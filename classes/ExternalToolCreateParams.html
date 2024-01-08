@@ -155,6 +155,11 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                <a href="#isDeactivated" >isDeactivated</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                 <a href="#isHidden" >isHidden</a>
                             </li>
                             <li>
@@ -249,6 +254,43 @@
                     <tr>
                         <td class="col-md-4">
                                 <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/request/external-tool-create.params.ts:48</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isDeactivated"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>isDeactivated</b></span>
+                        <a href="#isDeactivated"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @IsBoolean()<br />@ApiProperty({type: Boolean, default: false, description: &#x27;Tool can be deactivated, related tools can not be added to e.g. school, course or board anymore&#x27;})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="67" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/request/external-tool-create.params.ts:67</a></div>
                         </td>
                     </tr>
 
@@ -398,7 +440,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="63" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/request/external-tool-create.params.ts:63</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="71" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/request/external-tool-create.params.ts:71</a></div>
                         </td>
                     </tr>
 
@@ -479,7 +521,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="69" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/request/external-tool-create.params.ts:69</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="77" class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/dto/request/external-tool-create.params.ts:77</a></div>
                         </td>
                     </tr>
 
@@ -596,6 +638,14 @@ export class ExternalToolCreateParams {
 	@IsBoolean()
 	@ApiProperty()
 	isHidden!: boolean;
+
+	@IsBoolean()
+	@ApiProperty({
+		type: Boolean,
+		default: false,
+		description: &#x27;Tool can be deactivated, related tools can not be added to e.g. school, course or board anymore&#x27;,
+	})
+	isDeactivated!: boolean;
 
 	@IsBoolean()
 	@ApiProperty()

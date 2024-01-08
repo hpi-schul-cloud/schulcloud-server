@@ -167,7 +167,7 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
-                                <a href="#isToolStatusLatestOrThrow" >isToolStatusLatestOrThrow</a>
+                                <a href="#isToolStatusLaunchableOrThrow" >isToolStatusLaunchableOrThrow</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -452,19 +452,19 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="isToolStatusLatestOrThrow"></a>
+                    <a name="isToolStatusLaunchableOrThrow"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
                             <span class="modifier">Async</span>
-                        <span ><b>isToolStatusLatestOrThrow</b></span>
-                        <a href="#isToolStatusLatestOrThrow"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>isToolStatusLaunchableOrThrow</b></span>
+                        <a href="#isToolStatusLaunchableOrThrow"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isToolStatusLatestOrThrow(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>, schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
+                    <code>isToolStatusLaunchableOrThrow(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>, schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
                 </td>
             </tr>
 
@@ -719,7 +719,7 @@ export class ToolLaunchService {
 
 		const { externalTool, schoolExternalTool } &#x3D; await this.loadToolHierarchy(schoolExternalToolId);
 
-		await this.isToolStatusLatestOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
+		await this.isToolStatusLaunchableOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
 
 		const strategy: ToolLaunchStrategy | undefined &#x3D; this.strategies.get(externalTool.config.type);
 
@@ -749,7 +749,7 @@ export class ToolLaunchService {
 		};
 	}
 
-	private async isToolStatusLatestOrThrow(
+	private async isToolStatusLaunchableOrThrow(
 		userId: EntityId,
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
@@ -762,12 +762,13 @@ export class ToolLaunchService {
 				contextExternalTool
 			);
 
-		if (status.isOutdatedOnScopeSchool || status.isOutdatedOnScopeContext) {
+		if (status.isOutdatedOnScopeSchool || status.isOutdatedOnScopeContext || status.isDeactivated) {
 			throw new ToolStatusOutdatedLoggableException(
 				userId,
 				contextExternalTool.id ?? &#x27;&#x27;,
 				status.isOutdatedOnScopeSchool,
-				status.isOutdatedOnScopeContext
+				status.isOutdatedOnScopeContext,
+				status.isDeactivated
 			);
 		}
 	}

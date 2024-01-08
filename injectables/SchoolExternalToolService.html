@@ -170,6 +170,10 @@
                                 <a href="#findSchoolExternalTools" >findSchoolExternalTools</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#isToolDeactivated" >isToolDeactivated</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#saveSchoolExternalTool" >saveSchoolExternalTool</a>
                             </li>
@@ -297,8 +301,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="85"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool.service.ts:85</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="86"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool.service.ts:86</a></div>
                         </td>
                     </tr>
 
@@ -708,6 +712,87 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="isToolDeactivated"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>isToolDeactivated</b></span>
+                        <a href="#isToolDeactivated"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isToolDeactivated(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>, schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="96"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool.service.ts:96</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>externalTool</td>
+                                            <td>
+                                                            <code><a href="../classes/ExternalTool.html" target="_self" >ExternalTool</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>schoolExternalTool</td>
+                                            <td>
+                                                            <code><a href="../classes/SchoolExternalTool.html" target="_self" >SchoolExternalTool</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="saveSchoolExternalTool"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -726,8 +811,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="89"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool.service.ts:89</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="90"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool.service.ts:90</a></div>
                         </td>
                     </tr>
 
@@ -840,6 +925,7 @@ export class SchoolExternalToolService {
 	): Promise&lt;SchoolExternalToolConfigurationStatus&gt; {
 		const status: SchoolExternalToolConfigurationStatus &#x3D; new SchoolExternalToolConfigurationStatus({
 			isOutdatedOnScopeSchool: true,
+			isDeactivated: this.isToolDeactivated(externalTool, tool),
 		});
 
 		if (this.toolFeatures.toolStatusWithoutVersions) {
@@ -871,6 +957,14 @@ export class SchoolExternalToolService {
 		let createdSchoolExternalTool: SchoolExternalTool &#x3D; await this.schoolExternalToolRepo.save(schoolExternalTool);
 		createdSchoolExternalTool &#x3D; await this.enrichDataFromExternalTool(createdSchoolExternalTool);
 		return createdSchoolExternalTool;
+	}
+
+	private isToolDeactivated(externalTool: ExternalTool, schoolExternalTool: SchoolExternalTool) {
+		if (externalTool.isDeactivated || schoolExternalTool.status?.isDeactivated) {
+			return true;
+		}
+
+		return false;
 	}
 }
 </code></pre>

@@ -4925,6 +4925,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SchoolExternalToolConfigurationStatus.html" data-type="entity-link" >SchoolExternalToolConfigurationStatus</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SchoolExternalToolConfigurationStatusEntity.html" data-type="entity-link" >SchoolExternalToolConfigurationStatusEntity</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SchoolExternalToolConfigurationStatusResponse.html" data-type="entity-link" >SchoolExternalToolConfigurationStatusResponse</a>
                             </li>
                             <li class="link">

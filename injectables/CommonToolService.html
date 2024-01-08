@@ -292,8 +292,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool.service.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool.service.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -373,8 +373,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="40"
-                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool.service.ts:40</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool.service.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -460,6 +460,7 @@ export class CommonToolService {
 		const configurationStatus: ContextExternalToolConfigurationStatus &#x3D; new ContextExternalToolConfigurationStatus({
 			isOutdatedOnScopeContext: true,
 			isOutdatedOnScopeSchool: true,
+			isDeactivated: false,
 		});
 
 		if (
@@ -472,6 +473,10 @@ export class CommonToolService {
 		} else {
 			configurationStatus.isOutdatedOnScopeContext &#x3D; true;
 			configurationStatus.isOutdatedOnScopeSchool &#x3D; true;
+		}
+
+		if (externalTool.isDeactivated || schoolExternalTool.status?.isDeactivated) {
+			configurationStatus.isDeactivated &#x3D; true;
 		}
 
 		return configurationStatus;

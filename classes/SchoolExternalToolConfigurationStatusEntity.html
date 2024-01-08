@@ -86,7 +86,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content entity">
+               <div class="content class">
                    <div class="content-data">
 
 
@@ -94,9 +94,15 @@
 
 
 
+
+
+
+
+
+
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Entities</li>
-  <li class="breadcrumb-item" >SchoolExternalToolEntity</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >SchoolExternalToolConfigurationStatusEntity</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -120,8 +126,10 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tool/school-external-tool/entity/school-external-tool.entity.ts</code>
+            <code>apps/server/src/modules/tool/school-external-tool/entity/school-external-tool-configuration-status.entity.ts</code>
         </p>
+
+
 
 
 
@@ -140,24 +148,11 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
-                                <a href="#school" >school</a>
+                                <a href="#isDeactivated" >isDeactivated</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
-                                <a href="#schoolParameters" >schoolParameters</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier">Optional</span>
-                                <a href="#status" >status</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                <a href="#tool" >tool</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                <a href="#toolVersion" >toolVersion</a>
+                                <a href="#isOutdatedOnScopeSchool" >isOutdatedOnScopeSchool</a>
                             </li>
                         </ul>
                     </td>
@@ -172,6 +167,55 @@
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(props: <a href="../classes/SchoolExternalToolConfigurationStatusEntity.html" target="_self">SchoolExternalToolConfigurationStatusEntity</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/entity/school-external-tool-configuration-status.entity.ts:9</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>props</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../classes/SchoolExternalToolConfigurationStatusEntity.html" target="_self" >SchoolExternalToolConfigurationStatusEntity</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
             <section data-compodoc="block-properties">
     
     <h3 id="inputs">
@@ -181,162 +225,17 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="school"></a>
+                    <a name="isDeactivated"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                        <span ><b>school</b></span>
-                        <a href="#school"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>isDeactivated</b></span>
+                        <a href="#isDeactivated"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../classes/SchoolEntity.html" target="_self" >SchoolEntity</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ManyToOne(undefined, {eager: true})<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/entity/school-external-tool.entity.ts:22</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="schoolParameters"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                        <span ><b>schoolParameters</b></span>
-                        <a href="#schoolParameters"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>    <code>CustomParameterEntryEntity[]</code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @Embedded(undefined, {array: true})<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/entity/school-external-tool.entity.ts:25</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="status"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier">Optional</span>
-                        <span ><b>status</b></span>
-                        <a href="#status"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../classes/SchoolExternalToolConfigurationStatusEntity.html" target="_self" >SchoolExternalToolConfigurationStatusEntity</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @Embedded(undefined, {object: true, nullable: true})<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/entity/school-external-tool.entity.ts:31</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="tool"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                        <span ><b>tool</b></span>
-                        <a href="#tool"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../entitys/ExternalToolEntity.html" target="_self" >ExternalToolEntity</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ManyToOne()<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/entity/school-external-tool.entity.ts:19</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="toolVersion"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                        <span ><b>toolVersion</b></span>
-                        <a href="#toolVersion"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
 
                     </td>
                 </tr>
@@ -351,7 +250,43 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/entity/school-external-tool.entity.ts:28</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/entity/school-external-tool-configuration-status.entity.ts:9</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isOutdatedOnScopeSchool"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>isOutdatedOnScopeSchool</b></span>
+                        <a href="#isOutdatedOnScopeSchool"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Property()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/entity/school-external-tool-configuration-status.entity.ts:6</a></div>
                         </td>
                     </tr>
 
@@ -359,60 +294,35 @@
         </tbody>
     </table>
 </section>
+
+
+
+
+
+
+
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Embedded, Entity, ManyToOne, Property } from &#x27;@mikro-orm/core&#x27;;
-import { BaseEntityWithTimestamps } from &#x27;@shared/domain/entity/base.entity&#x27;;
-import { SchoolEntity } from &#x27;@shared/domain/entity/school.entity&#x27;;
-import { CustomParameterEntryEntity } from &#x27;../../common/entity&#x27;;
-import { ExternalToolEntity } from &#x27;../../external-tool/entity&#x27;;
-import { SchoolExternalToolConfigurationStatusEntity } from &#x27;./school-external-tool-configuration-status.entity&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Embeddable, Property } from &#x27;@mikro-orm/core&#x27;;
 
-export interface SchoolExternalToolProperties {
-	tool: ExternalToolEntity;
-	school: SchoolEntity;
-	schoolParameters?: CustomParameterEntryEntity[];
-	toolVersion: number;
-	status?: SchoolExternalToolConfigurationStatusEntity;
-}
-
-@Entity({ tableName: &#x27;school-external-tools&#x27; })
-export class SchoolExternalToolEntity extends BaseEntityWithTimestamps {
-	@ManyToOne()
-	tool: ExternalToolEntity;
-
-	@ManyToOne(() &#x3D;&gt; SchoolEntity, { eager: true })
-	school: SchoolEntity;
-
-	@Embedded(() &#x3D;&gt; CustomParameterEntryEntity, { array: true })
-	schoolParameters: CustomParameterEntryEntity[];
+@Embeddable()
+export class SchoolExternalToolConfigurationStatusEntity {
+	@Property()
+	isOutdatedOnScopeSchool: boolean;
 
 	@Property()
-	toolVersion: number;
+	isDeactivated: boolean;
 
-	@Embedded(() &#x3D;&gt; SchoolExternalToolConfigurationStatusEntity, { object: true, nullable: true })
-	status?: SchoolExternalToolConfigurationStatusEntity;
-
-	constructor(props: SchoolExternalToolProperties) {
-		super();
-		this.tool &#x3D; props.tool;
-		this.school &#x3D; props.school;
-		this.schoolParameters &#x3D; props.schoolParameters ?? [];
-		this.toolVersion &#x3D; props.toolVersion;
-		this.status &#x3D; props.status;
+	constructor(props: SchoolExternalToolConfigurationStatusEntity) {
+		this.isOutdatedOnScopeSchool &#x3D; props.isOutdatedOnScopeSchool;
+		this.isDeactivated &#x3D; props.isDeactivated;
 	}
 }
 </code></pre>
     </div>
 </div>
-
-
-
-
-
-
 
 
 
@@ -447,8 +357,8 @@ export class SchoolExternalToolEntity extends BaseEntityWithTimestamps {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'entity';
-            var COMPODOC_CURRENT_PAGE_URL = 'SchoolExternalToolEntity.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'SchoolExternalToolConfigurationStatusEntity.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

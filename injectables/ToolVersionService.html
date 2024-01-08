@@ -146,6 +146,10 @@
                                     <span class="modifier">Async</span>
                                 <a href="#determineToolConfigurationStatus" >determineToolConfigurationStatus</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#isToolDeactivated" >isToolDeactivated</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -341,6 +345,87 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isToolDeactivated"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>isToolDeactivated</b></span>
+                        <a href="#isToolDeactivated"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isToolDeactivated(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>, schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="57"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/service/tool-version-service.ts:57</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>externalTool</td>
+                                            <td>
+                                                            <code><a href="../classes/ExternalTool.html" target="_self" >ExternalTool</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>schoolExternalTool</td>
+                                            <td>
+                                                            <code><a href="../classes/SchoolExternalTool.html" target="_self" >SchoolExternalTool</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -377,6 +462,7 @@ export class ToolVersionService {
 			const configurationStatus: ContextExternalToolConfigurationStatus &#x3D; new ContextExternalToolConfigurationStatus({
 				isOutdatedOnScopeContext: false,
 				isOutdatedOnScopeSchool: false,
+				isDeactivated: this.isToolDeactivated(externalTool, schoolExternalTool),
 			});
 
 			try {
@@ -400,6 +486,14 @@ export class ToolVersionService {
 		);
 
 		return status;
+	}
+
+	private isToolDeactivated(externalTool: ExternalTool, schoolExternalTool: SchoolExternalTool) {
+		if (externalTool.isDeactivated || (schoolExternalTool.status &amp;&amp; schoolExternalTool.status.isDeactivated)) {
+			return true;
+		}
+
+		return false;
 	}
 }
 </code></pre>

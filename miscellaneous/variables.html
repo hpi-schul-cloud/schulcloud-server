@@ -809,6 +809,9 @@
                             <a href="#SCHOOL_YEAR_REPO" title="apps/server/src/modules/school/domain/interface/school-year.repo.interface.ts" ><b>SCHOOL_YEAR_REPO</b>&nbsp;&nbsp;&nbsp;(apps/.../school-year.repo.interface.ts)</a>
                         </li>
                         <li>
+                            <a href="#schoolExternalToolConfigurationStatusEntityFactory" title="apps/server/src/shared/testing/factory/school-external-tool-configuration-status-entity.factory.ts" ><b>schoolExternalToolConfigurationStatusEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../school-external-tool-configuration-status-entity.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#schoolExternalToolEntityFactory" title="apps/server/src/shared/testing/factory/school-external-tool-entity.factory.ts" ><b>schoolExternalToolEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../school-external-tool-entity.factory.ts)</a>
                         </li>
                         <li>
@@ -2498,6 +2501,7 @@
 		config: basicToolConfigFactory.build(),
 		logoUrl: &#x27;https://logo.com/&#x27;,
 		isHidden: false,
+		isDeactivated: false,
 		openNewTab: false,
 		version: 1,
 	};
@@ -4013,6 +4017,7 @@ must use</p>
 		return {
 			isOutdatedOnScopeContext: false,
 			isOutdatedOnScopeSchool: false,
+			isDeactivated: false,
 		};
 	})</code>
                     </td>
@@ -5194,6 +5199,7 @@ must use</p>
 			}),
 			parameters: [customParameterEntityFactory.build()],
 			isHidden: false,
+			isDeactivated: false,
 			openNewTab: true,
 			version: 1,
 		};
@@ -10034,6 +10040,34 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/shared/testing/factory/school-external-tool-configuration-status-entity.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="schoolExternalToolConfigurationStatusEntityFactory"></a>
+                    <span class="name">
+                        <span ><b>schoolExternalToolConfigurationStatusEntityFactory</b></span>
+                        <a href="#schoolExternalToolConfigurationStatusEntityFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Factory.define&lt;SchoolExternalToolConfigurationStatusEntity&gt;(() &#x3D;&gt; {
+		return {
+			isOutdatedOnScopeSchool: false,
+			isDeactivated: false,
+		};
+	})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/shared/testing/factory/school-external-tool-entity.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -10058,6 +10092,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		school: schoolFactory.buildWithId(),
 		schoolParameters: [{ name: &#x27;schoolMockParameter&#x27;, value: &#x27;mockValue&#x27; }],
 		toolVersion: 0,
+		status: schoolExternalToolConfigurationStatusEntityFactory.build(),
 	};
 })</code>
                     </td>
@@ -10256,6 +10291,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                         <i>Default value : </i><code>Factory.define&lt;SchoolExternalToolConfigurationStatus&gt;(() &#x3D;&gt; {
 	return {
 		isOutdatedOnScopeSchool: false,
+		isDeactivated: false,
 	};
 })</code>
                     </td>
@@ -10283,6 +10319,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                         <i>Default value : </i><code>Factory.define&lt;SchoolExternalToolConfigurationStatusResponse&gt;(() &#x3D;&gt; {
 		return {
 			isOutdatedOnScopeSchool: false,
+			isDeactivated: false,
 		};
 	})</code>
                     </td>
@@ -11553,6 +11590,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	return {
 		isOutdatedOnScopeContext: false,
 		isOutdatedOnScopeSchool: false,
+		isDeactivated: false,
 	};
 })</code>
                     </td>

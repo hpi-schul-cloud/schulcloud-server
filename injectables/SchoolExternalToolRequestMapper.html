@@ -189,8 +189,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-request.mapper.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="25"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-request.mapper.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -256,8 +256,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="8"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-request.mapper.ts:8</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="12"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/mapper/school-external-tool-request.mapper.ts:12</a></div>
                         </td>
                     </tr>
 
@@ -311,7 +311,11 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { CustomParameterEntry } from &#x27;../../common/domain&#x27;;
-import { CustomParameterEntryParam, SchoolExternalToolPostParams } from &#x27;../controller/dto&#x27;;
+import {
+	CustomParameterEntryParam,
+	SchoolExternalToolConfigurationStatus,
+	SchoolExternalToolPostParams,
+} from &#x27;../controller/dto&#x27;;
 import { SchoolExternalToolDto } from &#x27;../uc/dto/school-external-tool.types&#x27;;
 
 @Injectable()
@@ -322,6 +326,10 @@ export class SchoolExternalToolRequestMapper {
 			schoolId: request.schoolId,
 			toolVersion: request.version,
 			parameters: this.mapRequestToCustomParameterEntryDO(request.parameters ?? []),
+			status: new SchoolExternalToolConfigurationStatus({
+				isOutdatedOnScopeSchool: false,
+				isDeactivated: request.isDeactivated,
+			}),
 		};
 	}
 

@@ -257,6 +257,7 @@ export class SchoolToolConfigurationStatusResponseMapper {
 		const configurationStatus: SchoolExternalToolConfigurationStatusResponse &#x3D;
 			new SchoolExternalToolConfigurationStatusResponse({
 				isOutdatedOnScopeSchool: status.isOutdatedOnScopeSchool,
+				isDeactivated: status.isDeactivated,
 			});
 
 		return configurationStatus;
