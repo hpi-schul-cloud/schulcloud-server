@@ -1,15 +1,15 @@
 import { Entity, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { EntityId } from '@shared/domain/types';
+import { DomainModel, EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
-import { DeletionDomainModel, DeletionOperationModel } from '../domain/types';
+import { DeletionOperationModel } from '../domain/types';
 
 export interface DeletionLogEntityProps {
 	id?: EntityId;
-	domain: DeletionDomainModel;
+	domain: DomainModel;
 	operation?: DeletionOperationModel;
-	modifiedCount?: number;
-	deletedCount?: number;
+	modifiedCount: number;
+	deletedCount: number;
 	deletionRequestId?: ObjectId;
 	performedAt?: Date;
 	createdAt?: Date;
@@ -19,16 +19,16 @@ export interface DeletionLogEntityProps {
 @Entity({ tableName: 'deletionlogs' })
 export class DeletionLogEntity extends BaseEntityWithTimestamps {
 	@Property()
-	domain: DeletionDomainModel;
+	domain: DomainModel;
 
 	@Property({ nullable: true })
 	operation?: DeletionOperationModel;
 
-	@Property({ nullable: true })
-	modifiedCount?: number;
+	@Property()
+	modifiedCount: number;
 
-	@Property({ nullable: true })
-	deletedCount?: number;
+	@Property()
+	deletedCount: number;
 
 	@Property({ nullable: true })
 	deletionRequestId?: ObjectId;
@@ -48,14 +48,8 @@ export class DeletionLogEntity extends BaseEntityWithTimestamps {
 		if (props.operation !== undefined) {
 			this.operation = props.operation;
 		}
-
-		if (props.modifiedCount !== undefined) {
-			this.modifiedCount = props.modifiedCount;
-		}
-
-		if (props.deletedCount !== undefined) {
-			this.deletedCount = props.deletedCount;
-		}
+		this.modifiedCount = props.modifiedCount;
+		this.deletedCount = props.deletedCount;
 
 		if (props.deletionRequestId !== undefined) {
 			this.deletionRequestId = props.deletionRequestId;
