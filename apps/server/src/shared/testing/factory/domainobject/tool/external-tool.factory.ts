@@ -121,6 +121,7 @@ export const externalToolFactory = ExternalToolFactory.define(ExternalTool, ({ s
 		config: basicToolConfigFactory.build(),
 		logoUrl: 'https://logo.com/',
 		isHidden: false,
+		isDeactivated: false,
 		openNewTab: false,
 		version: 1,
 	};

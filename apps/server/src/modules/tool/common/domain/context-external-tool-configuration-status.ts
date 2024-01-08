@@ -3,8 +3,11 @@ export class ContextExternalToolConfigurationStatus {
 
 	isOutdatedOnScopeContext: boolean;
 
+	isDeactivated: boolean;
+
 	constructor(props: ContextExternalToolConfigurationStatus) {
 		this.isOutdatedOnScopeSchool = props.isOutdatedOnScopeSchool;
 		this.isOutdatedOnScopeContext = props.isOutdatedOnScopeContext;
+		this.isDeactivated = props.isDeactivated;
 	}
 }

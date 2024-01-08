@@ -7,6 +7,7 @@ export class ToolStatusResponseMapper {
 			new ContextExternalToolConfigurationStatusResponse({
 				isOutdatedOnScopeSchool: status.isOutdatedOnScopeSchool,
 				isOutdatedOnScopeContext: status.isOutdatedOnScopeContext,
+				isDeactivated: status.isDeactivated,
 			});
 
 		return configurationStatus;
