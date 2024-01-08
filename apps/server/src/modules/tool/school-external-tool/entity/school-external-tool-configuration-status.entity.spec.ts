@@ -1,4 +1,3 @@
-import { tr } from '@faker-js/faker';
 import { setupEntities } from '@shared/testing';
 import { schoolExternalToolConfigurationStatusEntityFactory } from '@shared/testing/factory/school-external-tool-configuration-status-entity.factory';
 import { SchoolExternalToolConfigurationStatusEntity } from './school-external-tool-configuration-status.entity';
