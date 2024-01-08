@@ -1,8 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TaskRepo } from '@shared/repo';
-import { setupEntities, submissionFactory, taskFactory } from '@shared/testing';
+import { courseFactory, setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { DomainModel } from '@shared/domain/types';
+import { DomainOperationBuilder } from '@shared/domain/builder';
+import { LegacyLogger } from '@src/core/logger';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
 
@@ -28,6 +31,10 @@ describe('TaskService', () => {
 				{
 					provide: FilesStorageClientAdapterService,
 					useValue: createMock<FilesStorageClientAdapterService>(),
+				},
+				{
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
@@ -100,6 +107,109 @@ describe('TaskService', () => {
 			await taskService.delete(task);
 
 			expect(taskRepo.delete).toBeCalledWith(task);
+		});
+	});
+
+	describe('deleteTasksByOnlyCreator', () => {
+		describe('when task has only user as parent', () => {
+			const setup = () => {
+				const creator = userFactory.buildWithId();
+				const taskWithoutCourse = taskFactory.buildWithId({ creator });
+
+				taskRepo.findByOnlyCreatorId.mockResolvedValue([[taskWithoutCourse], 1]);
+
+				const expectedResult = DomainOperationBuilder.build(DomainModel.TASK, 0, 1);
+
+				return { creator, expectedResult };
+			};
+
+			it('should call taskRepo.findByOnlyCreatorId with creatorId', async () => {
+				const { creator } = setup();
+
+				await taskService.deleteTasksByOnlyCreator(creator.id);
+
+				expect(taskRepo.findByOnlyCreatorId).toBeCalledWith(creator.id);
+			});
+
+			it('should return the object with information on the actions performed', async () => {
+				const { creator, expectedResult } = setup();
+
+				const result = await taskService.deleteTasksByOnlyCreator(creator.id);
+
+				expect(result).toEqual(expectedResult);
+			});
+		});
+	});
+
+	describe('removeCreatorIdFromTasks', () => {
+		describe('when tasks where user is parent, and when task has course', () => {
+			const setup = () => {
+				const creator = userFactory.buildWithId();
+				const course = courseFactory.build();
+				const taskWithCourse = taskFactory.buildWithId({ creator, course });
+
+				taskRepo.findByCreatorIdWithCourseAndLesson.mockResolvedValue([[taskWithCourse], 1]);
+
+				const expectedResult = DomainOperationBuilder.build(DomainModel.TASK, 1, 0);
+				const taskWithCourseToUpdate = { ...taskWithCourse, creator: undefined };
+
+				return { creator, expectedResult, taskWithCourseToUpdate };
+			};
+
+			it('should call taskRepo.findByCreatorIdWithCourseAndLesson with creatorId', async () => {
+				const { creator } = setup();
+
+				await taskService.removeCreatorIdFromTasks(creator.id);
+
+				expect(taskRepo.findByCreatorIdWithCourseAndLesson).toBeCalledWith(creator.id);
+			});
+
+			it('should call taskRepo.save with task to update', async () => {
+				const { creator, taskWithCourseToUpdate } = setup();
+
+				await taskService.removeCreatorIdFromTasks(creator.id);
+
+				expect(taskRepo.save).toBeCalledWith([taskWithCourseToUpdate]);
+			});
+
+			it('should return the object with information on the actions performed', async () => {
+				const { creator, expectedResult } = setup();
+
+				const result = await taskService.removeCreatorIdFromTasks(creator.id);
+
+				expect(result).toEqual(expectedResult);
+			});
+		});
+	});
+
+	describe('removeUserFromFinished', () => {
+		describe('when task has user in finished array', () => {
+			const setup = () => {
+				const creator = userFactory.buildWithId();
+				const finishedTask = taskFactory.finished(creator).buildWithId();
+
+				taskRepo.findByUserIdInFinished.mockResolvedValue([[finishedTask], 1]);
+
+				const expectedResult = DomainOperationBuilder.build(DomainModel.TASK, 1, 0);
+
+				return { creator, expectedResult };
+			};
+
+			it('should call taskRepo.findByUserIdInFinished with creatorId', async () => {
+				const { creator } = setup();
+
+				await taskService.removeUserFromFinished(creator.id);
+
+				expect(taskRepo.findByUserIdInFinished).toBeCalledWith(creator.id);
+			});
+
+			it('should return the object with information on the actions performed', async () => {
+				const { creator, expectedResult } = setup();
+
+				const result = await taskService.removeUserFromFinished(creator.id);
+
+				expect(result).toEqual(expectedResult);
+			});
 		});
 	});
 });
