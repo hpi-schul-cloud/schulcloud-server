@@ -394,7 +394,6 @@ describe('course copy service', () => {
 		};
 
 		it('should not find ctl tools', async () => {
-			Configuration.set('FEATURE_CTL_TOOLS_COPY_ENABLED', false);
 			const { course, user } = setup();
 			await service.copyCourse({ userId: user.id, courseId: course.id });
 
@@ -402,7 +401,6 @@ describe('course copy service', () => {
 		});
 
 		it('should not copy ctl tools', async () => {
-			Configuration.set('FEATURE_CTL_TOOLS_COPY_ENABLED', false);
 			const { course, user } = setup();
 			await service.copyCourse({ userId: user.id, courseId: course.id });
 

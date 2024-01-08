@@ -6,9 +6,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Course, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
+import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
 import { BoardCopyService } from './board-copy.service';
 import { RoomsService } from './rooms.service';
-import { IToolFeatures, ToolFeatures } from '../../tool/tool-config';
 
 type CourseCopyParams = {
 	originalCourse: Course;

@@ -8,6 +8,7 @@ import { CourseRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { DrawingElementAdapterService } from '@modules/tldraw-client/service/drawing-element-adapter.service';
 import { HttpModule } from '@nestjs/axios';
+import { ToolConfigModule } from '@modules/tool/tool-config.module';
 import { BoardDoRepo, BoardNodeRepo, RecursiveDeleteVisitor } from './repo';
 import {
 	BoardDoAuthorizableService,
@@ -20,7 +21,6 @@ import {
 } from './service';
 import { BoardDoCopyService, SchoolSpecificFileCopyServiceFactory } from './service/board-do-copy-service';
 import { ColumnBoardCopyService } from './service/column-board-copy.service';
-import { ToolConfigModule } from '../tool/tool-config.module';
 
 @Module({
 	imports: [
