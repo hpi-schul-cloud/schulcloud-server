@@ -866,4 +866,52 @@ describe('Task Entity', () => {
 			expect(schoolId).toEqual(school.id);
 		});
 	});
+
+	describe('removeCreatorId is called', () => {
+		describe('WHEN creatorId exists', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.buildWithId({ creator: user });
+
+				return { task };
+			};
+
+			it('should set it to undefined', () => {
+				const { task } = setup();
+
+				const result = task.removeCreatorId();
+
+				expect(result).toBe(undefined);
+			});
+		});
+	});
+
+	describe('removeUserFromFinished', () => {
+		describe('when user exist in Finished array', () => {
+			const setup = () => {
+				const user1 = userFactory.buildWithId();
+				const user2 = userFactory.buildWithId();
+				const task = taskFactory.buildWithId({ finished: [user1, user2] });
+
+				return { user1, user2, task };
+			};
+
+			it('should remove user form finished collection', () => {
+				const { task, user1 } = setup();
+
+				task.removeUserFromFinished(user1.id);
+
+				expect(task.finished.contains(user1)).toBe(false);
+			});
+
+			it('should remove only user selected, not other users in finished collection', () => {
+				const { task, user1, user2 } = setup();
+
+				task.removeUserFromFinished(user1.id);
+
+				expect(task.finished.contains(user1)).toBe(false);
+				expect(task.finished.contains(user2)).toBe(true);
+			});
+		});
+	});
 });
