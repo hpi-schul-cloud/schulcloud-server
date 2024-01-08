@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { GetFile, S3ClientAdapter } from '@infra/s3-client';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
@@ -317,11 +318,13 @@ describe('PreviewGeneratorService', () => {
 				const originFile = createFile(undefined, 'image/jpeg');
 				s3ClientAdapter.get.mockResolvedValueOnce(originFile);
 
-				const data = Buffer.from('imagemagic is not found');
+				const data1 = Buffer.from('imagemagick ');
+				const data2 = Buffer.from('is not found');
 				const { stderr } = createMockStream();
 
 				process.nextTick(() => {
-					stderr.write(data);
+					stderr.write(data1);
+					stderr.write(data2);
 					stderr.end();
 				});
 
@@ -334,6 +337,16 @@ describe('PreviewGeneratorService', () => {
 				const { params, expectedError } = setup();
 
 				await expect(service.generatePreview(params)).rejects.toThrowError(expectedError);
+			});
+
+			it('should have external error in getLogMessage', async () => {
+				const { params } = setup();
+				try {
+					await service.generatePreview(params);
+				} catch (error) {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+					expect(error.getLogMessage().error).toEqual(new Error('imagemagick is not found'));
+				}
 			});
 		});
 
