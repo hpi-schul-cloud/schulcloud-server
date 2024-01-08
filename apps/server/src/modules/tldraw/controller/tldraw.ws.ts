@@ -29,7 +29,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 			try {
 				await this.tldrawWsService.authorizeConnection(docName, cookies?.jwt);
 			} catch (err) {
-				if ((err as AxiosError).response?.status === 404) {
+				if ((err as AxiosError).response?.status === 404 || (err as AxiosError).response?.status === 400) {
 					this.closeClientAndLogError(
 						client,
 						WsCloseCodeEnum.WS_CLIENT_NOT_FOUND_CODE,
