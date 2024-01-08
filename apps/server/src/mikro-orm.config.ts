@@ -2,8 +2,6 @@ import type { MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs/typings';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { FileEntity } from '@modules/files/entity';
 import { FileRecord } from '@modules/files-storage/entity';
-import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
-import { NotFoundException } from '@nestjs/common';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
 
 export const mikroOrmConfig: MikroOrmModuleSyncOptions = {
@@ -14,8 +12,10 @@ export const mikroOrmConfig: MikroOrmModuleSyncOptions = {
 	user: DB_USERNAME,
 	entities: [...ALL_ENTITIES, FileEntity, FileRecord],
 	allowGlobalContext: true,
+	/*
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
 		new NotFoundException(`The requested ${entityName}: ${JSON.stringify(where)} has not been found.`),
+	*/
 	migrations: {
 		tableName: 'migrations', // name of database table with log of executed transactions
 		path: './dist/apps/server/src/migrations/mikro-orm', // path to the folder with migrations
