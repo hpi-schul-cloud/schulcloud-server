@@ -1,17 +1,20 @@
 import { Group, GroupService, GroupTypes } from '@modules/group';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { AnyProvisioningOptions } from '../domain';
+import { SchulConneXProvisioningOptions } from '../domain';
+import { ProvisioningOptionsUpdateHandler } from './provisioning-options-update-handler';
 
 @Injectable()
-export class ProvisioningOptionsUpdateService {
+export class SchulconnexProvisioningOptionsUpdateService
+	implements ProvisioningOptionsUpdateHandler<SchulConneXProvisioningOptions>
+{
 	constructor(private readonly groupService: GroupService) {}
 
-	public async handleActions<T extends AnyProvisioningOptions>(
+	public async handleUpdate(
 		schoolId: EntityId,
 		systemId: EntityId,
-		newOptions: T,
-		oldOptions: T
+		newOptions: SchulConneXProvisioningOptions,
+		oldOptions: SchulConneXProvisioningOptions
 	): Promise<void> {
 		if (oldOptions.groupProvisioningClassesEnabled && !newOptions.groupProvisioningClassesEnabled) {
 			await this.deleteGroups(schoolId, systemId, GroupTypes.CLASS);

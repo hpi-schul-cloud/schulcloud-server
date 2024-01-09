@@ -175,7 +175,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 					schoolSystemOptions.provisioningOptions
 				);
 
-				expect(provisioningOptionsUpdateService.handleActions).toHaveBeenCalledWith(
+				expect(provisioningOptionsUpdateService.handleUpdate).toHaveBeenCalledWith(
 					schoolSystemOptions.schoolId,
 					schoolSystemOptions.systemId,
 					schoolSystemOptions.provisioningOptions,
@@ -271,7 +271,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 					newOptions
 				);
 
-				expect(provisioningOptionsUpdateService.handleActions).toHaveBeenCalledWith(
+				expect(provisioningOptionsUpdateService.handleUpdate).toHaveBeenCalledWith(
 					schoolSystemOptions.schoolId,
 					schoolSystemOptions.systemId,
 					newOptions,

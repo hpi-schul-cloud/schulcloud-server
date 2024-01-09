@@ -83,7 +83,7 @@ export class SchoolSystemOptionsUc {
 
 		const currentProvisioningOptions: AnyProvisioningOptions =
 			existingSchoolSystemOptions?.provisioningOptions ?? schoolSystemOptionsBuilder.getDefaultProvisioningOptions();
-		await this.provisioningOptionsUpdateService.handleActions(
+		await this.provisioningOptionsUpdateService.handleUpdate(
 			schoolId,
 			systemId,
 			newProvisioningOptions,

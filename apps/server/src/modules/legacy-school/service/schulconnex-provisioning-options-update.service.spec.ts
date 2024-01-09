@@ -3,18 +3,18 @@ import { Group, GroupService, GroupTypes } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
 import { groupFactory, schoolSystemOptionsFactory } from '@shared/testing';
 import { SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
-import { ProvisioningOptionsUpdateService } from './provisioning-options-update-service';
+import { SchulconnexProvisioningOptionsUpdateService } from './schulconnex-provisioning-options-update.service';
 
-describe(ProvisioningOptionsUpdateService.name, () => {
+describe(SchulconnexProvisioningOptionsUpdateService.name, () => {
 	let module: TestingModule;
-	let service: ProvisioningOptionsUpdateService;
+	let service: SchulconnexProvisioningOptionsUpdateService;
 
 	let groupService: DeepMocked<GroupService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				ProvisioningOptionsUpdateService,
+				SchulconnexProvisioningOptionsUpdateService,
 				{
 					provide: GroupService,
 					useValue: createMock<GroupService>(),
@@ -22,7 +22,7 @@ describe(ProvisioningOptionsUpdateService.name, () => {
 			],
 		}).compile();
 
-		service = module.get(ProvisioningOptionsUpdateService);
+		service = module.get(SchulconnexProvisioningOptionsUpdateService);
 		groupService = module.get(GroupService);
 	});
 
@@ -34,7 +34,7 @@ describe(ProvisioningOptionsUpdateService.name, () => {
 		jest.resetAllMocks();
 	});
 
-	describe('handleActions', () => {
+	describe('handleUpdate', () => {
 		describe('when groupProvisioningClassesEnabled gets turned off', () => {
 			const setup = () => {
 				const schoolSystemOptions: SchoolSystemOptions = schoolSystemOptionsFactory.build({
@@ -63,7 +63,7 @@ describe(ProvisioningOptionsUpdateService.name, () => {
 			it('should search for all classes of the school for the system', async () => {
 				const { schoolSystemOptions, newProvisioningOptions } = setup();
 
-				await service.handleActions(
+				await service.handleUpdate(
 					schoolSystemOptions.schoolId,
 					schoolSystemOptions.systemId,
 					newProvisioningOptions,
@@ -80,7 +80,7 @@ describe(ProvisioningOptionsUpdateService.name, () => {
 			it('should delete all classes', async () => {
 				const { schoolSystemOptions, newProvisioningOptions, group } = setup();
 
-				await service.handleActions(
+				await service.handleUpdate(
 					schoolSystemOptions.schoolId,
 					schoolSystemOptions.systemId,
 					newProvisioningOptions,
@@ -120,7 +120,7 @@ describe(ProvisioningOptionsUpdateService.name, () => {
 			it('should search for all courses of the school for the system', async () => {
 				const { schoolSystemOptions, newProvisioningOptions } = setup();
 
-				await service.handleActions(
+				await service.handleUpdate(
 					schoolSystemOptions.schoolId,
 					schoolSystemOptions.systemId,
 					newProvisioningOptions,
@@ -137,7 +137,7 @@ describe(ProvisioningOptionsUpdateService.name, () => {
 			it('should delete all courses', async () => {
 				const { schoolSystemOptions, newProvisioningOptions, group } = setup();
 
-				await service.handleActions(
+				await service.handleUpdate(
 					schoolSystemOptions.schoolId,
 					schoolSystemOptions.systemId,
 					newProvisioningOptions,
@@ -177,7 +177,7 @@ describe(ProvisioningOptionsUpdateService.name, () => {
 			it('should search for all other groups of the school for the system', async () => {
 				const { schoolSystemOptions, newProvisioningOptions } = setup();
 
-				await service.handleActions(
+				await service.handleUpdate(
 					schoolSystemOptions.schoolId,
 					schoolSystemOptions.systemId,
 					newProvisioningOptions,
@@ -194,7 +194,7 @@ describe(ProvisioningOptionsUpdateService.name, () => {
 			it('should delete all other groups', async () => {
 				const { schoolSystemOptions, newProvisioningOptions, group } = setup();
 
-				await service.handleActions(
+				await service.handleUpdate(
 					schoolSystemOptions.schoolId,
 					schoolSystemOptions.systemId,
 					newProvisioningOptions,
