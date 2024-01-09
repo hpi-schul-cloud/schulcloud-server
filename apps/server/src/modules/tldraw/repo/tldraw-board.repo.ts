@@ -9,6 +9,7 @@ import { WsSharedDocDo } from '../domain/ws-shared-doc.do';
 @Injectable()
 export class TldrawBoardRepo {
 	public connectionString: string;
+
 	public collectionName: string;
 
 	public flushSize: number;

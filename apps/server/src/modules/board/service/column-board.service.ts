@@ -80,16 +80,16 @@ export class ColumnBoardService {
 			id: courseId,
 		});
 
-		const deletePromises = columnBoardsId.map((id) => this.deleteColumnBoardById(id));
+		const deletePromises = columnBoardsId.map((columnBoardId) => this.deleteColumnBoardById(columnBoardId));
 
 		await Promise.all(deletePromises);
 	}
 
 	private async deleteColumnBoardById(id: EntityId): Promise<void> {
-		const columnBoardToDeletion = await this.findById(id);
+		const columnBoardToDeletion = await this.boardDoRepo.findByClassAndId(ColumnBoard, id);
 
 		if (columnBoardToDeletion) {
-			await this.delete(columnBoardToDeletion);
+			await this.boardDoService.deleteWithDescendants(columnBoardToDeletion);
 		}
 	}
 
