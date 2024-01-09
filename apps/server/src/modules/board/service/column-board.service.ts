@@ -4,6 +4,7 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import {
 	AnyBoardDo,
 	BoardExternalReference,
+	BoardExternalReferenceType,
 	Card,
 	Column,
 	ColumnBoard,
@@ -71,6 +72,25 @@ export class ColumnBoardService {
 
 	async delete(board: ColumnBoard): Promise<void> {
 		await this.boardDoService.deleteWithDescendants(board);
+	}
+
+	async deleteByCourseId(courseId: EntityId): Promise<void> {
+		const columnBoardsId = await this.findIdsByExternalReference({
+			type: BoardExternalReferenceType.Course,
+			id: courseId,
+		});
+
+		const deletePromises = columnBoardsId.map((id) => this.deleteColumnBoardById(id));
+
+		await Promise.all(deletePromises);
+	}
+
+	private async deleteColumnBoardById(id: EntityId): Promise<void> {
+		const columnBoardToDeletion = await this.findById(id);
+
+		if (columnBoardToDeletion) {
+			await this.delete(columnBoardToDeletion);
+		}
 	}
 
 	async updateTitle(board: ColumnBoard, title: string): Promise<void> {
