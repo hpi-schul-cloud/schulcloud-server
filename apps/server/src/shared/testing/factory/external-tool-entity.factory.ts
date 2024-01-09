@@ -103,6 +103,7 @@ export const externalToolEntityFactory = ExternalToolEntityFactory.define(
 			}),
 			parameters: [customParameterEntityFactory.build()],
 			isHidden: false,
+			isDeactivated: false,
 			openNewTab: true,
 			version: 1,
 		};

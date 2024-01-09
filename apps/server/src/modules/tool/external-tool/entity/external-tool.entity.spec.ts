@@ -57,6 +57,7 @@ describe('ExternalToolEntity', () => {
 				config: basicToolConfig,
 				parameters: [customParameter],
 				isHidden: true,
+				isDeactivated: false,
 				openNewTab: true,
 				version: 1,
 			});
