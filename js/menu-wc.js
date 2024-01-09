@@ -2599,13 +2599,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/TldrawTestModule.html" data-type="entity-link" >TldrawTestModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-TldrawTestModule-88de9ced3b44c76a10f5cc7501ec0aad4f355bbc2ab63f48de8169f317ee5249db34c6d6649e2823e3c1560f7ffd1e363289df08e915ec2e9475366f12773dfc"' : 'data-bs-target="#xs-injectables-links-module-TldrawTestModule-88de9ced3b44c76a10f5cc7501ec0aad4f355bbc2ab63f48de8169f317ee5249db34c6d6649e2823e3c1560f7ffd1e363289df08e915ec2e9475366f12773dfc"' }>
+                                        'data-bs-target="#injectables-links-module-TldrawTestModule-351bb7fc2eab299f32ebba48e2511459364996a530882a7ee599ed674fcb30d6d1425fd94130c6880895ba151aa512c6975822f2b3b3a477ea6ad41ac88a58f8"' : 'data-bs-target="#xs-injectables-links-module-TldrawTestModule-351bb7fc2eab299f32ebba48e2511459364996a530882a7ee599ed674fcb30d6d1425fd94130c6880895ba151aa512c6975822f2b3b3a477ea6ad41ac88a58f8"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawTestModule-88de9ced3b44c76a10f5cc7501ec0aad4f355bbc2ab63f48de8169f317ee5249db34c6d6649e2823e3c1560f7ffd1e363289df08e915ec2e9475366f12773dfc"' :
-                                        'id="xs-injectables-links-module-TldrawTestModule-88de9ced3b44c76a10f5cc7501ec0aad4f355bbc2ab63f48de8169f317ee5249db34c6d6649e2823e3c1560f7ffd1e363289df08e915ec2e9475366f12773dfc"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawTestModule-351bb7fc2eab299f32ebba48e2511459364996a530882a7ee599ed674fcb30d6d1425fd94130c6880895ba151aa512c6975822f2b3b3a477ea6ad41ac88a58f8"' :
+                                        'id="xs-injectables-links-module-TldrawTestModule-351bb7fc2eab299f32ebba48e2511459364996a530882a7ee599ed674fcb30d6d1425fd94130c6880895ba151aa512c6975822f2b3b3a477ea6ad41ac88a58f8"' }>
+                                        <li class="link">
+                                            <a href="injectables/MetricsService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >MetricsService</a>
+                                        </li>
                                         <li class="link">
                                             <a href="injectables/TldrawBoardRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawBoardRepo</a>
                                         </li>
@@ -2619,15 +2622,18 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/TldrawWsModule.html" data-type="entity-link" >TldrawWsModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-TldrawWsModule-c598a1c802f9412084c2a46e9062f6fded77a090757202e4d3f2132ab26a4c1906bbbd0898c595c58ea7182d42a6a1867b26c458807b278ce9f218836b2b2d5c"' : 'data-bs-target="#xs-injectables-links-module-TldrawWsModule-c598a1c802f9412084c2a46e9062f6fded77a090757202e4d3f2132ab26a4c1906bbbd0898c595c58ea7182d42a6a1867b26c458807b278ce9f218836b2b2d5c"' }>
+                                        'data-bs-target="#injectables-links-module-TldrawWsModule-7a9e0663b153b5c2b736474ed16bbd8052a2670cd8f1e12f6a212d2e44b4361bf0fb41182efe847bba6ca609dfe5b719d33a2c17b70fc2c6f0bd75a56144d69c"' : 'data-bs-target="#xs-injectables-links-module-TldrawWsModule-7a9e0663b153b5c2b736474ed16bbd8052a2670cd8f1e12f6a212d2e44b4361bf0fb41182efe847bba6ca609dfe5b719d33a2c17b70fc2c6f0bd75a56144d69c"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawWsModule-c598a1c802f9412084c2a46e9062f6fded77a090757202e4d3f2132ab26a4c1906bbbd0898c595c58ea7182d42a6a1867b26c458807b278ce9f218836b2b2d5c"' :
-                                        'id="xs-injectables-links-module-TldrawWsModule-c598a1c802f9412084c2a46e9062f6fded77a090757202e4d3f2132ab26a4c1906bbbd0898c595c58ea7182d42a6a1867b26c458807b278ce9f218836b2b2d5c"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawWsModule-7a9e0663b153b5c2b736474ed16bbd8052a2670cd8f1e12f6a212d2e44b4361bf0fb41182efe847bba6ca609dfe5b719d33a2c17b70fc2c6f0bd75a56144d69c"' :
+                                        'id="xs-injectables-links-module-TldrawWsModule-7a9e0663b153b5c2b736474ed16bbd8052a2670cd8f1e12f6a212d2e44b4361bf0fb41182efe847bba6ca609dfe5b719d33a2c17b70fc2c6f0bd75a56144d69c"' }>
                                         <li class="link">
                                             <a href="injectables/Logger.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >Logger</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/MetricsService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >MetricsService</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/TldrawBoardRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawBoardRepo</a>
@@ -2642,13 +2648,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/TldrawWsTestModule.html" data-type="entity-link" >TldrawWsTestModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-TldrawWsTestModule-4c5665e9fa4041b45e2b382f97a6a76483266fee5dad66459f59190e98d0be0a4e1e909f50d1b827dac88a15a903204726d014db3061600a4865ee1c536d2f9e"' : 'data-bs-target="#xs-injectables-links-module-TldrawWsTestModule-4c5665e9fa4041b45e2b382f97a6a76483266fee5dad66459f59190e98d0be0a4e1e909f50d1b827dac88a15a903204726d014db3061600a4865ee1c536d2f9e"' }>
+                                        'data-bs-target="#injectables-links-module-TldrawWsTestModule-643991cdb68e0e7023cdc8b9c0bb9b10705af092e3b411cdafc93be43c9d241977a46cc6af0b9d340d685279ded5d3145b324ddd602bb50c00e55b484e9fae39"' : 'data-bs-target="#xs-injectables-links-module-TldrawWsTestModule-643991cdb68e0e7023cdc8b9c0bb9b10705af092e3b411cdafc93be43c9d241977a46cc6af0b9d340d685279ded5d3145b324ddd602bb50c00e55b484e9fae39"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawWsTestModule-4c5665e9fa4041b45e2b382f97a6a76483266fee5dad66459f59190e98d0be0a4e1e909f50d1b827dac88a15a903204726d014db3061600a4865ee1c536d2f9e"' :
-                                        'id="xs-injectables-links-module-TldrawWsTestModule-4c5665e9fa4041b45e2b382f97a6a76483266fee5dad66459f59190e98d0be0a4e1e909f50d1b827dac88a15a903204726d014db3061600a4865ee1c536d2f9e"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawWsTestModule-643991cdb68e0e7023cdc8b9c0bb9b10705af092e3b411cdafc93be43c9d241977a46cc6af0b9d340d685279ded5d3145b324ddd602bb50c00e55b484e9fae39"' :
+                                        'id="xs-injectables-links-module-TldrawWsTestModule-643991cdb68e0e7023cdc8b9c0bb9b10705af092e3b411cdafc93be43c9d241977a46cc6af0b9d340d685279ded5d3145b324ddd602bb50c00e55b484e9fae39"' }>
+                                        <li class="link">
+                                            <a href="injectables/MetricsService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >MetricsService</a>
+                                        </li>
                                         <li class="link">
                                             <a href="injectables/TldrawBoardRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawBoardRepo</a>
                                         </li>
@@ -6022,6 +6031,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/MetaTagExtractorUc.html" data-type="entity-link" >MetaTagExtractorUc</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/MetricsService.html" data-type="entity-link" >MetricsService</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/MigrationCheckService.html" data-type="entity-link" >MigrationCheckService</a>
