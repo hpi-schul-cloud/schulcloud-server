@@ -249,7 +249,7 @@ exports.before = () => {
 			hasPermission('TOPIC_VIEW'),
 			iff(isProvider('external'), validateLessonFind),
 			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
-			iff(isProvider('external'), restrictToUsersCoursesLessons, restrictToUsersDraftLessons),
+			iff(isProvider('external'), restrictToUsersCoursesLessons),
 		],
 		get: [
 			hasPermission('TOPIC_VIEW'),
