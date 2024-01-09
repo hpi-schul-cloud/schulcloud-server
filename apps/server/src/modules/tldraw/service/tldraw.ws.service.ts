@@ -8,6 +8,7 @@ import { Persitence, WSConnectionState, WSMessageType } from '../types';
 import { TldrawConfig } from '../config';
 import { WsSharedDocDo } from '../domain/ws-shared-doc.do';
 import { TldrawBoardRepo } from '../repo';
+import { MetricsService } from '../metrics';
 
 @Injectable()
 export class TldrawWsService {
@@ -19,7 +20,8 @@ export class TldrawWsService {
 
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
-		private readonly tldrawBoardRepo: TldrawBoardRepo
+		private readonly tldrawBoardRepo: TldrawBoardRepo,
+		private readonly metricsService: MetricsService
 	) {
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
 	}
@@ -47,7 +49,9 @@ export class TldrawWsService {
 					})
 					.catch(() => {});
 				this.docs.delete(doc.name);
+				this.metricsService.decrementNumberOfBoardsOnServerCounter();
 			}
+			this.metricsService.decrementNumberOfUsersOnServerCounter();
 		}
 
 		try {
@@ -106,6 +110,7 @@ export class TldrawWsService {
 				this.persistence.bindState(docName, doc).catch(() => {});
 			}
 			this.docs.set(docName, doc);
+			this.metricsService.incrementNumberOfBoardsOnServerCounter();
 			return doc;
 		});
 	}
@@ -197,6 +202,7 @@ export class TldrawWsService {
 				this.send(doc, ws, encoding.toUint8Array(encoder));
 			}
 		}
+		this.metricsService.incrementNumberOfUsersOnServerCounter();
 	}
 
 	public async updateDocument(docName: string, ydoc: WsSharedDocDo): Promise<void> {
