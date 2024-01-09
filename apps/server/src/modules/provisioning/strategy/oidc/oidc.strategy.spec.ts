@@ -65,7 +65,6 @@ describe('OidcStrategy', () => {
 	beforeEach(() => {
 		Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
 			schulconnexGroupProvisioningEnabled: false,
-			provisioningOptionsEnabled: false,
 		});
 	});
 
@@ -194,7 +193,6 @@ describe('OidcStrategy', () => {
 		describe('when group data is provided and the feature is enabled', () => {
 			const setup = () => {
 				provisioningFeatures.schulconnexGroupProvisioningEnabled = true;
-				provisioningFeatures.provisioningOptionsEnabled = true;
 
 				const externalUserId = 'externalUserId';
 				const externalGroups: ExternalGroupDto[] = externalGroupDtoFactory.buildList(2);

@@ -1,5 +1,6 @@
 import { SchulConneXProvisioningOptionsInterface } from '../interface';
 import { BaseProvisioningOptions } from './base-provisioning-options';
+import { ProvisioningOptionsType } from './provisioning-options-type';
 
 export class SchulConneXProvisioningOptions
 	extends BaseProvisioningOptions<SchulConneXProvisioningOptionsInterface>
@@ -10,6 +11,10 @@ export class SchulConneXProvisioningOptions
 	groupProvisioningCoursesEnabled = false;
 
 	groupProvisioningOtherEnabled = false;
+
+	get getType(): ProvisioningOptionsType {
+		return ProvisioningOptionsType.SCHULCONNEX;
+	}
 
 	set(props: SchulConneXProvisioningOptionsInterface): this {
 		this.groupProvisioningClassesEnabled = props.groupProvisioningClassesEnabled;

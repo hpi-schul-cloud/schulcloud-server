@@ -83,6 +83,29 @@ export class GroupRepo {
 		return domainObjects;
 	}
 
+	public async findGroupsBySchoolIdAndSystemIdAndGroupType(
+		schoolId: EntityId,
+		systemId: EntityId,
+		groupType: GroupTypes
+	): Promise<Group[]> {
+		const groupEntityType: GroupEntityTypes = GroupTypesToGroupEntityTypesMapping[groupType];
+
+		const scope: Scope<GroupEntity> = new GroupScope()
+			.byOrganizationId(schoolId)
+			.bySystemId(systemId)
+			.byTypes([groupEntityType]);
+
+		const entities: GroupEntity[] = await this.em.find(GroupEntity, scope.query);
+
+		const domainObjects: Group[] = entities.map((entity) => {
+			const props: GroupProps = GroupDomainMapper.mapEntityToDomainObjectProperties(entity);
+
+			return new Group(props);
+		});
+
+		return domainObjects;
+	}
+
 	public async save(domainObject: Group): Promise<Group> {
 		const entityProps: GroupEntityProps = GroupDomainMapper.mapDomainObjectToEntityProperties(domainObject, this.em);
 
