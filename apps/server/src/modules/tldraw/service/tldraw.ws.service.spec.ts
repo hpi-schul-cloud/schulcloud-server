@@ -15,6 +15,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { of, throwError } from 'rxjs';
 import { AxiosResponse } from 'axios';
 import { axiosResponseFactory } from '@shared/testing';
+import { MetricsService } from '@modules/tldraw/metrics';
 import { WsSharedDocDo } from '../domain/ws-shared-doc.do';
 import { config } from '../config';
 import { TldrawBoardRepo } from '../repo';
@@ -61,6 +62,7 @@ describe('TldrawWSService', () => {
 				TldrawWs,
 				TldrawBoardRepo,
 				TldrawWsService,
+				MetricsService,
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),

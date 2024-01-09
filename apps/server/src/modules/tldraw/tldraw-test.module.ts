@@ -6,6 +6,7 @@ import { createConfigModuleOptions } from '@src/config';
 import { RedisModule } from '@infra/redis';
 import { defaultMikroOrmOptions } from '@modules/server';
 import { HttpModule } from '@nestjs/axios';
+import { MetricsService } from './metrics';
 import { config } from './config';
 import { TldrawController } from './controller/tldraw.controller';
 import { TldrawService } from './service/tldraw.service';
@@ -18,7 +19,7 @@ const imports = [
 	RedisModule,
 	HttpModule,
 ];
-const providers = [Logger, TldrawService, TldrawRepo];
+const providers = [Logger, TldrawService, TldrawRepo, MetricsService];
 @Module({
 	imports,
 	providers,

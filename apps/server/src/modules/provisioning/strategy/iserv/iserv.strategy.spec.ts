@@ -4,15 +4,14 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { legacySchoolDoFactory, schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import jwt from 'jsonwebtoken';
+import { legacySchoolDoFactory, userDoFactory } from '@shared/testing';
 import {
 	IdTokenExtractionFailureLoggableException,
 	IdTokenUserNotFoundLoggableException,
 } from '@src/modules/oauth/loggable';
+import jwt from 'jsonwebtoken';
 import { RoleDto } from '../../../role/service/dto/role.dto';
 import {
 	ExternalSchoolDto,
@@ -34,7 +33,6 @@ describe('IservProvisioningStrategy', () => {
 	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
-		await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				IservProvisioningStrategy,
@@ -141,9 +139,9 @@ describe('IservProvisioningStrategy', () => {
 			it('should throw an error with code sso_user_notfound and additional information', async () => {
 				const { input, userUUID, email } = setup();
 				const schoolId: string = new ObjectId().toHexString();
-				const user: User = userFactory.buildWithId({
+				const user: UserDO = userDoFactory.buildWithId({
 					externalId: userUUID,
-					school: schoolFactory.buildWithId(undefined, schoolId),
+					schoolId,
 				});
 
 				jest.spyOn(jwt, 'decode').mockImplementation(() => {
