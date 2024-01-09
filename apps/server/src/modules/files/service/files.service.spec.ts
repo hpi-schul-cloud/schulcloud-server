@@ -30,7 +30,7 @@ describe(FilesService.name, () => {
 	});
 
 	afterEach(() => {
-		repo.findByPermissionRefId.mockClear();
+		repo.findByPermissionRefIdOrCreatorId.mockClear();
 		repo.findByOwnerUserId.mockClear();
 		repo.save.mockClear();
 	});
@@ -39,82 +39,105 @@ describe(FilesService.name, () => {
 		await module.close();
 	});
 
-	describe('findFilesAccessibleByUser', () => {
+	describe('findFilesAccessibleOrCreatedByUser', () => {
 		describe('when called with a userId of a user that', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
-				const accessibleFiles: FileEntity[] = [];
+				const userId2 = new ObjectId().toHexString();
+				const userId3 = new ObjectId().toHexString();
+				const accessibleOrCreatedFiles: FileEntity[] = [];
 
 				for (let i = 0; i < 5; i += 1) {
-					accessibleFiles.push(
+					accessibleOrCreatedFiles.push(
 						fileEntityFactory.build({
 							permissions: [filePermissionEntityFactory.build({ refId: userId })],
+						}),
+						fileEntityFactory.build({
+							creatorId: userId2,
+						}),
+						fileEntityFactory.build({
+							permissions: [filePermissionEntityFactory.build({ refId: userId })],
+							creatorId: userId3,
+						}),
+						fileEntityFactory.build({
+							permissions: [filePermissionEntityFactory.build({ refId: userId3 })],
+							creatorId: userId,
 						})
 					);
 				}
 
-				return { userId, accessibleFiles };
+				return { userId, accessibleOrCreatedFiles };
 			};
 
-			describe("doesn't have an access to any files", () => {
+			describe("doesn't have an access or is creator of any files", () => {
 				it('should return an empty array', async () => {
 					const { userId } = setup();
 
-					repo.findByPermissionRefId.mockResolvedValueOnce([]);
+					repo.findByPermissionRefIdOrCreatorId.mockResolvedValueOnce([]);
 
-					const result = await service.findFilesAccessibleByUser(userId);
+					const result = await service.findFilesAccessibleOrCreatedByUser(userId);
 
-					expect(repo.findByPermissionRefId).toBeCalledWith(userId);
+					expect(repo.findByPermissionRefIdOrCreatorId).toBeCalledWith(userId);
 					expect(result).toEqual([]);
 				});
 			});
 
-			describe('does have an access to some files', () => {
+			describe('does have an access or is creator of some files', () => {
 				it('should return an array containing proper file entities', async () => {
-					const { userId, accessibleFiles } = setup();
+					const { userId, accessibleOrCreatedFiles } = setup();
 
-					repo.findByPermissionRefId.mockResolvedValueOnce(accessibleFiles);
+					repo.findByPermissionRefIdOrCreatorId.mockResolvedValueOnce(accessibleOrCreatedFiles);
 
-					const result = await service.findFilesAccessibleByUser(userId);
+					const result = await service.findFilesAccessibleOrCreatedByUser(userId);
 
-					expect(repo.findByPermissionRefId).toBeCalledWith(userId);
-					expect(result).toEqual(accessibleFiles);
+					expect(repo.findByPermissionRefIdOrCreatorId).toBeCalledWith(userId);
+					expect(result).toEqual(accessibleOrCreatedFiles);
 				});
 			});
 		});
 	});
 
-	describe('removeUserPermissionsToAnyFiles', () => {
-		it('should not modify any files if there are none that user has permission to access', async () => {
+	describe('removeUserPermissionsOrCreatorReferenceToAnyFiles', () => {
+		it('should not modify any files if there are none that user has permission to access or is creator', async () => {
 			const userId = new ObjectId().toHexString();
-			repo.findByPermissionRefId.mockResolvedValueOnce([]);
+			repo.findByPermissionRefIdOrCreatorId.mockResolvedValueOnce([]);
 
-			const result = await service.removeUserPermissionsToAnyFiles(userId);
+			const result = await service.removeUserPermissionsOrCreatorReferenceToAnyFiles(userId);
 
 			expect(result).toEqual(0);
 
-			expect(repo.findByPermissionRefId).toBeCalledWith(userId);
+			expect(repo.findByPermissionRefIdOrCreatorId).toBeCalledWith(userId);
 			expect(repo.save).not.toBeCalled();
 		});
 
-		describe('should properly remove user permissions', () => {
-			it('in case of just a single file accessible by given user', async () => {
+		describe('should properly remove user permissions, creatorId reference', () => {
+			const setup = () => {
 				const userId = new ObjectId().toHexString();
 				const userPermission = filePermissionEntityFactory.build({ refId: userId });
-				const entity = fileEntityFactory.buildWithId({ permissions: [userPermission] });
 
-				repo.findByPermissionRefId.mockResolvedValueOnce([entity]);
+				const entity = fileEntityFactory.buildWithId({ permissions: [userPermission], creatorId: userId });
+				const entity2 = fileEntityFactory.buildWithId({ creatorId: userId });
+				const entity3 = fileEntityFactory.buildWithId({ permissions: [userPermission] });
 
-				const result = await service.removeUserPermissionsToAnyFiles(userId);
+				repo.findByPermissionRefIdOrCreatorId.mockResolvedValueOnce([entity, entity2, entity3]);
+				return { userId, userPermission, entity, entity2, entity3 };
+			};
+			it('in case of just a single file (permission) accessible by given user and couple of files created', async () => {
+				const { userId, userPermission, entity, entity2, entity3 } = setup();
 
-				expect(result).toEqual(1);
-				expect(entity.permissions).not.toContain(userPermission);
+				const result = await service.removeUserPermissionsOrCreatorReferenceToAnyFiles(userId);
 
-				expect(repo.findByPermissionRefId).toBeCalledWith(userId);
-				expect(repo.save).toBeCalledWith([entity]);
+				expect(result).toEqual(3);
+				expect(entity3.permissions).not.toContain(userPermission);
+				expect(entity._creatorId).toBe(undefined);
+				expect(entity3.permissions).not.toContain(userPermission);
+				expect(entity2._creatorId).toBe(undefined);
+
+				expect(repo.findByPermissionRefIdOrCreatorId).toBeCalledWith(userId);
+				expect(repo.save).toBeCalledWith([entity, entity2, entity3]);
 			});
 
-			it('in case of many files accessible by given user', async () => {
+			it('in case of many files accessible or created by given user', async () => {
 				const userId = new ObjectId().toHexString();
 				const userPermission = filePermissionEntityFactory.build({ refId: userId });
 				const anotherUserPermission = filePermissionEntityFactory.build();
@@ -125,31 +148,36 @@ describe(FilesService.name, () => {
 					}),
 					fileEntityFactory.buildWithId({
 						permissions: [yetAnotherUserPermission, userPermission, anotherUserPermission],
+						creatorId: userId,
 					}),
 					fileEntityFactory.buildWithId({
 						permissions: [anotherUserPermission, yetAnotherUserPermission, userPermission],
 					}),
 					fileEntityFactory.buildWithId({
 						permissions: [userPermission, yetAnotherUserPermission, anotherUserPermission],
+						creatorId: userId,
 					}),
 					fileEntityFactory.buildWithId({
 						permissions: [yetAnotherUserPermission, anotherUserPermission, userPermission],
 					}),
 				];
 
-				repo.findByPermissionRefId.mockResolvedValueOnce(entities);
+				repo.findByPermissionRefIdOrCreatorId.mockResolvedValueOnce(entities);
 
-				const result = await service.removeUserPermissionsToAnyFiles(userId);
+				const result = await service.removeUserPermissionsOrCreatorReferenceToAnyFiles(userId);
 
 				expect(result).toEqual(5);
 
-				entities.forEach((entity) => {
-					expect(entity.permissions).not.toContain(userPermission);
-					expect(entity.permissions).toContain(anotherUserPermission);
-					expect(entity.permissions).toContain(yetAnotherUserPermission);
-				});
+				for (let i = 0; i < entities.length; i += 1) {
+					expect(entities[i].permissions).not.toContain(userPermission);
+					if (i === 1 || i === 3) {
+						expect(entities[i]._creatorId).toBe(undefined);
+					}
+					expect(entities[i].permissions).toContain(anotherUserPermission);
+					expect(entities[i].permissions).toContain(yetAnotherUserPermission);
+				}
 
-				expect(repo.findByPermissionRefId).toBeCalledWith(userId);
+				expect(repo.findByPermissionRefIdOrCreatorId).toBeCalledWith(userId);
 				expect(repo.save).toBeCalledWith(entities);
 			});
 		});
