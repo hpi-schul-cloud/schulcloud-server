@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolFeature } from '@shared/domain/types';
-import { setupEntities, userLoginMigrationDOFactory } from '@shared/testing';
+import { userLoginMigrationDOFactory } from '@shared/testing';
 import { UserLoginMigrationRevertService } from './user-login-migration-revert.service';
 import { UserLoginMigrationService } from './user-login-migration.service';
 
@@ -14,8 +14,6 @@ describe('UserLoginMigrationRevertService', () => {
 	let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
 
 	beforeAll(async () => {
-		await setupEntities();
-
 		module = await Test.createTestingModule({
 			providers: [
 				UserLoginMigrationRevertService,
