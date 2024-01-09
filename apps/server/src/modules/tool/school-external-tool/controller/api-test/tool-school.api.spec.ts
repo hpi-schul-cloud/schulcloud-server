@@ -96,6 +96,7 @@ describe('ToolSchoolController (API)', () => {
 					{ name: 'param1', value: 'value' },
 					{ name: 'param2', value: '' },
 				],
+				isDeactivated: false,
 			};
 
 			em.persist([
@@ -458,6 +459,7 @@ describe('ToolSchoolController (API)', () => {
 				schoolId: school.id,
 				version: 1,
 				parameters: [paramEntry],
+				isDeactivated: false,
 			};
 
 			const updatedParamEntry: CustomParameterEntryParam = { name: 'param1', value: 'updatedValue' };
@@ -466,6 +468,7 @@ describe('ToolSchoolController (API)', () => {
 				schoolId: school.id,
 				version: 1,
 				parameters: [updatedParamEntry],
+				isDeactivated: false,
 			};
 
 			const schoolExternalToolResponse: SchoolExternalToolResponse = new SchoolExternalToolResponse({

@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
+import { DomainModel, EntityId } from '@shared/domain/types';
 import { DeletionLog } from '../domain/deletion-log.do';
-import { DeletionDomainModel, DeletionOperationModel } from '../domain/types';
+import { DeletionOperationModel } from '../domain/types';
 import { DeletionLogRepo } from '../repo';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class DeletionLogService {
 
 	async createDeletionLog(
 		deletionRequestId: EntityId,
-		domain: DeletionDomainModel,
+		domain: DomainModel,
 		operation: DeletionOperationModel,
 		modifiedCount: number,
 		deletedCount: number
