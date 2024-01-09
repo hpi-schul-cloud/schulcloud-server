@@ -59,6 +59,7 @@ export class SchoolExternalToolService {
 	): Promise<SchoolExternalToolConfigurationStatus> {
 		const status: SchoolExternalToolConfigurationStatus = new SchoolExternalToolConfigurationStatus({
 			isOutdatedOnScopeSchool: true,
+			isDeactivated: this.isToolDeactivated(externalTool, tool),
 		});
 
 		if (this.toolFeatures.toolStatusWithoutVersions) {
@@ -90,5 +91,13 @@ export class SchoolExternalToolService {
 		let createdSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolRepo.save(schoolExternalTool);
 		createdSchoolExternalTool = await this.enrichDataFromExternalTool(createdSchoolExternalTool);
 		return createdSchoolExternalTool;
+	}
+
+	private isToolDeactivated(externalTool: ExternalTool, schoolExternalTool: SchoolExternalTool) {
+		if (externalTool.isDeactivated || schoolExternalTool.status?.isDeactivated) {
+			return true;
+		}
+
+		return false;
 	}
 }

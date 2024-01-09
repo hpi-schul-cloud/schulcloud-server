@@ -22,6 +22,8 @@ export interface ExternalToolProps {
 
 	isHidden: boolean;
 
+	isDeactivated: boolean;
+
 	openNewTab: boolean;
 
 	version: number;
@@ -43,6 +45,8 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 	parameters?: CustomParameter[];
 
 	isHidden: boolean;
+
+	isDeactivated: boolean;
 
 	openNewTab: boolean;
 
@@ -68,6 +72,7 @@ export class ExternalTool extends BaseDO implements ToolVersion {
 		}
 		this.parameters = props.parameters;
 		this.isHidden = props.isHidden;
+		this.isDeactivated = props.isDeactivated;
 		this.openNewTab = props.openNewTab;
 		this.version = props.version;
 		this.restrictToContexts = props.restrictToContexts;

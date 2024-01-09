@@ -5,6 +5,7 @@ import {
 	contextExternalToolFactory,
 	externalToolFactory,
 	schoolExternalToolFactory,
+	schoolToolConfigurationStatusFactory,
 	toolConfigurationStatusFactory,
 } from '@shared/testing';
 import { ContextExternalToolConfigurationStatus } from '../../common/domain';
@@ -317,6 +318,133 @@ describe('ToolVersionService', () => {
 				await service.determineToolConfigurationStatus(externalTool, schoolExternalTool, contextExternalTool);
 
 				expect(contextExternalToolValidationService.validate).toHaveBeenCalledWith(contextExternalTool);
+			});
+		});
+
+		describe('when FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED is true and  SchoolExternalTool is deactivated', () => {
+			const setup = () => {
+				const externalTool = externalToolFactory.buildWithId();
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolId: externalTool.id as string,
+				});
+				schoolExternalTool.status = schoolToolConfigurationStatusFactory.build({ isDeactivated: true });
+				const contextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.buildWithId();
+
+				toolFeatures.toolStatusWithoutVersions = true;
+
+				schoolExternalToolValidationService.validate.mockRejectedValueOnce(Promise.resolve());
+				contextExternalToolValidationService.validate.mockRejectedValueOnce(Promise.resolve());
+
+				return {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				};
+			};
+
+			it('should return status is deactivated', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+
+				const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool
+				);
+
+				expect(status).toEqual(
+					toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeContext: true,
+						isOutdatedOnScopeSchool: true,
+						isDeactivated: true,
+					})
+				);
+			});
+		});
+
+		describe('when FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED is true and  externalTool is deactivated', () => {
+			const setup = () => {
+				const externalTool = externalToolFactory.buildWithId({
+					isDeactivated: true,
+				});
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolId: externalTool.id as string,
+				});
+				const contextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.buildWithId();
+
+				toolFeatures.toolStatusWithoutVersions = true;
+
+				schoolExternalToolValidationService.validate.mockRejectedValueOnce(Promise.resolve());
+				contextExternalToolValidationService.validate.mockRejectedValueOnce(Promise.resolve());
+
+				return {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				};
+			};
+
+			it('should return deactivated tool status', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+
+				const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool
+				);
+
+				expect(status).toEqual(
+					toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeContext: true,
+						isOutdatedOnScopeSchool: true,
+						isDeactivated: true,
+					})
+				);
+			});
+		});
+
+		describe('when FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED is true,  externalTool and schoolExternalTool are not deactivated', () => {
+			const setup = () => {
+				const externalTool = externalToolFactory.buildWithId({});
+
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
+					toolId: externalTool.id as string,
+				});
+				const contextExternalTool = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolExternalTool.id as string)
+					.buildWithId();
+
+				toolFeatures.toolStatusWithoutVersions = true;
+
+				schoolExternalToolValidationService.validate.mockRejectedValueOnce(Promise.resolve());
+				contextExternalToolValidationService.validate.mockRejectedValueOnce(Promise.resolve());
+
+				return {
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool,
+				};
+			};
+
+			it('should return deactivated tool status', async () => {
+				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
+
+				const status: ContextExternalToolConfigurationStatus = await service.determineToolConfigurationStatus(
+					externalTool,
+					schoolExternalTool,
+					contextExternalTool
+				);
+
+				expect(status).toEqual(
+					toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeContext: true,
+						isOutdatedOnScopeSchool: true,
+						isDeactivated: false,
+					})
+				);
 			});
 		});
 	});
