@@ -98,7 +98,6 @@ const setupSessions = (
 
 	let store: RedisStore | undefined;
 	if (redisClient) {
-		// const RedisStore: RedisStore = connectRedis(session);
 		store = new RedisStore({
 			client: redisClient,
 			ttl: sessionDuration,
