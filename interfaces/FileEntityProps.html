@@ -162,6 +162,7 @@
                                         </a>
                                 </li>
                                 <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#creatorId" 
 >
                                             creatorId
@@ -410,6 +411,11 @@
                                         </td>
                                     </tr>
 
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
 
 
 
@@ -1152,7 +1158,7 @@ export interface FileEntityProps {
 	parentId?: EntityId;
 	ownerId: EntityId;
 	refOwnerModel: FileOwnerModel;
-	creatorId: EntityId;
+	creatorId?: EntityId;
 	permissions: FilePermissionEntity[];
 	lockId?: EntityId;
 	versionKey?: number;
@@ -1220,12 +1226,12 @@ export class FileEntity extends BaseEntityWithTimestamps {
 	@Enum({ nullable: false })
 	refOwnerModel: FileOwnerModel;
 
-	@Property({ fieldName: &#x27;creator&#x27; })
+	@Property({ fieldName: &#x27;creator&#x27;, nullable: true })
 	@Index()
-	_creatorId: ObjectId;
+	_creatorId?: ObjectId;
 
-	get creatorId(): EntityId {
-		return this._creatorId.toHexString();
+	get creatorId(): EntityId | undefined {
+		return this._creatorId?.toHexString();
 	}
 
 	@Embedded(() &#x3D;&gt; FilePermissionEntity, { array: true, nullable: false })
@@ -1264,6 +1270,12 @@ export class FileEntity extends BaseEntityWithTimestamps {
 
 	public isMarkedForDeletion(): boolean {
 		return this.deleted &amp;&amp; this.deletedAt !&#x3D;&#x3D; undefined &amp;&amp; !Number.isNaN(this.deletedAt.getTime());
+	}
+
+	public removeCreatorId(creatorId: EntityId): void {
+		if (creatorId &#x3D;&#x3D;&#x3D; this._creatorId?.toHexString()) {
+			this._creatorId &#x3D; undefined;
+		}
 	}
 
 	constructor(props: FileEntityProps) {

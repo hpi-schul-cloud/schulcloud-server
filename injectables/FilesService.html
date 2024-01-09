@@ -144,7 +144,7 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#findFilesAccessibleByUser" >findFilesAccessibleByUser</a>
+                                <a href="#findFilesAccessibleOrCreatedByUser" >findFilesAccessibleOrCreatedByUser</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -156,7 +156,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#removeUserPermissionsToAnyFiles" >removeUserPermissionsToAnyFiles</a>
+                                <a href="#removeUserPermissionsOrCreatorReferenceToAnyFiles" >removeUserPermissionsOrCreatorReferenceToAnyFiles</a>
                             </li>
                         </ul>
                     </td>
@@ -228,18 +228,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="findFilesAccessibleByUser"></a>
+                    <a name="findFilesAccessibleOrCreatedByUser"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
-                        <span ><b>findFilesAccessibleByUser</b></span>
-                        <a href="#findFilesAccessibleByUser"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>findFilesAccessibleOrCreatedByUser</b></span>
+                        <a href="#findFilesAccessibleOrCreatedByUser"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findFilesAccessibleByUser(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>findFilesAccessibleOrCreatedByUser(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -315,8 +315,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:28</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -384,8 +384,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="35"
+                                    class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -435,18 +435,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="removeUserPermissionsToAnyFiles"></a>
+                    <a name="removeUserPermissionsOrCreatorReferenceToAnyFiles"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
-                        <span ><b>removeUserPermissionsToAnyFiles</b></span>
-                        <a href="#removeUserPermissionsToAnyFiles"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>removeUserPermissionsOrCreatorReferenceToAnyFiles</b></span>
+                        <a href="#removeUserPermissionsOrCreatorReferenceToAnyFiles"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeUserPermissionsToAnyFiles(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>removeUserPermissionsOrCreatorReferenceToAnyFiles(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -515,18 +515,21 @@ import { FilesRepo } from &#x27;../repo&#x27;;
 export class FilesService {
 	constructor(private readonly repo: FilesRepo) {}
 
-	async findFilesAccessibleByUser(userId: EntityId): Promise&lt;FileEntity[]&gt; {
-		return this.repo.findByPermissionRefId(userId);
+	async findFilesAccessibleOrCreatedByUser(userId: EntityId): Promise&lt;FileEntity[]&gt; {
+		return this.repo.findByPermissionRefIdOrCreatorId(userId);
 	}
 
-	async removeUserPermissionsToAnyFiles(userId: EntityId): Promise&lt;number&gt; {
-		const entities &#x3D; await this.repo.findByPermissionRefId(userId);
+	async removeUserPermissionsOrCreatorReferenceToAnyFiles(userId: EntityId): Promise&lt;number&gt; {
+		const entities &#x3D; await this.repo.findByPermissionRefIdOrCreatorId(userId);
 
 		if (entities.length &#x3D;&#x3D;&#x3D; 0) {
 			return 0;
 		}
 
-		entities.forEach((entity) &#x3D;&gt; entity.removePermissionsByRefId(userId));
+		entities.forEach((entity) &#x3D;&gt; {
+			entity.removePermissionsByRefId(userId);
+			entity.removeCreatorId(userId);
+		});
 
 		await this.repo.save(entities);
 

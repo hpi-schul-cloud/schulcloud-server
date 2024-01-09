@@ -2164,14 +2164,14 @@ export class DeletionRequestUc {
 		this.logger.debug({ action: &#x27;removeUsersFilesAndPermissions&#x27;, deletionRequest });
 
 		const filesDeleted: number &#x3D; await this.filesService.markFilesOwnedByUserForDeletion(deletionRequest.targetRefId);
-		const filePermissionsUpdated: number &#x3D; await this.filesService.removeUserPermissionsToAnyFiles(
+		const filesUpdated: number &#x3D; await this.filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles(
 			deletionRequest.targetRefId
 		);
 		await this.logDeletion(
 			deletionRequest,
 			DomainModel.FILE,
 			DeletionOperationModel.UPDATE,
-			filesDeleted + filePermissionsUpdated,
+			filesDeleted + filesUpdated,
 			0
 		);
 	}

@@ -156,7 +156,7 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#findByPermissionRefId" >findByPermissionRefId</a>
+                                <a href="#findByPermissionRefIdOrCreatorId" >findByPermissionRefIdOrCreatorId</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -332,19 +332,19 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="findByPermissionRefId"></a>
+                    <a name="findByPermissionRefIdOrCreatorId"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>findByPermissionRefId</b></span>
-                        <a href="#findByPermissionRefId"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>findByPermissionRefIdOrCreatorId</b></span>
+                        <a href="#findByPermissionRefIdOrCreatorId"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findByPermissionRefId(permissionRefId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>findByPermissionRefIdOrCreatorId(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -373,7 +373,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>permissionRefId</td>
+                                                <td>userId</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                             </td>
@@ -866,15 +866,28 @@ export class FilesRepo extends BaseRepo&lt;FileEntity&gt; {
 		return files as FileEntity[];
 	}
 
-	public async findByPermissionRefId(permissionRefId: EntityId): Promise&lt;FileEntity[]&gt; {
+	public async findByPermissionRefIdOrCreatorId(userId: EntityId): Promise&lt;FileEntity[]&gt; {
+		const refId &#x3D; new ObjectId(userId);
+
 		const pipeline &#x3D; [
 			{
 				$match: {
-					permissions: {
-						$elemMatch: {
-							refId: new ObjectId(permissionRefId),
+					$and: [
+						{
+							$or: [
+								{
+									permissions: {
+										$elemMatch: {
+											refId,
+										},
+									},
+								},
+								{ creator: refId },
+							],
 						},
-					},
+						{ deleted: false },
+						{ deletedAt: undefined },
+					],
 				},
 			},
 		];
