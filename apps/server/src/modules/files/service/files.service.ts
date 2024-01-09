@@ -7,18 +7,21 @@ import { FilesRepo } from '../repo';
 export class FilesService {
 	constructor(private readonly repo: FilesRepo) {}
 
-	async findFilesAccessibleByUser(userId: EntityId): Promise<FileEntity[]> {
-		return this.repo.findByPermissionRefId(userId);
+	async findFilesAccessibleOrCreatedByUser(userId: EntityId): Promise<FileEntity[]> {
+		return this.repo.findByPermissionRefIdOrCreatorId(userId);
 	}
 
-	async removeUserPermissionsToAnyFiles(userId: EntityId): Promise<number> {
-		const entities = await this.repo.findByPermissionRefId(userId);
+	async removeUserPermissionsOrCreatorReferenceToAnyFiles(userId: EntityId): Promise<number> {
+		const entities = await this.repo.findByPermissionRefIdOrCreatorId(userId);
 
 		if (entities.length === 0) {
 			return 0;
 		}
 
-		entities.forEach((entity) => entity.removePermissionsByRefId(userId));
+		entities.forEach((entity) => {
+			entity.removePermissionsByRefId(userId);
+			entity.removeCreatorId(userId);
+		});
 
 		await this.repo.save(entities);
 

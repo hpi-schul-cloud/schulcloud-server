@@ -15,8 +15,15 @@ export class ContextExternalToolConfigurationStatusResponse {
 	})
 	isOutdatedOnScopeContext: boolean;
 
+	@ApiProperty({
+		type: Boolean,
+		description: 'Is the tool deactivated, because of superhero or school administrator',
+	})
+	isDeactivated: boolean;
+
 	constructor(props: ContextExternalToolConfigurationStatusResponse) {
 		this.isOutdatedOnScopeSchool = props.isOutdatedOnScopeSchool;
 		this.isOutdatedOnScopeContext = props.isOutdatedOnScopeContext;
+		this.isDeactivated = props.isDeactivated;
 	}
 }
