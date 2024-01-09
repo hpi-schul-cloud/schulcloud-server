@@ -31,6 +31,8 @@ export type ExternalToolDto<T> = {
 
 	isHidden: boolean;
 
+	isDeactivated: boolean;
+
 	openNewTab: boolean;
 
 	version: number;
