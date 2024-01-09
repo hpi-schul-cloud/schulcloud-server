@@ -6,6 +6,7 @@ import {
 	customParameterFactory,
 	externalToolFactory,
 	schoolExternalToolFactory,
+	schoolToolConfigurationStatusFactory,
 	setupEntities,
 } from '@shared/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
@@ -65,9 +66,11 @@ describe('ExternalToolConfigurationService', () => {
 					externalToolFactory.buildWithId(undefined, 'usedToolId'),
 					externalToolFactory.buildWithId(undefined, 'unusedToolId'),
 				];
+
 				const externalTools: ExternalTool[] = [
 					...notHiddenTools,
 					externalToolFactory.buildWithId({ isHidden: true }, 'hiddenToolId'),
+					externalToolFactory.buildWithId({ isDeactivated: true }, 'deactivatedToolId'),
 				];
 				const externalToolsPage: Page<ExternalTool> = new Page<ExternalTool>(externalTools, externalTools.length);
 				const toolIdsInUse: EntityId[] = ['usedToolId', 'hiddenToolId'];
@@ -97,6 +100,14 @@ describe('ExternalToolConfigurationService', () => {
 				const result: ExternalTool[] = service.filterForAvailableTools(externalToolsPage, []);
 
 				expect(result.length).toBe(notHiddenTools.length);
+			});
+
+			it('should filter out deactivated tools', () => {
+				const { externalToolsPage, toolIdsInUse } = setup();
+
+				const result: ExternalTool[] = service.filterForAvailableTools(externalToolsPage, toolIdsInUse);
+
+				expect(result.some((tool) => tool.id !== 'deactivatedToolId')).toBe(true);
 			});
 		});
 	});
@@ -176,8 +187,25 @@ describe('ExternalToolConfigurationService', () => {
 				const availableSchoolExternalTools: SchoolExternalTool[] = [
 					schoolExternalToolFactory.buildWithId({ toolId: usedExternalToolId }, 'usedSchoolExternalToolId'),
 					schoolExternalToolFactory.buildWithId(undefined, 'unusedSchoolExternalToolId'),
+					schoolExternalToolFactory.buildWithId(undefined, 'deactivatedToolId'),
+					schoolExternalToolFactory.buildWithId(undefined, 'deactivatedToolId'),
+					schoolExternalToolFactory.buildWithId(undefined, 'deactivatedToolId'),
+					schoolExternalToolFactory.buildWithId(undefined, 'unusedSchoolExternalToolId'),
 					schoolExternalToolFactory.buildWithId({ toolId: usedExternalToolHiddenId }, 'usedSchoolExternalToolHiddenId'),
 				];
+
+				availableSchoolExternalTools.forEach((tool): void => {
+					if (tool.id === 'deactivatedToolId') {
+						tool.status = schoolToolConfigurationStatusFactory.build({
+							isDeactivated: true,
+							isOutdatedOnScopeSchool: false,
+						});
+					}
+					tool.status = schoolToolConfigurationStatusFactory.build({
+						isDeactivated: false,
+						isOutdatedOnScopeSchool: false,
+					});
+				});
 
 				return { externalTools, availableSchoolExternalTools };
 			};
@@ -191,6 +219,34 @@ describe('ExternalToolConfigurationService', () => {
 				);
 
 				expect(result.every((toolInfo: ContextExternalToolTemplateInfo) => !toolInfo.externalTool.isHidden)).toBe(true);
+			});
+
+			it('should filter out deactivated external tools', () => {
+				const { externalTools, availableSchoolExternalTools } = setup();
+
+				const result: ContextExternalToolTemplateInfo[] = service.filterForAvailableExternalTools(
+					externalTools,
+					availableSchoolExternalTools
+				);
+
+				expect(result.every((toolInfo: ContextExternalToolTemplateInfo) => !toolInfo.externalTool.isDeactivated)).toBe(
+					true
+				);
+			});
+
+			it('should filter out deactivated school external tools', () => {
+				const { externalTools, availableSchoolExternalTools } = setup();
+
+				const result: ContextExternalToolTemplateInfo[] = service.filterForAvailableExternalTools(
+					externalTools,
+					availableSchoolExternalTools
+				);
+
+				expect(
+					result.every(
+						(toolInfo: ContextExternalToolTemplateInfo) => !toolInfo.schoolExternalTool.status?.isDeactivated
+					)
+				).toBe(true);
 			});
 		});
 	});

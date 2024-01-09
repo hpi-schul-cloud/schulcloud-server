@@ -20,9 +20,9 @@ export class ExternalToolConfigurationService {
 	public filterForAvailableTools(externalTools: Page<ExternalTool>, toolIdsInUse: EntityId[]): ExternalTool[] {
 		const visibleTools: ExternalTool[] = externalTools.data.filter((tool: ExternalTool): boolean => !tool.isHidden);
 
-		const availableTools: ExternalTool[] = visibleTools.filter(
-			(tool: ExternalTool): boolean => !!tool.id && !toolIdsInUse.includes(tool.id)
-		);
+		const availableTools: ExternalTool[] = visibleTools
+			.filter((tool: ExternalTool): boolean => !!tool.id && !toolIdsInUse.includes(tool.id))
+			.filter((tool) => !tool.isDeactivated);
 		return availableTools;
 	}
 
@@ -72,9 +72,10 @@ export class ExternalToolConfigurationService {
 		const unusedTools: ContextExternalToolTemplateInfo[] = toolsWithSchoolTool.filter(
 			(toolRef): toolRef is ContextExternalToolTemplateInfo => !!toolRef
 		);
-		const availableTools: ContextExternalToolTemplateInfo[] = unusedTools.filter(
-			(toolRef): toolRef is ContextExternalToolTemplateInfo => !toolRef.externalTool.isHidden
-		);
+		const availableTools: ContextExternalToolTemplateInfo[] = unusedTools
+			.filter((toolRef): toolRef is ContextExternalToolTemplateInfo => !toolRef.externalTool.isHidden)
+			.filter((toolRef) => !toolRef.externalTool.isDeactivated)
+			.filter((toolRef) => !toolRef.schoolExternalTool.status?.isDeactivated);
 
 		return availableTools;
 	}
