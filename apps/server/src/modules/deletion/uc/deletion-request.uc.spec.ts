@@ -218,7 +218,7 @@ describe(DeletionRequestUc.name, () => {
 				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(2);
 				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(2);
 				filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(2);
-				filesService.removeUserPermissionsToAnyFiles.mockResolvedValueOnce(2);
+				filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles.mockResolvedValueOnce(2);
 				lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(2);
 				pseudonymService.deleteByUserId.mockResolvedValueOnce(2);
 				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(2);
@@ -336,7 +336,9 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(filesService.removeUserPermissionsToAnyFiles).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+				expect(filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles).toHaveBeenCalledWith(
+					deletionRequestToExecute.targetRefId
+				);
 			});
 
 			it('should call filesStorageClientAdapterService.removeCreatorIdFromFileRecords to remove cratorId to any files in fileRecords module', async () => {
@@ -482,7 +484,7 @@ describe(DeletionRequestUc.name, () => {
 				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(2);
 				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(2);
 				filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(2);
-				filesService.removeUserPermissionsToAnyFiles.mockResolvedValueOnce(2);
+				filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles.mockResolvedValueOnce(2);
 				lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(2);
 				pseudonymService.deleteByUserId.mockResolvedValueOnce(2);
 				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(2);

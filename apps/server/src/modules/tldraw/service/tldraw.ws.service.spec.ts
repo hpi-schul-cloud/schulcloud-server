@@ -10,6 +10,7 @@ import * as SyncProtocols from 'y-protocols/sync';
 import * as AwarenessProtocol from 'y-protocols/awareness';
 import { encoding } from 'lib0';
 import { TldrawWsFactory } from '@shared/testing/factory/tldraw.ws.factory';
+import { MetricsService } from '@modules/tldraw/metrics';
 import { WsSharedDocDo } from '../domain/ws-shared-doc.do';
 import { config } from '../config';
 import { TldrawBoardRepo } from '../repo';
@@ -51,7 +52,7 @@ describe('TldrawWSService', () => {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 		const testingModule = await Test.createTestingModule({
 			imports,
-			providers: [TldrawWs, TldrawBoardRepo, TldrawWsService],
+			providers: [TldrawWs, TldrawBoardRepo, TldrawWsService, MetricsService],
 		}).compile();
 
 		service = testingModule.get<TldrawWsService>(TldrawWsService);
