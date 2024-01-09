@@ -84,39 +84,37 @@ describe('Course Controller (API)', () => {
 	});
 
 	describe('[GET] /courses/:id/export', () => {
-		describe('export feature is enabled', () => {
-			const setup = () => {
-				const student1 = createStudent();
-				const student2 = createStudent();
-				const teacher = createTeacher();
-				const substitutionTeacher = createTeacher();
-				const teacherUnknownToCourse = createTeacher();
-				const course = courseFactory.build({
-					name: 'course #1',
-					teachers: [teacher.user],
-					students: [student1.user, student2.user],
-				});
-
-				return { course, teacher, teacherUnknownToCourse, substitutionTeacher, student1 };
-			};
-
-			it('should find course export', async () => {
-				const { teacher, course } = setup();
-				await em.persistAndFlush([teacher.account, teacher.user, course]);
-				em.clear();
-				const version = { version: '1.1.0' };
-
-				const loggedInClient = await testApiClient.login(teacher.account);
-				const response = await loggedInClient.get(`${course.id}/export`).query(version);
-
-				expect(response.statusCode).toEqual(200);
-				const file = response.body as StreamableFile;
-				expect(file).toBeDefined();
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				expect(response.header['content-type']).toBe('application/zip');
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				expect(response.header['content-disposition']).toBe('attachment;');
+		const setup = () => {
+			const student1 = createStudent();
+			const student2 = createStudent();
+			const teacher = createTeacher();
+			const substitutionTeacher = createTeacher();
+			const teacherUnknownToCourse = createTeacher();
+			const course = courseFactory.build({
+				name: 'course #1',
+				teachers: [teacher.user],
+				students: [student1.user, student2.user],
 			});
+
+			return { course, teacher, teacherUnknownToCourse, substitutionTeacher, student1 };
+		};
+
+		it('should find course export', async () => {
+			const { teacher, course } = setup();
+			await em.persistAndFlush([teacher.account, teacher.user, course]);
+			em.clear();
+			const version = { version: '1.1.0' };
+
+			const loggedInClient = await testApiClient.login(teacher.account);
+			const response = await loggedInClient.get(`${course.id}/export`).query(version);
+
+			expect(response.statusCode).toEqual(200);
+			const file = response.body as StreamableFile;
+			expect(file).toBeDefined();
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			expect(response.header['content-type']).toBe('application/zip');
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+			expect(response.header['content-disposition']).toBe('attachment;');
 		});
 	});
 });
