@@ -21,6 +21,7 @@ import { TestConnection, tldrawTestConfig } from '../testing';
 import { WsSharedDocDo } from '../domain';
 import { TldrawWsService } from '.';
 import { TldrawConfig } from '../config';
+import { MetricsService } from '../metrics';
 
 jest.mock('yjs', () => {
 	const moduleMock: unknown = {
@@ -71,6 +72,7 @@ describe('TldrawWSService', () => {
 				TldrawWsService,
 				TldrawBoardRepo,
 				YMongodb,
+                MetricsService,
 				{
 					provide: TldrawRepo,
 					useValue: createMock<TldrawRepo>(),

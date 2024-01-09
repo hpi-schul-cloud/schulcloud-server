@@ -19,6 +19,7 @@ import { TldrawConfig } from '../config';
 import { AwarenessConnectionsUpdate, WSConnectionState, WSMessageType } from '../types';
 import { WsSharedDocDo } from '../domain';
 import { TldrawBoardRepo } from '../repo';
+import { MetricsService } from '../metrics';
 
 @Injectable()
 export class TldrawWsService {
@@ -35,7 +36,8 @@ export class TldrawWsService {
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly tldrawBoardRepo: TldrawBoardRepo,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+        private readonly metricsService: MetricsService
 	) {
 		this.logger.setContext(TldrawWsService.name);
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
@@ -76,7 +78,9 @@ export class TldrawWsService {
 						this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while flushing doc', err as Error))
 					);
 				this.docs.delete(doc.name);
+				this.metricsService.decrementNumberOfBoardsOnServerCounter();
 			}
+			this.metricsService.decrementNumberOfUsersOnServerCounter();
 		}
 
 		try {
@@ -167,6 +171,7 @@ export class TldrawWsService {
 				);
 
 			this.docs.set(docName, doc);
+			this.metricsService.incrementNumberOfBoardsOnServerCounter();
 			return doc;
 		});
 	}
@@ -289,6 +294,7 @@ export class TldrawWsService {
 				this.send(doc, ws, encoding.toUint8Array(awarenessEncoder));
 			}
 		}
+		this.metricsService.incrementNumberOfUsersOnServerCounter();
 	}
 
 	private propagateUpdate(update: Uint8Array, doc: WsSharedDocDo): void {

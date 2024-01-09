@@ -26,6 +26,9 @@ export class ExternalToolResponse {
 	isHidden: boolean;
 
 	@ApiProperty()
+	isDeactivated: boolean;
+
+	@ApiProperty()
 	openNewTab: boolean;
 
 	@ApiProperty()
@@ -42,6 +45,7 @@ export class ExternalToolResponse {
 		this.config = response.config;
 		this.parameters = response.parameters;
 		this.isHidden = response.isHidden;
+		this.isDeactivated = response.isDeactivated;
 		this.openNewTab = response.openNewTab;
 		this.version = response.version;
 		this.restrictToContexts = response.restrictToContexts;

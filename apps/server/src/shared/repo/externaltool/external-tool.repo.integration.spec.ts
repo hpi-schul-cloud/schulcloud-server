@@ -158,6 +158,7 @@ describe('ExternalToolRepo', () => {
 				isHidden: true,
 				openNewTab: true,
 				version: 2,
+				isDeactivated: false,
 			});
 
 			return {

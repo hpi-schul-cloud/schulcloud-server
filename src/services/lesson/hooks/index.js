@@ -3,7 +3,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { nanoid } = require('nanoid');
 const { iff, isProvider } = require('feathers-hooks-common');
-const { NotFound, BadRequest } = require('../../../errors');
+const { NotFound, BadRequest, Forbidden } = require('../../../errors');
 const { equal } = require('../../../helper/compare').ObjectId;
 const {
 	injectUserId,
@@ -204,6 +204,19 @@ const restrictToUsersCoursesLessons = async (context) => {
 	return context;
 };
 
+const restrictToUsersDraftLessons = async (context) => {
+	const user = await context.app.service('users').get(context.params.account.userId, { query: { $populate: 'roles' } });
+	const userIsStudent = user.roles.filter((u) => u.name === 'student').length > 0;
+	const lesson = await context.app.service('lessons').get(context.id);
+	const isDraft = lesson.hidden;
+
+	if (isDraft && userIsStudent) {
+		throw new Forbidden(`You don't have permission.`);
+	}
+
+	return context;
+};
+
 const populateWhitelist = {
 	materialIds: [
 		'_id',
@@ -241,7 +254,7 @@ exports.before = () => {
 		get: [
 			hasPermission('TOPIC_VIEW'),
 			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
-			iff(isProvider('external'), restrictToUsersCoursesLessons),
+			iff(isProvider('external'), restrictToUsersCoursesLessons, restrictToUsersDraftLessons),
 		],
 		create: [
 			checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),
@@ -254,7 +267,7 @@ exports.before = () => {
 			iff(isProvider('external'), preventPopulate),
 			permitGroupOperation,
 			ifNotLocal(checkCorrectCourseOrTeamId),
-			iff(isProvider('external'), restrictToUsersCoursesLessons),
+			iff(isProvider('external'), restrictToUsersCoursesLessons, restrictToUsersDraftLessons),
 			checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
 		],
 		patch: [

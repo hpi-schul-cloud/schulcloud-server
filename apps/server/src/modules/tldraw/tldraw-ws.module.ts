@@ -6,6 +6,7 @@ import { LoggerModule } from '@src/core/logger';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { TldrawDrawing } from './entities';
+import { MetricsService } from './metrics';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
 import { TldrawWsService } from './service';
 import { TldrawWs } from './controller';
@@ -30,6 +31,6 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		}),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 	],
-	providers: [TldrawWs, TldrawWsService, TldrawBoardRepo, TldrawRepo, YMongodb],
+	providers: [TldrawWs, TldrawWsService, TldrawBoardRepo, TldrawRepo, YMongodb, MetricsService],
 })
 export class TldrawWsModule {}

@@ -8,6 +8,9 @@ metadata:
 data:
   update.sh: |
     #! /bin/bash
+    {% if KEDA_NAMESPACE_ACTIVATOR_ENABLED is defined %}
+    curl -XPUT -H 'Content-Type: application/json'  -L 'http://ns-activator-svc.sc-common.svc.cluster.local:8080/namespace' -d '{"name" : "{{ NAMESPACE }}"}'
+    {% endif %}
     # necessary for secret handling and legacy indexes
     git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
     cd /schulcloud-server
@@ -25,9 +28,6 @@ data:
     else
         echo "gg, hacky mongo replicaset"
     fi
-    {% if KEDA_NAMESPACE_ACTIVATOR_ENABLED is defined %}
-    curl -XPUT -H 'Content-Type: application/json'  -L 'http://ns-activator-svc.sc-common.svc.cluster.local:8080/namespace' -d '{"name" : "{{ NAMESPACE }}"}'
-    {% endif %}
     echo "seeding database"
     curl --retry 360 --retry-all-errors --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/database/seed?with-indexes=true'
 
@@ -68,7 +68,7 @@ data:
           },
           "roleAttributeNameMapping" : {
             "roleStudent" : "cn=ROLE_STUDENT,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
-            "roleTeacher" : "cn=ROLE_TEACHER,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
+            "roleTeacher": "cn=ROLE_TEACHER,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org;;cn=ROLE_SUBSTITUTE_TEACHER,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
             "roleAdmin" : "cn=ROLE_ADMIN,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org",
             "roleNoSc" : "cn=ROLE_NBC_EXCLUDE,ou=roles,o=schoolOne0,dc=de,dc=example,dc=org"
           },
@@ -116,7 +116,7 @@ data:
           },
           "roleAttributeNameMapping" : {
             "roleStudent" : "cn=ROLE_STUDENT,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
-            "roleTeacher" : "cn=ROLE_TEACHER,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
+            "roleTeacher": "cn=ROLE_TEACHER,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org;;cn=ROLE_SUBSTITUTE_TEACHER,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
             "roleAdmin" : "cn=ROLE_ADMIN,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org",
             "roleNoSc" : "cn=ROLE_NBC_EXCLUDE,ou=roles,o=schoolOne1,dc=de,dc=example,dc=org"
           },
@@ -183,7 +183,7 @@ data:
               "grantType": "authorization_code",
               "scope": "openid",
               "responseType": "code",
-              "redirectUri": "https://{{ NAMESPACE }}.cd.dbildungscloud.dev/api/v3/sso/oauth",
+              "redirectUri": "https://{{ NAMESPACE }}.nbc.dbildungscloud.dev/api/v3/sso/oauth",
               "authEndpoint": "https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/auth",
               "provider": "sanis",
               "jwksEndpoint": "https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/certs",
@@ -198,15 +198,15 @@ data:
 
     # ========== Start of the Dev IServ configuration section.
 
-    # This is currently performed only for the following 2 namespaces:
-    #   - 'nbc-main',
-    #   - 'nbc-iserv-test';
+    # This is currently performed only for the following 2 namespaces on *dev-nbc*:
+    #   - 'main',
+    #   - 'iserv-test';
     # the first one being the namespace of the default nbc dev environment and the second one being
     # the additional namespace intended for use for the testing (and development) purposes if one want
     # to test anything that includes signing in with the IServ on nbc instance, but don't want to use
     # the default dev nbc instance as it would require merging the code to the main branch first.
 
-    if [[ "$NS" =~ ^(nbc-main|nbc-iserv-test)$ ]]; then
+    if [ "$SC_THEME" = "n21" ] && [[ "$NS" =~ ^(main|iserv-test)$ ]]; then
         ISERV_SYSTEM_ID=0000d186816abba584714c92
 
         # Encrypt secrets that contain IServ's OAuth client secret and LDAP server's search user password.
@@ -245,7 +245,7 @@ data:
                     "grantType": "authorization_code",
                     "scope": "openid uuid",
                     "responseType": "code",
-                    "redirectUri": "https://'$NS'.cd.dbildungscloud.dev/api/v3/sso/oauth",
+                    "redirectUri": "https://'$NS'.nbc.dbildungscloud.dev/api/v3/sso/oauth",
                     "authEndpoint": "'$ISERV_URL'/iserv/auth/auth",
                     "provider": "iserv",
                     "logoutEndpoint": "'$ISERV_URL'/iserv/auth/logout",
@@ -265,7 +265,7 @@ data:
 
     # This is currently performed for any 'brb-*' namespace ('brb-main' for example).
 
-    if [[ "$NS" =~ ^brb-[^\s]+$ ]]; then
+    if [ "$SC_THEME" = "brb" ]; then
         UNIVENTION_LDAP_SYSTEM_ID=621beef78ec63ea12a3adae6
         UNIVENTION_LDAP_FEDERAL_STATE_ID=0000b186816abba584714c53
 
@@ -306,11 +306,9 @@ data:
 
     # ========== Start of the Bettermarks tool configuration section.
 
-    # This is currently performed only for the following 4 namespaces:
-    #   - 'nbc-bettermarks-test',
-    #   - 'nbc-main',
-    #   - 'brb-bettermarks-test',
-    #   - 'brb-main';
+    # This is currently performed only for the following namespaces on dev for each tenant nbc and brb:
+    #   - 'bettermarks-test'
+    #   - 'main'
     # the first two being the testing environments for the nbc instances
     # and the last two being the testing environments for the brb instances.
 
@@ -319,16 +317,16 @@ data:
 
     if [ -n "$NS" ]; then
         # Set the BETTERMARKS_CLIENT_SECRET and BETTERMARKS_URL variables values according to the k8s namespace.
-        if [ "$NS" = "nbc-bettermarks-test" ]; then
+        if [ "$SC_THEME" = "n21" ] && [ "$NS" = "bettermarks-test" ]; then
             BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_NBC_BETTERMARKS_TEST_CLIENT_SECRET
             BETTERMARKS_URL=$BETTERMARKS_NBC_BETTERMARKS_TEST_ENTRYPOINT
-        elif [ "$NS" = "nbc-main" ]; then
+        elif [ "$SC_THEME" = "n21" ] && [ "$NS" = "main" ]; then
             BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_NBC_MAIN_CLIENT_SECRET
             BETTERMARKS_URL=$BETTERMARKS_NBC_MAIN_ENTRYPOINT
-        elif [ "$NS" = "brb-bettermarks-test" ]; then
+        elif [ "$SC_THEME" = "brb" ] && [ "$NS" = "bettermarks-test" ]; then
             BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_BRB_BETTERMARKS_TEST_CLIENT_SECRET
             BETTERMARKS_URL=$BETTERMARKS_BRB_BETTERMARKS_TEST_ENTRYPOINT
-        elif [ "$NS" = "brb-main" ]; then
+        elif [ "$SC_THEME" = "brb" ] && [ "$NS" = "main" ]; then
             BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_BRB_MAIN_CLIENT_SECRET
             BETTERMARKS_URL=$BETTERMARKS_BRB_MAIN_ENTRYPOINT
         else
