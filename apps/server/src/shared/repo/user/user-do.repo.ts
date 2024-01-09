@@ -1,12 +1,15 @@
 import { EntityData, EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { EntityNotFoundError } from '@shared/common';
-import { Page, RoleReference } from '@shared/domain/domainobject';
+import { EntityNotFoundError } from '@shared/common/error/entity-not-found.error';
+import { Page } from '@shared/domain/domainobject/page';
+import { RoleReference } from '@shared/domain/domainobject/role-reference';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { Role, SchoolEntity, User } from '@shared/domain/entity';
-import { IFindOptions, Pagination, SortOrder, SortOrderMap } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
-import { BaseDORepo } from '@shared/repo'; 
+import { Role } from '@shared/domain/entity/role.entity';
+import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { User } from '@shared/domain/entity/user.entity';
+import { IFindOptions, Pagination, SortOrder, SortOrderMap } from '@shared/domain/interface/find-options';
+import { EntityId } from '@shared/domain/types/entity-id';
+import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { UserQuery } from '@src/modules/user/service/user-query.type';
 import { UserScope } from './user.scope';
 

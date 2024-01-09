@@ -1,4 +1,4 @@
-import { Scope } from '@shared/repo';
+import { Scope } from '@shared/repo/scope';
 import { ObjectId } from 'bson';
 import { ExternalToolPseudonymEntity } from './external-tool-pseudonym.entity';
 
