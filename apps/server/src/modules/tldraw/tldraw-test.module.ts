@@ -5,6 +5,7 @@ import { LoggerModule } from '@src/core/logger';
 import { AuthenticationModule } from '@modules/authentication/authentication.module';
 import { AuthorizationModule } from '@modules/authorization';
 import { Course, User } from '@shared/domain/entity';
+import { MetricsService } from '@modules/tldraw/metrics';
 import { AuthenticationApiModule } from '../authentication/authentication-api.module';
 import { TldrawWsModule } from './tldraw-ws.module';
 import { TldrawWs } from './controller';
@@ -20,7 +21,7 @@ const imports = [
 	CoreModule,
 	LoggerModule,
 ];
-const providers = [TldrawWs, TldrawBoardRepo, TldrawWsService];
+const providers = [TldrawWs, TldrawBoardRepo, TldrawWsService, MetricsService];
 @Module({
 	imports,
 	providers,
