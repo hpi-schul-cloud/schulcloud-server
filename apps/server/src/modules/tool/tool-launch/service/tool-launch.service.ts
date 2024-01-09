@@ -54,7 +54,7 @@ export class ToolLaunchService {
 
 		const { externalTool, schoolExternalTool } = await this.loadToolHierarchy(schoolExternalToolId);
 
-		this.isToolStatusLatestOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
+		this.isToolStatusLaunchableOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
 
 		const strategy: ToolLaunchStrategy | undefined = this.strategies.get(externalTool.config.type);
 
@@ -84,7 +84,7 @@ export class ToolLaunchService {
 		};
 	}
 
-	private isToolStatusLatestOrThrow(
+	private isToolStatusLaunchableOrThrow(
 		userId: EntityId,
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
@@ -96,12 +96,13 @@ export class ToolLaunchService {
 			contextExternalTool
 		);
 
-		if (status.isOutdatedOnScopeSchool || status.isOutdatedOnScopeContext) {
+		if (status.isOutdatedOnScopeSchool || status.isOutdatedOnScopeContext || status.isDeactivated) {
 			throw new ToolStatusOutdatedLoggableException(
 				userId,
 				contextExternalTool.id ?? '',
 				status.isOutdatedOnScopeSchool,
-				status.isOutdatedOnScopeContext
+				status.isOutdatedOnScopeContext,
+				status.isDeactivated
 			);
 		}
 	}

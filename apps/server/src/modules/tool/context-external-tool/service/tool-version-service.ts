@@ -30,6 +30,7 @@ export class ToolVersionService {
 				isOutdatedOnScopeContext: false,
 				isIncompleteOnScopeContext: false,
 				isOutdatedOnScopeSchool: false,
+				isDeactivated: this.isToolDeactivated(externalTool, schoolExternalTool),
 			});
 
 			const schoolParameterErrors: ValidationError[] = this.commonToolValidationService.validateParameters(
@@ -68,5 +69,13 @@ export class ToolVersionService {
 		);
 
 		return status;
+	}
+
+	private isToolDeactivated(externalTool: ExternalTool, schoolExternalTool: SchoolExternalTool) {
+		if (externalTool.isDeactivated || (schoolExternalTool.status && schoolExternalTool.status.isDeactivated)) {
+			return true;
+		}
+
+		return false;
 	}
 }

@@ -6,5 +6,6 @@ export const toolConfigurationStatusFactory = Factory.define<ContextExternalTool
 		isOutdatedOnScopeContext: false,
 		isOutdatedOnScopeSchool: false,
 		isIncompleteOnScopeContext: false,
+		isDeactivated: false,
 	};
 });

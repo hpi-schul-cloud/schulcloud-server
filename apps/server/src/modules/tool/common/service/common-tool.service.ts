@@ -21,6 +21,7 @@ export class CommonToolService {
 			isOutdatedOnScopeContext: true,
 			isOutdatedOnScopeSchool: true,
 			isIncompleteOnScopeContext: false,
+			isDeactivated: false,
 		});
 
 		if (
@@ -33,6 +34,10 @@ export class CommonToolService {
 		} else {
 			configurationStatus.isOutdatedOnScopeContext = true;
 			configurationStatus.isOutdatedOnScopeSchool = true;
+		}
+
+		if (externalTool.isDeactivated || schoolExternalTool.status?.isDeactivated) {
+			configurationStatus.isDeactivated = true;
 		}
 
 		return configurationStatus;

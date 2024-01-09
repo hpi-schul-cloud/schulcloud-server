@@ -7,5 +7,6 @@ export const contextExternalToolConfigurationStatusResponseFactory =
 			isOutdatedOnScopeContext: false,
 			isOutdatedOnScopeSchool: false,
 			isIncompleteOnScopeContext: false,
+			isDeactivated: false,
 		};
 	});
