@@ -1,12 +1,10 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { CourseMetadataListResponse } from '@modules/learnroom/controller/dto';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication, StreamableFile } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
 
 const createStudent = () => {
 	const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({}, [Permission.COURSE_VIEW]);
@@ -24,15 +22,11 @@ describe('Course Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let configServiceMock: DeepMocked<ConfigService>;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideProvider(ConfigService)
-			.useValue(createMock<ConfigService>())
-			.compile();
+		}).compile();
 
 		app = module.createNestApplication();
 		await app.init();
@@ -72,6 +66,7 @@ describe('Course Controller (API)', () => {
 			expect(data[0].startDate).toBe(course.startDate);
 			expect(data[0].untilDate).toBe(course.untilDate);
 		});
+
 		it('should find courses as teacher', async () => {
 			const { teacher, course } = setup();
 			await em.persistAndFlush([teacher.account, teacher.user, course]);
@@ -89,10 +84,6 @@ describe('Course Controller (API)', () => {
 	});
 
 	describe('[GET] /courses/:id/export', () => {
-		beforeEach(() => {
-			configServiceMock = app.get(ConfigService);
-		});
-
 		describe('export feature is enabled', () => {
 			const setup = () => {
 				const student1 = createStudent();
@@ -105,8 +96,6 @@ describe('Course Controller (API)', () => {
 					teachers: [teacher.user],
 					students: [student1.user, student2.user],
 				});
-
-				configServiceMock.get.mockReturnValue(true);
 
 				return { course, teacher, teacherUnknownToCourse, substitutionTeacher, student1 };
 			};
@@ -127,35 +116,6 @@ describe('Course Controller (API)', () => {
 				expect(response.header['content-type']).toBe('application/zip');
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				expect(response.header['content-disposition']).toBe('attachment;');
-			});
-		});
-
-		describe('export feature is disabled', () => {
-			const setup = () => {
-				const student = createStudent();
-				const teacher = createTeacher();
-
-				const course = courseFactory.build({
-					name: 'course #2',
-					teachers: [teacher.user],
-					students: [student.user],
-				});
-
-				configServiceMock.get.mockReturnValue(false);
-
-				return { course, teacher, student };
-			};
-
-			it('should throw NotFoundException when course export feature is not enabled', async () => {
-				const { teacher, course } = setup();
-				await em.persistAndFlush([teacher.account, teacher.user, course]);
-				em.clear();
-				const version = { version: '1.1.0' };
-
-				const loggedInClient = await testApiClient.login(teacher.account);
-				const response = await loggedInClient.get(`${course.id}/export`).query(version);
-
-				expect(response.statusCode).toEqual(404);
 			});
 		});
 	});
