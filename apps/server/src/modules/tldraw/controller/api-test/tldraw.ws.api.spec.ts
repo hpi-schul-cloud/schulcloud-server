@@ -12,6 +12,7 @@ import { TldrawDrawing } from '../../entities';
 import { TldrawWsService } from '../../service';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../../repo';
 import { TestConnection, tldrawTestConfig } from '../../testing';
+import { MetricsService } from '../../metrics';
 import { TldrawWs } from '..';
 
 describe('WebSocketController (WsAdapter)', () => {
@@ -36,6 +37,7 @@ describe('WebSocketController (WsAdapter)', () => {
 				TldrawWsService,
 				TldrawBoardRepo,
 				YMongodb,
+				MetricsService,
 				{
 					provide: TldrawRepo,
 					useValue: createMock<TldrawRepo>(),

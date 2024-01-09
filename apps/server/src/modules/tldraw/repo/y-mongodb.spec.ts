@@ -11,6 +11,7 @@ import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { TldrawWs } from '../controller';
 import { TldrawWsService } from '../service';
+import { MetricsService } from '../metrics';
 import { TldrawBoardRepo } from './tldraw-board.repo';
 import { TldrawRepo } from './tldraw.repo';
 import { YMongodb } from './y-mongodb';
@@ -41,6 +42,7 @@ describe('YMongoDb', () => {
 				TldrawBoardRepo,
 				TldrawRepo,
 				YMongodb,
+				MetricsService,
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
