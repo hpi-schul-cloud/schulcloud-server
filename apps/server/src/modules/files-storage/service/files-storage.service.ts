@@ -84,13 +84,27 @@ export class FilesStorageService {
 
 	// upload
 	public async uploadFile(userId: EntityId, params: FileRecordParams, file: FileDto): Promise<FileRecord> {
+		console.log('createFileRecord start');
+		console.time('createFileRecord');
 		const { fileRecord, stream } = await this.createFileRecord(file, params, userId);
+		console.timeEnd('createFileRecord');
+		console.log('createFileRecord end');
+
 		// MimeType Detection consumes part of the stream, so the restored stream is passed on
 		file.data = stream;
 		file.mimeType = fileRecord.mimeType;
-		await this.fileRecordRepo.save(fileRecord);
 
+		console.log('save start');
+		console.time('save');
+		await this.fileRecordRepo.save(fileRecord);
+		console.timeEnd('save');
+		console.log('save end');
+
+		console.log('createFileInStorageAndRollbackOnError start');
+		console.time('createFileInStorageAndRollbackOnError');
 		await this.createFileInStorageAndRollbackOnError(fileRecord, params, file);
+		console.timeEnd('createFileInStorageAndRollbackOnError');
+		console.log('createFileInStorageAndRollbackOnError end');
 
 		return fileRecord;
 	}
@@ -100,8 +114,17 @@ export class FilesStorageService {
 		params: FileRecordParams,
 		userId: EntityId
 	): Promise<{ fileRecord: FileRecord; stream: Readable }> {
+		console.log('resolveFileName start');
+		console.time('resolveFileName');
 		const fileName = await this.resolveFileName(file, params);
+		console.timeEnd('resolveFileName');
+		console.log('resolveFileName end');
+
+		console.log('detectMimeType start');
+		console.time('detectMimeType');
 		const { mimeType, stream } = await this.detectMimeType(file);
+		console.timeEnd('detectMimeType');
+		console.log('detectMimeType end');
 
 		// Create fileRecord with 0 as initial file size, because it is overwritten later anyway.
 		const fileRecord = createFileRecord(fileName, 0, mimeType, params, userId);
@@ -167,10 +190,14 @@ export class FilesStorageService {
 			if (useStreamToAntivirus && fileRecord.isPreviewPossible()) {
 				const streamToAntivirus = file.data.pipe(new PassThrough());
 
+				console.log('upload and virus check start');
+				console.time('upload and virus check ');
 				const [, antivirusClientResponse] = await Promise.all([
 					this.storageClient.create(filePath, file),
 					this.antivirusService.checkStream(streamToAntivirus),
 				]);
+				console.log('upload and virus check end');
+				console.timeEnd('upload and virus check ');
 				const { status, reason } = FileRecordMapper.mapScanResultParamsToDto(antivirusClientResponse);
 				fileRecord.updateSecurityCheckStatus(status, reason);
 			} else {
@@ -183,7 +210,11 @@ export class FilesStorageService {
 
 			fileRecord.markAsLoaded();
 
+			console.log('second save start');
+			console.time('second save');
 			await this.fileRecordRepo.save(fileRecord);
+			console.log('second save end');
+			console.timeEnd('second save');
 
 			if (!useStreamToAntivirus || !fileRecord.isPreviewPossible()) {
 				await this.sendToAntivirus(fileRecord);

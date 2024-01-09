@@ -86,9 +86,11 @@ export class FilesStorageController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request
 	): Promise<FileRecordResponse> {
+		console.time('controller');
 		const fileRecord = await this.filesStorageUC.upload(currentUser.userId, params, req);
 
 		const response = FileRecordMapper.mapToFileRecordResponse(fileRecord);
+		console.timeEnd('controller');
 
 		return response;
 	}
