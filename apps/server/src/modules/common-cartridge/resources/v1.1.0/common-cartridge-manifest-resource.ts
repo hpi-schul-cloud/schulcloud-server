@@ -43,12 +43,12 @@ export class CommonCartridgeManifestResourceV110 extends CommonCartridgeResource
 			manifest: {
 				$: {
 					identifier: this.props.identifier,
-					xmlns: 'http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1',
+					xmlns: 'https://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1',
 					'xmlns:mnf': 'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest',
 					'xmlns:res': 'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource',
 					'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
 					'xsi:schemaLocation':
-						'http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1 http://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imscp_v1p2_v1p0.xsd ' +
+						'https://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1 https://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imscp_v1p2_v1p0.xsd ' +
 						'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lommanifest_v1p0.xsd ' +
 						'http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lomresource_v1p0.xsd',
 				},
