@@ -37,7 +37,7 @@ export class TldrawWsService {
 		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly tldrawBoardRepo: TldrawBoardRepo,
 		private readonly logger: Logger,
-        private readonly metricsService: MetricsService
+		private readonly metricsService: MetricsService
 	) {
 		this.logger.setContext(TldrawWsService.name);
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
@@ -234,7 +234,7 @@ export class TldrawWsService {
 	 * @param {WebSocket} ws
 	 * @param {string} docName
 	 */
-	public setupWSConnection(ws: WebSocket, docName = 'GLOBAL'): void {
+	public setupWSConnection(ws: WebSocket, docName: string): void {
 		ws.binaryType = 'arraybuffer';
 		// get doc, initialize if it does not exist yet
 		const doc = this.getYDoc(docName);

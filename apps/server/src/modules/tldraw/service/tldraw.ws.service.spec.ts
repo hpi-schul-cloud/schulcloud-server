@@ -51,6 +51,7 @@ describe('TldrawWSService', () => {
 	let configService: ConfigService<TldrawConfig, true>;
 	let service: TldrawWsService;
 	let boardRepo: TldrawBoardRepo;
+	let metricsService: MetricsService;
 	let logger: DeepMocked<Logger>;
 
 	const gatewayPort = 3346;
@@ -72,7 +73,7 @@ describe('TldrawWSService', () => {
 				TldrawWsService,
 				TldrawBoardRepo,
 				YMongodb,
-                MetricsService,
+				MetricsService,
 				{
 					provide: TldrawRepo,
 					useValue: createMock<TldrawRepo>(),
@@ -86,6 +87,7 @@ describe('TldrawWSService', () => {
 
 		configService = testingModule.get(ConfigService);
 		service = testingModule.get(TldrawWsService);
+		metricsService = testingModule.get(MetricsService);
 		boardRepo = testingModule.get(TldrawBoardRepo);
 		logger = testingModule.get(Logger);
 		app = testingModule.createNestApplication();
@@ -120,7 +122,9 @@ describe('TldrawWSService', () => {
 		it('should throw if REDIS_URI is not set', () => {
 			const configSpy = jest.spyOn(configService, 'get').mockReturnValue(null);
 
-			expect(() => new TldrawWsService(configService, boardRepo, logger)).toThrow('REDIS_URI is not set');
+			expect(() => new TldrawWsService(configService, boardRepo, logger, metricsService)).toThrow(
+				'REDIS_URI is not set'
+			);
 			configSpy.mockRestore();
 		});
 	});
@@ -339,7 +343,7 @@ describe('TldrawWSService', () => {
 			it('should send to every client', async () => {
 				const { messageHandlerSpy, sendSpy, getYDocSpy } = await setup();
 
-				service.setupWSConnection(ws);
+				service.setupWSConnection(ws, 'TEST');
 
 				expect(sendSpy).toHaveBeenCalledTimes(2);
 				ws.close();
@@ -369,7 +373,7 @@ describe('TldrawWSService', () => {
 			it('should close connection', async () => {
 				const { closeConnSpy } = await setup();
 
-				service.setupWSConnection(ws);
+				service.setupWSConnection(ws, 'TEST');
 				await delay(10);
 
 				expect(closeConnSpy).toHaveBeenCalled();
@@ -419,7 +423,7 @@ describe('TldrawWSService', () => {
 			it('should close connection', async () => {
 				const { messageHandlerSpy, closeConnSpy } = await setup();
 
-				service.setupWSConnection(ws);
+				service.setupWSConnection(ws, 'TEST');
 				await delay(10);
 
 				expect(closeConnSpy).toHaveBeenCalled();
@@ -445,7 +449,7 @@ describe('TldrawWSService', () => {
 			it('should log error', async () => {
 				const { flushDocumentSpy, errorLogSpy } = await setup();
 
-				service.setupWSConnection(ws);
+				service.setupWSConnection(ws, 'TEST');
 				await delay(10);
 
 				expect(flushDocumentSpy).toHaveBeenCalled();
@@ -521,7 +525,7 @@ describe('TldrawWSService', () => {
 			it('should handle message', async () => {
 				const { messageHandlerSpy, msg, readSyncMessageSpy } = await setup([0, 1]);
 
-				service.setupWSConnection(ws);
+				service.setupWSConnection(ws, 'TEST');
 				ws.emit('message', msg);
 
 				expect(messageHandlerSpy).toHaveBeenCalledTimes(1);
@@ -534,7 +538,7 @@ describe('TldrawWSService', () => {
 				jest.spyOn(Ioredis.Redis.prototype, 'publish').mockRejectedValueOnce(new Error('error'));
 				const { msg, errorLogSpy } = await setup([1, 1]);
 
-				service.setupWSConnection(ws);
+				service.setupWSConnection(ws, 'TEST');
 				ws.emit('message', msg);
 				await delay(10);
 
