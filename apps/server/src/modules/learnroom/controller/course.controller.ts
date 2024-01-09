@@ -1,5 +1,5 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Controller, Get, NotFoundException, Param, Query, Res, StreamableFile } from '@nestjs/common';
+import { Controller, Get, Param, Query, Res, StreamableFile } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
@@ -39,9 +39,6 @@ export class CourseController {
 		@Query() queryParams: CourseQueryParams,
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile> {
-		if (!this.configService.get<boolean>('FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED'))
-			throw new NotFoundException();
-
 		const result = await this.courseExportUc.exportCourse(
 			urlParams.courseId,
 			currentUser.userId,
