@@ -10,6 +10,7 @@ import {
 	SchoolSystemOptionsService,
 	SchoolValidationService,
 	SchoolYearService,
+	SchulconnexProvisioningOptionsUpdateService,
 } from './service';
 
 /**
@@ -28,6 +29,7 @@ import {
 		SchoolSystemOptionsRepo,
 		SchoolSystemOptionsService,
 		ProvisioningOptionsUpdateService,
+		SchulconnexProvisioningOptionsUpdateService,
 	],
 	exports: [
 		LegacySchoolService,
