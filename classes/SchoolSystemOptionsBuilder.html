@@ -151,6 +151,10 @@
                                     <span class="modifier">Public</span>
                                 <a href="#buildProvisioningOptions" >buildProvisioningOptions</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#getDefaultProvisioningOptions" >getDefaultProvisioningOptions</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -174,7 +178,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/legacy-school/domain/school-system-options.builder.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/legacy-school/domain/school-system-options.builder.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -240,8 +244,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="10"
-                                    class="link-to-prism">apps/server/src/modules/legacy-school/domain/school-system-options.builder.ts:10</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="26"
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/domain/school-system-options.builder.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -287,6 +291,45 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getDefaultProvisioningOptions"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>getDefaultProvisioningOptions</b></span>
+                        <a href="#getDefaultProvisioningOptions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getDefaultProvisioningOptions()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="13"
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/domain/school-system-options.builder.ts:13</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#AnyProvisioningOptions" target="_self" >AnyProvisioningOptions</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
 
@@ -299,22 +342,31 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
 import { ProvisioningOptionsInterface } from &#x27;../interface&#x27;;
-import { ProvisioningStrategyInvalidOptionsLoggableException } from &#x27;../loggable&#x27;;
+import {
+	ProvisioningStrategyInvalidOptionsLoggableException,
+	ProvisioningStrategyNoOptionsLoggableException,
+} from &#x27;../loggable&#x27;;
 import { provisioningStrategyOptions } from &#x27;./provisioning-strategy-options&#x27;;
 import { AnyProvisioningOptions } from &#x27;./school-system-options.do&#x27;;
 
 export class SchoolSystemOptionsBuilder {
 	constructor(private readonly provisioningStrategy: SystemProvisioningStrategy) {}
 
-	public buildProvisioningOptions(provisioningOptions: ProvisioningOptionsInterface): AnyProvisioningOptions {
+	public getDefaultProvisioningOptions(): AnyProvisioningOptions {
 		const ProvisioningOptionsConstructor: (new () &#x3D;&gt; AnyProvisioningOptions) | undefined &#x3D;
 			provisioningStrategyOptions.get(this.provisioningStrategy);
 
 		if (!ProvisioningOptionsConstructor) {
-			throw new ProvisioningStrategyInvalidOptionsLoggableException(this.provisioningStrategy, provisioningOptions);
+			throw new ProvisioningStrategyNoOptionsLoggableException(this.provisioningStrategy);
 		}
 
 		const createdProvisioningOptions: AnyProvisioningOptions &#x3D; new ProvisioningOptionsConstructor();
+
+		return createdProvisioningOptions;
+	}
+
+	public buildProvisioningOptions(provisioningOptions: ProvisioningOptionsInterface): AnyProvisioningOptions {
+		const createdProvisioningOptions: AnyProvisioningOptions &#x3D; this.getDefaultProvisioningOptions();
 
 		if (!createdProvisioningOptions.isApplicable(provisioningOptions)) {
 			throw new ProvisioningStrategyInvalidOptionsLoggableException(this.provisioningStrategy, provisioningOptions);

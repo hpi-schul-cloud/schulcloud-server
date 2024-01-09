@@ -194,6 +194,20 @@
 
 
 
+                    <tr>
+                        <td class="col-md-4">
+                            <h6><b>Accessors</b></h6>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                            <ul class="index-list">
+                                <li>
+                                    <a href="#getType" >getType</a>
+                                </li>
+                            </ul>
+                        </td>
+                    </tr>
         </tbody>
     </table>
 </section>
@@ -222,7 +236,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/legacy-school/domain/schulconnex-provisionin-options.do.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/legacy-school/domain/schulconnex-provisionin-options.do.ts:9</a></div>
                         </td>
                     </tr>
 
@@ -247,7 +261,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/legacy-school/domain/schulconnex-provisionin-options.do.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/legacy-school/domain/schulconnex-provisionin-options.do.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -272,7 +286,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/legacy-school/domain/schulconnex-provisionin-options.do.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/legacy-school/domain/schulconnex-provisionin-options.do.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -312,7 +326,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseProvisioningOptions.html#source" target="_self" >BaseProvisioningOptions:14</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseProvisioningOptions.html#source" target="_self" >BaseProvisioningOptions:19</a></code>
 </div>
                         </td>
                     </tr>
@@ -380,7 +394,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseProvisioningOptions.html#source" target="_self" >BaseProvisioningOptions:4</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseProvisioningOptions.html#source" target="_self" >BaseProvisioningOptions:5</a></code>
 </div>
                         </td>
                     </tr>
@@ -433,12 +447,40 @@
 
 
 
+            <section data-compodoc="block-accessors">
+    <h3 id="accessors">
+        Accessors
+    </h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="getType"></a>
+                        <span class="name"><b>getType</b><a href="#getType"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>getType()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/legacy-school/domain/schulconnex-provisionin-options.do.ts:15</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+</section>
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SchulConneXProvisioningOptionsInterface } from &#x27;../interface&#x27;;
 import { BaseProvisioningOptions } from &#x27;./base-provisioning-options&#x27;;
+import { ProvisioningOptionsType } from &#x27;./provisioning-options-type&#x27;;
 
 export class SchulConneXProvisioningOptions
 	extends BaseProvisioningOptions&lt;SchulConneXProvisioningOptionsInterface&gt;
@@ -449,6 +491,10 @@ export class SchulConneXProvisioningOptions
 	groupProvisioningCoursesEnabled &#x3D; false;
 
 	groupProvisioningOtherEnabled &#x3D; false;
+
+	get getType(): ProvisioningOptionsType {
+		return ProvisioningOptionsType.SCHULCONNEX;
+	}
 
 	set(props: SchulConneXProvisioningOptionsInterface): this {
 		this.groupProvisioningClassesEnabled &#x3D; props.groupProvisioningClassesEnabled;

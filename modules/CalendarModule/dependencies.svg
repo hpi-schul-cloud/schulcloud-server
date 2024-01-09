@@ -24,13 +24,13 @@
 <title>cluster_CalendarModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="72,-70 72,-268 424,-268 424,-70 72,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_CalendarModule_providers</title>
-<polygon fill="none" stroke="black" points="80,-78 80,-130 416,-130 416,-78 80,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_CalendarModule_exports</title>
 <polygon fill="none" stroke="black" points="183,-208 183,-260 311,-260 311,-208 183,-208"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_CalendarModule_providers</title>
+<polygon fill="none" stroke="black" points="80,-78 80,-130 416,-130 416,-78 80,-78"/>
 </g>
 <!-- CalendarService  -->
 <g id="node1" class="node">

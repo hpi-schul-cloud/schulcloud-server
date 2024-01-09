@@ -98,7 +98,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >OidcProvisioningStrategy</li>
+  <li class="breadcrumb-item" >SchulconnexProvisioningOptionsUpdateService</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -122,17 +122,11 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/provisioning/strategy/oidc/oidc.strategy.ts</code>
+            <code>apps/server/src/modules/legacy-school/service/schulconnex-provisioning-options-update.service.ts</code>
         </p>
 
 
 
-            <p class="comment">
-                <h3>Extends</h3>
-            </p>
-            <p class="comment">
-                            <code><a href="../classes/ProvisioningStrategy.html" target="_self" >ProvisioningStrategy</a></code>
-            </p>
 
 
             <section data-compodoc="block-index">
@@ -149,17 +143,14 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier"></span>
+                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
-                                <a href="#apply" >apply</a>
+                                <a href="#deleteGroups" >deleteGroups</a>
                             </li>
                             <li>
-                                    <span class="modifier">Abstract</span>
-                                <a href="#getData" >getData</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Abstract</span>
-                                <a href="#getType" >getType</a>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#handleUpdate" >handleUpdate</a>
                             </li>
                         </ul>
                     </td>
@@ -179,12 +170,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(provisioningFeatures: <a href="../interfaces/IProvisioningFeatures.html" target="_self">IProvisioningFeatures</a>, oidcProvisioningService: <a href="../injectables/OidcProvisioningService.html" target="_self">OidcProvisioningService</a>)</code>
+<code>constructor(groupService: <a href="../injectables/GroupService.html" target="_self">GroupService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/oidc.strategy.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/legacy-school/service/schulconnex-provisioning-options-update.service.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -202,22 +193,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>provisioningFeatures</td>
+                                                        <td>groupService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../interfaces/IProvisioningFeatures.html" target="_self" >IProvisioningFeatures</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>oidcProvisioningService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/OidcProvisioningService.html" target="_self" >OidcProvisioningService</a></code>
+                                                                        <code><a href="../injectables/GroupService.html" target="_self" >GroupService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -243,33 +222,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="apply"></a>
+                    <a name="deleteGroups"></a>
                     <span class="name">
-                            <span class="modifier"></span>
+                            <span class="modifier">Private</span>
                             <span class="modifier">Async</span>
-                        <span ><b>apply</b></span>
-                        <a href="#apply"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>deleteGroups</b></span>
+                        <a href="#deleteGroups"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>apply(data: <a href="../classes/OauthDataDto.html" target="_self">OauthDataDto</a>)</code>
+                    <code>deleteGroups(schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, systemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, groupType: <a href="../undefineds/GroupTypes.html" target="_self">GroupTypes</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../classes/ProvisioningStrategy.html" target="_self" >ProvisioningStrategy</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:17</a></code>
-</div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/schulconnex-provisioning-options-update.service.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -290,9 +263,33 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>data</td>
+                                                <td>schoolId</td>
                                             <td>
-                                                            <code><a href="../classes/OauthDataDto.html" target="_self" >OauthDataDto</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>systemId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>groupType</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#GroupTypes" target="_self" >GroupTypes</a></code>
                                             </td>
 
                                             <td>
@@ -305,7 +302,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/ProvisioningDto.html" target="_self" >Promise&lt;ProvisioningDto&gt;</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -319,32 +316,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getData"></a>
+                    <a name="handleUpdate"></a>
                     <span class="name">
-                            <span class="modifier">Abstract</span>
-                        <span ><b>getData</b></span>
-                        <a href="#getData"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>handleUpdate</b></span>
+                        <a href="#handleUpdate"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getData(input: <a href="../classes/OauthDataStrategyInputDto.html" target="_self">OauthDataStrategyInputDto</a>)</code>
+                    <code>handleUpdate(schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, systemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, newOptions: <a href="../classes/SchulConneXProvisioningOptions.html" target="_self">SchulConneXProvisioningOptions</a>, oldOptions: <a href="../classes/SchulConneXProvisioningOptions.html" target="_self">SchulConneXProvisioningOptions</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../classes/ProvisioningStrategy.html" target="_self" >ProvisioningStrategy</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:7</a></code>
-</div>
+                            <div class="io-line">Defined in <a href="" data-line="13"
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/schulconnex-provisioning-options-update.service.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -365,9 +357,45 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>input</td>
+                                                <td>schoolId</td>
                                             <td>
-                                                            <code><a href="../classes/OauthDataStrategyInputDto.html" target="_self" >OauthDataStrategyInputDto</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>systemId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>newOptions</td>
+                                            <td>
+                                                            <code><a href="../classes/SchulConneXProvisioningOptions.html" target="_self" >SchulConneXProvisioningOptions</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>oldOptions</td>
+                                            <td>
+                                                            <code><a href="../classes/SchulConneXProvisioningOptions.html" target="_self" >SchulConneXProvisioningOptions</a></code>
                                             </td>
 
                                             <td>
@@ -380,57 +408,12 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/OauthDataDto.html" target="_self" >Promise&lt;OauthDataDto&gt;</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                         </div>
                             <div class="io-description">
                                 
                             </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="getType"></a>
-                    <span class="name">
-                            <span class="modifier">Abstract</span>
-                        <span ><b>getType</b></span>
-                        <a href="#getType"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getType()</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../classes/ProvisioningStrategy.html" target="_self" >ProvisioningStrategy</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:5</a></code>
-</div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#SystemProvisioningStrategy" target="_self" >SystemProvisioningStrategy</a></code>
-
-                        </div>
                 </td>
             </tr>
         </tbody>
@@ -441,55 +424,49 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
-import { LegacySchoolDo, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
-import { IProvisioningFeatures, ProvisioningFeatures } from &#x27;../../config&#x27;;
-import { ExternalGroupDto, OauthDataDto, ProvisioningDto } from &#x27;../../dto&#x27;;
-import { ProvisioningStrategy } from &#x27;../base.strategy&#x27;;
-import { OidcProvisioningService } from &#x27;./service/oidc-provisioning.service&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Group, GroupService, GroupTypes } from &#x27;@modules/group&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { SchulConneXProvisioningOptions } from &#x27;../domain&#x27;;
+import { ProvisioningOptionsUpdateHandler } from &#x27;./provisioning-options-update-handler&#x27;;
 
 @Injectable()
-export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
-	constructor(
-		@Inject(ProvisioningFeatures) protected readonly provisioningFeatures: IProvisioningFeatures,
-		protected readonly oidcProvisioningService: OidcProvisioningService
-	) {
-		super();
+export class SchulconnexProvisioningOptionsUpdateService
+	implements ProvisioningOptionsUpdateHandler&lt;SchulConneXProvisioningOptions&gt;
+{
+	constructor(private readonly groupService: GroupService) {}
+
+	public async handleUpdate(
+		schoolId: EntityId,
+		systemId: EntityId,
+		newOptions: SchulConneXProvisioningOptions,
+		oldOptions: SchulConneXProvisioningOptions
+	): Promise&lt;void&gt; {
+		if (oldOptions.groupProvisioningClassesEnabled &amp;&amp; !newOptions.groupProvisioningClassesEnabled) {
+			await this.deleteGroups(schoolId, systemId, GroupTypes.CLASS);
+		}
+
+		if (oldOptions.groupProvisioningCoursesEnabled &amp;&amp; !newOptions.groupProvisioningCoursesEnabled) {
+			await this.deleteGroups(schoolId, systemId, GroupTypes.COURSE);
+		}
+
+		if (oldOptions.groupProvisioningOtherEnabled &amp;&amp; !newOptions.groupProvisioningOtherEnabled) {
+			await this.deleteGroups(schoolId, systemId, GroupTypes.OTHER);
+		}
 	}
 
-	override async apply(data: OauthDataDto): Promise&lt;ProvisioningDto&gt; {
-		let school: LegacySchoolDo | undefined;
-		if (data.externalSchool) {
-			school &#x3D; await this.oidcProvisioningService.provisionExternalSchool(data.externalSchool, data.system.systemId);
-		}
-
-		const user: UserDO &#x3D; await this.oidcProvisioningService.provisionExternalUser(
-			data.externalUser,
-			data.system.systemId,
-			school?.id
+	private async deleteGroups(schoolId: EntityId, systemId: EntityId, groupType: GroupTypes): Promise&lt;void&gt; {
+		const groups: Group[] &#x3D; await this.groupService.findGroupsBySchoolIdAndSystemIdAndGroupType(
+			schoolId,
+			systemId,
+			groupType
 		);
 
-		if (this.provisioningFeatures.schulconnexGroupProvisioningEnabled) {
-			await this.oidcProvisioningService.removeExternalGroupsAndAffiliation(
-				data.externalUser.externalId,
-				data.externalGroups ?? [],
-				data.system.systemId
-			);
-
-			if (data.externalGroups) {
-				let groups: ExternalGroupDto[] &#x3D; data.externalGroups;
-
-				groups &#x3D; await this.oidcProvisioningService.filterExternalGroups(groups, school?.id, data.system.systemId);
-
-				await Promise.all(
-					groups.map((group: ExternalGroupDto) &#x3D;&gt;
-						this.oidcProvisioningService.provisionExternalGroup(group, data.externalSchool, data.system.systemId)
-					)
-				);
-			}
-		}
-
-		return new ProvisioningDto({ externalUserId: user.externalId || data.externalUser.externalId });
+		await Promise.all(
+			groups.map(async (group: Group): Promise&lt;void&gt; &#x3D;&gt; {
+				await this.groupService.delete(group);
+			})
+		);
 	}
 }
 </code></pre>
@@ -535,7 +512,7 @@ export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'OidcProvisioningStrategy.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'SchulconnexProvisioningOptionsUpdateService.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

@@ -180,6 +180,9 @@
                                 <a href="#byOrganizationId" >byOrganizationId</a>
                             </li>
                             <li>
+                                <a href="#bySystemId" >bySystemId</a>
+                            </li>
+                            <li>
                                 <a href="#byTypes" >byTypes</a>
                             </li>
                             <li>
@@ -387,6 +390,66 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="bySystemId"></a>
+                    <span class="name">
+                        <span ><b>bySystemId</b></span>
+                        <a href="#bySystemId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>bySystemId(id: <a href="../undefineds/EntityId.html" target="_self">EntityId | undefined</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="21"
+                                    class="link-to-prism">apps/server/src/modules/group/repo/group.scope.ts:21</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId | undefined</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="byTypes"></a>
                     <span class="name">
                         <span ><b>byTypes</b></span>
@@ -463,8 +526,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="21"
-                                    class="link-to-prism">apps/server/src/modules/group/repo/group.scope.ts:21</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">apps/server/src/modules/group/repo/group.scope.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -675,6 +738,13 @@ export class GroupScope extends Scope&lt;GroupEntity&gt; {
 	byOrganizationId(id: EntityId | undefined): this {
 		if (id) {
 			this.addQuery({ organization: id });
+		}
+		return this;
+	}
+
+	bySystemId(id: EntityId | undefined): this {
+		if (id) {
+			this.addQuery({ externalSource: { system: id } });
 		}
 		return this;
 	}

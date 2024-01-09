@@ -242,7 +242,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Embeddable, ManyToOne } from &#x27;@mikro-orm/core&#x27;;
-import { Role, User } from &#x27;@shared/domain/entity&#x27;;
+import { Role } from &#x27;@shared/domain/entity/role.entity&#x27;;
+import { User } from &#x27;@shared/domain/entity/user.entity&#x27;;
 
 export interface GroupUserEntityProps {
 	user: User;

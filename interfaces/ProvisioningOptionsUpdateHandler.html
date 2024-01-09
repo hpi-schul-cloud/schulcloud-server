@@ -86,7 +86,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content class">
+               <div class="content interface">
                    <div class="content-data">
 
 
@@ -100,9 +100,12 @@
 
 
 
+
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >BaseProvisioningOptions</li>
+  <li class="breadcrumb-item">Interfaces</li>
+  <li class="breadcrumb-item"
+  >
+  ProvisioningOptionsUpdateHandler</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,63 +129,36 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/legacy-school/domain/base-provisioning-options.ts</code>
+            <code>apps/server/src/modules/legacy-school/service/provisioning-options-update-handler.ts</code>
         </p>
 
 
 
 
-
-
-            <section data-compodoc="block-index">
-    <h3 id="index">Index</h3>
-    <table class="table table-sm table-bordered index-table">
-        <tbody>
-
-                <tr>
-                    <td class="col-md-4">
-                        <h6><b>Methods</b></h6>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <ul class="index-list">
-                            <li>
-                                    <span class="modifier">Public</span>
-                                <a href="#isApplicable" >isApplicable</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Abstract</span>
-                                <a href="#set" >set</a>
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
-
-
-
-
-
+        <section data-compodoc="block-index">
+            <h3 id="index">Index</h3>
+            <table class="table table-sm table-bordered index-table">
+                <tbody>
                     <tr>
                         <td class="col-md-4">
-                            <h6><b>Accessors</b></h6>
+                            <h6><b>Methods</b></h6>
                         </td>
                     </tr>
                     <tr>
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
-                                    <a href="#getType" >getType</a>
+                                    <a href="#handleUpdate" 
+>
+                                        handleUpdate
+                                    </a>
                                 </li>
                             </ul>
                         </td>
                     </tr>
-        </tbody>
-    </table>
-</section>
-
-
+                </tbody>
+            </table>
+        </section>
 
             <section data-compodoc="block-methods">
     
@@ -193,18 +169,16 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="isApplicable"></a>
+                    <a name="handleUpdate"></a>
                     <span class="name">
-                            <span class="modifier">Public</span>
-                        <span ><b>isApplicable</b></span>
-                        <a href="#isApplicable"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>handleUpdate</b></span>
+                        <a href="#handleUpdate"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isApplicable(provisioningOptions: <a href="../undefineds/ProvisioningOptionsInterface.html" target="_self">ProvisioningOptionsInterface</a>)</code>
+<code>handleUpdate(schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, systemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, newOptions: T, oldOptions: T)</code>
                 </td>
             </tr>
 
@@ -212,7 +186,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="5"
-                                    class="link-to-prism">apps/server/src/modules/legacy-school/domain/base-provisioning-options.ts:5</a></div>
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/provisioning-options-update-handler.ts:5</a></div>
                         </td>
                     </tr>
 
@@ -233,9 +207,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>provisioningOptions</td>
+                                                <td>schoolId</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#ProvisioningOptionsInterface" target="_self" >ProvisioningOptionsInterface</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                             </td>
 
                                             <td>
@@ -244,66 +218,32 @@
 
 
                                         </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>T</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="set"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Abstract</span>
-                        <span ><b>set</b></span>
-                        <a href="#set"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>set(props: T)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">apps/server/src/modules/legacy-school/domain/base-provisioning-options.ts:17</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
                                         <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
+                                                <td>systemId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
                                         </tr>
-                                    </thead>
-                                    <tbody>
                                         <tr>
-                                                <td>props</td>
+                                                <td>newOptions</td>
+                                            <td>
+                                                        <code>T</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>oldOptions</td>
                                             <td>
                                                         <code>T</code>
                                             </td>
@@ -317,69 +257,32 @@
                                     </tbody>
                                 </table>
                             </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
     </table>
 </section>
 
-
-
-
-
-            <section data-compodoc="block-accessors">
-    <h3 id="accessors">
-        Accessors
-    </h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="getType"></a>
-                        <span class="name"><b>getType</b><a href="#getType"><span class="icon ion-ios-link"></span></a></span>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="col-md-4">
-                        <span class="accessor"><b>get</b><code>getType()</code></span>
-                    </td>
-                </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/legacy-school/domain/base-provisioning-options.ts:15</a></div>
-                                </td>
-                            </tr>
-
-            </tbody>
-        </table>
-</section>
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ProvisioningOptionsInterface } from &#x27;../interface&#x27;;
-import { ProvisioningOptionsType } from &#x27;./provisioning-options-type&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { AnyProvisioningOptions } from &#x27;../domain&#x27;;
 
-export abstract class BaseProvisioningOptions&lt;T extends ProvisioningOptionsInterface&gt; {
-	public isApplicable(provisioningOptions: ProvisioningOptionsInterface): provisioningOptions is T {
-		const expectedKeys: Set&lt;string&gt; &#x3D; new Set(Object.keys(this));
-		const actualKeys: Set&lt;string&gt; &#x3D; new Set(Object.keys(provisioningOptions));
-
-		const hasProperties: boolean &#x3D;
-			expectedKeys.size &#x3D;&#x3D;&#x3D; actualKeys.size &amp;&amp; [...expectedKeys].every((key: string) &#x3D;&gt; actualKeys.has(key));
-
-		return hasProperties;
-	}
-
-	public abstract get getType(): ProvisioningOptionsType;
-
-	public abstract set(props: T): this;
+export interface ProvisioningOptionsUpdateHandler&lt;T extends AnyProvisioningOptions &#x3D; AnyProvisioningOptions&gt; {
+	handleUpdate(schoolId: EntityId, systemId: EntityId, newOptions: T, oldOptions: T): Promise&lt;void&gt;;
 }
 </code></pre>
     </div>
 </div>
-
 
 
 
@@ -413,8 +316,8 @@ export abstract class BaseProvisioningOptions&lt;T extends ProvisioningOptionsIn
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'BaseProvisioningOptions.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
+            var COMPODOC_CURRENT_PAGE_URL = 'ProvisioningOptionsUpdateHandler.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

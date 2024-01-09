@@ -514,7 +514,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;User[]&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;UserDO[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1492,8 +1492,8 @@ export class UserService {
 		return user;
 	}
 
-	async findByEmail(email: string): Promise&lt;User[]&gt; {
-		const user: Promise&lt;User[]&gt; &#x3D; this.userRepo.findByEmail(email);
+	async findByEmail(email: string): Promise&lt;UserDO[]&gt; {
+		const user: Promise&lt;UserDO[]&gt; &#x3D; this.userDORepo.findByEmail(email);
 
 		return user;
 	}

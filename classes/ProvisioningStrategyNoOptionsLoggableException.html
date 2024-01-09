@@ -102,7 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >BaseProvisioningOptions</li>
+  <li class="breadcrumb-item" >ProvisioningStrategyNoOptionsLoggableException</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,12 +126,24 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/legacy-school/domain/base-provisioning-options.ts</code>
+            <code>apps/server/src/modules/legacy-school/loggable/provisioning-strategy-no-options.loggable-exception.ts</code>
         </p>
 
 
 
+            <p class="comment">
+                <h3>Extends</h3>
+            </p>
+            <p class="comment">
+                        <code>UnprocessableEntityException</code>
+            </p>
 
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
+            </p>
 
 
             <section data-compodoc="block-index">
@@ -148,13 +160,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Public</span>
-                                <a href="#isApplicable" >isApplicable</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Abstract</span>
-                                <a href="#set" >set</a>
+                                <a href="#getLogMessage" >getLogMessage</a>
                             </li>
                         </ul>
                     </td>
@@ -164,24 +170,58 @@
 
 
 
-                    <tr>
-                        <td class="col-md-4">
-                            <h6><b>Accessors</b></h6>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <ul class="index-list">
-                                <li>
-                                    <a href="#getType" >getType</a>
-                                </li>
-                            </ul>
-                        </td>
-                    </tr>
         </tbody>
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(provisioningStrategy: <a href="../undefineds/SystemProvisioningStrategy.html" target="_self">SystemProvisioningStrategy</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/legacy-school/loggable/provisioning-strategy-no-options.loggable-exception.ts:5</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>provisioningStrategy</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../miscellaneous/enumerations.html#SystemProvisioningStrategy" target="_self" >SystemProvisioningStrategy</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
 
 
             <section data-compodoc="block-methods">
@@ -193,26 +233,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="isApplicable"></a>
+                    <a name="getLogMessage"></a>
                     <span class="name">
-                            <span class="modifier">Public</span>
-                        <span ><b>isApplicable</b></span>
-                        <a href="#isApplicable"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getLogMessage</b></span>
+                        <a href="#getLogMessage"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isApplicable(provisioningOptions: <a href="../undefineds/ProvisioningOptionsInterface.html" target="_self">ProvisioningOptionsInterface</a>)</code>
+<code>getLogMessage()</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="5"
-                                    class="link-to-prism">apps/server/src/modules/legacy-school/domain/base-provisioning-options.ts:5</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="10"
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/loggable/provisioning-strategy-no-options.loggable-exception.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -220,103 +258,10 @@
             <tr>
                 <td class="col-md-4">
 
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>provisioningOptions</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#ProvisioningOptionsInterface" target="_self" >ProvisioningOptionsInterface</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>T</code>
+                            <b>Returns : </b>        <code><a href="../classes/ValidationError.html" target="_self" >LogMessage | ErrorLogMessage | ValidationErrorLogMessage</a></code>
 
                         </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="set"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Abstract</span>
-                        <span ><b>set</b></span>
-                        <a href="#set"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>set(props: T)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">apps/server/src/modules/legacy-school/domain/base-provisioning-options.ts:17</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>props</td>
-                                            <td>
-                                                        <code>T</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
                 </td>
             </tr>
         </tbody>
@@ -327,54 +272,29 @@
 
 
 
-            <section data-compodoc="block-accessors">
-    <h3 id="accessors">
-        Accessors
-    </h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="getType"></a>
-                        <span class="name"><b>getType</b><a href="#getType"><span class="icon ion-ios-link"></span></a></span>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td class="col-md-4">
-                        <span class="accessor"><b>get</b><code>getType()</code></span>
-                    </td>
-                </tr>
-                            <tr>
-                                <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/legacy-school/domain/base-provisioning-options.ts:15</a></div>
-                                </td>
-                            </tr>
-
-            </tbody>
-        </table>
-</section>
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ProvisioningOptionsInterface } from &#x27;../interface&#x27;;
-import { ProvisioningOptionsType } from &#x27;./provisioning-options-type&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
+import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
 
-export abstract class BaseProvisioningOptions&lt;T extends ProvisioningOptionsInterface&gt; {
-	public isApplicable(provisioningOptions: ProvisioningOptionsInterface): provisioningOptions is T {
-		const expectedKeys: Set&lt;string&gt; &#x3D; new Set(Object.keys(this));
-		const actualKeys: Set&lt;string&gt; &#x3D; new Set(Object.keys(provisioningOptions));
-
-		const hasProperties: boolean &#x3D;
-			expectedKeys.size &#x3D;&#x3D;&#x3D; actualKeys.size &amp;&amp; [...expectedKeys].every((key: string) &#x3D;&gt; actualKeys.has(key));
-
-		return hasProperties;
+export class ProvisioningStrategyNoOptionsLoggableException extends UnprocessableEntityException implements Loggable {
+	constructor(private readonly provisioningStrategy: SystemProvisioningStrategy) {
+		super();
 	}
 
-	public abstract get getType(): ProvisioningOptionsType;
-
-	public abstract set(props: T): this;
+	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+		return {
+			type: &#x27;PROVISIONING_STRATEGY_NO_OPTIONS&#x27;,
+			message: &#x27;The provisioning strategy does not support options.&#x27;,
+			stack: this.stack,
+			data: {
+				provisioningStrategy: this.provisioningStrategy,
+			},
+		};
+	}
 }
 </code></pre>
     </div>
@@ -414,7 +334,7 @@ export abstract class BaseProvisioningOptions&lt;T extends ProvisioningOptionsIn
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'BaseProvisioningOptions.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'ProvisioningStrategyNoOptionsLoggableException.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

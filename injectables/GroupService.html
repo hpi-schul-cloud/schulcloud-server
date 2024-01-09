@@ -165,6 +165,11 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#findGroupsBySchoolIdAndSystemIdAndGroupType" >findGroupsBySchoolIdAndSystemIdAndGroupType</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#findGroupsByUserAndGroupTypes" >findGroupsByUserAndGroupTypes</a>
                             </li>
                             <li>
@@ -266,8 +271,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="53"
-                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:53</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="67"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:67</a></div>
                         </td>
                     </tr>
 
@@ -551,6 +556,100 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findGroupsBySchoolIdAndSystemIdAndGroupType"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>findGroupsBySchoolIdAndSystemIdAndGroupType</b></span>
+                        <a href="#findGroupsBySchoolIdAndSystemIdAndGroupType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findGroupsBySchoolIdAndSystemIdAndGroupType(schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, systemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, groupType: <a href="../undefineds/GroupTypes.html" target="_self">GroupTypes</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:47</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>schoolId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>systemId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>groupType</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#GroupTypes" target="_self" >GroupTypes</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/Group.html" target="_self" >Promise&lt;Group[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findGroupsByUserAndGroupTypes"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -652,8 +751,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:47</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -817,6 +916,20 @@ export class GroupService implements AuthorizationLoaderServiceGeneric&lt;Group&
 
 	public async findGroupsBySchoolIdAndGroupTypes(schoolId: EntityId, groupTypes: GroupTypes[]): Promise&lt;Group[]&gt; {
 		const group: Group[] &#x3D; await this.groupRepo.findBySchoolIdAndGroupTypes(schoolId, groupTypes);
+
+		return group;
+	}
+
+	public async findGroupsBySchoolIdAndSystemIdAndGroupType(
+		schoolId: EntityId,
+		systemId: EntityId,
+		groupType: GroupTypes
+	): Promise&lt;Group[]&gt; {
+		const group: Group[] &#x3D; await this.groupRepo.findGroupsBySchoolIdAndSystemIdAndGroupType(
+			schoolId,
+			systemId,
+			groupType
+		);
 
 		return group;
 	}

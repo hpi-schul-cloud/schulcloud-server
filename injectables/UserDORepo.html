@@ -158,6 +158,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#findByEmail" >findByEmail</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findByExternalId" >findByExternalId</a>
                             </li>
                             <li>
@@ -266,8 +270,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="146"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:146</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="157"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:157</a></div>
                         </td>
                     </tr>
 
@@ -385,6 +389,75 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findByEmail"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findByEmail</b></span>
+                        <a href="#findByEmail"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findByEmail(email: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="93"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:93</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>email</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;UserDO[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -760,7 +833,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:127</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:138</a></code>
 </div>
                         </td>
                     </tr>
@@ -833,7 +906,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:93</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDORepo.html#source" target="_self" >BaseDORepo:104</a></code>
 </div>
                         </td>
                     </tr>
@@ -903,8 +976,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="156"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:156</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="167"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user-do.repo.ts:167</a></div>
                         </td>
                     </tr>
 
@@ -1618,6 +1691,17 @@ export class UserDORepo extends BaseDORepo&lt;UserDO, User&gt; {
 
 		const userDo: UserDO | null &#x3D; userEntity ? this.mapEntityToDO(userEntity) : null;
 		return userDo;
+	}
+
+	async findByEmail(email: string): Promise&lt;UserDO[]&gt; {
+		// find mail case-insensitive by regex
+		const userEntitys: User[] &#x3D; await this._em.find(User, {
+			email: new RegExp(&#x60;^${email.replace(/\W/g, &#x27;\\$&amp;&#x27;)}$&#x60;, &#x27;i&#x27;),
+		});
+
+		const userDos: UserDO[] &#x3D; userEntitys.map((userEntity: User): UserDO &#x3D;&gt; this.mapEntityToDO(userEntity));
+
+		return userDos;
 	}
 
 	mapEntityToDO(entity: User): UserDO {
