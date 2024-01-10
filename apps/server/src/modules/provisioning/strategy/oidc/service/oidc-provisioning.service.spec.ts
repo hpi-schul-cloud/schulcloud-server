@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account/services/account.service';
-import { AccountSaveDto } from '@modules/account/services/dto';
+import { AccountSaveDto } from '@src/modules/account/domain';
 import { Group, GroupService, GroupTypes } from '@modules/group';
 import {
 	FederalStateService,

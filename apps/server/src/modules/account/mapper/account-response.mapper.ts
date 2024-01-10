@@ -1,4 +1,4 @@
-import { AccountDto } from '@modules/account/services/dto/account.dto';
+import { Account } from '@src/modules/account/domain/account';
 import { AccountEntity } from '@shared/domain/entity';
 import { AccountResponse } from '../controller/dto';
 
@@ -14,9 +14,9 @@ export class AccountResponseMapper {
 		});
 	}
 
-	static mapToResponse(account: AccountDto): AccountResponse {
+	static mapToResponse(account: Account): AccountResponse {
 		return new AccountResponse({
-			id: account.id,
+			id: account.id ?? '',
 			userId: account.userId,
 			activated: account.activated,
 			username: account.username,

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
-import { AccountEntityToDtoMapper } from '../mapper/account-entity-to-dto.mapper';
+import { AccountEntityToDoMapper } from '../mapper/account-entity-to-do.mapper';
 import { AccountRepo } from '../repo/account.repo';
 
 @Injectable()
@@ -14,7 +14,7 @@ export class AccountValidationService {
 		const [foundUsers, [accounts]] = await Promise.all([
 			// Test coverage: Missing branch null check; unreachable
 			this.userRepo.findByEmail(email),
-			AccountEntityToDtoMapper.mapSearchResult(await this.accountRepo.searchByUsernameExactMatch(email)),
+			AccountEntityToDoMapper.mapSearchResult(await this.accountRepo.searchByUsernameExactMatch(email)),
 		]);
 
 		const filteredAccounts = accounts.filter((foundAccount) => foundAccount.systemId === systemId);
@@ -24,7 +24,7 @@ export class AccountValidationService {
 			filteredAccounts.length > 1 ||
 			// paranoid 'toString': legacy code may call userId or accountId as ObjectID
 			(foundUsers.length === 1 && foundUsers[0].id.toString() !== userId?.toString()) ||
-			(filteredAccounts.length === 1 && filteredAccounts[0].id.toString() !== accountId?.toString())
+			(filteredAccounts.length === 1 && (filteredAccounts[0].id ?? '').toString() !== accountId?.toString())
 		);
 	}
 

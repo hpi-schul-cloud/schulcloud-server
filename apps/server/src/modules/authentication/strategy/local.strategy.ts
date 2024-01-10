@@ -1,5 +1,5 @@
 import { IdentityManagementConfig, IdentityManagementOauthService } from '@infra/identity-management';
-import { AccountDto } from '@modules/account/services/dto';
+import { Account } from '@src/modules/account/domain';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
@@ -36,10 +36,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 
 		const accountUserId = GuardAgainst.nullOrUndefined(
 			account.userId,
-			new Error(`login failing, because account ${account.id} has no userId`)
+			new Error(`login failing, because account ${account.id ?? ''} has no userId`)
 		);
 		const user = await this.userRepo.findById(accountUserId, true);
-		const currentUser = CurrentUserMapper.userToICurrentUser(account.id, user, false);
+		const currentUser = CurrentUserMapper.userToICurrentUser(account.id ?? '', user, false);
 		return currentUser;
 	}
 
@@ -54,11 +54,11 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 	private async checkCredentials(
 		enteredPassword: string,
 		savedPassword: string,
-		account: AccountDto
+		account: Account
 	): Promise<void | never> {
 		this.authenticationService.checkBrutForce(account);
 		if (!(await bcrypt.compare(enteredPassword, savedPassword))) {
-			await this.authenticationService.updateLastTriedFailedLogin(account.id);
+			await this.authenticationService.updateLastTriedFailedLogin(account.id ?? '');
 			throw new UnauthorizedException();
 		}
 	}

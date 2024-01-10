@@ -1,9 +1,9 @@
-import { PrivacyProtect } from '@shared/controller';
 import { EntityId } from '@shared/domain/types';
-import { IsBoolean, IsDate, IsMongoId, IsNotEmpty, IsOptional, IsString, Matches } from 'class-validator';
-import { passwordPattern } from '../../controller/dto/password-pattern';
+import { PrivacyProtect } from '@shared/controller';
+import { IsOptional, IsMongoId, IsDate, IsString, IsNotEmpty, Matches, IsBoolean } from 'class-validator';
+import { passwordPattern } from '../controller/dto/password-pattern';
 
-export class AccountSaveDto {
+export class Account {
 	@IsOptional()
 	@IsMongoId()
 	readonly id?: EntityId;
@@ -56,7 +56,7 @@ export class AccountSaveDto {
 	@IsOptional()
 	idmReferenceId?: string;
 
-	constructor(props: AccountSaveDto) {
+	constructor(props: Account) {
 		this.id = props.id;
 		this.createdAt = props.createdAt;
 		this.updatedAt = props.updatedAt;

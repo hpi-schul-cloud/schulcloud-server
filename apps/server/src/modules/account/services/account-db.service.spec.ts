@@ -9,10 +9,10 @@ import { EntityId } from '@shared/domain/types';
 import { accountFactory, setupEntities, userFactory } from '@shared/testing';
 import { IdentityManagementService } from '@src/infra/identity-management';
 import bcrypt from 'bcryptjs';
-import { AccountDto } from './dto';
+import { Account } from '../domain';
 
 import { LegacyLogger } from '../../../core/logger';
-import { AccountEntityToDtoMapper } from '../mapper';
+import { AccountEntityToDoMapper } from '../mapper';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountLookupService } from './account-lookup.service';
@@ -78,7 +78,7 @@ describe('AccountDbService', () => {
 		describe('when searching by Id', () => {
 			const setup = () => {
 				const mockTeacherAccount = accountFactory.buildWithId();
-				const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+				const mockTeacherAccountDto = AccountEntityToDoMapper.mapToDto(mockTeacherAccount);
 
 				mockTeacherAccountDto.username = 'changedUsername@example.org';
 				mockTeacherAccountDto.activated = false;
@@ -93,7 +93,7 @@ describe('AccountDbService', () => {
 					const { mockTeacherAccount } = setup();
 
 					const resultAccount = await accountService.findById(mockTeacherAccount.id);
-					expect(resultAccount).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+					expect(resultAccount).toEqual(AccountEntityToDoMapper.mapToDto(mockTeacherAccount));
 				},
 				10 * 60 * 1000
 			);
@@ -119,7 +119,7 @@ describe('AccountDbService', () => {
 			it('should return accountDto', async () => {
 				const { mockTeacherUser, mockTeacherAccount } = setup();
 				const resultAccount = await accountService.findByUserId(mockTeacherUser.id);
-				expect(resultAccount).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+				expect(resultAccount).toEqual(AccountEntityToDoMapper.mapToDto(mockTeacherAccount));
 			});
 		});
 
@@ -221,8 +221,8 @@ describe('AccountDbService', () => {
 			it('should return multiple accountDtos', async () => {
 				const { mockStudentUser, mockStudentAccount, mockTeacherUser, mockTeacherAccount } = setup();
 				const resultAccounts = await accountService.findMultipleByUserId([mockTeacherUser.id, mockStudentUser.id]);
-				expect(resultAccounts).toContainEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
-				expect(resultAccounts).toContainEqual(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				expect(resultAccounts).toContainEqual(AccountEntityToDoMapper.mapToDto(mockTeacherAccount));
+				expect(resultAccounts).toContainEqual(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				expect(resultAccounts).toHaveLength(2);
 			});
 		});
@@ -265,7 +265,7 @@ describe('AccountDbService', () => {
 			it('should return accountDto', async () => {
 				const { mockTeacherUser, mockTeacherAccount } = setup();
 				const resultAccount = await accountService.findByUserIdOrFail(mockTeacherUser.id);
-				expect(resultAccount).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+				expect(resultAccount).toEqual(AccountEntityToDoMapper.mapToDto(mockTeacherAccount));
 			});
 		});
 
@@ -295,7 +295,7 @@ describe('AccountDbService', () => {
 		describe('when update an existing account', () => {
 			const setup = () => {
 				const mockTeacherAccount = accountFactory.buildWithId();
-				const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+				const mockTeacherAccountDto = AccountEntityToDoMapper.mapToDto(mockTeacherAccount);
 
 				mockTeacherAccountDto.username = 'changedUsername@example.org';
 				mockTeacherAccountDto.activated = false;
@@ -325,7 +325,7 @@ describe('AccountDbService', () => {
 		describe("when update an existing account's system", () => {
 			const setup = () => {
 				const mockTeacherAccount = accountFactory.buildWithId();
-				const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+				const mockTeacherAccountDto = AccountEntityToDoMapper.mapToDto(mockTeacherAccount);
 
 				mockTeacherAccountDto.username = 'changedUsername@example.org';
 				mockTeacherAccountDto.systemId = '123456789012';
@@ -354,7 +354,7 @@ describe('AccountDbService', () => {
 			const setup = () => {
 				const mockTeacherAccount = accountFactory.buildWithId();
 				const mockStudentUser = accountFactory.buildWithId();
-				const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+				const mockTeacherAccountDto = AccountEntityToDoMapper.mapToDto(mockTeacherAccount);
 
 				mockTeacherAccountDto.username = 'changedUsername@example.org';
 				mockTeacherAccountDto.userId = mockStudentUser.id;
@@ -382,7 +382,7 @@ describe('AccountDbService', () => {
 		describe("when existing account's system is undefined", () => {
 			const setup = () => {
 				const mockTeacherAccount = accountFactory.buildWithId();
-				const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+				const mockTeacherAccountDto = AccountEntityToDoMapper.mapToDto(mockTeacherAccount);
 
 				mockTeacherAccountDto.username = 'changedUsername@example.org';
 				mockTeacherAccountDto.systemId = undefined;
@@ -412,14 +412,14 @@ describe('AccountDbService', () => {
 			const setup = () => {
 				const mockUserWithoutAccount = userFactory.buildWithId();
 
-				const accountToSave: AccountDto = {
+				const accountToSave: Account = {
 					createdAt: new Date(),
 					updatedAt: new Date(),
 					username: 'asdf@asdf.de',
 					userId: mockUserWithoutAccount.id,
 					systemId: '012345678912',
 					password: defaultPassword,
-				} as AccountDto;
+				} as Account;
 				(accountRepo.findById as jest.Mock).mockClear();
 				(accountRepo.save as jest.Mock).mockClear();
 
@@ -444,13 +444,13 @@ describe('AccountDbService', () => {
 			const setup = () => {
 				const mockUserWithoutAccount = userFactory.buildWithId();
 
-				const accountToSave: AccountDto = {
+				const accountToSave: Account = {
 					createdAt: new Date(),
 					updatedAt: new Date(),
 					username: 'asdf@asdf.de',
 					userId: mockUserWithoutAccount.id,
 					password: defaultPassword,
-				} as AccountDto;
+				} as Account;
 				(accountRepo.findById as jest.Mock).mockClear();
 				(accountRepo.save as jest.Mock).mockClear();
 
@@ -478,7 +478,7 @@ describe('AccountDbService', () => {
 					userId: mockUserWithoutAccount.id,
 					systemId: '012345678912',
 					password: defaultPassword,
-				} as AccountDto;
+				} as Account;
 				(accountRepo.findById as jest.Mock).mockClear();
 				(accountRepo.save as jest.Mock).mockClear();
 
@@ -502,7 +502,7 @@ describe('AccountDbService', () => {
 				const dto = {
 					username: 'john.doe@domain.tld',
 					password: '',
-				} as AccountDto;
+				} as Account;
 				(accountRepo.findById as jest.Mock).mockClear();
 				(accountRepo.save as jest.Mock).mockClear();
 
@@ -529,7 +529,7 @@ describe('AccountDbService', () => {
 				const dto = {
 					id: mockTeacherAccount.id,
 					password: undefined,
-				} as AccountDto;
+				} as Account;
 
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
 				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id);
@@ -554,7 +554,7 @@ describe('AccountDbService', () => {
 		describe('when updating username', () => {
 			const setup = () => {
 				const mockTeacherAccount = accountFactory.buildWithId();
-				const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+				const mockTeacherAccountDto = AccountEntityToDoMapper.mapToDto(mockTeacherAccount);
 				const newUsername = 'newUsername';
 
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
@@ -578,7 +578,7 @@ describe('AccountDbService', () => {
 		describe('when update last failed Login', () => {
 			const setup = () => {
 				const mockTeacherAccount = accountFactory.buildWithId();
-				const mockTeacherAccountDto = AccountEntityToDtoMapper.mapToDto(mockTeacherAccount);
+				const mockTeacherAccountDto = AccountEntityToDoMapper.mapToDto(mockTeacherAccount);
 				const theNewDate = new Date();
 
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
@@ -603,7 +603,7 @@ describe('AccountDbService', () => {
 		describe('when accepted Password', () => {
 			const setup = async () => {
 				const ret = await accountService.validatePassword(
-					{ password: await bcrypt.hash(defaultPassword, 10) } as unknown as AccountDto,
+					{ password: await bcrypt.hash(defaultPassword, 10) } as unknown as Account,
 					defaultPassword
 				);
 
@@ -619,7 +619,7 @@ describe('AccountDbService', () => {
 		describe('when wrong Password', () => {
 			const setup = async () => {
 				const ret = await accountService.validatePassword(
-					{ password: await bcrypt.hash(defaultPassword, 10) } as unknown as AccountDto,
+					{ password: await bcrypt.hash(defaultPassword, 10) } as unknown as Account,
 					'incorrectPwd'
 				);
 
@@ -634,7 +634,7 @@ describe('AccountDbService', () => {
 
 		describe('when missing account password', () => {
 			const setup = async () => {
-				const ret = await accountService.validatePassword({ password: undefined } as AccountDto, 'incorrectPwd');
+				const ret = await accountService.validatePassword({ password: undefined } as Account, 'incorrectPwd');
 
 				return { ret };
 			};
@@ -756,7 +756,7 @@ describe('AccountDbService', () => {
 				expect(accountRepo.searchByUsernamePartialMatch).toHaveBeenCalledWith(partialUserName, skip, limit);
 				expect(total).toBe(mockAccounts.length);
 
-				expect(accounts[0]).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+				expect(accounts[0]).toEqual(AccountEntityToDoMapper.mapToDto(mockTeacherAccount));
 			});
 		});
 	});
@@ -776,7 +776,7 @@ describe('AccountDbService', () => {
 				const [accounts, total] = await accountService.searchByUsernameExactMatch(partialUserName);
 				expect(accountRepo.searchByUsernameExactMatch).toHaveBeenCalledWith(partialUserName);
 				expect(total).toBe(1);
-				expect(accounts[0]).toEqual(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+				expect(accounts[0]).toEqual(AccountEntityToDoMapper.mapToDto(mockTeacherAccount));
 			});
 		});
 	});

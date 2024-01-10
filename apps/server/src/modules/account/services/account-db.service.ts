@@ -4,11 +4,11 @@ import { EntityNotFoundError } from '@shared/common';
 import { AccountEntity } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import bcrypt from 'bcryptjs';
-import { AccountEntityToDtoMapper } from '../mapper';
+import { AccountEntityToDoMapper } from '../mapper';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
-import { AccountDto, AccountSaveDto } from './dto';
+import { Account } from '../domain';
 
 // HINT: do more empty lines :)
 
@@ -18,33 +18,33 @@ export class AccountServiceDb extends AbstractAccountService {
 		super();
 	}
 
-	async findById(id: EntityId): Promise<AccountDto> {
+	async findById(id: EntityId): Promise<Account> {
 		const internalId = await this.getInternalId(id);
 		const accountEntity = await this.accountRepo.findById(internalId);
-		return AccountEntityToDtoMapper.mapToDto(accountEntity);
+		return AccountEntityToDoMapper.mapToDto(accountEntity);
 	}
 
-	async findMultipleByUserId(userIds: EntityId[]): Promise<AccountDto[]> {
+	async findMultipleByUserId(userIds: EntityId[]): Promise<Account[]> {
 		const accountEntities = await this.accountRepo.findMultipleByUserId(userIds);
-		return AccountEntityToDtoMapper.mapAccountsToDto(accountEntities);
+		return AccountEntityToDoMapper.mapAccountsToDto(accountEntities);
 	}
 
-	async findByUserId(userId: EntityId): Promise<AccountDto | null> {
+	async findByUserId(userId: EntityId): Promise<Account | null> {
 		const accountEntity = await this.accountRepo.findByUserId(userId);
-		return accountEntity ? AccountEntityToDtoMapper.mapToDto(accountEntity) : null;
+		return accountEntity ? AccountEntityToDoMapper.mapToDto(accountEntity) : null;
 	}
 
-	async findByUserIdOrFail(userId: EntityId): Promise<AccountDto> {
+	async findByUserIdOrFail(userId: EntityId): Promise<Account> {
 		const accountEntity = await this.accountRepo.findByUserIdOrFail(userId);
-		return AccountEntityToDtoMapper.mapToDto(accountEntity);
+		return AccountEntityToDoMapper.mapToDto(accountEntity);
 	}
 
-	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<AccountDto | null> {
+	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account | null> {
 		const accountEntity = await this.accountRepo.findByUsernameAndSystemId(username, systemId);
-		return accountEntity ? AccountEntityToDtoMapper.mapToDto(accountEntity) : null;
+		return accountEntity ? AccountEntityToDoMapper.mapToDto(accountEntity) : null;
 	}
 
-	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
+	async save(accountDto: Account): Promise<Account> {
 		let account: AccountEntity;
 		// HINT: mapping could be done by a mapper (though this whole file is subject to be removed in the future)
 		// HINT: today we have logic to map back into unit work in the baseDO
@@ -79,32 +79,32 @@ export class AccountServiceDb extends AbstractAccountService {
 
 			await this.accountRepo.save(account); // HINT: this can be done once in the end
 		}
-		return AccountEntityToDtoMapper.mapToDto(account);
+		return AccountEntityToDoMapper.mapToDto(account);
 	}
 
-	async updateUsername(accountId: EntityId, username: string): Promise<AccountDto> {
+	async updateUsername(accountId: EntityId, username: string): Promise<Account> {
 		const internalId = await this.getInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.username = username;
 		await this.accountRepo.save(account);
-		return AccountEntityToDtoMapper.mapToDto(account);
+		return AccountEntityToDoMapper.mapToDto(account);
 	}
 
-	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<AccountDto> {
+	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<Account> {
 		const internalId = await this.getInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.lasttriedFailedLogin = lastTriedFailedLogin;
 		await this.accountRepo.save(account);
-		return AccountEntityToDtoMapper.mapToDto(account);
+		return AccountEntityToDoMapper.mapToDto(account);
 	}
 
-	async updatePassword(accountId: EntityId, password: string): Promise<AccountDto> {
+	async updatePassword(accountId: EntityId, password: string): Promise<Account> {
 		const internalId = await this.getInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.password = await this.encryptPassword(password);
 
 		await this.accountRepo.save(account);
-		return AccountEntityToDtoMapper.mapToDto(account);
+		return AccountEntityToDoMapper.mapToDto(account);
 	}
 
 	async delete(id: EntityId): Promise<void> {
@@ -116,17 +116,17 @@ export class AccountServiceDb extends AbstractAccountService {
 		return this.accountRepo.deleteByUserId(userId);
 	}
 
-	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<AccountDto[]>> {
+	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>> {
 		const accountEntities = await this.accountRepo.searchByUsernamePartialMatch(userName, skip, limit);
-		return AccountEntityToDtoMapper.mapSearchResult(accountEntities);
+		return AccountEntityToDoMapper.mapSearchResult(accountEntities);
 	}
 
-	async searchByUsernameExactMatch(userName: string): Promise<Counted<AccountDto[]>> {
+	async searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
 		const accountEntities = await this.accountRepo.searchByUsernameExactMatch(userName);
-		return AccountEntityToDtoMapper.mapSearchResult(accountEntities);
+		return AccountEntityToDoMapper.mapSearchResult(accountEntities);
 	}
 
-	validatePassword(account: AccountDto, comparePassword: string): Promise<boolean> {
+	validatePassword(account: Account, comparePassword: string): Promise<boolean> {
 		if (!account.password) {
 			return Promise.resolve(false);
 		}
@@ -145,7 +145,7 @@ export class AccountServiceDb extends AbstractAccountService {
 		return bcrypt.hash(password, 10);
 	}
 
-	async findMany(offset = 0, limit = 100): Promise<AccountDto[]> {
-		return AccountEntityToDtoMapper.mapAccountsToDto(await this.accountRepo.findMany(offset, limit));
+	async findMany(offset = 0, limit = 100): Promise<Account[]> {
+		return AccountEntityToDoMapper.mapAccountsToDto(await this.accountRepo.findMany(offset, limit));
 	}
 }

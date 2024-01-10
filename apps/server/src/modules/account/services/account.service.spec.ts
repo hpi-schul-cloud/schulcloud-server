@@ -7,7 +7,7 @@ import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AccountValidationService } from './account.validation.service';
-import { AccountDto, AccountSaveDto } from './dto';
+import { Account } from '../domain';
 
 describe('AccountService', () => {
 	let module: TestingModule;
@@ -171,7 +171,7 @@ describe('AccountService', () => {
 	describe('save', () => {
 		describe('When calling save in accountService', () => {
 			it('should call save in accountServiceDb', async () => {
-				await expect(accountService.save({} as AccountSaveDto)).resolves.not.toThrow();
+				await expect(accountService.save({} as Account)).resolves.not.toThrow();
 				expect(accountServiceDb.save).toHaveBeenCalledTimes(1);
 			});
 		});
@@ -182,7 +182,7 @@ describe('AccountService', () => {
 			it('should call save in accountServiceIdm', async () => {
 				setup();
 
-				await expect(accountService.save({} as AccountSaveDto)).resolves.not.toThrow();
+				await expect(accountService.save({} as Account)).resolves.not.toThrow();
 				expect(accountServiceIdm.save).toHaveBeenCalledTimes(1);
 			});
 		});
@@ -193,7 +193,7 @@ describe('AccountService', () => {
 			it('should not call save in accountServiceIdm', async () => {
 				setup();
 
-				await expect(accountService.save({} as AccountSaveDto)).resolves.not.toThrow();
+				await expect(accountService.save({} as Account)).resolves.not.toThrow();
 				expect(accountServiceIdm.save).not.toHaveBeenCalled();
 			});
 		});
@@ -219,7 +219,7 @@ describe('AccountService', () => {
 			it('should not sanitize username for external user', async () => {
 				const spy = setup();
 
-				const params: AccountSaveDto = {
+				const params: Account = {
 					username: ' John.Doe@domain.tld ',
 					systemId: 'ABC123',
 				};
@@ -235,7 +235,7 @@ describe('AccountService', () => {
 
 		describe('When username for a local user is not an email', () => {
 			it('should throw username is not an email error', async () => {
-				const params: AccountSaveDto = {
+				const params: Account = {
 					username: 'John Doe',
 					password: 'JohnsPassword',
 				};
@@ -245,7 +245,7 @@ describe('AccountService', () => {
 
 		describe('When username for an external user is not an email', () => {
 			it('should not throw an error', async () => {
-				const params: AccountSaveDto = {
+				const params: Account = {
 					username: 'John Doe',
 					systemId: 'ABC123',
 				};
@@ -255,7 +255,7 @@ describe('AccountService', () => {
 
 		describe('When username for an external user is a ldap search string', () => {
 			it('should not throw an error', async () => {
-				const params: AccountSaveDto = {
+				const params: Account = {
 					username: 'dc=schul-cloud,dc=org/fake.ldap',
 					systemId: 'ABC123',
 				};
@@ -265,7 +265,7 @@ describe('AccountService', () => {
 
 		describe('When no password is provided for an internal user', () => {
 			it('should throw no password provided error', async () => {
-				const params: AccountSaveDto = {
+				const params: Account = {
 					username: 'john.doe@mail.tld',
 				};
 				await expect(accountService.saveWithValidation(params)).rejects.toThrow('No password provided');
@@ -274,12 +274,12 @@ describe('AccountService', () => {
 
 		describe('When account already exists', () => {
 			it('should throw account already exists', async () => {
-				const params: AccountSaveDto = {
+				const params: Account = {
 					username: 'john.doe@mail.tld',
 					password: 'JohnsPassword',
 					userId: 'userId123',
 				};
-				accountServiceDb.findByUserId.mockResolvedValueOnce({ id: 'foundAccount123' } as AccountDto);
+				accountServiceDb.findByUserId.mockResolvedValueOnce({ id: 'foundAccount123' } as Account);
 				await expect(accountService.saveWithValidation(params)).rejects.toThrow('Account already exists');
 			});
 		});
@@ -290,7 +290,7 @@ describe('AccountService', () => {
 			};
 			it('should throw username already exists', async () => {
 				setup();
-				const params: AccountSaveDto = {
+				const params: Account = {
 					username: 'john.doe@mail.tld',
 					password: 'JohnsPassword',
 				};
@@ -427,7 +427,7 @@ describe('AccountService', () => {
 	describe('validatePassword', () => {
 		describe('When calling validatePassword in accountService', () => {
 			it('should call validatePassword in accountServiceDb', async () => {
-				await expect(accountService.validatePassword({} as AccountDto, 'password')).resolves.not.toThrow();
+				await expect(accountService.validatePassword({} as Account, 'password')).resolves.not.toThrow();
 				expect(accountServiceIdm.validatePassword).toHaveBeenCalledTimes(0);
 				expect(accountServiceDb.validatePassword).toHaveBeenCalledTimes(1);
 			});
@@ -440,7 +440,7 @@ describe('AccountService', () => {
 			};
 			it('should call validatePassword in accountServiceIdm', async () => {
 				const service = setup();
-				await expect(service.validatePassword({} as AccountDto, 'password')).resolves.not.toThrow();
+				await expect(service.validatePassword({} as Account, 'password')).resolves.not.toThrow();
 				expect(accountServiceDb.validatePassword).toHaveBeenCalledTimes(0);
 				expect(accountServiceIdm.validatePassword).toHaveBeenCalledTimes(1);
 			});

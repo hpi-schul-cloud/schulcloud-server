@@ -11,7 +11,7 @@ import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
-import { AccountDto, AccountSaveDto } from './dto';
+import { Account } from '../domain';
 
 /* TODO: extract a service that contains all things required by feathers,
 which is responsible for the additionally required validation 
@@ -38,52 +38,52 @@ export class AccountService extends AbstractAccountService {
 		}
 	}
 
-	async findById(id: string): Promise<AccountDto> {
+	async findById(id: string): Promise<Account> {
 		return this.accountImpl.findById(id);
 	}
 
-	async findMultipleByUserId(userIds: string[]): Promise<AccountDto[]> {
+	async findMultipleByUserId(userIds: string[]): Promise<Account[]> {
 		return this.accountImpl.findMultipleByUserId(userIds);
 	}
 
-	async findByUserId(userId: string): Promise<AccountDto | null> {
+	async findByUserId(userId: string): Promise<Account | null> {
 		return this.accountImpl.findByUserId(userId);
 	}
 
-	async findByUserIdOrFail(userId: string): Promise<AccountDto> {
+	async findByUserIdOrFail(userId: string): Promise<Account> {
 		return this.accountImpl.findByUserIdOrFail(userId);
 	}
 
-	async findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise<AccountDto | null> {
+	async findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise<Account | null> {
 		return this.accountImpl.findByUsernameAndSystemId(username, systemId);
 	}
 
-	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<AccountDto[]>> {
+	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>> {
 		return this.accountImpl.searchByUsernamePartialMatch(userName, skip, limit);
 	}
 
-	async searchByUsernameExactMatch(userName: string): Promise<Counted<AccountDto[]>> {
+	async searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
 		return this.accountImpl.searchByUsernameExactMatch(userName);
 	}
 
-	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
+	async save(accountDto: Account): Promise<Account> {
 		const ret = await this.accountDb.save(accountDto);
-		const newAccount: AccountSaveDto = {
+		const newAccount: Account = {
 			...accountDto,
 			id: accountDto.id,
 			idmReferenceId: ret.id,
 			password: accountDto.password,
 		};
 		const idmAccount = await this.executeIdmMethod(async () => {
-			this.logger.debug(`Saving account with accountID ${ret.id} ...`);
+			this.logger.debug(`Saving account with accountID ${ret.id ?? 'undefined'} ...`);
 			const account = await this.accountIdm.save(newAccount);
-			this.logger.debug(`Saved account with accountID ${ret.id}`);
+			this.logger.debug(`Saved account with accountID ${ret.id ?? 'undefined'}`);
 			return account;
 		});
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
-	async saveWithValidation(dto: AccountSaveDto): Promise<void> {
+	async saveWithValidation(dto: Account): Promise<void> {
 		// TODO: move as much as possible into the class validator
 		await validateOrReject(dto);
 		// sanatizeUsername ✔
@@ -119,7 +119,7 @@ export class AccountService extends AbstractAccountService {
 		await this.save(dto);
 	}
 
-	async updateUsername(accountId: string, username: string): Promise<AccountDto> {
+	async updateUsername(accountId: string, username: string): Promise<Account> {
 		const ret = await this.accountDb.updateUsername(accountId, username);
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(`Updating username for account with accountID ${accountId} ...`);
@@ -130,7 +130,7 @@ export class AccountService extends AbstractAccountService {
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
-	async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<AccountDto> {
+	async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<Account> {
 		const ret = await this.accountDb.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(`Updating last tried failed login for account with accountID ${accountId} ...`);
@@ -141,7 +141,7 @@ export class AccountService extends AbstractAccountService {
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
-	async updatePassword(accountId: string, password: string): Promise<AccountDto> {
+	async updatePassword(accountId: string, password: string): Promise<Account> {
 		const ret = await this.accountDb.updatePassword(accountId, password);
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(`Updating password for account with accountID ${accountId} ...`);
@@ -152,7 +152,7 @@ export class AccountService extends AbstractAccountService {
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
-	async validatePassword(account: AccountDto, comparePassword: string): Promise<boolean> {
+	async validatePassword(account: Account, comparePassword: string): Promise<boolean> {
 		return this.accountImpl.validatePassword(account, comparePassword);
 	}
 
@@ -177,7 +177,7 @@ export class AccountService extends AbstractAccountService {
 	/**
 	 * @deprecated For migration purpose only
 	 */
-	async findMany(offset = 0, limit = 100): Promise<AccountDto[]> {
+	async findMany(offset = 0, limit = 100): Promise<Account[]> {
 		return this.accountDb.findMany(offset, limit);
 	}
 

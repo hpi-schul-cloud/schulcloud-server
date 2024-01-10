@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AccountService } from '@modules/account/services/account.service';
-import { AccountDto } from '@modules/account/services/dto';
+import { Account } from '@src/modules/account/domain';
 import { ICurrentUser } from '@modules/authentication';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -21,7 +21,7 @@ describe('AuthenticationService', () => {
 	let accountService: DeepMocked<AccountService>;
 	let jwtService: DeepMocked<JwtService>;
 
-	const mockAccount: AccountDto = {
+	const mockAccount: Account = {
 		id: 'mockAccountId',
 		createdAt: new Date(),
 		updatedAt: new Date(),
@@ -146,14 +146,14 @@ describe('AuthenticationService', () => {
 			it('should fail for account with recently failed login', () => {
 				const lasttriedFailedLogin = setup(14);
 				expect(() =>
-					authenticationService.checkBrutForce({ id: 'mockAccountId', lasttriedFailedLogin } as AccountDto)
+					authenticationService.checkBrutForce({ id: 'mockAccountId', lasttriedFailedLogin } as Account)
 				).toThrow(BruteForceError);
 			});
 
 			it('should not fail for account with failed login above threshold', () => {
 				const lasttriedFailedLogin = setup(16);
 				expect(() =>
-					authenticationService.checkBrutForce({ id: 'mockAccountId', lasttriedFailedLogin } as AccountDto)
+					authenticationService.checkBrutForce({ id: 'mockAccountId', lasttriedFailedLogin } as Account)
 				).not.toThrow();
 			});
 		});

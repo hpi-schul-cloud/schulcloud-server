@@ -1,12 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { IdmAccount } from '@shared/domain/interface';
-import { AccountDto } from '../services/dto';
-import { AccountIdmToDtoMapper } from './account-idm-to-dto.mapper.abstract';
-import { AccountIdmToDtoMapperIdm } from './account-idm-to-dto.mapper.idm';
+import { Account } from '../domain';
+import { AccountIdmToDoMapper } from './account-idm-to-do.mapper.abstract';
+import { AccountIdmToDoMapperIdm } from './account-idm-to-do.mapper.idm';
 
-describe('AccountIdmToDtoMapperIdm', () => {
+describe('AccountIdmToDoMapperIdm', () => {
 	let module: TestingModule;
-	let mapper: AccountIdmToDtoMapper;
+	let mapper: AccountIdmToDoMapper;
 
 	const now: Date = new Date(2022, 1, 22);
 
@@ -14,13 +14,13 @@ describe('AccountIdmToDtoMapperIdm', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				{
-					provide: AccountIdmToDtoMapper,
-					useClass: AccountIdmToDtoMapperIdm,
+					provide: AccountIdmToDoMapper,
+					useClass: AccountIdmToDoMapperIdm,
 				},
 			],
 		}).compile();
 
-		mapper = module.get(AccountIdmToDtoMapper);
+		mapper = module.get(AccountIdmToDoMapper);
 
 		jest.useFakeTimers();
 		jest.setSystemTime(now);
@@ -53,7 +53,7 @@ describe('AccountIdmToDtoMapperIdm', () => {
 				const ret = mapper.mapToDto(testIdmEntity);
 
 				expect(ret).toEqual(
-					expect.objectContaining<Partial<AccountDto>>({
+					expect.objectContaining<Partial<Account>>({
 						id: testIdmEntity.id,
 						idmReferenceId: undefined,
 						userId: testIdmEntity.attDbcUserId,

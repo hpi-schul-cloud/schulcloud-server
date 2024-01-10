@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account/services/account.service';
-import { AccountDto } from '@modules/account/services/dto';
+import { Account } from '@src/modules/account/domain';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
@@ -83,7 +83,7 @@ describe(UserMigrationService.name, () => {
 
 				const accountId = new ObjectId().toHexString();
 				const sourceSystemId = new ObjectId().toHexString();
-				const accountDto: AccountDto = new AccountDto({
+				const accountDto: Account = new Account({
 					id: accountId,
 					updatedAt: new Date(),
 					createdAt: new Date(),
@@ -169,7 +169,7 @@ describe(UserMigrationService.name, () => {
 
 				const accountId = new ObjectId().toHexString();
 				const sourceSystemId = new ObjectId().toHexString();
-				const accountDto: AccountDto = new AccountDto({
+				const accountDto: Account = new Account({
 					id: accountId,
 					updatedAt: new Date(),
 					createdAt: new Date(),

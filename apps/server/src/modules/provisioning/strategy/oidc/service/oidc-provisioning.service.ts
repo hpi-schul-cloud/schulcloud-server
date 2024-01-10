@@ -1,4 +1,4 @@
-import { AccountSaveDto, AccountService } from '@modules/account';
+import { AccountService } from '@modules/account';
 import { Group, GroupService, GroupTypes, GroupUser } from '@modules/group';
 import {
 	FederalStateService,
@@ -17,6 +17,7 @@ import { ExternalSource, LegacySchoolDo, RoleReference, UserDO } from '@shared/d
 import { FederalStateEntity, SchoolYearEntity } from '@shared/domain/entity';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
+import { Account } from '@src/modules/account/domain';
 import { ObjectId } from 'bson';
 import CryptoJS from 'crypto-js';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../../dto';
@@ -128,7 +129,7 @@ export class OidcProvisioningService {
 
 		if (createNewAccount) {
 			await this.accountService.saveWithValidation(
-				new AccountSaveDto({
+				new Account({
 					userId: savedUser.id,
 					username: CryptoJS.SHA256(savedUser.id as string).toString(CryptoJS.enc.Base64),
 					systemId,

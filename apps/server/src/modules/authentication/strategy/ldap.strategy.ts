@@ -1,4 +1,4 @@
-import { AccountDto } from '@modules/account/services/dto';
+import { Account } from '@src/modules/account/domain';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
@@ -37,7 +37,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 			throw new UnauthorizedException(`School ${schoolId} does not have the selected system ${systemId}`);
 		}
 
-		const account: AccountDto = await this.loadAccount(username, system.id, school);
+		const account: Account = await this.loadAccount(username, system.id, school);
 
 		const userId: string = this.checkValue(account.userId);
 
@@ -49,7 +49,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 
 		await this.checkCredentials(account, system, ldapDn, password);
 
-		const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(account.id, user, true, systemId);
+		const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(account.id ?? '', user, true, systemId);
 
 		return currentUser;
 	}
@@ -74,7 +74,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 	}
 
 	private async checkCredentials(
-		account: AccountDto,
+		account: Account,
 		system: SystemEntity,
 		ldapDn: string,
 		password: string
@@ -83,16 +83,16 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 			await this.ldapService.checkLdapCredentials(system, ldapDn, password);
 		} catch (error) {
 			if (error instanceof UnauthorizedException) {
-				await this.authenticationService.updateLastTriedFailedLogin(account.id);
+				await this.authenticationService.updateLastTriedFailedLogin(account.id ?? '');
 			}
 			throw error;
 		}
 	}
 
-	private async loadAccount(username: string, systemId: string, school: LegacySchoolDo): Promise<AccountDto> {
+	private async loadAccount(username: string, systemId: string, school: LegacySchoolDo): Promise<Account> {
 		const externalSchoolId = this.checkValue(school.externalId);
 
-		let account: AccountDto;
+		let account: Account;
 
 		// TODO having to check for two values in order to find an account is not optimal and should be changed.
 		// The way the name field of Accounts is used for LDAP should be reconsidered, since

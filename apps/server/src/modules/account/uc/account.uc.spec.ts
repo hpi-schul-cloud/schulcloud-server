@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 
+import { faker } from '@faker-js/faker';
 import { AccountEntity, Role, SchoolRolePermission, SchoolRoles, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { PermissionService } from '@shared/domain/service';
@@ -12,7 +13,7 @@ import { UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import { BruteForcePrevention } from '@src/imports-from-feathers';
 import { ObjectId } from 'bson';
-import { AccountDto, AccountSaveDto, AccountService } from '..';
+import { AccountService } from '..';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
@@ -20,10 +21,10 @@ import {
 	AccountSearchQueryParams,
 	AccountSearchType,
 } from '../controller/dto';
-import { AccountEntityToDtoMapper, AccountResponseMapper } from '../mapper';
+import { AccountEntityToDoMapper, AccountResponseMapper } from '../mapper';
 import { AccountValidationService } from '../services/account.validation.service';
 import { AccountUc } from './account.uc';
-import { faker } from '@faker-js/faker';
+import { Account } from '../domain';
 
 describe('AccountUc', () => {
 	let module: TestingModule;
@@ -111,7 +112,7 @@ describe('AccountUc', () => {
 					],
 				});
 
-				accountService.findByUserIdOrFail.mockImplementation((): Promise<AccountDto> => {
+				accountService.findByUserIdOrFail.mockImplementation((): Promise<Account> => {
 					throw new EntityNotFoundError(AccountEntity.name);
 				});
 
@@ -143,7 +144,7 @@ describe('AccountUc', () => {
 				});
 
 				accountService.findByUserIdOrFail.mockResolvedValueOnce(
-					AccountEntityToDtoMapper.mapToDto(mockExternalUserAccount)
+					AccountEntityToDoMapper.mapToDto(mockExternalUserAccount)
 				);
 
 				return { mockExternalUserAccount };
@@ -173,7 +174,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				accountService.validatePassword.mockResolvedValueOnce(false);
 
 				return { mockStudentUser };
@@ -202,7 +203,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValue(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				accountService.validatePassword.mockResolvedValue(true);
 
 				return { mockStudentUser };
@@ -238,7 +239,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValue(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				accountService.validatePassword.mockResolvedValue(true);
 
 				return { mockStudentUser };
@@ -267,7 +268,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValue(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				accountService.validatePassword.mockResolvedValue(true);
 				accountValidationService.isUniqueEmail.mockResolvedValueOnce(true);
 				const accountSaveSpy = jest.spyOn(accountService, 'save');
@@ -302,7 +303,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValue(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				accountService.validatePassword.mockResolvedValue(true);
 				accountValidationService.isUniqueEmail.mockResolvedValueOnce(true);
 
@@ -336,7 +337,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValue(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				accountService.validatePassword.mockResolvedValue(true);
 				accountValidationService.isUniqueEmail.mockResolvedValueOnce(true);
 
@@ -373,7 +374,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValue(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				accountService.validatePassword.mockResolvedValue(true);
 				accountValidationService.isUniqueEmail.mockResolvedValueOnce(false);
 
@@ -404,7 +405,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValue(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				accountService.validatePassword.mockResolvedValue(true);
 
 				return { mockStudentUser };
@@ -440,7 +441,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValue(mockTeacherUser);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockTeacherAccount));
 				accountService.validatePassword.mockResolvedValue(true);
 
 				return { mockTeacherUser };
@@ -491,7 +492,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValue(mockAdminUser);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDtoMapper.mapToDto(mockAdminAccount));
+				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockAdminAccount));
 				accountService.validatePassword.mockResolvedValue(true);
 
 				return { mockAdminUser };
@@ -532,7 +533,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValue(mockSuperheroUser);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDtoMapper.mapToDto(mockSuperheroAccount));
+				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockSuperheroAccount));
 				accountService.validatePassword.mockResolvedValue(true);
 
 				return { mockSuperheroUser };
@@ -574,7 +575,7 @@ describe('AccountUc', () => {
 
 				userRepo.findById.mockResolvedValue(mockTeacherUser);
 				userRepo.save.mockRejectedValueOnce(undefined);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockTeacherAccount));
 				accountService.validatePassword.mockResolvedValue(true);
 
 				return { mockTeacherUser, mockTeacherAccount };
@@ -605,7 +606,7 @@ describe('AccountUc', () => {
 
 				userRepo.findById.mockResolvedValue(mockStudentUser);
 				userRepo.save.mockResolvedValueOnce(undefined);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				accountService.validatePassword.mockResolvedValue(true);
 				accountService.save.mockRejectedValueOnce(undefined);
 
@@ -639,7 +640,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValue(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				accountService.validatePassword.mockResolvedValue(true);
 				const spyAccountServiceSave = jest.spyOn(accountService, 'save');
 
@@ -729,7 +730,7 @@ describe('AccountUc', () => {
 
 				userRepo.findById.mockResolvedValueOnce(mockExternalUser);
 				accountService.findByUserIdOrFail.mockResolvedValueOnce(
-					AccountEntityToDtoMapper.mapToDto(mockExternalUserAccount)
+					AccountEntityToDoMapper.mapToDto(mockExternalUserAccount)
 				);
 
 				return { mockExternalUserAccount };
@@ -762,7 +763,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 
 				return { mockStudentAccount };
 			};
@@ -795,7 +796,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				accountService.validatePassword.mockResolvedValueOnce(true);
 
 				return { mockStudentAccount };
@@ -829,7 +830,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				accountService.validatePassword.mockResolvedValueOnce(true);
 
 				return { mockStudentAccount };
@@ -862,7 +863,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				accountService.validatePassword.mockResolvedValueOnce(false);
 				return { mockStudentAccount };
 			};
@@ -895,7 +896,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				accountService.validatePassword.mockResolvedValueOnce(false);
 
 				return { mockStudentAccount };
@@ -930,7 +931,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				accountService.validatePassword.mockResolvedValueOnce(false);
 
 				return { mockStudentAccount };
@@ -966,7 +967,7 @@ describe('AccountUc', () => {
 
 				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
 				userRepo.save.mockRejectedValueOnce(undefined);
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				accountService.validatePassword.mockResolvedValueOnce(false);
 
 				return { mockStudentAccount };
@@ -1002,7 +1003,7 @@ describe('AccountUc', () => {
 
 				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
 				userRepo.save.mockResolvedValueOnce();
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				accountService.save.mockRejectedValueOnce(undefined);
 				accountService.validatePassword.mockResolvedValueOnce(false);
 
@@ -1050,7 +1051,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser).mockResolvedValueOnce(mockStudentUser);
-				accountService.findByUserId.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findByUserId.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 
 				return { mockSuperheroUser, mockStudentUser, mockStudentAccount };
 			};
@@ -1132,10 +1133,7 @@ describe('AccountUc', () => {
 
 				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser).mockResolvedValueOnce(mockSuperheroUser);
 				accountService.searchByUsernamePartialMatch.mockResolvedValueOnce([
-					[
-						AccountEntityToDtoMapper.mapToDto(mockStudentAccount),
-						AccountEntityToDtoMapper.mapToDto(mockStudentAccount),
-					],
+					[AccountEntityToDoMapper.mapToDto(mockStudentAccount), AccountEntityToDoMapper.mapToDto(mockStudentAccount)],
 					2,
 				]);
 
@@ -1963,7 +1961,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser);
-				accountService.findById.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 
 				return { mockSuperheroUser, mockStudentUser, mockStudentAccount };
 			};
@@ -2036,7 +2034,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser);
-				accountService.findById.mockImplementation((): Promise<AccountDto> => {
+				accountService.findById.mockImplementation((): Promise<Account> => {
 					throw new EntityNotFoundError(AccountEntity.name);
 				});
 
@@ -2068,7 +2066,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser);
-				accountService.findById.mockImplementation((): Promise<AccountDto> => {
+				accountService.findById.mockImplementation((): Promise<Account> => {
 					throw new EntityNotFoundError(AccountEntity.name);
 				});
 
@@ -2096,7 +2094,7 @@ describe('AccountUc', () => {
 			it('should call account service', async () => {
 				const { spy } = setup();
 
-				const params: AccountSaveDto = {
+				const params: Account = {
 					username: 'john.doe@domain.tld',
 					password: defaultPassword,
 				};
@@ -2170,7 +2168,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValue(mockAdminUser);
-				accountService.findById.mockResolvedValue(AccountEntityToDtoMapper.mapToDto(mockAccountWithoutUser));
+				accountService.findById.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockAccountWithoutUser));
 
 				return { mockAdminUser };
 			};
@@ -2206,12 +2204,12 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser).mockResolvedValueOnce(mockStudentUser);
-				accountService.findById.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 
 				userRepo.save.mockResolvedValue();
-				accountService.save.mockImplementation((account: AccountSaveDto): Promise<AccountDto> => {
+				accountService.save.mockImplementation((account: Account): Promise<Account> => {
 					Object.assign(mockStudentAccount, account);
-					return Promise.resolve(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+					return Promise.resolve(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				});
 
 				return { mockStudentAccount, mockStudentUser, mockSuperheroUser };
@@ -2252,12 +2250,12 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser).mockResolvedValueOnce(mockStudentUser);
-				accountService.findById.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 
 				userRepo.save.mockResolvedValue();
-				accountService.save.mockImplementation((account: AccountSaveDto): Promise<AccountDto> => {
+				accountService.save.mockImplementation((account: Account): Promise<Account> => {
 					Object.assign(mockStudentAccount, account);
-					return Promise.resolve(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+					return Promise.resolve(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				});
 				accountValidationService.isUniqueEmail.mockResolvedValue(true);
 
@@ -2298,12 +2296,12 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser).mockResolvedValueOnce(mockStudentUser);
-				accountService.findById.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 
 				userRepo.save.mockResolvedValue();
-				accountService.save.mockImplementation((account: AccountSaveDto): Promise<AccountDto> => {
+				accountService.save.mockImplementation((account: Account): Promise<Account> => {
 					Object.assign(mockStudentAccount, account);
-					return Promise.resolve(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+					return Promise.resolve(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				});
 
 				return { mockStudentAccount, mockSuperheroUser };
@@ -2350,7 +2348,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValueOnce(mockAdminUser).mockResolvedValueOnce(mockStudentUser);
-				accountService.findById.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 
 				userRepo.save.mockResolvedValue();
 				accountService.save.mockRejectedValueOnce(undefined);
@@ -2400,7 +2398,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValueOnce(mockAdminUser).mockResolvedValueOnce(mockStudentUser);
-				accountService.findById.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 
 				userRepo.save.mockRejectedValueOnce(undefined);
 
@@ -2437,7 +2435,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser);
-				accountService.findById.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockAccountWithoutUser));
+				accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockAccountWithoutUser));
 
 				return { mockSuperheroUser, mockAccountWithoutUser };
 			};
@@ -2500,7 +2498,7 @@ describe('AccountUc', () => {
 				});
 
 				userRepo.findById.mockResolvedValueOnce(mockAdminUser).mockResolvedValueOnce(mockStudentUser);
-				accountService.findById.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 
 				userRepo.save.mockRejectedValueOnce(undefined);
 
@@ -2556,7 +2554,7 @@ describe('AccountUc', () => {
 					});
 
 					userRepo.findById.mockResolvedValueOnce(mockAdminUser).mockResolvedValueOnce(mockTeacherUser);
-					accountService.findById.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+					accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockTeacherAccount));
 
 					return { mockAdminUser, mockTeacherAccount };
 				};
@@ -2592,7 +2590,7 @@ describe('AccountUc', () => {
 					});
 
 					userRepo.findById.mockResolvedValueOnce(mockTeacherUser).mockResolvedValueOnce(mockStudentUser);
-					accountService.findById.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+					accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 
 					return { mockStudentAccount, mockTeacherUser };
 				};
@@ -2636,7 +2634,7 @@ describe('AccountUc', () => {
 					});
 
 					userRepo.findById.mockResolvedValueOnce(mockAdminUser).mockResolvedValueOnce(mockStudentUser);
-					accountService.findById.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+					accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 
 					return { mockStudentAccount, mockAdminUser };
 				};
@@ -2677,7 +2675,7 @@ describe('AccountUc', () => {
 					});
 
 					userRepo.findById.mockResolvedValueOnce(mockTeacherUser).mockResolvedValueOnce(mockOtherTeacherUser);
-					accountService.findById.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockOtherTeacherAccount));
+					accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockOtherTeacherAccount));
 
 					return { mockOtherTeacherAccount, mockTeacherUser };
 				};
@@ -2733,7 +2731,7 @@ describe('AccountUc', () => {
 					});
 
 					userRepo.findById.mockResolvedValueOnce(mockDifferentSchoolAdminUser).mockResolvedValueOnce(mockTeacherUser);
-					accountService.findById.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockTeacherAccount));
+					accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockTeacherAccount));
 
 					return { mockDifferentSchoolAdminUser, mockTeacherAccount };
 				};
@@ -2783,7 +2781,7 @@ describe('AccountUc', () => {
 					});
 
 					userRepo.findById.mockResolvedValueOnce(mockSuperheroUser).mockResolvedValueOnce(mockAdminUser);
-					accountService.findById.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockAdminAccount));
+					accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockAdminAccount));
 
 					return { mockAdminAccount, mockSuperheroUser };
 				};
@@ -2814,7 +2812,7 @@ describe('AccountUc', () => {
 					});
 
 					userRepo.findById.mockResolvedValueOnce(mockUnknownRoleUser).mockResolvedValueOnce(mockUserWithoutRole);
-					accountService.findById.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockAccountWithoutRole));
+					accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockAccountWithoutRole));
 
 					return { mockAccountWithoutRole, mockUnknownRoleUser };
 				};
@@ -2859,7 +2857,7 @@ describe('AccountUc', () => {
 					});
 
 					userRepo.findById.mockResolvedValueOnce(mockAdminUser).mockResolvedValueOnce(mockUnknownRoleUser);
-					accountService.findById.mockResolvedValueOnce(AccountEntityToDtoMapper.mapToDto(mockUnknownRoleUserAccount));
+					accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockUnknownRoleUserAccount));
 
 					return { mockAdminUser, mockUnknownRoleUserAccount };
 				};
@@ -2900,7 +2898,7 @@ describe('AccountUc', () => {
 
 				userRepo.findById.mockResolvedValue(mockSuperheroUser);
 
-				accountService.findById.mockResolvedValue(AccountEntityToDtoMapper.mapToDto(mockStudentAccount));
+				accountService.findById.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 
 				return { mockSuperheroUser, mockStudentAccount };
 			};
@@ -2989,7 +2987,7 @@ describe('AccountUc', () => {
 					throw new EntityNotFoundError(User.name);
 				});
 
-				accountService.findById.mockImplementation((id: EntityId): Promise<AccountDto> => {
+				accountService.findById.mockImplementation((id: EntityId): Promise<Account> => {
 					if (id === 'xxx') {
 						throw new EntityNotFoundError(AccountEntity.name);
 					}
@@ -3023,12 +3021,12 @@ describe('AccountUc', () => {
 				configService.get.mockReturnValue(LOGIN_BLOCK_TIME);
 
 				accountService.findByUsernameAndSystemId.mockImplementation(
-					(username: string, systemId: EntityId | ObjectId): Promise<AccountDto> => {
+					(username: string, systemId: EntityId | ObjectId): Promise<Account> => {
 						if (
 							mockAccountWithLastFailedLogin.username === username &&
 							mockAccountWithLastFailedLogin.systemId === systemId
 						) {
-							return Promise.resolve(AccountEntityToDtoMapper.mapToDto(mockAccountWithLastFailedLogin));
+							return Promise.resolve(AccountEntityToDoMapper.mapToDto(mockAccountWithLastFailedLogin));
 						}
 						throw new EntityNotFoundError(AccountEntity.name);
 					}
@@ -3056,9 +3054,9 @@ describe('AccountUc', () => {
 				configService.get.mockReturnValue(LOGIN_BLOCK_TIME);
 
 				accountService.findByUsernameAndSystemId.mockImplementation(
-					(username: string, systemId: EntityId | ObjectId): Promise<AccountDto> => {
+					(username: string, systemId: EntityId | ObjectId): Promise<Account> => {
 						if (mockAccountWithSystemId.username === username && mockAccountWithSystemId.systemId === systemId) {
-							return Promise.resolve(AccountEntityToDtoMapper.mapToDto(mockAccountWithSystemId));
+							return Promise.resolve(AccountEntityToDoMapper.mapToDto(mockAccountWithSystemId));
 						}
 						throw new EntityNotFoundError(AccountEntity.name);
 					}
@@ -3075,7 +3073,7 @@ describe('AccountUc', () => {
 					accountUc.checkBrutForce(mockAccountWithSystemId.username, mockAccountWithSystemId.systemId!)
 				).resolves.not.toThrow();
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				expect(updateMock.mock.calls[0][0]).toEqual(mockAccountWithSystemId.id);
+				expect(updateMock.mock.calls[0][0]).toEqual('');
 				const newDate = new Date().getTime() - 10000;
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				expect((updateMock.mock.calls[0][1] as Date).getTime()).toBeGreaterThan(newDate);
@@ -3094,12 +3092,12 @@ describe('AccountUc', () => {
 				configService.get.mockReturnValue(LOGIN_BLOCK_TIME);
 
 				accountService.findByUsernameAndSystemId.mockImplementation(
-					(username: string, systemId: EntityId | ObjectId): Promise<AccountDto> => {
+					(username: string, systemId: EntityId | ObjectId): Promise<Account> => {
 						if (
 							mockAccountWithNoLastFailedLogin.username === username &&
 							mockAccountWithNoLastFailedLogin.systemId === systemId
 						) {
-							return Promise.resolve(AccountEntityToDtoMapper.mapToDto(mockAccountWithNoLastFailedLogin));
+							return Promise.resolve(AccountEntityToDoMapper.mapToDto(mockAccountWithNoLastFailedLogin));
 						}
 						throw new EntityNotFoundError(AccountEntity.name);
 					}

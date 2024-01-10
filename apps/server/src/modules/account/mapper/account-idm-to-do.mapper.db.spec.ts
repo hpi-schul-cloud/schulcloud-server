@@ -1,24 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { IdmAccount } from '@shared/domain/interface';
-import { AccountDto } from '../services/dto';
-import { AccountIdmToDtoMapper } from './account-idm-to-dto.mapper.abstract';
-import { AccountIdmToDtoMapperDb } from './account-idm-to-dto.mapper.db';
+import { Account } from '../domain';
+import { AccountIdmToDoMapper } from './account-idm-to-do.mapper.abstract';
+import { AccountIdmToDoMapperDb } from './account-idm-to-do.mapper.db';
 
-describe('AccountIdmToDtoMapperDb', () => {
+describe('AccountIdmToDoMapperDb', () => {
 	let module: TestingModule;
-	let mapper: AccountIdmToDtoMapper;
+	let mapper: AccountIdmToDoMapper;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				{
-					provide: AccountIdmToDtoMapper,
-					useClass: AccountIdmToDtoMapperDb,
+					provide: AccountIdmToDoMapper,
+					useClass: AccountIdmToDoMapperDb,
 				},
 			],
 		}).compile();
 
-		mapper = module.get(AccountIdmToDtoMapper);
+		mapper = module.get(AccountIdmToDoMapper);
 	});
 
 	afterAll(async () => {
@@ -47,7 +47,7 @@ describe('AccountIdmToDtoMapperDb', () => {
 				const ret = mapper.mapToDto(testIdmEntity);
 
 				expect(ret).toEqual(
-					expect.objectContaining<Partial<AccountDto>>({
+					expect.objectContaining<Partial<Account>>({
 						id: testIdmEntity.attDbcAccountId,
 						idmReferenceId: testIdmEntity.id,
 						userId: testIdmEntity.attDbcUserId,

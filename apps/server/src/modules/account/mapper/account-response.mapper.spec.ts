@@ -1,7 +1,7 @@
 import { AccountEntity } from '@shared/domain/entity';
 import { accountDtoFactory, accountFactory } from '@shared/testing';
 import { AccountResponseMapper } from '.';
-import { AccountDto } from '../services';
+import { Account } from '../domain';
 
 describe('AccountResponseMapper', () => {
 	describe('mapToResponseFromEntity', () => {
@@ -36,9 +36,9 @@ describe('AccountResponseMapper', () => {
 	});
 
 	describe('mapToResponse', () => {
-		describe('When mapping AccountDto to AccountResponse', () => {
+		describe('When mapping Account to AccountResponse', () => {
 			const setup = () => {
-				const testDto: AccountDto = accountDtoFactory.buildWithId();
+				const testDto: Account = accountDtoFactory.buildWithId();
 				return testDto;
 			};
 
