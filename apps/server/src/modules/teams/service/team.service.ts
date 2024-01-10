@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
+import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { TeamEntity } from '@shared/domain/entity';
-import { EntityId } from '@shared/domain/types';
+import { DomainModel, EntityId, StatusModel } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 
 @Injectable()
 export class TeamService {
-	constructor(private readonly teamsRepo: TeamsRepo, private readonly logger: LegacyLogger) {
+	constructor(private readonly teamsRepo: TeamsRepo, private readonly logger: Logger) {
 		this.logger.setContext(TeamService.name);
 	}
 
@@ -17,7 +18,14 @@ export class TeamService {
 	}
 
 	public async deleteUserDataFromTeams(userId: EntityId): Promise<number> {
-		this.logger.log(`Deleting users data from Teams for userId ${userId}`);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Deleting user data from Teams',
+				DomainModel.TEAMS,
+				userId,
+				StatusModel.PENDING
+			)
+		);
 		const teams = await this.teamsRepo.findByUserId(userId);
 
 		teams.forEach((team) => {
@@ -28,7 +36,16 @@ export class TeamService {
 
 		const numberOfUpdatedTeams = teams.length;
 
-		this.logger.log(`Successfully updated ${numberOfUpdatedTeams} teams for userId ${userId}`);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully deleted user data from Teams',
+				DomainModel.TEAMS,
+				userId,
+				StatusModel.PENDING,
+				numberOfUpdatedTeams,
+				0
+			)
+		);
 
 		return numberOfUpdatedTeams;
 	}
