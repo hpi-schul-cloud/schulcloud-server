@@ -5,7 +5,9 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { v4 as uuidv4 } from 'uuid';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
+import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
+import { DomainModel, StatusModel } from '@shared/domain/types';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 
@@ -14,7 +16,7 @@ export class PseudonymService {
 	constructor(
 		private readonly pseudonymRepo: PseudonymsRepo,
 		private readonly externalToolPseudonymRepo: ExternalToolPseudonymRepo,
-		private readonly logger: LegacyLogger
+		private readonly logger: Logger
 	) {
 		this.logger.setContext(PseudonymService.name);
 	}
@@ -77,7 +79,14 @@ export class PseudonymService {
 	}
 
 	public async deleteByUserId(userId: string): Promise<number> {
-		this.logger.log(`Deleting Pseudonyms for userId ${userId}`);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Deleting user data from Pseudonyms',
+				DomainModel.PSEUDONYMS,
+				userId,
+				StatusModel.PENDING
+			)
+		);
 		if (!userId) {
 			throw new InternalServerErrorException('User id is missing');
 		}
@@ -89,7 +98,16 @@ export class PseudonymService {
 
 		const numberOfDeletedPseudonyms = deletedPseudonyms + deletedExternalToolPseudonyms;
 
-		this.logger.log(`Successfully deleted ${numberOfDeletedPseudonyms} pseudonym for userId ${userId}`);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully deleted user data from Pseudonyms',
+				DomainModel.PSEUDONYMS,
+				userId,
+				StatusModel.FINISHED,
+				0,
+				numberOfDeletedPseudonyms
+			)
+		);
 
 		return numberOfDeletedPseudonyms;
 	}

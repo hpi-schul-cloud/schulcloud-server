@@ -1,9 +1,10 @@
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { ComponentProperties, LessonEntity } from '@shared/domain/entity';
-import { Counted, EntityId } from '@shared/domain/types';
+import { Counted, DomainModel, EntityId, StatusModel } from '@shared/domain/types';
 import { AuthorizationLoaderService } from '@src/modules/authorization';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
+import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { LessonRepo } from '../repository';
 
 @Injectable()
@@ -11,7 +12,7 @@ export class LessonService implements AuthorizationLoaderService {
 	constructor(
 		private readonly lessonRepo: LessonRepo,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
-		private readonly logger: LegacyLogger
+		private readonly logger: Logger
 	) {
 		this.logger.setContext(LessonService.name);
 	}
@@ -37,7 +38,14 @@ export class LessonService implements AuthorizationLoaderService {
 	}
 
 	async deleteUserDataFromLessons(userId: EntityId): Promise<number> {
-		this.logger.log(`Deleting User Data From Lesson for userId ${userId}`);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Deleting user data from Lessons',
+				DomainModel.LESSONS,
+				userId,
+				StatusModel.PENDING
+			)
+		);
 		const lessons = await this.lessonRepo.findByUserId(userId);
 
 		const updatedLessons = lessons.map((lesson: LessonEntity) => {
@@ -54,7 +62,16 @@ export class LessonService implements AuthorizationLoaderService {
 
 		const numberOfUpdatedLessons = updatedLessons.length;
 
-		this.logger.log(`Successfully updated ${numberOfUpdatedLessons} lessons for userId ${userId}`);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully removed user data from Classes',
+				DomainModel.LESSONS,
+				userId,
+				StatusModel.FINISHED,
+				numberOfUpdatedLessons,
+				0
+			)
+		);
 
 		return numberOfUpdatedLessons;
 	}

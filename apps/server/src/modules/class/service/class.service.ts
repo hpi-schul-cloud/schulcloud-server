@@ -1,12 +1,13 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
-import { LegacyLogger } from '@src/core/logger';
+import { DomainModel, EntityId, StatusModel } from '@shared/domain/types';
+import { Logger } from '@src/core/logger';
+import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { Class } from '../domain';
 import { ClassesRepo } from '../repo';
 
 @Injectable()
 export class ClassService {
-	constructor(private readonly classesRepo: ClassesRepo, private readonly logger: LegacyLogger) {
+	constructor(private readonly classesRepo: ClassesRepo, private readonly logger: Logger) {
 		this.logger.setContext(ClassService.name);
 	}
 
@@ -23,7 +24,14 @@ export class ClassService {
 	}
 
 	public async deleteUserDataFromClasses(userId: EntityId): Promise<number> {
-		this.logger.log(`Deleting data from Classes for userId ${userId}`);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Deleting data from Classes',
+				DomainModel.CLASS,
+				userId,
+				StatusModel.PENDING
+			)
+		);
 
 		if (!userId) {
 			throw new InternalServerErrorException('User id is missing');
@@ -41,7 +49,16 @@ export class ClassService {
 		const numberOfUpdatedClasses = updatedClasses.length;
 
 		await this.classesRepo.updateMany(updatedClasses);
-		this.logger.log(`Successfully removed userId ${userId} from ${numberOfUpdatedClasses} classes`);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully removed user data from Classes',
+				DomainModel.CLASS,
+				userId,
+				StatusModel.FINISHED,
+				numberOfUpdatedClasses,
+				0
+			)
+		);
 
 		return numberOfUpdatedClasses;
 	}

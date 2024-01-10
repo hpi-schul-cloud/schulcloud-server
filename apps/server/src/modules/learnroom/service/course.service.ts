@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
+import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { Course } from '@shared/domain/entity';
-import { Counted, EntityId } from '@shared/domain/types';
+import { Counted, DomainModel, EntityId, StatusModel } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 
 @Injectable()
 export class CourseService {
-	constructor(private readonly repo: CourseRepo, private readonly logger: LegacyLogger) {
+	constructor(private readonly repo: CourseRepo, private readonly logger: Logger) {
 		this.logger.setContext(CourseService.name);
 	}
 
@@ -21,13 +22,29 @@ export class CourseService {
 	}
 
 	public async deleteUserDataFromCourse(userId: EntityId): Promise<number> {
-		this.logger.log(`Deleting data from Courses for userId ${userId}`);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Deleting data from Courses',
+				DomainModel.COURSE,
+				userId,
+				StatusModel.PENDING
+			)
+		);
 		const [courses, count] = await this.repo.findAllByUserId(userId);
 
 		courses.forEach((course: Course) => course.removeUser(userId));
 
 		await this.repo.save(courses);
-		this.logger.log(`Successfully removed userId ${userId} from ${count} courses`);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully removed data from Courses',
+				DomainModel.COURSE,
+				userId,
+				StatusModel.FINISHED,
+				0,
+				count
+			)
+		);
 
 		return count;
 	}

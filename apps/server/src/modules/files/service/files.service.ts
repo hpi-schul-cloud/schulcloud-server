@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
-import { LegacyLogger } from '@src/core/logger';
+import { DomainModel, EntityId, StatusModel } from '@shared/domain/types';
+import { Logger } from '@src/core/logger';
+import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { FileEntity } from '../entity';
 import { FilesRepo } from '../repo';
 
 @Injectable()
 export class FilesService {
-	constructor(private readonly repo: FilesRepo, private readonly logger: LegacyLogger) {
+	constructor(private readonly repo: FilesRepo, private readonly logger: Logger) {
 		this.logger.setContext(FilesService.name);
 	}
 
@@ -15,7 +16,14 @@ export class FilesService {
 	}
 
 	async removeUserPermissionsToAnyFiles(userId: EntityId): Promise<number> {
-		this.logger.log(`Deleting Permissions To Any Files for userId ${userId}`);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Deleting user data from Files',
+				DomainModel.FILE,
+				userId,
+				StatusModel.PENDING
+			)
+		);
 		const entities = await this.repo.findByPermissionRefId(userId);
 
 		if (entities.length === 0) {
@@ -28,7 +36,16 @@ export class FilesService {
 
 		const numberOfUpdatedFiles = entities.length;
 
-		this.logger.log(`Successfully removed permissions for userId ${userId} for ${numberOfUpdatedFiles} files`);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully removed user data from Files',
+				DomainModel.FILE,
+				userId,
+				StatusModel.FINISHED,
+				numberOfUpdatedFiles,
+				0
+			)
+		);
 
 		return numberOfUpdatedFiles;
 	}
@@ -38,7 +55,14 @@ export class FilesService {
 	}
 
 	async markFilesOwnedByUserForDeletion(userId: EntityId): Promise<number> {
-		this.logger.log(`Marking Files For Deletion Owned By userId ${userId}`);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Marking user files to deletion',
+				DomainModel.FILE,
+				userId,
+				StatusModel.PENDING
+			)
+		);
 		const entities = await this.repo.findByOwnerUserId(userId);
 
 		if (entities.length === 0) {
@@ -51,8 +75,15 @@ export class FilesService {
 
 		const numberOfMarkedForDeletionFiles = entities.length;
 
-		this.logger.log(
-			`Successfully marked for deletion ${numberOfMarkedForDeletionFiles} files owned by userId ${userId}`
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully marked user files for deletion',
+				DomainModel.FILE,
+				userId,
+				StatusModel.FINISHED,
+				numberOfMarkedForDeletionFiles,
+				0
+			)
 		);
 
 		return numberOfMarkedForDeletionFiles;

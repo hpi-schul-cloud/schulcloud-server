@@ -4,7 +4,7 @@ import { DashboardElementRepo, IDashboardRepo, UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
 import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
 import { DashboardEntity, GridElement } from '@shared/domain/entity';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import { DashboardService } from '.';
 
 const learnroomMock = (id: string, name: string) => {
@@ -46,8 +46,8 @@ describe(DashboardService.name, () => {
 					useValue: createMock<DashboardElementRepo>(),
 				},
 				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
