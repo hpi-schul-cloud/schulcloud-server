@@ -1,9 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDate, IsMongoId, IsOptional, IsString } from 'class-validator';
-import { InputFormat, ITaskUpdate } from '@shared/domain';
 import { SanitizeHtml } from '@shared/controller';
+import { InputFormat, TaskUpdate } from '@shared/domain/types';
+import { IsDate, IsMongoId, IsOptional, IsString } from 'class-validator';
 
-export class TaskUpdateParams implements ITaskUpdate {
+export class TaskUpdateParams implements TaskUpdate {
 	@IsString()
 	@IsMongoId()
 	@IsOptional()

@@ -2,28 +2,54 @@ import { Injectable } from '@nestjs/common';
 import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ToolConfigurationStatus } from '../enum';
+import { ToolContextType } from '../enum';
+import { ContextExternalToolConfigurationStatus } from '../domain';
 import { ToolVersion } from '../interface';
 
+// TODO N21-1337 remove class when tool versioning is removed
 @Injectable()
 export class CommonToolService {
-	determineToolConfigurationStatus(
+	/**
+	 * @deprecated use ToolVersionService
+	 */
+	public determineToolConfigurationStatus(
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
-	): ToolConfigurationStatus {
+	): ContextExternalToolConfigurationStatus {
+		const configurationStatus: ContextExternalToolConfigurationStatus = new ContextExternalToolConfigurationStatus({
+			isOutdatedOnScopeContext: true,
+			isOutdatedOnScopeSchool: true,
+			isDeactivated: false,
+		});
+
 		if (
 			this.isLatest(schoolExternalTool, externalTool) &&
 			this.isLatest(contextExternalTool, schoolExternalTool) &&
 			this.isLatest(contextExternalTool, externalTool)
 		) {
-			return ToolConfigurationStatus.LATEST;
+			configurationStatus.isOutdatedOnScopeContext = false;
+			configurationStatus.isOutdatedOnScopeSchool = false;
+		} else {
+			configurationStatus.isOutdatedOnScopeContext = true;
+			configurationStatus.isOutdatedOnScopeSchool = true;
 		}
 
-		return ToolConfigurationStatus.OUTDATED;
+		if (externalTool.isDeactivated || schoolExternalTool.status?.isDeactivated) {
+			configurationStatus.isDeactivated = true;
+		}
+
+		return configurationStatus;
 	}
 
 	private isLatest(tool1: ToolVersion, tool2: ToolVersion): boolean {
 		return tool1.getVersion() >= tool2.getVersion();
+	}
+
+	public isContextRestricted(externalTool: ExternalTool, context: ToolContextType): boolean {
+		if (externalTool.restrictToContexts?.length && !externalTool.restrictToContexts.includes(context)) {
+			return true;
+		}
+		return false;
 	}
 }

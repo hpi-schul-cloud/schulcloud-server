@@ -134,7 +134,10 @@
 			"USER_LOGIN_MIGRATION_ADMIN",
 			"START_MEETING",
 			"JOIN_MEETING",
-			"GROUP_LIST"
+			"GROUP_LIST",
+			"GROUP_FULL_ADMIN",
+			"SCHOOL_SYSTEM_EDIT",
+			"SCHOOL_SYSTEM_VIEW"
 		],
 		"__v": 2
 	},
@@ -191,7 +194,8 @@
 			"TOOL_CREATE",
 			"TOOL_EDIT",
 			"YEARS_EDIT",
-			"GROUP_LIST"
+			"GROUP_LIST",
+			"GROUP_FULL_ADMIN"
 		],
 		"__v": 2
 	},

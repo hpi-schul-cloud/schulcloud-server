@@ -1,7 +1,8 @@
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SortOrder, Task } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { Task } from '@shared/domain/entity';
+import { SortOrder } from '@shared/domain/interface';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -2102,6 +2103,82 @@ describe('TaskRepo', () => {
 			await expect(async () => {
 				await repo.findById(unknownId);
 			}).rejects.toThrow();
+		});
+	});
+
+	describe('findByOnlyCreatorId', () => {
+		describe('when searching by creatorId', () => {
+			const setup = async () => {
+				const creator = userFactory.build();
+				const course = courseFactory.build({ teachers: [creator] });
+				const task = taskFactory.build({ creator });
+				const taskWithCourse = taskFactory.build({ course, creator });
+
+				await em.persistAndFlush([task, taskWithCourse]);
+				em.clear();
+
+				return { creator };
+			};
+
+			it('should find task where is only creator', async () => {
+				const { creator } = await setup();
+
+				const [result] = await repo.findByOnlyCreatorId(creator.id);
+
+				expect(result).toHaveLength(1);
+			});
+		});
+	});
+
+	describe('findByCreatorIdWithCourseAndLesson', () => {
+		describe('when searching by creatorId', () => {
+			const setup = async () => {
+				const creator = userFactory.build();
+				const task = taskFactory.build({ creator });
+
+				const course = courseFactory.build({ teachers: [creator] });
+				const taskWithCourse = taskFactory.build({ course, creator });
+
+				const lesson = lessonFactory.build({ course });
+				const taskWithCourseAndLesson = taskFactory.build({ course, creator, lesson });
+
+				await em.persistAndFlush([task, taskWithCourse, taskWithCourseAndLesson]);
+				em.clear();
+
+				return { creator };
+			};
+
+			it('should find task where are lesson or course', async () => {
+				const { creator } = await setup();
+
+				const [result] = await repo.findByCreatorIdWithCourseAndLesson(creator.id);
+
+				expect(result).toHaveLength(2);
+			});
+		});
+	});
+
+	describe('findByUserIdInFinished', () => {
+		describe('when searching by userId', () => {
+			const setup = async () => {
+				const creator = userFactory.build();
+				const course = courseFactory.build({ teachers: [creator] });
+				const taskWithFinished = taskFactory.build({ creator, course, finished: [creator] });
+				const taskWithoutFinished = taskFactory.build({ creator, course });
+
+				await em.persistAndFlush([taskWithFinished, taskWithoutFinished]);
+				em.clear();
+
+				return { creator };
+			};
+
+			it('should find task where user is in archive', async () => {
+				const { creator } = await setup();
+
+				const [result] = await repo.findByUserIdInFinished(creator.id);
+
+				expect(result).toHaveLength(1);
+			});
 		});
 	});
 });

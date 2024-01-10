@@ -1,20 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { HydraSsoService, OAuthService } from '@modules/oauth';
+import { HydraRedirectDto } from '@modules/oauth/service/dto/hydra.redirect.dto';
 import { HttpModule } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthConfig } from '@shared/domain';
+import { OauthConfigEntity } from '@shared/domain/entity';
 import { axiosResponseFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { HydraRedirectDto } from '@modules/oauth/service/dto/hydra.redirect.dto';
-import { HydraSsoService } from '@modules/oauth/service/hydra.service';
-import { OAuthService } from '@modules/oauth/service/oauth.service';
 import { AxiosResponse } from 'axios';
 import { HydraOauthUc } from '.';
 import { AuthorizationParams } from '../controller/dto';
 import { StatelessAuthorizationParams } from '../controller/dto/stateless-authorization.params';
-import { OAuthSSOError } from '../loggable/oauth-sso.error';
 import { OAuthTokenDto } from '../interface';
+import { AuthCodeFailureLoggableException } from '../loggable';
 
 class HydraOauthUcSpec extends HydraOauthUc {
 	public validateStatusSpec = (status: number) => this.validateStatus(status);
@@ -36,12 +35,11 @@ describe('HydraOauthUc', () => {
 	};
 
 	const JWTMock = 'jwtMock';
-	const userIdMock = 'userIdMock';
 	const oauthClientId = 'oauthClientIdMock';
 	const hydraUri = 'hydraUri';
 	const apiHost = 'apiHost';
 	const nextcloudScopes = 'nextcloudscope';
-	const hydraOauthConfig = new OauthConfig({
+	const hydraOauthConfig = new OauthConfigEntity({
 		authEndpoint: `${hydraUri}/oauth2/auth`,
 		clientId: 'toolClientId',
 		clientSecret: 'toolSecret',
@@ -118,9 +116,7 @@ describe('HydraOauthUc', () => {
 
 				const func = () => uc.getOauthToken('4566456', undefined, error);
 
-				await expect(func).rejects.toThrow(
-					new OAuthSSOError('Authorization Query Object has no authorization code or error', error)
-				);
+				await expect(func).rejects.toThrow(new AuthCodeFailureLoggableException(error));
 			});
 		});
 
@@ -134,9 +130,7 @@ describe('HydraOauthUc', () => {
 
 				const func = async () => uc.getOauthToken('oauthClientId', undefined, error);
 
-				await expect(func).rejects.toThrow(
-					new OAuthSSOError('Authorization Query Object has no authorization code or error', error)
-				);
+				await expect(func).rejects.toThrow(new AuthCodeFailureLoggableException(error));
 			});
 		});
 	});
@@ -199,7 +193,7 @@ describe('HydraOauthUc', () => {
 			hydraOauthService.processRedirect.mockResolvedValueOnce(responseDto1);
 			hydraOauthService.processRedirect.mockResolvedValueOnce(responseDto2);
 
-			const authParams: AuthorizationParams = await uc.requestAuthCode(userIdMock, JWTMock, oauthClientId);
+			const authParams: AuthorizationParams = await uc.requestAuthCode(JWTMock, oauthClientId);
 
 			expect(authParams).toStrictEqual(expectedAuthParams);
 			expect(hydraOauthService.processRedirect).toBeCalledTimes(2);
@@ -212,9 +206,7 @@ describe('HydraOauthUc', () => {
 				return Promise.resolve(dto);
 			});
 
-			await expect(uc.requestAuthCode(userIdMock, JWTMock, oauthClientId)).rejects.toThrow(
-				InternalServerErrorException
-			);
+			await expect(uc.requestAuthCode(JWTMock, oauthClientId)).rejects.toThrow(InternalServerErrorException);
 		});
 	});
 

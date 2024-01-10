@@ -1,14 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
-import { ToolConfigurationStatus } from '../../common/enum';
-import { CommonToolService } from '../../common/service';
+import {
+	contextExternalToolFactory,
+	externalToolFactory,
+	schoolExternalToolFactory,
+	toolConfigurationStatusFactory,
+} from '@shared/testing';
 import { ExternalToolLogoService, ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ToolReference } from '../domain';
 import { ContextExternalToolService } from './context-external-tool.service';
 import { ToolReferenceService } from './tool-reference.service';
+import { ToolVersionService } from './tool-version-service';
 
 describe('ToolReferenceService', () => {
 	let module: TestingModule;
@@ -17,7 +21,7 @@ describe('ToolReferenceService', () => {
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
-	let commonToolService: DeepMocked<CommonToolService>;
+	let toolVersionService: DeepMocked<ToolVersionService>;
 	let externalToolLogoService: DeepMocked<ExternalToolLogoService>;
 
 	beforeAll(async () => {
@@ -37,8 +41,8 @@ describe('ToolReferenceService', () => {
 					useValue: createMock<ContextExternalToolService>(),
 				},
 				{
-					provide: CommonToolService,
-					useValue: createMock<CommonToolService>(),
+					provide: ToolVersionService,
+					useValue: createMock<ToolVersionService>(),
 				},
 				{
 					provide: ExternalToolLogoService,
@@ -51,7 +55,7 @@ describe('ToolReferenceService', () => {
 		externalToolService = module.get(ExternalToolService);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
 		contextExternalToolService = module.get(ContextExternalToolService);
-		commonToolService = module.get(CommonToolService);
+		toolVersionService = module.get(ToolVersionService);
 		externalToolLogoService = module.get(ExternalToolLogoService);
 	});
 
@@ -76,10 +80,15 @@ describe('ToolReferenceService', () => {
 					.buildWithId(undefined, contextExternalToolId);
 				const logoUrl = 'logoUrl';
 
-				contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
+				contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findById.mockResolvedValueOnce(externalTool);
-				commonToolService.determineToolConfigurationStatus.mockReturnValue(ToolConfigurationStatus.OUTDATED);
+				toolVersionService.determineToolConfigurationStatus.mockResolvedValue(
+					toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeSchool: true,
+						isOutdatedOnScopeContext: false,
+					})
+				);
 				externalToolLogoService.buildLogoUrl.mockReturnValue(logoUrl);
 
 				return {
@@ -96,7 +105,7 @@ describe('ToolReferenceService', () => {
 
 				await service.getToolReference(contextExternalToolId);
 
-				expect(commonToolService.determineToolConfigurationStatus).toHaveBeenCalledWith(
+				expect(toolVersionService.determineToolConfigurationStatus).toHaveBeenCalledWith(
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool
@@ -123,7 +132,10 @@ describe('ToolReferenceService', () => {
 					logoUrl,
 					displayName: contextExternalTool.displayName as string,
 					openInNewTab: externalTool.openNewTab,
-					status: ToolConfigurationStatus.OUTDATED,
+					status: toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeSchool: true,
+						isOutdatedOnScopeContext: false,
+					}),
 					contextToolId: contextExternalToolId,
 				});
 			});

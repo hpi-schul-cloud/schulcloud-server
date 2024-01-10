@@ -1,54 +1,47 @@
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { Permission, LegacySchoolDo, User, UserLoginMigrationDO } from '@shared/domain';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { User } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
 import { Logger } from '@src/core/logger';
-import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { LegacySchoolService } from '@modules/legacy-school';
-import {
-	UserLoginMigrationGracePeriodExpiredLoggableException,
-	UserLoginMigrationNotFoundLoggableException,
-} from '../error';
-import { UserLoginMigrationStartLoggable } from '../loggable';
-import { UserLoginMigrationService } from '../service';
+import { UserLoginMigrationNotFoundLoggableException, UserLoginMigrationStartLoggable } from '../loggable';
+import { SchoolMigrationService, UserLoginMigrationService } from '../service';
 
 @Injectable()
 export class RestartUserLoginMigrationUc {
 	constructor(
 		private readonly userLoginMigrationService: UserLoginMigrationService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly schoolService: LegacySchoolService,
+		private readonly schoolMigrationService: SchoolMigrationService,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(RestartUserLoginMigrationUc.name);
 	}
 
-	async restartMigration(userId: string, schoolId: string): Promise<UserLoginMigrationDO> {
-		await this.checkPermission(userId, schoolId);
-
-		let userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
+	public async restartMigration(userId: string, schoolId: string): Promise<UserLoginMigrationDO> {
+		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
 			schoolId
 		);
 
 		if (!userLoginMigration) {
 			throw new UserLoginMigrationNotFoundLoggableException(schoolId);
-		} else if (userLoginMigration.finishedAt && Date.now() >= userLoginMigration.finishedAt.getTime()) {
-			throw new UserLoginMigrationGracePeriodExpiredLoggableException(
-				userLoginMigration.id as string,
-				userLoginMigration.finishedAt
-			);
-		} else if (userLoginMigration.closedAt) {
-			userLoginMigration = await this.userLoginMigrationService.restartMigration(schoolId);
-
-			this.logger.info(new UserLoginMigrationStartLoggable(userId, schoolId));
 		}
 
-		return userLoginMigration;
-	}
-
-	async checkPermission(userId: string, schoolId: string): Promise<void> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
+		this.authorizationService.checkPermission(
+			user,
+			userLoginMigration,
+			AuthorizationContextBuilder.write([Permission.USER_LOGIN_MIGRATION_ADMIN])
+		);
 
-		const context: AuthorizationContext = AuthorizationContextBuilder.write([Permission.USER_LOGIN_MIGRATION_ADMIN]);
-		this.authorizationService.checkPermission(user, school, context);
+		const updatedUserLoginMigration: UserLoginMigrationDO = await this.userLoginMigrationService.restartMigration(
+			userLoginMigration
+		);
+
+		await this.schoolMigrationService.unmarkOutdatedUsers(updatedUserLoginMigration);
+
+		this.logger.info(new UserLoginMigrationStartLoggable(userId, updatedUserLoginMigration.id));
+
+		return updatedUserLoginMigration;
 	}
 }

@@ -1,17 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { OauthProviderService } from '@shared/infra/oauth-provider/index';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AcceptQuery, ConsentRequestBody } from '@modules/oauth-provider/controller/dto';
-import {
-	AcceptConsentRequestBody,
-	ProviderConsentResponse,
-	ProviderRedirectResponse,
-} from '@shared/infra/oauth-provider/dto';
-import { OauthProviderConsentFlowUc } from '@modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
+import { OauthProviderService } from '@infra/oauth-provider';
+import { AcceptConsentRequestBody, ProviderConsentResponse, ProviderRedirectResponse } from '@infra/oauth-provider/dto';
 import { ICurrentUser } from '@modules/authentication';
-import { ForbiddenException } from '@nestjs/common';
-import { IdTokenService } from '@modules/oauth-provider/service/id-token.service';
+import { AcceptQuery, ConsentRequestBody } from '@modules/oauth-provider/controller/dto';
 import { IdToken } from '@modules/oauth-provider/interface/id-token';
+import { IdTokenService } from '@modules/oauth-provider/service/id-token.service';
+import { OauthProviderConsentFlowUc } from '@modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
+import { ForbiddenException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 
 describe('OauthProviderConsentFlowUc', () => {
 	let module: TestingModule;

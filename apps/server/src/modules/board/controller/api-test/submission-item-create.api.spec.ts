@@ -1,7 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ServerTestModule } from '@modules/server';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, SubmissionItemNode } from '@shared/domain';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { SubmissionItemNode } from '@shared/domain/entity';
 import {
 	TestApiClient,
 	UserAndAccountTestFactory,
@@ -13,7 +15,6 @@ import {
 	submissionContainerElementNodeFactory,
 	userFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@modules/server';
 import { SubmissionItemResponse } from '../dto';
 
 const baseRouteName = '/elements';
@@ -142,7 +143,7 @@ describe('submission create (api)', () => {
 			expect(response.status).toBe(201);
 
 			const response2 = await loggedInClient.post(`${submissionContainerNode.id}/submissions`, { completed: false });
-			expect(response2.status).toBe(406);
+			expect(response2.status).toBe(403);
 		});
 	});
 

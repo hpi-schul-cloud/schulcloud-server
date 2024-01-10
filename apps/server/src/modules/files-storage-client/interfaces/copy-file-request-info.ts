@@ -1,8 +1,8 @@
-import { EntityId } from '@shared/domain';
-import { IFileRequestInfo } from './file-request-info';
+import { EntityId } from '@shared/domain/types';
+import { FileRequestInfo } from './file-request-info';
 
-export interface ICopyFilesRequestInfo {
+export interface CopyFilesRequestInfo {
 	userId: EntityId;
-	source: IFileRequestInfo;
-	target: IFileRequestInfo;
+	source: FileRequestInfo;
+	target: FileRequestInfo;
 }

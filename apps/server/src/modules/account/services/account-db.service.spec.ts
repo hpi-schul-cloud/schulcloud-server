@@ -1,16 +1,18 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import { Account, EntityId } from '@shared/domain';
-import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
+import { Account } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { accountFactory, setupEntities, userFactory } from '@shared/testing';
-import { AccountEntityToDtoMapper } from '@modules/account/mapper';
-import { AccountDto } from '@modules/account/services/dto';
-import { IServerConfig } from '@modules/server';
+import { IdentityManagementService } from '@src/infra/identity-management';
 import bcrypt from 'bcryptjs';
+import { AccountDto } from './dto';
+
 import { LegacyLogger } from '../../../core/logger';
+import { AccountEntityToDtoMapper } from '../mapper';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountLookupService } from './account-lookup.service';
@@ -43,7 +45,7 @@ describe('AccountDbService', () => {
 				},
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService<IServerConfig, true>>(),
+					useValue: createMock<ConfigService<ServerConfig, true>>(),
 				},
 				{
 					provide: IdentityManagementService,

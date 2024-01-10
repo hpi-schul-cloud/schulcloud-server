@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { Course, EntityId, IComponentProperties, Task } from '@shared/domain';
 import { LessonService } from '@modules/lesson/service';
-import { ComponentType } from '@src/shared/domain/entity/lesson.entity';
 import { TaskService } from '@modules/task/service';
+import { Injectable } from '@nestjs/common';
+import { ComponentProperties, Course, Task } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
+import { ComponentType } from '@src/shared/domain/entity/lesson.entity';
 import {
 	CommonCartridgeFileBuilder,
 	CommonCartridgeIntendedUseType,
@@ -11,8 +12,8 @@ import {
 	ICommonCartridgeResourceProps,
 	ICommonCartridgeWebContentResourceProps,
 } from '../common-cartridge';
-import { CourseService } from './course.service';
 import { createIdentifier } from '../common-cartridge/utils';
+import { CourseService } from './course.service';
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -59,6 +60,11 @@ export class CommonCartridgeExportService {
 					organizationBuilder.addResourceToOrganization(resourceProps);
 				}
 			});
+
+			const tasks = lesson.tasks.getItems();
+			tasks.forEach((task) => {
+				organizationBuilder.addResourceToOrganization(this.mapTaskToWebContentResource(task, version));
+			});
 		});
 	}
 
@@ -84,7 +90,7 @@ export class CommonCartridgeExportService {
 
 	private mapContentToResource(
 		lessonId: string,
-		content: IComponentProperties,
+		content: ComponentProperties,
 		version: CommonCartridgeVersion
 	): ICommonCartridgeResourceProps | undefined {
 		const commonProps = {

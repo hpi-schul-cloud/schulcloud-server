@@ -1,11 +1,12 @@
 import { Embedded, Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { v4 as uuid } from 'uuid';
-import { EntityId, StorageProviderEntity } from '@shared/domain';
+import { StorageProviderEntity } from '@shared/domain/entity';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
+import { EntityId } from '@shared/domain/types';
+import { v4 as uuid } from 'uuid';
 import { FileOwnerModel } from '../domain';
-import { FileSecurityCheckEntity } from './file-security-check.entity';
 import { FilePermissionEntity } from './file-permission.entity';
+import { FileSecurityCheckEntity } from './file-security-check.entity';
 
 export interface FileEntityProps {
 	createdAt?: Date;
@@ -26,7 +27,7 @@ export interface FileEntityProps {
 	parentId?: EntityId;
 	ownerId: EntityId;
 	refOwnerModel: FileOwnerModel;
-	creatorId: EntityId;
+	creatorId?: EntityId;
 	permissions: FilePermissionEntity[];
 	lockId?: EntityId;
 	versionKey?: number;
@@ -94,12 +95,12 @@ export class FileEntity extends BaseEntityWithTimestamps {
 	@Enum({ nullable: false })
 	refOwnerModel: FileOwnerModel;
 
-	@Property({ fieldName: 'creator' })
+	@Property({ fieldName: 'creator', nullable: true })
 	@Index()
-	_creatorId: ObjectId;
+	_creatorId?: ObjectId;
 
-	get creatorId(): EntityId {
-		return this._creatorId.toHexString();
+	get creatorId(): EntityId | undefined {
+		return this._creatorId?.toHexString();
 	}
 
 	@Embedded(() => FilePermissionEntity, { array: true, nullable: false })
@@ -138,6 +139,12 @@ export class FileEntity extends BaseEntityWithTimestamps {
 
 	public isMarkedForDeletion(): boolean {
 		return this.deleted && this.deletedAt !== undefined && !Number.isNaN(this.deletedAt.getTime());
+	}
+
+	public removeCreatorId(creatorId: EntityId): void {
+		if (creatorId === this._creatorId?.toHexString()) {
+			this._creatorId = undefined;
+		}
 	}
 
 	constructor(props: FileEntityProps) {

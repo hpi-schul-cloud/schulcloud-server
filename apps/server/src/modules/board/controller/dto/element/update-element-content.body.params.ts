@@ -1,15 +1,16 @@
 import { ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
-import { ContentElementType, InputFormat } from '@shared/domain';
+import { ContentElementType } from '@shared/domain/domainobject';
+import { InputFormat } from '@shared/domain/types';
 import { Type } from 'class-transformer';
 import { IsDate, IsEnum, IsMongoId, IsOptional, IsString, ValidateNested } from 'class-validator';
 
 export abstract class ElementContentBody {
+	@IsEnum(ContentElementType)
 	@ApiProperty({
 		enum: ContentElementType,
 		description: 'the type of the updated element',
 		enumName: 'ContentElementType',
 	})
-	@IsEnum(ContentElementType)
 	type!: ContentElementType;
 }
 
@@ -31,10 +32,26 @@ export class FileElementContentBody extends ElementContentBody {
 	@ApiProperty()
 	content!: FileContentBody;
 }
+
 export class LinkContentBody {
 	@IsString()
 	@ApiProperty({})
 	url!: string;
+
+	@IsString()
+	@IsOptional()
+	@ApiProperty({})
+	title?: string;
+
+	@IsString()
+	@IsOptional()
+	@ApiProperty({})
+	description?: string;
+
+	@IsString()
+	@IsOptional()
+	@ApiProperty({})
+	imageUrl?: string;
 }
 
 export class LinkElementContentBody extends ElementContentBody {
@@ -44,6 +61,21 @@ export class LinkElementContentBody extends ElementContentBody {
 	@ValidateNested()
 	@ApiProperty({})
 	content!: LinkContentBody;
+}
+
+export class DrawingContentBody {
+	@IsString()
+	@ApiProperty()
+	description!: string;
+}
+
+export class DrawingElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.DRAWING })
+	type!: ContentElementType.DRAWING;
+
+	@ValidateNested()
+	@ApiProperty()
+	content!: DrawingContentBody;
 }
 
 export class RichTextContentBody {
@@ -101,6 +133,7 @@ export class ExternalToolElementContentBody extends ElementContentBody {
 
 export type AnyElementContentBody =
 	| FileContentBody
+	| DrawingContentBody
 	| LinkContentBody
 	| RichTextContentBody
 	| SubmissionContainerContentBody
@@ -117,6 +150,8 @@ export class UpdateElementContentBodyParams {
 				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
 				{ value: SubmissionContainerElementContentBody, name: ContentElementType.SUBMISSION_CONTAINER },
 				{ value: ExternalToolElementContentBody, name: ContentElementType.EXTERNAL_TOOL },
+				{ value: ExternalToolElementContentBody, name: ContentElementType.DRAWING },
+				{ value: DrawingElementContentBody, name: ContentElementType.DRAWING },
 			],
 		},
 		keepDiscriminatorProperty: true,
@@ -128,6 +163,7 @@ export class UpdateElementContentBodyParams {
 			{ $ref: getSchemaPath(RichTextElementContentBody) },
 			{ $ref: getSchemaPath(SubmissionContainerElementContentBody) },
 			{ $ref: getSchemaPath(ExternalToolElementContentBody) },
+			{ $ref: getSchemaPath(DrawingElementContentBody) },
 		],
 	})
 	data!:
@@ -135,5 +171,6 @@ export class UpdateElementContentBodyParams {
 		| LinkElementContentBody
 		| RichTextElementContentBody
 		| SubmissionContainerElementContentBody
-		| ExternalToolElementContentBody;
+		| ExternalToolElementContentBody
+		| DrawingElementContentBody;
 }

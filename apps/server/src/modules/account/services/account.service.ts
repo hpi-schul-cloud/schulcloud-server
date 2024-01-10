@@ -2,11 +2,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
-import { Counted } from '@shared/domain';
+import { Counted } from '@shared/domain/types';
 import { isEmail, validateOrReject } from 'class-validator';
 import { LegacyLogger } from '../../../core/logger'; // TODO: use path alias
 // TODO: account needs to define its own config, which is made available for the server
-import { IServerConfig } from '../../server/server.config';
+import { ServerConfig } from '../../server/server.config';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
@@ -25,7 +25,7 @@ export class AccountService extends AbstractAccountService {
 	constructor(
 		private readonly accountDb: AccountServiceDb,
 		private readonly accountIdm: AccountServiceIdm,
-		private readonly configService: ConfigService<IServerConfig, true>,
+		private readonly configService: ConfigService<ServerConfig, true>,
 		private readonly accountValidationService: AccountValidationService,
 		private readonly logger: LegacyLogger
 	) {

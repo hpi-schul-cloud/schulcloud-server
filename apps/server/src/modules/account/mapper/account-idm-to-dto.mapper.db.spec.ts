@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { IdmAccount } from '@shared/domain';
+import { IdmAccount } from '@shared/domain/interface';
 import { AccountDto } from '../services/dto';
 import { AccountIdmToDtoMapper } from './account-idm-to-dto.mapper.abstract';
 import { AccountIdmToDtoMapperDb } from './account-idm-to-dto.mapper.db';
@@ -65,36 +65,42 @@ describe('AccountIdmToDtoMapperDb', () => {
 				const testIdmEntity: IdmAccount = {
 					id: 'id',
 				};
-				return testIdmEntity;
+
+				const dateMock = new Date();
+				jest.useFakeTimers();
+				jest.setSystemTime(dateMock);
+
+				return { testIdmEntity, dateMock };
 			};
 
 			it('should use actual date', () => {
-				const testIdmEntity = setup();
+				const { testIdmEntity, dateMock } = setup();
 
 				const ret = mapper.mapToDto(testIdmEntity);
 
-				const now = new Date();
-				expect(ret.createdAt).toEqual(now);
-				expect(ret.updatedAt).toEqual(now);
+				expect(ret.createdAt).toEqual(dateMock);
+				expect(ret.updatedAt).toEqual(dateMock);
+
+				jest.useRealTimers();
 			});
 		});
+	});
 
-		describe('when a fields value is missing', () => {
-			const setup = () => {
-				const testIdmEntity: IdmAccount = {
-					id: 'id',
-				};
-				return testIdmEntity;
+	describe('when a fields value is missing', () => {
+		const setup = () => {
+			const testIdmEntity: IdmAccount = {
+				id: 'id',
 			};
+			return testIdmEntity;
+		};
 
-			it('should fill with empty string', () => {
-				const testIdmEntity = setup();
+		it('should fill with empty string', () => {
+			const testIdmEntity = setup();
 
-				const ret = mapper.mapToDto(testIdmEntity);
+			const ret = mapper.mapToDto(testIdmEntity);
 
-				expect(ret.id).toBe('');
-				expect(ret.username).toBe('');
-			});
+			expect(ret.id).toBe('');
+			expect(ret.username).toBe('');
 		});
 	});
 });

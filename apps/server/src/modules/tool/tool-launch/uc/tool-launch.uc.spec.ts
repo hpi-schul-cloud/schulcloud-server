@@ -66,7 +66,7 @@ describe('ToolLaunchUc', () => {
 			const userId: string = new ObjectId().toHexString();
 
 			toolPermissionHelper.ensureContextPermissions.mockResolvedValueOnce();
-			contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
+			contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
 			toolLaunchService.getLaunchData.mockResolvedValueOnce(toolLaunchData);
 
 			return {
@@ -82,7 +82,7 @@ describe('ToolLaunchUc', () => {
 
 			await uc.getToolLaunchRequest(userId, contextExternalToolId);
 
-			expect(contextExternalToolService.findById).toHaveBeenCalledWith(contextExternalToolId);
+			expect(contextExternalToolService.findByIdOrFail).toHaveBeenCalledWith(contextExternalToolId);
 		});
 
 		it('should call service to get data', async () => {

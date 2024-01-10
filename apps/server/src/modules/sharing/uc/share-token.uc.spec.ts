@@ -2,9 +2,18 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { BadRequestException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain';
-import { LessonRepo } from '@shared/repo';
+import { Permission } from '@shared/domain/interface';
 
+import {
+	Action,
+	AuthorizableReferenceType,
+	AuthorizationReferenceService,
+	AuthorizationService,
+} from '@modules/authorization';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CourseCopyService, CourseService } from '@modules/learnroom';
+import { LessonCopyService } from '@modules/lesson';
+import { TaskCopyService } from '@modules/task';
 import {
 	courseFactory,
 	lessonFactory,
@@ -15,13 +24,6 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { Action, AuthorizationService } from '@modules/authorization';
-import { AuthorizableReferenceType, AuthorizationReferenceService } from '@modules/authorization/domain';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { CourseCopyService } from '@modules/learnroom';
-import { CourseService } from '@modules/learnroom/service';
-import { LessonCopyService } from '@modules/lesson/service';
-import { TaskCopyService } from '@modules/task/service';
 import { ShareTokenContextType, ShareTokenParentType, ShareTokenPayload } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { ShareTokenUC } from './share-token.uc';
@@ -36,7 +38,6 @@ describe('ShareTokenUC', () => {
 	let authorization: DeepMocked<AuthorizationService>;
 	let authorizationReferenceService: DeepMocked<AuthorizationReferenceService>;
 	let courseService: DeepMocked<CourseService>;
-	let lessonRepo: DeepMocked<LessonRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -63,10 +64,6 @@ describe('ShareTokenUC', () => {
 					useValue: createMock<LessonCopyService>(),
 				},
 				{
-					provide: LessonRepo,
-					useValue: createMock<LessonRepo>(),
-				},
-				{
 					provide: CourseService,
 					useValue: createMock<CourseService>(),
 				},
@@ -89,7 +86,6 @@ describe('ShareTokenUC', () => {
 		authorization = module.get(AuthorizationService);
 		authorizationReferenceService = module.get(AuthorizationReferenceService);
 		courseService = module.get(CourseService);
-		lessonRepo = module.get(LessonRepo);
 
 		await setupEntities();
 	});
@@ -729,7 +725,6 @@ describe('ShareTokenUC', () => {
 				const course = courseFactory.buildWithId();
 				courseService.findById.mockResolvedValue(course);
 				const lesson = lessonFactory.buildWithId({ course });
-				lessonRepo.findById.mockResolvedValue(lesson);
 
 				const status: CopyStatus = {
 					type: CopyElementType.LESSON,

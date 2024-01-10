@@ -1,10 +1,11 @@
+import { AccountDto } from '@modules/account/services/dto';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { LegacySchoolDo, SystemEntity, User } from '@shared/domain';
-import { LegacySchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { LegacySchoolDo } from '@shared/domain/domainobject';
+import { SystemEntity, User } from '@shared/domain/entity';
+import { LegacySchoolRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { ErrorLoggable } from '@src/core/error/loggable/error.loggable';
 import { Logger } from '@src/core/logger';
-import { AccountDto } from '@modules/account/services/dto';
 import { Strategy } from 'passport-custom';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
 import { ICurrentUser } from '../interface';
@@ -15,7 +16,7 @@ import { LdapService } from '../services/ldap.service';
 @Injectable()
 export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 	constructor(
-		private readonly systemRepo: SystemRepo,
+		private readonly systemRepo: LegacySystemRepo,
 		private readonly schoolRepo: LegacySchoolRepo,
 		private readonly ldapService: LdapService,
 		private readonly authenticationService: AuthenticationService,
@@ -48,7 +49,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 
 		await this.checkCredentials(account, system, ldapDn, password);
 
-		const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(account.id, user, systemId);
+		const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(account.id, user, true, systemId);
 
 		return currentUser;
 	}

@@ -3,10 +3,11 @@ import { Embedded, Entity, Property, Unique } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { CustomParameterEntity } from './custom-parameter';
 import { BasicToolConfigEntity, Lti11ToolConfigEntity, Oauth2ToolConfigEntity } from './config';
+import { ToolContextType } from '../../common/enum';
 
 export type IExternalToolProperties = Readonly<Omit<ExternalToolEntity, keyof BaseEntityWithTimestamps>>;
 
-@Entity({ tableName: 'external_tools' })
+@Entity({ tableName: 'external-tools' })
 export class ExternalToolEntity extends BaseEntityWithTimestamps {
 	@Unique()
 	@Property()
@@ -31,10 +32,16 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 	isHidden: boolean;
 
 	@Property()
+	isDeactivated: boolean;
+
+	@Property()
 	openNewTab: boolean;
 
 	@Property()
 	version: number;
+
+	@Property({ nullable: true })
+	restrictToContexts?: ToolContextType[];
 
 	constructor(props: IExternalToolProperties) {
 		super();
@@ -45,7 +52,9 @@ export class ExternalToolEntity extends BaseEntityWithTimestamps {
 		this.config = props.config;
 		this.parameters = props.parameters;
 		this.isHidden = props.isHidden;
+		this.isDeactivated = props.isDeactivated;
 		this.openNewTab = props.openNewTab;
 		this.version = props.version;
+		this.restrictToContexts = props.restrictToContexts;
 	}
 }

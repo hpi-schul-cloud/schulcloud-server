@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { LinkElement, LinkElementProps } from '@shared/domain';
+import { LinkElement, LinkElementProps } from '@shared/domain/domainobject';
 import { ObjectId } from 'bson';
 import { BaseFactory } from '../../base.factory';
 
@@ -7,7 +7,7 @@ export const linkElementFactory = BaseFactory.define<LinkElement, LinkElementPro
 	return {
 		id: new ObjectId().toHexString(),
 		url: `https://www.example.com/link/${sequence}`,
-		title: 'Website opengraph title',
+		title: 'Website open graph title',
 		children: [],
 		createdAt: new Date(),
 		updatedAt: new Date(),

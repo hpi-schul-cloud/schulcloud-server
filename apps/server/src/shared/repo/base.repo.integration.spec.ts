@@ -1,9 +1,9 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { Entity, EntityName, Property } from '@mikro-orm/core';
-import { BaseEntity } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { BaseEntity } from '@shared/domain/entity';
 import { BaseRepo } from './base.repo';
 
 /**

@@ -1,10 +1,10 @@
 import { Embedded, Entity, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { ClassSourceOptionsEntity } from './class-source-options.entity';
 
-export interface IClassEntityProps {
+export interface ClassEntityProps {
 	id?: EntityId;
 	name: string;
 	schoolId: ObjectId;
@@ -59,13 +59,13 @@ export class ClassEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => ClassSourceOptionsEntity, { object: true, nullable: true })
 	sourceOptions?: ClassSourceOptionsEntity;
 
-	private validate(props: IClassEntityProps) {
+	private validate(props: ClassEntityProps) {
 		if (props.gradeLevel !== undefined && (props.gradeLevel < 1 || props.gradeLevel > 13)) {
 			throw new Error('gradeLevel must be value beetween 1 and 13');
 		}
 	}
 
-	constructor(props: IClassEntityProps) {
+	constructor(props: ClassEntityProps) {
 		super();
 		this.validate(props);
 

@@ -54,7 +54,7 @@ module.exports = function setup() {
 		}
 	}
 
-	app.use('/sync/userAccount', new UserAccountService());
+	app.use('/sync/userAccount', new UserAccountService(), { methods: [] });
 
 	app.use('/sync/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 	app.use('/sync', new SyncService());

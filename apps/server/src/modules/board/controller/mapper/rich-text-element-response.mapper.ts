@@ -1,4 +1,4 @@
-import { ContentElementType, RichTextElement } from '@shared/domain';
+import { ContentElementType, RichTextElement } from '@shared/domain/domainobject';
 import { TimestampsResponse } from '../dto';
 import { RichTextElementContent, RichTextElementResponse } from '../dto/element/rich-text-element.response';
 import { BaseResponseMapper } from './base-mapper.interface';

@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { CustomParameterEntryParam, SchoolExternalToolPostParams } from '../controller/dto';
-import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
 import { CustomParameterEntry } from '../../common/domain';
+import {
+	CustomParameterEntryParam,
+	SchoolExternalToolConfigurationStatus,
+	SchoolExternalToolPostParams,
+} from '../controller/dto';
+import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
 
 @Injectable()
 export class SchoolExternalToolRequestMapper {
@@ -11,6 +15,10 @@ export class SchoolExternalToolRequestMapper {
 			schoolId: request.schoolId,
 			toolVersion: request.version,
 			parameters: this.mapRequestToCustomParameterEntryDO(request.parameters ?? []),
+			status: new SchoolExternalToolConfigurationStatus({
+				isOutdatedOnScopeSchool: false,
+				isDeactivated: request.isDeactivated,
+			}),
 		};
 	}
 
@@ -20,7 +28,7 @@ export class SchoolExternalToolRequestMapper {
 		return customParameterParams.map((customParameterParam: CustomParameterEntryParam) => {
 			return {
 				name: customParameterParam.name,
-				value: customParameterParam.value,
+				value: customParameterParam.value || undefined,
 			};
 		});
 	}

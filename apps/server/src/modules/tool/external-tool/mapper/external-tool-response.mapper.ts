@@ -63,8 +63,10 @@ export class ExternalToolResponseMapper {
 			config: mappedConfig,
 			parameters: mappedCustomParameter,
 			isHidden: externalTool.isHidden,
+			isDeactivated: externalTool.isDeactivated,
 			openNewTab: externalTool.openNewTab,
 			version: externalTool.version,
+			restrictToContexts: externalTool.restrictToContexts,
 		});
 	}
 
@@ -93,6 +95,7 @@ export class ExternalToolResponseMapper {
 				location: locationMapping[customParameterDO.location],
 				type: typeMapping[customParameterDO.type],
 				isOptional: customParameterDO.isOptional,
+				isProtected: customParameterDO.isProtected,
 			};
 		});
 	}

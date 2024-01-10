@@ -1,9 +1,11 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Course, EntityId, Task, LessonEntity, User } from '@shared/domain';
-import { CourseRepo, LessonRepo, TaskRepo } from '@shared/repo';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CopyHelperService, CopyStatus } from '@modules/copy-helper';
+import { LessonService } from '@modules/lesson';
+import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Course, LessonEntity, Task, User } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
+import { CourseRepo, TaskRepo } from '@shared/repo';
 import { TaskCopyService } from '../service';
 import { TaskCopyParentParams } from '../types';
 
@@ -11,7 +13,7 @@ import { TaskCopyParentParams } from '../types';
 export class TaskCopyUC {
 	constructor(
 		private readonly courseRepo: CourseRepo,
-		private readonly lessonRepo: LessonRepo,
+		private readonly lessonService: LessonService,
 		private readonly authorisation: AuthorizationService,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly taskRepo: TaskRepo,
@@ -104,7 +106,7 @@ export class TaskCopyUC {
 			return undefined;
 		}
 
-		const destinationLesson = await this.lessonRepo.findById(lessonId);
+		const destinationLesson = await this.lessonService.findById(lessonId);
 
 		return destinationLesson;
 	}

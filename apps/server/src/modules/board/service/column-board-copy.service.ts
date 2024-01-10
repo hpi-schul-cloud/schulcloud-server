@@ -1,16 +1,17 @@
+import { CopyStatus } from '@modules/copy-helper';
+import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
 	ColumnBoard,
-	EntityId,
 	isColumnBoard,
-} from '@shared/domain';
+} from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
-import { CopyStatus } from '@modules/copy-helper';
-import { UserService } from '@modules/user';
 import { BoardDoRepo } from '../repo';
 import { BoardDoCopyService, SchoolSpecificFileCopyServiceFactory } from './board-do-copy-service';
+import { SwapInternalLinksVisitor } from './board-do-copy-service/swap-internal-links.visitor';
 
 @Injectable()
 export class ColumnBoardCopyService {
@@ -53,5 +54,17 @@ export class ColumnBoardCopyService {
 		await this.boardDoRepo.save(copyStatus.copyEntity);
 
 		return copyStatus;
+	}
+
+	public async swapLinkedIds(boardId: EntityId, idMap: Map<EntityId, EntityId>) {
+		const board = await this.boardDoRepo.findById(boardId);
+
+		const visitor = new SwapInternalLinksVisitor(idMap);
+
+		board.accept(visitor);
+
+		await this.boardDoRepo.save(board);
+
+		return board;
 	}
 }

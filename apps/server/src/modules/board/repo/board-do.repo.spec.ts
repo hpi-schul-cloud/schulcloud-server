@@ -1,18 +1,13 @@
 import { createMock } from '@golevelup/ts-jest';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	AnyBoardDo,
-	BoardExternalReferenceType,
-	Card,
-	CardNode,
-	Column,
-	ColumnBoard,
-	RichTextElementNode,
-} from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { AnyBoardDo, BoardExternalReferenceType, Card, Column, ColumnBoard } from '@shared/domain/domainobject';
+import { CardNode, RichTextElementNode } from '@shared/domain/entity';
 import {
 	cardFactory,
 	cardNodeFactory,
@@ -26,7 +21,7 @@ import {
 	richTextElementFactory,
 	richTextElementNodeFactory,
 } from '@shared/testing';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { DrawingElementAdapterService } from '@modules/tldraw-client/service/drawing-element-adapter.service';
 import { BoardDoRepo } from './board-do.repo';
 import { BoardNodeRepo } from './board-node.repo';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
@@ -46,6 +41,8 @@ describe(BoardDoRepo.name, () => {
 				BoardNodeRepo,
 				RecursiveDeleteVisitor,
 				{ provide: FilesStorageClientAdapterService, useValue: createMock<FilesStorageClientAdapterService>() },
+				{ provide: ContextExternalToolService, useValue: createMock<ContextExternalToolService>() },
+				{ provide: DrawingElementAdapterService, useValue: createMock<DrawingElementAdapterService>() },
 			],
 		}).compile();
 		repo = module.get(BoardDoRepo);

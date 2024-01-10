@@ -6,16 +6,18 @@ import {
 	ForbiddenOperationError,
 	ValidationError,
 } from '@shared/common/error';
-import { Account, EntityId, Permission, PermissionService, Role, RoleName, SchoolEntity, User } from '@shared/domain';
+import { Account, Role, SchoolEntity, User } from '@shared/domain/entity';
+import { Permission, RoleName } from '@shared/domain/interface';
+import { PermissionService } from '@shared/domain/service';
+import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 // TODO: module internals should be imported with relative paths
-import { AccountService } from '@modules/account/services/account.service';
-import { AccountDto } from '@modules/account/services/dto/account.dto';
 
-import { BruteForcePrevention } from '@src/imports-from-feathers';
 import { ICurrentUser } from '@modules/authentication';
+import { BruteForcePrevention } from '@src/imports-from-feathers';
 import { ObjectId } from 'bson';
-import { IAccountConfig } from '../account-config';
+import { AccountService } from '..';
+import { AccountConfig } from '../account-config';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
@@ -27,7 +29,7 @@ import {
 } from '../controller/dto';
 import { AccountResponseMapper } from '../mapper';
 import { AccountValidationService } from '../services/account.validation.service';
-import { AccountSaveDto } from '../services/dto';
+import { AccountDto, AccountSaveDto } from '../services/dto';
 
 type UserPreferences = {
 	// first login completed
@@ -40,7 +42,7 @@ export class AccountUc {
 		private readonly userRepo: UserRepo,
 		private readonly permissionService: PermissionService,
 		private readonly accountValidationService: AccountValidationService,
-		private readonly configService: ConfigService<IAccountConfig, true>
+		private readonly configService: ConfigService<AccountConfig, true>
 	) {}
 
 	/* HINT: there is a lot of logic here that would belong into service layer,

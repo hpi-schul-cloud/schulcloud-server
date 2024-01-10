@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SortOrder } from '@shared/domain';
-import { CourseRepo, LessonRepo } from '@shared/repo';
+import { SortOrder } from '@shared/domain/interface';
+import { CourseRepo } from '@shared/repo';
 import { courseFactory, setupEntities } from '@shared/testing';
 import { CourseUc } from './course.uc';
 
@@ -18,10 +18,6 @@ describe('CourseUc', () => {
 				{
 					provide: CourseRepo,
 					useValue: createMock<CourseRepo>(),
-				},
-				{
-					provide: LessonRepo,
-					useValue: createMock<LessonRepo>(),
 				},
 			],
 		}).compile();

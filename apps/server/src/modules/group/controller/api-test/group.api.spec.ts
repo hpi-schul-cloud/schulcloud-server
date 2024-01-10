@@ -1,24 +1,26 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ClassEntity } from '@modules/class/entity';
+import { classEntityFactory } from '@modules/class/entity/testing';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role, RoleName, SchoolEntity, SchoolYearEntity, SortOrder, SystemEntity, User } from '@shared/domain';
+import { Role, SchoolEntity, SchoolYearEntity, SystemEntity, User } from '@shared/domain/entity';
+import { RoleName, SortOrder } from '@shared/domain/interface';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	groupEntityFactory,
 	roleFactory,
 	schoolFactory,
 	schoolYearFactory,
-	systemFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
+	systemEntityFactory,
 	userFactory,
 } from '@shared/testing';
-import { ClassEntity } from '@modules/class/entity';
-import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
-import { ServerTestModule } from '@modules/server';
 import { ObjectId } from 'bson';
 import { GroupEntity, GroupEntityTypes } from '../../entity';
 import { ClassRootType } from '../../uc/dto/class-root-type';
-import { ClassInfoSearchListResponse, ClassSortBy } from '../dto';
+import { ClassInfoSearchListResponse } from '../dto';
+import { ClassSortBy } from '../dto/interface';
 
 const baseRouteName = '/groups';
 
@@ -45,13 +47,13 @@ describe('Group (API)', () => {
 	describe('[GET] /groups/class', () => {
 		describe('when an admin requests a list of classes', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
+				const school: SchoolEntity = schoolFactory.buildWithId({ currentYear: schoolYear });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				const teacherRole: Role = roleFactory.buildWithId({ name: RoleName.TEACHER });
 				const teacherUser: User = userFactory.buildWithId({ school, roles: [teacherRole] });
-				const system: SystemEntity = systemFactory.buildWithId();
-				const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
+				const system: SystemEntity = systemEntityFactory.buildWithId();
 				const clazz: ClassEntity = classEntityFactory.buildWithId({
 					name: 'Group A',
 					schoolId: school._id,
@@ -120,6 +122,7 @@ describe('Group (API)', () => {
 							name: group.name,
 							externalSourceName: system.displayName,
 							teachers: [adminUser.lastName],
+							studentCount: 0,
 						},
 						{
 							id: clazz.id,
@@ -128,34 +131,12 @@ describe('Group (API)', () => {
 							teachers: [teacherUser.lastName],
 							schoolYear: schoolYear.name,
 							isUpgradable: false,
+							studentCount: 0,
 						},
 					],
 					skip: 0,
 					limit: 2,
 				});
-			});
-		});
-
-		describe('when an invalid user requests a list of classes', () => {
-			const setup = async () => {
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-
-				await em.persistAndFlush([studentAccount, studentUser]);
-				em.clear();
-
-				const studentClient = await testApiClient.login(studentAccount);
-
-				return {
-					studentClient,
-				};
-			};
-
-			it('should return forbidden', async () => {
-				const { studentClient } = await setup();
-
-				const response = await studentClient.get(`/class`);
-
-				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});
 		});
 	});

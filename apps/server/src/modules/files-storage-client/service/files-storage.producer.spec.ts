@@ -3,10 +3,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileRecordParentType, FilesStorageEvents, FilesStorageExchange } from '@shared/infra/rabbitmq';
+import { ErrorMapper, FileRecordParentType, FilesStorageEvents, FilesStorageExchange } from '@infra/rabbitmq';
 import { setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { ErrorMapper } from '../mapper';
 import { FilesStorageProducer } from './files-storage.producer';
 
 describe('FilesStorageProducer', () => {
@@ -248,6 +247,61 @@ describe('FilesStorageProducer', () => {
 				const { parentId, message } = setup();
 
 				const res = await service.deleteFilesOfParent(parentId);
+
+				expect(res).toEqual(message);
+			});
+		});
+	});
+
+	describe('removeCreatorIdFromFileRecords', () => {
+		describe('when valid parameter passed and amqpConnection return with error in response', () => {
+			const setup = () => {
+				const creatorId = new ObjectId().toHexString();
+
+				amqpConnection.request.mockResolvedValue({ error: new Error() });
+				const spy = jest.spyOn(ErrorMapper, 'mapRpcErrorResponseToDomainError');
+
+				return { creatorId, spy };
+			};
+
+			it('should call error mapper and throw with error', async () => {
+				const { creatorId, spy } = setup();
+
+				await expect(service.removeCreatorIdFromFileRecords(creatorId)).rejects.toThrowError();
+				expect(spy).toBeCalled();
+			});
+		});
+
+		describe('when valid parameter passed and amqpConnection return with message', () => {
+			const setup = () => {
+				const creatorId = new ObjectId().toHexString();
+
+				const message = [];
+				amqpConnection.request.mockResolvedValue({ message });
+
+				const expectedParams = {
+					exchange: FilesStorageExchange,
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					routingKey: FilesStorageEvents.REMOVE_CREATORID_OF_FILES,
+					payload: creatorId,
+					timeout,
+				};
+
+				return { creatorId, message, expectedParams };
+			};
+
+			it('should call the ampqConnection.', async () => {
+				const { creatorId, expectedParams } = setup();
+
+				await service.removeCreatorIdFromFileRecords(creatorId);
+
+				expect(amqpConnection.request).toHaveBeenCalledWith(expectedParams);
+			});
+
+			it('should return the response message.', async () => {
+				const { creatorId, message } = setup();
+
+				const res = await service.removeCreatorIdFromFileRecords(creatorId);
 
 				expect(res).toEqual(message);
 			});

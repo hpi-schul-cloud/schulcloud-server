@@ -1,17 +1,19 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UserService } from '@modules/user';
-import { userDoFactory } from '@shared/testing';
-import { Permission, UserDO, VideoConferenceDO, VideoConferenceScope } from '@shared/domain';
-import { ObjectId } from 'bson';
-import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
 import { ForbiddenException } from '@nestjs/common';
-import { BBBService, VideoConferenceService } from '../service';
+import { Test, TestingModule } from '@nestjs/testing';
+import { UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
+import {} from '@shared/domain/entity';
+import { Permission, VideoConferenceScope } from '@shared/domain/interface';
+import { userDoFactory } from '@shared/testing';
+import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
+import { ObjectId } from 'bson';
 import { BBBMeetingInfoResponse, BBBResponse, BBBRole, BBBStatus } from '../bbb';
-import { IScopeInfo, VideoConferenceInfo, VideoConferenceState } from './dto';
-import { VideoConferenceInfoUc } from './video-conference-info.uc';
-import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
 import { ErrorStatus } from '../error/error-status.enum';
+import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { BBBService, VideoConferenceService } from '../service';
+import { ScopeInfo, VideoConferenceInfo, VideoConferenceState } from './dto';
+import { VideoConferenceInfoUc } from './video-conference-info.uc';
 
 describe('VideoConferenceInfoUc', () => {
 	let module: TestingModule;
@@ -76,7 +78,7 @@ describe('VideoConferenceInfoUc', () => {
 				const user: UserDO = userDoFactory.buildWithId();
 				const currentUserId: string = user.id as string;
 				const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
-				const scopeInfo: IScopeInfo = {
+				const scopeInfo: ScopeInfo = {
 					scopeId: scope.id,
 					scopeName: 'scopeName',
 					title: 'title',
@@ -117,7 +119,7 @@ describe('VideoConferenceInfoUc', () => {
 					const user: UserDO = userDoFactory.buildWithId();
 					const currentUserId: string = user.id as string;
 					const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
-					const scopeInfo: IScopeInfo = {
+					const scopeInfo: ScopeInfo = {
 						scopeId: scope.id,
 						scopeName: 'scopeName',
 						title: 'title',
@@ -235,7 +237,7 @@ describe('VideoConferenceInfoUc', () => {
 							const user: UserDO = userDoFactory.buildWithId();
 							const currentUserId: string = user.id as string;
 							const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
-							const scopeInfo: IScopeInfo = {
+							const scopeInfo: ScopeInfo = {
 								scopeId: scope.id,
 								scopeName: 'scopeName',
 								title: 'title',
@@ -283,7 +285,7 @@ describe('VideoConferenceInfoUc', () => {
 							const user: UserDO = userDoFactory.buildWithId();
 							const currentUserId: string = user.id as string;
 							const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
-							const scopeInfo: IScopeInfo = {
+							const scopeInfo: ScopeInfo = {
 								scopeId: scope.id,
 								scopeName: 'scopeName',
 								title: 'title',
@@ -327,7 +329,7 @@ describe('VideoConferenceInfoUc', () => {
 						const user: UserDO = userDoFactory.buildWithId();
 						const currentUserId: string = user.id as string;
 						const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
-						const scopeInfo: IScopeInfo = {
+						const scopeInfo: ScopeInfo = {
 							scopeId: scope.id,
 							scopeName: 'scopeName',
 							title: 'title',

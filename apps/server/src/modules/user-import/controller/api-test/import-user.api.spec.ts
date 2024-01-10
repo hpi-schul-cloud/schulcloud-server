@@ -1,29 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { PaginationParams } from '@shared/controller';
-import {
-	ImportUser,
-	MatchCreator,
-	Permission,
-	RoleName,
-	SchoolEntity,
-	SchoolFeatures,
-	SortOrder,
-	SystemEntity,
-	User,
-} from '@shared/domain';
 import { ICurrentUser } from '@modules/authentication';
-import {
-	cleanupCollections,
-	importUserFactory,
-	mapUserToCurrentUser,
-	roleFactory,
-	schoolFactory,
-	systemFactory,
-	userFactory,
-} from '@shared/testing';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@modules/server/server.module';
 import {
@@ -42,6 +19,21 @@ import {
 	UserMatchResponse,
 	UserRole,
 } from '@modules/user-import/controller/dto';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { PaginationParams } from '@shared/controller';
+import { ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
+import { SchoolFeature } from '@shared/domain/types';
+import {
+	cleanupCollections,
+	importUserFactory,
+	mapUserToCurrentUser,
+	roleFactory,
+	schoolFactory,
+	systemEntityFactory,
+	userFactory,
+} from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
 
@@ -50,8 +42,8 @@ describe('ImportUser Controller (API)', () => {
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 
-	const authenticatedUser = async (permissions: Permission[] = [], features: SchoolFeatures[] = []) => {
-		const system = systemFactory.buildWithId(); // TODO no id?
+	const authenticatedUser = async (permissions: Permission[] = [], features: SchoolFeature[] = []) => {
+		const system = systemEntityFactory.buildWithId(); // TODO no id?
 		const school = schoolFactory.build({ officialSchoolNumber: 'foo', features });
 		const roles = [roleFactory.build({ name: RoleName.ADMINISTRATOR, permissions })];
 		await em.persistAndFlush([school, system, ...roles]);
@@ -205,7 +197,7 @@ describe('ImportUser Controller (API)', () => {
 				beforeEach(async () => {
 					({ school, system, user } = await authenticatedUser(
 						[Permission.SCHOOL_IMPORT_USERS_VIEW],
-						[SchoolFeatures.LDAP_UNIVENTION_MIGRATION]
+						[SchoolFeature.LDAP_UNIVENTION_MIGRATION]
 					));
 					currentUser = mapUserToCurrentUser(user);
 					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', system._id.toString());

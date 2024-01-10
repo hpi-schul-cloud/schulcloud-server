@@ -1,15 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { NotFoundException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	ContentElementFactory,
 	ContentElementType,
 	FileElement,
-	InputFormat,
 	RichTextElement,
 	SubmissionContainerElement,
-} from '@shared/domain';
-import { setupEntities } from '@shared/testing';
+} from '@shared/domain/domainobject';
+import { InputFormat } from '@shared/domain/types';
+import { drawingElementFactory, setupEntities } from '@shared/testing';
 import {
 	cardFactory,
 	fileElementFactory,
@@ -18,6 +18,7 @@ import {
 	submissionContainerElementFactory,
 } from '@shared/testing/factory/domainobject';
 import {
+	DrawingContentBody,
 	FileContentBody,
 	LinkContentBody,
 	RichTextContentBody,
@@ -26,7 +27,6 @@ import {
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementService } from './content-element.service';
-import { OpenGraphProxyService } from './open-graph-proxy.service';
 
 describe(ContentElementService.name, () => {
 	let module: TestingModule;
@@ -34,7 +34,6 @@ describe(ContentElementService.name, () => {
 	let boardDoRepo: DeepMocked<BoardDoRepo>;
 	let boardDoService: DeepMocked<BoardDoService>;
 	let contentElementFactory: DeepMocked<ContentElementFactory>;
-	let openGraphProxyService: DeepMocked<OpenGraphProxyService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -52,10 +51,6 @@ describe(ContentElementService.name, () => {
 					provide: ContentElementFactory,
 					useValue: createMock<ContentElementFactory>(),
 				},
-				{
-					provide: OpenGraphProxyService,
-					useValue: createMock<OpenGraphProxyService>(),
-				},
 			],
 		}).compile();
 
@@ -63,7 +58,6 @@ describe(ContentElementService.name, () => {
 		boardDoRepo = module.get(BoardDoRepo);
 		boardDoService = module.get(BoardDoService);
 		contentElementFactory = module.get(ContentElementFactory);
-		openGraphProxyService = module.get(OpenGraphProxyService);
 
 		await setupEntities();
 	});
@@ -123,6 +117,43 @@ describe(ContentElementService.name, () => {
 		});
 	});
 
+	describe('findParentOfId', () => {
+		describe('when parent is a vaid node', () => {
+			const setup = () => {
+				const card = cardFactory.build();
+				const element = richTextElementFactory.build();
+
+				return { element, card };
+			};
+
+			it('should call the repo', async () => {
+				const { element, card } = setup();
+				boardDoRepo.findParentOfId.mockResolvedValueOnce(card);
+
+				await service.findParentOfId(element.id);
+
+				expect(boardDoRepo.findParentOfId).toHaveBeenCalledWith(element.id);
+			});
+
+			it('should throw NotFoundException', async () => {
+				const { element } = setup();
+
+				boardDoRepo.findParentOfId.mockResolvedValue(undefined);
+
+				await expect(service.findParentOfId(element.id)).rejects.toThrowError(NotFoundException);
+			});
+
+			it('should return the parent', async () => {
+				const { element, card } = setup();
+				boardDoRepo.findParentOfId.mockResolvedValueOnce(card);
+
+				const result = await service.findParentOfId(element.id);
+
+				expect(result).toEqual(card);
+			});
+		});
+	});
+
 	describe('create', () => {
 		describe('when creating a content element of type', () => {
 			const setup = () => {
@@ -158,6 +189,25 @@ describe(ContentElementService.name, () => {
 				await service.create(card, ContentElementType.RICH_TEXT);
 
 				expect(boardDoRepo.save).toHaveBeenCalledWith([richTextElement], card);
+			});
+		});
+
+		describe('when creating a drawing element multiple times', () => {
+			const setup = () => {
+				const card = cardFactory.build();
+				const drawingElement = drawingElementFactory.build();
+
+				contentElementFactory.build.mockReturnValue(drawingElement);
+
+				return { card, drawingElement };
+			};
+
+			it('should return error for second creation', async () => {
+				const { card } = setup();
+
+				await service.create(card, ContentElementType.DRAWING);
+
+				await expect(service.create(card, ContentElementType.DRAWING)).rejects.toThrow(BadRequestException);
 			});
 		});
 	});
@@ -218,6 +268,34 @@ describe(ContentElementService.name, () => {
 			});
 		});
 
+		describe('when element is a drawing element', () => {
+			const setup = () => {
+				const drawingElement = drawingElementFactory.build();
+				const content = new DrawingContentBody();
+				content.description = 'test-description';
+				const card = cardFactory.build();
+				boardDoRepo.findParentOfId.mockResolvedValue(card);
+
+				return { drawingElement, content, card };
+			};
+
+			it('should update the element', async () => {
+				const { drawingElement, content } = setup();
+
+				await service.update(drawingElement, content);
+
+				expect(drawingElement.description).toEqual(content.description);
+			});
+
+			it('should persist the element', async () => {
+				const { drawingElement, content, card } = setup();
+
+				await service.update(drawingElement, content);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(drawingElement, card);
+			});
+		});
+
 		describe('when element is a file element', () => {
 			const setup = () => {
 				const fileElement = fileElementFactory.build();
@@ -264,8 +342,6 @@ describe(ContentElementService.name, () => {
 					url: linkElement.url,
 					image: { url: 'https://my-open-graph-proxy.scvs.de/image/adefcb12ed3a' },
 				};
-
-				openGraphProxyService.fetchOpenGraphData.mockResolvedValueOnce(imageResponse);
 
 				return { linkElement, content, card, imageResponse };
 			};

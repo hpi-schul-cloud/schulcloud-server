@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ErrorResponse } from '@src/core/error/dto/error.response';
-import { IErrorType } from '@src/core/error/interface';
+import { ErrorType } from '@src/core/error/interface';
 
 /**
  * Abstract base class for business errors, errors that are handled
@@ -25,7 +25,7 @@ export abstract class BusinessError extends HttpException {
 	readonly details?: Record<string, unknown>;
 
 	protected constructor(
-		{ type, title, defaultMessage }: IErrorType,
+		{ type, title, defaultMessage }: ErrorType,
 		code: HttpStatus = HttpStatus.CONFLICT,
 		details?: Record<string, unknown>,
 		cause?: unknown

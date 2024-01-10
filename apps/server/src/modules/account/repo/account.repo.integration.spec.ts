@@ -1,8 +1,8 @@
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, User } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { Account, User } from '@shared/domain/entity';
 import { accountFactory, cleanupCollections, userFactory } from '@shared/testing';
 import { AccountRepo } from './account.repo';
 

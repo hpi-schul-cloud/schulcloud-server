@@ -150,23 +150,26 @@ describe('LdapConfigService', () => {
 		function MockLdapService() {
 			return {
 				setup: () => {},
+				get: () => {},
 				getUsers: sinon.fake.resolves(fakeUsers),
 				getClasses: sinon.fake.resolves(fakeClasses),
 				disconnect: sinon.fake.resolves(),
 			};
 		}
 
-		beforeEach(() => {
-			ldapServiceMock = new MockLdapService();
-			app.use('ldap', ldapServiceMock);
-		});
-
 		before(() => {
 			originalLdapService = app.service('ldap');
 		});
 
 		after(() => {
+			app.unuse('ldap');
 			app.use('ldap', originalLdapService);
+		});
+
+		beforeEach(() => {
+			app.unuse('/ldap');
+			ldapServiceMock = new MockLdapService();
+			app.use('ldap', ldapServiceMock);
 		});
 
 		beforeEach(async () => {
@@ -223,6 +226,7 @@ describe('LdapConfigService', () => {
 		});
 
 		it('should catch common errors', async () => {
+			app.unuse('ldap');
 			ldapServiceMock.getUsers = sinon.fake.rejects(new LDAPConnectionError());
 			app.use('ldap', ldapServiceMock);
 
@@ -287,23 +291,26 @@ describe('LdapConfigService', () => {
 		function MockLdapService() {
 			return {
 				setup: () => {},
+				get: () => {},
 				getUsers: sinon.fake.resolves(fakeUsers),
 				getClasses: sinon.fake.resolves(fakeClasses),
 				disconnect: sinon.fake.resolves(),
 			};
 		}
 
-		beforeEach(() => {
-			ldapServiceMock = new MockLdapService();
-			app.use('ldap', ldapServiceMock);
-		});
-
 		before(() => {
 			originalLdapService = app.service('ldap');
 		});
 
 		after(() => {
+			app.unuse('ldap');
 			app.use('ldap', originalLdapService);
+		});
+
+		beforeEach(() => {
+			app.unuse('/ldap');
+			ldapServiceMock = new MockLdapService();
+			app.use('/ldap', ldapServiceMock);
 		});
 
 		beforeEach(async () => {

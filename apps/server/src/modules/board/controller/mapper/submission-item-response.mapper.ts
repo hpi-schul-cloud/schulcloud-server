@@ -1,5 +1,12 @@
-import { SubmissionItem, UserBoardRoles } from '@shared/domain';
+import {
+	FileElement,
+	isSubmissionItemContent,
+	RichTextElement,
+	SubmissionItem,
+	UserBoardRoles,
+} from '@shared/domain/domainobject';
 import { SubmissionItemResponse, SubmissionsResponse, TimestampsResponse, UserDataResponse } from '../dto';
+import { ContentElementResponseFactory } from './content-element-response.factory';
 
 export class SubmissionItemResponseMapper {
 	private static instance: SubmissionItemResponseMapper;
@@ -14,7 +21,7 @@ export class SubmissionItemResponseMapper {
 
 	public mapToResponse(submissionItems: SubmissionItem[], users: UserBoardRoles[]): SubmissionsResponse {
 		const submissionItemsResponse: SubmissionItemResponse[] = submissionItems.map((item) =>
-			this.mapSubmissionsToResponse(item)
+			this.mapSubmissionItemToResponse(item)
 		);
 		const usersResponse: UserDataResponse[] = users.map((user) => this.mapUsersToResponse(user));
 
@@ -23,7 +30,8 @@ export class SubmissionItemResponseMapper {
 		return response;
 	}
 
-	public mapSubmissionsToResponse(submissionItem: SubmissionItem): SubmissionItemResponse {
+	public mapSubmissionItemToResponse(submissionItem: SubmissionItem): SubmissionItemResponse {
+		const children: (FileElement | RichTextElement)[] = submissionItem.children.filter(isSubmissionItemContent);
 		const result = new SubmissionItemResponse({
 			completed: submissionItem.completed,
 			id: submissionItem.id,
@@ -32,6 +40,7 @@ export class SubmissionItemResponseMapper {
 				createdAt: submissionItem.createdAt,
 			}),
 			userId: submissionItem.userId,
+			elements: children.map((element) => ContentElementResponseFactory.mapSubmissionContentToResponse(element)),
 		});
 
 		return result;

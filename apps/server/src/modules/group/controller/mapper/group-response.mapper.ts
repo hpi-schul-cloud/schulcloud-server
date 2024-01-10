@@ -1,4 +1,4 @@
-import { Page } from '@shared/domain';
+import { Page } from '@shared/domain/domainobject';
 import { GroupTypes } from '../../domain';
 import { ClassInfoDto, ResolvedGroupDto } from '../../uc/dto';
 import {
@@ -12,6 +12,8 @@ import {
 
 const typeMapping: Record<GroupTypes, GroupTypeResponse> = {
 	[GroupTypes.CLASS]: GroupTypeResponse.CLASS,
+	[GroupTypes.COURSE]: GroupTypeResponse.COURSE,
+	[GroupTypes.OTHER]: GroupTypeResponse.OTHER,
 };
 
 export class GroupResponseMapper {
@@ -40,9 +42,10 @@ export class GroupResponseMapper {
 			type: classInfo.type,
 			name: classInfo.name,
 			externalSourceName: classInfo.externalSourceName,
-			teachers: classInfo.teachers,
+			teachers: classInfo.teacherNames,
 			schoolYear: classInfo.schoolYear,
 			isUpgradable: classInfo.isUpgradable,
+			studentCount: classInfo.studentCount,
 		});
 
 		return mapped;

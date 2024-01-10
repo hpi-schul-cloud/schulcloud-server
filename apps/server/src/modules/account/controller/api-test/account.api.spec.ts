@@ -1,14 +1,15 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, Permission, RoleName, User } from '@shared/domain';
+import { Account, User } from '@shared/domain/entity';
+import { Permission, RoleName } from '@shared/domain/interface';
 import {
+	TestApiClient,
 	accountFactory,
+	cleanupCollections,
 	roleFactory,
 	schoolFactory,
 	userFactory,
-	TestApiClient,
-	cleanupCollections,
 } from '@shared/testing';
 import {
 	AccountByIdBodyParams,

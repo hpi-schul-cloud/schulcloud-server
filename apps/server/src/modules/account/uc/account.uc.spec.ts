@@ -1,26 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ICurrentUser } from '@modules/authentication';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
-import {
-	Account,
-	EntityId,
-	Permission,
-	PermissionService,
-	Role,
-	RoleName,
-	SchoolRolePermission,
-	SchoolRoles,
-	User,
-} from '@shared/domain';
+
+import { Account, Role, SchoolRolePermission, SchoolRoles, User } from '@shared/domain/entity';
+import { Permission, RoleName } from '@shared/domain/interface';
+import { PermissionService } from '@shared/domain/service';
+import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import { BruteForcePrevention } from '@src/imports-from-feathers';
-import { AccountService } from '@modules/account/services/account.service';
-import { AccountSaveDto } from '@modules/account/services/dto';
-import { AccountDto } from '@modules/account/services/dto/account.dto';
-import { ICurrentUser } from '@modules/authentication';
 import { ObjectId } from 'bson';
+import { AccountDto, AccountSaveDto, AccountService } from '..';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
@@ -31,6 +23,7 @@ import {
 import { AccountEntityToDtoMapper, AccountResponseMapper } from '../mapper';
 import { AccountValidationService } from '../services/account.validation.service';
 import { AccountUc } from './account.uc';
+import { faker } from '@faker-js/faker';
 
 describe('AccountUc', () => {
 	let module: TestingModule;
@@ -142,8 +135,8 @@ describe('AccountUc', () => {
 					school: mockSchool,
 					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 				});
-				const externalSystem = systemFactory.buildWithId();
-				const mockExternalUserAccount = accountFactory.buildWithId({
+				const externalSystem = systemFactory.build();
+				const mockExternalUserAccount = accountFactory.build({
 					userId: mockExternalUser.id,
 					password: defaultPasswordHash,
 					systemId: externalSystem.id,
@@ -727,8 +720,8 @@ describe('AccountUc', () => {
 					school: mockSchool,
 					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 				});
-				const externalSystem = systemFactory.buildWithId();
-				const mockExternalUserAccount = accountFactory.buildWithId({
+				const externalSystem = systemFactory.build();
+				const mockExternalUserAccount = accountFactory.build({
 					userId: mockExternalUser.id,
 					password: defaultPasswordHash,
 					systemId: externalSystem.id,
@@ -2170,10 +2163,10 @@ describe('AccountUc', () => {
 					],
 				});
 
-				const mockAccountWithoutUser = accountFactory.buildWithId({
+				const mockAccountWithoutUser = accountFactory.build({
 					userId: undefined,
 					password: defaultPasswordHash,
-					systemId: systemFactory.buildWithId().id,
+					systemId: faker.database.mongodbObjectId(),
 				});
 
 				userRepo.findById.mockResolvedValue(mockAdminUser);
@@ -2437,10 +2430,10 @@ describe('AccountUc', () => {
 						}),
 					],
 				});
-				const mockAccountWithoutUser = accountFactory.buildWithId({
+				const mockAccountWithoutUser = accountFactory.build({
 					userId: undefined,
 					password: defaultPasswordHash,
-					systemId: systemFactory.buildWithId().id,
+					systemId: faker.database.mongodbObjectId(),
 				});
 
 				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser);
@@ -3020,10 +3013,10 @@ describe('AccountUc', () => {
 	describe('checkBrutForce', () => {
 		describe('When time difference < the allowed time', () => {
 			const setup = () => {
-				const mockAccountWithLastFailedLogin = accountFactory.buildWithId({
+				const mockAccountWithLastFailedLogin = accountFactory.build({
 					userId: undefined,
 					password: defaultPasswordHash,
-					systemId: systemFactory.buildWithId().id,
+					systemId: faker.database.mongodbObjectId(),
 					lasttriedFailedLogin: new Date(),
 				});
 
@@ -3091,10 +3084,10 @@ describe('AccountUc', () => {
 
 		describe('When lasttriedFailedLogin is undefined', () => {
 			const setup = () => {
-				const mockAccountWithNoLastFailedLogin = accountFactory.buildWithId({
+				const mockAccountWithNoLastFailedLogin = accountFactory.build({
 					userId: undefined,
 					password: defaultPasswordHash,
-					systemId: systemFactory.buildWithId().id,
+					systemId: faker.database.mongodbObjectId(),
 					lasttriedFailedLogin: undefined,
 				});
 

@@ -1,12 +1,13 @@
+import { IdentityManagementModule } from '@infra/identity-management/identity-management.module';
 import { Module } from '@nestjs/common';
-import { IdentityManagementModule } from '@shared/infra/identity-management/identity-management.module';
-import { SystemRepo } from '@shared/repo';
-import { SystemService } from '@modules/system/service/system.service';
+import { LegacySystemRepo } from '@shared/repo';
+import { SystemRepo } from './repo';
+import { LegacySystemService, SystemService } from './service';
 import { SystemOidcService } from './service/system-oidc.service';
 
 @Module({
 	imports: [IdentityManagementModule],
-	providers: [SystemRepo, SystemService, SystemOidcService],
-	exports: [SystemService, SystemOidcService],
+	providers: [LegacySystemRepo, LegacySystemService, SystemOidcService, SystemService, SystemRepo],
+	exports: [LegacySystemService, SystemOidcService, SystemService],
 })
 export class SystemModule {}

@@ -1,7 +1,7 @@
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolYearEntity } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { SchoolYearEntity } from '@shared/domain/entity';
 import { cleanupCollections } from '@shared/testing';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 import { SchoolYearRepo } from './schoolyear.repo';
@@ -46,30 +46,65 @@ describe('schoolyear repo', () => {
 	});
 
 	describe('findCurrentYear', () => {
-		describe('when date is between schoolyears start and end date', () => {
-			const setup = async () => {
-				const schoolYear: SchoolYearEntity = schoolYearFactory.build({
-					startDate: new Date('2020-08-01'),
-					endDate: new Date('9999-07-31'),
+		describe('when current date is between schoolyears start and end date', () => {
+			describe('when current date year is in the schoolyears start date', () => {
+				const setup = async () => {
+					jest
+						.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] })
+						.setSystemTime(new Date('2023-10-01'));
+
+					const schoolYear: SchoolYearEntity = schoolYearFactory.build({
+						startDate: new Date('2023-08-01'),
+						endDate: new Date('2024-07-31'),
+					});
+
+					await em.persistAndFlush(schoolYear);
+					em.clear();
+
+					return { schoolYear };
+				};
+
+				it('should return the current schoolyear', async () => {
+					const { schoolYear } = await setup();
+
+					const currentYear = await repo.findCurrentYear();
+
+					expect(currentYear).toEqual(schoolYear);
 				});
+			});
+			describe('when current date year is in the schoolyears end date', () => {
+				const setup = async () => {
+					jest
+						.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] })
+						.setSystemTime(new Date('2024-03-01'));
 
-				await em.persistAndFlush(schoolYear);
-				em.clear();
+					const schoolYear: SchoolYearEntity = schoolYearFactory.build({
+						startDate: new Date('2023-08-01'),
+						endDate: new Date('2024-07-31'),
+					});
 
-				return { schoolYear };
-			};
+					await em.persistAndFlush(schoolYear);
+					em.clear();
 
-			it('should return the current schoolyear', async () => {
-				const { schoolYear } = await setup();
+					return { schoolYear };
+				};
 
-				const currentYear = await repo.findCurrentYear();
+				it('should return the current schoolyear', async () => {
+					const { schoolYear } = await setup();
 
-				expect(currentYear).toEqual(schoolYear);
+					const currentYear = await repo.findCurrentYear();
+
+					expect(currentYear).toEqual(schoolYear);
+				});
 			});
 		});
 
-		describe('when date is not between schoolyears start and end date', () => {
+		describe('when current date is outside schoolyears start and end date', () => {
 			const setup = async () => {
+				jest
+					.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] })
+					.setSystemTime(new Date('2024-01-01'));
+
 				const schoolYear: SchoolYearEntity = schoolYearFactory.build({
 					startDate: new Date('2020-08-01'),
 					endDate: new Date('2021-07-31'),
@@ -81,7 +116,7 @@ describe('schoolyear repo', () => {
 				return { schoolYear };
 			};
 
-			it('should return the current schoolyear', async () => {
+			it('should throw', async () => {
 				await setup();
 
 				const func = () => repo.findCurrentYear();

@@ -1,12 +1,14 @@
+import { ConsoleWriterModule } from '@infra/console';
+import { FilesStorageClientModule } from '@modules/files-storage-client';
+import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
+import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
-import { ContentElementFactory } from '@shared/domain';
-import { ConsoleWriterModule } from '@shared/infra/console';
+import { ContentElementFactory } from '@shared/domain/domainobject';
 import { CourseRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { FilesStorageClientModule } from '../files-storage-client';
-import { UserModule } from '../user';
-import { BoardDoRepo, BoardNodeRepo } from './repo';
-import { RecursiveDeleteVisitor } from './repo/recursive-delete.vistor';
+import { DrawingElementAdapterService } from '@modules/tldraw-client/service/drawing-element-adapter.service';
+import { HttpModule } from '@nestjs/axios';
+import { BoardDoRepo, BoardNodeRepo, RecursiveDeleteVisitor } from './repo';
 import {
 	BoardDoAuthorizableService,
 	BoardDoService,
@@ -14,14 +16,20 @@ import {
 	ColumnBoardService,
 	ColumnService,
 	ContentElementService,
-	OpenGraphProxyService,
 	SubmissionItemService,
 } from './service';
 import { BoardDoCopyService, SchoolSpecificFileCopyServiceFactory } from './service/board-do-copy-service';
 import { ColumnBoardCopyService } from './service/column-board-copy.service';
 
 @Module({
-	imports: [ConsoleWriterModule, FilesStorageClientModule, LoggerModule, UserModule],
+	imports: [
+		ConsoleWriterModule,
+		FilesStorageClientModule,
+		LoggerModule,
+		UserModule,
+		ContextExternalToolModule,
+		HttpModule,
+	],
 	providers: [
 		BoardDoAuthorizableService,
 		BoardDoRepo,
@@ -38,7 +46,7 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		BoardDoCopyService,
 		ColumnBoardCopyService,
 		SchoolSpecificFileCopyServiceFactory,
-		OpenGraphProxyService,
+		DrawingElementAdapterService,
 	],
 	exports: [
 		BoardDoAuthorizableService,

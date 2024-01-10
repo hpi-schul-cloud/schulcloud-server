@@ -1,8 +1,9 @@
+import { AuthorizationLoaderServiceGeneric } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { EntityId, type UserDO } from '@shared/domain';
-import { AuthorizationLoaderServiceGeneric } from '@modules/authorization';
-import { Group } from '../domain';
+import { type UserDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
+import { Group, GroupTypes } from '../domain';
 import { GroupRepo } from '../repo';
 
 @Injectable()
@@ -13,7 +14,7 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		const group: Group | null = await this.groupRepo.findById(id);
 
 		if (!group) {
-			throw new NotFoundLoggableException(Group.name, 'id', id);
+			throw new NotFoundLoggableException(Group.name, { id });
 		}
 
 		return group;
@@ -31,14 +32,28 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		return group;
 	}
 
-	public async findByUser(user: UserDO): Promise<Group[]> {
-		const groups: Group[] = await this.groupRepo.findByUser(user);
+	public async findGroupsByUserAndGroupTypes(user: UserDO, groupTypes?: GroupTypes[]): Promise<Group[]> {
+		const groups: Group[] = await this.groupRepo.findByUserAndGroupTypes(user, groupTypes);
 
 		return groups;
 	}
 
-	public async findClassesForSchool(schoolId: EntityId): Promise<Group[]> {
-		const group: Group[] = await this.groupRepo.findClassesForSchool(schoolId);
+	public async findGroupsBySchoolIdAndGroupTypes(schoolId: EntityId, groupTypes: GroupTypes[]): Promise<Group[]> {
+		const group: Group[] = await this.groupRepo.findBySchoolIdAndGroupTypes(schoolId, groupTypes);
+
+		return group;
+	}
+
+	public async findGroupsBySchoolIdAndSystemIdAndGroupType(
+		schoolId: EntityId,
+		systemId: EntityId,
+		groupType: GroupTypes
+	): Promise<Group[]> {
+		const group: Group[] = await this.groupRepo.findGroupsBySchoolIdAndSystemIdAndGroupType(
+			schoolId,
+			systemId,
+			groupType
+		);
 
 		return group;
 	}

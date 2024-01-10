@@ -1,5 +1,5 @@
 import { Readable } from 'stream';
-import type { DownloadFileParams, PreviewParams } from '../controller/dto';
+import type { PreviewParams } from '../controller/dto';
 import { FileRecord } from '../entity';
 
 export interface GetFileResponse {
@@ -13,9 +13,10 @@ export interface GetFileResponse {
 
 export interface PreviewFileParams {
 	fileRecord: FileRecord;
-	downloadParams: DownloadFileParams;
 	previewParams: PreviewParams;
 	hash: string;
-	filePath: string;
+	originFilePath: string;
+	previewFilePath: string;
+	format: string;
 	bytesRange?: string;
 }

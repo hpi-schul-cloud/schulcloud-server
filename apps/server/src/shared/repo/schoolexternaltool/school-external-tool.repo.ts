@@ -1,32 +1,24 @@
-import { EntityName } from '@mikro-orm/core';
+import { EntityData, EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { SchoolExternalToolQuery } from '@modules/tool/school-external-tool/uc/dto/school-external-tool.types';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { SchoolEntity } from '@shared/domain';
+import { SchoolEntity } from '@shared/domain/entity';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { LegacyLogger } from '@src/core/logger';
-import { SchoolExternalToolQuery } from '@modules/tool/school-external-tool/uc/dto/school-external-tool.types';
-import { ISchoolExternalToolProperties, SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
-import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
-import { SchoolExternalToolScope } from './school-external-tool.scope';
 import { ExternalToolRepoMapper } from '../externaltool';
+import { SchoolExternalToolScope } from './school-external-tool.scope';
 
 @Injectable()
-export class SchoolExternalToolRepo extends BaseDORepo<
-	SchoolExternalTool,
-	SchoolExternalToolEntity,
-	ISchoolExternalToolProperties
-> {
+export class SchoolExternalToolRepo extends BaseDORepo<SchoolExternalTool, SchoolExternalToolEntity> {
 	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
 
 	get entityName(): EntityName<SchoolExternalToolEntity> {
 		return SchoolExternalToolEntity;
-	}
-
-	entityFactory(props: ISchoolExternalToolProperties): SchoolExternalToolEntity {
-		return new SchoolExternalToolEntity(props);
 	}
 
 	async findByExternalToolId(toolId: string): Promise<SchoolExternalTool[]> {
@@ -44,6 +36,7 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 			const domainObject: SchoolExternalTool = this.mapEntityToDO(entity);
 			return domainObject;
 		});
+
 		return domainObjects;
 	}
 
@@ -78,15 +71,17 @@ export class SchoolExternalToolRepo extends BaseDORepo<
 			schoolId: entity.school.id,
 			toolVersion: entity.toolVersion,
 			parameters: ExternalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.schoolParameters),
+			status: entity.status,
 		});
 	}
 
-	mapDOToEntityProperties(entityDO: SchoolExternalTool): ISchoolExternalToolProperties {
+	mapDOToEntityProperties(entityDO: SchoolExternalTool): EntityData<SchoolExternalToolEntity> {
 		return {
 			school: this._em.getReference(SchoolEntity, entityDO.schoolId),
 			tool: this._em.getReference(ExternalToolEntity, entityDO.toolId),
 			toolVersion: entityDO.toolVersion,
 			schoolParameters: ExternalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
+			status: entityDO.status,
 		};
 	}
 }

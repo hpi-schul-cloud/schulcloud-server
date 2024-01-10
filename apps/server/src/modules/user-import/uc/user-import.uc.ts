@@ -1,28 +1,16 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { UserAlreadyAssignedToImportUserError } from '@shared/common';
-import {
-	Account,
-	Counted,
-	EntityId,
-	IFindOptions,
-	IImportUserScope,
-	ImportUser,
-	INameMatch,
-	LegacySchoolDo,
-	MatchCreator,
-	MatchCreatorScope,
-	Permission,
-	SchoolFeatures,
-	SystemEntity,
-	User,
-} from '@shared/domain';
-import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
-import { Logger } from '@src/core/logger';
 import { AccountService } from '@modules/account/services/account.service';
 import { AccountDto } from '@modules/account/services/dto/account.dto';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { UserAlreadyAssignedToImportUserError } from '@shared/common';
+import { LegacySchoolDo } from '@shared/domain/domainobject';
+import { Account, ImportUser, MatchCreator, SystemEntity, User } from '@shared/domain/entity';
+import { IFindOptions, Permission } from '@shared/domain/interface';
+import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch, SchoolFeature } from '@shared/domain/types';
+import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
+import { Logger } from '@src/core/logger';
 import { AccountSaveDto } from '../../account/services/dto';
 import {
 	MigrationMayBeCompleted,
@@ -50,7 +38,7 @@ export class UserImportUc {
 		private readonly importUserRepo: ImportUserRepo,
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolService: LegacySchoolService,
-		private readonly systemRepo: SystemRepo,
+		private readonly systemRepo: LegacySystemRepo,
 		private readonly userRepo: UserRepo,
 		private readonly logger: Logger
 	) {
@@ -59,7 +47,7 @@ export class UserImportUc {
 
 	private checkFeatureEnabled(school: LegacySchoolDo): void | never {
 		const enabled = Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean;
-		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeatures.LDAP_UNIVENTION_MIGRATION);
+		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeature.LDAP_UNIVENTION_MIGRATION);
 		if (!enabled && !isLdapPilotSchool) {
 			this.logger.warning(new UserMigrationIsNotEnabled());
 			throw new InternalServerErrorException('User Migration not enabled');
@@ -164,7 +152,7 @@ export class UserImportUc {
 	 */
 	async findAllUnmatchedUsers(
 		currentUserId: EntityId,
-		query: INameMatch,
+		query: NameMatch,
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);

@@ -1,7 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Action, AuthorizationService } from '@modules/authorization';
+import { HttpService } from '@nestjs/axios';
+import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, InputFormat } from '@shared/domain';
+import { BoardDoAuthorizable } from '@shared/domain/domainobject';
+import { InputFormat } from '@shared/domain/types';
 import {
+	drawingElementFactory,
 	fileElementFactory,
 	richTextElementFactory,
 	setupEntities,
@@ -10,10 +15,8 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { AuthorizationService } from '@modules/authorization';
 import { ObjectId } from 'bson';
-import { BoardDoAuthorizableService, ContentElementService } from '../service';
-import { SubmissionItemService } from '../service/submission-item.service';
+import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { ElementUc } from './element.uc';
 
 describe(ElementUc.name, () => {
@@ -46,6 +49,10 @@ describe(ElementUc.name, () => {
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
+				},
+				{
+					provide: HttpService,
+					useValue: createMock<HttpService>(),
 				},
 			],
 		}).compile();
@@ -123,15 +130,104 @@ describe(ElementUc.name, () => {
 		});
 	});
 
+	describe('deleteElement', () => {
+		describe('when deleting an element which has a submission item parent', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const element = richTextElementFactory.build();
+				const submissionItem = submissionItemFactory.build({ userId: user.id });
+
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
+					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
+				);
+
+				elementService.findById.mockResolvedValueOnce(element);
+				return { element, user, submissionItem };
+			};
+
+			it('should call the service to find the element', async () => {
+				const { element, user } = setup();
+				await uc.deleteElement(user.id, element.id);
+
+				expect(elementService.findById).toHaveBeenCalledWith(element.id);
+			});
+
+			it('should call the service to find the parent of the element', async () => {
+				const { element, user } = setup();
+				await uc.deleteElement(user.id, element.id);
+
+				expect(elementService.findParentOfId).toHaveBeenCalledWith(element.id);
+			});
+
+			it('should throw if the user is not the owner of the submission item', async () => {
+				const { element, user } = setup();
+				const otherSubmissionItem = submissionItemFactory.build({ userId: new ObjectId().toHexString() });
+				elementService.findParentOfId.mockResolvedValueOnce(otherSubmissionItem);
+
+				await expect(uc.deleteElement(user.id, element.id)).rejects.toThrow(new ForbiddenException());
+			});
+
+			it('should authorize the user to delete the element', async () => {
+				const { element, user, submissionItem } = setup();
+				elementService.findParentOfId.mockResolvedValueOnce(submissionItem);
+				const boardDoAuthorizable = await boardDoAuthorizableService.getBoardAuthorizable(submissionItem);
+				const context = { action: Action.read, requiredPermissions: [] };
+				await uc.deleteElement(user.id, element.id);
+
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, boardDoAuthorizable, context);
+			});
+
+			it('should call the service to delete the element', async () => {
+				const { user, element, submissionItem } = setup();
+				elementService.findParentOfId.mockResolvedValueOnce(submissionItem);
+
+				await uc.deleteElement(user.id, element.id);
+
+				expect(elementService.delete).toHaveBeenCalledWith(element);
+			});
+		});
+
+		describe('when deleting a content element', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const element = richTextElementFactory.build();
+				const drawingElement = drawingElementFactory.build();
+
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
+					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
+				);
+
+				return { user, element, drawingElement };
+			};
+
+			it('should call the service to find the element', async () => {
+				const { user, element } = setup();
+
+				await uc.deleteElement(user.id, element.id);
+
+				expect(elementService.findById).toHaveBeenCalledWith(element.id);
+			});
+
+			it('should call the service to delete the element', async () => {
+				const { user, element } = setup();
+				elementService.findById.mockResolvedValueOnce(element);
+
+				await uc.deleteElement(user.id, element.id);
+
+				expect(elementService.delete).toHaveBeenCalledWith(element);
+			});
+		});
+	});
+
 	describe('createSubmissionItem', () => {
 		describe('with non SubmissionContainerElement parent', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const fileElement = fileElementFactory.build();
 
-				const elementSpy = elementService.findById.mockResolvedValue(fileElement);
+				elementService.findById.mockResolvedValue(fileElement);
 
-				return { fileElement, user, elementSpy };
+				return { fileElement, user };
 			};
 
 			it('should throw', async () => {
@@ -150,9 +246,9 @@ describe(ElementUc.name, () => {
 
 				const submissionContainer = submissionContainerElementFactory.build({ children: [fileElement] });
 
-				const elementSpy = elementService.findById.mockResolvedValue(submissionContainer);
+				elementService.findById.mockResolvedValue(submissionContainer);
 
-				return { submissionContainer, fileElement, user, elementSpy };
+				return { submissionContainer, fileElement, user };
 			};
 
 			it('should throw', async () => {
@@ -171,9 +267,9 @@ describe(ElementUc.name, () => {
 				const submissionItem = submissionItemFactory.build({ userId: user.id });
 				const submissionContainer = submissionContainerElementFactory.build({ children: [submissionItem] });
 
-				const elementSpy = elementService.findById.mockResolvedValue(submissionContainer);
+				elementService.findById.mockResolvedValue(submissionContainer);
 
-				return { submissionContainer, submissionItem, user, elementSpy };
+				return { submissionContainer, submissionItem, user };
 			};
 
 			it('should throw', async () => {

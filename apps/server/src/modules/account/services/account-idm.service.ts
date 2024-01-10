@@ -1,8 +1,9 @@
+import { IdentityManagementOauthService, IdentityManagementService } from '@infra/identity-management';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
-import { IdentityManagementOauthService, IdentityManagementService } from '@shared/infra/identity-management';
-import { Counted, EntityId, IdmAccount, IdmAccountUpdate } from '@shared/domain';
+import { Counted, EntityId } from '@shared/domain/types';
+import { IdmAccount, IdmAccountUpdate } from '@shared/domain/interface';
 import { LegacyLogger } from '@src/core/logger';
 import { AccountIdmToDtoMapper } from '../mapper';
 import { AccountLookupService } from './account-lookup.service';

@@ -1,4 +1,5 @@
 import {
+	Cascade,
 	Collection,
 	Embeddable,
 	Embedded,
@@ -6,27 +7,20 @@ import {
 	Index,
 	ManyToMany,
 	ManyToOne,
+	OneToMany,
 	OneToOne,
 	Property,
 } from '@mikro-orm/core';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
-import { BaseEntity } from './base.entity';
+import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
+import { FileStorageType } from '@src/modules/school/domain/type/file-storage-type.enum';
+import { BaseEntityWithTimestamps } from './base.entity';
+import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
 import { SchoolYearEntity } from './schoolyear.entity';
 import { SystemEntity } from './system.entity';
-import { FederalStateEntity } from './federal-state.entity';
 
-export enum SchoolFeatures {
-	ROCKET_CHAT = 'rocketChat',
-	VIDEOCONFERENCE = 'videoconference',
-	NEXTCLOUD = 'nextcloud',
-	STUDENTVISIBILITY = 'studentVisibility', // deprecated
-	LDAP_UNIVENTION_MIGRATION = 'ldapUniventionMigrationSchool',
-	OAUTH_PROVISIONING_ENABLED = 'oauthProvisioningEnabled',
-	SHOW_OUTDATED_USERS = 'showOutdatedUsers',
-	ENABLE_LDAP_SYNC_DURING_MIGRATION = 'enableLdapSyncDuringMigration',
-}
-
-export interface ISchoolProperties {
+export interface SchoolProperties {
 	_id?: string;
 	externalId?: string;
 	inMaintenanceSince?: Date;
@@ -35,10 +29,19 @@ export interface ISchoolProperties {
 	name: string;
 	officialSchoolNumber?: string;
 	systems?: SystemEntity[];
-	features?: SchoolFeatures[];
-	schoolYear?: SchoolYearEntity;
+	permissions?: SchoolRoles;
+	features?: SchoolFeature[];
+	currentYear?: SchoolYearEntity;
 	userLoginMigration?: UserLoginMigrationEntity;
 	federalState: FederalStateEntity;
+	county?: CountyEmbeddable;
+	purpose?: SchoolPurpose;
+	enableStudentTeamCreation?: boolean;
+	logo_dataUrl?: string;
+	logo_name?: string;
+	fileStorageType?: FileStorageType;
+	language?: string;
+	timezone?: string;
 }
 
 @Embeddable()
@@ -61,9 +64,9 @@ export class SchoolRoles {
 
 @Entity({ tableName: 'schools' })
 @Index({ properties: ['externalId', 'systems'] })
-export class SchoolEntity extends BaseEntity {
+export class SchoolEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
-	features?: SchoolFeatures[];
+	features?: SchoolFeature[];
 
 	@Property({ nullable: true })
 	inMaintenanceSince?: Date;
@@ -83,57 +86,77 @@ export class SchoolEntity extends BaseEntity {
 	@Property({ nullable: true })
 	officialSchoolNumber?: string;
 
-	@ManyToMany(() => SystemEntity, undefined, { fieldName: 'systems' })
+	@ManyToMany(() => SystemEntity)
 	systems = new Collection<SystemEntity>(this);
 
 	@Embedded(() => SchoolRoles, { object: true, nullable: true, prefix: false })
 	permissions?: SchoolRoles;
 
-	@ManyToOne(() => SchoolYearEntity, { fieldName: 'currentYear', nullable: true })
-	schoolYear?: SchoolYearEntity;
+	@ManyToOne(() => SchoolYearEntity, { nullable: true })
+	currentYear?: SchoolYearEntity;
 
 	@OneToOne(
 		() => UserLoginMigrationEntity,
 		(userLoginMigration: UserLoginMigrationEntity) => userLoginMigration.school,
 		{
 			orphanRemoval: true,
-			nullable: true,
-			fieldName: 'userLoginMigrationId',
 		}
 	)
 	userLoginMigration?: UserLoginMigrationEntity;
 
-	@ManyToOne(() => FederalStateEntity, { fieldName: 'federalState', nullable: false })
+	@ManyToOne(() => FederalStateEntity)
 	federalState: FederalStateEntity;
 
-	constructor(props: ISchoolProperties) {
+	@Property({ nullable: true })
+	county?: CountyEmbeddable;
+
+	@Property({ nullable: true })
+	purpose?: SchoolPurpose;
+
+	@Property({ nullable: true })
+	enableStudentTeamCreation?: boolean;
+
+	@Property({ nullable: true })
+	logo_dataUrl?: string;
+
+	@Property({ nullable: true })
+	logo_name?: string;
+
+	@Property({ nullable: true })
+	fileStorageType?: FileStorageType;
+
+	@Property({ nullable: true })
+	language?: string;
+
+	@Property({ nullable: true })
+	timezone?: string;
+
+	@OneToMany(() => SchoolSystemOptionsEntity, (options) => options.school, { cascade: [Cascade.REMOVE] })
+	schoolSystemOptions = new Collection<SchoolSystemOptionsEntity>(this);
+
+	constructor(props: SchoolProperties) {
 		super();
-		if (props.externalId) {
-			this.externalId = props.externalId;
-		}
-		if (props.previousExternalId) {
-			this.previousExternalId = props.previousExternalId;
-		}
+		this.externalId = props.externalId;
+		this.previousExternalId = props.previousExternalId;
 		this.inMaintenanceSince = props.inMaintenanceSince;
-		if (props.inUserMigration !== null) {
-			this.inUserMigration = props.inUserMigration;
-		}
+		this.inUserMigration = props.inUserMigration;
 		this.name = props.name;
-		if (props.officialSchoolNumber) {
-			this.officialSchoolNumber = props.officialSchoolNumber;
-		}
+		this.officialSchoolNumber = props.officialSchoolNumber;
 		if (props.systems) {
 			this.systems.set(props.systems);
 		}
-		if (props.features) {
-			this.features = props.features;
-		}
-		if (props.schoolYear) {
-			this.schoolYear = props.schoolYear;
-		}
-		if (props.userLoginMigration) {
-			this.userLoginMigration = props.userLoginMigration;
-		}
+		this.permissions = props.permissions;
+		this.features = props.features;
+		this.currentYear = props.currentYear;
+		this.userLoginMigration = props.userLoginMigration;
 		this.federalState = props.federalState;
+		this.county = props.county;
+		this.purpose = props.purpose;
+		this.enableStudentTeamCreation = props.enableStudentTeamCreation;
+		this.logo_dataUrl = props.logo_dataUrl;
+		this.logo_name = props.logo_name;
+		this.fileStorageType = props.fileStorageType;
+		this.language = props.language;
+		this.timezone = props.timezone;
 	}
 }

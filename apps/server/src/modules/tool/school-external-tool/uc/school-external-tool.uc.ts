@@ -1,10 +1,15 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId, Permission } from '@shared/domain';
 import { AuthorizationContext, AuthorizationContextBuilder } from '@modules/authorization';
+import { Injectable } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalToolService } from '../../context-external-tool/service';
-import { SchoolExternalTool } from '../domain';
-import { SchoolExternalToolService, SchoolExternalToolValidationService } from '../service';
+import { SchoolExternalTool, SchoolExternalToolMetadata } from '../domain';
+import {
+	SchoolExternalToolMetadataService,
+	SchoolExternalToolService,
+	SchoolExternalToolValidationService,
+} from '../service';
 import { SchoolExternalToolDto, SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 
 @Injectable()
@@ -13,6 +18,7 @@ export class SchoolExternalToolUc {
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService,
+		private readonly schoolExternalToolMetadataService: SchoolExternalToolMetadataService,
 		private readonly toolPermissionHelper: ToolPermissionHelper
 	) {}
 
@@ -94,5 +100,21 @@ export class SchoolExternalToolUc {
 
 		const saved = await this.schoolExternalToolService.saveSchoolExternalTool(updated);
 		return saved;
+	}
+
+	async getMetadataForSchoolExternalTool(
+		userId: EntityId,
+		schoolExternalToolId: EntityId
+	): Promise<SchoolExternalToolMetadata> {
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
+
+		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
+		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context);
+
+		const metadata: SchoolExternalToolMetadata = await this.schoolExternalToolMetadataService.getMetadata(
+			schoolExternalToolId
+		);
+
+		return metadata;
 	}
 }

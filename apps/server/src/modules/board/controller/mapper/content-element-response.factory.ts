@@ -1,7 +1,14 @@
-import { NotImplementedException } from '@nestjs/common';
-import { AnyBoardDo } from '@shared/domain';
-import { AnyContentElementResponse } from '../dto';
+import { NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
+import { AnyBoardDo, FileElement, RichTextElement } from '@shared/domain/domainobject';
+import {
+	AnyContentElementResponse,
+	FileElementResponse,
+	isFileElementResponse,
+	isRichTextElementResponse,
+	RichTextElementResponse,
+} from '../dto';
 import { BaseResponseMapper } from './base-mapper.interface';
+import { DrawingElementResponseMapper } from './drawing-element-response.mapper';
 import { ExternalToolElementResponseMapper } from './external-tool-element-response.mapper';
 import { FileElementResponseMapper } from './file-element-response.mapper';
 import { LinkElementResponseMapper } from './link-element-response.mapper';
@@ -13,6 +20,7 @@ export class ContentElementResponseFactory {
 		FileElementResponseMapper.getInstance(),
 		LinkElementResponseMapper.getInstance(),
 		RichTextElementResponseMapper.getInstance(),
+		DrawingElementResponseMapper.getInstance(),
 		SubmissionContainerElementResponseMapper.getInstance(),
 		ExternalToolElementResponseMapper.getInstance(),
 	];
@@ -26,6 +34,16 @@ export class ContentElementResponseFactory {
 
 		const result = elementMapper.mapToResponse(element);
 
+		return result;
+	}
+
+	static mapSubmissionContentToResponse(
+		element: RichTextElement | FileElement
+	): FileElementResponse | RichTextElementResponse {
+		const result = this.mapToResponse(element);
+		if (!isFileElementResponse(result) && !isRichTextElementResponse(result)) {
+			throw new UnprocessableEntityException();
+		}
 		return result;
 	}
 }

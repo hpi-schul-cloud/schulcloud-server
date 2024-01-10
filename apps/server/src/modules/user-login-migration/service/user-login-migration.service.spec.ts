@@ -1,28 +1,30 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, LegacySchoolDo, SchoolFeatures, UserDO, UserLoginMigrationDO } from '@shared/domain';
-import { UserLoginMigrationRepo } from '@shared/repo';
-import { legacySchoolDoFactory, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { SystemService } from '@modules/system';
+import { LegacySystemService } from '@modules/system';
 import { SystemDto } from '@modules/system/service';
 import { UserService } from '@modules/user';
-import { UserLoginMigrationNotFoundLoggableException } from '../error';
-import { SchoolMigrationService } from './school-migration.service';
+import { InternalServerErrorException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
+import { UserLoginMigrationRepo } from '@shared/repo';
+import { legacySchoolDoFactory, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
+import {
+	UserLoginMigrationAlreadyClosedLoggableException,
+	UserLoginMigrationGracePeriodExpiredLoggableException,
+} from '../loggable';
 import { UserLoginMigrationService } from './user-login-migration.service';
 
-describe('UserLoginMigrationService', () => {
+describe(UserLoginMigrationService.name, () => {
 	let module: TestingModule;
 	let service: UserLoginMigrationService;
 
 	let userService: DeepMocked<UserService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
-	let systemService: DeepMocked<SystemService>;
+	let systemService: DeepMocked<LegacySystemService>;
 	let userLoginMigrationRepo: DeepMocked<UserLoginMigrationRepo>;
-	let schoolMigrationService: DeepMocked<SchoolMigrationService>;
 
 	const mockedDate: Date = new Date('2023-05-02');
 	const finishDate: Date = new Date(
@@ -45,16 +47,12 @@ describe('UserLoginMigrationService', () => {
 					useValue: createMock<LegacySchoolService>(),
 				},
 				{
-					provide: SystemService,
-					useValue: createMock<SystemService>(),
+					provide: LegacySystemService,
+					useValue: createMock<LegacySystemService>(),
 				},
 				{
 					provide: UserLoginMigrationRepo,
 					useValue: createMock<UserLoginMigrationRepo>(),
-				},
-				{
-					provide: SchoolMigrationService,
-					useValue: createMock<SchoolMigrationService>(),
 				},
 			],
 		}).compile();
@@ -62,9 +60,8 @@ describe('UserLoginMigrationService', () => {
 		service = module.get(UserLoginMigrationService);
 		userService = module.get(UserService);
 		schoolService = module.get(LegacySchoolService);
-		systemService = module.get(SystemService);
+		systemService = module.get(LegacySystemService);
 		userLoginMigrationRepo = module.get(UserLoginMigrationRepo);
-		schoolMigrationService = module.get(SchoolMigrationService);
 	});
 
 	afterAll(async () => {
@@ -156,404 +153,6 @@ describe('UserLoginMigrationService', () => {
 				const result: UserLoginMigrationDO | null = await service.findMigrationByUser(userId);
 
 				expect(result).toBeNull();
-			});
-		});
-	});
-
-	describe('setMigration', () => {
-		describe('when first starting the migration', () => {
-			describe('when the school has no systems', () => {
-				const setup = () => {
-					const schoolId: EntityId = new ObjectId().toHexString();
-					const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(undefined, schoolId);
-
-					const targetSystemId: EntityId = new ObjectId().toHexString();
-					const system: SystemDto = new SystemDto({
-						id: targetSystemId,
-						type: 'oauth2',
-						alias: 'SANIS',
-					});
-
-					schoolService.getSchoolById.mockResolvedValue(school);
-					systemService.findByType.mockResolvedValue([system]);
-					userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
-
-					return {
-						schoolId,
-						school,
-						targetSystemId,
-					};
-				};
-
-				it('should save the UserLoginMigration with start date and target system', async () => {
-					const { schoolId, targetSystemId } = setup();
-					const expected: UserLoginMigrationDO = new UserLoginMigrationDO({
-						id: new ObjectId().toHexString(),
-						targetSystemId,
-						schoolId,
-						startedAt: mockedDate,
-					});
-					userLoginMigrationRepo.save.mockResolvedValue(expected);
-
-					const result: UserLoginMigrationDO = await service.setMigration(schoolId, true);
-
-					expect(result).toEqual(expected);
-				});
-			});
-
-			describe('when the school has systems', () => {
-				const setup = () => {
-					const sourceSystemId: EntityId = new ObjectId().toHexString();
-					const targetSystemId: EntityId = new ObjectId().toHexString();
-					const system: SystemDto = new SystemDto({
-						id: targetSystemId,
-						type: 'oauth2',
-						alias: 'SANIS',
-					});
-
-					const schoolId: EntityId = new ObjectId().toHexString();
-					const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ systems: [sourceSystemId] }, schoolId);
-
-					schoolService.getSchoolById.mockResolvedValue(school);
-					systemService.findByType.mockResolvedValue([system]);
-					userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
-
-					return {
-						schoolId,
-						school,
-						targetSystemId,
-						sourceSystemId,
-					};
-				};
-
-				it('should save the UserLoginMigration with start date, target system and source system', async () => {
-					const { schoolId, targetSystemId, sourceSystemId } = setup();
-					const expected: UserLoginMigrationDO = new UserLoginMigrationDO({
-						id: new ObjectId().toHexString(),
-						sourceSystemId,
-						targetSystemId,
-						schoolId,
-						startedAt: mockedDate,
-					});
-					userLoginMigrationRepo.save.mockResolvedValue(expected);
-
-					const result: UserLoginMigrationDO = await service.setMigration(schoolId, true);
-
-					expect(result).toEqual(expected);
-				});
-			});
-
-			describe('when the school has a feature', () => {
-				const setup = () => {
-					const schoolId: EntityId = new ObjectId().toHexString();
-					const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(undefined, schoolId);
-
-					const targetSystemId: EntityId = new ObjectId().toHexString();
-					const system: SystemDto = new SystemDto({
-						id: targetSystemId,
-						type: 'oauth2',
-						alias: 'SANIS',
-					});
-
-					schoolService.getSchoolById.mockResolvedValue(school);
-					systemService.findByType.mockResolvedValue([system]);
-					userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
-
-					return {
-						schoolId,
-						school,
-						targetSystemId,
-					};
-				};
-
-				it('should add the OAUTH_PROVISIONING_ENABLED feature to the schools feature list', async () => {
-					const { schoolId, school } = setup();
-					const existingFeature: SchoolFeatures = 'otherFeature' as SchoolFeatures;
-					school.features = [existingFeature];
-
-					await service.setMigration(schoolId, true, undefined, undefined);
-
-					expect(schoolService.save).toHaveBeenCalledWith(
-						expect.objectContaining<Partial<LegacySchoolDo>>({
-							features: [existingFeature, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
-						})
-					);
-				});
-			});
-
-			describe('when the school has no features yet', () => {
-				const setup = () => {
-					const schoolId: EntityId = new ObjectId().toHexString();
-					const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ features: undefined }, schoolId);
-
-					const targetSystemId: EntityId = new ObjectId().toHexString();
-					const system: SystemDto = new SystemDto({
-						id: targetSystemId,
-						type: 'oauth2',
-						alias: 'SANIS',
-					});
-
-					schoolService.getSchoolById.mockResolvedValue(school);
-					systemService.findByType.mockResolvedValue([system]);
-					userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
-
-					return {
-						schoolId,
-						school,
-						targetSystemId,
-					};
-				};
-
-				it('should set the OAUTH_PROVISIONING_ENABLED feature for the school', async () => {
-					const { schoolId } = setup();
-
-					await service.setMigration(schoolId, true, undefined, undefined);
-
-					expect(schoolService.save).toHaveBeenCalledWith(
-						expect.objectContaining<Partial<LegacySchoolDo>>({
-							features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
-						})
-					);
-				});
-			});
-
-			describe('when modifying a migration that does not exist on the school', () => {
-				const setup = () => {
-					const schoolId: EntityId = new ObjectId().toHexString();
-					const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(undefined, schoolId);
-
-					schoolService.getSchoolById.mockResolvedValue(school);
-					userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
-
-					return {
-						schoolId,
-						school,
-					};
-				};
-
-				it('should throw an UnprocessableEntityException', async () => {
-					const { schoolId } = setup();
-
-					const func = async () => service.setMigration(schoolId, undefined, true, true);
-
-					await expect(func).rejects.toThrow(UnprocessableEntityException);
-				});
-			});
-
-			describe('when creating a new migration but the SANIS system does not exist', () => {
-				const setup = () => {
-					const schoolId: EntityId = new ObjectId().toHexString();
-					const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(undefined, schoolId);
-
-					schoolService.getSchoolById.mockResolvedValue(school);
-					systemService.findByType.mockResolvedValue([]);
-					userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
-
-					return {
-						schoolId,
-						school,
-					};
-				};
-
-				it('should throw an InternalServerErrorException', async () => {
-					const { schoolId } = setup();
-
-					const func = async () => service.setMigration(schoolId, true);
-
-					await expect(func).rejects.toThrow(InternalServerErrorException);
-				});
-			});
-		});
-
-		describe('when restarting the migration', () => {
-			const setup = () => {
-				const schoolId: EntityId = new ObjectId().toHexString();
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(undefined, schoolId);
-
-				const targetSystemId: EntityId = new ObjectId().toHexString();
-				const system: SystemDto = new SystemDto({
-					id: targetSystemId,
-					type: 'oauth2',
-					alias: 'SANIS',
-				});
-
-				const userLoginMigrationId: EntityId = new ObjectId().toHexString();
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					id: userLoginMigrationId,
-					targetSystemId,
-					schoolId,
-					startedAt: mockedDate,
-					closedAt: mockedDate,
-					finishedAt: finishDate,
-				});
-
-				schoolService.getSchoolById.mockResolvedValue(school);
-				systemService.findByType.mockResolvedValue([system]);
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
-
-				return {
-					schoolId,
-					userLoginMigration,
-				};
-			};
-
-			it('should save the UserLoginMigration without close date and finish date', async () => {
-				const { schoolId, userLoginMigration } = setup();
-				const expected: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					...userLoginMigration,
-					closedAt: undefined,
-					finishedAt: undefined,
-				});
-				userLoginMigrationRepo.save.mockResolvedValue(expected);
-
-				const result: UserLoginMigrationDO = await service.setMigration(schoolId, true, undefined, false);
-
-				expect(result).toEqual(expected);
-			});
-		});
-
-		describe('when setting the migration to mandatory', () => {
-			const setup = () => {
-				const schoolId: EntityId = new ObjectId().toHexString();
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(undefined, schoolId);
-
-				const targetSystemId: EntityId = new ObjectId().toHexString();
-				const system: SystemDto = new SystemDto({
-					id: targetSystemId,
-					type: 'oauth2',
-					alias: 'SANIS',
-				});
-
-				const userLoginMigrationId: EntityId = new ObjectId().toHexString();
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					id: userLoginMigrationId,
-					targetSystemId,
-					schoolId,
-					startedAt: mockedDate,
-				});
-
-				schoolService.getSchoolById.mockResolvedValue(school);
-				systemService.findByType.mockResolvedValue([system]);
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
-
-				return {
-					schoolId,
-					userLoginMigration,
-				};
-			};
-
-			it('should save the UserLoginMigration with mandatory date', async () => {
-				const { schoolId, userLoginMigration } = setup();
-				const expected: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					...userLoginMigration,
-					mandatorySince: mockedDate,
-				});
-				userLoginMigrationRepo.save.mockResolvedValue(expected);
-
-				const result: UserLoginMigrationDO = await service.setMigration(schoolId, undefined, true);
-
-				expect(result).toEqual(expected);
-			});
-		});
-
-		describe('when setting the migration back to optional', () => {
-			const setup = () => {
-				const schoolId: EntityId = new ObjectId().toHexString();
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(undefined, schoolId);
-
-				const targetSystemId: EntityId = new ObjectId().toHexString();
-				const system: SystemDto = new SystemDto({
-					id: targetSystemId,
-					type: 'oauth2',
-					alias: 'SANIS',
-				});
-
-				const userLoginMigrationId: EntityId = new ObjectId().toHexString();
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					id: userLoginMigrationId,
-					targetSystemId,
-					schoolId,
-					startedAt: mockedDate,
-					mandatorySince: mockedDate,
-				});
-
-				schoolService.getSchoolById.mockResolvedValue(school);
-				systemService.findByType.mockResolvedValue([system]);
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
-
-				return {
-					schoolId,
-					userLoginMigration,
-				};
-			};
-
-			it('should save the UserLoginMigration without mandatory date', async () => {
-				const { schoolId, userLoginMigration } = setup();
-				const expected: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					...userLoginMigration,
-					mandatorySince: undefined,
-				});
-				userLoginMigrationRepo.save.mockResolvedValue(expected);
-
-				const result: UserLoginMigrationDO = await service.setMigration(schoolId, undefined, false);
-
-				expect(result).toEqual(expected);
-			});
-		});
-
-		describe('when closing the migration', () => {
-			const setup = () => {
-				const schoolId: EntityId = new ObjectId().toHexString();
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(undefined, schoolId);
-
-				const targetSystemId: EntityId = new ObjectId().toHexString();
-				const system: SystemDto = new SystemDto({
-					id: targetSystemId,
-					type: 'oauth2',
-					alias: 'SANIS',
-				});
-
-				const userLoginMigrationId: EntityId = new ObjectId().toHexString();
-				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					id: userLoginMigrationId,
-					targetSystemId,
-					schoolId,
-					startedAt: mockedDate,
-				});
-
-				schoolService.getSchoolById.mockResolvedValue(school);
-				systemService.findByType.mockResolvedValue([system]);
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
-
-				return {
-					schoolId,
-					userLoginMigration,
-				};
-			};
-
-			it('should call schoolService.removeFeature', async () => {
-				const { schoolId } = setup();
-
-				await service.setMigration(schoolId, undefined, undefined, true);
-
-				expect(schoolService.removeFeature).toHaveBeenCalledWith(
-					schoolId,
-					SchoolFeatures.ENABLE_LDAP_SYNC_DURING_MIGRATION
-				);
-			});
-
-			it('should save the UserLoginMigration with close date and finish date', async () => {
-				const { schoolId, userLoginMigration } = setup();
-				const expected: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					...userLoginMigration,
-					closedAt: mockedDate,
-					finishedAt: finishDate,
-				});
-				userLoginMigrationRepo.save.mockResolvedValue(expected);
-
-				const result: UserLoginMigrationDO = await service.setMigration(schoolId, undefined, undefined, true);
-
-				expect(result).toEqual(expected);
 			});
 		});
 	});
@@ -679,14 +278,14 @@ describe('UserLoginMigrationService', () => {
 
 			it('should add the OAUTH_PROVISIONING_ENABLED feature to the schools feature list', async () => {
 				const { schoolId, school } = setup();
-				const existingFeature: SchoolFeatures = 'otherFeature' as SchoolFeatures;
+				const existingFeature: SchoolFeature = 'otherFeature' as SchoolFeature;
 				school.features = [existingFeature];
 
 				await service.startMigration(schoolId);
 
 				expect(schoolService.save).toHaveBeenCalledWith(
 					expect.objectContaining<Partial<LegacySchoolDo>>({
-						features: [existingFeature, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+						features: [existingFeature, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 					})
 				);
 			});
@@ -720,7 +319,7 @@ describe('UserLoginMigrationService', () => {
 
 				expect(schoolService.save).toHaveBeenCalledWith(
 					expect.objectContaining<Partial<LegacySchoolDo>>({
-						features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 					})
 				);
 			});
@@ -816,7 +415,7 @@ describe('UserLoginMigrationService', () => {
 			it('should call userLoginMigrationRepo.delete', async () => {
 				const { userLoginMigration } = setup();
 
-				await service.deleteUserLoginMigration(userLoginMigration);
+				await service.deleteUserLoginMigration({ ...userLoginMigration });
 
 				expect(userLoginMigrationRepo.delete).toHaveBeenCalledWith(userLoginMigration);
 			});
@@ -824,73 +423,100 @@ describe('UserLoginMigrationService', () => {
 	});
 
 	describe('restartMigration', () => {
-		describe('when migration restart was successfully', () => {
+		describe('when the migration can be restarted', () => {
 			const setup = () => {
-				const schoolId: EntityId = new ObjectId().toHexString();
-
-				const targetSystemId: EntityId = new ObjectId().toHexString();
-
-				const userLoginMigrationDO: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					targetSystemId,
-					schoolId,
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					startedAt: mockedDate,
+					closedAt: mockedDate,
+					finishedAt: finishDate,
 				});
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigrationDO);
-				schoolMigrationService.unmarkOutdatedUsers.mockResolvedValue();
-				userLoginMigrationRepo.save.mockResolvedValue(userLoginMigrationDO);
+				const restartedUserLoginMigration: UserLoginMigrationDO = new UserLoginMigrationDO({
+					...userLoginMigration,
+					closedAt: undefined,
+					finishedAt: undefined,
+				});
+
+				userLoginMigrationRepo.save.mockResolvedValueOnce(restartedUserLoginMigration);
 
 				return {
-					schoolId,
-					targetSystemId,
-					userLoginMigrationDO,
+					userLoginMigration,
+					restartedUserLoginMigration,
 				};
 			};
 
-			it('should call userLoginMigrationRepo', async () => {
-				const { schoolId, userLoginMigrationDO } = setup();
+			it('should save the migration without closedAt and finishedAt timestamps', async () => {
+				const { userLoginMigration, restartedUserLoginMigration } = setup();
 
-				await service.restartMigration(schoolId);
+				await service.restartMigration({ ...userLoginMigration });
 
-				expect(userLoginMigrationRepo.findBySchoolId).toHaveBeenCalledWith(schoolId);
-				expect(userLoginMigrationRepo.save).toHaveBeenCalledWith(userLoginMigrationDO);
+				expect(userLoginMigrationRepo.save).toHaveBeenCalledWith(restartedUserLoginMigration);
 			});
 
-			it('should call schoolMigrationService', async () => {
-				const { schoolId } = setup();
+			it('should return the migration', async () => {
+				const { userLoginMigration, restartedUserLoginMigration } = setup();
 
-				await service.restartMigration(schoolId);
+				const result: UserLoginMigrationDO = await service.restartMigration({ ...userLoginMigration });
 
-				expect(schoolMigrationService.unmarkOutdatedUsers).toHaveBeenCalledWith(schoolId);
+				expect(result).toEqual(restartedUserLoginMigration);
 			});
 		});
 
-		describe('when migration could not be found', () => {
+		describe('when the migration is still running', () => {
 			const setup = () => {
-				const schoolId: EntityId = new ObjectId().toHexString();
-
-				const targetSystemId: EntityId = new ObjectId().toHexString();
-
-				const userLoginMigrationDO: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					targetSystemId,
-					schoolId,
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					startedAt: mockedDate,
 				});
 
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
-
 				return {
-					schoolId,
-					targetSystemId,
-					userLoginMigrationDO,
+					userLoginMigration,
 				};
 			};
 
-			it('should throw UserLoginMigrationLoggableException ', async () => {
-				const { schoolId } = setup();
+			it('should not save the migration again', async () => {
+				const { userLoginMigration } = setup();
 
-				const func = async () => service.restartMigration(schoolId);
+				await service.restartMigration({ ...userLoginMigration });
 
-				await expect(func).rejects.toThrow(UserLoginMigrationNotFoundLoggableException);
+				expect(userLoginMigrationRepo.save).not.toHaveBeenCalled();
+			});
+
+			it('should return the migration', async () => {
+				const { userLoginMigration } = setup();
+
+				const result: UserLoginMigrationDO = await service.restartMigration({ ...userLoginMigration });
+
+				expect(result).toEqual(userLoginMigration);
+			});
+		});
+
+		describe('when the grace period for the user login migration is expired', () => {
+			const setup = () => {
+				const dateInThePast: Date = new Date(mockedDate.getTime() - 100);
+				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
+					closedAt: dateInThePast,
+					finishedAt: dateInThePast,
+				});
+
+				return {
+					userLoginMigration,
+					dateInThePast,
+				};
+			};
+
+			it('should not save the user login migration again', async () => {
+				const { userLoginMigration } = setup();
+
+				await expect(service.restartMigration({ ...userLoginMigration })).rejects.toThrow();
+
+				expect(userLoginMigrationRepo.save).not.toHaveBeenCalled();
+			});
+
+			it('should return throw an error', async () => {
+				const { userLoginMigration, dateInThePast } = setup();
+
+				await expect(service.restartMigration({ ...userLoginMigration })).rejects.toThrow(
+					new UserLoginMigrationGracePeriodExpiredLoggableException(userLoginMigration.id as string, dateInThePast)
+				);
 			});
 		});
 	});
@@ -898,34 +524,25 @@ describe('UserLoginMigrationService', () => {
 	describe('setMigrationMandatory', () => {
 		describe('when migration is set to mandatory', () => {
 			const setup = () => {
-				const schoolId: EntityId = new ObjectId().toHexString();
-
-				const targetSystemId: EntityId = new ObjectId().toHexString();
-
-				const userLoginMigrationDO: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					targetSystemId,
-					schoolId,
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					startedAt: mockedDate,
 					mandatorySince: undefined,
 				});
 
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigrationDO);
-				userLoginMigrationRepo.save.mockResolvedValue(userLoginMigrationDO);
+				userLoginMigrationRepo.save.mockResolvedValue(userLoginMigration);
 
 				return {
-					schoolId,
-					targetSystemId,
-					userLoginMigrationDO,
+					userLoginMigration,
 				};
 			};
 
 			it('should call save the user login migration', async () => {
-				const { schoolId, userLoginMigrationDO } = setup();
+				const { userLoginMigration } = setup();
 
-				await service.setMigrationMandatory(schoolId, true);
+				await service.setMigrationMandatory(userLoginMigration, true);
 
 				expect(userLoginMigrationRepo.save).toHaveBeenCalledWith({
-					...userLoginMigrationDO,
+					...userLoginMigration,
 					mandatorySince: mockedDate,
 				});
 			});
@@ -933,65 +550,76 @@ describe('UserLoginMigrationService', () => {
 
 		describe('when migration is set to optional', () => {
 			const setup = () => {
-				const schoolId: EntityId = new ObjectId().toHexString();
-
-				const targetSystemId: EntityId = new ObjectId().toHexString();
-
-				const userLoginMigrationDO: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					targetSystemId,
-					schoolId,
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
 					startedAt: mockedDate,
 					mandatorySince: mockedDate,
 				});
 
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigrationDO);
-				userLoginMigrationRepo.save.mockResolvedValue(userLoginMigrationDO);
-
 				return {
-					schoolId,
-					targetSystemId,
-					userLoginMigrationDO,
+					userLoginMigration,
 				};
 			};
 
 			it('should call save the user login migration', async () => {
-				const { schoolId, userLoginMigrationDO } = setup();
+				const { userLoginMigration } = setup();
 
-				await service.setMigrationMandatory(schoolId, false);
+				await service.setMigrationMandatory(userLoginMigration, false);
 
 				expect(userLoginMigrationRepo.save).toHaveBeenCalledWith({
-					...userLoginMigrationDO,
+					...userLoginMigration,
 					mandatorySince: undefined,
 				});
 			});
 		});
 
-		describe('when migration could not be found', () => {
+		describe('when the grace period for the user login migration is expired', () => {
 			const setup = () => {
-				const schoolId: EntityId = new ObjectId().toHexString();
-
-				const targetSystemId: EntityId = new ObjectId().toHexString();
-
-				const userLoginMigrationDO: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					targetSystemId,
-					schoolId,
-					startedAt: mockedDate,
+				const dateInThePast: Date = new Date(mockedDate.getTime() - 100);
+				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
+					closedAt: dateInThePast,
+					finishedAt: dateInThePast,
 				});
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
 
 				return {
-					schoolId,
-					targetSystemId,
-					userLoginMigrationDO,
+					userLoginMigration,
+					dateInThePast,
 				};
 			};
 
-			it('should throw UserLoginMigrationLoggableException ', async () => {
-				const { schoolId } = setup();
+			it('should not save the user login migration again', async () => {
+				const { userLoginMigration } = setup();
 
-				const func = async () => service.setMigrationMandatory(schoolId, true);
+				await expect(service.setMigrationMandatory({ ...userLoginMigration }, true)).rejects.toThrow();
 
-				await expect(func).rejects.toThrow(UserLoginMigrationNotFoundLoggableException);
+				expect(userLoginMigrationRepo.save).not.toHaveBeenCalled();
+			});
+
+			it('should return throw an error', async () => {
+				const { userLoginMigration, dateInThePast } = setup();
+
+				await expect(service.setMigrationMandatory({ ...userLoginMigration }, true)).rejects.toThrow(
+					new UserLoginMigrationGracePeriodExpiredLoggableException(userLoginMigration.id as string, dateInThePast)
+				);
+			});
+		});
+
+		describe('when migration is closed', () => {
+			const setup = () => {
+				const userLoginMigration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
+					closedAt: new Date(2023, 5),
+				});
+
+				return {
+					userLoginMigration,
+				};
+			};
+
+			it('should throw a UserLoginMigrationAlreadyClosedLoggableException', async () => {
+				const { userLoginMigration } = setup();
+
+				const func = async () => service.setMigrationMandatory(userLoginMigration, true);
+
+				await expect(func).rejects.toThrow(UserLoginMigrationAlreadyClosedLoggableException);
 			});
 		});
 	});
@@ -999,7 +627,6 @@ describe('UserLoginMigrationService', () => {
 	describe('closeMigration', () => {
 		describe('when a migration can be closed', () => {
 			const setup = () => {
-				const schoolId: EntityId = new ObjectId().toHexString();
 				const userLoginMigration = userLoginMigrationDOFactory.buildWithId();
 				const closedUserLoginMigration = new UserLoginMigrationDO({
 					...userLoginMigration,
@@ -1007,60 +634,99 @@ describe('UserLoginMigrationService', () => {
 					finishedAt: finishDate,
 				});
 
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(userLoginMigration);
 				userLoginMigrationRepo.save.mockResolvedValue(closedUserLoginMigration);
 
 				return {
-					schoolId,
+					userLoginMigration,
 					closedUserLoginMigration,
 				};
 			};
 
-			it('should call schoolService.removeFeature', async () => {
-				const { schoolId } = setup();
+			it('should remove the "ldap sync during migration" school feature', async () => {
+				const { userLoginMigration } = setup();
 
-				await service.closeMigration(schoolId);
+				await service.closeMigration({ ...userLoginMigration });
 
 				expect(schoolService.removeFeature).toHaveBeenCalledWith(
-					schoolId,
-					SchoolFeatures.ENABLE_LDAP_SYNC_DURING_MIGRATION
+					userLoginMigration.schoolId,
+					SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION
 				);
 			});
 
 			it('should save the closed user login migration', async () => {
-				const { schoolId, closedUserLoginMigration } = setup();
+				const { userLoginMigration, closedUserLoginMigration } = setup();
 
-				await service.closeMigration(schoolId);
+				await service.closeMigration({ ...userLoginMigration });
 
 				expect(userLoginMigrationRepo.save).toHaveBeenCalledWith(closedUserLoginMigration);
 			});
 
 			it('should return the closed user login migration', async () => {
-				const { schoolId, closedUserLoginMigration } = setup();
+				const { userLoginMigration, closedUserLoginMigration } = setup();
 
-				const result = await service.closeMigration(schoolId);
+				const result: UserLoginMigrationDO = await service.closeMigration({ ...userLoginMigration });
 
 				expect(result).toEqual(closedUserLoginMigration);
 			});
 		});
 
-		describe('when a migration can be closed', () => {
+		describe('when the user login migration was already closed', () => {
 			const setup = () => {
-				const schoolId: EntityId = new ObjectId().toHexString();
-
-				userLoginMigrationRepo.findBySchoolId.mockResolvedValue(null);
+				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
+					closedAt: mockedDate,
+					finishedAt: finishDate,
+				});
 
 				return {
-					schoolId,
+					userLoginMigration,
 				};
 			};
 
-			it('should save the closed user login migration', async () => {
-				const { schoolId } = setup();
+			it('should not save the user login migration again', async () => {
+				const { userLoginMigration } = setup();
 
-				const func = () => service.closeMigration(schoolId);
+				await service.closeMigration({ ...userLoginMigration });
 
-				await expect(func).rejects.toThrow(UserLoginMigrationNotFoundLoggableException);
+				expect(userLoginMigrationRepo.save).not.toHaveBeenCalled();
+			});
+
+			it('should return the already closed user login migration', async () => {
+				const { userLoginMigration } = setup();
+
+				const result: UserLoginMigrationDO = await service.closeMigration({ ...userLoginMigration });
+
+				expect(result).toEqual(userLoginMigration);
+			});
+		});
+
+		describe('when the grace period for the user login migration is expired', () => {
+			const setup = () => {
+				const dateInThePast: Date = new Date(mockedDate.getTime() - 100);
+				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
+					closedAt: dateInThePast,
+					finishedAt: dateInThePast,
+				});
+
+				return {
+					userLoginMigration,
+					dateInThePast,
+				};
+			};
+
+			it('should not save the user login migration again', async () => {
+				const { userLoginMigration } = setup();
+
+				await expect(service.closeMigration({ ...userLoginMigration })).rejects.toThrow();
+
+				expect(userLoginMigrationRepo.save).not.toHaveBeenCalled();
+			});
+
+			it('should return throw an error', async () => {
+				const { userLoginMigration, dateInThePast } = setup();
+
+				await expect(service.closeMigration({ ...userLoginMigration })).rejects.toThrow(
+					new UserLoginMigrationGracePeriodExpiredLoggableException(userLoginMigration.id as string, dateInThePast)
+				);
 			});
 		});
 	});

@@ -1,24 +1,23 @@
 import { createMock } from '@golevelup/ts-jest';
-import { EntityManager } from '@mikro-orm/core';
+import { MongoMemoryDatabaseModule } from '@infra/database';
+import { EntityData, EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { LegacySchoolDo } from '@shared/domain/domainobject';
 import {
-	ISchoolProperties,
-	LegacySchoolDo,
 	SchoolEntity,
 	SchoolRolePermission,
 	SchoolRoles,
 	SchoolYearEntity,
 	SystemEntity,
 	UserLoginMigrationEntity,
-} from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+} from '@shared/domain/entity';
 import {
 	legacySchoolDoFactory,
 	schoolFactory,
 	schoolYearFactory,
-	systemFactory,
+	systemEntityFactory,
 	userLoginMigrationFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
@@ -85,7 +84,7 @@ describe('LegacySchoolRepo', () => {
 		const schoolYear = schoolYearFactory.build();
 		const school = schoolFactory.build({
 			name: 'test',
-			schoolYear,
+			currentYear: schoolYear,
 			previousExternalId: 'someId',
 			userLoginMigration: userLoginMigrationFactory.build(),
 		});
@@ -114,7 +113,7 @@ describe('LegacySchoolRepo', () => {
 
 	describe('findByExternalId', () => {
 		it('should find school by external ID', async () => {
-			const system: SystemEntity = systemFactory.buildWithId();
+			const system: SystemEntity = systemEntityFactory.buildWithId();
 			const schoolEntity: SchoolEntity = schoolFactory.build({ externalId: 'externalId' });
 			schoolEntity.systems.add(system);
 
@@ -182,9 +181,13 @@ describe('LegacySchoolRepo', () => {
 
 	describe('mapEntityToDO is called', () => {
 		it('should map school entity to school domain object', () => {
-			const system: SystemEntity = systemFactory.buildWithId();
+			const system: SystemEntity = systemEntityFactory.buildWithId();
 			const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
-			const schoolEntity: SchoolEntity = schoolFactory.buildWithId({ systems: [system], features: [], schoolYear });
+			const schoolEntity: SchoolEntity = schoolFactory.buildWithId({
+				systems: [system],
+				features: [],
+				currentYear: schoolYear,
+			});
 			const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.build({ school: schoolEntity });
 			schoolEntity.userLoginMigration = userLoginMigration;
 
@@ -219,8 +222,8 @@ describe('LegacySchoolRepo', () => {
 
 	describe('mapDOToEntityProperties is called', () => {
 		const setup = async () => {
-			const system1: SystemEntity = systemFactory.buildWithId();
-			const system2: SystemEntity = systemFactory.buildWithId();
+			const system1: SystemEntity = systemEntityFactory.buildWithId();
+			const system2: SystemEntity = systemEntityFactory.buildWithId();
 
 			const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId();
 
@@ -241,10 +244,10 @@ describe('LegacySchoolRepo', () => {
 			};
 		};
 
-		it('should map SchoolDO properties to ISchoolProperties', async () => {
+		it('should map SchoolDO properties to entity data', async () => {
 			const { entityDO, emGetReferenceSpy, system1, system2, userLoginMigration } = await setup();
 
-			const result: ISchoolProperties = repo.mapDOToEntityProperties(entityDO);
+			const result: EntityData<SchoolEntity> = repo.mapDOToEntityProperties(entityDO);
 
 			expect(result.externalId).toEqual(entityDO.externalId);
 			expect(result.features).toEqual(entityDO.features);
@@ -253,8 +256,8 @@ describe('LegacySchoolRepo', () => {
 			expect(result.name).toEqual(entityDO.name);
 			expect(result.previousExternalId).toEqual(entityDO.previousExternalId);
 			expect(result.officialSchoolNumber).toEqual(entityDO.officialSchoolNumber);
-			expect(result.schoolYear).toEqual(entityDO.schoolYear);
-			expect(result.userLoginMigration?.id).toEqual(entityDO.userLoginMigrationId);
+			expect(result.currentYear).toEqual(entityDO.schoolYear);
+			expect((result.userLoginMigration as UserLoginMigrationEntity)?.id).toEqual(entityDO.userLoginMigrationId);
 			expect(result.federalState).toEqual(entityDO.federalState);
 
 			expect(emGetReferenceSpy).toHaveBeenCalledTimes(3);

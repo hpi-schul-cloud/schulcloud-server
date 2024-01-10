@@ -1,0 +1,16 @@
+export const enum DomainModel {
+	ACCOUNT = 'account',
+	CLASS = 'class',
+	COURSEGROUP = 'courseGroup',
+	COURSE = 'course',
+	DASHBOARD = 'dashboard',
+	FILE = 'file',
+	FILERECORDS = 'fileRecords',
+	LESSONS = 'lessons',
+	PSEUDONYMS = 'pseudonyms',
+	REGISTRATIONPIN = 'registrationPin',
+	ROCKETCHATUSER = 'rocketChatUser',
+	TASK = 'task',
+	TEAMS = 'teams',
+	USER = 'user',
+}

@@ -82,11 +82,10 @@ export const customParameterEntityFactory = BaseFactory.define<CustomParameterEn
 			description: 'This is a mock parameter.',
 			default: 'default',
 			location: CustomParameterLocation.PATH,
-			regex: 'regex',
-			regexComment: 'mockComment',
 			scope: CustomParameterScope.SCHOOL,
 			type: CustomParameterType.STRING,
 			isOptional: false,
+			isProtected: false,
 		};
 	}
 );
@@ -104,6 +103,7 @@ export const externalToolEntityFactory = ExternalToolEntityFactory.define(
 			}),
 			parameters: [customParameterEntityFactory.build()],
 			isHidden: false,
+			isDeactivated: false,
 			openNewTab: true,
 			version: 1,
 		};

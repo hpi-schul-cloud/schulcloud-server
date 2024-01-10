@@ -1,17 +1,17 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ConsoleWriterModule } from '@infra/console/console-writer/console-writer.module';
+import { KeycloakModule } from '@infra/identity-management/keycloak/keycloak.module';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { Module, NotFoundException } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { ALL_ENTITIES } from '@shared/domain';
-import { ConsoleWriterModule } from '@shared/infra/console/console-writer/console-writer.module';
-import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycloak.module';
-import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { FilesModule } from '@modules/files';
-import { FileEntity } from '@modules/files/entity';
 import { FileRecord } from '@modules/files-storage/entity';
+import { FileEntity } from '@modules/files/entity';
 import { ManagementModule } from '@modules/management/management.module';
 import { serverConfig } from '@modules/server';
+import { Module, NotFoundException } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { ALL_ENTITIES } from '@shared/domain/entity';
+import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
 import { ConsoleModule } from 'nestjs-console';
 import { ServerConsole } from './server.console';
 

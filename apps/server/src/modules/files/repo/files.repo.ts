@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
 import { EntityDictionary } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { EntityId } from '@shared/domain';
+import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { FileOwnerModel } from '../domain';
 import { FileEntity } from '../entity';
@@ -41,15 +41,28 @@ export class FilesRepo extends BaseRepo<FileEntity> {
 		return files as FileEntity[];
 	}
 
-	public async findByPermissionRefId(permissionRefId: EntityId): Promise<FileEntity[]> {
+	public async findByPermissionRefIdOrCreatorId(userId: EntityId): Promise<FileEntity[]> {
+		const refId = new ObjectId(userId);
+
 		const pipeline = [
 			{
 				$match: {
-					permissions: {
-						$elemMatch: {
-							refId: new ObjectId(permissionRefId),
+					$and: [
+						{
+							$or: [
+								{
+									permissions: {
+										$elemMatch: {
+											refId,
+										},
+									},
+								},
+								{ creator: refId },
+							],
 						},
-					},
+						{ deleted: false },
+						{ deletedAt: undefined },
+					],
 				},
 			},
 		];

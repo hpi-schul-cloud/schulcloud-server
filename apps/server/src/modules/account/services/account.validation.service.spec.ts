@@ -1,9 +1,10 @@
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, Role, RoleName } from '@shared/domain';
+import { Role } from '@shared/domain/entity';
+import { Permission, RoleName } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountValidationService } from './account.validation.service';
 
@@ -258,14 +259,14 @@ describe('AccountValidationService', () => {
 					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 				});
 
-				const externalSystemA = systemFactory.buildWithId();
-				const externalSystemB = systemFactory.buildWithId();
-				const mockExternalUserAccount = accountFactory.buildWithId({
+				const externalSystemA = systemFactory.build();
+				const externalSystemB = systemFactory.build();
+				const mockExternalUserAccount = accountFactory.build({
 					userId: mockExternalUser.id,
 					username: 'unique.within@system',
 					systemId: externalSystemA.id,
 				});
-				const mockOtherExternalUserAccount = accountFactory.buildWithId({
+				const mockOtherExternalUserAccount = accountFactory.build({
 					userId: mockOtherExternalUser.id,
 					username: 'unique.within@system',
 					systemId: externalSystemB.id,

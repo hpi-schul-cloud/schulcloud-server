@@ -1,7 +1,8 @@
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { EntityId, CourseGroup, Course } from '@shared/domain';
+import { Course, CourseGroup } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { courseFactory, courseGroupFactory } from '@shared/testing';
 import { CourseGroupRepo } from './coursegroup.repo';
 

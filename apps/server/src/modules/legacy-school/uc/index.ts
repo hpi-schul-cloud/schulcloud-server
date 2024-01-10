@@ -1,1 +1,1 @@
-export * from './legacy-school.uc';
+export { SchoolSystemOptionsUc } from './school-system-options.uc';

@@ -1,8 +1,9 @@
-import { ObjectId } from 'bson';
 import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { ObjectId } from 'bson';
 
-import { EntityId, isSubmissionContainerElement, SubmissionContainerElement, SubmissionItem } from '@shared/domain';
 import { ValidationError } from '@shared/common';
+import { isSubmissionContainerElement, SubmissionContainerElement, SubmissionItem } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';

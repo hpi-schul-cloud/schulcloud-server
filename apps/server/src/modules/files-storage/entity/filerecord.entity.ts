@@ -1,10 +1,12 @@
+import { PreviewInputMimeTypes } from '@infra/preview-generator';
 import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
-import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
+import path from 'path';
 import { v4 as uuid } from 'uuid';
 import { ErrorType } from '../error';
-import { PreviewInputMimeTypes } from '../interface/preview-input-mime-types.enum';
 
 export enum ScanStatus {
 	PENDING = 'pending',
@@ -33,7 +35,7 @@ export enum PreviewStatus {
 	PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE = 'preview_not_possible_wrong_mime_type',
 }
 
-export interface IFileRecordSecurityCheckProperties {
+export interface FileRecordSecurityCheckProperties {
 	status?: ScanStatus;
 	reason?: string;
 	requestToken?: string;
@@ -55,7 +57,7 @@ export class FileRecordSecurityCheck {
 	@Property()
 	updatedAt = new Date();
 
-	constructor(props: IFileRecordSecurityCheckProperties) {
+	constructor(props: FileRecordSecurityCheckProperties) {
 		if (props.status !== undefined) {
 			this.status = props.status;
 		}
@@ -68,25 +70,25 @@ export class FileRecordSecurityCheck {
 	}
 }
 
-export interface IFileRecordProperties {
+export interface FileRecordProperties {
 	size: number;
 	name: string;
 	mimeType: string;
 	parentType: FileRecordParentType;
 	parentId: EntityId;
-	creatorId: EntityId;
+	creatorId?: EntityId;
 	schoolId: EntityId;
 	deletedSince?: Date;
 	isCopyFrom?: EntityId;
 }
 
-interface IParentInfo {
+interface ParentInfo {
 	schoolId: EntityId;
 	parentId: EntityId;
 	parentType: FileRecordParentType;
 }
 
-// TODO: IEntityWithSchool
+// TODO: EntityWithSchool
 
 /**
  * Note: The file record entity will not manage any entity relations by itself.
@@ -126,11 +128,15 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return this._parentId.toHexString();
 	}
 
-	@Property({ fieldName: 'creator' })
-	_creatorId: ObjectId;
+	@Property({ fieldName: 'creator', nullable: true })
+	_creatorId?: ObjectId;
 
-	get creatorId(): EntityId {
-		return this._creatorId.toHexString();
+	get creatorId(): EntityId | undefined {
+		return this._creatorId?.toHexString();
+	}
+
+	set creatorId(userId: EntityId | undefined) {
+		this._creatorId = userId !== undefined ? new ObjectId(userId) : undefined;
 	}
 
 	@Property({ fieldName: 'school' })
@@ -149,14 +155,16 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return result;
 	}
 
-	constructor(props: IFileRecordProperties) {
+	constructor(props: FileRecordProperties) {
 		super();
 		this.size = props.size;
 		this.name = props.name;
 		this.mimeType = props.mimeType;
 		this.parentType = props.parentType;
 		this._parentId = new ObjectId(props.parentId);
-		this._creatorId = new ObjectId(props.creatorId);
+		if (props.creatorId !== undefined) {
+			this._creatorId = new ObjectId(props.creatorId);
+		}
 		this._schoolId = new ObjectId(props.schoolId);
 		if (props.isCopyFrom) {
 			this._isCopyFrom = new ObjectId(props.isCopyFrom);
@@ -176,7 +184,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return this.securityCheck.requestToken;
 	}
 
-	public copy(userId: EntityId, targetParentInfo: IParentInfo): FileRecord {
+	public copy(userId: EntityId, targetParentInfo: ParentInfo): FileRecord {
 		const { size, name, mimeType, id } = this;
 		const { parentType, parentId, schoolId } = targetParentInfo;
 
@@ -260,7 +268,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		return isPreviewPossible;
 	}
 
-	public getParentInfo(): IParentInfo {
+	public getParentInfo(): ParentInfo {
 		const { parentId, parentType, schoolId } = this;
 
 		return { parentId, parentType, schoolId };
@@ -292,5 +300,15 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		}
 
 		return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR;
+	}
+
+	public get fileNameWithoutExtension(): string {
+		const filenameObj = path.parse(this.name);
+
+		return filenameObj.name;
+	}
+
+	public removeCreatorId(): void {
+		this.creatorId = undefined;
 	}
 }

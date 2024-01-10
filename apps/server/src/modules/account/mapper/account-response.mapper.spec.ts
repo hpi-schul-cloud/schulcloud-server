@@ -1,7 +1,7 @@
-import { Account } from '@shared/domain';
-import { AccountDto } from '@modules/account/services/dto/account.dto';
+import { Account } from '@shared/domain/entity';
 import { accountDtoFactory, accountFactory } from '@shared/testing';
 import { AccountResponseMapper } from '.';
+import { AccountDto } from '../services';
 
 describe('AccountResponseMapper', () => {
 	describe('mapToResponseFromEntity', () => {

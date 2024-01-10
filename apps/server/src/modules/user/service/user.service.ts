@@ -1,17 +1,19 @@
-import { ConfigService } from '@nestjs/config';
-import { EntityId, IFindOptions, LanguageType, User } from '@shared/domain';
-import { RoleReference, Page, UserDO } from '@shared/domain/domainobject';
-import { UserRepo } from '@shared/repo';
-import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { AccountService } from '@modules/account';
 import { AccountDto } from '@modules/account/services/dto';
-import { ICurrentUser } from '@modules/authentication';
 // invalid import
+import { OauthCurrentUser } from '@modules/authentication/interface';
 import { CurrentUserMapper } from '@modules/authentication/mapper';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { RoleService } from '@modules/role/service/role.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { IUserConfig } from '../interfaces';
+import { ConfigService } from '@nestjs/config';
+import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { LanguageType, User } from '@shared/domain/entity';
+import { IFindOptions } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
+import { UserRepo } from '@shared/repo';
+import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import { UserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
@@ -21,7 +23,7 @@ export class UserService {
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly userDORepo: UserDORepo,
-		private readonly configService: ConfigService<IUserConfig, true>,
+		private readonly configService: ConfigService<UserConfig, true>,
 		private readonly roleService: RoleService,
 		private readonly accountService: AccountService
 	) {}
@@ -34,7 +36,7 @@ export class UserService {
 	}
 
 	/**
-	 * @deprecated
+	 * @deprecated use {@link UserService.findById} instead
 	 */
 	async getUser(id: string): Promise<UserDto> {
 		const userEntity = await this.userRepo.findById(id, true);
@@ -43,17 +45,23 @@ export class UserService {
 		return userDto;
 	}
 
-	async getResolvedUser(userId: EntityId): Promise<ICurrentUser> {
-		const user: User = await this.userRepo.findById(userId, true);
+	async getResolvedUser(userId: EntityId): Promise<OauthCurrentUser> {
+		const user: UserDO = await this.findById(userId);
 		const account: AccountDto = await this.accountService.findByUserIdOrFail(userId);
 
-		const resolvedUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(account.id, user, account.systemId);
+		const resolvedUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(account.id, user, account.systemId);
 
 		return resolvedUser;
 	}
 
 	async findById(id: string): Promise<UserDO> {
 		const userDO = await this.userDORepo.findById(id, true);
+
+		return userDO;
+	}
+
+	public async findByIdOrNull(id: string): Promise<UserDO | null> {
+		const userDO: UserDO | null = await this.userDORepo.findByIdOrNull(id, true);
 
 		return userDO;
 	}
@@ -82,8 +90,8 @@ export class UserService {
 		return user;
 	}
 
-	async findByEmail(email: string): Promise<User[]> {
-		const user: Promise<User[]> = this.userRepo.findByEmail(email);
+	async findByEmail(email: string): Promise<UserDO[]> {
+		const user: Promise<UserDO[]> = this.userDORepo.findByEmail(email);
 
 		return user;
 	}
@@ -119,5 +127,11 @@ export class UserService {
 		const deletedUserNumber: Promise<number> = this.userRepo.deleteUser(userId);
 
 		return deletedUserNumber;
+	}
+
+	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
+		const parentEmails = this.userRepo.getParentEmailsFromUser(userId);
+
+		return parentEmails;
 	}
 }

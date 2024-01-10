@@ -1,8 +1,8 @@
+import { IdentityManagementService } from '@infra/identity-management';
+import { ServerConfig } from '@modules/server/server.config';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId } from '@shared/domain';
-import { IdentityManagementService } from '@shared/infra/identity-management';
-import { IServerConfig } from '@modules/server/server.config';
+import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 
 /**
@@ -15,7 +15,7 @@ import { ObjectId } from 'bson';
 export class AccountLookupService {
 	constructor(
 		private readonly idmService: IdentityManagementService,
-		private readonly configService: ConfigService<IServerConfig, true>
+		private readonly configService: ConfigService<ServerConfig, true>
 	) {}
 
 	/**

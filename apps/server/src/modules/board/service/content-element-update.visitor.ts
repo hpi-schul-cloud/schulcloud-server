@@ -8,27 +8,28 @@ import {
 	ColumnBoard,
 	ExternalToolElement,
 	FileElement,
-	InputFormat,
 	RichTextElement,
 	SubmissionContainerElement,
 	SubmissionItem,
-} from '@shared/domain';
+} from '@shared/domain/domainobject';
+import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
+import { InputFormat } from '@shared/domain/types';
 import {
 	AnyElementContentBody,
+	DrawingContentBody,
 	ExternalToolContentBody,
 	FileContentBody,
 	LinkContentBody,
 	RichTextContentBody,
 	SubmissionContainerContentBody,
 } from '../controller/dto';
-import { OpenGraphProxyService } from './open-graph-proxy.service';
 
 @Injectable()
 export class ContentElementUpdateVisitor implements BoardCompositeVisitorAsync {
 	private readonly content: AnyElementContentBody;
 
-	constructor(content: AnyElementContentBody, private readonly openGraphProxyService: OpenGraphProxyService) {
+	constructor(content: AnyElementContentBody) {
 		this.content = content;
 	}
 
@@ -55,13 +56,19 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitorAsync {
 
 	async visitLinkElementAsync(linkElement: LinkElement): Promise<void> {
 		if (this.content instanceof LinkContentBody) {
-			const urlWithProtocol = /:\/\//.test(this.content.url) ? this.content.url : `https://${this.content.url}`;
-			linkElement.url = new URL(urlWithProtocol).toString();
-			const openGraphData = await this.openGraphProxyService.fetchOpenGraphData(linkElement.url);
-			linkElement.title = openGraphData.title;
-			linkElement.description = openGraphData.description;
-			if (openGraphData.image) {
-				linkElement.imageUrl = openGraphData.image.url;
+			linkElement.url = new URL(this.content.url).toString();
+			linkElement.title = this.content.title ?? '';
+			linkElement.description = this.content.description ?? '';
+			if (this.content.imageUrl) {
+				const isRelativeUrl = (url: string) => {
+					const fallbackHostname = 'https://www.fallback-url-if-url-is-relative.org';
+					const imageUrlObject = new URL(url, fallbackHostname);
+					return imageUrlObject.origin === fallbackHostname;
+				};
+
+				if (isRelativeUrl(this.content.imageUrl)) {
+					linkElement.imageUrl = this.content.imageUrl;
+				}
 			}
 			return Promise.resolve();
 		}
@@ -75,6 +82,14 @@ export class ContentElementUpdateVisitor implements BoardCompositeVisitorAsync {
 			return Promise.resolve();
 		}
 		return this.rejectNotHandled(richTextElement);
+	}
+
+	async visitDrawingElementAsync(drawingElement: DrawingElement): Promise<void> {
+		if (this.content instanceof DrawingContentBody) {
+			drawingElement.description = this.content.description;
+			return Promise.resolve();
+		}
+		return this.rejectNotHandled(drawingElement);
 	}
 
 	async visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise<void> {

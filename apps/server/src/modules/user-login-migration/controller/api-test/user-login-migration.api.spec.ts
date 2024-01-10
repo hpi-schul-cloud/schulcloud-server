@@ -1,27 +1,28 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { OauthTokenResponse } from '@modules/oauth/service/dto';
+import { SanisResponse, SanisRole } from '@modules/provisioning';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, SchoolEntity, SystemEntity, User } from '@shared/domain';
+import { SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
-	cleanupCollections,
-	schoolFactory,
-	systemFactory,
+	JwtTestFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
+	cleanupCollections,
+	schoolFactory,
+	systemEntityFactory,
 	userFactory,
 	userLoginMigrationFactory,
 } from '@shared/testing';
-import { JwtTestFactory } from '@shared/testing/factory/jwt.test.factory';
-import { OauthTokenResponse } from '@modules/oauth/service/dto';
-import { ServerTestModule } from '@modules/server';
+import { ErrorResponse } from '@src/core/error/dto';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { UUID } from 'bson';
 import { Response } from 'supertest';
-import { SanisResponse, SanisRole } from '@modules/provisioning/strategy/sanis/response';
 import { UserLoginMigrationResponse } from '../dto';
 import { Oauth2MigrationParams } from '../dto/oauth2-migration.params';
 
@@ -37,6 +38,7 @@ jest.mock('jwks-rsa', () => () => {
 		getSigningKeys: jest.fn(),
 	};
 });
+
 describe('UserLoginMigrationController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
@@ -69,8 +71,8 @@ describe('UserLoginMigrationController (API)', () => {
 		describe('when data is given', () => {
 			const setup = async () => {
 				const date: Date = new Date(2023, 5, 4);
-				const sourceSystem: SystemEntity = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 				});
@@ -80,8 +82,8 @@ describe('UserLoginMigrationController (API)', () => {
 					sourceSystem,
 					startedAt: date,
 					mandatorySince: date,
-					closedAt: undefined,
-					finishedAt: undefined,
+					closedAt: date,
+					finishedAt: date,
 				});
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 
@@ -107,6 +109,7 @@ describe('UserLoginMigrationController (API)', () => {
 				expect(response.body).toEqual({
 					data: [
 						{
+							id: userLoginMigration.id,
 							sourceSystemId: sourceSystem.id,
 							targetSystemId: targetSystem.id,
 							startedAt: userLoginMigration.startedAt.toISOString(),
@@ -130,11 +133,11 @@ describe('UserLoginMigrationController (API)', () => {
 	});
 
 	describe('[GET] /user-login-migrations/schools/:schoolId', () => {
-		describe('when a user login migration is found', () => {
+		describe('when a user login migration exists', () => {
 			const setup = async () => {
 				const date: Date = new Date(2023, 5, 4);
-				const sourceSystem: SystemEntity = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 				});
@@ -147,9 +150,7 @@ describe('UserLoginMigrationController (API)', () => {
 					closedAt: undefined,
 					finishedAt: undefined,
 				});
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.USER_LOGIN_MIGRATION_ADMIN,
-				]);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
 
@@ -171,6 +172,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual({
+					id: userLoginMigration.id,
 					sourceSystemId: sourceSystem.id,
 					targetSystemId: targetSystem.id,
 					startedAt: userLoginMigration.startedAt.toISOString(),
@@ -181,12 +183,10 @@ describe('UserLoginMigrationController (API)', () => {
 			});
 		});
 
-		describe('when no user login migration is found', () => {
+		describe('when no user login migration exists', () => {
 			const setup = async () => {
 				const school: SchoolEntity = schoolFactory.buildWithId();
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.USER_LOGIN_MIGRATION_ADMIN,
-				]);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([school, adminAccount, adminUser]);
 
@@ -198,12 +198,25 @@ describe('UserLoginMigrationController (API)', () => {
 				};
 			};
 
-			it('should return the users migration', async () => {
+			it('should have the status "not found"', async () => {
 				const { loggedInClient, school } = await setup();
 
 				const response: Response = await loggedInClient.get(`schools/${school.id}`);
 
 				expect(response.status).toEqual(HttpStatus.NOT_FOUND);
+			});
+
+			it('should return an error response', async () => {
+				const { loggedInClient, school } = await setup();
+
+				const response: Response = await loggedInClient.get(`schools/${school.id}`);
+
+				expect(response.body).toEqual<ErrorResponse>({
+					message: 'Not Found',
+					type: 'NOT_FOUND',
+					code: 404,
+					title: 'Not Found',
+				});
 			});
 		});
 
@@ -217,18 +230,16 @@ describe('UserLoginMigrationController (API)', () => {
 	});
 
 	describe('[POST] /start', () => {
-		describe('when current User start the migration successfully', () => {
+		describe('when current user start the migration successfully', () => {
 			const setup = async () => {
-				const sourceSystem: SystemEntity = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
 				});
 
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.USER_LOGIN_MIGRATION_ADMIN,
-				]);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser]);
 
@@ -236,6 +247,8 @@ describe('UserLoginMigrationController (API)', () => {
 
 				return {
 					loggedInClient,
+					sourceSystem,
+					targetSystem,
 				};
 			};
 
@@ -245,6 +258,28 @@ describe('UserLoginMigrationController (API)', () => {
 				const response: Response = await loggedInClient.post(`/start`);
 
 				expect(response.status).toEqual(HttpStatus.CREATED);
+			});
+
+			it('should return the user login migration', async () => {
+				const { loggedInClient, sourceSystem, targetSystem } = await setup();
+
+				const response: Response = await loggedInClient.post(`/start`);
+
+				expect(response.body).toEqual({
+					id: expect.any(String),
+					sourceSystemId: sourceSystem.id,
+					startedAt: expect.any(String),
+					targetSystemId: targetSystem.id,
+				});
+			});
+
+			it('should should change the database correctly', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.post(`/start`);
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+				await em.findOneOrFail(UserLoginMigrationEntity, { id: response.body.id });
 			});
 		});
 
@@ -281,8 +316,8 @@ describe('UserLoginMigrationController (API)', () => {
 		describe('when migration already started', () => {
 			const setup = async () => {
 				const date: Date = new Date(2023, 5, 4);
-				const sourceSystem: SystemEntity = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -296,9 +331,7 @@ describe('UserLoginMigrationController (API)', () => {
 					mandatorySince: date,
 				});
 
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.USER_LOGIN_MIGRATION_ADMIN,
-				]);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
 
@@ -322,8 +355,8 @@ describe('UserLoginMigrationController (API)', () => {
 		describe('when migration already closed', () => {
 			const setup = async () => {
 				const date: Date = new Date(2023, 5, 4);
-				const sourceSystem: SystemEntity = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -339,9 +372,7 @@ describe('UserLoginMigrationController (API)', () => {
 					finishedAt: date,
 				});
 
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.USER_LOGIN_MIGRATION_ADMIN,
-				]);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
 
@@ -364,15 +395,13 @@ describe('UserLoginMigrationController (API)', () => {
 
 		describe('when official school number is not set', () => {
 			const setup = async () => {
-				const sourceSystem: SystemEntity = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 				});
 
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.USER_LOGIN_MIGRATION_ADMIN,
-				]);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser]);
 
@@ -417,9 +446,6 @@ describe('UserLoginMigrationController (API)', () => {
 							familienname: 'familienName',
 							vorname: 'vorname',
 						},
-						geschlecht: 'weiblich',
-						lokalisierung: 'not necessary',
-						vertrauensstufe: 'not necessary',
 					},
 					personenkontexte: [
 						{
@@ -429,9 +455,7 @@ describe('UserLoginMigrationController (API)', () => {
 								id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713').toString(),
 								kennung: officialSchoolNumber,
 								name: 'schulName',
-								typ: 'not necessary',
 							},
-							personenstatus: 'not necessary',
 						},
 					],
 				});
@@ -439,7 +463,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 		describe('when providing a code and being eligible to migrate', () => {
 			const setup = async () => {
-				const targetSystem: SystemEntity = systemFactory
+				const targetSystem: SystemEntity = systemEntityFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
@@ -449,7 +473,7 @@ describe('UserLoginMigrationController (API)', () => {
 				query.systemId = targetSystem.id;
 				query.redirectUri = 'redirectUri';
 
-				const sourceSystem: SystemEntity = systemFactory.buildWithId();
+				const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
 
 				const officialSchoolNumber = '12345';
 				const externalId = 'aef1f4fd-c323-466e-962b-a84354c0e713';
@@ -466,10 +490,10 @@ describe('UserLoginMigrationController (API)', () => {
 					startedAt: new Date('2022-12-17T03:24:00'),
 				});
 
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin(
-					{ school, externalId: 'externalUserId' },
-					[Permission.USER_LOGIN_MIGRATION_ADMIN]
-				);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({
+					school,
+					externalId: 'externalUserId',
+				});
 
 				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
 				em.clear();
@@ -507,7 +531,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 		describe('when migration failed, because of schoolnumbers mismatch', () => {
 			const setup = async () => {
-				const targetSystem: SystemEntity = systemFactory
+				const targetSystem: SystemEntity = systemEntityFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 
@@ -516,7 +540,7 @@ describe('UserLoginMigrationController (API)', () => {
 				query.systemId = targetSystem.id;
 				query.redirectUri = 'redirectUri';
 
-				const sourceSystem: SystemEntity = systemFactory.buildWithId();
+				const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
 
 				const officialSchoolNumber = '12345';
 				const externalId = 'aef1f4fd-c323-466e-962b-a84354c0e713';
@@ -593,8 +617,8 @@ describe('UserLoginMigrationController (API)', () => {
 	describe('[POST] /restart', () => {
 		describe('when current User restart the migration successfully', () => {
 			const setup = async () => {
-				const sourceSystem: SystemEntity = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -610,9 +634,7 @@ describe('UserLoginMigrationController (API)', () => {
 				});
 				school.userLoginMigration = userLoginMigration;
 
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.USER_LOGIN_MIGRATION_ADMIN,
-				]);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
 				em.clear();
@@ -642,16 +664,33 @@ describe('UserLoginMigrationController (API)', () => {
 				expect(response.body).not.toHaveProperty('closedAt');
 				expect(response.body).not.toHaveProperty('finishedAt');
 			});
+
+			it('should should change the database correctly', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.put(`/restart`);
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+				const entity = await em.findOneOrFail(UserLoginMigrationEntity, { id: response.body.id });
+
+				expect(entity.startedAt).toBeDefined();
+				expect(entity.closedAt).toBeUndefined();
+				expect(entity.finishedAt).toBeUndefined();
+			});
 		});
 
 		describe('when invalid User restart the migration', () => {
 			const setup = async () => {
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-				await em.persistAndFlush([adminAccount, adminUser]);
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId({
+					school: teacherUser.school,
+				});
+
+				await em.persistAndFlush([teacherAccount, teacherUser, userLoginMigration]);
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(adminAccount);
+				const loggedInClient = await testApiClient.login(teacherAccount);
 
 				return {
 					loggedInClient,
@@ -677,8 +716,8 @@ describe('UserLoginMigrationController (API)', () => {
 
 		describe('when migration is already started', () => {
 			const setup = async () => {
-				const sourceSystem: SystemEntity = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -692,9 +731,7 @@ describe('UserLoginMigrationController (API)', () => {
 				});
 				school.userLoginMigration = userLoginMigration;
 
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.USER_LOGIN_MIGRATION_ADMIN,
-				]);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
 				em.clear();
@@ -717,8 +754,8 @@ describe('UserLoginMigrationController (API)', () => {
 
 		describe('when migration is finally finished', () => {
 			const setup = async () => {
-				const sourceSystem: SystemEntity = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -734,9 +771,7 @@ describe('UserLoginMigrationController (API)', () => {
 				});
 				school.userLoginMigration = userLoginMigration;
 
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.USER_LOGIN_MIGRATION_ADMIN,
-				]);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
 				em.clear();
@@ -762,8 +797,8 @@ describe('UserLoginMigrationController (API)', () => {
 	describe('[PUT] /mandatory', () => {
 		describe('when migration is set from optional to mandatory', () => {
 			const setup = async () => {
-				const sourceSystem: SystemEntity = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -778,9 +813,7 @@ describe('UserLoginMigrationController (API)', () => {
 				});
 				school.userLoginMigration = userLoginMigration;
 
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.USER_LOGIN_MIGRATION_ADMIN,
-				]);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
 				em.clear();
@@ -801,12 +834,23 @@ describe('UserLoginMigrationController (API)', () => {
 				const responseBody = response.body as UserLoginMigrationResponse;
 				expect(responseBody.mandatorySince).toBeDefined();
 			});
+
+			it('should should change the database correctly', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.put('/mandatory', { mandatory: true });
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+				const entity = await em.findOneOrFail(UserLoginMigrationEntity, { id: response.body.id });
+
+				expect(entity.mandatorySince).toBeDefined();
+			});
 		});
 
 		describe('when migration is set from mandatory to optional', () => {
 			const setup = async () => {
-				const sourceSystem: SystemEntity = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -818,13 +862,10 @@ describe('UserLoginMigrationController (API)', () => {
 					sourceSystem,
 					startedAt: new Date(2023, 1, 4),
 					mandatorySince: new Date(2023, 1, 4),
-					closedAt: new Date(2023, 1, 5),
 				});
 				school.userLoginMigration = userLoginMigration;
 
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.USER_LOGIN_MIGRATION_ADMIN,
-				]);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
 				em.clear();
@@ -845,20 +886,29 @@ describe('UserLoginMigrationController (API)', () => {
 				const responseBody = response.body as UserLoginMigrationResponse;
 				expect(responseBody.mandatorySince).toBeUndefined();
 			});
+
+			it('should should change the database correctly', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.put('/mandatory', { mandatory: false });
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+				const entity = await em.findOneOrFail(UserLoginMigrationEntity, { id: response.body.id });
+
+				expect(entity.mandatorySince).toBeUndefined();
+			});
 		});
 
 		describe('when migration is not started', () => {
 			const setup = async () => {
-				const sourceSystem: SystemEntity = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
 				});
 
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.USER_LOGIN_MIGRATION_ADMIN,
-				]);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser]);
 				em.clear();
@@ -881,8 +931,8 @@ describe('UserLoginMigrationController (API)', () => {
 
 		describe('when the migration is closed', () => {
 			const setup = async () => {
-				const sourceSystem: SystemEntity = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -897,9 +947,7 @@ describe('UserLoginMigrationController (API)', () => {
 				});
 				school.userLoginMigration = userLoginMigration;
 
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.USER_LOGIN_MIGRATION_ADMIN,
-				]);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
 				em.clear();
@@ -931,8 +979,8 @@ describe('UserLoginMigrationController (API)', () => {
 
 		describe('when user has not the required permission', () => {
 			const setup = async () => {
-				const sourceSystem: SystemEntity = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -947,12 +995,12 @@ describe('UserLoginMigrationController (API)', () => {
 				});
 				school.userLoginMigration = userLoginMigration;
 
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, []);
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				await em.persistAndFlush([sourceSystem, targetSystem, school, teacherAccount, teacherUser, userLoginMigration]);
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(adminAccount);
+				const loggedInClient = await testApiClient.login(teacherAccount);
 
 				return {
 					loggedInClient,
@@ -973,8 +1021,8 @@ describe('UserLoginMigrationController (API)', () => {
 	describe('[POST] /close', () => {
 		describe('when the user login migration is running', () => {
 			const setup = async () => {
-				const sourceSystem: SystemEntity = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -990,9 +1038,7 @@ describe('UserLoginMigrationController (API)', () => {
 					lastLoginSystemChange: new Date(2023, 1, 5),
 				});
 
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.USER_LOGIN_MIGRATION_ADMIN,
-				]);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([
 					sourceSystem,
@@ -1018,7 +1064,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const response: Response = await loggedInClient.post('/close');
 
-				expect(response.status).toEqual(HttpStatus.CREATED);
+				expect(response.status).toEqual(HttpStatus.OK);
 			});
 
 			it('should return the closed user login migration', async () => {
@@ -1027,6 +1073,7 @@ describe('UserLoginMigrationController (API)', () => {
 				const response: Response = await loggedInClient.post('/close');
 
 				expect(response.body).toEqual({
+					id: expect.any(String),
 					targetSystemId: userLoginMigration.targetSystem.id,
 					sourceSystemId: userLoginMigration.sourceSystem?.id,
 					startedAt: userLoginMigration.startedAt.toISOString(),
@@ -1034,20 +1081,30 @@ describe('UserLoginMigrationController (API)', () => {
 					finishedAt: expect.any(String),
 				});
 			});
+
+			it('should should change the database correctly', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.post('/close');
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+				const entity = await em.findOneOrFail(UserLoginMigrationEntity, { id: response.body.id });
+
+				expect(entity.closedAt).toBeDefined();
+				expect(entity.finishedAt).toBeDefined();
+			});
 		});
 
 		describe('when migration is not started', () => {
 			const setup = async () => {
-				const sourceSystem: SystemEntity = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
 				});
 
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.USER_LOGIN_MIGRATION_ADMIN,
-				]);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser]);
 				em.clear();
@@ -1066,12 +1123,25 @@ describe('UserLoginMigrationController (API)', () => {
 
 				expect(response.status).toEqual(HttpStatus.NOT_FOUND);
 			});
+
+			it('should return an error response', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.post('/close');
+
+				expect(response.body).toEqual<ErrorResponse>({
+					message: 'Not Found',
+					type: 'USER_LOGIN_MIGRATION_NOT_FOUND',
+					code: 404,
+					title: 'User Login Migration Not Found',
+				});
+			});
 		});
 
 		describe('when the migration is already closed', () => {
 			const setup = async () => {
-				const sourceSystem: SystemEntity = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -1085,11 +1155,22 @@ describe('UserLoginMigrationController (API)', () => {
 					closedAt: new Date(2023, 1, 5),
 				});
 
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.USER_LOGIN_MIGRATION_ADMIN,
-				]);
+				const migratedUser = userFactory.buildWithId({
+					school,
+					lastLoginSystemChange: new Date(2023, 1, 4),
+				});
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+
+				await em.persistAndFlush([
+					sourceSystem,
+					targetSystem,
+					school,
+					adminAccount,
+					adminUser,
+					userLoginMigration,
+					migratedUser,
+				]);
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -1100,12 +1181,21 @@ describe('UserLoginMigrationController (API)', () => {
 				};
 			};
 
+			it('should return status ok', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.post('/close');
+
+				expect(response.status).toEqual(HttpStatus.OK);
+			});
+
 			it('should return the same user login migration', async () => {
 				const { loggedInClient, userLoginMigration } = await setup();
 
 				const response: Response = await loggedInClient.post('/close');
 
 				expect(response.body).toEqual({
+					id: userLoginMigration.id,
 					targetSystemId: userLoginMigration.targetSystem.id,
 					sourceSystemId: userLoginMigration.sourceSystem?.id,
 					startedAt: userLoginMigration.startedAt.toISOString(),
@@ -1116,8 +1206,8 @@ describe('UserLoginMigrationController (API)', () => {
 
 		describe('when the migration is finished', () => {
 			const setup = async () => {
-				const sourceSystem: SystemEntity = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -1132,9 +1222,7 @@ describe('UserLoginMigrationController (API)', () => {
 					finishedAt: new Date(2023, 1, 6),
 				});
 
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.USER_LOGIN_MIGRATION_ADMIN,
-				]);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
 				em.clear();
@@ -1166,8 +1254,8 @@ describe('UserLoginMigrationController (API)', () => {
 
 		describe('when user has not the required permission', () => {
 			const setup = async () => {
-				const sourceSystem: SystemEntity = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -1181,12 +1269,12 @@ describe('UserLoginMigrationController (API)', () => {
 					closedAt: new Date(2023, 1, 5),
 				});
 
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, []);
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 
-				await em.persistAndFlush([sourceSystem, targetSystem, school, adminAccount, adminUser, userLoginMigration]);
+				await em.persistAndFlush([sourceSystem, targetSystem, school, teacherAccount, teacherUser, userLoginMigration]);
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(adminAccount);
+				const loggedInClient = await testApiClient.login(teacherAccount);
 
 				return {
 					loggedInClient,
@@ -1205,8 +1293,8 @@ describe('UserLoginMigrationController (API)', () => {
 
 		describe('when no user has migrate', () => {
 			const setup = async () => {
-				const sourceSystem: SystemEntity = systemFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
-				const targetSystem: SystemEntity = systemFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
+				const sourceSystem: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({ alias: 'SourceSystem' });
+				const targetSystem: SystemEntity = systemEntityFactory.withOauthConfig().buildWithId({ alias: 'SANIS' });
 				const school: SchoolEntity = schoolFactory.buildWithId({
 					systems: [sourceSystem],
 					officialSchoolNumber: '12345',
@@ -1220,9 +1308,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const user: User = userFactory.buildWithId();
 
-				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.USER_LOGIN_MIGRATION_ADMIN,
-				]);
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				await em.persistAndFlush([
 					sourceSystem,

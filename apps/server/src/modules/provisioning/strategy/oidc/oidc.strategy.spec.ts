@@ -1,12 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacySchoolDo, RoleName, UserDO } from '@shared/domain';
+import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
+import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { legacySchoolDoFactory, userDoFactory } from '@shared/testing';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { externalGroupDtoFactory } from '@shared/testing/factory/external-group-dto.factory';
 import {
+	externalGroupDtoFactory,
+	externalSchoolDtoFactory,
+	legacySchoolDoFactory,
+	userDoFactory,
+} from '@shared/testing';
+import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
+import {
+	ExternalGroupDto,
 	ExternalSchoolDto,
 	ExternalUserDto,
 	OauthDataDto,
@@ -33,6 +40,7 @@ describe('OidcStrategy', () => {
 	let strategy: TestOidcStrategy;
 
 	let oidcProvisioningService: DeepMocked<OidcProvisioningService>;
+	let provisioningFeatures: IProvisioningFeatures;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -42,11 +50,22 @@ describe('OidcStrategy', () => {
 					provide: OidcProvisioningService,
 					useValue: createMock<OidcProvisioningService>(),
 				},
+				{
+					provide: ProvisioningFeatures,
+					useValue: {},
+				},
 			],
 		}).compile();
 
 		strategy = module.get(TestOidcStrategy);
 		oidcProvisioningService = module.get(OidcProvisioningService);
+		provisioningFeatures = module.get(ProvisioningFeatures);
+	});
+
+	beforeEach(() => {
+		Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
+			schulconnexGroupProvisioningEnabled: false,
+		});
 	});
 
 	afterAll(async () => {
@@ -173,25 +192,28 @@ describe('OidcStrategy', () => {
 
 		describe('when group data is provided and the feature is enabled', () => {
 			const setup = () => {
-				Configuration.set('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED', true);
+				provisioningFeatures.schulconnexGroupProvisioningEnabled = true;
 
 				const externalUserId = 'externalUserId';
+				const externalGroups: ExternalGroupDto[] = externalGroupDtoFactory.buildList(2);
 				const oauthData: OauthDataDto = new OauthDataDto({
 					system: new ProvisioningSystemDto({
-						systemId: 'systemId',
+						systemId: new ObjectId().toHexString(),
 						provisioningStrategy: SystemProvisioningStrategy.OIDC,
 					}),
+					externalSchool: externalSchoolDtoFactory.build(),
 					externalUser: new ExternalUserDto({
 						externalId: externalUserId,
 					}),
-					externalGroups: externalGroupDtoFactory.buildList(2),
+					externalGroups,
 				});
 
 				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
 					externalId: externalUserId,
 				});
 
-				oidcProvisioningService.provisionExternalUser.mockResolvedValue(user);
+				oidcProvisioningService.provisionExternalUser.mockResolvedValueOnce(user);
+				oidcProvisioningService.filterExternalGroups.mockResolvedValueOnce(externalGroups);
 
 				return {
 					oauthData,
@@ -217,10 +239,12 @@ describe('OidcStrategy', () => {
 
 				expect(oidcProvisioningService.provisionExternalGroup).toHaveBeenCalledWith(
 					oauthData.externalGroups?.[0],
+					oauthData.externalSchool,
 					oauthData.system.systemId
 				);
 				expect(oidcProvisioningService.provisionExternalGroup).toHaveBeenCalledWith(
 					oauthData.externalGroups?.[1],
+					oauthData.externalSchool,
 					oauthData.system.systemId
 				);
 			});
@@ -228,7 +252,7 @@ describe('OidcStrategy', () => {
 
 		describe('when group data is provided, but the feature is disabled', () => {
 			const setup = () => {
-				Configuration.set('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED', false);
+				provisioningFeatures.schulconnexGroupProvisioningEnabled = false;
 
 				const externalUserId = 'externalUserId';
 				const oauthData: OauthDataDto = new OauthDataDto({
@@ -267,6 +291,47 @@ describe('OidcStrategy', () => {
 				await strategy.apply(oauthData);
 
 				expect(oidcProvisioningService.provisionExternalGroup).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when group data is not provided', () => {
+			const setup = () => {
+				provisioningFeatures.schulconnexGroupProvisioningEnabled = true;
+
+				const externalUserId = 'externalUserId';
+				const oauthData: OauthDataDto = new OauthDataDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'systemId',
+						provisioningStrategy: SystemProvisioningStrategy.OIDC,
+					}),
+					externalUser: new ExternalUserDto({
+						externalId: externalUserId,
+					}),
+					externalGroups: undefined,
+				});
+
+				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+					externalId: externalUserId,
+				});
+
+				oidcProvisioningService.provisionExternalUser.mockResolvedValue(user);
+
+				return {
+					externalUserId,
+					oauthData,
+				};
+			};
+
+			it('should remove external groups and affiliation', async () => {
+				const { externalUserId, oauthData } = setup();
+
+				await strategy.apply(oauthData);
+
+				expect(oidcProvisioningService.removeExternalGroupsAndAffiliation).toHaveBeenCalledWith(
+					externalUserId,
+					[],
+					oauthData.system.systemId
+				);
 			});
 		});
 	});

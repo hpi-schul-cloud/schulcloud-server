@@ -1,3 +1,4 @@
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query, Res } from '@nestjs/common';
 import {
 	ApiCreatedResponse,
@@ -12,19 +13,21 @@ import {
 } from '@nestjs/swagger';
 import { ValidationError } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
-import { IFindOptions, Page } from '@shared/domain';
+import { Page } from '@shared/domain/domainobject';
+import { IFindOptions } from '@shared/domain/interface';
 import { LegacyLogger } from '@src/core/logger';
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Response } from 'express';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { ExternalTool } from '../domain';
+import { ExternalTool, ExternalToolMetadata } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
-import { ExternalToolRequestMapper, ExternalToolResponseMapper } from '../mapper';
+
+import { ExternalToolMetadataMapper, ExternalToolRequestMapper, ExternalToolResponseMapper } from '../mapper';
 import { ExternalToolLogoService } from '../service';
 import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate } from '../uc';
 import {
 	ExternalToolCreateParams,
 	ExternalToolIdParams,
+	ExternalToolMetadataResponse,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
 	ExternalToolSearchParams,
@@ -164,5 +167,27 @@ export class ToolController {
 		res.setHeader('Content-Type', externalToolLogo.contentType);
 		res.setHeader('Cache-Control', 'must-revalidate');
 		res.send(externalToolLogo.logo);
+	}
+
+	@Get('/:externalToolId/metadata')
+	@ApiOperation({ summary: 'Gets the metadata of an external tool.' })
+	@ApiOkResponse({
+		description: 'Metadata of external tool fetched successfully.',
+		type: ExternalToolMetadataResponse,
+	})
+	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
+	async getMetaDataForExternalTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ExternalToolIdParams
+	): Promise<ExternalToolMetadataResponse> {
+		const externalToolMetadata: ExternalToolMetadata = await this.externalToolUc.getMetadataForExternalTool(
+			currentUser.userId,
+			params.externalToolId
+		);
+
+		const mapped: ExternalToolMetadataResponse =
+			ExternalToolMetadataMapper.mapToExternalToolMetadataResponse(externalToolMetadata);
+
+		return mapped;
 	}
 }

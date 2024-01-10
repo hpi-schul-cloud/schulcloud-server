@@ -1,12 +1,19 @@
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Controller, Get, HttpStatus, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { PaginationParams } from '@shared/controller';
-import { Page } from '@shared/domain';
+import { Page } from '@shared/domain/domainobject';
 import { ErrorResponse } from '@src/core/error/dto';
-import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { GroupUc } from '../uc';
 import { ClassInfoDto, ResolvedGroupDto } from '../uc/dto';
-import { ClassInfoSearchListResponse, ClassSortParams, GroupIdParams, GroupResponse } from './dto';
+import {
+	ClassFilterParams,
+	ClassInfoSearchListResponse,
+	ClassSortParams,
+	GroupIdParams,
+	GroupResponse,
+	GroupPaginationParams,
+	ClassCallerParams,
+} from './dto';
 import { GroupResponseMapper } from './mapper';
 
 @ApiTags('Group')
@@ -15,19 +22,23 @@ import { GroupResponseMapper } from './mapper';
 export class GroupController {
 	constructor(private readonly groupUc: GroupUc) {}
 
-	@ApiOperation({ summary: 'Get a list of classes and groups of type class for the current users school.' })
+	@ApiOperation({ summary: 'Get a list of classes and groups of type class for the current user.' })
 	@ApiResponse({ status: HttpStatus.OK, type: ClassInfoSearchListResponse })
 	@ApiResponse({ status: '4XX', type: ErrorResponse })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	@Get('/class')
-	public async findClassesForSchool(
-		@Query() pagination: PaginationParams,
+	public async findClasses(
+		@Query() pagination: GroupPaginationParams,
 		@Query() sortingQuery: ClassSortParams,
+		@Query() filterParams: ClassFilterParams,
+		@Query() callerParams: ClassCallerParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ClassInfoSearchListResponse> {
-		const board: Page<ClassInfoDto> = await this.groupUc.findAllClassesForSchool(
+		const board: Page<ClassInfoDto> = await this.groupUc.findAllClasses(
 			currentUser.userId,
 			currentUser.schoolId,
+			filterParams.type,
+			callerParams.calledFrom,
 			pagination.skip,
 			pagination.limit,
 			sortingQuery.sortBy,

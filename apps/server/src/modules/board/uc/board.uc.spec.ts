@@ -1,17 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AuthorizationService } from '@modules/authorization';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, BoardRoles, ContentElementType, UserRoleEnum } from '@shared/domain/domainobject/board';
+import { BoardDoAuthorizable, BoardRoles, ContentElementType, UserRoleEnum } from '@shared/domain/domainobject';
 import { setupEntities, userFactory } from '@shared/testing';
-import { cardFactory, columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
+import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService } from '@modules/authorization';
 import { ObjectId } from 'bson';
-import { ContentElementService } from '../service';
-import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
-import { CardService } from '../service/card.service';
-import { ColumnBoardService } from '../service/column-board.service';
-import { ColumnService } from '../service/column.service';
+import {
+	BoardDoAuthorizableService,
+	CardService,
+	ColumnBoardService,
+	ColumnService,
+	ContentElementService,
+} from '../service';
 import { BoardUc } from './board.uc';
 
 describe(BoardUc.name, () => {
@@ -21,7 +23,6 @@ describe(BoardUc.name, () => {
 	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
 	let columnService: DeepMocked<ColumnService>;
-	let cardService: DeepMocked<CardService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -63,7 +64,6 @@ describe(BoardUc.name, () => {
 		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
 		columnBoardService = module.get(ColumnBoardService);
 		columnService = module.get(ColumnService);
-		cardService = module.get(CardService);
 		await setupEntities();
 	});
 
@@ -81,7 +81,6 @@ describe(BoardUc.name, () => {
 		const board = columnBoardFactory.build();
 		const boardId = board.id;
 		const column = columnFactory.build();
-		const card = cardFactory.build();
 		authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 		const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
@@ -94,7 +93,7 @@ describe(BoardUc.name, () => {
 
 		boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
 
-		return { user, board, boardId, column, card, createCardBodyParams };
+		return { user, board, boardId, column, createCardBodyParams };
 	};
 
 	describe('findBoard', () => {
@@ -203,27 +202,6 @@ describe(BoardUc.name, () => {
 		});
 	});
 
-	describe('deleteColumn', () => {
-		describe('when deleting a column', () => {
-			it('should call the service to find the column', async () => {
-				const { user, column } = setup();
-
-				await uc.deleteColumn(user.id, column.id);
-
-				expect(columnService.findById).toHaveBeenCalledWith(column.id);
-			});
-
-			it('should call the service to delete the column', async () => {
-				const { user, column } = setup();
-				columnService.findById.mockResolvedValueOnce(column);
-
-				await uc.deleteColumn(user.id, column.id);
-
-				expect(columnService.delete).toHaveBeenCalledWith(column);
-			});
-		});
-	});
-
 	describe('moveColumn', () => {
 		describe('when moving a column', () => {
 			it('should call the service to find the column', async () => {
@@ -250,155 +228,6 @@ describe(BoardUc.name, () => {
 				await uc.moveColumn(user.id, board.id, column.id, 7);
 
 				expect(columnService.move).toHaveBeenCalledWith(column, board, 7);
-			});
-		});
-	});
-
-	describe('updateColumnTitle', () => {
-		describe('when updating a column title', () => {
-			it('should call the service to find the column', async () => {
-				const { user, column } = setup();
-
-				await uc.updateColumnTitle(user.id, column.id, 'new title');
-
-				expect(columnService.findById).toHaveBeenCalledWith(column.id);
-			});
-
-			it('should call the service to update the column title', async () => {
-				const { user, column } = setup();
-				columnService.findById.mockResolvedValueOnce(column);
-				const newTitle = 'new title';
-
-				await uc.updateColumnTitle(user.id, column.id, newTitle);
-
-				expect(columnService.updateTitle).toHaveBeenCalledWith(column, newTitle);
-			});
-		});
-	});
-
-	describe('createCard', () => {
-		describe('when creating a card', () => {
-			it('should call the service to create the card', async () => {
-				const { user, column, createCardBodyParams } = setup();
-				const { requiredEmptyElements } = createCardBodyParams;
-
-				await uc.createCard(user.id, column.id, requiredEmptyElements);
-
-				expect(cardService.create).toHaveBeenCalledWith(column, requiredEmptyElements);
-			});
-
-			it('should return the card object', async () => {
-				const { user, column, card } = setup();
-				cardService.create.mockResolvedValueOnce(card);
-
-				const result = await uc.createCard(user.id, column.id);
-
-				expect(result).toEqual(card);
-			});
-		});
-	});
-
-	describe('deleteCard', () => {
-		describe('when deleting a card', () => {
-			it('should call the service to find the card', async () => {
-				const { user, card } = setup();
-
-				await uc.deleteCard(user.id, card.id);
-
-				expect(cardService.findById).toHaveBeenCalledWith(card.id);
-			});
-
-			it('should call the service to delete the card', async () => {
-				const { user, card } = setup();
-				cardService.findById.mockResolvedValueOnce(card);
-
-				await uc.deleteCard(user.id, card.id);
-
-				expect(cardService.delete).toHaveBeenCalledWith(card);
-			});
-		});
-	});
-
-	describe('moveCard', () => {
-		describe('when moving a card', () => {
-			it('should call the service to find the card', async () => {
-				const { user, column, card } = setup();
-
-				await uc.moveCard(user.id, card.id, column.id, 5);
-
-				expect(cardService.findById).toHaveBeenCalledWith(card.id);
-			});
-
-			it('should call the service to find the target column', async () => {
-				const { user, column, card } = setup();
-
-				await uc.moveCard(user.id, card.id, column.id, 5);
-
-				expect(columnService.findById).toHaveBeenCalledWith(column.id);
-			});
-
-			it('should call the service to move the card', async () => {
-				const { user, column, card } = setup();
-				cardService.findById.mockResolvedValueOnce(card);
-				columnService.findById.mockResolvedValueOnce(column);
-
-				await uc.moveCard(user.id, card.id, column.id, 5);
-
-				expect(cardService.move).toHaveBeenCalledWith(card, column, 5);
-			});
-		});
-	});
-
-	describe('updateCardHeight', () => {
-		describe('when updating a card height', () => {
-			it('should call the service to find the card', async () => {
-				const { user, card } = setup();
-				const cardHeight = 200;
-
-				await uc.updateCardHeight(user.id, card.id, cardHeight);
-
-				expect(cardService.findById).toHaveBeenCalledWith(card.id);
-			});
-
-			it('should check the permission', async () => {
-				const { user, card } = setup();
-				const cardHeight = 200;
-
-				await uc.updateCardHeight(user.id, card.id, cardHeight);
-
-				expect(authorizationService.checkPermission).toHaveBeenCalled();
-			});
-
-			it('should call the service to update the card height', async () => {
-				const { user, card } = setup();
-				columnService.findById.mockResolvedValueOnce(card);
-				const newHeight = 250;
-
-				await uc.updateCardHeight(user.id, card.id, newHeight);
-
-				expect(cardService.updateHeight).toHaveBeenCalledWith(card, newHeight);
-			});
-		});
-	});
-
-	describe('updateCardTitle', () => {
-		describe('when updating a card title', () => {
-			it('should call the service to find the card', async () => {
-				const { user, card } = setup();
-
-				await uc.updateCardTitle(user.id, card.id, 'new title');
-
-				expect(cardService.findById).toHaveBeenCalledWith(card.id);
-			});
-
-			it('should call the service to update the card title', async () => {
-				const { user, card } = setup();
-				columnService.findById.mockResolvedValueOnce(card);
-				const newTitle = 'new title';
-
-				await uc.updateCardTitle(user.id, card.id, newTitle);
-
-				expect(cardService.updateTitle).toHaveBeenCalledWith(card, newTitle);
 			});
 		});
 	});

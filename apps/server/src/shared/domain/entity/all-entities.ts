@@ -1,16 +1,21 @@
 import { ClassEntity } from '@modules/class/entity';
 import { GroupEntity } from '@modules/group/entity';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
+import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { DeletionLogEntity, DeletionRequestEntity } from '@src/modules/deletion/entity';
+import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
 import { Account } from './account.entity';
 import {
 	BoardNode,
 	CardNode,
 	ColumnBoardNode,
 	ColumnNode,
+	DrawingElementNode,
 	ExternalToolElementNodeEntity,
 	FileElementNode,
 	LinkElementNode,
@@ -21,7 +26,7 @@ import {
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
-import { FederalStateEntity } from './federal-state.entity';
+import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
 import { ImportUser } from './import-user.entity';
 import {
 	Board,
@@ -58,14 +63,18 @@ export const ALL_ENTITIES = [
 	ColumnBoardTarget,
 	ColumnNode,
 	ClassEntity,
+	DeletionRequestEntity,
+	DeletionLogEntity,
 	FileElementNode,
 	LinkElementNode,
 	RichTextElementNode,
+	DrawingElementNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
 	ExternalToolElementNodeEntity,
-	Course,
 	ContextExternalToolEntity,
+	CountyEmbeddable,
+	Course,
 	CourseGroup,
 	CourseNews,
 	DashboardGridElementModel,
@@ -80,12 +89,14 @@ export const ALL_ENTITIES = [
 	News,
 	PseudonymEntity,
 	ExternalToolPseudonymEntity,
+	RocketChatUserEntity,
 	Role,
 	SchoolEntity,
 	SchoolExternalToolEntity,
 	SchoolNews,
 	SchoolRolePermission,
 	SchoolRoles,
+	SchoolSystemOptionsEntity,
 	SchoolYearEntity,
 	ShareToken,
 	StorageProviderEntity,
@@ -100,4 +111,5 @@ export const ALL_ENTITIES = [
 	UserLoginMigrationEntity,
 	VideoConference,
 	GroupEntity,
+	RegistrationPinEntity,
 ];

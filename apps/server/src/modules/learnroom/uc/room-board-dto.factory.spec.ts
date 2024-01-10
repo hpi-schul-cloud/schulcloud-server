@@ -1,8 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
+import { AuthorizationService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, Course, LessonEntity, Task, TaskWithStatusVo, User } from '@shared/domain';
+import { Board, Course, LessonEntity, Task, TaskWithStatusVo, User } from '@shared/domain/entity';
 import {
 	boardFactory,
 	columnboardBoardElementFactory,
@@ -13,7 +14,6 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { AuthorizationService } from '@modules/authorization';
 import { LessonMetaData } from '../types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';

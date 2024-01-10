@@ -1,15 +1,17 @@
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { News, NewsTargetModel, SortOrder } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { News } from '@shared/domain/entity';
+import { SortOrder } from '@shared/domain/interface';
+import { NewsTargetModel } from '@shared/domain/types';
 import {
-	courseNewsFactory,
-	schoolNewsFactory,
-	teamNewsFactory,
 	cleanupCollections,
+	courseNewsFactory,
 	courseUnpublishedNewsFactory,
+	schoolNewsFactory,
 	schoolUnpublishedNewsFactory,
+	teamNewsFactory,
 	teamUnpublishedNewsFactory,
 	userFactory,
 } from '@shared/testing';

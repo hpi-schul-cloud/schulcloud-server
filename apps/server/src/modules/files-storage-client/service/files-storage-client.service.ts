@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { CopyFileDto, FileDto } from '../dto';
-import { IFileRequestInfo } from '../interfaces';
-import { ICopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
+import { FileRequestInfo } from '../interfaces';
+import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
 import { FilesStorageClientMapper } from '../mapper';
 import { FilesStorageProducer } from './files-storage.producer';
 
@@ -13,14 +13,14 @@ export class FilesStorageClientAdapterService {
 		this.logger.setContext(FilesStorageClientAdapterService.name);
 	}
 
-	async copyFilesOfParent(param: ICopyFilesRequestInfo): Promise<CopyFileDto[]> {
+	async copyFilesOfParent(param: CopyFilesRequestInfo): Promise<CopyFileDto[]> {
 		const response = await this.fileStorageMQProducer.copyFilesOfParent(param);
 		const fileInfos = FilesStorageClientMapper.mapCopyFileListResponseToCopyFilesDto(response);
 
 		return fileInfos;
 	}
 
-	async listFilesOfParent(param: IFileRequestInfo): Promise<FileDto[]> {
+	async listFilesOfParent(param: FileRequestInfo): Promise<FileDto[]> {
 		const response = await this.fileStorageMQProducer.listFilesOfParent(param);
 
 		const fileInfos = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response);
@@ -34,5 +34,11 @@ export class FilesStorageClientAdapterService {
 		const fileInfos = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response);
 
 		return fileInfos;
+	}
+
+	async removeCreatorIdFromFileRecords(creatorId: EntityId): Promise<number> {
+		const response = await this.fileStorageMQProducer.removeCreatorIdFromFileRecords(creatorId);
+
+		return response.length;
 	}
 }

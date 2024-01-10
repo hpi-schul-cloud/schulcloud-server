@@ -1,3 +1,4 @@
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import {
 	BadRequestException,
 	Body,
@@ -22,10 +23,10 @@ import {
 	UseInterceptors,
 } from '@nestjs/common';
 import { ApiConsumes, ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError, RequestLoggingInterceptor } from '@shared/common';
+import { ApiValidationError, RequestLoggingInterceptor, RequestTimeout } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
-import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { Request, Response } from 'express';
+import { config } from '../files-storage.config';
 import { GetFileResponse } from '../interface';
 import { FilesStorageMapper } from '../mapper';
 import { FileRecordMapper } from '../mapper/file-record.mapper';
@@ -119,6 +120,7 @@ export class FilesStorageController {
 	@ApiOperation({ summary: 'Streamable download of a preview file.' })
 	@ApiResponse({ status: 200, type: StreamableFile })
 	@ApiResponse({ status: 206, type: StreamableFile })
+	@ApiResponse({ status: 304, description: 'Not Modified' })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
@@ -126,20 +128,30 @@ export class FilesStorageController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiHeader({ name: 'Range', required: false })
 	@Get('/preview/:fileRecordId/:fileName')
+	@RequestTimeout(config().INCOMING_REQUEST_TIMEOUT)
 	async downloadPreview(
 		@Param() params: DownloadFileParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() previewParams: PreviewParams,
 		@Req() req: Request,
 		@Res({ passthrough: true }) response: Response,
-		@Headers('Range') bytesRange?: string
-	): Promise<StreamableFile> {
+		@Headers('Range') bytesRange?: string,
+		@Headers('If-None-Match') etag?: string
+	): Promise<StreamableFile | void> {
 		const fileResponse = await this.filesStorageUC.downloadPreview(
 			currentUser.userId,
 			params,
 			previewParams,
 			bytesRange
 		);
+
+		response.set({ ETag: fileResponse.etag });
+
+		if (etag === fileResponse.etag) {
+			response.status(HttpStatus.NOT_MODIFIED);
+
+			return undefined;
+		}
 
 		const streamableFile = this.streamFileToClient(req, fileResponse, response, bytesRange);
 

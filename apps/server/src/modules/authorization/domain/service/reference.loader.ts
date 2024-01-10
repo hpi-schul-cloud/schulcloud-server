@@ -1,19 +1,21 @@
+import { BoardDoAuthorizableService } from '@modules/board';
+
+import { LessonService } from '@modules/lesson';
+import { ContextExternalToolAuthorizableService } from '@modules/tool';
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { BaseDO, EntityId } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object';
+import { BaseDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import {
 	CourseGroupRepo,
 	CourseRepo,
-	LessonRepo,
-	SchoolExternalToolRepo,
 	LegacySchoolRepo,
+	SchoolExternalToolRepo,
 	SubmissionRepo,
 	TaskRepo,
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
-import { BoardDoAuthorizableService } from '@modules/board';
-import { ContextExternalToolAuthorizableService } from '@modules/tool/context-external-tool/service';
 import { AuthorizableReferenceType } from '../type';
 
 type RepoType =
@@ -21,22 +23,22 @@ type RepoType =
 	| CourseRepo
 	| UserRepo
 	| LegacySchoolRepo
-	| LessonRepo
 	| TeamsRepo
 	| CourseGroupRepo
 	| SubmissionRepo
 	| SchoolExternalToolRepo
 	| BoardDoAuthorizableService
-	| ContextExternalToolAuthorizableService;
+	| ContextExternalToolAuthorizableService
+	| LessonService;
 
-interface IRepoLoader {
+interface RepoLoader {
 	repo: RepoType;
 	populate?: boolean;
 }
 
 @Injectable()
 export class ReferenceLoader {
-	private repos: Map<AuthorizableReferenceType, IRepoLoader> = new Map();
+	private repos: Map<AuthorizableReferenceType, RepoLoader> = new Map();
 
 	constructor(
 		private readonly userRepo: UserRepo,
@@ -44,7 +46,7 @@ export class ReferenceLoader {
 		private readonly courseGroupRepo: CourseGroupRepo,
 		private readonly taskRepo: TaskRepo,
 		private readonly schoolRepo: LegacySchoolRepo,
-		private readonly lessonRepo: LessonRepo,
+		private readonly lessonService: LessonService,
 		private readonly teamsRepo: TeamsRepo,
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
@@ -56,7 +58,7 @@ export class ReferenceLoader {
 		this.repos.set(AuthorizableReferenceType.CourseGroup, { repo: this.courseGroupRepo });
 		this.repos.set(AuthorizableReferenceType.User, { repo: this.userRepo });
 		this.repos.set(AuthorizableReferenceType.School, { repo: this.schoolRepo });
-		this.repos.set(AuthorizableReferenceType.Lesson, { repo: this.lessonRepo });
+		this.repos.set(AuthorizableReferenceType.Lesson, { repo: this.lessonService });
 		this.repos.set(AuthorizableReferenceType.Team, { repo: this.teamsRepo, populate: true });
 		this.repos.set(AuthorizableReferenceType.Submission, { repo: this.submissionRepo });
 		this.repos.set(AuthorizableReferenceType.SchoolExternalToolEntity, { repo: this.schoolExternalToolRepo });
@@ -66,7 +68,7 @@ export class ReferenceLoader {
 		});
 	}
 
-	private resolveRepo(type: AuthorizableReferenceType): IRepoLoader {
+	private resolveRepo(type: AuthorizableReferenceType): RepoLoader {
 		const repo = this.repos.get(type);
 		if (repo) {
 			return repo;
@@ -78,7 +80,7 @@ export class ReferenceLoader {
 		objectName: AuthorizableReferenceType,
 		objectId: EntityId
 	): Promise<AuthorizableObject | BaseDO> {
-		const repoLoader: IRepoLoader = this.resolveRepo(objectName);
+		const repoLoader: RepoLoader = this.resolveRepo(objectName);
 
 		let object: AuthorizableObject | BaseDO;
 		if (repoLoader.populate) {
