@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, User } from '@shared/domain/entity';
+import { AccountEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import {
 	TestApiClient,
@@ -30,7 +30,7 @@ describe('Account Controller (API)', () => {
 	const defaultPassword = 'DummyPasswd!1';
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
 
-	const mapUserToAccount = (user: User): Account =>
+	const mapUserToAccount = (user: User): AccountEntity =>
 		accountFactory.buildWithId({
 			userId: user.id,
 			username: user.email,
@@ -83,7 +83,7 @@ describe('Account Controller (API)', () => {
 
 				await loggedInClient.patch('/me/password', passwordPatchParams).expect(200);
 
-				const updatedAccount = await em.findOneOrFail(Account, studentAccount.id);
+				const updatedAccount = await em.findOneOrFail(AccountEntity, studentAccount.id);
 				expect(updatedAccount.password).not.toEqual(defaultPasswordHash);
 			});
 		});
@@ -142,7 +142,7 @@ describe('Account Controller (API)', () => {
 
 				await loggedInClient.patch('/me', patchMyAccountParams).expect(200);
 
-				const updatedAccount = await em.findOneOrFail(Account, studentAccount.id);
+				const updatedAccount = await em.findOneOrFail(AccountEntity, studentAccount.id);
 				expect(updatedAccount.username).toEqual(newEmailValue);
 			});
 		});

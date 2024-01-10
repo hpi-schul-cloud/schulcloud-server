@@ -4,7 +4,7 @@ import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import { Account } from '@shared/domain/entity';
+import { AccountEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { accountFactory, setupEntities, userFactory } from '@shared/testing';
 import { IdentityManagementService } from '@src/infra/identity-management';
@@ -107,7 +107,7 @@ describe('AccountDbService', () => {
 
 				const mockTeacherAccount = accountFactory.buildWithId();
 
-				accountRepo.findByUserId.mockImplementation((userId: EntityId | ObjectId): Promise<Account | null> => {
+				accountRepo.findByUserId.mockImplementation((userId: EntityId | ObjectId): Promise<AccountEntity | null> => {
 					if (userId === mockTeacherUser.id) {
 						return Promise.resolve(mockTeacherAccount);
 					}
@@ -152,7 +152,7 @@ describe('AccountDbService', () => {
 			const setup = () => {
 				const mockAccountWithSystemId = accountFactory.withSystemId(new ObjectId()).build();
 				accountRepo.findByUsernameAndSystemId.mockImplementation(
-					(username: string, systemId: EntityId | ObjectId): Promise<Account | null> => {
+					(username: string, systemId: EntityId | ObjectId): Promise<AccountEntity | null> => {
 						if (mockAccountWithSystemId.username === username && mockAccountWithSystemId.systemId === systemId) {
 							return Promise.resolve(mockAccountWithSystemId);
 						}
@@ -175,7 +175,7 @@ describe('AccountDbService', () => {
 			const setup = () => {
 				const mockAccountWithSystemId = accountFactory.withSystemId(new ObjectId()).build();
 				accountRepo.findByUsernameAndSystemId.mockImplementation(
-					(username: string, systemId: EntityId | ObjectId): Promise<Account | null> => {
+					(username: string, systemId: EntityId | ObjectId): Promise<AccountEntity | null> => {
 						if (mockAccountWithSystemId.username === username && mockAccountWithSystemId.systemId === systemId) {
 							return Promise.resolve(mockAccountWithSystemId);
 						}
@@ -210,7 +210,7 @@ describe('AccountDbService', () => {
 					password: defaultPassword,
 				});
 
-				accountRepo.findMultipleByUserId.mockImplementation((userIds: (EntityId | ObjectId)[]): Promise<Account[]> => {
+				accountRepo.findMultipleByUserId.mockImplementation((userIds: (EntityId | ObjectId)[]): Promise<AccountEntity[]> => {
 					const accounts = [mockStudentAccount, mockTeacherAccount].filter((tempAccount) =>
 						userIds.find((userId) => tempAccount.userId?.toString() === userId)
 					);
@@ -232,7 +232,7 @@ describe('AccountDbService', () => {
 				const mockTeacherAccount = accountFactory.buildWithId();
 				const mockStudentAccount = accountFactory.buildWithId();
 
-				accountRepo.findMultipleByUserId.mockImplementation((userIds: (EntityId | ObjectId)[]): Promise<Account[]> => {
+				accountRepo.findMultipleByUserId.mockImplementation((userIds: (EntityId | ObjectId)[]): Promise<AccountEntity[]> => {
 					const accounts = [mockStudentAccount, mockTeacherAccount].filter((tempAccount) =>
 						userIds.find((userId) => tempAccount.userId?.toString() === userId)
 					);
@@ -276,11 +276,11 @@ describe('AccountDbService', () => {
 					userId: mockTeacherUser.id,
 					password: defaultPassword,
 				});
-				accountRepo.findByUserIdOrFail.mockImplementation((userId: EntityId | ObjectId): Promise<Account> => {
+				accountRepo.findByUserIdOrFail.mockImplementation((userId: EntityId | ObjectId): Promise<AccountEntity> => {
 					if (mockTeacherUser.id === userId) {
 						return Promise.resolve(mockTeacherAccount);
 					}
-					throw new EntityNotFoundError(Account.name);
+					throw new EntityNotFoundError(AccountEntity.name);
 				});
 				return {};
 			};

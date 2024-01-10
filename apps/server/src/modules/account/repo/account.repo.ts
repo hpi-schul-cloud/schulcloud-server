@@ -1,15 +1,15 @@
 import { AnyEntity, EntityName, Primary } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { Account } from '@shared/domain/entity/account.entity';
+import { AccountEntity } from '@shared/domain/entity/account.entity';
 import { SortOrder } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 
 @Injectable()
-export class AccountRepo extends BaseRepo<Account> {
+export class AccountRepo extends BaseRepo<AccountEntity> {
 	get entityName() {
-		return Account;
+		return AccountEntity;
 	}
 
 	/**
@@ -17,22 +17,22 @@ export class AccountRepo extends BaseRepo<Account> {
 	 * @param userId the user id
 	 */
 	// TODO: here only EntityIds should arrive
-	async findByUserId(userId: EntityId | ObjectId): Promise<Account | null> {
+	async findByUserId(userId: EntityId | ObjectId): Promise<AccountEntity | null> {
 		// TODO: you can use userId directly, without constructing an objectId
-		return this._em.findOne(Account, { userId: new ObjectId(userId) });
+		return this._em.findOne(AccountEntity, { userId: new ObjectId(userId) });
 	}
 
-	async findMultipleByUserId(userIds: EntityId[] | ObjectId[]): Promise<Account[]> {
+	async findMultipleByUserId(userIds: EntityId[] | ObjectId[]): Promise<AccountEntity[]> {
 		const objectIds = userIds.map((id: EntityId | ObjectId) => new ObjectId(id));
-		return this._em.find(Account, { userId: objectIds });
+		return this._em.find(AccountEntity, { userId: objectIds });
 	}
 
-	async findByUserIdOrFail(userId: EntityId | ObjectId): Promise<Account> {
-		return this._em.findOneOrFail(Account, { userId: new ObjectId(userId) });
+	async findByUserIdOrFail(userId: EntityId | ObjectId): Promise<AccountEntity> {
+		return this._em.findOneOrFail(AccountEntity, { userId: new ObjectId(userId) });
 	}
 
-	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account | null> {
-		return this._em.findOne(Account, { username, systemId: new ObjectId(systemId) });
+	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<AccountEntity | null> {
+		return this._em.findOne(AccountEntity, { username, systemId: new ObjectId(systemId) });
 	}
 
 	getObjectReference<Entity extends AnyEntity<Entity>>(
@@ -42,7 +42,7 @@ export class AccountRepo extends BaseRepo<Account> {
 		return this._em.getReference(entityName, id);
 	}
 
-	saveWithoutFlush(account: Account): void {
+	saveWithoutFlush(account: AccountEntity): void {
 		this._em.persist(account);
 	}
 
@@ -50,13 +50,11 @@ export class AccountRepo extends BaseRepo<Account> {
 		await this._em.flush();
 	}
 
-	// TODO: the default values for skip and limit, are they required and/or correct here?
-	// TODO: use counted for the return type
-	async searchByUsernameExactMatch(username: string, skip = 0, limit = 1): Promise<[Account[], number]> {
+	async searchByUsernameExactMatch(username: string, skip = 0, limit = 1): Promise<Counted<AccountEntity[]>> {
 		return this.searchByUsername(username, skip, limit, true);
 	}
 
-	async searchByUsernamePartialMatch(username: string, skip = 0, limit = 10): Promise<[Account[], number]> {
+	async searchByUsernamePartialMatch(username: string, skip = 0, limit = 10): Promise<Counted<AccountEntity[]>> {
 		return this.searchByUsername(username, skip, limit, false);
 	}
 
@@ -75,7 +73,7 @@ export class AccountRepo extends BaseRepo<Account> {
 	/**
 	 * @deprecated For migration purpose only
 	 */
-	async findMany(offset = 0, limit = 100): Promise<Account[]> {
+	async findMany(offset = 0, limit = 100): Promise<AccountEntity[]> {
 		const result = await this._em.find(this.entityName, {}, { offset, limit, orderBy: { _id: SortOrder.asc } });
 		this._em.clear();
 		return result;
@@ -86,7 +84,7 @@ export class AccountRepo extends BaseRepo<Account> {
 		offset: number,
 		limit: number,
 		exactMatch: boolean
-	): Promise<[Account[], number]> {
+	): Promise<Counted<AccountEntity[]>> {
 		// TODO: check that injections are not possible, eg make sure sanitizeHTML has been called at some point (for username)
 		// escapes every character, that's not a unicode letter or number
 		const escapedUsername = username.replace(/[^(\p{L}\p{N})]/gu, '\\$&');

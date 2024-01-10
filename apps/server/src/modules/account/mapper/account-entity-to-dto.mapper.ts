@@ -1,9 +1,9 @@
-import { Account } from '@shared/domain/entity';
+import { AccountEntity } from '@shared/domain/entity';
 import { Counted } from '@shared/domain/types';
 import { AccountDto } from '../services/dto/account.dto';
 
 export class AccountEntityToDtoMapper {
-	static mapToDto(account: Account): AccountDto {
+	static mapToDto(account: AccountEntity): AccountDto {
 		return new AccountDto({
 			id: account.id,
 			createdAt: account.createdAt,
@@ -20,15 +20,13 @@ export class AccountEntityToDtoMapper {
 		});
 	}
 
-	// TODO: use Counted<Account[]> instead of [Account[], number]
-	// TODO: adjust naming of accountEntities
-	static mapSearchResult(accountEntities: [Account[], number]): Counted<AccountDto[]> {
+	static mapSearchResult(accountEntities: Counted<AccountEntity[]>): Counted<AccountDto[]> {
 		const foundAccounts = accountEntities[0];
 		const accountDtos: AccountDto[] = AccountEntityToDtoMapper.mapAccountsToDto(foundAccounts);
 		return [accountDtos, accountEntities[1]];
 	}
 
-	static mapAccountsToDto(accounts: Account[]): AccountDto[] {
+	static mapAccountsToDto(accounts: AccountEntity[]): AccountDto[] {
 		return accounts.map((accountEntity) => AccountEntityToDtoMapper.mapToDto(accountEntity));
 	}
 }

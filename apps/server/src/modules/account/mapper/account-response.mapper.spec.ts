@@ -1,4 +1,4 @@
-import { Account } from '@shared/domain/entity';
+import { AccountEntity } from '@shared/domain/entity';
 import { accountDtoFactory, accountFactory } from '@shared/testing';
 import { AccountResponseMapper } from '.';
 import { AccountDto } from '../services';
@@ -7,9 +7,9 @@ describe('AccountResponseMapper', () => {
 	describe('mapToResponseFromEntity', () => {
 		describe('When mapping AccountEntity to AccountResponse', () => {
 			const setup = () => {
-				const testEntityAllFields: Account = accountFactory.withAllProperties().buildWithId();
+				const testEntityAllFields: AccountEntity = accountFactory.withAllProperties().buildWithId();
 
-				const testEntityMissingUserId: Account = accountFactory.withoutSystemAndUserId().build();
+				const testEntityMissingUserId: AccountEntity = accountFactory.withoutSystemAndUserId().build();
 
 				return { testEntityAllFields, testEntityMissingUserId };
 			};

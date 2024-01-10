@@ -8,7 +8,7 @@ import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-ad
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account } from '@shared/domain/entity';
+import { AccountEntity } from '@shared/domain/entity';
 import { IdmAccount } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, cleanupCollections } from '@shared/testing';
@@ -152,7 +152,7 @@ describe('AccountService Integration', () => {
 	const compareDbAccount = async (dbId: string, createdAccount: AccountDto): Promise<void> => {
 		const foundDbAccount = await accountRepo.findById(dbId);
 		expect(foundDbAccount).toEqual(
-			expect.objectContaining<Partial<Account>>({
+			expect.objectContaining<Partial<AccountEntity>>({
 				username: createdAccount.username,
 				userId: new ObjectId(createdAccount.userId),
 				systemId: new ObjectId(createdAccount.systemId),
@@ -232,7 +232,7 @@ describe('AccountService Integration', () => {
 					})
 				);
 				expect(foundDbAccount).toEqual(
-					expect.objectContaining<Partial<Account>>({
+					expect.objectContaining<Partial<AccountEntity>>({
 						username: newUsername,
 					})
 				);

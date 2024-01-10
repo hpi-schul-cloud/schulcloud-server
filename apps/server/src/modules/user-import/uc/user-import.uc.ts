@@ -6,7 +6,7 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { Account, ImportUser, MatchCreator, SystemEntity, User } from '@shared/domain/entity';
+import { AccountEntity, ImportUser, MatchCreator, SystemEntity, User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch, SchoolFeature } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
@@ -262,7 +262,7 @@ export class UserImportUc {
 	private async updateUserAndAccount(
 		importUser: ImportUser,
 		school: LegacySchoolDo
-	): Promise<[User, Account] | undefined> {
+	): Promise<[User, AccountEntity] | undefined> {
 		if (!importUser.user || !importUser.loginName || !school.externalId) {
 			return;
 		}

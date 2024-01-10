@@ -1,5 +1,5 @@
 import { accountFactory } from '@shared/testing';
-import { Account } from '@shared/domain/entity';
+import { AccountEntity } from '@shared/domain/entity';
 import { AccountEntityToDtoMapper } from './account-entity-to-dto.mapper';
 
 describe('AccountEntityToDtoMapper', () => {
@@ -18,7 +18,7 @@ describe('AccountEntityToDtoMapper', () => {
 			const setup = () => {
 				const accountEntity = accountFactory.withAllProperties().buildWithId({}, '000000000000000000000001');
 
-				const missingSystemUserIdEntity: Account = accountFactory.withoutSystemAndUserId().build();
+				const missingSystemUserIdEntity: AccountEntity = accountFactory.withoutSystemAndUserId().build();
 
 				return { accountEntity, missingSystemUserIdEntity };
 			};
@@ -45,8 +45,8 @@ describe('AccountEntityToDtoMapper', () => {
 	describe('mapSearchResult', () => {
 		describe('When mapping multiple Account entities', () => {
 			const setup = () => {
-				const testEntity1: Account = accountFactory.buildWithId({}, '000000000000000000000001');
-				const testEntity2: Account = accountFactory.buildWithId({}, '000000000000000000000002');
+				const testEntity1: AccountEntity = accountFactory.buildWithId({}, '000000000000000000000001');
+				const testEntity2: AccountEntity = accountFactory.buildWithId({}, '000000000000000000000002');
 
 				const testAmount = 10;
 
@@ -71,8 +71,8 @@ describe('AccountEntityToDtoMapper', () => {
 	describe('mapAccountsToDto', () => {
 		describe('When mapping multiple Account entities', () => {
 			const setup = () => {
-				const testEntity1: Account = accountFactory.buildWithId({}, '000000000000000000000001');
-				const testEntity2: Account = accountFactory.buildWithId({}, '000000000000000000000002');
+				const testEntity1: AccountEntity = accountFactory.buildWithId({}, '000000000000000000000001');
+				const testEntity2: AccountEntity = accountFactory.buildWithId({}, '000000000000000000000002');
 
 				const testEntities = [testEntity1, testEntity2];
 

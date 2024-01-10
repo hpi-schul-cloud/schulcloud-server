@@ -2,7 +2,7 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, User } from '@shared/domain/entity';
+import { AccountEntity, User } from '@shared/domain/entity';
 import { accountFactory, cleanupCollections, userFactory } from '@shared/testing';
 import { AccountRepo } from './account.repo';
 
@@ -29,7 +29,7 @@ describe('account repo', () => {
 	});
 
 	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(Account);
+		expect(repo.entityName).toBe(AccountEntity);
 	});
 
 	describe('findByUserId', () => {

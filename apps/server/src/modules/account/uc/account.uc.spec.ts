@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 
-import { Account, Role, SchoolRolePermission, SchoolRoles, User } from '@shared/domain/entity';
+import { AccountEntity, Role, SchoolRolePermission, SchoolRoles, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { PermissionService } from '@shared/domain/service';
 import { EntityId } from '@shared/domain/types';
@@ -112,7 +112,7 @@ describe('AccountUc', () => {
 				});
 
 				accountService.findByUserIdOrFail.mockImplementation((): Promise<AccountDto> => {
-					throw new EntityNotFoundError(Account.name);
+					throw new EntityNotFoundError(AccountEntity.name);
 				});
 
 				return { mockUserWithoutAccount };
@@ -687,7 +687,7 @@ describe('AccountUc', () => {
 
 				userRepo.findById.mockResolvedValueOnce(mockUserWithoutAccount);
 				accountService.findByUserIdOrFail.mockImplementation(() => {
-					throw new EntityNotFoundError(Account.name);
+					throw new EntityNotFoundError(AccountEntity.name);
 				});
 
 				return { mockUserWithoutAccount };
@@ -2037,7 +2037,7 @@ describe('AccountUc', () => {
 
 				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser);
 				accountService.findById.mockImplementation((): Promise<AccountDto> => {
-					throw new EntityNotFoundError(Account.name);
+					throw new EntityNotFoundError(AccountEntity.name);
 				});
 
 				return { mockSuperheroUser };
@@ -2069,7 +2069,7 @@ describe('AccountUc', () => {
 
 				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser);
 				accountService.findById.mockImplementation((): Promise<AccountDto> => {
-					throw new EntityNotFoundError(Account.name);
+					throw new EntityNotFoundError(AccountEntity.name);
 				});
 
 				return { mockSuperheroUser };
@@ -2991,7 +2991,7 @@ describe('AccountUc', () => {
 
 				accountService.findById.mockImplementation((id: EntityId): Promise<AccountDto> => {
 					if (id === 'xxx') {
-						throw new EntityNotFoundError(Account.name);
+						throw new EntityNotFoundError(AccountEntity.name);
 					}
 					return Promise.reject();
 				});
@@ -3030,7 +3030,7 @@ describe('AccountUc', () => {
 						) {
 							return Promise.resolve(AccountEntityToDtoMapper.mapToDto(mockAccountWithLastFailedLogin));
 						}
-						throw new EntityNotFoundError(Account.name);
+						throw new EntityNotFoundError(AccountEntity.name);
 					}
 				);
 
@@ -3060,7 +3060,7 @@ describe('AccountUc', () => {
 						if (mockAccountWithSystemId.username === username && mockAccountWithSystemId.systemId === systemId) {
 							return Promise.resolve(AccountEntityToDtoMapper.mapToDto(mockAccountWithSystemId));
 						}
-						throw new EntityNotFoundError(Account.name);
+						throw new EntityNotFoundError(AccountEntity.name);
 					}
 				);
 
@@ -3101,7 +3101,7 @@ describe('AccountUc', () => {
 						) {
 							return Promise.resolve(AccountEntityToDtoMapper.mapToDto(mockAccountWithNoLastFailedLogin));
 						}
-						throw new EntityNotFoundError(Account.name);
+						throw new EntityNotFoundError(AccountEntity.name);
 					}
 				);
 

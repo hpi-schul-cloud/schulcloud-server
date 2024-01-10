@@ -6,7 +6,7 @@ import {
 	ForbiddenOperationError,
 	ValidationError,
 } from '@shared/common/error';
-import { Account, Role, SchoolEntity, User } from '@shared/domain/entity';
+import { AccountEntity, Role, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { PermissionService } from '@shared/domain/service';
 import { EntityId } from '@shared/domain/types';
@@ -174,7 +174,7 @@ export class AccountUc {
 			try {
 				await this.accountService.save(targetAccount);
 			} catch (err) {
-				throw new EntityNotFoundError(Account.name);
+				throw new EntityNotFoundError(AccountEntity.name);
 			}
 		}
 		// TODO: mapping from domain to api dto should be a responsability of the controller
@@ -261,7 +261,7 @@ export class AccountUc {
 			try {
 				await this.accountService.save(account);
 			} catch (err) {
-				throw new EntityNotFoundError(Account.name);
+				throw new EntityNotFoundError(AccountEntity.name);
 			}
 		}
 	}
@@ -307,7 +307,7 @@ export class AccountUc {
 			account.password = password;
 			await this.accountService.save(account);
 		} catch (err) {
-			throw new EntityNotFoundError(Account.name);
+			throw new EntityNotFoundError(AccountEntity.name);
 		}
 		try {
 			user.forcePasswordChange = false;

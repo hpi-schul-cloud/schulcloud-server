@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
-import { Account } from '@shared/domain/entity';
+import { AccountEntity } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import bcrypt from 'bcryptjs';
 import { AccountEntityToDtoMapper } from '../mapper';
@@ -45,7 +45,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
-		let account: Account;
+		let account: AccountEntity;
 		// HINT: mapping could be done by a mapper (though this whole file is subject to be removed in the future)
 		// HINT: today we have logic to map back into unit work in the baseDO
 		if (accountDto.id) {
@@ -65,7 +65,7 @@ export class AccountServiceDb extends AbstractAccountService {
 
 			await this.accountRepo.save(account);
 		} else {
-			account = new Account({
+			account = new AccountEntity({
 				userId: new ObjectId(accountDto.userId),
 				systemId: accountDto.systemId ? new ObjectId(accountDto.systemId) : undefined,
 				username: accountDto.username,
