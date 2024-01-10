@@ -7,24 +7,28 @@ const { GeneralError } = require('../errors');
 let redisClient = false;
 
 async function initializeRedisClient() {
-	if (Configuration.has('REDIS_URI')) {
+	if (Configuration.has('REDIS_CLUSTER_URI')) {
 		try {
-			if (Configuration.has('REDIS_CLUSTER_ENABLED') === true) {
-				redisClient = redis.createCluster({
-					rootNodes: [{
-					  url: Configuration.get('REDIS_URI')
-					}]
-				  })
-			}
-			else {
-				redisClient = redis.createClient({
+			redisClient = redis.createCluster({
+				rootNodes: [{
 					url: Configuration.get('REDIS_URI'),
-				  legacyMode: true,
-				})				
-			}
+				}]
+			})
 			await redisClient.connect();
 		} catch (err) {
-			throw new GeneralError('Redis connection failed!', err);
+			throw new GeneralError('Redis Cluster connection failed!', err);
+		}
+	} else {
+		if (Configuration.has('REDIS_URI')) {
+			try {
+				redisClient = redis.createClient({
+					url: Configuration.get('REDIS_URI'),
+				legacyMode: true,
+				})
+				await redisClient.connect();
+			} catch (err) {
+				throw new GeneralError('Redis connection failed!', err);
+			}
 		}
 	}
 }
