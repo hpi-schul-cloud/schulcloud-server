@@ -90,6 +90,17 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		return userDo;
 	}
 
+	async findByEmail(email: string): Promise<UserDO[]> {
+		// find mail case-insensitive by regex
+		const userEntitys: User[] = await this._em.find(User, {
+			email: new RegExp(`^${email.replace(/\W/g, '\\$&')}$`, 'i'),
+		});
+
+		const userDos: UserDO[] = userEntitys.map((userEntity: User): UserDO => this.mapEntityToDO(userEntity));
+
+		return userDos;
+	}
+
 	mapEntityToDO(entity: User): UserDO {
 		const user: UserDO = new UserDO({
 			id: entity.id,

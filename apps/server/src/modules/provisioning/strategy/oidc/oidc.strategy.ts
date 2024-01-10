@@ -36,9 +36,7 @@ export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
 			if (data.externalGroups) {
 				let groups: ExternalGroupDto[] = data.externalGroups;
 
-				if (this.provisioningFeatures.provisioningOptionsEnabled) {
-					groups = await this.oidcProvisioningService.filterExternalGroups(groups, school?.id, data.system.systemId);
-				}
+				groups = await this.oidcProvisioningService.filterExternalGroups(groups, school?.id, data.system.systemId);
 
 				await Promise.all(
 					groups.map((group: ExternalGroupDto) =>

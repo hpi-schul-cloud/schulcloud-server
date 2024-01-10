@@ -1,15 +1,14 @@
 import { LegacySchoolService } from '@modules/legacy-school';
-import { UserService } from '@modules/user';
-import { Injectable } from '@nestjs/common';
-import { LegacySchoolDo, RoleReference, UserDO } from '@shared/domain/domainobject';
-import { User } from '@shared/domain/entity';
-import { RoleName } from '@shared/domain/interface';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import {
 	IdTokenExtractionFailureLoggableException,
 	IdTokenUserNotFoundLoggableException,
 } from '@modules/oauth/loggable';
+import { UserService } from '@modules/user';
+import { Injectable } from '@nestjs/common';
+import { LegacySchoolDo, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { RoleName } from '@shared/domain/interface';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import {
 	ExternalSchoolDto,
 	ExternalUserDto,
@@ -66,10 +65,10 @@ export class IservProvisioningStrategy extends ProvisioningStrategy {
 
 	async getAdditionalErrorInfo(email: string | undefined): Promise<string> {
 		if (email) {
-			const usersWithEmail: User[] = await this.userService.findByEmail(email);
+			const usersWithEmail: UserDO[] = await this.userService.findByEmail(email);
 			if (usersWithEmail.length > 0) {
-				const user: User = usersWithEmail[0];
-				return ` [schoolId: ${user.school.id}, currentLdapId: ${user.externalId ?? ''}]`;
+				const user: UserDO = usersWithEmail[0];
+				return ` [schoolId: ${user.schoolId}, currentLdapId: ${user.externalId ?? ''}]`;
 			}
 		}
 		return '';
