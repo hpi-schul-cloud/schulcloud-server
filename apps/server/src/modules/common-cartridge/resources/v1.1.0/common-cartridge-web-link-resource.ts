@@ -30,10 +30,10 @@ export class CommonCartridgeWebLinkResourceV110 extends CommonCartridgeResource 
 		return buildXmlString({
 			webLink: {
 				$: {
-					xmlns: 'https://www.imsglobal.org/xsd/imsccv1p1/imswl_v1p1',
+					xmlns: 'http://www.imsglobal.org/xsd/imsccv1p1/imswl_v1p1',
 					'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
 					'xsi:schemaLocation':
-						'https://www.imsglobal.org/xsd/imsccv1p1/imswl_v1p1 https://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imswl_v1p1.xsd',
+						'http://www.imsglobal.org/xsd/imsccv1p1/imswl_v1p1 https://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imswl_v1p1.xsd',
 				},
 				title: this.props.title,
 				url: {
