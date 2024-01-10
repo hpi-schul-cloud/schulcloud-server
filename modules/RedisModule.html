@@ -212,7 +212,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
 import { Module } from &#x27;@nestjs/common&#x27;;
 import { LegacyLogger, LoggerModule } from &#x27;@src/core/logger&#x27;;
-import { createClient, RedisClient } from &#x27;redis&#x27;;
+import { createClient, RedisClientType } from &#x27;redis&#x27;;
 import { REDIS_CLIENT } from &#x27;./interface/redis.constants&#x27;;
 
 @Module({
@@ -225,7 +225,7 @@ import { REDIS_CLIENT } from &#x27;./interface/redis.constants&#x27;;
 
 				if (Configuration.has(&#x27;REDIS_URI&#x27;)) {
 					const redisUrl: string &#x3D; Configuration.get(&#x27;REDIS_URI&#x27;) as string;
-					const client: RedisClient &#x3D; createClient({ url: redisUrl });
+					const client: RedisClientType &#x3D; createClient({ url: redisUrl });
 
 					client.on(&#x27;error&#x27;, (error) &#x3D;&gt; logger.error(error));
 					client.on(&#x27;connect&#x27;, (msg) &#x3D;&gt; logger.log(msg));

@@ -5787,12 +5787,15 @@ must use</p>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>(consumer: MiddlewareConsumer, redisClient: RedisClient | undefined, logger: LegacyLogger) &#x3D;&gt; {
+                        <i>Default value : </i><code>(
+	consumer: MiddlewareConsumer,
+	redisClient: RedisClientType | undefined,
+	logger: LegacyLogger
+) &#x3D;&gt; {
 	const sessionDuration: number &#x3D; Configuration.get(&#x27;SESSION__EXPIRES_SECONDS&#x27;) as number;
 
-	let store: connectRedis.RedisStore | undefined;
+	let store: RedisStore | undefined;
 	if (redisClient) {
-		const RedisStore: connectRedis.RedisStore &#x3D; connectRedis(session);
 		store &#x3D; new RedisStore({
 			client: redisClient,
 			ttl: sessionDuration,

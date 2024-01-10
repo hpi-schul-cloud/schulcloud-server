@@ -291,8 +291,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="159"
-                                    class="link-to-prism">apps/server/src/modules/server/server.module.ts:159</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="162"
+                                    class="link-to-prism">apps/server/src/modules/server/server.module.ts:162</a></div>
                         </td>
                     </tr>
 
@@ -347,7 +347,7 @@
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from &#x27;@infra/database&#x27;;
 import { MailModule } from &#x27;@infra/mail&#x27;;
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from &#x27;@infra/rabbitmq&#x27;;
-import { REDIS_CLIENT, RedisModule } from &#x27;@infra/redis&#x27;;
+import { RedisModule, REDIS_CLIENT } from &#x27;@infra/redis&#x27;;
 import { Dictionary, IPrimaryKey } from &#x27;@mikro-orm/core&#x27;;
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from &#x27;@mikro-orm/nestjs&#x27;;
 import { AccountApiModule } from &#x27;@modules/account/account-api.module&#x27;;
@@ -381,9 +381,9 @@ import { ALL_ENTITIES } from &#x27;@shared/domain/entity&#x27;;
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from &#x27;@src/config&#x27;;
 import { CoreModule } from &#x27;@src/core&#x27;;
 import { LegacyLogger, LoggerModule } from &#x27;@src/core/logger&#x27;;
-import connectRedis from &#x27;connect-redis&#x27;;
+import RedisStore from &#x27;connect-redis&#x27;;
 import session from &#x27;express-session&#x27;;
-import { RedisClient } from &#x27;redis&#x27;;
+import { RedisClientType } from &#x27;redis&#x27;;
 import { ServerController } from &#x27;./controller/server.controller&#x27;;
 import { serverConfig } from &#x27;./server.config&#x27;;
 
@@ -434,12 +434,15 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions &#x3D; {
 		new NotFoundException(&#x60;The requested ${entityName}: ${where} has not been found.&#x60;),
 };
 
-const setupSessions &#x3D; (consumer: MiddlewareConsumer, redisClient: RedisClient | undefined, logger: LegacyLogger) &#x3D;&gt; {
+const setupSessions &#x3D; (
+	consumer: MiddlewareConsumer,
+	redisClient: RedisClientType | undefined,
+	logger: LegacyLogger
+) &#x3D;&gt; {
 	const sessionDuration: number &#x3D; Configuration.get(&#x27;SESSION__EXPIRES_SECONDS&#x27;) as number;
 
-	let store: connectRedis.RedisStore | undefined;
+	let store: RedisStore | undefined;
 	if (redisClient) {
-		const RedisStore: connectRedis.RedisStore &#x3D; connectRedis(session);
 		store &#x3D; new RedisStore({
 			client: redisClient,
 			ttl: sessionDuration,
@@ -495,7 +498,7 @@ const setupSessions &#x3D; (consumer: MiddlewareConsumer, redisClient: RedisClie
 })
 export class ServerModule implements NestModule {
 	constructor(
-		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClient | undefined,
+		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClientType | undefined,
 		private readonly logger: LegacyLogger
 	) {
 		logger.setContext(ServerModule.name);
@@ -526,7 +529,7 @@ export class ServerModule implements NestModule {
 })
 export class ServerTestModule implements NestModule {
 	constructor(
-		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClient | undefined,
+		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClientType | undefined,
 		private readonly logger: LegacyLogger
 	) {
 		logger.setContext(ServerTestModule.name);
