@@ -50,6 +50,8 @@ export class CommonCartridgeMapper {
 	public mapTaskToResource(task: Task, version: CommonCartridgeVersion): CommonCartridgeResourceProps {
 		const intendedUse = (() => {
 			switch (version) {
+				case CommonCartridgeVersion.V_1_1_0:
+					return CommonCartridgeIntendedUseType.UNSPECIFIED;
 				case CommonCartridgeVersion.V_1_3_0:
 					return CommonCartridgeIntendedUseType.ASSIGNMENT;
 				default:
