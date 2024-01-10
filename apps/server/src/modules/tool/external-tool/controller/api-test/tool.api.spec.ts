@@ -3,17 +3,19 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity } from '@shared/domain/entity';
+import { ColumnBoardNode, ExternalToolElementNodeEntity, SchoolEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	cleanupCollections,
+	columnBoardNodeFactory,
 	contextExternalToolEntityFactory,
+	externalToolElementNodeFactory,
 	externalToolEntityFactory,
 	externalToolFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -669,6 +671,7 @@ describe('ToolController (API)', () => {
 				const courseTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildList(3, {
 					schoolTool: schoolExternalToolEntitys[0],
 					contextType: ContextExternalToolType.COURSE,
+					contextId: new ObjectId().toHexString(),
 				});
 
 				const boardTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildList(2, {
@@ -676,6 +679,15 @@ describe('ToolController (API)', () => {
 					contextType: ContextExternalToolType.BOARD_ELEMENT,
 					contextId: new ObjectId().toHexString(),
 				});
+
+				const board: ColumnBoardNode = columnBoardNodeFactory.buildWithId();
+				const externalToolElements: ExternalToolElementNodeEntity[] = externalToolElementNodeFactory.buildListWithId(
+					2,
+					{
+						contextExternalTool: boardTools[0],
+						parent: board,
+					}
+				);
 
 				const externalToolMetadata: ExternalToolMetadata = new ExternalToolMetadata({
 					schoolExternalToolCount: 2,
@@ -691,6 +703,8 @@ describe('ToolController (API)', () => {
 					...schoolExternalToolEntitys,
 					...courseTools,
 					...boardTools,
+					board,
+					...externalToolElements,
 				]);
 				em.clear();
 
@@ -708,8 +722,8 @@ describe('ToolController (API)', () => {
 				expect(response.body).toEqual<ExternalToolMetadataResponse>({
 					schoolExternalToolCount: 2,
 					contextExternalToolCountPerContext: {
-						course: 3,
-						boardElement: 2,
+						course: 1,
+						boardElement: 1,
 					},
 				});
 			});
