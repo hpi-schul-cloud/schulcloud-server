@@ -28,7 +28,6 @@ import {
 } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
-import { ExternalToolMetadata } from '../../domain';
 import { ExternalToolEntity } from '../../entity';
 import {
 	ExternalToolCreateParams,
@@ -689,11 +688,6 @@ describe('ToolController (API)', () => {
 					}
 				);
 
-				const externalToolMetadata: ExternalToolMetadata = new ExternalToolMetadata({
-					schoolExternalToolCount: 2,
-					contextExternalToolCountPerContext: { course: 3, boardElement: 2 },
-				});
-
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
 				await em.persistAndFlush([
 					adminAccount,
@@ -710,7 +704,7 @@ describe('ToolController (API)', () => {
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
-				return { loggedInClient, toolId, externalToolEntity, externalToolMetadata };
+				return { loggedInClient, toolId, externalToolEntity };
 			};
 
 			it('should return the metadata of externalTool', async () => {
