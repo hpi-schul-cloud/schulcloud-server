@@ -11,7 +11,7 @@ import { REDIS_CLIENT } from './interface/redis.constants';
 			provide: REDIS_CLIENT,
 			useFactory: (logger: LegacyLogger) => {
 				logger.setContext(RedisModule.name);
-				if (Configuration.has('REDIS_CLUSTER_URI') === true) {
+				if (Configuration.has('REDIS_CLUSTER_URI')) {
 					const redisClusterUri: string = Configuration.get('REDIS_CLUSTER_URI') as string;
 					const clusterClient: RedisClusterType = createCluster({
 						rootNodes: [{
