@@ -54,6 +54,32 @@ describe(GroupScope.name, () => {
 		});
 	});
 
+	describe('bySystemId', () => {
+		describe('when id is undefined', () => {
+			it('should not add query', () => {
+				scope.bySystemId(undefined);
+
+				expect(scope.query).toEqual({});
+			});
+		});
+
+		describe('when id is defined', () => {
+			const setup = () => {
+				return {
+					id: new ObjectId().toHexString(),
+				};
+			};
+
+			it('should add query', () => {
+				const { id } = setup();
+
+				scope.bySystemId(id);
+
+				expect(scope.query).toEqual({ externalSource: { system: id } });
+			});
+		});
+	});
+
 	describe('byUserId', () => {
 		describe('when id is undefined', () => {
 			it('should not add query', () => {

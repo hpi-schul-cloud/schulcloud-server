@@ -71,6 +71,7 @@ export class SchoolExternalToolRepo extends BaseDORepo<SchoolExternalTool, Schoo
 			schoolId: entity.school.id,
 			toolVersion: entity.toolVersion,
 			parameters: ExternalToolRepoMapper.mapCustomParameterEntryEntitiesToDOs(entity.schoolParameters),
+			status: entity.status,
 		});
 	}
 
@@ -80,6 +81,7 @@ export class SchoolExternalToolRepo extends BaseDORepo<SchoolExternalTool, Schoo
 			tool: this._em.getReference(ExternalToolEntity, entityDO.toolId),
 			toolVersion: entityDO.toolVersion,
 			schoolParameters: ExternalToolRepoMapper.mapCustomParameterEntryDOsToEntities(entityDO.parameters),
+			status: entityDO.status,
 		};
 	}
 }

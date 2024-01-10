@@ -95,8 +95,8 @@ export class UserService {
 		return user;
 	}
 
-	async findByEmail(email: string): Promise<User[]> {
-		const user: Promise<User[]> = this.userRepo.findByEmail(email);
+	async findByEmail(email: string): Promise<UserDO[]> {
+		const user: Promise<UserDO[]> = this.userDORepo.findByEmail(email);
 
 		return user;
 	}
