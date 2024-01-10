@@ -42,6 +42,7 @@ const grantAccessToPrivateFiles = async (app, oldUser, newUser) => {
 			refOwnerModel: 'user',
 			owner: oldUser._id,
 		},
+		adapter: { multi: ['patch'] },
 	};
 	const updateData = {
 		owner: newUser._id,

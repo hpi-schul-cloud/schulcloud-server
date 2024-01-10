@@ -48,6 +48,7 @@ describe('ExternalToolEntity', () => {
 				regex: 'mockRegex',
 				regexComment: 'mockComment',
 				isOptional: false,
+				isProtected: false,
 			});
 			const externalToolEntity: ExternalToolEntity = new ExternalToolEntity({
 				name: 'toolName',
@@ -56,6 +57,7 @@ describe('ExternalToolEntity', () => {
 				config: basicToolConfig,
 				parameters: [customParameter],
 				isHidden: true,
+				isDeactivated: false,
 				openNewTab: true,
 				version: 1,
 			});

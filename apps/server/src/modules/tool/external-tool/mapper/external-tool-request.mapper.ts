@@ -79,6 +79,7 @@ export class ExternalToolRequestMapper {
 			config: mappedConfig,
 			parameters: mappedCustomParameter,
 			isHidden: externalToolUpdateParams.isHidden,
+			isDeactivated: externalToolUpdateParams.isDeactivated,
 			openNewTab: externalToolUpdateParams.openNewTab,
 			version,
 			restrictToContexts: externalToolUpdateParams.restrictToContexts,
@@ -106,6 +107,7 @@ export class ExternalToolRequestMapper {
 			config: mappedConfig,
 			parameters: mappedCustomParameter,
 			isHidden: externalToolCreateParams.isHidden,
+			isDeactivated: externalToolCreateParams.isDeactivated,
 			openNewTab: externalToolCreateParams.openNewTab,
 			version,
 			restrictToContexts: externalToolCreateParams.restrictToContexts,
@@ -153,6 +155,7 @@ export class ExternalToolRequestMapper {
 				location: locationMapping[customParameterParam.location],
 				type: typeMapping[customParameterParam.type],
 				isOptional: customParameterParam.isOptional,
+				isProtected: customParameterParam.isProtected,
 			};
 		});
 	}

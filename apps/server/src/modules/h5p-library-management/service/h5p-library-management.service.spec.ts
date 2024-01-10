@@ -53,6 +53,10 @@ describe('H5PLibraryManagementService', () => {
 		await module.close();
 	});
 
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
 	describe('uninstallUnwantedLibraries is called', () => {
 		describe('when wantedLibraries have no dependands', () => {
 			const setup = () => {
@@ -195,6 +199,7 @@ describe('H5PLibraryManagementService', () => {
 				const { service } = setup();
 				const wantedLibraries = ['a', 'b', 'c'];
 				const installContentTypeSpy = jest.spyOn(service.contentTypeRepo, 'installContentType').mockResolvedValue([]);
+				jest.spyOn(service.contentTypeCache, 'get').mockResolvedValue([]);
 				await service.installLibraries(wantedLibraries);
 				for (const libName of wantedLibraries) {
 					expect(installContentTypeSpy).toHaveBeenCalledWith(libName, expect.anything());

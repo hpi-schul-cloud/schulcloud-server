@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
 import { MailModule } from '@infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
-import { REDIS_CLIENT, RedisModule } from '@infra/redis';
+import { RedisModule, REDIS_CLIENT } from '@infra/redis';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { AccountApiModule } from '@modules/account/account-api.module';
@@ -12,6 +12,7 @@ import { CollaborativeStorageModule } from '@modules/collaborative-storage';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
+import { LegacySchoolApiModule } from '@modules/legacy-school/legacy-school.api-module';
 import { LessonApiModule } from '@modules/lesson/lesson-api.module';
 import { MetaTagExtractorApiModule, MetaTagExtractorModule } from '@modules/meta-tag-extractor';
 import { NewsModule } from '@modules/news';
@@ -19,6 +20,7 @@ import { OauthProviderApiModule } from '@modules/oauth-provider';
 import { OauthApiModule } from '@modules/oauth/oauth-api.module';
 import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
 import { RocketChatModule } from '@modules/rocketchat';
+import { SchoolApiModule } from '@modules/school/school-api.module';
 import { SharingApiModule } from '@modules/sharing/sharing.module';
 import { SystemApiModule } from '@modules/system/system-api.module';
 import { TaskApiModule } from '@modules/task/task-api.module';
@@ -31,12 +33,12 @@ import { VideoConferenceApiModule } from '@modules/video-conference/video-confer
 import { DynamicModule, Inject, MiddlewareConsumer, Module, NestModule, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain/entity';
-import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
+import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LegacyLogger, LoggerModule } from '@src/core/logger';
-import connectRedis from 'connect-redis';
+import RedisStore from 'connect-redis';
 import session from 'express-session';
-import { RedisClient } from 'redis';
+import { RedisClientType } from 'redis';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 
@@ -77,6 +79,8 @@ const serverModules = [
 	TeamsApiModule,
 	MetaTagExtractorApiModule,
 	PseudonymApiModule,
+	SchoolApiModule,
+	LegacySchoolApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
@@ -85,12 +89,15 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		new NotFoundException(`The requested ${entityName}: ${where} has not been found.`),
 };
 
-const setupSessions = (consumer: MiddlewareConsumer, redisClient: RedisClient | undefined, logger: LegacyLogger) => {
+const setupSessions = (
+	consumer: MiddlewareConsumer,
+	redisClient: RedisClientType | undefined,
+	logger: LegacyLogger
+) => {
 	const sessionDuration: number = Configuration.get('SESSION__EXPIRES_SECONDS') as number;
 
-	let store: connectRedis.RedisStore | undefined;
+	let store: RedisStore | undefined;
 	if (redisClient) {
-		const RedisStore: connectRedis.RedisStore = connectRedis(session);
 		store = new RedisStore({
 			client: redisClient,
 			ttl: sessionDuration,
@@ -146,7 +153,7 @@ const setupSessions = (consumer: MiddlewareConsumer, redisClient: RedisClient | 
 })
 export class ServerModule implements NestModule {
 	constructor(
-		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClient | undefined,
+		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClientType | undefined,
 		private readonly logger: LegacyLogger
 	) {
 		logger.setContext(ServerModule.name);
@@ -177,7 +184,7 @@ export class ServerModule implements NestModule {
 })
 export class ServerTestModule implements NestModule {
 	constructor(
-		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClient | undefined,
+		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClientType | undefined,
 		private readonly logger: LegacyLogger
 	) {
 		logger.setContext(ServerTestModule.name);

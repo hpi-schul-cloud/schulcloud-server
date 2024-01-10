@@ -1,4 +1,4 @@
-import { DeletionDomainModel } from '../domain/types';
+import { DomainModel } from '@shared/domain/types';
 import { DeletionLogStatisticBuilder } from '.';
 
 describe(DeletionLogStatisticBuilder.name, () => {
@@ -8,7 +8,7 @@ describe(DeletionLogStatisticBuilder.name, () => {
 
 	it('should build generic deletionLogStatistic with all attributes', () => {
 		// Arrange
-		const domain = DeletionDomainModel.PSEUDONYMS;
+		const domain = DomainModel.PSEUDONYMS;
 		const modifiedCount = 0;
 		const deletedCount = 2;
 

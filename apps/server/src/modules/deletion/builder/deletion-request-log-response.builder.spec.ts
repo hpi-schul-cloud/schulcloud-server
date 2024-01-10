@@ -1,14 +1,14 @@
-import { DeletionDomainModel } from '../domain/types';
-import { DeletionLogStatisticBuilder, DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from './index';
+import { DomainModel } from '@shared/domain/types';
+import { DeletionLogStatisticBuilder, DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '.';
 
-describe(DeletionRequestLogResponseBuilder.name, () => {
+describe(DeletionRequestLogResponseBuilder, () => {
 	afterAll(() => {
 		jest.clearAllMocks();
 	});
 
 	it('should build generic deletionRequestLog with all attributes', () => {
 		// Arrange
-		const targetRefDomain = DeletionDomainModel.PSEUDONYMS;
+		const targetRefDomain = DomainModel.PSEUDONYMS;
 		const targetRefId = '653e4833cc39e5907a1e18d2';
 		const targetRef = DeletionTargetRefBuilder.build(targetRefDomain, targetRefId);
 		const deletionPlannedAt = new Date();

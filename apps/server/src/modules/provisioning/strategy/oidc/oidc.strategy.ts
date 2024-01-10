@@ -1,13 +1,16 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
-import { OauthDataDto, ProvisioningDto } from '../../dto';
+import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
+import { ExternalGroupDto, OauthDataDto, ProvisioningDto } from '../../dto';
 import { ProvisioningStrategy } from '../base.strategy';
 import { OidcProvisioningService } from './service/oidc-provisioning.service';
 
 @Injectable()
 export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
-	constructor(protected readonly oidcProvisioningService: OidcProvisioningService) {
+	constructor(
+		@Inject(ProvisioningFeatures) protected readonly provisioningFeatures: IProvisioningFeatures,
+		protected readonly oidcProvisioningService: OidcProvisioningService
+	) {
 		super();
 	}
 
@@ -23,7 +26,7 @@ export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
 			school?.id
 		);
 
-		if (Configuration.get('FEATURE_SANIS_GROUP_PROVISIONING_ENABLED')) {
+		if (this.provisioningFeatures.schulconnexGroupProvisioningEnabled) {
 			await this.oidcProvisioningService.removeExternalGroupsAndAffiliation(
 				data.externalUser.externalId,
 				data.externalGroups ?? [],
@@ -31,13 +34,13 @@ export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
 			);
 
 			if (data.externalGroups) {
+				let groups: ExternalGroupDto[] = data.externalGroups;
+
+				groups = await this.oidcProvisioningService.filterExternalGroups(groups, school?.id, data.system.systemId);
+
 				await Promise.all(
-					data.externalGroups.map((externalGroup) =>
-						this.oidcProvisioningService.provisionExternalGroup(
-							externalGroup,
-							data.externalSchool,
-							data.system.systemId
-						)
+					groups.map((group: ExternalGroupDto) =>
+						this.oidcProvisioningService.provisionExternalGroup(group, data.externalSchool, data.system.systemId)
 					)
 				);
 			}

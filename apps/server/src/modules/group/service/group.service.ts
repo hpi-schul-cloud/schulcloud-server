@@ -14,7 +14,7 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		const group: Group | null = await this.groupRepo.findById(id);
 
 		if (!group) {
-			throw new NotFoundLoggableException(Group.name, 'id', id);
+			throw new NotFoundLoggableException(Group.name, { id });
 		}
 
 		return group;
@@ -40,6 +40,20 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 
 	public async findGroupsBySchoolIdAndGroupTypes(schoolId: EntityId, groupTypes: GroupTypes[]): Promise<Group[]> {
 		const group: Group[] = await this.groupRepo.findBySchoolIdAndGroupTypes(schoolId, groupTypes);
+
+		return group;
+	}
+
+	public async findGroupsBySchoolIdAndSystemIdAndGroupType(
+		schoolId: EntityId,
+		systemId: EntityId,
+		groupType: GroupTypes
+	): Promise<Group[]> {
+		const group: Group[] = await this.groupRepo.findGroupsBySchoolIdAndSystemIdAndGroupType(
+			schoolId,
+			systemId,
+			groupType
+		);
 
 		return group;
 	}

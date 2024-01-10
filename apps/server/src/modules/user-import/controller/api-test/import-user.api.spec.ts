@@ -22,8 +22,9 @@ import {
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { PaginationParams } from '@shared/controller';
-import { ImportUser, MatchCreator, SchoolEntity, SchoolFeatures, SystemEntity, User } from '@shared/domain/entity';
+import { ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
+import { SchoolFeature } from '@shared/domain/types';
 import {
 	cleanupCollections,
 	importUserFactory,
@@ -41,7 +42,7 @@ describe('ImportUser Controller (API)', () => {
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 
-	const authenticatedUser = async (permissions: Permission[] = [], features: SchoolFeatures[] = []) => {
+	const authenticatedUser = async (permissions: Permission[] = [], features: SchoolFeature[] = []) => {
 		const system = systemEntityFactory.buildWithId(); // TODO no id?
 		const school = schoolFactory.build({ officialSchoolNumber: 'foo', features });
 		const roles = [roleFactory.build({ name: RoleName.ADMINISTRATOR, permissions })];
@@ -196,7 +197,7 @@ describe('ImportUser Controller (API)', () => {
 				beforeEach(async () => {
 					({ school, system, user } = await authenticatedUser(
 						[Permission.SCHOOL_IMPORT_USERS_VIEW],
-						[SchoolFeatures.LDAP_UNIVENTION_MIGRATION]
+						[SchoolFeature.LDAP_UNIVENTION_MIGRATION]
 					));
 					currentUser = mapUserToCurrentUser(user);
 					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', system._id.toString());

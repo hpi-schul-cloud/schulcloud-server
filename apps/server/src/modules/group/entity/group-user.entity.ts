@@ -1,5 +1,6 @@
 import { Embeddable, ManyToOne } from '@mikro-orm/core';
-import { Role, User } from '@shared/domain/entity';
+import { Role } from '@shared/domain/entity/role.entity';
+import { User } from '@shared/domain/entity/user.entity';
 
 export interface GroupUserEntityProps {
 	user: User;

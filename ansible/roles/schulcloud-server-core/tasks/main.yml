@@ -37,6 +37,20 @@
       template: onepassword.yml.j2
     when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
 
+  - name: Admin API server ConfigMap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-configmap.yml.j2
+      apply: yes
+
+  - name: Admin API server Secret (from 1Password)
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-onepassword.yml.j2
+    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+
   - name: Admin API client secret (from 1Password)
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -192,4 +206,11 @@
       namespace: "{{ NAMESPACE }}"
       template: tldraw-ingress.yml.j2
       apply: yes
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
+
+  - name: TldrawServiceMonitor
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: tldraw-svc-monitor.yml.j2
     when: WITH_TLDRAW is defined and WITH_TLDRAW|bool

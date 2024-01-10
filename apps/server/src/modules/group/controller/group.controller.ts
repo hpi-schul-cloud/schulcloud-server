@@ -1,12 +1,19 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Controller, Get, HttpStatus, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { PaginationParams } from '@shared/controller';
 import { Page } from '@shared/domain/domainobject';
 import { ErrorResponse } from '@src/core/error/dto';
 import { GroupUc } from '../uc';
 import { ClassInfoDto, ResolvedGroupDto } from '../uc/dto';
-import { ClassFilterParams, ClassInfoSearchListResponse, ClassSortParams, GroupIdParams, GroupResponse } from './dto';
+import {
+	ClassFilterParams,
+	ClassInfoSearchListResponse,
+	ClassSortParams,
+	GroupIdParams,
+	GroupResponse,
+	GroupPaginationParams,
+	ClassCallerParams,
+} from './dto';
 import { GroupResponseMapper } from './mapper';
 
 @ApiTags('Group')
@@ -21,15 +28,17 @@ export class GroupController {
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	@Get('/class')
 	public async findClasses(
-		@Query() pagination: PaginationParams,
+		@Query() pagination: GroupPaginationParams,
 		@Query() sortingQuery: ClassSortParams,
 		@Query() filterParams: ClassFilterParams,
+		@Query() callerParams: ClassCallerParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ClassInfoSearchListResponse> {
 		const board: Page<ClassInfoDto> = await this.groupUc.findAllClasses(
 			currentUser.userId,
 			currentUser.schoolId,
 			filterParams.type,
+			callerParams.calledFrom,
 			pagination.skip,
 			pagination.limit,
 			sortingQuery.sortBy,

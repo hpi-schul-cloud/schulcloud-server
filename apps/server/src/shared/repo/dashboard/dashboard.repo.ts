@@ -15,6 +15,7 @@ export interface IDashboardRepo {
 	getUsersDashboard(userId: EntityId): Promise<DashboardEntity>;
 	getDashboardById(id: EntityId): Promise<DashboardEntity>;
 	persistAndFlush(entity: DashboardEntity): Promise<DashboardEntity>;
+	deleteDashboardByUserId(userId: EntityId): Promise<number>;
 }
 
 @Injectable()
@@ -50,5 +51,11 @@ export class DashboardRepo implements IDashboardRepo {
 		await this.persistAndFlush(dashboard);
 
 		return dashboard;
+	}
+
+	async deleteDashboardByUserId(userId: EntityId): Promise<number> {
+		const promise: Promise<number> = this.em.nativeDelete(DashboardModelEntity, { user: userId });
+
+		return promise;
 	}
 }

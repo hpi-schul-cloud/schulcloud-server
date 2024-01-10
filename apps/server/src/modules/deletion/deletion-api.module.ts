@@ -14,6 +14,8 @@ import { RocketChatUserModule } from '@modules/rocketchat-user';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { RocketChatModule } from '@modules/rocketchat';
 import { RegistrationPinModule } from '@modules/registration-pin';
+import { TaskModule } from '@modules/task';
+import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { DeletionRequestsController } from './controller/deletion-requests.controller';
 import { DeletionExecutionsController } from './controller/deletion-executions.controller';
 import { DeletionRequestUc } from './uc';
@@ -33,6 +35,8 @@ import { DeletionRequestUc } from './uc';
 		AuthenticationModule,
 		RocketChatUserModule,
 		RegistrationPinModule,
+		FilesStorageClientModule,
+		TaskModule,
 		RocketChatModule.forRoot({
 			uri: Configuration.get('ROCKET_CHAT_URI') as string,
 			adminId: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,

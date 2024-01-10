@@ -6,7 +6,7 @@ const { GeneralError } = require('../errors');
 
 let redisClient = false;
 
-function initializeRedisClient() {
+async function initializeRedisClient() {
 	if (Configuration.has('REDIS_URI')) {
 		try {
 			if (Configuration.has('REDIS_CLUSTER_ENABLED') === true) {
@@ -19,8 +19,10 @@ function initializeRedisClient() {
 			else {
 				redisClient = redis.createClient({
 					url: Configuration.get('REDIS_URI'),
+				  legacyMode: true,
 				})				
 			}
+			await redisClient.connect();
 		} catch (err) {
 			throw new GeneralError('Redis connection failed!', err);
 		}

@@ -47,7 +47,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		const userEntity: User = await this._em.findOneOrFail(this.entityName, id as FilterQuery<User>);
 
 		if (populate) {
-			await this._em.populate(userEntity, ['roles', 'school.systems', 'school.schoolYear']);
+			await this._em.populate(userEntity, ['roles', 'school.systems', 'school.currentYear']);
 			await this.populateRoles(userEntity.roles.getItems());
 		}
 
@@ -62,7 +62,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 		}
 
 		if (populate) {
-			await this._em.populate(user, ['roles', 'school.systems', 'school.schoolYear']);
+			await this._em.populate(user, ['roles', 'school.systems', 'school.currentYear']);
 			await this.populateRoles(user.roles.getItems());
 		}
 
@@ -88,6 +88,17 @@ export class UserDORepo extends BaseDORepo<UserDO, User> {
 
 		const userDo: UserDO | null = userEntity ? this.mapEntityToDO(userEntity) : null;
 		return userDo;
+	}
+
+	async findByEmail(email: string): Promise<UserDO[]> {
+		// find mail case-insensitive by regex
+		const userEntitys: User[] = await this._em.find(User, {
+			email: new RegExp(`^${email.replace(/\W/g, '\\$&')}$`, 'i'),
+		});
+
+		const userDos: UserDO[] = userEntitys.map((userEntity: User): UserDO => this.mapEntityToDO(userEntity));
+
+		return userDos;
 	}
 
 	mapEntityToDO(entity: User): UserDO {
