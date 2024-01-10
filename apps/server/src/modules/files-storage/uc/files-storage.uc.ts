@@ -70,8 +70,6 @@ export class FilesStorageUC {
 
 				try {
 					const record = await this.filesStorageService.uploadFile(userId, params, fileDto);
-					console.log('filerecord returned in uc', record);
-
 					resolve(record);
 				} catch (error) {
 					req.unpipe(bb);
