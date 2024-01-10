@@ -1,3 +1,4 @@
+import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import {
 	BadRequestException,
@@ -51,7 +52,11 @@ import {
 @Authenticate('jwt')
 @Controller('file')
 export class FilesStorageController {
-	constructor(private readonly filesStorageUC: FilesStorageUC) {}
+	constructor(
+		private readonly filesStorageUC: FilesStorageUC,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		private readonly orm: MikroORM // don't remove it, we need it for @UseRequestContext
+	) {}
 
 	@ApiOperation({ summary: 'Upload file from url' })
 	@ApiResponse({ status: 201, type: FileRecordResponse })
@@ -79,6 +84,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiConsumes('multipart/form-data')
+	@UseRequestContext()
 	@Post('/upload/:schoolId/:parentType/:parentId')
 	async upload(
 		@Body() _: FileParams,
