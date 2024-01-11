@@ -67,9 +67,7 @@ describe('CommonCartridgeMapper', () => {
 				expect(metadataProps).toStrictEqual<CommonCartridgeElementProps>({
 					type: CommonCartridgeElementType.METADATA,
 					title: course.name,
-					copyrightOwners: course.teachers
-						.toArray()
-						.map((teacher) => `${teacher.firstName} ${teacher.lastName}`),
+					copyrightOwners: course.teachers.toArray().map((teacher) => `${teacher.firstName} ${teacher.lastName}`),
 					creationDate: course.createdAt,
 				});
 			});

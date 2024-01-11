@@ -85,9 +85,9 @@ export class CommonCartridgeMapper {
 					type: CommonCartridgeResourceType.WEB_LINK,
 					identifier: createIdentifier(content._id),
 					title: content.title,
-					url: `${this.configService.getOrThrow<string>(
-						'FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED'
-					)}/m/${content.content.materialId}`,
+					url: `${this.configService.getOrThrow<string>('FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED')}/m/${
+						content.content.materialId
+					}`,
 				};
 			case ComponentType.ETHERPAD:
 				return {

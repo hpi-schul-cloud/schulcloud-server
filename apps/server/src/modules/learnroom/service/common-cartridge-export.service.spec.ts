@@ -120,9 +120,7 @@ describe('CommonCartridgeExportService', () => {
 			it('should add course', async () => {
 				const { archive, course } = await setup(CommonCartridgeVersion.V_1_1_0);
 
-				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(
-					createXmlString('mnf:string', course.name)
-				);
+				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(createXmlString('mnf:string', course.name));
 			});
 
 			it('should add lessons', async () => {
@@ -162,9 +160,7 @@ describe('CommonCartridgeExportService', () => {
 			it('should add course', async () => {
 				const { archive, course } = await setup(CommonCartridgeVersion.V_1_3_0);
 
-				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(
-					createXmlString('mnf:string', course.name)
-				);
+				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(createXmlString('mnf:string', course.name));
 			});
 
 			it('should add lessons', async () => {

@@ -33,9 +33,7 @@ export class CommonCartridgeMetadataElementV130 extends CommonCartridgeElement {
 						'mnf:value': 'yes',
 					},
 					'mnf:description': {
-						'mnf:string': `${this.props.creationDate.getFullYear()} ${this.props.copyrightOwners.join(
-							', '
-						)}`,
+						'mnf:string': `${this.props.creationDate.getFullYear()} ${this.props.copyrightOwners.join(', ')}`,
 					},
 				},
 			},

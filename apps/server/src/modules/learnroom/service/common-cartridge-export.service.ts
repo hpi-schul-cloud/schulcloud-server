@@ -43,9 +43,7 @@ export class CommonCartridgeExportService {
 		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
 
 		lessons.forEach((lesson) => {
-			const organizationBuilder = builder.addOrganization(
-				this.commonCartridgeMapper.mapLessonToOrganization(lesson)
-			);
+			const organizationBuilder = builder.addOrganization(this.commonCartridgeMapper.mapLessonToOrganization(lesson));
 
 			lesson.contents.forEach((content) => {
 				this.addComponentToOrganization(organizationBuilder, content);
