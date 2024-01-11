@@ -87,7 +87,7 @@ export class AccountUc {
 			const account = await this.accountService.findByUserId(query.value);
 			if (account) {
 				// HINT: skip and limit should be from the query
-				return new ResolvedSearchListAccountDto([AccountUcMapper.mapToResolvedAccountDto(account)], 1, 0, 1);
+				return new ResolvedSearchListAccountDto([AccountResponseMapper.mapToAccountResponse(account)], 1, 0, 1);
 			}
 			// HINT: skip and limit should be from the query
 			return new ResolvedSearchListAccountDto([], 0, 0, 0);
