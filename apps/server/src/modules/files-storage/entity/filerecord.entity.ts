@@ -317,7 +317,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		this.creatorId = undefined;
 	}
 
-	public markAsLoaded(): void {
+	public markAsUploaded(): void {
 		this.isUploading = undefined;
 	}
 }

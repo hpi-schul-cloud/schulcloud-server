@@ -1,4 +1,5 @@
 import { ProvisioningOptionsInterface } from '../interface';
+import { ProvisioningOptionsType } from './provisioning-options-type';
 
 export abstract class BaseProvisioningOptions<T extends ProvisioningOptionsInterface> {
 	public isApplicable(provisioningOptions: ProvisioningOptionsInterface): provisioningOptions is T {
@@ -11,5 +12,7 @@ export abstract class BaseProvisioningOptions<T extends ProvisioningOptionsInter
 		return hasProperties;
 	}
 
-	abstract set(props: T): this;
+	public abstract get getType(): ProvisioningOptionsType;
+
+	public abstract set(props: T): this;
 }

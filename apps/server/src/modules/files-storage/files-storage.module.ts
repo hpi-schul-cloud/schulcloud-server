@@ -49,7 +49,6 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
 			entities: [...ALL_ENTITIES, FileRecord, FileRecordSecurityCheck],
-			debug: true,
 
 			// debug: true, // use it for locally debugging of querys
 		}),

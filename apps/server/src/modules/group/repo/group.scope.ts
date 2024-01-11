@@ -18,6 +18,13 @@ export class GroupScope extends Scope<GroupEntity> {
 		return this;
 	}
 
+	bySystemId(id: EntityId | undefined): this {
+		if (id) {
+			this.addQuery({ externalSource: { system: id } });
+		}
+		return this;
+	}
+
 	byUserId(id: EntityId | undefined): this {
 		if (id) {
 			this.addQuery({ users: { user: new ObjectId(id) } });
