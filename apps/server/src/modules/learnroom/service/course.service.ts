@@ -32,4 +32,8 @@ export class CourseService {
 
 		return courses;
 	}
+
+	async create(course: Course): Promise<void> {
+		await this.repo.createCourse(course);
+	}
 }

@@ -1,10 +1,24 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Controller, Get, NotFoundException, Param, Query, Res, StreamableFile } from '@nestjs/common';
+import {
+	Controller,
+	Get,
+	NotFoundException,
+	Param,
+	Post,
+	Query,
+	Res,
+	StreamableFile,
+	UploadedFile,
+	UseInterceptors,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
 import { Response } from 'express';
+import { memoryStorage } from 'multer';
 import { CourseMapper } from '../mapper/course.mapper';
+import { CourseImportUc } from '../uc';
 import { CourseExportUc } from '../uc/course-export.uc';
 import { CourseUc } from '../uc/course.uc';
 import { CourseMetadataListResponse, CourseQueryParams, CourseUrlParams } from './dto';
@@ -16,6 +30,7 @@ export class CourseController {
 	constructor(
 		private readonly courseUc: CourseUc,
 		private readonly courseExportUc: CourseExportUc,
+		private readonly courseImportUc: CourseImportUc,
 		private readonly configService: ConfigService
 	) {}
 
@@ -46,5 +61,14 @@ export class CourseController {
 			'Content-Disposition': 'attachment;',
 		});
 		return new StreamableFile(result);
+	}
+
+	@Post('import')
+	@UseInterceptors(FileInterceptor('file', { storage: memoryStorage(), limits: { fileSize: 1000 * 1000 * 1000 * 2 } })) // 2GB file size limit
+	public async importCourse(
+		@CurrentUser() currentUser: ICurrentUser,
+		@UploadedFile() file: Express.Multer.File
+	): Promise<void> {
+		await this.courseImportUc.importFromCommonCartridge(currentUser.userId, file.buffer);
 	}
 }
