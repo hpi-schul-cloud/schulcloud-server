@@ -5,6 +5,7 @@ import { LegacyLogger, LoggerModule } from '@src/core/logger';
 import { redisStore, redisClusterStore } from 'cache-manager-redis-yet';
 import { CacheStoreType } from './interface';
 import { CacheService } from './service/cache.service';
+import { RedisClusterOptions } from 'redis';
 
 @Module({
 	imports: [
@@ -12,10 +13,10 @@ import { CacheService } from './service/cache.service';
 			useFactory: async (cacheService: CacheService, logger: LegacyLogger): Promise<CacheModuleOptions> => {
 				if (cacheService.getStoreType() === CacheStoreType.REDIS) {
 					if(Configuration.has('REDIS_CLUSTER_URI')) {
-						const redisClusterUrl: string = Configuration.get('REDIS_CLUSTER_URI') as string;
-						const storeCluster = await redisClusterStore({
-							rootNodes: [ redisClusterUrl ]
-						});
+						const redisClusterOptionsUse: RedisClusterOptions = {
+							rootNodes: [ Configuration.get('REDIS_CLUSTER_URI') ]
+						};
+						const storeCluster = await redisClusterStore(redisClusterOptionsUse);
 						const { client } = storeCluster;
 
 						client.on('error', (error) => logger.error(error));
