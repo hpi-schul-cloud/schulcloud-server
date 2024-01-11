@@ -10,6 +10,9 @@ export interface TldrawConfig {
 	FEATURE_TLDRAW_ENABLED: boolean;
 	TLDRAW_PING_TIMEOUT: number;
 	TLDRAW_GC_ENABLED: number;
+	TLDRAW_ASSETS_ENABLED: boolean;
+	TLDRAW_ASSETS_MAX_SIZE: number;
+	TLDRAW_ASSETS_ALLOWED_EXTENSIONS_LIST: string;
 }
 
 const tldrawConnectionString: string = Configuration.get('TLDRAW_DB_URL') as string;
@@ -24,6 +27,9 @@ const tldrawConfig = {
 	CONNECTION_STRING: tldrawConnectionString,
 	TLDRAW_PING_TIMEOUT: Configuration.get('TLDRAW__PING_TIMEOUT') as number,
 	TLDRAW_GC_ENABLED: Configuration.get('TLDRAW__GC_ENABLED') as boolean,
+	TLDRAW_ASSETS_ENABLED: Configuration.get('TLDRAW__ASSETS_ENABLED') as boolean,
+	TLDRAW_ASSETS_MAX_SIZE: Configuration.get('TLDRAW__ASSETS_MAX_SIZE') as number,
+	TLDRAW_ASSETS_ALLOWED_EXTENSIONS_LIST: Configuration.get('TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST') as string,
 };
 
 export const SOCKET_PORT = Configuration.get('TLDRAW__SOCKET_PORT') as number;
