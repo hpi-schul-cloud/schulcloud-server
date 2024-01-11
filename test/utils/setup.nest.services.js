@@ -18,6 +18,7 @@ const { TeamsApiModule } = require('../../dist/apps/server/modules/teams/teams-a
 const { AuthorizationModule } = require('../../dist/apps/server/modules/authorization');
 const { SystemRule } = require('../../dist/apps/server/modules/authorization');
 const { ColumnBoardService } = require('../../dist/apps/server/modules/board/service/column-board.service');
+const { BoardModule } = require('../../dist/apps/server/modules/board/board.module');
 
 const setupNestServices = async (app) => {
 	const module = await Test.createTestingModule({
@@ -35,6 +36,7 @@ const setupNestServices = async (app) => {
 			AccountApiModule,
 			TeamsApiModule,
 			AuthorizationModule,
+			BoardModule,
 		],
 	}).compile();
 	const nestApp = await module.createNestApplication().init();
