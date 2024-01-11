@@ -874,7 +874,7 @@ describe('FileRecord Entity', () => {
 			it('should set it to undefined', () => {
 				const { fileRecord } = setup();
 				expect(fileRecord.isUploading).toBe(true);
-				const result = fileRecord.markAsLoaded();
+				const result = fileRecord.markAsUploaded();
 
 				expect(result).toBe(undefined);
 			});
