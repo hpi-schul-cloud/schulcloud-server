@@ -311,8 +311,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw.repo.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="21"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw.repo.ts:21</a></div>
                         </td>
                     </tr>
 
@@ -434,7 +434,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import { TldrawDrawing } from &#x27;../entities&#x27;;
 
 @Injectable()
@@ -446,7 +446,11 @@ export class TldrawRepo {
 	}
 
 	async findByDocName(docName: string): Promise&lt;TldrawDrawing[]&gt; {
-		return this._em.find(TldrawDrawing, { docName });
+		const domainObject &#x3D; await this._em.find(TldrawDrawing, { docName });
+		if (domainObject.length &#x3D;&#x3D;&#x3D; 0) {
+			throw new NotFoundException(&#x60;There is no &#x27;${docName}&#x27; for this docName&#x60;);
+		}
+		return domainObject;
 	}
 
 	async delete(entity: TldrawDrawing | TldrawDrawing[]): Promise&lt;void&gt; {

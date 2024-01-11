@@ -175,11 +175,19 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                <a href="#closeClientAndLogError" >closeClientAndLogError</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#getDocNameFromRequest" >getDocNameFromRequest</a>
                             </li>
                             <li>
-                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#handleConnection" >handleConnection</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#parseCookiesFromHeader" >parseCookiesFromHeader</a>
                             </li>
                         </ul>
                     </td>
@@ -199,12 +207,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(configService: <a href="../interfaces/TldrawConfig.html" target="_self">ConfigService&lt;TldrawConfig | &gt;</a>, tldrawWsService: <a href="../injectables/TldrawWsService.html" target="_self">TldrawWsService</a>)</code>
+<code>constructor(configService: <a href="../interfaces/TldrawConfig.html" target="_self">ConfigService&lt;TldrawConfig | &gt;</a>, tldrawWsService: <a href="../injectables/TldrawWsService.html" target="_self">TldrawWsService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:17</a></div>
                             </td>
                         </tr>
 
@@ -238,6 +246,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/TldrawWsService.html" target="_self" >TldrawWsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -288,7 +308,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -324,8 +344,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="69"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -337,6 +357,111 @@
                             <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
 
                         </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="closeClientAndLogError"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>closeClientAndLogError</b></span>
+                        <a href="#closeClientAndLogError"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>closeClientAndLogError(client: WebSocket, code: <a href="../undefineds/WsCloseCodeEnum.html" target="_self">WsCloseCodeEnum</a>, data: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, err: Error)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="92"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:92</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>client</td>
+                                            <td>
+                                                        <code>WebSocket</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>code</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#WsCloseCodeEnum" target="_self" >WsCloseCodeEnum</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>err</td>
+                                            <td>
+                                                        <code>Error</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -363,8 +488,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:82</a></div>
                         </td>
                     </tr>
 
@@ -416,7 +541,7 @@
                 <td class="col-md-4">
                     <a name="handleConnection"></a>
                     <span class="name">
-                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
                         <span ><b>handleConnection</b></span>
                         <a href="#handleConnection"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -432,8 +557,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="25"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -481,7 +606,76 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="parseCookiesFromHeader"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>parseCookiesFromHeader</b></span>
+                        <a href="#parseCookiesFromHeader"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>parseCookiesFromHeader(request: Request)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="87"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:87</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>request</td>
+                                            <td>
+                                                        <code>Request</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>literal type</code>
 
                         </div>
                             <div class="io-description">
@@ -503,9 +697,15 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection } from &#x27;@nestjs/websockets&#x27;;
 import { Server, WebSocket } from &#x27;ws&#x27;;
+import { Request } from &#x27;express&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
+import cookie from &#x27;cookie&#x27;;
+import { BadRequestException } from &#x27;@nestjs/common&#x27;;
+import { Logger } from &#x27;@src/core/logger&#x27;;
+import { AxiosError } from &#x27;axios&#x27;;
+import { WebsocketCloseErrorLoggable } from &#x27;../loggable/websocket-close-error.loggable&#x27;;
 import { TldrawConfig, SOCKET_PORT } from &#x27;../config&#x27;;
-import { WsCloseCodeEnum } from &#x27;../types&#x27;;
+import { WsCloseCodeEnum, WsCloseMessageEnum } from &#x27;../types&#x27;;
 import { TldrawWsService } from &#x27;../service&#x27;;
 
 @WebSocketGateway(SOCKET_PORT)
@@ -515,18 +715,50 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 
 	constructor(
 		private readonly configService: ConfigService&lt;TldrawConfig, true&gt;,
-		private readonly tldrawWsService: TldrawWsService
+		private readonly tldrawWsService: TldrawWsService,
+		private readonly logger: Logger
 	) {}
 
-	public handleConnection(client: WebSocket, request: Request): void {
+	async handleConnection(client: WebSocket, request: Request): Promise&lt;void&gt; {
 		const docName &#x3D; this.getDocNameFromRequest(request);
-
 		if (docName.length &gt; 0 &amp;&amp; this.configService.get&lt;string&gt;(&#x27;FEATURE_TLDRAW_ENABLED&#x27;)) {
-			this.tldrawWsService.setupWSConnection(client, docName);
+			const cookies &#x3D; this.parseCookiesFromHeader(request);
+			try {
+				await this.tldrawWsService.authorizeConnection(docName, cookies?.jwt);
+			} catch (err) {
+				if ((err as AxiosError).response?.status &#x3D;&#x3D;&#x3D; 404 || (err as AxiosError).response?.status &#x3D;&#x3D;&#x3D; 400) {
+					this.closeClientAndLogError(
+						client,
+						WsCloseCodeEnum.WS_CLIENT_NOT_FOUND_CODE,
+						WsCloseMessageEnum.WS_CLIENT_NOT_FOUND_MESSAGE,
+						err as Error
+					);
+				} else {
+					this.closeClientAndLogError(
+						client,
+						WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
+						WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE,
+						err as Error
+					);
+				}
+				return;
+			}
+			try {
+				this.tldrawWsService.setupWSConnection(client, docName);
+			} catch (err) {
+				this.closeClientAndLogError(
+					client,
+					WsCloseCodeEnum.WS_CLIENT_ESTABLISHING_CONNECTION_CODE,
+					WsCloseMessageEnum.WS_CLIENT_ESTABLISHING_CONNECTION_MESSAGE,
+					err as Error
+				);
+			}
 		} else {
-			client.close(
+			this.closeClientAndLogError(
+				client,
 				WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE,
-				&#x27;Document name is mandatory in url or Tldraw Tool is turned off.&#x27;
+				WsCloseMessageEnum.WS_CLIENT_BAD_REQUEST_MESSAGE,
+				new BadRequestException()
 			);
 		}
 	}
@@ -547,6 +779,16 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 	private getDocNameFromRequest(request: Request): string {
 		const urlStripped &#x3D; request.url.replace(/(\/)|(tldraw-server)/g, &#x27;&#x27;);
 		return urlStripped;
+	}
+
+	private parseCookiesFromHeader(request: Request): { [p: string]: string } {
+		const parsedCookies: { [p: string]: string } &#x3D; cookie.parse(request.headers.cookie || &#x27;&#x27;);
+		return parsedCookies;
+	}
+
+	private closeClientAndLogError(client: WebSocket, code: WsCloseCodeEnum, data: string, err: Error): void {
+		client.close(code, data);
+		this.logger.warning(new WebsocketCloseErrorLoggable(err, &#x60;(${code}) ${data}&#x60;));
 	}
 }
 </code></pre>

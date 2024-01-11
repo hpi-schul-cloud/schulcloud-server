@@ -286,8 +286,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/tldraw-ws-test.module.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/tldraw-ws-test.module.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -343,13 +343,14 @@ import { MongoMemoryDatabaseModule, MongoDatabaseModuleOptions } from &#x27;@inf
 import { CoreModule } from &#x27;@src/core&#x27;;
 import { ConfigModule } from &#x27;@nestjs/config&#x27;;
 import { createConfigModuleOptions } from &#x27;@src/config&#x27;;
-import { MetricsService } from &#x27;@modules/tldraw/metrics&#x27;;
+import { HttpModule } from &#x27;@nestjs/axios&#x27;;
+import { MetricsService } from &#x27;./metrics&#x27;;
 import { TldrawBoardRepo } from &#x27;./repo&#x27;;
 import { TldrawWsService } from &#x27;./service&#x27;;
 import { config } from &#x27;./config&#x27;;
 import { TldrawWs } from &#x27;./controller&#x27;;
 
-const imports &#x3D; [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
+const imports &#x3D; [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config)), HttpModule];
 const providers &#x3D; [TldrawWs, TldrawBoardRepo, TldrawWsService, MetricsService];
 @Module({
 	imports,

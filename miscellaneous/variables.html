@@ -1722,6 +1722,7 @@
 	VideoConference,
 	GroupEntity,
 	RegistrationPinEntity,
+	TldrawDrawing,
 ]</code>
                     </td>
                 </tr>
@@ -3815,6 +3816,7 @@ This allows adding console commands to execute provider methods.</p>
 	CONNECTION_STRING: tldrawConnectionString,
 	TLDRAW_PING_TIMEOUT: Configuration.get(&#x27;TLDRAW__PING_TIMEOUT&#x27;) as number,
 	TLDRAW_GC_ENABLED: Configuration.get(&#x27;TLDRAW__GC_ENABLED&#x27;) as boolean,
+	API_HOST: Configuration.get(&#x27;API_HOST&#x27;) as string,
 }</code>
                     </td>
                 </tr>
@@ -7695,13 +7697,11 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>[
-	TldrawWsModule,
-	MongoMemoryDatabaseModule.forRoot({ entities: [User, Course] }),
-	AuthenticationApiModule,
-	AuthorizationModule,
-	AuthenticationModule,
-	CoreModule,
+	MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions }),
 	LoggerModule,
+	ConfigModule.forRoot(createConfigModuleOptions(config)),
+	RedisModule,
+	HttpModule,
 ]</code>
                     </td>
                 </tr>
@@ -7728,7 +7728,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                 </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>[TldrawWs, TldrawBoardRepo, TldrawWsService, MetricsService]</code>
+                        <i>Default value : </i><code>[Logger, TldrawService, TldrawRepo, MetricsService]</code>
                     </td>
                 </tr>
 
@@ -7757,7 +7757,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                 </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>[CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))]</code>
+                        <i>Default value : </i><code>[CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config)), HttpModule]</code>
                     </td>
                 </tr>
 
@@ -11561,6 +11561,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	({ sequence }) &#x3D;&gt; {
 		return {
 			_id: &#x27;test-id&#x27;,
+			id: &#x27;test-id&#x27;,
 			docName: &#x27;test-name&#x27;,
 			value: &#x27;test-value&#x27;,
 			version: &#x60;test-version-${sequence}&#x60;,

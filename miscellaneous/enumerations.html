@@ -461,7 +461,10 @@
                             <a href="#VideoConferenceStateResponse" title="apps/server/src/modules/video-conference/controller/dto/response/video-conference-state.response.ts" ><b>VideoConferenceStateResponse</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference-state.response.ts)</a>
                         </li>
                         <li>
-                            <a href="#WsCloseCodeEnum" title="apps/server/src/modules/tldraw/types/ws-close-code-enum.ts" ><b>WsCloseCodeEnum</b>&nbsp;&nbsp;&nbsp;(apps/.../ws-close-code-enum.ts)</a>
+                            <a href="#WsCloseCodeEnum" title="apps/server/src/modules/tldraw/types/ws-close-enum.ts" ><b>WsCloseCodeEnum</b>&nbsp;&nbsp;&nbsp;(apps/.../ws-close-enum.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#WsCloseMessageEnum" title="apps/server/src/modules/tldraw/types/ws-close-enum.ts" ><b>WsCloseMessageEnum</b>&nbsp;&nbsp;&nbsp;(apps/.../ws-close-enum.ts)</a>
                         </li>
                         <li>
                             <a href="#WSConnectionState" title="apps/server/src/modules/tldraw/types/connection-enum.ts" ><b>WSConnectionState</b>&nbsp;&nbsp;&nbsp;(apps/.../connection-enum.ts)</a>
@@ -8067,7 +8070,7 @@
             </tbody>
         </table>
 </section>
-    <h3>apps/server/src/modules/tldraw/types/ws-close-code-enum.ts</h3>
+    <h3>apps/server/src/modules/tldraw/types/ws-close-enum.ts</h3>
     <section data-compodoc="block-enums">
         <table class="table table-sm table-bordered">
             <tbody>
@@ -8085,6 +8088,86 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>4400</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;WS_CLIENT_UNAUTHORISED_CONNECTION_CODE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>4401</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;WS_CLIENT_NOT_FOUND_CODE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>4404</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;WS_CLIENT_ESTABLISHING_CONNECTION_CODE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>4500</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="WsCloseMessageEnum"></a>
+                        <span class="name "><b>WsCloseMessageEnum</b><a href="#WsCloseMessageEnum"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;WS_CLIENT_BAD_REQUEST_MESSAGE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>Document name is mandatory in url or Tldraw Tool is turned off.</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>Unauthorised connection - you don&#x27;t have permission to this drawing.</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;WS_CLIENT_NOT_FOUND_MESSAGE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>Drawing not found.</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;WS_CLIENT_ESTABLISHING_CONNECTION_MESSAGE
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>Unable to establish websocket connection. Try again later.</code>
                             </td>
                         </tr>
             </tbody>

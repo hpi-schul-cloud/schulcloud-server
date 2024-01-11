@@ -188,6 +188,16 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#readPermission" >readPermission</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
@@ -247,8 +257,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="129"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:129</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="130"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:130</a></div>
                         </td>
                     </tr>
 
@@ -354,8 +364,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="114"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:114</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="115"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:115</a></div>
                         </td>
                     </tr>
 
@@ -449,8 +459,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="53"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:53</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -524,6 +534,100 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="readPermission"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>readPermission</b></span>
+                        <a href="#readPermission"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>readPermission(urlParams: <a href="../classes/ContentElementUrlParams.html" target="_self">ContentElementUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@ApiOperation({summary: &#x27;Check if user has read permission for any board element.&#x27;})<br />@ApiResponse({status: 200})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@Get(&#x27;:contentElementId/permission&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="152"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:152</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>urlParams</td>
+                                            <td>
+                                                            <code><a href="../classes/ContentElementUrlParams.html" target="_self" >ContentElementUrlParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="updateElement"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -557,8 +661,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="93"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:93</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="94"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/element.controller.ts:94</a></div>
                         </td>
                     </tr>
 
@@ -638,6 +742,7 @@ import {
 	Controller,
 	Delete,
 	ForbiddenException,
+	Get,
 	HttpCode,
 	NotFoundException,
 	Param,
@@ -774,6 +879,19 @@ export class ElementController {
 		const response &#x3D; mapper.mapSubmissionItemToResponse(submissionItem);
 
 		return response;
+	}
+
+	@ApiOperation({ summary: &#x27;Check if user has read permission for any board element.&#x27; })
+	@ApiResponse({ status: 200 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Get(&#x27;:contentElementId/permission&#x27;)
+	async readPermission(
+		@Param() urlParams: ContentElementUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise&lt;void&gt; {
+		await this.elementUc.checkElementReadPermission(currentUser.userId, urlParams.contentElementId);
 	}
 }
 </code></pre>

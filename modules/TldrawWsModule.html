@@ -284,14 +284,15 @@ import { ConfigModule } from &#x27;@nestjs/config&#x27;;
 import { createConfigModuleOptions } from &#x27;@src/config&#x27;;
 import { CoreModule } from &#x27;@src/core&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { MetricsService } from &#x27;@modules/tldraw/metrics&#x27;;
+import { HttpModule } from &#x27;@nestjs/axios&#x27;;
+import { MetricsService } from &#x27;./metrics&#x27;;
 import { TldrawBoardRepo } from &#x27;./repo&#x27;;
 import { TldrawWsService } from &#x27;./service&#x27;;
 import { TldrawWs } from &#x27;./controller&#x27;;
 import { config } from &#x27;./config&#x27;;
 
 @Module({
-	imports: [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))],
+	imports: [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config)), HttpModule],
 	providers: [Logger, TldrawWs, TldrawWsService, TldrawBoardRepo, MetricsService],
 })
 export class TldrawWsModule {}
