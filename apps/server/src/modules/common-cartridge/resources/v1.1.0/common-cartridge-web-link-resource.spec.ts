@@ -50,10 +50,7 @@ describe('CommonCartridgeWebLinkResourceV110', () => {
 		describe('when using Common Cartridge version 1.1.0', () => {
 			it('should contain correct XML', async () => {
 				const { sut } = setup();
-				const expected = await readFile(
-					'./apps/server/test/assets/common-cartridge/v1.1.0/weblink.xml',
-					'utf8'
-				);
+				const expected = await readFile('./apps/server/test/assets/common-cartridge/v1.1.0/weblink.xml', 'utf8');
 				const result = sut.getFileContent();
 
 				expect(result).toEqual(expected);

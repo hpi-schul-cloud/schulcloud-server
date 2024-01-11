@@ -91,10 +91,7 @@ describe('CommonCartridgeManifestResourceV110', () => {
 		describe('when using Common Cartridge version 1.1.0', () => {
 			it('should return constructed file content', async () => {
 				const { sut } = setup();
-				const expected = await readFile(
-					'./apps/server/test/assets/common-cartridge/v1.1.0/manifest.xml',
-					'utf-8'
-				);
+				const expected = await readFile('./apps/server/test/assets/common-cartridge/v1.1.0/manifest.xml', 'utf-8');
 				const result = sut.getFileContent();
 
 				expect(result).toEqual(expected);
