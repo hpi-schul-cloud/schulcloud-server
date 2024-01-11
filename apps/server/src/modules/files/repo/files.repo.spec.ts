@@ -228,13 +228,19 @@ describe(FilesRepo.name, () => {
 		});
 	});
 
-	describe('findByPermissionRefId', () => {
-		describe('when searching for a files to which the user with given userId has access', () => {
+	describe('findByPermissionRefIdOrCreatorId', () => {
+		describe('when searching for a files to which the user with given userId has access or is creator', () => {
 			const setup = async () => {
 				const mainUserId = new ObjectId().toHexString();
 				const otherUserId = new ObjectId().toHexString();
 
 				// Test files created, owned and accessible only by the other user.
+				const otherUserFileWithMainUserCreator = fileEntityFactory.build({
+					ownerId: otherUserId,
+					creatorId: mainUserId,
+					permissions: [filePermissionEntityFactory.build({ refId: otherUserId })],
+				});
+
 				const otherUserFile = fileEntityFactory.build({
 					ownerId: otherUserId,
 					creatorId: otherUserId,
@@ -268,8 +274,34 @@ describe(FilesRepo.name, () => {
 					permissions: [filePermissionEntityFactory.build({ refId: mainUserId })],
 				});
 
-				await em.persistAndFlush([otherUserFile, mainUserSharedFile, otherUserSharedFile, mainUserFile]);
+				await em.persistAndFlush([
+					otherUserFileWithMainUserCreator,
+					mainUserSharedFile,
+					otherUserSharedFile,
+					mainUserFile,
+					otherUserFile,
+				]);
 				em.clear();
+
+				const expectedOtherUserFileWithMainUserCreatorProps = {
+					id: otherUserFileWithMainUserCreator.id,
+					createdAt: otherUserFileWithMainUserCreator.createdAt,
+					updatedAt: otherUserFileWithMainUserCreator.updatedAt,
+					deleted: false,
+					isDirectory: false,
+					name: otherUserFileWithMainUserCreator.name,
+					size: otherUserFileWithMainUserCreator.size,
+					type: otherUserFileWithMainUserCreator.type,
+					storageFileName: otherUserFileWithMainUserCreator.storageFileName,
+					bucket: otherUserFileWithMainUserCreator.bucket,
+					thumbnail: otherUserFileWithMainUserCreator.thumbnail,
+					thumbnailRequestToken: otherUserFileWithMainUserCreator.thumbnailRequestToken,
+					securityCheck: otherUserFileWithMainUserCreator.securityCheck,
+					shareTokens: [],
+					refOwnerModel: otherUserFileWithMainUserCreator.refOwnerModel,
+					permissions: otherUserFileWithMainUserCreator.permissions,
+					versionKey: 0,
+				};
 
 				const expectedMainUserSharedFileProps = {
 					id: mainUserSharedFile.id,
@@ -336,6 +368,8 @@ describe(FilesRepo.name, () => {
 					mainUserSharedFile,
 					otherUserSharedFile,
 					mainUserFile,
+					otherUserFileWithMainUserCreator,
+					expectedOtherUserFileWithMainUserCreatorProps,
 					expectedMainUserSharedFileProps,
 					expectedOtherUserSharedFileProps,
 					expectedMainUserFileProps,
@@ -349,18 +383,21 @@ describe(FilesRepo.name, () => {
 						mainUserSharedFile,
 						otherUserSharedFile,
 						mainUserFile,
+						otherUserFileWithMainUserCreator,
 						expectedMainUserSharedFileProps,
 						expectedOtherUserSharedFileProps,
 						expectedMainUserFileProps,
+						expectedOtherUserFileWithMainUserCreatorProps,
 					} = await setup();
 
-					const results = await repo.findByPermissionRefId(mainUserId);
+					const results = await repo.findByPermissionRefIdOrCreatorId(mainUserId);
 
-					expect(results).toHaveLength(3);
+					expect(results).toHaveLength(4);
 
 					// Verify explicit fields.
 					expect(results).toEqual(
 						expect.arrayContaining([
+							expect.objectContaining(expectedOtherUserFileWithMainUserCreatorProps),
 							expect.objectContaining(expectedMainUserSharedFileProps),
 							expect.objectContaining(expectedOtherUserSharedFileProps),
 							expect.objectContaining(expectedMainUserFileProps),
@@ -370,6 +407,7 @@ describe(FilesRepo.name, () => {
 					// Verify storage provider id.
 					expect(results.map((result) => result.storageProvider?.id)).toEqual(
 						expect.arrayContaining([
+							otherUserFileWithMainUserCreator.storageProvider?.id,
 							mainUserSharedFile.storageProvider?.id,
 							otherUserSharedFile.storageProvider?.id,
 							mainUserFile.storageProvider?.id,
@@ -384,6 +422,7 @@ describe(FilesRepo.name, () => {
 					// Verify implicit creatorId field.
 					expect(results.map((result) => result.creatorId)).toEqual(
 						expect.arrayContaining([
+							otherUserFileWithMainUserCreator.creatorId,
 							mainUserSharedFile.creatorId,
 							otherUserSharedFile.creatorId,
 							mainUserFile.creatorId,
@@ -397,7 +436,7 @@ describe(FilesRepo.name, () => {
 					await em.persistAndFlush([fileEntityFactory.build(), fileEntityFactory.build(), fileEntityFactory.build()]);
 					em.clear();
 
-					const results = await repo.findByPermissionRefId(new ObjectId().toHexString());
+					const results = await repo.findByPermissionRefIdOrCreatorId(new ObjectId().toHexString());
 
 					expect(results).toHaveLength(0);
 				});
@@ -407,7 +446,7 @@ describe(FilesRepo.name, () => {
 				it('should return an empty array', async () => {
 					const testPermissionRefId = new ObjectId().toHexString();
 
-					const results = await repo.findByPermissionRefId(testPermissionRefId);
+					const results = await repo.findByPermissionRefIdOrCreatorId(testPermissionRefId);
 
 					expect(results).toHaveLength(0);
 				});
