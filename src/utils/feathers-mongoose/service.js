@@ -468,8 +468,9 @@ class Service extends AdapterBase {
 			default: undefined,
 			max: undefined,
 		};
-		if (params.query && params.query.$limit && (params.query.$limit === 'false' || params.query.$limit === false)) {
+		if (params.query && (params.query.$limit === 'false' || params.query.$limit === false)) {
 			options.paginate = paginateNoLimit;
+			params.query.$limit = undefined;
 		}
 
 		const { $select, $sort, $limit: _limit, $skip = 0, $populate, ...query } = params.query || {};

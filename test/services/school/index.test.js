@@ -575,7 +575,7 @@ describe('school service', () => {
 	});
 });
 
-describe.only('find schools', () => {
+describe('find schools', () => {
 	let app;
 	let server;
 	let schoolsService;
