@@ -13,7 +13,6 @@ import {
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
 } from './dto';
-import { AccountResponseMapper } from './mapper/account-response.mapper';
 
 @ApiTags('Account')
 @Authenticate('jwt')
@@ -33,9 +32,9 @@ export class AccountController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() query: AccountSearchQueryParams
 	): Promise<AccountSearchListResponse> {
-		const searchResult = await this.accountUc.searchAccounts(currentUser, query);
+		return this.accountUc.searchAccounts(currentUser, query);
 
-		return AccountResponseMapper.mapToAccountSearchListResponse(searchResult);
+		// TODO: mapping from domain to api dto should be a responsability of the controller (also every other function here)
 	}
 
 	@Get(':id')
@@ -48,8 +47,7 @@ export class AccountController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: AccountByIdParams
 	): Promise<AccountResponse> {
-		const dto = await this.accountUc.findAccountById(currentUser, params);
-		return AccountResponseMapper.mapToAccountResponse(dto);
+		return this.accountUc.findAccountById(currentUser, params);
 	}
 
 	// IMPORTANT!!!
@@ -76,8 +74,7 @@ export class AccountController {
 		@Param() params: AccountByIdParams,
 		@Body() body: AccountByIdBodyParams
 	): Promise<AccountResponse> {
-		const dto = await this.accountUc.updateAccountById(currentUser, params, body);
-		return AccountResponseMapper.mapToAccountResponse(dto);
+		return this.accountUc.updateAccountById(currentUser, params, body);
 	}
 
 	@Delete(':id')
@@ -90,8 +87,7 @@ export class AccountController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: AccountByIdParams
 	): Promise<AccountResponse> {
-		const dto = await this.accountUc.deleteAccountById(currentUser, params);
-		return AccountResponseMapper.mapToAccountResponse(dto);
+		return this.accountUc.deleteAccountById(currentUser, params);
 	}
 
 	@Patch('me/password')

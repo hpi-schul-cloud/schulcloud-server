@@ -1,29 +1,14 @@
-import { AccountResponse, AccountSearchListResponse } from '../dto';
-import { ResolvedAccountDto, ResolvedSearchListAccountDto } from '../../uc/dto/resolved-account.dto';
+import { Account } from '@src/modules/account/domain/account';
+import { AccountResponse } from '../dto';
 
 export class AccountResponseMapper {
-	static mapToAccountResponse(resolvedAccount: ResolvedAccountDto): AccountResponse {
+	static mapToResponse(account: Account): AccountResponse {
 		return new AccountResponse({
-			id: resolvedAccount.id as string,
-			userId: resolvedAccount.userId,
-			activated: resolvedAccount.activated,
-			username: resolvedAccount.username ?? '',
-			updatedAt: resolvedAccount.updatedAt,
+			id: account.id ?? '',
+			userId: account.userId,
+			activated: account.activated,
+			username: account.username,
+			updatedAt: account.updatedAt,
 		});
-	}
-
-	static mapToAccountResponses(resolvedAccounts: ResolvedAccountDto[]): AccountResponse[] {
-		return resolvedAccounts.map((resolvedAccount) => AccountResponseMapper.mapToAccountResponse(resolvedAccount));
-	}
-
-	static mapToAccountSearchListResponse(
-		resolvedSearchListAccountDto: ResolvedSearchListAccountDto
-	): AccountSearchListResponse {
-		return new AccountSearchListResponse(
-			AccountResponseMapper.mapToAccountResponses(resolvedSearchListAccountDto.data),
-			resolvedSearchListAccountDto.total,
-			resolvedSearchListAccountDto.skip,
-			resolvedSearchListAccountDto.limit
-		);
 	}
 }

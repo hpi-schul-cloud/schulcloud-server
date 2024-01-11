@@ -26,7 +26,6 @@ import { AccountEntityToDoMapper } from '../repo/mapper';
 import { AccountValidationService } from '../services/account.validation.service';
 import { AccountUc } from './account.uc';
 import { Account } from '../domain';
-import { ResolvedSearchListAccountDto } from './dto/resolved-account.dto';
 
 describe('AccountUc', () => {
 	let module: TestingModule;
@@ -1063,7 +1062,7 @@ describe('AccountUc', () => {
 					{ userId: mockSuperheroUser.id } as ICurrentUser,
 					{ type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams
 				);
-				const expected = new ResolvedSearchListAccountDto(
+				const expected = new AccountSearchListResponse(
 					[
 						new AccountResponse({
 							id: mockStudentAccount.id ?? '',
@@ -1077,7 +1076,7 @@ describe('AccountUc', () => {
 					0,
 					1
 				);
-				expect(accounts).toStrictEqual<ResolvedSearchListAccountDto>(expected);
+				expect(accounts).toStrictEqual<AccountSearchListResponse>(expected);
 			});
 		});
 
@@ -1114,8 +1113,8 @@ describe('AccountUc', () => {
 					{ userId: mockSuperheroUser.id } as ICurrentUser,
 					{ type: AccountSearchType.USER_ID, value: mockUserWithoutAccount.id } as AccountSearchQueryParams
 				);
-				const expected = new ResolvedSearchListAccountDto([], 0, 0, 0);
-				expect(accounts).toStrictEqual<ResolvedSearchListAccountDto>(expected);
+				const expected = new AccountSearchListResponse([], 0, 0, 0);
+				expect(accounts).toStrictEqual<AccountSearchListResponse>(expected);
 			});
 		});
 		describe('When search type is username', () => {
@@ -2094,7 +2093,7 @@ describe('AccountUc', () => {
 		});
 	});
 
-	/* describe('saveAccount', () => {
+	describe('saveAccount', () => {
 		describe('When saving an account', () => {
 			const setup = () => {
 				const spy = jest.spyOn(accountService, 'saveWithValidation');
@@ -2117,7 +2116,7 @@ describe('AccountUc', () => {
 				);
 			});
 		});
-	}); */
+	});
 
 	describe('updateAccountById', () => {
 		describe('when updating a user that does not exist', () => {
