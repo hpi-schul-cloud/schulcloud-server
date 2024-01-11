@@ -17,11 +17,12 @@ import { AccountService } from '..';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
+	AccountResponse,
 	AccountSearchListResponse,
 	AccountSearchQueryParams,
 	AccountSearchType,
 } from '../controller/dto';
-import { AccountEntityToDoMapper, AccountResponseMapper } from '../mapper';
+import { AccountEntityToDoMapper } from '../repo/mapper';
 import { AccountValidationService } from '../services/account.validation.service';
 import { AccountUc } from './account.uc';
 import { Account } from '../domain';
@@ -1062,7 +1063,15 @@ describe('AccountUc', () => {
 					{ type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams
 				);
 				const expected = new AccountSearchListResponse(
-					[AccountResponseMapper.mapToResponseFromEntity(mockStudentAccount)],
+					[
+						new AccountResponse({
+							id: mockStudentAccount.id ?? '',
+							userId: mockStudentAccount.userId?.toString(),
+							activated: mockStudentAccount.activated,
+							username: mockStudentAccount.username,
+							updatedAt: mockStudentAccount.updatedAt,
+						}),
+					],
 					1,
 					0,
 					1

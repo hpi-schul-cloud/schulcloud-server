@@ -1,13 +1,13 @@
 import { IdmAccount } from '@shared/domain/interface';
-import { Account } from '../domain/account';
+import { Account } from '../../domain/account';
 import { AccountIdmToDoMapper } from './account-idm-to-do.mapper.abstract';
 
-export class AccountIdmToDoMapperIdm extends AccountIdmToDoMapper {
+export class AccountIdmToDoMapperDb extends AccountIdmToDoMapper {
 	mapToDto(account: IdmAccount): Account {
 		const createdDate = account.createdDate ? account.createdDate : new Date();
 		return new Account({
-			id: account.id,
-			idmReferenceId: undefined,
+			id: account.attDbcAccountId ?? '',
+			idmReferenceId: account.id,
 			userId: account.attDbcUserId,
 			systemId: account.attDbcSystemId,
 			username: account.username ?? '',

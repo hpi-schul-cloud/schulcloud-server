@@ -27,9 +27,9 @@ import {
 	AccountSearchType,
 	PatchMyAccountParams,
 } from '../controller/dto';
-import { AccountResponseMapper } from '../mapper';
 import { AccountValidationService } from '../services/account.validation.service';
 import { Account } from '../domain';
+import { AccountResponseMapper } from '../controller/mapper/account-response.mapper';
 
 type UserPreferences = {
 	// first login completed

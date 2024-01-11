@@ -7,7 +7,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { IdmAccount } from '@shared/domain/interface';
 import { LoggerModule } from '@src/core/logger';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../mapper';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../repo/mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountLookupService } from './account-lookup.service';
 import { Account } from '../domain';

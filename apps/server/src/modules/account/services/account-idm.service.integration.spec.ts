@@ -7,7 +7,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { IdmAccount } from '@shared/domain/interface';
 import { LoggerModule } from '@src/core/logger';
 import { v1 } from 'uuid';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../mapper';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../repo/mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';

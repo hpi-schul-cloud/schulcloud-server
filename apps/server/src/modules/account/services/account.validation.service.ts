@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
-import { AccountEntityToDoMapper } from '../mapper/account-entity-to-do.mapper';
+import { AccountEntityToDoMapper } from '../repo/mapper/account-entity-to-do.mapper';
 import { AccountRepo } from '../repo/account.repo';
 
 @Injectable()

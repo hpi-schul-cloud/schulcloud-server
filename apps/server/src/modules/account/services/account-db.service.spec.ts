@@ -12,7 +12,7 @@ import bcrypt from 'bcryptjs';
 import { Account } from '../domain';
 
 import { LegacyLogger } from '../../../core/logger';
-import { AccountEntityToDoMapper } from '../mapper';
+import { AccountEntityToDoMapper } from '../repo/mapper';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountLookupService } from './account-lookup.service';
@@ -210,12 +210,14 @@ describe('AccountDbService', () => {
 					password: defaultPassword,
 				});
 
-				accountRepo.findMultipleByUserId.mockImplementation((userIds: (EntityId | ObjectId)[]): Promise<AccountEntity[]> => {
-					const accounts = [mockStudentAccount, mockTeacherAccount].filter((tempAccount) =>
-						userIds.find((userId) => tempAccount.userId?.toString() === userId)
-					);
-					return Promise.resolve(accounts);
-				});
+				accountRepo.findMultipleByUserId.mockImplementation(
+					(userIds: (EntityId | ObjectId)[]): Promise<AccountEntity[]> => {
+						const accounts = [mockStudentAccount, mockTeacherAccount].filter((tempAccount) =>
+							userIds.find((userId) => tempAccount.userId?.toString() === userId)
+						);
+						return Promise.resolve(accounts);
+					}
+				);
 				return { mockStudentUser, mockStudentAccount, mockTeacherUser, mockTeacherAccount };
 			};
 			it('should return multiple accountDtos', async () => {
@@ -232,12 +234,14 @@ describe('AccountDbService', () => {
 				const mockTeacherAccount = accountFactory.buildWithId();
 				const mockStudentAccount = accountFactory.buildWithId();
 
-				accountRepo.findMultipleByUserId.mockImplementation((userIds: (EntityId | ObjectId)[]): Promise<AccountEntity[]> => {
-					const accounts = [mockStudentAccount, mockTeacherAccount].filter((tempAccount) =>
-						userIds.find((userId) => tempAccount.userId?.toString() === userId)
-					);
-					return Promise.resolve(accounts);
-				});
+				accountRepo.findMultipleByUserId.mockImplementation(
+					(userIds: (EntityId | ObjectId)[]): Promise<AccountEntity[]> => {
+						const accounts = [mockStudentAccount, mockTeacherAccount].filter((tempAccount) =>
+							userIds.find((userId) => tempAccount.userId?.toString() === userId)
+						);
+						return Promise.resolve(accounts);
+					}
+				);
 				return {};
 			};
 			it('should return empty array on mismatch', async () => {

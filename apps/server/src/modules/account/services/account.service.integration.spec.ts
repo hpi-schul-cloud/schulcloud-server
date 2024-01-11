@@ -15,7 +15,7 @@ import { accountFactory, cleanupCollections } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { v1 } from 'uuid';
 import { LegacyLogger } from '../../../core/logger';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../mapper';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../repo/mapper';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
