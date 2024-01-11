@@ -69,8 +69,10 @@ export class FilesStorageUC {
 				const fileDto = FileDtoBuilder.buildFromRequest(info, file);
 
 				try {
-					resolve(this.filesStorageService.uploadFile(userId, params, fileDto));
+					const result = await this.filesStorageService.uploadFile(userId, params, fileDto);
+					resolve(result);
 				} catch (error) {
+					this.logger.error({ message: 'could not upload file', error: error as Error });
 					req.unpipe(bb);
 					reject(error);
 				}

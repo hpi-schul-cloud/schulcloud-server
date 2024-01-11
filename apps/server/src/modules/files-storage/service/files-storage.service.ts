@@ -189,6 +189,7 @@ export class FilesStorageService {
 				await this.sendToAntivirus(fileRecord);
 			}
 		} catch (error) {
+			this.logger.error(`create file failed for fileRecordId ${fileRecord.id}`, error);
 			await this.storageClient.delete([filePath]);
 			await this.fileRecordRepo.delete(fileRecord);
 			throw error;
