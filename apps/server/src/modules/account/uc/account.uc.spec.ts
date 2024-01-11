@@ -16,7 +16,6 @@ import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
 	AccountResponse,
-	AccountSearchListResponse,
 	AccountSearchQueryParams,
 	AccountSearchType,
 } from '../controller/dto';
@@ -24,6 +23,7 @@ import { Account } from '../domain';
 import { AccountEntityToDoMapper } from '../repo/mapper';
 import { AccountValidationService } from '../services/account.validation.service';
 import { AccountUc } from './account.uc';
+import { ResolvedSearchListAccountDto } from './dto/resolved-account.dto';
 
 describe('AccountUc', () => {
 	let module: TestingModule;
@@ -1059,7 +1059,7 @@ describe('AccountUc', () => {
 					{ userId: mockSuperheroUser.id } as ICurrentUser,
 					{ type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams
 				);
-				const expected = new AccountSearchListResponse(
+				const expected = new ResolvedSearchListAccountDto(
 					[
 						new AccountResponse({
 							id: mockStudentAccount.id ?? '',
@@ -1073,7 +1073,7 @@ describe('AccountUc', () => {
 					0,
 					1
 				);
-				expect(accounts).toStrictEqual<AccountSearchListResponse>(expected);
+				expect(accounts).toStrictEqual<ResolvedSearchListAccountDto>(expected);
 			});
 		});
 
@@ -1110,8 +1110,8 @@ describe('AccountUc', () => {
 					{ userId: mockSuperheroUser.id } as ICurrentUser,
 					{ type: AccountSearchType.USER_ID, value: mockUserWithoutAccount.id } as AccountSearchQueryParams
 				);
-				const expected = new AccountSearchListResponse([], 0, 0, 0);
-				expect(accounts).toStrictEqual<AccountSearchListResponse>(expected);
+				const expected = new ResolvedSearchListAccountDto([], 0, 0, 0);
+				expect(accounts).toStrictEqual<ResolvedSearchListAccountDto>(expected);
 			});
 		});
 		describe('When search type is username', () => {
