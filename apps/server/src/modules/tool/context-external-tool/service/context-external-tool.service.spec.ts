@@ -21,7 +21,7 @@ import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { RestrictedContextMismatchLoggable } from './restricted-context-mismatch-loggabble';
 import { CommonToolService } from '../../common/service';
-import { CustomParameter, CustomParameterEntry } from '../../common/domain';
+import { CustomParameter } from '../../common/domain';
 
 describe('ContextExternalToolService', () => {
 	let module: TestingModule;
