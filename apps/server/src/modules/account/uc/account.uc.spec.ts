@@ -11,18 +11,21 @@ import { PermissionService } from '@shared/domain/service';
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
+import { BruteForcePrevention } from '@src/imports-from-feathers';
+import { ObjectId } from 'bson';
 import { AccountService } from '..';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
 	AccountResponse,
+	AccountSearchListResponse,
 	AccountSearchQueryParams,
 	AccountSearchType,
 } from '../controller/dto';
-import { Account } from '../domain';
 import { AccountEntityToDoMapper } from '../repo/mapper';
 import { AccountValidationService } from '../services/account.validation.service';
 import { AccountUc } from './account.uc';
+import { Account } from '../domain';
 import { ResolvedSearchListAccountDto } from './dto/resolved-account.dto';
 
 describe('AccountUc', () => {
@@ -36,6 +39,7 @@ describe('AccountUc', () => {
 	const defaultPassword = 'DummyPasswd!1';
 	const otherPassword = 'DummyPasswd!2';
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
+	const LOGIN_BLOCK_TIME = 15;
 
 	afterAll(async () => {
 		jest.restoreAllMocks();
@@ -3010,6 +3014,116 @@ describe('AccountUc', () => {
 						{ id: 'xxx' } as AccountByIdParams
 					)
 				).rejects.toThrow(EntityNotFoundError);
+			});
+		});
+	});
+
+	describe('checkBrutForce', () => {
+		describe('When time difference < the allowed time', () => {
+			const setup = () => {
+				const mockAccountWithLastFailedLogin = accountFactory.build({
+					userId: undefined,
+					password: defaultPasswordHash,
+					systemId: faker.database.mongodbObjectId(),
+					lasttriedFailedLogin: new Date(),
+				});
+
+				configService.get.mockReturnValue(LOGIN_BLOCK_TIME);
+
+				accountService.findByUsernameAndSystemId.mockImplementation(
+					(username: string, systemId: EntityId | ObjectId): Promise<Account> => {
+						if (
+							mockAccountWithLastFailedLogin.username === username &&
+							mockAccountWithLastFailedLogin.systemId === systemId
+						) {
+							return Promise.resolve(AccountEntityToDoMapper.mapToDto(mockAccountWithLastFailedLogin));
+						}
+						throw new EntityNotFoundError(AccountEntity.name);
+					}
+				);
+
+				return { mockAccountWithLastFailedLogin };
+			};
+
+			it('should throw BruteForcePrevention', async () => {
+				const { mockAccountWithLastFailedLogin } = setup();
+				await expect(
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+					accountUc.checkBrutForce(mockAccountWithLastFailedLogin.username, mockAccountWithLastFailedLogin.systemId!)
+				).rejects.toThrow(BruteForcePrevention);
+			});
+		});
+
+		describe('When the time difference > the allowed time', () => {
+			const setup = () => {
+				const mockAccountWithSystemId = accountFactory.withSystemId(new ObjectId(10)).build();
+
+				// eslint-disable-next-line jest/unbound-method
+				const updateMock = accountService.updateLastTriedFailedLogin as jest.Mock;
+
+				configService.get.mockReturnValue(LOGIN_BLOCK_TIME);
+
+				accountService.findByUsernameAndSystemId.mockImplementation(
+					(username: string, systemId: EntityId | ObjectId): Promise<Account> => {
+						if (mockAccountWithSystemId.username === username && mockAccountWithSystemId.systemId === systemId) {
+							return Promise.resolve(AccountEntityToDoMapper.mapToDto(mockAccountWithSystemId));
+						}
+						throw new EntityNotFoundError(AccountEntity.name);
+					}
+				);
+
+				return { mockAccountWithSystemId, updateMock };
+			};
+
+			it('should not throw Error, ', async () => {
+				const { mockAccountWithSystemId, updateMock } = setup();
+
+				await expect(
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+					accountUc.checkBrutForce(mockAccountWithSystemId.username, mockAccountWithSystemId.systemId!)
+				).resolves.not.toThrow();
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				expect(updateMock.mock.calls[0][0]).toEqual('');
+				const newDate = new Date().getTime() - 10000;
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				expect((updateMock.mock.calls[0][1] as Date).getTime()).toBeGreaterThan(newDate);
+			});
+		});
+
+		describe('When lasttriedFailedLogin is undefined', () => {
+			const setup = () => {
+				const mockAccountWithNoLastFailedLogin = accountFactory.build({
+					userId: undefined,
+					password: defaultPasswordHash,
+					systemId: faker.database.mongodbObjectId(),
+					lasttriedFailedLogin: undefined,
+				});
+
+				configService.get.mockReturnValue(LOGIN_BLOCK_TIME);
+
+				accountService.findByUsernameAndSystemId.mockImplementation(
+					(username: string, systemId: EntityId | ObjectId): Promise<Account> => {
+						if (
+							mockAccountWithNoLastFailedLogin.username === username &&
+							mockAccountWithNoLastFailedLogin.systemId === systemId
+						) {
+							return Promise.resolve(AccountEntityToDoMapper.mapToDto(mockAccountWithNoLastFailedLogin));
+						}
+						throw new EntityNotFoundError(AccountEntity.name);
+					}
+				);
+
+				return { mockAccountWithNoLastFailedLogin };
+			};
+			it('should not throw error', async () => {
+				const { mockAccountWithNoLastFailedLogin } = setup();
+				await expect(
+					accountUc.checkBrutForce(
+						mockAccountWithNoLastFailedLogin.username,
+						// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+						mockAccountWithNoLastFailedLogin.systemId!
+					)
+				).resolves.not.toThrow();
 			});
 		});
 	});

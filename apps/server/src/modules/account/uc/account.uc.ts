@@ -14,6 +14,8 @@ import { UserRepo } from '@shared/repo';
 // TODO: module internals should be imported with relative paths, AccountEntity should be moved to this module
 
 import { ICurrentUser } from '@modules/authentication';
+import { BruteForcePrevention } from '@src/imports-from-feathers';
+import { ObjectId } from 'bson';
 import { AccountService } from '..';
 import { AccountConfig } from '../account-config';
 import {
@@ -23,9 +25,9 @@ import {
 	AccountSearchType,
 	PatchMyAccountParams,
 } from '../controller/dto';
-import { AccountResponseMapper } from '../controller/mapper/account-response.mapper';
-import { Account } from '../domain';
 import { AccountValidationService } from '../services/account.validation.service';
+import { Account } from '../domain';
+import { AccountResponseMapper } from '../controller/mapper/account-response.mapper';
 import { ResolvedAccountDto, ResolvedSearchListAccountDto } from './dto/resolved-account.dto';
 import { AccountUcMapper } from './mapper/account-uc.mapper';
 
@@ -317,6 +319,27 @@ export class AccountUc {
 			await this.userRepo.save(user);
 		} catch (err) {
 			throw new EntityNotFoundError(User.name);
+		}
+	}
+
+	// TODO: remove
+	/**
+	 *
+	 * @deprecated this is for legacy login strategies only. Login strategies in Nest.js should use {@link AuthenticationService}
+	 */
+	async checkBrutForce(username: string, systemId: EntityId | ObjectId): Promise<void> {
+		const account = await this.accountService.findByUsernameAndSystemId(username, systemId);
+		//  missing Account is ignored as in legacy feathers Impl.
+		if (account) {
+			if (account.lasttriedFailedLogin) {
+				const timeDifference = (new Date().getTime() - account.lasttriedFailedLogin.getTime()) / 1000;
+				if (timeDifference < this.configService.get<number>('LOGIN_BLOCK_TIME')) {
+					throw new BruteForcePrevention('Brute Force Prevention!', {
+						timeToWait: this.configService.get<number>('LOGIN_BLOCK_TIME') - Math.ceil(timeDifference),
+					});
+				}
+			}
+			await this.accountService.updateLastTriedFailedLogin(account.id ?? '', new Date());
 		}
 	}
 
