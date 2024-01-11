@@ -119,6 +119,21 @@
 			"default": "opt-out",
 			"description": "URL of a Redis Cluster server. If undefined, JWT whitelisting and timeouts will be disabled."
 		},
+		"REDIS_CLUSTER_NODE_0_URI": {
+			"type": "string",
+			"default": "opt-out",
+			"description": "URL of a Redis Cluster server. If undefined, JWT whitelisting and timeouts will be disabled."
+		},
+		"REDIS_CLUSTER_NODE_1_URI": {
+			"type": "string",
+			"default": "opt-out",
+			"description": "URL of a Redis Cluster server. If undefined, JWT whitelisting and timeouts will be disabled."
+		},
+		"REDIS_CLUSTER_NODE_2_URI": {
+			"type": "string",
+			"default": "opt-out",
+			"description": "URL of a Redis Cluster server. If undefined, JWT whitelisting and timeouts will be disabled."
+		},
 		"PIN_MAX_AGE_SECONDS": {
 			"type": "integer",
 			"default": 86400,

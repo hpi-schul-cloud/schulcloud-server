@@ -12,8 +12,10 @@ import { REDIS_CLIENT } from './interface/redis.constants';
 			useFactory: (logger: LegacyLogger) => {
 				logger.setContext(RedisModule.name);
 				if (Configuration.has('REDIS_CLUSTER_URI')) {
-					const redisClusterOptionsUse: RedisClusterOptions = Configuration.get('REDIS_CLUSTER_URI') as RedisClusterOptions;
-					const clusterClient: RedisClusterType = createCluster(redisClusterOptionsUse);
+					const redisClusterNode0: string = Configuration.get('REDIS_CLUSTER_NODE_0_URI') as string;
+					const redisClusterNode1: string = Configuration.get('REDIS_CLUSTER_NODE_1_URI') as string;
+					const redisClusterNode2: string = Configuration.get('REDIS_CLUSTER_NODE_1_URI') as string;
+					const clusterClient: RedisClusterType = createCluster({ rootNodes: [{ url: redisClusterNode0 }, { url: redisClusterNode1 }, { url: redisClusterNode2 } ] });
 					  clusterClient.on('error', (error) => logger.error(error));
 					  clusterClient.on('connect', (msg) => logger.log(msg));
 
