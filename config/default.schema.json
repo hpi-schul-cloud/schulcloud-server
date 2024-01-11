@@ -534,6 +534,7 @@
 		"API_HOST": {
 			"type": "string",
 			"format": "uri",
+			"default": "http://localhost:3030/api",
 			"pattern": ".*(?<!/)$",
 			"description": "The server endpoint, for external calls like Antivirus service. When called from docker container, can be http://host.docker.internal:3030"
 		},

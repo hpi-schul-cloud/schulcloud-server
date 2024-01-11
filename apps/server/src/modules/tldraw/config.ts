@@ -13,6 +13,7 @@ export interface TldrawConfig {
 	TLDRAW_ASSETS_ENABLED: boolean;
 	TLDRAW_ASSETS_MAX_SIZE: number;
 	TLDRAW_ASSETS_ALLOWED_EXTENSIONS_LIST: string;
+	API_HOST: number;
 }
 
 const tldrawConnectionString: string = Configuration.get('TLDRAW_DB_URL') as string;
@@ -30,6 +31,7 @@ const tldrawConfig = {
 	TLDRAW_ASSETS_ENABLED: Configuration.get('TLDRAW__ASSETS_ENABLED') as boolean,
 	TLDRAW_ASSETS_MAX_SIZE: Configuration.get('TLDRAW__ASSETS_MAX_SIZE') as number,
 	TLDRAW_ASSETS_ALLOWED_EXTENSIONS_LIST: Configuration.get('TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST') as string,
+	API_HOST: Configuration.get('API_HOST') as string,
 };
 
 export const SOCKET_PORT = Configuration.get('TLDRAW__SOCKET_PORT') as number;

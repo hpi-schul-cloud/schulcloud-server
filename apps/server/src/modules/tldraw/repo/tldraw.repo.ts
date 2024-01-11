@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { TldrawDrawing } from '../entities';
 
 @Injectable()
@@ -11,7 +11,11 @@ export class TldrawRepo {
 	}
 
 	async findByDocName(docName: string): Promise<TldrawDrawing[]> {
-		return this._em.find(TldrawDrawing, { docName });
+		const domainObject = await this._em.find(TldrawDrawing, { docName });
+		if (domainObject.length === 0) {
+			throw new NotFoundException(`There is no '${docName}' for this docName`);
+		}
+		return domainObject;
 	}
 
 	async delete(entity: TldrawDrawing | TldrawDrawing[]): Promise<void> {
