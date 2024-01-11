@@ -90,6 +90,15 @@ export class ContextExternalToolService {
 		);
 		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
+		tool.parameters.forEach((parameter: CustomParameterEntry): void => {
+			const isUnusedParameter = !externalTool.parameters?.find(
+				(param: CustomParameter): boolean => param.name === parameter.name
+			);
+			if (isUnusedParameter) {
+				this.deleteUnusedParameter(tool, parameter.name);
+			}
+		});
+
 		externalTool.parameters?.forEach((parameter: CustomParameter): void => {
 			if (parameter.isProtected) {
 				this.deleteProtectedValues(tool, parameter.name);
@@ -99,6 +108,20 @@ export class ContextExternalToolService {
 		const copiedTool = await this.contextExternalToolRepo.save(tool);
 
 		return copiedTool;
+	}
+
+	private deleteUnusedParameter(contextExternalTool: ContextExternalTool, unusedParameterName: string): void {
+		const unusedParameter: CustomParameterEntry | undefined = contextExternalTool.parameters.find(
+			(param: CustomParameterEntry): boolean => param.name === unusedParameterName
+		);
+
+		if (unusedParameter) {
+			const unusedParameterIndex: number = contextExternalTool.parameters.indexOf({
+				name: unusedParameter.name,
+				value: unusedParameter.value,
+			});
+			contextExternalTool.parameters.splice(unusedParameterIndex, 1);
+		}
 	}
 
 	private deleteProtectedValues(contextExternalTool: ContextExternalTool, protectedParameterName: string): void {

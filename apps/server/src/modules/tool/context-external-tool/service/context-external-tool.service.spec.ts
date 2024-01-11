@@ -21,7 +21,7 @@ import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { RestrictedContextMismatchLoggable } from './restricted-context-mismatch-loggabble';
 import { CommonToolService } from '../../common/service';
-import { CustomParameter } from '../../common/domain';
+import { CustomParameter, CustomParameterEntry } from '../../common/domain';
 
 describe('ContextExternalToolService', () => {
 	let module: TestingModule;
@@ -415,12 +415,15 @@ describe('ContextExternalToolService', () => {
 			});
 
 			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({ toolId: externalTool.id });
+
+			const unusedParam: CustomParameter = customParameterFactory.build();
 			const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
 				contextRef: { type: ToolContextType.COURSE, id: courseId },
 				schoolToolRef: { schoolToolId: schoolExternalTool.id, schoolId: schoolExternalTool.schoolId },
 				parameters: [
 					{ name: protectedParam.name, value: 'paramValue1' },
 					{ name: unprotectedParam.name, value: 'paramValue2' },
+					{ name: unusedParam.name, value: 'paramValue3' },
 				],
 			});
 
@@ -434,6 +437,7 @@ describe('ContextExternalToolService', () => {
 				contextCopyId,
 				contextExternalTool,
 				schoolExternalTool,
+				unusedParam,
 			};
 		};
 
@@ -475,6 +479,15 @@ describe('ContextExternalToolService', () => {
 					},
 				],
 			});
+		});
+
+		it('should not copy unused parameter', async () => {
+			const { contextExternalTool, contextCopyId, unusedParam } = setup();
+
+			const copiedTool: ContextExternalTool = await service.copyContextExternalTool(contextExternalTool, contextCopyId);
+
+			expect(copiedTool.parameters.length).toEqual(2);
+			expect(copiedTool.parameters).not.toContain(unusedParam);
 		});
 
 		it('should save copied tool', async () => {
