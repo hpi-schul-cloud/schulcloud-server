@@ -16,23 +16,21 @@ import { REDIS_CLIENT } from './interface/redis.constants';
 					const redisClusterNode1: string = Configuration.get('REDIS_CLUSTER_NODE_1_URI') as string;
 					const redisClusterNode2: string = Configuration.get('REDIS_CLUSTER_NODE_1_URI') as string;
 					const clusterClient: RedisClusterType = createCluster({ rootNodes: [{ url: redisClusterNode0 }, { url: redisClusterNode1 }, { url: redisClusterNode2 } ] });
-					  clusterClient.on('error', (error) => logger.error(error));
-					  clusterClient.on('connect', (msg) => logger.log(msg));
+					clusterClient.on('error', (error) => logger.error(error));
+					clusterClient.on('connect', (msg) => logger.log(msg));
 
-					  return clusterClient;
-				} else {
-					if (Configuration.has('REDIS_URI')) {
-						const redisUrl: string = Configuration.get('REDIS_URI') as string;
-						const client: RedisClientType = createClient({ url: redisUrl });
+					return clusterClient;
+				} else if (Configuration.has('REDIS_URI')) {
+					const redisUrl: string = Configuration.get('REDIS_URI') as string;
+					const client: RedisClientType = createClient({ url: redisUrl });
 
-						client.on('error', (error) => logger.error(error));
-						client.on('connect', (msg) => logger.log(msg));
-
-						return client;
-					}
+					client.on('error', (error) => logger.error(error));
+					client.on('connect', (msg) => logger.log(msg));
+					return client;
 				}
-
-				return undefined;
+				else {
+					return undefined;
+				}
 			},
 			inject: [LegacyLogger],
 		},

@@ -153,7 +153,7 @@ const setupSessions = (
 })
 export class ServerModule implements NestModule {
 	constructor(
-		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClientType | undefined,
+		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClientType | RedisClusterType | undefined,
 		private readonly logger: LegacyLogger
 	) {
 		logger.setContext(ServerModule.name);
@@ -184,7 +184,7 @@ export class ServerModule implements NestModule {
 })
 export class ServerTestModule implements NestModule {
 	constructor(
-		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClientType | undefined,
+		@Inject(REDIS_CLIENT) private readonly redisClient: RedisClientType | RedisClusterType | undefined,
 		private readonly logger: LegacyLogger
 	) {
 		logger.setContext(ServerTestModule.name);
