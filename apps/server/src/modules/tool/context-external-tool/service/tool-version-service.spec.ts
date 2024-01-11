@@ -9,6 +9,7 @@ import {
 } from '@shared/testing';
 import {
 	ContextExternalToolConfigurationStatus,
+	ToolParameterDuplicateLoggableException,
 	ToolParameterValueMissingLoggableException,
 } from '../../common/domain';
 import { CommonToolService, CommonToolValidationService } from '../../common/service';
@@ -314,7 +315,7 @@ describe('ToolVersionService', () => {
 			});
 		});
 
-		describe('when FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED is true and validation of ContextExternalTool throws only missing value errors', () => {
+		describe('when FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED is true and validation of ContextExternalTool throws at least 1 missing value errors', () => {
 			const setup = () => {
 				const customParameter = customParameterFactory.build();
 				const externalTool = externalToolFactory.buildWithId({ parameters: [customParameter] });
@@ -330,6 +331,7 @@ describe('ToolVersionService', () => {
 				commonToolValidationService.validateParameters.mockReturnValueOnce([]);
 				commonToolValidationService.validateParameters.mockReturnValueOnce([
 					new ToolParameterValueMissingLoggableException(customParameter),
+					new ToolParameterDuplicateLoggableException(customParameter.name),
 				]);
 
 				return {

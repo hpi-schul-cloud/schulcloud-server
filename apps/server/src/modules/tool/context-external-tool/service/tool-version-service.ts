@@ -51,7 +51,7 @@ export class ToolVersionService {
 				configurationStatus.isOutdatedOnScopeContext = true;
 
 				if (
-					contextParameterErrors.every(
+					contextParameterErrors.some(
 						(error: ValidationError) => error instanceof ToolParameterValueMissingLoggableException
 					)
 				) {
