@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Module } from '@nestjs/common';
 import { LegacyLogger, LoggerModule } from '@src/core/logger';
-import { createClient, createCluster, RedisClientType, RedisClusterType } from 'redis';
+import { createClient, createCluster, RedisClientType, RedisClusterType, RedisClusterOptions } from 'redis';
 import { REDIS_CLIENT } from './interface/redis.constants';
 
 @Module({
@@ -12,10 +12,8 @@ import { REDIS_CLIENT } from './interface/redis.constants';
 			useFactory: (logger: LegacyLogger) => {
 				logger.setContext(RedisModule.name);
 				if (Configuration.has('REDIS_CLUSTER_URI')) {
-					const redisClusterUri: string = Configuration.get('REDIS_CLUSTER_URI') as string;
-					const clusterClient: RedisClusterType = createCluster({
-						rootNodes: [ Configuration.get('REDIS_CLUSTER_URI') ]
-					  });
+					const redisClusterOptionsUse: RedisClusterOptions = Configuration.get('REDIS_CLUSTER_URI') as RedisClusterOptions;
+					const clusterClient: RedisClusterType = createCluster(redisClusterOptionsUse);
 					  clusterClient.on('error', (error) => logger.error(error));
 					  clusterClient.on('connect', (msg) => logger.log(msg));
 

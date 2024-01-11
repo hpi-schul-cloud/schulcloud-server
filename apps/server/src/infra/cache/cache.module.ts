@@ -13,9 +13,7 @@ import { RedisClusterOptions } from 'redis';
 			useFactory: async (cacheService: CacheService, logger: LegacyLogger): Promise<CacheModuleOptions> => {
 				if (cacheService.getStoreType() === CacheStoreType.REDIS) {
 					if(Configuration.has('REDIS_CLUSTER_URI')) {
-						const redisClusterOptionsUse: RedisClusterOptions = {
-							rootNodes: [ Configuration.get('REDIS_CLUSTER_URI') ]
-						};
+						const redisClusterOptionsUse: RedisClusterOptions = Configuration.get('REDIS_CLUSTER_URI') as RedisClusterOptions;
 						const storeCluster = await redisClusterStore(redisClusterOptionsUse);
 						const { client } = storeCluster;
 

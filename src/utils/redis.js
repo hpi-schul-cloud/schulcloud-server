@@ -9,9 +9,9 @@ let redisClient = false;
 async function initializeRedisClient() {
 	if (Configuration.has('REDIS_CLUSTER_URI')) {
 		try {
-			redisClient = redis.createCluster({
-				rootNodes: [ Configuration.get('REDIS_CLUSTER_URI') ]
-			})
+			redisClient = redis.createCluster(
+				Configuration.get('REDIS_CLUSTER_URI') 
+			)
 			await redisClient.connect();
 		} catch (err) {
 			throw new GeneralError('Redis Cluster connection failed!', err);
