@@ -89,7 +89,7 @@ describe('Oauth2Strategy', () => {
 					userId: user.id as EntityId,
 					roles: [user.roles[0].id],
 					schoolId: user.schoolId,
-					accountId: account.id ?? '',
+					accountId: account.id,
 					externalIdToken: idToken,
 					isExternalUser: true,
 				});

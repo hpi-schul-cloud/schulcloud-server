@@ -15,6 +15,7 @@ import { AccountService } from '..';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
+	AccountResponse,
 	AccountSearchQueryParams,
 	AccountSearchType,
 } from '../controller/dto';
@@ -22,7 +23,7 @@ import { Account } from '../domain';
 import { AccountEntityToDoMapper } from '../repo/mapper';
 import { AccountValidationService } from '../services/account.validation.service';
 import { AccountUc } from './account.uc';
-import { ResolvedAccountDto, ResolvedSearchListAccountDto } from './dto/resolved-account.dto';
+import { ResolvedSearchListAccountDto } from './dto/resolved-account.dto';
 
 describe('AccountUc', () => {
 	let module: TestingModule;
@@ -1060,15 +1061,12 @@ describe('AccountUc', () => {
 				);
 				const expected = new ResolvedSearchListAccountDto(
 					[
-						new ResolvedAccountDto({
+						new AccountResponse({
 							id: mockStudentAccount.id ?? '',
 							userId: mockStudentAccount.userId?.toString(),
 							activated: mockStudentAccount.activated,
 							username: mockStudentAccount.username,
 							updatedAt: mockStudentAccount.updatedAt,
-							password: mockStudentAccount.password,
-							createdAt: mockStudentAccount.createdAt,
-							systemId: mockStudentAccount.systemId?.toString(),
 						}),
 					],
 					1,
