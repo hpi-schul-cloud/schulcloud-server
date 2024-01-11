@@ -10,9 +10,7 @@ async function initializeRedisClient() {
 	if (Configuration.has('REDIS_CLUSTER_URI')) {
 		try {
 			redisClient = redis.createCluster({
-				rootNodes: [{
-					url: Configuration.get('REDIS_URI'),
-				}]
+				rootNodes: [ Configuration.get('REDIS_CLUSTER_URI') ]
 			})
 			await redisClient.connect();
 		} catch (err) {

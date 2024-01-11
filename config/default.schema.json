@@ -116,8 +116,8 @@
 		},
 		"REDIS_CLUSTER_URI": {
 			"type": "string",
-			"pattern": "(rediss?:)?//((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",
-			"description": "URL of a Redis server. If undefined, JWT whitelisting and timeouts will be disabled. Format: [redis[s]:]//[[user][:password@]][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]"
+			"default": "opt-out",
+			"description": "URL of a Redis Cluster server. If undefined, JWT whitelisting and timeouts will be disabled."
 		},
 		"PIN_MAX_AGE_SECONDS": {
 			"type": "integer",

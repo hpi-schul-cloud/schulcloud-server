@@ -14,9 +14,7 @@ import { REDIS_CLIENT } from './interface/redis.constants';
 				if (Configuration.has('REDIS_CLUSTER_URI')) {
 					const redisClusterUri: string = Configuration.get('REDIS_CLUSTER_URI') as string;
 					const clusterClient: RedisClusterType = createCluster({
-						rootNodes: [{
-						  url: Configuration.get('REDIS_CLUSTER_URI')
-						}]
+						rootNodes: [ Configuration.get('REDIS_CLUSTER_URI') ]
 					  });
 					  clusterClient.on('error', (error) => logger.error(error));
 					  clusterClient.on('connect', (msg) => logger.log(msg));

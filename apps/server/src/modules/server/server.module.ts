@@ -38,7 +38,7 @@ import { CoreModule } from '@src/core';
 import { LegacyLogger, LoggerModule } from '@src/core/logger';
 import RedisStore from 'connect-redis';
 import session from 'express-session';
-import { RedisClientType } from 'redis';
+import { RedisClientType, RedisClusterType } from 'redis';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 
@@ -91,7 +91,7 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 
 const setupSessions = (
 	consumer: MiddlewareConsumer,
-	redisClient: RedisClientType | undefined,
+	redisClient: RedisClientType | RedisClusterType | undefined,
 	logger: LegacyLogger
 ) => {
 	const sessionDuration: number = Configuration.get('SESSION__EXPIRES_SECONDS') as number;
