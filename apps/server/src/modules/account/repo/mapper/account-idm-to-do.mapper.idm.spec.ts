@@ -30,8 +30,8 @@ describe('AccountIdmToDoMapperIdm', () => {
 		await module.close();
 	});
 
-	describe('mapToDto', () => {
-		describe('when mapping from entity to dto', () => {
+	describe('mapToDo', () => {
+		describe('when mapping from entity to do', () => {
 			const setup = () => {
 				const testIdmEntity: IdmAccount = {
 					id: 'id',
@@ -50,7 +50,7 @@ describe('AccountIdmToDoMapperIdm', () => {
 			it('should map all fields', () => {
 				const testIdmEntity = setup();
 
-				const ret = mapper.mapToDto(testIdmEntity);
+				const ret = mapper.mapToDo(testIdmEntity);
 
 				expect(ret).toEqual(
 					expect.objectContaining<Partial<Account>>({
@@ -76,7 +76,7 @@ describe('AccountIdmToDoMapperIdm', () => {
 			it('should use actual date', () => {
 				const testIdmEntity = setup();
 
-				const ret = mapper.mapToDto(testIdmEntity);
+				const ret = mapper.mapToDo(testIdmEntity);
 
 				expect(ret.createdAt).toEqual(now);
 				expect(ret.updatedAt).toEqual(now);
@@ -94,7 +94,7 @@ describe('AccountIdmToDoMapperIdm', () => {
 			it('should fill with empty string', () => {
 				const testIdmEntity = setup();
 
-				const ret = mapper.mapToDto(testIdmEntity);
+				const ret = mapper.mapToDo(testIdmEntity);
 
 				expect(ret.username).toBe('');
 			});

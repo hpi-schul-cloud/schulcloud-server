@@ -503,19 +503,19 @@ describe('AccountDbService', () => {
 		describe('when creating a new account', () => {
 			const setup = () => {
 				const spy = jest.spyOn(accountRepo, 'save');
-				const dto = {
+				const account = {
 					username: 'john.doe@domain.tld',
 					password: '',
 				} as Account;
 				(accountRepo.findById as jest.Mock).mockClear();
 				(accountRepo.save as jest.Mock).mockClear();
 
-				return { spy, dto };
+				return { spy, account };
 			};
 			it('should set password to undefined if password is empty', async () => {
-				const { spy, dto } = setup();
+				const { spy, account } = setup();
 
-				await expect(accountService.save(dto)).resolves.not.toThrow();
+				await expect(accountService.save(account)).resolves.not.toThrow();
 				expect(accountRepo.findById).not.toHaveBeenCalled();
 				expect(spy).toHaveBeenCalledWith(
 					expect.objectContaining({
@@ -530,7 +530,7 @@ describe('AccountDbService', () => {
 				const mockTeacherAccount = accountFactory.buildWithId();
 
 				const spy = jest.spyOn(accountRepo, 'save');
-				const dto = {
+				const account = {
 					id: mockTeacherAccount.id,
 					password: undefined,
 				} as Account;
@@ -539,11 +539,11 @@ describe('AccountDbService', () => {
 				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id);
 				accountRepo.save.mockResolvedValue();
 
-				return { mockTeacherAccount, spy, dto };
+				return { mockTeacherAccount, spy, account };
 			};
 			it('should not change password', async () => {
-				const { mockTeacherAccount, spy, dto } = setup();
-				await expect(accountService.save(dto)).resolves.not.toThrow();
+				const { mockTeacherAccount, spy, account } = setup();
+				await expect(accountService.save(account)).resolves.not.toThrow();
 				expect(accountRepo.findById).toHaveBeenCalled();
 				expect(spy).toHaveBeenCalledWith(
 					expect.objectContaining({

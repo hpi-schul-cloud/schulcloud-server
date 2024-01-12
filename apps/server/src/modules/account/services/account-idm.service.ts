@@ -24,7 +24,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 
 	async findById(id: EntityId): Promise<Account> {
 		const result = await this.identityManager.findAccountById(id);
-		const account = this.accountIdmToDtoMapper.mapToDto(result);
+		const account = this.accountIdmToDtoMapper.mapToDo(result);
 		return account;
 	}
 
@@ -40,14 +40,14 @@ export class AccountServiceIdm extends AbstractAccountService {
 				// ignore entry
 			}
 		}
-		const accounts = results.map((result) => this.accountIdmToDtoMapper.mapToDto(result));
+		const accounts = results.map((result) => this.accountIdmToDtoMapper.mapToDo(result));
 		return accounts;
 	}
 
 	async findByUserId(userId: EntityId): Promise<Account | null> {
 		try {
 			const result = await this.identityManager.findAccountByDbcUserId(userId);
-			return this.accountIdmToDtoMapper.mapToDto(result);
+			return this.accountIdmToDtoMapper.mapToDo(result);
 		} catch {
 			// TODO: dont simply forget errors
 			return null;
@@ -57,7 +57,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 	async findByUserIdOrFail(userId: EntityId): Promise<Account> {
 		try {
 			const result = await this.identityManager.findAccountByDbcUserId(userId);
-			return this.accountIdmToDtoMapper.mapToDto(result);
+			return this.accountIdmToDtoMapper.mapToDo(result);
 		} catch {
 			throw new EntityNotFoundError(`Account with userId ${userId} not found`);
 		}
@@ -71,13 +71,13 @@ export class AccountServiceIdm extends AbstractAccountService {
 
 	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>> {
 		const [results, total] = await this.identityManager.findAccountsByUsername(userName, { skip, limit, exact: false });
-		const accounts = results.map((result) => this.accountIdmToDtoMapper.mapToDto(result));
+		const accounts = results.map((result) => this.accountIdmToDtoMapper.mapToDo(result));
 		return [accounts, total];
 	}
 
 	async searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
 		const [results, total] = await this.identityManager.findAccountsByUsername(userName, { exact: true });
-		const accounts = results.map((result) => this.accountIdmToDtoMapper.mapToDto(result));
+		const accounts = results.map((result) => this.accountIdmToDtoMapper.mapToDo(result));
 		return [accounts, total];
 	}
 
@@ -86,7 +86,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		const id = await this.getIdmAccountId(accountId);
 		await this.identityManager.setUserAttribute(id, attributeName, lastTriedFailedLogin.toISOString());
 		const updatedAccount = await this.identityManager.findAccountById(id);
-		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
+		return this.accountIdmToDtoMapper.mapToDo(updatedAccount);
 	}
 
 	async save(accountSave: AccountSave): Promise<Account> {
@@ -117,7 +117,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		}
 
 		const updatedAccount = await this.identityManager.findAccountById(accountId);
-		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
+		return this.accountIdmToDtoMapper.mapToDo(updatedAccount);
 	}
 
 	private async updateAccount(idmAccountId: string, idmAccount: IdmAccountUpdate, password?: string): Promise<string> {
@@ -137,14 +137,14 @@ export class AccountServiceIdm extends AbstractAccountService {
 		const id = await this.getIdmAccountId(accountRefId);
 		await this.identityManager.updateAccount(id, { username });
 		const updatedAccount = await this.identityManager.findAccountById(id);
-		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
+		return this.accountIdmToDtoMapper.mapToDo(updatedAccount);
 	}
 
 	async updatePassword(accountRefId: EntityId, password: string): Promise<Account> {
 		const id = await this.getIdmAccountId(accountRefId);
 		await this.identityManager.updateAccountPassword(id, password);
 		const updatedAccount = await this.identityManager.findAccountById(id);
-		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
+		return this.accountIdmToDtoMapper.mapToDo(updatedAccount);
 	}
 
 	async validatePassword(account: Account, comparePassword: string): Promise<boolean> {

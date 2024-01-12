@@ -9,10 +9,10 @@ export class AccountUcMapper {
 		});
 	}
 
-	static mapSearchResult(accountEntities: Counted<Account[]>): Counted<ResolvedAccountDto[]> {
-		const foundAccounts = accountEntities[0];
+	static mapSearchResult(accounts: Counted<Account[]>): Counted<ResolvedAccountDto[]> {
+		const foundAccounts = accounts[0];
 		const accountDos: ResolvedAccountDto[] = AccountUcMapper.mapAccountsToDo(foundAccounts);
-		return [accountDos, accountEntities[1]];
+		return [accountDos, accounts[1]];
 	}
 
 	static mapAccountsToDo(accounts: Account[]): ResolvedAccountDto[] {

@@ -3,7 +3,7 @@ import { Account } from '../../domain/account';
 import { AccountIdmToDoMapper } from './account-idm-to-do.mapper.abstract';
 
 export class AccountIdmToDoMapperDb extends AccountIdmToDoMapper {
-	mapToDto(account: IdmAccount): Account {
+	mapToDo(account: IdmAccount): Account {
 		const createdDate = account.createdDate ? account.createdDate : new Date();
 		return new Account({
 			id: account.attDbcAccountId ?? '',
