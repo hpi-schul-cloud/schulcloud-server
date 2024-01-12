@@ -28,7 +28,7 @@ describe('AccountEntityToDoMapper', () => {
 
 				const ret = AccountEntityToDoMapper.mapToDto(accountEntity);
 
-				expect({ ...ret, _id: accountEntity._id }).toMatchObject(accountEntity);
+				expect({ ...ret.getProps(), _id: accountEntity._id }).toMatchObject(accountEntity);
 			});
 
 			it('should ignore missing ids', () => {

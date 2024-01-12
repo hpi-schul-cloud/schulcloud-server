@@ -7,7 +7,7 @@ describe('AccountResponseMapper', () => {
 	describe('mapToAccountResponse', () => {
 		describe('When mapping Account to AccountResponse', () => {
 			const setup = () => {
-				const testDto: Account = accountDtoFactory.buildWithId();
+				const testDto: Account = accountDtoFactory.build();
 				return testDto;
 			};
 
@@ -27,7 +27,7 @@ describe('AccountResponseMapper', () => {
 	describe('mapToAccountResponses', () => {
 		describe('When mapping Account[] to AccountResponse[]', () => {
 			const setup = () => {
-				const testDto: Account[] = accountDtoFactory.buildListWithId(3);
+				const testDto: Account[] = accountDtoFactory.buildList(3);
 				return testDto;
 			};
 
@@ -48,7 +48,7 @@ describe('AccountResponseMapper', () => {
 	describe('mapToAccountSearchListResponse', () => {
 		describe('When mapping ResolvedSearchListAccountDto to AccountSearchListResponse', () => {
 			const setup = () => {
-				const testDto = accountDtoFactory.buildWithId();
+				const testDto = accountDtoFactory.build();
 				const searchListDto = new ResolvedSearchListAccountDto([testDto], 1, 0, 1);
 				return searchListDto;
 			};

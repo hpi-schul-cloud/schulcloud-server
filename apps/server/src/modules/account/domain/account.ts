@@ -1,74 +1,94 @@
+import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
-import { PrivacyProtect } from '@shared/controller';
-import { IsOptional, IsMongoId, IsDate, IsString, IsNotEmpty, Matches, IsBoolean } from 'class-validator';
-import { passwordPattern } from '../controller/dto/password-pattern';
 
-export class Account {
-	@IsOptional()
-	@IsMongoId()
-	readonly id?: EntityId;
-
-	@IsOptional()
-	@IsDate()
-	readonly createdAt?: Date;
-
-	@IsOptional()
-	@IsDate()
-	readonly updatedAt?: Date;
-
-	@IsString()
-	@IsNotEmpty()
-	username: string;
-
-	@PrivacyProtect()
-	@IsOptional()
-	@Matches(passwordPattern)
-	password?: string;
-
-	@IsOptional()
-	@IsString()
-	token?: string;
-
-	@IsOptional()
-	@IsString()
-	credentialHash?: string;
-
-	@IsOptional()
-	@IsMongoId()
+export interface AccountProps extends AuthorizableObject {
+	id: EntityId;
+	updatedAt?: Date;
+	createdAt?: Date;
 	userId?: EntityId;
-
-	@IsOptional()
-	@IsMongoId()
 	systemId?: EntityId;
-
-	@IsOptional()
-	@IsDate()
+	username: string;
+	password?: string;
+	token?: string;
+	credentialHash?: string;
 	lasttriedFailedLogin?: Date;
-
-	@IsOptional()
-	@IsDate()
 	expiresAt?: Date;
-
-	@IsOptional()
-	@IsBoolean()
 	activated?: boolean;
-
-	@IsOptional()
 	idmReferenceId?: string;
+}
 
-	constructor(props: Account) {
-		this.id = props.id;
-		this.createdAt = props.createdAt;
-		this.updatedAt = props.updatedAt;
-		this.username = props.username;
-		this.password = props.password;
-		this.token = props.token;
-		this.credentialHash = props.credentialHash;
-		this.userId = props.userId;
-		this.systemId = props.systemId;
-		this.lasttriedFailedLogin = props.lasttriedFailedLogin;
-		this.expiresAt = props.expiresAt;
-		this.activated = props.activated;
-		this.idmReferenceId = props.idmReferenceId;
+export class Account extends DomainObject<AccountProps> {
+	public get id(): EntityId {
+		return this.props.id;
+	}
+
+	public get createdAt(): Date | undefined {
+		return this.props.createdAt;
+	}
+
+	public get updatedAt(): Date | undefined {
+		return this.props.updatedAt;
+	}
+
+	public get userId(): EntityId | undefined {
+		return this.props.userId;
+	}
+
+	public set userId(userId: EntityId | undefined) {
+		this.props.userId = userId;
+	}
+
+	public get systemId(): EntityId | undefined {
+		return this.props.systemId;
+	}
+
+	public set systemId(systemId: EntityId | undefined) {
+		this.props.systemId = systemId;
+	}
+
+	public get username(): string {
+		return this.props.username;
+	}
+
+	public set username(username: string) {
+		this.props.username = username;
+	}
+
+	public get password(): string | undefined {
+		return this.props.password;
+	}
+
+	public set password(password: string | undefined) {
+		this.props.password = password;
+	}
+
+	public get token(): string | undefined {
+		return this.props.token;
+	}
+
+	public get credentialHash(): string | undefined {
+		return this.props.credentialHash;
+	}
+
+	public get lasttriedFailedLogin(): Date | undefined {
+		return this.props.lasttriedFailedLogin;
+	}
+
+	public get expiresAt(): Date | undefined {
+		return this.props.expiresAt;
+	}
+
+	public get activated(): boolean | undefined {
+		return this.props.activated;
+	}
+
+	public set activated(activated: boolean | undefined) {
+		this.props.activated = activated;
+	}
+
+	public get idmReferenceId(): string | undefined {
+		return this.props.idmReferenceId;
 	}
 }
+
+export type AccountSave = Omit<Account, 'id'> & Partial<Pick<Account, 'id'>>;

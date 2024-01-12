@@ -20,7 +20,7 @@ export class UserMigrationService {
 		const account: Account = await this.accountService.findByUserIdOrFail(currentUserId);
 
 		const userDOCopy: UserDO = new UserDO({ ...userDO });
-		const accountCopy: Account = new Account({ ...account });
+		const accountCopy: Account = new Account({ ...account.getProps() });
 
 		try {
 			await this.doMigration(userDO, externalUserId, account, targetSystemId);
@@ -46,11 +46,7 @@ export class UserMigrationService {
 		await this.accountService.save(account);
 	}
 
-	private async tryRollbackMigration(
-		currentUserId: EntityId,
-		userDOCopy: UserDO,
-		accountCopy: Account
-	): Promise<void> {
+	private async tryRollbackMigration(currentUserId: EntityId, userDOCopy: UserDO, accountCopy: Account): Promise<void> {
 		try {
 			await this.userService.save(userDOCopy);
 			await this.accountService.save(accountCopy);

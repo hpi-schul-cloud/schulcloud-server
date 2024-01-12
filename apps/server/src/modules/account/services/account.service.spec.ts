@@ -7,7 +7,7 @@ import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AccountValidationService } from './account.validation.service';
-import { Account } from '../domain';
+import { Account, AccountSave } from '../domain';
 
 describe('AccountService', () => {
 	let module: TestingModule;
@@ -204,7 +204,7 @@ describe('AccountService', () => {
 			};
 			it('should call idm implementation', async () => {
 				setup();
-				await expect(accountService.save({ username: 'username' })).resolves.not.toThrow();
+				await expect(accountService.save({ username: 'username' } as AccountSave)).resolves.not.toThrow();
 				expect(accountServiceIdm.save).toHaveBeenCalledTimes(1);
 			});
 		});
@@ -219,10 +219,10 @@ describe('AccountService', () => {
 			it('should not sanitize username for external user', async () => {
 				const spy = setup();
 
-				const params: Account = {
+				const params: AccountSave = {
 					username: ' John.Doe@domain.tld ',
 					systemId: 'ABC123',
-				};
+				} as AccountSave;
 				await accountService.saveWithValidation(params);
 				expect(spy).toHaveBeenCalledWith(
 					expect.objectContaining({
@@ -235,50 +235,50 @@ describe('AccountService', () => {
 
 		describe('When username for a local user is not an email', () => {
 			it('should throw username is not an email error', async () => {
-				const params: Account = {
+				const params: AccountSave = {
 					username: 'John Doe',
 					password: 'JohnsPassword',
-				};
+				} as AccountSave;
 				await expect(accountService.saveWithValidation(params)).rejects.toThrow('Username is not an email');
 			});
 		});
 
 		describe('When username for an external user is not an email', () => {
 			it('should not throw an error', async () => {
-				const params: Account = {
+				const params: AccountSave = {
 					username: 'John Doe',
 					systemId: 'ABC123',
-				};
+				} as AccountSave;
 				await expect(accountService.saveWithValidation(params)).resolves.not.toThrow();
 			});
 		});
 
 		describe('When username for an external user is a ldap search string', () => {
 			it('should not throw an error', async () => {
-				const params: Account = {
+				const params: AccountSave = {
 					username: 'dc=schul-cloud,dc=org/fake.ldap',
 					systemId: 'ABC123',
-				};
+				} as AccountSave;
 				await expect(accountService.saveWithValidation(params)).resolves.not.toThrow();
 			});
 		});
 
 		describe('When no password is provided for an internal user', () => {
 			it('should throw no password provided error', async () => {
-				const params: Account = {
+				const params: AccountSave = {
 					username: 'john.doe@mail.tld',
-				};
+				} as AccountSave;
 				await expect(accountService.saveWithValidation(params)).rejects.toThrow('No password provided');
 			});
 		});
 
 		describe('When account already exists', () => {
 			it('should throw account already exists', async () => {
-				const params: Account = {
+				const params: AccountSave = {
 					username: 'john.doe@mail.tld',
 					password: 'JohnsPassword',
 					userId: 'userId123',
-				};
+				} as AccountSave;
 				accountServiceDb.findByUserId.mockResolvedValueOnce({ id: 'foundAccount123' } as Account);
 				await expect(accountService.saveWithValidation(params)).rejects.toThrow('Account already exists');
 			});
@@ -290,10 +290,10 @@ describe('AccountService', () => {
 			};
 			it('should throw username already exists', async () => {
 				setup();
-				const params: Account = {
+				const params: AccountSave = {
 					username: 'john.doe@mail.tld',
 					password: 'JohnsPassword',
-				};
+				} as AccountSave;
 				await expect(accountService.saveWithValidation(params)).rejects.toThrow('Username already exists');
 			});
 		});
@@ -306,7 +306,7 @@ describe('AccountService', () => {
 			it('should call idm implementation', async () => {
 				setup();
 				await expect(
-					accountService.saveWithValidation({ username: 'username@mail.tld', password: 'password' })
+					accountService.saveWithValidation({ username: 'username@mail.tld', password: 'password' } as AccountSave)
 				).resolves.not.toThrow();
 				expect(accountServiceIdm.save).toHaveBeenCalledTimes(1);
 			});

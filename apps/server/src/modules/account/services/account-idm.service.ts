@@ -8,7 +8,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { AccountIdmToDoMapper } from '../repo/mapper';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
-import { Account } from '../domain';
+import { Account, AccountSave } from '../domain';
 
 @Injectable()
 export class AccountServiceIdm extends AbstractAccountService {
@@ -89,31 +89,31 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return this.accountIdmToDtoMapper.mapToDto(updatedAccount);
 	}
 
-	async save(accountDto: Account): Promise<Account> {
+	async save(accountSave: AccountSave): Promise<Account> {
 		let accountId: string;
 		const idmAccount: IdmAccountUpdate = {
-			username: accountDto.username,
-			attDbcAccountId: accountDto.idmReferenceId,
-			attDbcUserId: accountDto.userId,
-			attDbcSystemId: accountDto.systemId,
+			username: accountSave.username,
+			attDbcAccountId: accountSave.idmReferenceId,
+			attDbcUserId: accountSave.userId,
+			attDbcSystemId: accountSave.systemId,
 		};
 		// TODO: probably do some method extraction here
-		if (accountDto.id) {
+		if (accountSave.id) {
 			let idmId: string | undefined;
 			// TODO: extract into a method that hides the trycatch
 			try {
-				idmId = await this.getIdmAccountId(accountDto.id);
+				idmId = await this.getIdmAccountId(accountSave.id);
 			} catch {
-				this.logger.log(`Account ID ${accountDto.id} could not be resolved. Creating new account and ID ...`);
+				this.logger.log(`Account ID ${accountSave.id} could not be resolved. Creating new account and ID ...`);
 				idmId = undefined;
 			}
 			if (idmId) {
-				accountId = await this.updateAccount(idmId, idmAccount, accountDto.password);
+				accountId = await this.updateAccount(idmId, idmAccount, accountSave.password);
 			} else {
-				accountId = await this.createAccount(idmAccount, accountDto.password);
+				accountId = await this.createAccount(idmAccount, accountSave.password);
 			}
 		} else {
-			accountId = await this.createAccount(idmAccount, accountDto.password);
+			accountId = await this.createAccount(idmAccount, accountSave.password);
 		}
 
 		const updatedAccount = await this.identityManager.findAccountById(accountId);

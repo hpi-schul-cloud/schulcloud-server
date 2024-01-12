@@ -8,7 +8,7 @@ import { AccountEntityToDoMapper } from '../repo/mapper';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
-import { Account } from '../domain';
+import { Account, AccountSave } from '../domain';
 
 // HINT: do more empty lines :)
 
@@ -44,37 +44,37 @@ export class AccountServiceDb extends AbstractAccountService {
 		return accountEntity ? AccountEntityToDoMapper.mapToDto(accountEntity) : null;
 	}
 
-	async save(accountDto: Account): Promise<Account> {
+	async save(accountSave: AccountSave): Promise<Account> {
 		let account: AccountEntity;
 		// HINT: mapping could be done by a mapper (though this whole file is subject to be removed in the future)
 		// HINT: today we have logic to map back into unit work in the baseDO
-		if (accountDto.id) {
-			const internalId = await this.getInternalId(accountDto.id);
+		if (accountSave.id) {
+			const internalId = await this.getInternalId(accountSave.id);
 			account = await this.accountRepo.findById(internalId);
-			account.userId = new ObjectId(accountDto.userId);
-			account.systemId = accountDto.systemId ? new ObjectId(accountDto.systemId) : undefined;
-			account.username = accountDto.username;
-			account.activated = accountDto.activated;
-			account.expiresAt = accountDto.expiresAt;
-			account.lasttriedFailedLogin = accountDto.lasttriedFailedLogin;
-			if (accountDto.password) {
-				account.password = await this.encryptPassword(accountDto.password);
+			account.userId = new ObjectId(accountSave.userId);
+			account.systemId = accountSave.systemId ? new ObjectId(accountSave.systemId) : undefined;
+			account.username = accountSave.username;
+			account.activated = accountSave.activated;
+			account.expiresAt = accountSave.expiresAt;
+			account.lasttriedFailedLogin = accountSave.lasttriedFailedLogin;
+			if (accountSave.password) {
+				account.password = await this.encryptPassword(accountSave.password);
 			}
-			account.credentialHash = accountDto.credentialHash;
-			account.token = accountDto.token;
+			account.credentialHash = accountSave.credentialHash;
+			account.token = accountSave.token;
 
 			await this.accountRepo.save(account);
 		} else {
 			account = new AccountEntity({
-				userId: new ObjectId(accountDto.userId),
-				systemId: accountDto.systemId ? new ObjectId(accountDto.systemId) : undefined,
-				username: accountDto.username,
-				activated: accountDto.activated,
-				expiresAt: accountDto.expiresAt,
-				lasttriedFailedLogin: accountDto.lasttriedFailedLogin,
-				password: accountDto.password ? await this.encryptPassword(accountDto.password) : undefined,
-				token: accountDto.token,
-				credentialHash: accountDto.credentialHash,
+				userId: new ObjectId(accountSave.userId),
+				systemId: accountSave.systemId ? new ObjectId(accountSave.systemId) : undefined,
+				username: accountSave.username,
+				activated: accountSave.activated,
+				expiresAt: accountSave.expiresAt,
+				lasttriedFailedLogin: accountSave.lasttriedFailedLogin,
+				password: accountSave.password ? await this.encryptPassword(accountSave.password) : undefined,
+				token: accountSave.token,
+				credentialHash: accountSave.credentialHash,
 			});
 
 			await this.accountRepo.save(account); // HINT: this can be done once in the end

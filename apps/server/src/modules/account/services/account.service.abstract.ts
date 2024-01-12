@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Counted, EntityId } from '@shared/domain/types';
-import { Account } from '../domain';
+import { Account, AccountSave } from '../domain';
 
 // TODO: split functions which are only needed for feathers
 
@@ -16,7 +16,7 @@ export abstract class AbstractAccountService {
 	// HINT: it would be preferable to use entityId here. Needs to be checked if this is blocked by lecacy code
 	abstract findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account | null>;
 
-	abstract save(accountDto: Account): Promise<Account>;
+	abstract save(accountSave: AccountSave): Promise<Account>;
 
 	abstract updateUsername(accountId: EntityId, username: string): Promise<Account>;
 

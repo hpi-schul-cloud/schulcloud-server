@@ -7,7 +7,7 @@ describe('AccountUcMapper', () => {
 	describe('mapToResolvedAccountDto', () => {
 		describe('When mapping Account to ResolvedAccountDto', () => {
 			const setup = () => {
-				const testDos: Account = accountDtoFactory.buildWithId();
+				const testDos: Account = accountDtoFactory.build();
 				return testDos;
 			};
 
@@ -27,7 +27,7 @@ describe('AccountUcMapper', () => {
 	describe('mapSearchResult', () => {
 		describe('When mapping Counted<Account[]> to Counted<ResolvedAccountDto[]>', () => {
 			const setup = () => {
-				const testDos: Counted<Account[]> = [accountDtoFactory.buildListWithId(3), 3];
+				const testDos: Counted<Account[]> = [accountDtoFactory.buildList(3), 3];
 				return testDos;
 			};
 
@@ -48,7 +48,7 @@ describe('AccountUcMapper', () => {
 	describe('mapAccountsToDo', () => {
 		describe('When mapping Account[] to ResolvedAccountDto[]', () => {
 			const setup = () => {
-				const testDos: Account[] = accountDtoFactory.buildListWithId(3);
+				const testDos: Account[] = accountDtoFactory.buildList(3);
 				return testDos;
 			};
 

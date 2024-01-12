@@ -5,12 +5,7 @@ import { ResolvedAccountDto } from '../dto/resolved-account.dto';
 export class AccountUcMapper {
 	static mapToResolvedAccountDto(account: Account): ResolvedAccountDto {
 		return new ResolvedAccountDto({
-			...account,
-			id: account.id,
-			username: account.username,
-			userId: account.userId,
-			activated: account.activated,
-			updatedAt: account.updatedAt,
+			...account.getProps(),
 		});
 	}
 

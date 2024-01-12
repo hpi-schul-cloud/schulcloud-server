@@ -23,7 +23,7 @@ import { AccountLookupService } from './account-lookup.service';
 import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
-import { Account } from '../domain';
+import { Account, AccountSave } from '../domain';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;
@@ -36,12 +36,12 @@ describe('AccountService Integration', () => {
 	let isIdmReachable = true;
 
 	const testRealm = `test-realm-${v1()}`;
-	const testAccount = new Account({
+	const testAccount = {
 		username: 'john.doe@mail.tld',
 		password: 'super-secret-password',
 		userId: new ObjectId().toString(),
 		systemId: new ObjectId().toString(),
-	});
+	} as AccountSave;
 
 	const createDbAccount = async (): Promise<string> => {
 		const accountEntity = accountFactory.build({
@@ -181,9 +181,9 @@ describe('AccountService Integration', () => {
 				if (!isIdmReachable) return;
 				const { newUsername, dbId, idmId, originalAccount } = await setup();
 				const updatedAccount = await accountService.save({
-					...originalAccount,
+					...originalAccount.getProps(),
 					username: newUsername,
-				});
+				} as AccountSave);
 				await compareDbAccount(dbId, updatedAccount);
 				await compareIdmAccount(idmId, updatedAccount);
 			});
@@ -201,9 +201,9 @@ describe('AccountService Integration', () => {
 				const { newUsername, dbId, originalAccount } = await setup();
 
 				const updatedAccount = await accountService.save({
-					...originalAccount,
+					...originalAccount.getProps(),
 					username: newUsername,
-				});
+				} as AccountSave);
 				await compareDbAccount(dbId, updatedAccount);
 				await compareIdmAccount(updatedAccount.idmReferenceId ?? '', updatedAccount);
 			});

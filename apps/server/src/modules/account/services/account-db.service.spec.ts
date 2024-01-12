@@ -571,7 +571,7 @@ describe('AccountDbService', () => {
 				const ret = await accountService.updateUsername(mockTeacherAccount.id, newUsername);
 				expect(ret).toBeDefined();
 				expect(ret).toMatchObject({
-					...mockTeacherAccountDto,
+					...mockTeacherAccountDto.getProps(),
 					username: newUsername,
 				});
 			});
@@ -596,7 +596,7 @@ describe('AccountDbService', () => {
 
 				expect(ret).toBeDefined();
 				expect(ret).toMatchObject({
-					...mockTeacherAccountDto,
+					...mockTeacherAccountDto.getProps(),
 					lasttriedFailedLogin: theNewDate,
 				});
 			});

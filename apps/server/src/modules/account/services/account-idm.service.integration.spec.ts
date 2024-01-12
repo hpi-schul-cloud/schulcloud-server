@@ -11,7 +11,7 @@ import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../repo/mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
-import { Account } from '../domain';
+import { AccountSave } from '../domain';
 
 describe('AccountIdmService Integration', () => {
 	let module: TestingModule;
@@ -23,13 +23,13 @@ describe('AccountIdmService Integration', () => {
 
 	const testRealm = `test-realm-${v1()}`;
 	const testDbcAccountId = new ObjectId().toString();
-	const testAccount = new Account({
+	const testAccount = {
 		username: 'john.doe@mail.tld',
 		password: 'super-secret-password',
 		userId: new ObjectId().toString(),
 		systemId: new ObjectId().toString(),
 		idmReferenceId: testDbcAccountId,
-	});
+	} as AccountSave;
 	const createAccount = async (): Promise<string> =>
 		identityManagementService.createAccount(
 			{
@@ -128,7 +128,7 @@ describe('AccountIdmService Integration', () => {
 				await accountIdmService.save({
 					id: testDbcAccountId,
 					username: newUserName,
-				});
+				} as AccountSave);
 
 				const foundAccount = await identityManagementService.findAccountById(idmId);
 

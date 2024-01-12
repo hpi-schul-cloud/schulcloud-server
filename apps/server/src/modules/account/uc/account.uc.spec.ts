@@ -18,7 +18,7 @@ import {
 	AccountSearchQueryParams,
 	AccountSearchType,
 } from '../controller/dto';
-import { Account } from '../domain';
+import { Account, AccountSave } from '../domain';
 import { AccountEntityToDoMapper } from '../repo/mapper';
 import { AccountValidationService } from '../services/account.validation.service';
 import { AccountUc } from './account.uc';
@@ -1061,7 +1061,7 @@ describe('AccountUc', () => {
 				const expected = new ResolvedSearchListAccountDto(
 					[
 						new ResolvedAccountDto({
-							id: mockStudentAccount.id ?? '',
+							id: mockStudentAccount.id,
 							userId: mockStudentAccount.userId?.toString(),
 							activated: mockStudentAccount.activated,
 							username: mockStudentAccount.username,
@@ -2102,10 +2102,10 @@ describe('AccountUc', () => {
 			it('should call account service', async () => {
 				const { spy } = setup();
 
-				const params: Account = {
+				const params: AccountSave = {
 					username: 'john.doe@domain.tld',
 					password: defaultPassword,
-				};
+				} as AccountSave;
 				await accountUc.saveAccount(params);
 
 				expect(spy).toHaveBeenCalledWith(
@@ -2215,8 +2215,8 @@ describe('AccountUc', () => {
 				accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 
 				userRepo.save.mockResolvedValue();
-				accountService.save.mockImplementation((account: Account): Promise<Account> => {
-					Object.assign(mockStudentAccount, account);
+				accountService.save.mockImplementation((account: AccountSave): Promise<Account> => {
+					Object.assign(mockStudentAccount, account.getProps());
 					return Promise.resolve(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				});
 
@@ -2261,8 +2261,8 @@ describe('AccountUc', () => {
 				accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 
 				userRepo.save.mockResolvedValue();
-				accountService.save.mockImplementation((account: Account): Promise<Account> => {
-					Object.assign(mockStudentAccount, account);
+				accountService.save.mockImplementation((account: AccountSave): Promise<Account> => {
+					Object.assign(mockStudentAccount, account.getProps());
 					return Promise.resolve(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				});
 				accountValidationService.isUniqueEmail.mockResolvedValue(true);
@@ -2307,7 +2307,7 @@ describe('AccountUc', () => {
 				accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 
 				userRepo.save.mockResolvedValue();
-				accountService.save.mockImplementation((account: Account): Promise<Account> => {
+				accountService.save.mockImplementation((account: AccountSave): Promise<Account> => {
 					Object.assign(mockStudentAccount, account);
 					return Promise.resolve(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				});

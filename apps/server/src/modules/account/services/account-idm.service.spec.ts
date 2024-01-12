@@ -10,7 +10,7 @@ import { LoggerModule } from '@src/core/logger';
 import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../repo/mapper';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountLookupService } from './account-lookup.service';
-import { Account } from '../domain';
+import { Account, AccountSave } from '../domain';
 
 describe('AccountIdmService', () => {
 	let module: TestingModule;
@@ -85,13 +85,13 @@ describe('AccountIdmService', () => {
 				const updateSpy = jest.spyOn(idmServiceMock, 'updateAccount');
 				const createSpy = jest.spyOn(idmServiceMock, 'createAccount');
 
-				const mockAccountDto = {
+				const mockAccountSave = {
 					id: mockIdmAccountRefId,
 					username: 'testUserName',
 					userId: 'userId',
 					systemId: 'systemId',
-				};
-				return { updateSpy, createSpy, mockAccountDto };
+				} as AccountSave;
+				return { updateSpy, createSpy, mockAccountDto: mockAccountSave };
 			};
 
 			it('should update account information', async () => {
@@ -122,14 +122,14 @@ describe('AccountIdmService', () => {
 				const updateSpy = jest.spyOn(idmServiceMock, 'updateAccount');
 				const updatePasswordSpy = jest.spyOn(idmServiceMock, 'updateAccountPassword');
 
-				const mockAccountDto: Account = {
+				const mockAccountSave = {
 					id: mockIdmAccountRefId,
 					username: 'testUserName',
 					userId: 'userId',
 					systemId: 'systemId',
 					password: 'password',
-				};
-				return { updateSpy, updatePasswordSpy, mockAccountDto };
+				} as AccountSave;
+				return { updateSpy, updatePasswordSpy, mockAccountDto: mockAccountSave };
 			};
 			it('should update account password', async () => {
 				const { updateSpy, updatePasswordSpy, mockAccountDto } = setup();
@@ -151,9 +151,14 @@ describe('AccountIdmService', () => {
 				const updateSpy = jest.spyOn(idmServiceMock, 'updateAccount');
 				const createSpy = jest.spyOn(idmServiceMock, 'createAccount');
 
-				const mockAccountDto = { username: 'testUserName', id: undefined, userId: 'userId', systemId: 'systemId' };
+				const mockAccountSave = {
+					username: 'testUserName',
+					id: undefined,
+					userId: 'userId',
+					systemId: 'systemId',
+				} as AccountSave;
 
-				return { updateSpy, createSpy, mockAccountDto };
+				return { updateSpy, createSpy, mockAccountDto: mockAccountSave };
 			};
 			it('should create a new account', async () => {
 				const { updateSpy, createSpy, mockAccountDto } = setup();
@@ -181,14 +186,14 @@ describe('AccountIdmService', () => {
 				idmServiceMock.updateAccountPassword.mockResolvedValue(mockIdmAccount.id);
 				idmServiceMock.findAccountById.mockResolvedValue(mockIdmAccount);
 				accountLookupServiceMock.getExternalId.mockResolvedValue(null);
-				const mockAccountDto = {
+				const mockAccountSave = {
 					id: mockIdmAccountRefId,
 					username: 'testUserName',
 					userId: 'userId',
 					systemId: 'systemId',
-				};
+				} as AccountSave;
 
-				return { mockAccountDto };
+				return { mockAccountDto: mockAccountSave };
 			};
 			it('should create a new account on update error', async () => {
 				const { mockAccountDto } = setup();

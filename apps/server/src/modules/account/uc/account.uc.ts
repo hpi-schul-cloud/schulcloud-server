@@ -23,7 +23,7 @@ import {
 	AccountSearchType,
 	PatchMyAccountParams,
 } from '../controller/dto';
-import { Account } from '../domain';
+import { Account, AccountSave } from '../domain';
 import { AccountValidationService } from '../services/account.validation.service';
 import { ResolvedAccountDto, ResolvedSearchListAccountDto } from './dto/resolved-account.dto';
 import { AccountUcMapper } from './mapper/account-uc.mapper';
@@ -114,10 +114,10 @@ export class AccountUc {
 	/**
 	 * Saves the given account with validation.
 	 *
-	 * @param dto the account to save
+	 * @param accountSave the account to save
 	 */
-	async saveAccount(dto: Account): Promise<void> {
-		await this.accountService.saveWithValidation(dto);
+	async saveAccount(accountSave: AccountSave): Promise<void> {
+		await this.accountService.saveWithValidation(accountSave);
 	}
 
 	/**

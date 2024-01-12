@@ -11,7 +11,7 @@ import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
-import { Account } from '../domain';
+import { Account, AccountSave } from '../domain';
 
 /* TODO: extract a service that contains all things required by feathers,
 which is responsible for the additionally required validation 
@@ -66,13 +66,13 @@ export class AccountService extends AbstractAccountService {
 		return this.accountImpl.searchByUsernameExactMatch(userName);
 	}
 
-	async save(accountDto: Account): Promise<Account> {
-		const ret = await this.accountDb.save(accountDto);
-		const newAccount: Account = {
-			...accountDto,
-			id: accountDto.id,
+	async save(accountSave: AccountSave): Promise<Account> {
+		const ret = await this.accountDb.save(accountSave);
+		const newAccount: AccountSave = {
+			...accountSave,
+			id: accountSave.id,
 			idmReferenceId: ret.id,
-			password: accountDto.password,
+			password: accountSave.password,
 		};
 		const idmAccount = await this.executeIdmMethod(async () => {
 			this.logger.debug(`Saving account with accountID ${ret.id ?? 'undefined'} ...`);
@@ -80,33 +80,40 @@ export class AccountService extends AbstractAccountService {
 			this.logger.debug(`Saved account with accountID ${ret.id ?? 'undefined'}`);
 			return account;
 		});
-		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
+		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
-	async saveWithValidation(dto: Account): Promise<void> {
+	async saveWithValidation(accountSave: AccountSave): Promise<void> {
 		// TODO: move as much as possible into the class validator
-		await validateOrReject(dto);
+		await validateOrReject(accountSave);
 		// sanatizeUsername ✔
-		if (!dto.systemId) {
-			dto.username = dto.username.trim().toLowerCase();
+		if (!accountSave.systemId) {
+			accountSave.username = accountSave.username.trim().toLowerCase();
 		}
-		if (!dto.systemId && !dto.password) {
+		if (!accountSave.systemId && !accountSave.password) {
 			throw new ValidationError('No password provided');
 		}
 		// validateUserName ✔
 		// usernames must be an email address, if they are not from an external system
-		if (!dto.systemId && !isEmail(dto.username)) {
+		if (!accountSave.systemId && !isEmail(accountSave.username)) {
 			throw new ValidationError('Username is not an email');
 		}
 		// checkExistence ✔
-		if (dto.userId && (await this.findByUserId(dto.userId))) {
+		if (accountSave.userId && (await this.findByUserId(accountSave.userId))) {
 			throw new ValidationError('Account already exists');
 		}
 		// validateCredentials hook will not be ported ✔
 		// trimPassword hook will be done by class-validator ✔
 		// local.hooks.hashPassword('password'), will be done by account service ✔
 		// checkUnique ✔
-		if (!(await this.accountValidationService.isUniqueEmail(dto.username, dto.userId, dto.id, dto.systemId))) {
+		if (
+			!(await this.accountValidationService.isUniqueEmail(
+				accountSave.username,
+				accountSave.userId,
+				accountSave.id,
+				accountSave.systemId
+			))
+		) {
 			throw new ValidationError('Username already exists');
 		}
 		// removePassword hook is not implemented
@@ -116,7 +123,7 @@ export class AccountService extends AbstractAccountService {
 		// }
 
 		// TODO: split validation from saving, so it can be used independently
-		await this.save(dto);
+		await this.save(accountSave);
 	}
 
 	async updateUsername(accountId: string, username: string): Promise<Account> {
@@ -127,7 +134,7 @@ export class AccountService extends AbstractAccountService {
 			this.logger.debug(`Updated username for account with accountID ${accountId}`);
 			return account;
 		});
-		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
+		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
 	async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<Account> {
@@ -138,7 +145,7 @@ export class AccountService extends AbstractAccountService {
 			this.logger.debug(`Updated last tried failed login for account with accountID ${accountId}`);
 			return account;
 		});
-		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
+		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
 	async updatePassword(accountId: string, password: string): Promise<Account> {
@@ -149,7 +156,7 @@ export class AccountService extends AbstractAccountService {
 			this.logger.debug(`Updated password for account with accountID ${accountId}`);
 			return account;
 		});
-		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
+		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
 	async validatePassword(account: Account, comparePassword: string): Promise<boolean> {

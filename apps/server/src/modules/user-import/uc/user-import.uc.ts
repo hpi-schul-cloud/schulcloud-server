@@ -1,6 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AccountService } from '@modules/account/services/account.service';
-import { Account } from '@src/modules/account/domain/account';
+import { Account, AccountSave } from '@src/modules/account/domain/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
@@ -284,10 +284,10 @@ export class UserImportUc {
 		let account: Account | null = await this.accountService.findByUserId(user.id);
 
 		if (!account) {
-			const newAccount: Account = new Account({
+			const newAccount = {
 				userId: user.id,
 				username: user.email,
-			});
+			} as AccountSave;
 
 			await this.accountService.saveWithValidation(newAccount);
 			account = await this.accountService.findByUserIdOrFail(user.id);
