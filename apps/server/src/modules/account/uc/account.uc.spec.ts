@@ -16,6 +16,7 @@ import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
 	AccountResponse,
+	AccountSearchListResponse,
 	AccountSearchQueryParams,
 	AccountSearchType,
 } from '../controller/dto';
