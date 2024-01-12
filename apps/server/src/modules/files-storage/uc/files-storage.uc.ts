@@ -1,7 +1,7 @@
 import { AuthorizationContext } from '@modules/authorization';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { HttpService } from '@nestjs/axios';
-import { Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Counted, EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
@@ -29,7 +29,7 @@ import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable()
 export class FilesStorageUC {
 	constructor(
 		private logger: LegacyLogger,
