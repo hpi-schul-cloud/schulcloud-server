@@ -17,8 +17,6 @@ const { TeamService } = require('../../dist/apps/server/modules/teams/service/te
 const { TeamsApiModule } = require('../../dist/apps/server/modules/teams/teams-api.module');
 const { AuthorizationModule } = require('../../dist/apps/server/modules/authorization');
 const { SystemRule } = require('../../dist/apps/server/modules/authorization');
-const { ColumnBoardService } = require('../../dist/apps/server/modules/board/service/column-board.service');
-const { BoardModule } = require('../../dist/apps/server/modules/board/board.module');
 
 const setupNestServices = async (app) => {
 	const module = await Test.createTestingModule({
@@ -36,7 +34,6 @@ const setupNestServices = async (app) => {
 			AccountApiModule,
 			TeamsApiModule,
 			AuthorizationModule,
-			BoardModule,
 		],
 	}).compile();
 	const nestApp = await module.createNestApplication().init();
@@ -46,7 +43,6 @@ const setupNestServices = async (app) => {
 	const accountValidationService = nestApp.get(AccountValidationService);
 	const teamService = nestApp.get(TeamService);
 	const systemRule = nestApp.get(SystemRule);
-	const columnBoardService = nestApp.get(ColumnBoardService);
 
 	app.services['nest-account-uc'] = accountUc;
 	app.services['nest-account-service'] = accountService;
@@ -54,7 +50,6 @@ const setupNestServices = async (app) => {
 	app.services['nest-team-service'] = teamService;
 	app.services['nest-system-rule'] = systemRule;
 	app.services['nest-orm'] = orm;
-	app.services['nest-column-board-service'] = columnBoardService;
 
 	return { nestApp, orm, accountUc, accountService };
 };
