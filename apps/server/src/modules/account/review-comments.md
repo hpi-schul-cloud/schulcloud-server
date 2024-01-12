@@ -1,7 +1,6 @@
 # Review Comments 14.7.23
 
-- check ?? ''
-- check names (fix dto naming)
+- check TODOs
 - Remove lookup service, move to idm and db
 - Move Account Entity
 

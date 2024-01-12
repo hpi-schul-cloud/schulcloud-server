@@ -24,7 +24,7 @@ export class AccountValidationService {
 			filteredAccounts.length > 1 ||
 			// paranoid 'toString': legacy code may call userId or accountId as ObjectID
 			(foundUsers.length === 1 && foundUsers[0].id.toString() !== userId?.toString()) ||
-			(filteredAccounts.length === 1 && (filteredAccounts[0].id ?? '').toString() !== accountId?.toString())
+			(filteredAccounts.length === 1 && filteredAccounts[0].id.toString() !== accountId?.toString())
 		);
 	}
 

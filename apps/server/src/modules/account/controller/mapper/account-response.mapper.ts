@@ -7,7 +7,7 @@ export class AccountResponseMapper {
 			id: resolvedAccount.id as string,
 			userId: resolvedAccount.userId,
 			activated: resolvedAccount.activated,
-			username: resolvedAccount.username ?? '',
+			username: resolvedAccount.username,
 			updatedAt: resolvedAccount.updatedAt,
 		});
 	}

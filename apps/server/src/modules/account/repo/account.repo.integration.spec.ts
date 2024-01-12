@@ -60,10 +60,7 @@ describe('account repo', () => {
 
 			it('should return account', async () => {
 				const accountToFind = await setup();
-				const account = await repo.findByUsernameAndSystemId(
-					accountToFind.username ?? '',
-					accountToFind.systemId ?? ''
-				);
+				const account = await repo.findByUsernameAndSystemId(accountToFind.username, accountToFind.systemId ?? '');
 				expect(account?.username).toEqual(accountToFind.username);
 			});
 		});

@@ -188,7 +188,7 @@ describe('AccountDbService', () => {
 				const { mockAccountWithSystemId } = setup();
 				const resultAccount = await accountService.findByUsernameAndSystemId(
 					mockAccountWithSystemId.username,
-					'nonExistentSystemId' ?? ''
+					'nonExistentSystemId'
 				);
 				expect(resultAccount).toBeNull();
 			});

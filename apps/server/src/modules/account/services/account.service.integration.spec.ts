@@ -165,7 +165,7 @@ describe('AccountService Integration', () => {
 			it('should create a new account', async () => {
 				if (!isIdmReachable) return;
 				const account = await accountService.save(testAccount);
-				await compareDbAccount(account.id ?? '', account);
+				await compareDbAccount(account.id, account);
 				await compareIdmAccount(account.idmReferenceId ?? '', account);
 			});
 		});
