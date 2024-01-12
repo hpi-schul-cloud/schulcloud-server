@@ -16,9 +16,9 @@ export class AccountRepo extends BaseRepo<AccountEntity> {
 	 * Finds an account by user id.
 	 * @param userId the user id
 	 */
-	// TODO: here only EntityIds should arrive
+	// TODO: here only EntityIds should arrive => hard to determine because this is used by feathers/js part
 	async findByUserId(userId: EntityId | ObjectId): Promise<AccountEntity | null> {
-		// TODO: you can use userId directly, without constructing an objectId
+		// TODO: you can use userId directly, without constructing an objectId => AccountEntity still uses ObjectId
 		return this._em.findOne(AccountEntity, { userId: new ObjectId(userId) });
 	}
 
@@ -85,8 +85,6 @@ export class AccountRepo extends BaseRepo<AccountEntity> {
 		limit: number,
 		exactMatch: boolean
 	): Promise<Counted<AccountEntity[]>> {
-		// TODO: check that injections are not possible, eg make sure sanitizeHTML has been called at some point (for username)
-		// escapes every character, that's not a unicode letter or number
 		const escapedUsername = username.replace(/[^(\p{L}\p{N})]/gu, '\\$&');
 		const searchUsername = exactMatch ? `^${escapedUsername}$` : escapedUsername;
 		return this._em.findAndCount(

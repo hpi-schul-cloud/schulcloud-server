@@ -2,9 +2,23 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Counted, EntityId } from '@shared/domain/types';
 import { Account, AccountSave } from '../domain';
 
-// TODO: split functions which are only needed for feathers
-
 export abstract class AbstractAccountService {
+	/*
+	 * The following methods are only needed by nest
+	 */
+
+	abstract searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>>;
+
+	abstract validatePassword(account: Account, comparePassword: string): Promise<boolean>;
+	/**
+	 * @deprecated For migration purpose only
+	 */
+	abstract findMany(offset?: number, limit?: number): Promise<Account[]>;
+
+	/*
+	 * The following methods are also needed by feathers
+	 */
+
 	abstract findById(id: EntityId): Promise<Account>;
 
 	abstract findMultipleByUserId(userIds: EntityId[]): Promise<Account[]>;
@@ -31,13 +45,5 @@ export abstract class AbstractAccountService {
 
 	abstract deleteByUserId(userId: EntityId): Promise<void>;
 
-	abstract searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>>;
-
 	abstract searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>>;
-
-	abstract validatePassword(account: Account, comparePassword: string): Promise<boolean>;
-	/**
-	 * @deprecated For migration purpose only
-	 */
-	abstract findMany(offset?: number, limit?: number): Promise<Account[]>;
 }

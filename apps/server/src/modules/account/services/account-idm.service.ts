@@ -36,7 +36,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 				// eslint-disable-next-line no-await-in-loop
 				results.push(await this.identityManager.findAccountByDbcUserId(userId));
 			} catch {
-				// TODO: dont simply forget errors. maybe use a filter instead?
+				this.logger.error(`Error while searching for account with userId ${userId}`);
 				// ignore entry
 			}
 		}
@@ -49,7 +49,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 			const result = await this.identityManager.findAccountByDbcUserId(userId);
 			return this.accountIdmToDtoMapper.mapToDo(result);
 		} catch {
-			// TODO: dont simply forget errors
+			this.logger.error(`Error while searching for account with userId ${userId}`);
 			return null;
 		}
 	}
@@ -97,16 +97,9 @@ export class AccountServiceIdm extends AbstractAccountService {
 			attDbcUserId: accountSave.userId,
 			attDbcSystemId: accountSave.systemId,
 		};
-		// TODO: probably do some method extraction here
+
 		if (accountSave.id) {
-			let idmId: string | undefined;
-			// TODO: extract into a method that hides the trycatch
-			try {
-				idmId = await this.getIdmAccountId(accountSave.id);
-			} catch {
-				this.logger.log(`Account ID ${accountSave.id} could not be resolved. Creating new account and ID ...`);
-				idmId = undefined;
-			}
+			const idmId = await this.getOptionalIdmAccount(accountSave.id);
 			if (idmId) {
 				accountId = await this.updateAccount(idmId, idmAccount, accountSave.password);
 			} else {
@@ -165,6 +158,15 @@ export class AccountServiceIdm extends AbstractAccountService {
 	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars
 	async findMany(_offset: number, _limit: number): Promise<Account[]> {
 		throw new NotImplementedException();
+	}
+
+	private async getOptionalIdmAccount(accountId: string): Promise<string | undefined> {
+		try {
+			return await this.getIdmAccountId(accountId);
+		} catch {
+			this.logger.log(`Account ID ${accountId} could not be resolved. Creating new account and ID ...`);
+			return undefined;
+		}
 	}
 
 	private async getIdmAccountId(accountId: string): Promise<string> {

@@ -4,14 +4,13 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
 import { Counted } from '@shared/domain/types';
 import { isEmail, validateOrReject } from 'class-validator';
-import { LegacyLogger } from '../../../core/logger'; // TODO: use path alias
-// TODO: account needs to define its own config, which is made available for the server
-import { ServerConfig } from '../../server/server.config';
+import { LegacyLogger } from '@src/core/logger';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
 import { Account, AccountSave } from '../domain';
+import { AccountConfig } from '../account-config';
 
 /* TODO: extract a service that contains all things required by feathers,
 which is responsible for the additionally required validation 
@@ -25,7 +24,7 @@ export class AccountService extends AbstractAccountService {
 	constructor(
 		private readonly accountDb: AccountServiceDb,
 		private readonly accountIdm: AccountServiceIdm,
-		private readonly configService: ConfigService<ServerConfig, true>,
+		private readonly configService: ConfigService<AccountConfig, true>,
 		private readonly accountValidationService: AccountValidationService,
 		private readonly logger: LegacyLogger
 	) {
@@ -83,8 +82,7 @@ export class AccountService extends AbstractAccountService {
 		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
 	}
 
-	async saveWithValidation(accountSave: AccountSave): Promise<void> {
-		// TODO: move as much as possible into the class validator
+	async validateAccountBeforeSaveOrReject(accountSave: AccountSave) {
 		await validateOrReject(accountSave);
 		// sanatizeUsername ✔
 		if (!accountSave.systemId) {
@@ -121,8 +119,10 @@ export class AccountService extends AbstractAccountService {
 		// if (dto.passwordStrategy && noPasswordStrategies.includes(dto.passwordStrategy)) {
 		// 	dto.password = undefined;
 		// }
+	}
 
-		// TODO: split validation from saving, so it can be used independently
+	async saveWithValidation(accountSave: AccountSave): Promise<void> {
+		await this.validateAccountBeforeSaveOrReject(accountSave);
 		await this.save(accountSave);
 	}
 

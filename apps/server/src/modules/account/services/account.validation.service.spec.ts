@@ -341,7 +341,7 @@ describe('AccountValidationService', () => {
 
 				userRepo.findByEmail.mockResolvedValueOnce([mockStudentUser]);
 				accountRepo.searchByUsernameExactMatch.mockResolvedValueOnce([[mockStudentAccount], 1]);
-				accountRepo.findByUserId.mockResolvedValueOnce(mockAdminAccount);
+				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockAdminAccount);
 
 				return { mockStudentUser, mockAdminUser };
 			};
