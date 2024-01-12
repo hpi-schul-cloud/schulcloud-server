@@ -340,7 +340,7 @@
 		},
 		"name": "CY Test Tool Protected Parameter",
 		"config_type": "basic",
-		"config_baseUrl": "https:google.com/search",
+		"config_baseUrl": "https://google.com/search",
 		"parameters": [{
 			"name": "search",
 			"displayName": "Suchparameter",

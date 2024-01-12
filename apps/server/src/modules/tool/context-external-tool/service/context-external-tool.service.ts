@@ -79,33 +79,33 @@ export class ContextExternalToolService {
 	}
 
 	public async copyContextExternalTool(
-		tool: ContextExternalTool,
+		contextExternalTool: ContextExternalTool,
 		contextCopyId: EntityId
 	): Promise<ContextExternalTool> {
-		tool.id = undefined;
-		tool.contextRef.id = contextCopyId;
+		contextExternalTool.id = undefined;
+		contextExternalTool.contextRef.id = contextCopyId;
 
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
-			tool.schoolToolRef.schoolToolId
+			contextExternalTool.schoolToolRef.schoolToolId
 		);
 		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
-		tool.parameters.forEach((parameter: CustomParameterEntry): void => {
+		contextExternalTool.parameters.forEach((parameter: CustomParameterEntry): void => {
 			const isUnusedParameter = !externalTool.parameters?.find(
 				(param: CustomParameter): boolean => param.name === parameter.name
 			);
 			if (isUnusedParameter) {
-				this.deleteUnusedParameter(tool, parameter.name);
+				this.deleteUnusedParameter(contextExternalTool, parameter.name);
 			}
 		});
 
 		externalTool.parameters?.forEach((parameter: CustomParameter): void => {
 			if (parameter.isProtected) {
-				this.deleteProtectedValues(tool, parameter.name);
+				this.deleteProtectedValues(contextExternalTool, parameter.name);
 			}
 		});
 
-		const copiedTool = await this.contextExternalToolRepo.save(tool);
+		const copiedTool = await this.contextExternalToolRepo.save(contextExternalTool);
 
 		return copiedTool;
 	}
