@@ -394,5 +394,16 @@
 			"$date": "2023-12-20T11:44:04.729Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "65969f4adbb61670101696fb"
+		},
+		"state": "up",
+		"name": "remove-undefined-parameters-from-external-tool",
+		"createdAt": {
+			"$date": "2024-01-04T12:06:34.725Z"
+		},
+		"__v": 0
 	}
 ]
