@@ -98,7 +98,7 @@ async function bootstrap() {
 
 	// exposed alias mounts
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-	rootExpress.use('/api/v1', feathersExpress);
+	// rootExpress.use('/api/v1', feathersExpress);
 	rootExpress.use('/api/v3', nestExpress);
 	rootExpress.use(express.static(join(__dirname, '../static-assets')));
 
@@ -111,6 +111,8 @@ async function bootstrap() {
 
 	// safety net for deprecated paths not beginning with version prefix
 	// TODO remove when all calls to the server are migrated
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+	rootExpress.use('/api/v1', logDeprecatedPaths, feathersExpress);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	rootExpress.use('/api', logDeprecatedPaths, feathersExpress);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
