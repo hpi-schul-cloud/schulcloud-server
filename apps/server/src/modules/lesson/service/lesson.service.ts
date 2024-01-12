@@ -5,6 +5,7 @@ import { Counted, EntityId } from '@shared/domain/types';
 import { AuthorizationLoaderService } from '@src/modules/authorization';
 import { LessonRepo } from '../repository';
 
+// missing interface for dependency inversion over token, or maybe we do not need this when the event is used
 @Injectable()
 export class LessonService implements AuthorizationLoaderService {
 	constructor(
@@ -13,6 +14,29 @@ export class LessonService implements AuthorizationLoaderService {
 	) {}
 
 	async deleteLesson(lesson: LessonEntity): Promise<void> {
+		// shedule the event
+		/*
+			The "await this.filesStorageClientAdapterService.deleteFilesOfParent(lesson.id);" 
+			is wrong! Because if we add more parent to filestorage the developer must know that 
+			they must modified the parent deletion. 
+			For example in user. If we add user as possible parent. The files are not deleted without connection.
+			But it is not visible in the entity that files for user can be exists.
+
+			Expected result:
+			filestorage implement a event listener that react on "lesson deleted", "user deleted",..
+			..based on the parents that they know
+
+			!!! each delete of a entity bring us to lost a litte bit more connection, than bring us to situation that is harder to cleanup later !!!
+			"user deleted" -> remove removeUserFromFileRecord() => for each fileRecord.cretor() 
+			"lesson deleted" -> rabbitMQ(apiLayer) > UC no auhtorisation > deletFileRecordsOfParent(lessonId, { deletedAt: Date.now() }) -> delte all fileRecords delete all S3 binary files 
+			// -> default deletedAt is 7 days
+
+			!!! important this is the smae between course and lesson for example !!!
+
+			// Question when event "user deleted" event is popup from which instance ? After 14 days this event is shedulled.
+			// for filesstorage execution is zero days -> all fine S3 cleanup data and mongoDB too by it self
+			// console application sheduled the user deletion event
+		*/
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(lesson.id);
 
 		await this.lessonRepo.delete(lesson);
@@ -33,6 +57,9 @@ export class LessonService implements AuthorizationLoaderService {
 	}
 
 	async deleteUserDataFromLessons(userId: EntityId): Promise<number> {
+		// lesson
+		//
+		//
 		const lessons = await this.lessonRepo.findByUserId(userId);
 
 		const updatedLessons = lessons.map((lesson: LessonEntity) => {
@@ -46,6 +73,25 @@ export class LessonService implements AuthorizationLoaderService {
 		});
 
 		await this.lessonRepo.save(updatedLessons);
+		/*
+		// 
+		} if(lesson.getUserCount()<=1)  {
+			// we are in conflict with the same operation in course
+			const result = await this.deleteLesson();
+			// required event that external systems can be react on it 
+			...can do by application or a later cleanup job that remove all what have no user anymore
+			// S3 can only came to limits ..deletion request are smaller but should use a batch
+			
+			if we do not implement the "if" now,
+			than the cleanup job for entities without user can only work when events are implemented 
+			and they shedule this events.
+			But if we lost the user before we can not execute the fileRecord.creator event anymore.
+
+			If we lost the lesson, task, or submission we can not cleanup fileRecords that are placed in this context
+			without implement a cleanup job that make a lookup to parentSource and fileRecords. 
+			This cleanup job must also trigger the S3 binary deletions for S3 files and previews and so on.
+			A lot of work...much more then impplement the amqp queue before and implement the events.
+		} */
 
 		return updatedLessons.length;
 	}

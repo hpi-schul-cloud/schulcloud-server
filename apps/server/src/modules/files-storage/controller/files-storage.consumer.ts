@@ -36,6 +36,7 @@ export class FilesStorageConsumer {
 		const { userId, source, target } = payload;
 		const [response] = await this.filesStorageService.copyFilesOfParent(userId, source, { target });
 
+		// at this place do not response, create only a new event with information
 		return { message: response };
 	}
 

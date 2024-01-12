@@ -129,6 +129,10 @@ export class UserService {
 		return deletedUserNumber;
 	}
 
+	// mark for deletion
+	// but the "user deletion event" must sheduled 14 days later from the cronjob/console job.
+	// because many reaction places ...delete directly if the event is sheduled.
+
 	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
 		const parentEmails = this.userRepo.getParentEmailsFromUser(userId);
 
