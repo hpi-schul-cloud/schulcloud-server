@@ -23,7 +23,6 @@ import {
 	AccountSearchType,
 	PatchMyAccountParams,
 } from '../controller/dto';
-import { AccountResponseMapper } from '../controller/mapper/account-response.mapper';
 import { Account } from '../domain';
 import { AccountValidationService } from '../services/account.validation.service';
 import { ResolvedAccountDto, ResolvedSearchListAccountDto } from './dto/resolved-account.dto';
@@ -112,6 +111,11 @@ export class AccountUc {
 		return AccountUcMapper.mapToResolvedAccountDto(account);
 	}
 
+	/**
+	 * Saves the given account with validation.
+	 *
+	 * @param dto the account to save
+	 */
 	async saveAccount(dto: Account): Promise<void> {
 		await this.accountService.saveWithValidation(dto);
 	}
