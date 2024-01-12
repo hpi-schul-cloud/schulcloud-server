@@ -1,1 +1,0 @@
-This folder contains assets referenced by `/apps/server/doc` markdown files. Files are placed here to are correctly referenced directly from within of the markdown files and when running compodoc using `npm run nest:doc:serve`.
