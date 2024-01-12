@@ -97,6 +97,50 @@
 			"value": "test"
 		}],
 		"toolVersion": 1
+	},
+	{
+		"_id": {
+			"$oid": "647de3cfab79fd5bd57e68fe"
+		},
+		"createdAt": {
+			"$date": "2023-11-30T15:30:08.532Z"
+		},
+		"updatedAt": {
+			"$date": "2023-11-30T15:30:08.532Z"
+		},
+		"schoolTool": {
+			"$oid": "647de374cf6a427b9d39e6be"
+		},
+		"contextId": "5fa3a2f3a9c31a26f4d1d309",
+		"contextType": "course",
+		"displayName": "Cypress Test Tool deactivated on External Tool",
+		"parameters": [{
+			"name": "contextparam",
+			"value": "test"
+		}],
+		"toolVersion": 1
+	},
+	{
+		"_id": {
+			"$oid": "647de3cfab79fd5bd57e68ff"
+		},
+		"createdAt": {
+			"$date": "2023-11-30T15:30:08.532Z"
+		},
+		"updatedAt": {
+			"$date": "2023-11-30T15:30:08.532Z"
+		},
+		"schoolTool": {
+			"$oid": "647de374cf6a427b9d39e7be"
+		},
+		"contextId": "5fa3a2f3a9c31a26f4d1d309",
+		"contextType": "course",
+		"displayName": "Cypress Test Tool deactivated on School External Tool",
+		"parameters": [{
+			"name": "contextparam",
+			"value": "test"
+		}],
+		"toolVersion": 1
 	}
 
 ]

@@ -6,12 +6,15 @@ const { GeneralError } = require('../errors');
 
 let redisClient = false;
 
-function initializeRedisClient() {
+async function initializeRedisClient() {
 	if (Configuration.has('REDIS_URI')) {
 		try {
 			redisClient = redis.createClient({
 				url: Configuration.get('REDIS_URI'),
+				// Legacy mode is needed for compatibility with v4, see https://github.com/redis/node-redis/blob/HEAD/docs/v3-to-v4.md#legacy-mode
+				legacyMode: true,
 			});
+			await redisClient.connect();
 		} catch (err) {
 			throw new GeneralError('Redis connection failed!', err);
 		}
