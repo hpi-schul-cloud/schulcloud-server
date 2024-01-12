@@ -1,3 +1,4 @@
+import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { AuthorizationContext } from '@modules/authorization';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { HttpService } from '@nestjs/axios';
@@ -36,7 +37,8 @@ export class FilesStorageUC {
 		private readonly authorizationReferenceService: AuthorizationReferenceService,
 		private readonly httpService: HttpService,
 		private readonly filesStorageService: FilesStorageService,
-		private readonly previewService: PreviewService
+		private readonly previewService: PreviewService,
+		private readonly em: EntityManager
 	) {
 		this.logger.setContext(FilesStorageUC.name);
 	}
@@ -69,7 +71,11 @@ export class FilesStorageUC {
 				const fileDto = FileDtoBuilder.buildFromRequest(info, file);
 
 				try {
-					const result = await this.filesStorageService.uploadFile(userId, params, fileDto);
+					const result = await RequestContext.createAsync(this.em, async () => {
+						const record = await this.filesStorageService.uploadFile(userId, params, fileDto);
+
+						return record;
+					});
 					resolve(result);
 				} catch (error) {
 					this.logger.error({ message: 'could not upload file', error: error as Error });
