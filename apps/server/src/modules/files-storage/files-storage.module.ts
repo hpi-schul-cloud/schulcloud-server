@@ -5,7 +5,7 @@ import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { Module, NotFoundException } from '@nestjs/common';
+import { Module, NotFoundException, Scope } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
@@ -49,6 +49,8 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
 			entities: [...ALL_ENTITIES, FileRecord, FileRecordSecurityCheck],
+			registerRequestContext: false, // disable the automatic context
+			scope: Scope.REQUEST, // use nestjs request scopes instead
 
 			// debug: true, // use it for locally debugging of querys
 		}),
