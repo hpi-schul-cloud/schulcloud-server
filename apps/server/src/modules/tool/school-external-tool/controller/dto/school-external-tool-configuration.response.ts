@@ -8,7 +8,14 @@ export class SchoolExternalToolConfigurationStatusResponse {
 	})
 	isOutdatedOnScopeSchool: boolean;
 
+	@ApiProperty({
+		type: Boolean,
+		description: 'Is the tool deactivated, because of school administrator?',
+	})
+	isDeactivated: boolean;
+
 	constructor(props: SchoolExternalToolConfigurationStatusResponse) {
 		this.isOutdatedOnScopeSchool = props.isOutdatedOnScopeSchool;
+		this.isDeactivated = props.isDeactivated;
 	}
 }

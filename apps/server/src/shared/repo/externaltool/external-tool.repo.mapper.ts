@@ -40,6 +40,7 @@ export class ExternalToolRepoMapper {
 			config,
 			parameters: this.mapCustomParametersToDOs(entity.parameters || []),
 			isHidden: entity.isHidden,
+			isDeactivated: entity.isDeactivated,
 			openNewTab: entity.openNewTab,
 			version: entity.version,
 			restrictToContexts: entity.restrictToContexts,
@@ -100,6 +101,7 @@ export class ExternalToolRepoMapper {
 			config,
 			parameters: this.mapCustomParameterDOsToEntities(entityDO.parameters ?? []),
 			isHidden: entityDO.isHidden,
+			isDeactivated: entityDO.isDeactivated,
 			openNewTab: entityDO.openNewTab,
 			version: entityDO.version,
 			restrictToContexts: entityDO.restrictToContexts,
@@ -149,6 +151,7 @@ export class ExternalToolRepoMapper {
 					location: param.location,
 					type: param.type,
 					isOptional: param.isOptional,
+					isProtected: param.isProtected,
 				})
 		);
 	}
@@ -167,6 +170,7 @@ export class ExternalToolRepoMapper {
 					location: param.location,
 					type: param.type,
 					isOptional: param.isOptional,
+					isProtected: param.isProtected,
 				})
 		);
 	}

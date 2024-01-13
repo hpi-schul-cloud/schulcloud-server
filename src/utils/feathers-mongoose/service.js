@@ -462,6 +462,17 @@ class Service extends AdapterBase {
 
 	filterQuery(params) {
 		const options = this.getOptions(params);
+
+		// $limit=false - should return all records with structure as with pagination (total, limit, skip, data)
+		const paginateNoLimit = {
+			default: undefined,
+			max: undefined,
+		};
+		if (params.query && (params.query.$limit === 'false' || params.query.$limit === false)) {
+			options.paginate = paginateNoLimit;
+			params.query.$limit = undefined;
+		}
+
 		const { $select, $sort, $limit: _limit, $skip = 0, $populate, ...query } = params.query || {};
 		const $limit = getLimit(_limit, options.paginate);
 

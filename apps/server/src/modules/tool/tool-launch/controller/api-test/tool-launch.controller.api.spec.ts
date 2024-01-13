@@ -16,6 +16,7 @@ import {
 	schoolFactory,
 	customParameterFactory,
 } from '@shared/testing';
+import { schoolExternalToolConfigurationStatusEntityFactory } from '@shared/testing/factory/school-external-tool-configuration-status-entity.factory';
 import { Response } from 'supertest';
 import { CustomParameterLocation, CustomParameterScope, ToolConfigType } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
@@ -171,6 +172,114 @@ describe('ToolLaunchController (API)', () => {
 				const response: Response = await loggedInClient.get(`${params.contextExternalToolId}/launch`);
 
 				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+			});
+		});
+
+		describe('when user wants to launch a deactivated tool', () => {
+			describe('when external tool is deactivated', () => {
+				const setup = async () => {
+					const school: SchoolEntity = schoolFactory.buildWithId();
+					const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
+						Permission.CONTEXT_TOOL_USER,
+					]);
+					const course: Course = courseFactory.buildWithId({ school, teachers: [teacherUser] });
+
+					const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+						config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
+						version: 1,
+						isDeactivated: true,
+					});
+					const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+						tool: externalToolEntity,
+						school,
+						toolVersion: 0,
+					});
+					const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+						schoolTool: schoolExternalToolEntity,
+						contextId: course.id,
+						contextType: ContextExternalToolType.COURSE,
+						toolVersion: 0,
+					});
+
+					const params: ToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
+
+					await em.persistAndFlush([
+						school,
+						teacherUser,
+						teacherAccount,
+						course,
+						externalToolEntity,
+						schoolExternalToolEntity,
+						contextExternalToolEntity,
+					]);
+					em.clear();
+
+					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
+					return { params, loggedInClient };
+				};
+
+				it('should return a bad request', async () => {
+					const { params, loggedInClient } = await setup();
+
+					const response: Response = await loggedInClient.get(`${params.contextExternalToolId}/launch`);
+
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+				});
+			});
+
+			describe('when school external tool is deactivated', () => {
+				const setup = async () => {
+					const school: SchoolEntity = schoolFactory.buildWithId();
+					const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
+						Permission.CONTEXT_TOOL_USER,
+					]);
+					const course: Course = courseFactory.buildWithId({ school, teachers: [teacherUser] });
+
+					const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+						config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
+						version: 1,
+					});
+					const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+						tool: externalToolEntity,
+						school,
+						toolVersion: 0,
+						status: schoolExternalToolConfigurationStatusEntityFactory.build({
+							isDeactivated: true,
+						}),
+					});
+					const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+						schoolTool: schoolExternalToolEntity,
+						contextId: course.id,
+						contextType: ContextExternalToolType.COURSE,
+						toolVersion: 0,
+					});
+
+					const params: ToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
+
+					await em.persistAndFlush([
+						school,
+						teacherUser,
+						teacherAccount,
+						course,
+						externalToolEntity,
+						schoolExternalToolEntity,
+						contextExternalToolEntity,
+					]);
+					em.clear();
+
+					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
+					return { params, loggedInClient };
+				};
+
+				it('should return a bad request', async () => {
+					const { params, loggedInClient } = await setup();
+
+					const response: Response = await loggedInClient.get(`${params.contextExternalToolId}/launch`);
+
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+				});
 			});
 		});
 

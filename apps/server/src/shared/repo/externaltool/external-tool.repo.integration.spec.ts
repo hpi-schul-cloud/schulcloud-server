@@ -152,11 +152,13 @@ describe('ExternalToolRepo', () => {
 						location: CustomParameterLocation.BODY,
 						regexComment: 'mockComment',
 						isOptional: false,
+						isProtected: false,
 					}),
 				],
 				isHidden: true,
 				openNewTab: true,
 				version: 2,
+				isDeactivated: false,
 			});
 
 			return {

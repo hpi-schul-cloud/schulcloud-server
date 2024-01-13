@@ -58,6 +58,7 @@ describe('SchoolExternalToolResponseMapper', () => {
 							],
 							status: schoolToolConfigurationStatusResponseFactory.build({
 								isOutdatedOnScopeSchool: false,
+								isDeactivated: false,
 							}),
 						},
 						{
@@ -74,6 +75,7 @@ describe('SchoolExternalToolResponseMapper', () => {
 							],
 							status: schoolToolConfigurationStatusFactory.build({
 								isOutdatedOnScopeSchool: false,
+								isDeactivated: false,
 							}),
 						},
 					])
@@ -108,6 +110,7 @@ describe('SchoolExternalToolResponseMapper', () => {
 						name: '',
 						status: schoolToolConfigurationStatusResponseFactory.build({
 							isOutdatedOnScopeSchool: false,
+							isDeactivated: false,
 						}),
 					})
 				);
