@@ -1,7 +1,13 @@
-import { News, User } from '@shared/domain/entity';
+import { News } from '@shared/domain/entity';
 import { CreateNews, INewsScope, IUpdateNews, NewsTargetModel } from '@shared/domain/types';
 import { LogMessageData } from '@src/core/logger';
-import { CreateNewsParams, FilterNewsParams, NewsResponse, UpdateNewsParams, UserInfoResponse } from '../controller/dto';
+import {
+	CreateNewsParams,
+	FilterNewsParams,
+	NewsResponse,
+	UpdateNewsParams,
+	UserInfoResponse,
+} from '../controller/dto';
 import { SchoolInfoMapper } from './school-info.mapper';
 import { TargetInfoMapper } from './target-info.mapper';
 import { UserInfoMapper } from './user-info.mapper';
