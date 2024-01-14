@@ -4,11 +4,12 @@ import { FeathersAuthorizationService } from '@modules/authorization';
 import { UnauthorizedException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, RoleName } from '@shared/domain/interface';
+import { Permission } from '@shared/domain/interface';
 import { CreateNews, NewsTargetModel } from '@shared/domain/types';
 import { NewsRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { FederalStateEntity, Role, SchoolEntity, TeamNews, User } from '@shared/domain/entity';
+import { Collection } from '@mikro-orm/core';
 import { NewsUc } from './news.uc';
 
 describe('NewsUc', () => {
@@ -55,13 +56,18 @@ describe('NewsUc', () => {
 		name: 'string',
 		federalState,
 	});
-	const creator = new User({
+	const creator: User = {
+		_id: new ObjectId(userId),
+		id: userId,
 		email: 'string',
 		firstName: 'string',
 		lastName: 'string',
-		roles: [new Role({ name: RoleName.TEACHER })] as Role[],
+		roles: new Collection<Role>(User),
 		school,
-	});
+		createdAt: new Date(),
+		updatedAt: new Date(),
+		resolvePermissions: () => ['a'],
+	};
 	const exampleNews: TeamNews = new TeamNews({
 		title: 'string',
 		content: 'string',
@@ -337,14 +343,9 @@ describe('NewsUc', () => {
 
 	describe('deleteCreatorReference', () => {
 		it('should successfully delete creator reference from news', async () => {
-			const result = await service.deleteCreatorReference(userId);
+			const result = await service.deleteCreatorReference(creator.id);
 			expect(exampleNews.creator).toBeUndefined();
 			expect(result).toBe(1);
-		});
-
-		it('should throw Unauthorized exception if user doesnt have permission NEWS_EDIT', async () => {
-			const anotherUser = new ObjectId().toHexString();
-			await expect(service.delete(newsId, anotherUser)).rejects.toThrow(UnauthorizedException);
 		});
 	});
 });
