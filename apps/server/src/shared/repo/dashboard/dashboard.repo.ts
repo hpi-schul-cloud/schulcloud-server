@@ -54,7 +54,7 @@ export class DashboardRepo implements IDashboardRepo {
 	}
 
 	async deleteDashboardByUserId(userId: EntityId): Promise<number> {
-		const promise: Promise<number> = this.em.nativeDelete(DashboardModelEntity, { user: userId });
+		const promise = await this.em.nativeDelete(DashboardModelEntity, { user: userId });
 
 		return promise;
 	}
