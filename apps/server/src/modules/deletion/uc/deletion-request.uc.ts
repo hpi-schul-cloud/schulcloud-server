@@ -16,12 +16,12 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { TaskService } from '@modules/task';
 import { DomainOperation } from '@shared/domain/interface';
 import { DomainOperationBuilder } from '@shared/domain/builder/domain-operation.builder';
+import { NewsUc } from '@src/modules/news/uc';
 import { DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../builder';
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 import { DeletionRequest, DeletionLog } from '../domain';
 import { DeletionOperationModel, DeletionStatusModel } from '../domain/types';
 import { DeletionRequestService, DeletionLogService } from '../services';
-import { NewsUc } from '@src/modules/news/uc';
 
 @Injectable()
 export class DeletionRequestUc {
