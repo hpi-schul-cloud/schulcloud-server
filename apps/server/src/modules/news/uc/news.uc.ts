@@ -2,10 +2,20 @@ import { FeathersAuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { News } from '@shared/domain/entity';
 import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
-import { Counted, CreateNews, EntityId, INewsScope, IUpdateNews, NewsTargetModel } from '@shared/domain/types';
+import {
+	Counted,
+	CreateNews,
+	DomainModel,
+	EntityId,
+	INewsScope,
+	IUpdateNews,
+	NewsTargetModel,
+	StatusModel,
+} from '@shared/domain/types';
 import { NewsRepo, NewsTargetFilter } from '@shared/repo';
 import { CrudOperation } from '@shared/types';
 import { Logger } from '@src/core/logger';
+import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { NewsCrudOperationLoggable } from '../loggable/news-crud-operation.loggable';
 
 type NewsPermission = Permission.NEWS_VIEW | Permission.NEWS_EDIT;
@@ -145,6 +155,42 @@ export class NewsUc {
 		this.logger.info(new NewsCrudOperationLoggable(CrudOperation.DELETE, userId, news));
 
 		return id;
+	}
+
+	public async deleteCreatorReference(creatorId: EntityId): Promise<number> {
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Deleting user data from News',
+				DomainModel.NEWS,
+				creatorId,
+				StatusModel.PENDING
+			)
+		);
+
+		const news = await this.newsRepo.findByCreatorId(creatorId);
+
+		const newsCount = news[1];
+		if (newsCount === 0) {
+			return 0;
+		}
+
+		news[0].forEach((newsEntity) => {
+			newsEntity.removeCreatorReference(creatorId);
+		});
+
+		await this.newsRepo.save(news[0]);
+
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully removed user data from News',
+				DomainModel.NEWS,
+				creatorId,
+				StatusModel.FINISHED,
+				newsCount,
+				0
+			)
+		);
+		return newsCount;
 	}
 
 	private async getPermittedTargets(userId: EntityId, scope: INewsScope | undefined, permissions: NewsPermission[]) {

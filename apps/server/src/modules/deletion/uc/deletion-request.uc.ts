@@ -21,6 +21,7 @@ import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestRe
 import { DeletionRequest, DeletionLog } from '../domain';
 import { DeletionOperationModel, DeletionStatusModel } from '../domain/types';
 import { DeletionRequestService, DeletionLogService } from '../services';
+import { NewsUc } from '@src/modules/news/uc';
 
 @Injectable()
 export class DeletionRequestUc {
@@ -42,7 +43,8 @@ export class DeletionRequestUc {
 		private readonly registrationPinService: RegistrationPinService,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly dashboardService: DashboardService,
-		private readonly taskService: TaskService
+		private readonly taskService: TaskService,
+		private readonly newsUc: NewsUc
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
 	}
@@ -114,6 +116,7 @@ export class DeletionRequestUc {
 				this.removeUserRegistrationPin(deletionRequest),
 				this.removeUsersDashboard(deletionRequest),
 				this.removeUserFromTasks(deletionRequest),
+				this.removeUsersDataFromNews(deletionRequest),
 			]);
 			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
 		} catch (error) {
@@ -293,6 +296,18 @@ export class DeletionRequestUc {
 			DeletionOperationModel.UPDATE,
 			tasksModifiedByRemoveCreator.modifiedCount + tasksModifiedByRemoveUserFromFinished.modifiedCount,
 			tasksDeleted.deletedCount
+		);
+	}
+
+	private async removeUsersDataFromNews(deletionRequest: DeletionRequest) {
+		const newsesModifiedByRemoveCreator = await this.newsUc.deleteCreatorReference(deletionRequest.targetRefId);
+
+		await this.logDeletion(
+			deletionRequest,
+			DomainModel.NEWS,
+			DeletionOperationModel.UPDATE,
+			newsesModifiedByRemoveCreator,
+			0
 		);
 	}
 }

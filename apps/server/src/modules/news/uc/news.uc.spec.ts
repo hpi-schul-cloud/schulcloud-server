@@ -4,10 +4,11 @@ import { FeathersAuthorizationService } from '@modules/authorization';
 import { UnauthorizedException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
+import { Permission, RoleName } from '@shared/domain/interface';
 import { CreateNews, NewsTargetModel } from '@shared/domain/types';
 import { NewsRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import { FederalStateEntity, Role, SchoolEntity, TeamNews, User } from '@shared/domain/entity';
 import { NewsUc } from './news.uc';
 
 describe('NewsUc', () => {
@@ -40,6 +41,35 @@ describe('NewsUc', () => {
 			id: courseTargetId,
 		},
 	};
+	const federalState = new FederalStateEntity({
+		name: 'string',
+		abbreviation: 'string',
+		logoUrl: 'string',
+		createdAt: new Date(),
+		updatedAt: new Date(),
+	});
+
+	const school = new SchoolEntity({
+		_id: schoolId,
+
+		name: 'string',
+		federalState,
+	});
+	const creator = new User({
+		email: 'string',
+		firstName: 'string',
+		lastName: 'string',
+		roles: [new Role({ name: RoleName.TEACHER })] as Role[],
+		school,
+	});
+	const exampleNews: TeamNews = new TeamNews({
+		title: 'string',
+		content: 'string',
+		displayAt,
+		creator,
+		school: schoolId,
+		target: teamTargetId,
+	});
 	const pagination = {};
 
 	const targets = [
@@ -74,6 +104,9 @@ describe('NewsUc', () => {
 								return exampleCourseNews;
 							}
 							throw new NotFoundException();
+						},
+						findByCreatorId() {
+							return [[exampleNews], 1];
 						},
 						delete() {},
 					},
@@ -294,6 +327,19 @@ describe('NewsUc', () => {
 		it('should successfully delete news', async () => {
 			const result = await service.delete(newsId, userId);
 			expect(result).toBe(newsId);
+		});
+
+		it('should throw Unauthorized exception if user doesnt have permission NEWS_EDIT', async () => {
+			const anotherUser = new ObjectId().toHexString();
+			await expect(service.delete(newsId, anotherUser)).rejects.toThrow(UnauthorizedException);
+		});
+	});
+
+	describe('deleteCreatorReference', () => {
+		it('should successfully delete creator reference from news', async () => {
+			const result = await service.deleteCreatorReference(userId);
+			expect(exampleNews.creator).toBeUndefined();
+			expect(result).toBe(1);
 		});
 
 		it('should throw Unauthorized exception if user doesnt have permission NEWS_EDIT', async () => {
