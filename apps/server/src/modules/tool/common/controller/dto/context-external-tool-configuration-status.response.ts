@@ -17,6 +17,12 @@ export class ContextExternalToolConfigurationStatusResponse {
 
 	@ApiProperty({
 		type: Boolean,
+		description: 'True, if a configured parameter on the context external tool is missing a value',
+	})
+	isIncompleteOnScopeContext: boolean;
+
+	@ApiProperty({
+		type: Boolean,
 		description: 'Is the tool deactivated, because of superhero or school administrator',
 	})
 	isDeactivated: boolean;
@@ -24,6 +30,7 @@ export class ContextExternalToolConfigurationStatusResponse {
 	constructor(props: ContextExternalToolConfigurationStatusResponse) {
 		this.isOutdatedOnScopeSchool = props.isOutdatedOnScopeSchool;
 		this.isOutdatedOnScopeContext = props.isOutdatedOnScopeContext;
+		this.isIncompleteOnScopeContext = props.isIncompleteOnScopeContext;
 		this.isDeactivated = props.isDeactivated;
 	}
 }

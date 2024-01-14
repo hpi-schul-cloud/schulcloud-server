@@ -9,6 +9,7 @@ import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { RestrictedContextMismatchLoggable } from './restricted-context-mismatch-loggabble';
 import { CommonToolService } from '../../common/service';
+import { CustomParameter, CustomParameterEntry } from '../../common/domain';
 
 @Injectable()
 export class ContextExternalToolService {
@@ -74,6 +75,62 @@ export class ContextExternalToolService {
 
 		if (this.commonToolService.isContextRestricted(externalTool, contextExternalTool.contextRef.type)) {
 			throw new RestrictedContextMismatchLoggable(externalTool.name, contextExternalTool.contextRef.type);
+		}
+	}
+
+	public async copyContextExternalTool(
+		contextExternalTool: ContextExternalTool,
+		contextCopyId: EntityId
+	): Promise<ContextExternalTool> {
+		contextExternalTool.id = undefined;
+		contextExternalTool.contextRef.id = contextCopyId;
+
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
+			contextExternalTool.schoolToolRef.schoolToolId
+		);
+		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
+
+		contextExternalTool.parameters.forEach((parameter: CustomParameterEntry): void => {
+			const isUnusedParameter = !externalTool.parameters?.find(
+				(param: CustomParameter): boolean => param.name === parameter.name
+			);
+			if (isUnusedParameter) {
+				this.deleteUnusedParameter(contextExternalTool, parameter.name);
+			}
+		});
+
+		externalTool.parameters?.forEach((parameter: CustomParameter): void => {
+			if (parameter.isProtected) {
+				this.deleteProtectedValues(contextExternalTool, parameter.name);
+			}
+		});
+
+		const copiedTool = await this.contextExternalToolRepo.save(contextExternalTool);
+
+		return copiedTool;
+	}
+
+	private deleteUnusedParameter(contextExternalTool: ContextExternalTool, unusedParameterName: string): void {
+		const unusedParameter: CustomParameterEntry | undefined = contextExternalTool.parameters.find(
+			(param: CustomParameterEntry): boolean => param.name === unusedParameterName
+		);
+
+		if (unusedParameter) {
+			const unusedParameterIndex: number = contextExternalTool.parameters.indexOf({
+				name: unusedParameter.name,
+				value: unusedParameter.value,
+			});
+			contextExternalTool.parameters.splice(unusedParameterIndex, 1);
+		}
+	}
+
+	private deleteProtectedValues(contextExternalTool: ContextExternalTool, protectedParameterName: string): void {
+		const protectedParameter: CustomParameterEntry | undefined = contextExternalTool.parameters.find(
+			(param: CustomParameterEntry): boolean => param.name === protectedParameterName
+		);
+
+		if (protectedParameter) {
+			protectedParameter.value = undefined;
 		}
 	}
 }
