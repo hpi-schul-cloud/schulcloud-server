@@ -111,8 +111,11 @@ describe('NewsUc', () => {
 							}
 							throw new NotFoundException();
 						},
-						findByCreatorId() {
-							return [[exampleNews], 1];
+						findByCreatorId(creatorId) {
+							if (creatorId === creator.id) {
+								return [[exampleNews], 1];
+							}
+							return [[undefined], 0];
 						},
 						delete() {},
 					},
@@ -346,6 +349,12 @@ describe('NewsUc', () => {
 			const result = await service.deleteCreatorReference(creator.id);
 			expect(exampleNews.creator).toBeUndefined();
 			expect(result).toBe(1);
+		});
+
+		it('should return 0 if news not found', async () => {
+			const anotherUser = new ObjectId().toHexString();
+			const result = await service.deleteCreatorReference(anotherUser);
+			expect(result).toBe(0);
 		});
 	});
 });
