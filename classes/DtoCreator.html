@@ -1,0 +1,1298 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>schulcloud-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content class">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >DtoCreator</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts</code>
+        </p>
+
+
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#authorisationService" >authorisationService</a>
+                            </li>
+                            <li>
+                                <a href="#board" >board</a>
+                            </li>
+                            <li>
+                                <a href="#room" >room</a>
+                            </li>
+                            <li>
+                                <a href="#roomsAuthorisationService" >roomsAuthorisationService</a>
+                            </li>
+                            <li>
+                                <a href="#user" >user</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#buildDTOWithElements" >buildDTOWithElements</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#createTaskStatus" >createTaskStatus</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#filterByPermission" >filterByPermission</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#isColumnBoardFeatureFlagActive" >isColumnBoardFeatureFlagActive</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#isTeacher" >isTeacher</a>
+                            </li>
+                            <li>
+                                <a href="#manufacture" >manufacture</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#mapColumnBoardElement" >mapColumnBoardElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#mapLessonElement" >mapLessonElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#mapTaskElement" >mapTaskElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#mapToElementDTOs" >mapToElementDTOs</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(undefined: literal type)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:36</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                  
+                                                        <td>
+                                                                    <code>literal type</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="authorisationService"></a>
+                    <span class="name">
+                        <span ><b>authorisationService</b></span>
+                        <a href="#authorisationService"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../injectables/AuthorizationService.html" target="_self" >AuthorizationService</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:34</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="board"></a>
+                    <span class="name">
+                        <span ><b>board</b></span>
+                        <a href="#board"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../entitys/Board.html" target="_self" >Board</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:30</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="room"></a>
+                    <span class="name">
+                        <span ><b>room</b></span>
+                        <a href="#room"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../entitys/Course.html" target="_self" >Course</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:28</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="roomsAuthorisationService"></a>
+                    <span class="name">
+                        <span ><b>roomsAuthorisationService</b></span>
+                        <a href="#roomsAuthorisationService"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../injectables/RoomsAuthorisationService.html" target="_self" >RoomsAuthorisationService</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:36</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="user"></a>
+                    <span class="name">
+                        <span ><b>user</b></span>
+                        <a href="#user"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/User.html" target="_self" >User</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:32</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildDTOWithElements"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>buildDTOWithElements</b></span>
+                        <a href="#buildDTOWithElements"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildDTOWithElements(elements: <a href="../undefineds/RoomBoardElementDTO.html" target="_self">RoomBoardElementDTO[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="173"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:173</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>elements</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#RoomBoardElementDTO" target="_self" >RoomBoardElementDTO[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#RoomBoardDTO" target="_self" >RoomBoardDTO</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createTaskStatus"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>createTaskStatus</b></span>
+                        <a href="#createTaskStatus"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createTaskStatus(task: <a href="../classes/Task.html" target="_self">Task</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="129"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:129</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>task</td>
+                                            <td>
+                                                            <code><a href="../classes/Task.html" target="_self" >Task</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/TaskStatus.html" target="_self" >TaskStatus</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="filterByPermission"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>filterByPermission</b></span>
+                        <a href="#filterByPermission"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>filterByPermission(elements: BoardElement[])</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="67"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:67</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>elements</td>
+                                            <td>
+                                                        <code>BoardElement[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isColumnBoardFeatureFlagActive"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>isColumnBoardFeatureFlagActive</b></span>
+                        <a href="#isColumnBoardFeatureFlagActive"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isColumnBoardFeatureFlagActive()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="89"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:89</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isTeacher"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>isTeacher</b></span>
+                        <a href="#isTeacher"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isTeacher()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="95"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:95</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="manufacture"></a>
+                    <span class="name">
+                        <span ><b>manufacture</b></span>
+                        <a href="#manufacture"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>manufacture()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="58"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:58</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#RoomBoardDTO" target="_self" >RoomBoardDTO</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapColumnBoardElement"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>mapColumnBoardElement</b></span>
+                        <a href="#mapColumnBoardElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapColumnBoardElement(element: <a href="../entitys/BoardElement.html" target="_self">BoardElement</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="158"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:158</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>element</td>
+                                            <td>
+                                                            <code><a href="../entitys/BoardElement.html" target="_self" >BoardElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#RoomBoardElementDTO" target="_self" >RoomBoardElementDTO</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapLessonElement"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>mapLessonElement</b></span>
+                        <a href="#mapLessonElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapLessonElement(element: <a href="../entitys/BoardElement.html" target="_self">BoardElement</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="139"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:139</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>element</td>
+                                            <td>
+                                                            <code><a href="../entitys/BoardElement.html" target="_self" >BoardElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#RoomBoardElementDTO" target="_self" >RoomBoardElementDTO</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapTaskElement"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>mapTaskElement</b></span>
+                        <a href="#mapTaskElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapTaskElement(element: <a href="../entitys/BoardElement.html" target="_self">BoardElement</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="121"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:121</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>element</td>
+                                            <td>
+                                                            <code><a href="../entitys/BoardElement.html" target="_self" >BoardElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#RoomBoardElementDTO" target="_self" >RoomBoardElementDTO</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapToElementDTOs"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>mapToElementDTOs</b></span>
+                        <a href="#mapToElementDTOs"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapToElementDTOs(elements: BoardElement[])</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/room-board-dto.factory.ts:102</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>elements</td>
+                                            <td>
+                                                        <code>BoardElement[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>{}</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+
+
+
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
+import { Action, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import {
+	Board,
+	BoardElement,
+	BoardElementType,
+	ColumnBoardTarget,
+	ColumnboardBoardElement,
+	Course,
+	LessonEntity,
+	Task,
+	TaskWithStatusVo,
+	User,
+} from &#x27;@shared/domain/entity&#x27;;
+import { Permission } from &#x27;@shared/domain/interface&#x27;;
+import { TaskStatus } from &#x27;@shared/domain/types&#x27;;
+import {
+	ColumnBoardMetaData,
+	LessonMetaData,
+	RoomBoardDTO,
+	RoomBoardElementDTO,
+	RoomBoardElementTypes,
+} from &#x27;../types/room-board.types&#x27;;
+import { RoomsAuthorisationService } from &#x27;./rooms.authorisation.service&#x27;;
+
+class DtoCreator {
+	room: Course;
+
+	board: Board;
+
+	user: User;
+
+	authorisationService: AuthorizationService;
+
+	roomsAuthorisationService: RoomsAuthorisationService;
+
+	constructor({
+		room,
+		board,
+		user,
+		authorisationService,
+		roomsAuthorisationService,
+	}: {
+		room: Course;
+		board: Board;
+		user: User;
+		authorisationService: AuthorizationService;
+		roomsAuthorisationService: RoomsAuthorisationService;
+	}) {
+		this.room &#x3D; room;
+		this.board &#x3D; board;
+		this.user &#x3D; user;
+		this.authorisationService &#x3D; authorisationService;
+		this.roomsAuthorisationService &#x3D; roomsAuthorisationService;
+	}
+
+	manufacture(): RoomBoardDTO {
+		const elements &#x3D; this.board.getElements();
+		const filtered &#x3D; this.filterByPermission(elements);
+
+		const mappedElements &#x3D; this.mapToElementDTOs(filtered);
+		const dto &#x3D; this.buildDTOWithElements(mappedElements);
+		return dto;
+	}
+
+	private filterByPermission(elements: BoardElement[]) {
+		const filtered &#x3D; elements.filter((element) &#x3D;&gt; {
+			let result &#x3D; false;
+			if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.Task) {
+				result &#x3D; this.roomsAuthorisationService.hasTaskReadPermission(this.user, element.target as Task);
+			}
+
+			if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.Lesson) {
+				result &#x3D; this.roomsAuthorisationService.hasLessonReadPermission(this.user, element.target as LessonEntity);
+			}
+
+			if (element instanceof ColumnboardBoardElement &amp;&amp; this.isColumnBoardFeatureFlagActive()) {
+				result &#x3D; this.authorisationService.hasPermission(this.user, this.room, {
+					action: Action.read,
+					requiredPermissions: [Permission.COURSE_VIEW],
+				});
+			}
+			return result;
+		});
+		return filtered;
+	}
+
+	private isColumnBoardFeatureFlagActive() {
+		const isActive &#x3D; (Configuration.get(&#x27;FEATURE_COLUMN_BOARD_ENABLED&#x27;) as boolean) &#x3D;&#x3D;&#x3D; true;
+
+		return isActive;
+	}
+
+	private isTeacher(): boolean {
+		if (this.room.teachers.contains(this.user) || this.room.substitutionTeachers.contains(this.user)) {
+			return true;
+		}
+		return false;
+	}
+
+	private mapToElementDTOs(elements: BoardElement[]) {
+		const results: RoomBoardElementDTO[] &#x3D; [];
+		elements.forEach((element) &#x3D;&gt; {
+			if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.Task) {
+				const mapped &#x3D; this.mapTaskElement(element);
+				results.push(mapped);
+			}
+			if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.Lesson) {
+				const mapped &#x3D; this.mapLessonElement(element);
+				results.push(mapped);
+			}
+			if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.ColumnBoard) {
+				const mapped &#x3D; this.mapColumnBoardElement(element);
+				results.push(mapped);
+			}
+		});
+		return results;
+	}
+
+	private mapTaskElement(element: BoardElement): RoomBoardElementDTO {
+		const task &#x3D; element.target as Task;
+		const status &#x3D; this.createTaskStatus(task);
+
+		const content &#x3D; new TaskWithStatusVo(task, status);
+		return { type: RoomBoardElementTypes.TASK, content };
+	}
+
+	private createTaskStatus(task: Task): TaskStatus {
+		let status: TaskStatus;
+		if (this.isTeacher()) {
+			status &#x3D; task.createTeacherStatusForUser(this.user);
+		} else {
+			status &#x3D; task.createStudentStatusForUser(this.user);
+		}
+		return status;
+	}
+
+	private mapLessonElement(element: BoardElement): RoomBoardElementDTO {
+		const type &#x3D; RoomBoardElementTypes.LESSON;
+		const lesson &#x3D; element.target as LessonEntity;
+		const content: LessonMetaData &#x3D; {
+			id: lesson.id,
+			name: lesson.name,
+			hidden: lesson.hidden,
+			createdAt: lesson.createdAt,
+			updatedAt: lesson.updatedAt,
+			courseName: lesson.course.name,
+			numberOfPublishedTasks: lesson.getNumberOfPublishedTasks(),
+		};
+		if (this.isTeacher()) {
+			content.numberOfDraftTasks &#x3D; lesson.getNumberOfDraftTasks();
+			content.numberOfPlannedTasks &#x3D; lesson.getNumberOfPlannedTasks();
+		}
+		return { type, content };
+	}
+
+	private mapColumnBoardElement(element: BoardElement): RoomBoardElementDTO {
+		const type &#x3D; RoomBoardElementTypes.COLUMN_BOARD;
+		const columnBoardTarget &#x3D; element.target as ColumnBoardTarget;
+		const content: ColumnBoardMetaData &#x3D; {
+			id: columnBoardTarget.id,
+			columnBoardId: columnBoardTarget.columnBoardId,
+			title: columnBoardTarget.title,
+			createdAt: columnBoardTarget.createdAt,
+			updatedAt: columnBoardTarget.updatedAt,
+			published: columnBoardTarget.published,
+		};
+
+		return { type, content };
+	}
+
+	private buildDTOWithElements(elements: RoomBoardElementDTO[]): RoomBoardDTO {
+		const dto &#x3D; {
+			roomId: this.room.id,
+			displayColor: this.room.color,
+			title: this.room.name,
+			elements,
+			isArchived: this.room.isFinished(),
+		};
+		return dto;
+	}
+}
+
+@Injectable()
+export class RoomBoardDTOFactory {
+	constructor(
+		private readonly authorisationService: AuthorizationService,
+		private readonly roomsAuthorisationService: RoomsAuthorisationService
+	) {}
+
+	createDTO({ room, board, user }: { room: Course; board: Board; user: User }): RoomBoardDTO {
+		const worker &#x3D; new DtoCreator({
+			room,
+			board,
+			user,
+			authorisationService: this.authorisationService,
+			roomsAuthorisationService: this.roomsAuthorisationService,
+		});
+		const result &#x3D; worker.manufacture();
+		return result;
+	}
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'DtoCreator.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

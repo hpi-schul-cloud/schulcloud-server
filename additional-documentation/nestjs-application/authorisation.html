@@ -1,0 +1,497 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>schulcloud-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../../images/favicon.ico">
+	   <link rel="stylesheet" href="../../styles/style.css">
+        <link rel="stylesheet" href="../../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../../" class="navbar-brand">schulcloud-server documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content additional-page">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>NestJS Authorization Module</h1>
+<h2>Objectives</h2>
+<p>Breaking down complexity and isolate it.
+One place to solve a specific authorization for a scope.
+One implementation to handle all different situations in our system.
+It should not be possible to use it in a wrong way.</p>
+<blockquote>
+<p>You should not need to understand the complete system, to know if something is authorized</p>
+</blockquote>
+<p>We also want to avoid any specific code for modules, collections, or something else, in the authorization module.</p>
+<h2>Explanation of Terms</h2>
+<h3>Permissions</h3>
+<p>We have string based permissions.
+For examples check &quot;enum Permission&quot;.
+It includes all available permissions and is not seperated by concerns or abstraction levels.
+The permissions have different implicit scopes like instance, school, or named scope like team and course.</p>
+<h4>(Feature Flag Permissions)</h4>
+<p>Some of the permissions are used like feature flags. We want to seperate and move these in the future.
+Please keep that in mind, while becoming familiar with permissions.</p>
+<h3>Roles</h3>
+<p>We have a role collection, where each role has a permissions array that includes string based permissions.
+Roles inherit permissions from the roles they have in their &quot;roles&quot; field.
+Like the &quot;user&quot; role, some of these roles are abstract and only used for inheritance.
+Some others are scope based with a prefix name like team*, or course*.</p>
+<p>The &quot;real&quot; user roles by name are expert, student, teacher and administrator. All of these are in the school scope and the superhero is in the scope of an instance.</p>
+<blockquote>
+<p>In future we want to remove the inherit logic.
+We want to add scope types to each role.
+Add more technical users for the instance scope.</p>
+</blockquote>
+<h3>Entities</h3>
+<p>The entities are the representation of a single document of the collection, or the type.
+They are used for authorization for now, but should be replaced by domain objects soon.</p>
+<h3>Domain Objects</h3>
+<p>They are not really introduced. They should map between the repository layer and the domain.</p>
+<blockquote>
+<p>In future they are the base for authorization and the authorization service doesn&#39;t know anything about entities anymore.</p>
+</blockquote>
+<h3>Scopes</h3>
+<p>Everything what the system, or a user wants to do, is executed in a scope.
+A scope means an area like the complete instance, the school, the course, the user itself and so on.
+The scopes are highly bind to the real domain objects that we have in our domain.</p>
+<h4>Scope Actions</h4>
+<p>The permission for a base action, like they are defined in CRUD operations, is needed to execute something in a scope.
+The most implicit action you ever need is the &quot;read&quot; action. That means, you must have the authorization to &quot;read&quot; the scope, otherwise it should not exist for you. :-)
+The other possible action is to have write access to the scope.
+It is a combination of delete, edit, create from CRUD side.</p>
+<blockquote>
+<p>From our current perspective, we need no differentiation.
+But we force the implementation in a way, that allows us to add some more.</p>
+</blockquote>
+<h4>Scope Permission</h4>
+<p>We have different situations where it is hard to say you can write/read to the domain scope.
+We need the possibility to define different permissions for a single domain scope, or a single domain object it self.</p>
+<blockquote>
+<p>Let say the user can edit his own user account, but we want to disallow that they can change his age.
+But an administrator should have the authorization to do it.</p>
+</blockquote>
+<p>or a other case..</p>
+<blockquote>
+<p>A student has limited permissions in a team, where he is only a member, but would have more permissions in a team, where he is the owner. So at this point, we need to distingush between instances of domain objects.</p>
+</blockquote>
+<h3>User(s)</h3>
+<p>In authorization scope it can be a system user, or a real user in our application.
+Each user has a role with permissions in the scope of the domain object they want to interact with.
+Each authorization requires a user.</p>
+<h4>System Users</h4>
+<p>We have console operations, or operations based on API_KEYS that are used between internal services for already authorized operations like copy and copy files in file service.
+For this we want to use system user and roles with own permissions.</p>
+<blockquote>
+<p>They are not introduced for now</p>
+</blockquote>
+<h2>Rules</h2>
+<p>The rules are implemented with a strategy pattern and are called from the authorization service.
+The implementation should solve the authorization for a domain object based on the executed action.
+It implements a check for which domain object, entity, or additional conditions should be used.</p>
+<blockquote>
+<p>The rule must validate our scope actions.
+We highly recommend that every single operation and check in the rule is implemented as a additional method to keep the logic clean and moveable.</p>
+</blockquote>
+<h2>User (Role) Permissions vs Scope Based Permissions</h2>
+<p>The permissions of the user come from his role.
+This permissions have no explicit scope. But <em>implicitly</em> the roles expert, student, teacher and administrator are in the school scope. The superhero is <em>implicitly</em> in the scope of the instance.</p>
+<p>It exists also scope based permissions. A user can have different (scope)roles in different (domain)scopes. For example in teams where the student can have team member role in one team, or team adminstrator in another.</p>
+<blockquote>
+<p>In future we want to switch the implicit scope of the user role permissions to explicit scopes like in teams.
+At the moment we must handle scope-, user- and system-user-permissions as seperated special cases in our implementation.
+By implementing user role permissions bind to scopes, we can do it in one way for all situations.</p>
+</blockquote>
+<h2>How should you Authorize an Operation?</h2>
+<p>Authorization must be handled in use cases (UC). They solve the authorization and <em>orchestrate</em> the logic that should be done in services, or private methods.
+You should never implement authorization on service level, to avoid different authorization steps.
+When calling other internal micro service for already authorized operations please use a queue based on RabbitMQ.</p>
+<blockquote>
+<p>Not implemented but coming soon.</p>
+</blockquote>
+<h2>How to use Authorization Service</h2>
+<blockquote>
+<p>Please avoid to catch the errors of the authorization in UC.
+We set empty array as required for passing permissions to make it visible that no string base permission is needed.</p>
+</blockquote>
+<h3>Example 1 - Execute a Single Operation</h3>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-javascript">   this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([])
+   // or
+   this.authorizationService.hasPermission(user, course, AuthorizationContextBuilder.write([])
+   // next orchestration steps</code></pre></div><h3>Example 2 - Set Permission(s) of User as Required</h3>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-javascript">// Multiple permissions can be added. For a successful authorization, the user need all of them.
+await this.authorizationService.hasPermission(userId, course, AuthorizationContextBuilder.read([Permissions.COURSE_VIEW]));
+// next orchestration steps</code></pre></div><h3>Example 4 - Define Context for Multiple Places</h3>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-javascript">/** const **/
+export const FileStorageAuthorizationContext = {
+   create: AuthorizationContextBuilder.write([Permission.FILESTORAGE_CREATE]),
+   read: AuthorizationContextBuilder.read([Permission.FILESTORAGE_VIEW]),
+   update: AuthorizationContextBuilder.write([Permission.FILESTORAGE_EDIT]),
+   delete: AuthorizationContextBuilder.write([Permission.FILESTORAGE_REMOVE]),
+};
+
+/** UC **/
+this.authorizationService.hasPermission(userId, course, PermissionContexts.create);
+// do other orchestration steps</code></pre></div><h2>How to use in our use cases</h2>
+<h3>Example - Create a school by <strong>superhero</strong></h3>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-ts">async createSchoolBySuperhero(userId: EntityId, params: { name: string }) {
+
+   const user = this.authorizationService.getUserWithPermissions(userId);
+   this.authorizationService.hasAllPermissions(user, [Permission.SCHOOL_CREATE]);
+
+   const school = new School(params);
+   await this.schoolService.save(school);
+
+   return true;
+}
+</code></pre></div><h3>Example - Create user by <strong>admin</strong></h3>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-ts">
+async createUserByAdmin(userId: EntityId, params: { email: string, firstName: string, lastName: string, schoolId: EntityId }) {
+
+   const user = this.authorizationService.getUserWithPermissions(userId);
+    
+   const context = AuthorizationContextBuilder.write([Permission.INSTANCE, Permission.CREATE_USER])
+   await this.authorizationService.checkPermission(user, school, context);
+
+   const newUser = new User(params)
+   await this.userService.save(newUser);
+
+   return true;
+}
+</code></pre></div><h3>Example - Edit course by <strong>admin</strong></h3>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-ts">// admin
+async editCourseByAdmin(userId: EntityId, params: { courseId: EntityId, description: string }) {
+
+   const course = this.courseService.getCourse(params.courseId);
+   const user = this.authorizationService.getUserWithPermissions(userId);
+   const school = course.school;
+
+   const context = AuthorizationContextBuilder.write([Permission.INSTANCE, Permission.CREATE_USER]);
+   this.authorizationService.checkPermissions(user, school, context);
+
+   course.description = params.description;
+   await this.courseService.save(course);
+
+   return true;
+}
+</code></pre></div><h3>Example - Create a Course</h3>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-ts">// User can create a course in scope a school, you need to check if he can it by school
+async createCourse(userId: EntityId, params: { schoolId: EntityId }) {
+   const user = this.authorizationService.getUserWithPermissions(userId);
+   const school = this.schoolService.getSchool(params.schoolId);
+
+   this.authorizationService.checkPermission(user, school
+       {
+         action: Actions.write,
+         requiredPermissions: [Permission.COURSE_CREATE],
+       }
+   );
+
+   const course = new Course({ school });
+   await this.courseService.saveCourse(course);
+
+   return course;
+}
+</code></pre></div><h3>Example - Create a Lesson</h3>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-ts">// User can create a lesson to course, so you have a courseId
+async createLesson(userId: EntityId, params: { courseId: EntityId }) {
+   const course = this.courseService.getCourse(params.courseId);
+   const user = this.authorizationService.getUserWithPermissions(userId);
+         // check authorization for user and course
+   this.authorizationService.checkPermission(user, course
+      {
+         action: Actions.write,
+         requiredPermissions: [Permission.COURSE_EDIT],
+      }
+   );
+
+   const lesson = new Lesson({course});
+   await this.lessonService.saveLesson(lesson);
+
+   return true;
+}</code></pre></div><h2>How to write a rule</h2>
+<p>So a rule must validate our scope actions. For example we have a <em>news</em> for the school or course. The news has a creator and target model.</p>
+<blockquote>
+<p>Attention: The target model must be populated</p>
+</blockquote>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-ts">&#64;Injectable()
+export class NewsRule extends BasePermission&lt;News&gt; {
+   constructor(private readonly authorizationHelper: AuthorizationHelper, private readonly schoolRule: SchoolRule, private readonly courseRule: CourseRule) {
+         super();
+   }
+
+   // Is used to select the matching rule in the rule manager. Therefore we keep the condition to which case the rule
+   // applies in the rule itself. In future we expect more complex conditions that could apply here.
+   public isApplicable(user: User, entity: News): boolean {
+      const isMatched = entity instanceof News;
+
+      return isMatched;
+   }
+
+   public hasPermission(user: User, entity: News, context: AuthorizationContext): boolean {
+      const { action, requiredPermissions } = context;
+
+      // check required permissions passed by UC
+      const hasPermission = this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
+      // check access to entity by property
+      const isCreator = this.authorizationHelper.hasAccessToEntity(user, entity, [&#39;creator&#39;]);
+      let hasNewsPermission = false;
+
+      if (action === Actions.read) {
+         hasNewsPermission = this.parentPermission(user, entity, action);
+      } else if (action === Actions.write) {
+         hasNewsPermission = isCreator;
+      }
+
+      const result = hasPermission &amp;&amp; hasNewsPermission;
+
+      return result;
+   }
+
+   private parentPermission(user: User, entity: News, action: Actions): boolean {
+      let hasParentPermission = false;
+      // check by parentRule, because the schoolRule can contain extra logic
+      // e.g. school is offline
+      // or courseRule has complex permissions-resolves
+      if (entity.targetModel === NewsTargetModel.School) {
+         hasParentPermission = this.schoolRule.hasPermission(user, entity.target, { action, requiredPermissions: [] });
+      } else if (entity.targetModel === NewsTargetModel.Course) {
+         hasParentPermission = this.courseRule.hasPermission(user, entity.target, { action, requiredPermissions: [] });
+      }
+
+      return hasParentPermission;
+   }
+}
+</code></pre></div><h2>Structure of the Authorization Components</h2>
+<h3>feathers-* (legacy/deprecated)</h3>
+<p>It exists a adapter to call featherJS endpoints that solve authorizations.</p>
+<blockquote>
+<p>This service is only used in news and should not be used in any other place.
+We want to remove it completly.</p>
+</blockquote>
+<h3>Authorization Module</h3>
+<p>The authorization module is the core of authorization. It collects all needed information and handles it behind a small interface. It exports the authoriation service that can be used in your use case over injections.</p>
+<h3>Reference.loader</h3>
+<p>It should be use only inside of the authorization module.
+It is use to load registrated ressouces by the id and name of the ressource.
+This is needed to solve the API requests from external services. (API implementation is missing for now)</p>
+<blockquote>
+<p>Please keep in mind that it can have an impact on the performance if you use it wrongly.
+We keep it as a seperate method to avoid the usage in areas where the domain object should exist, because we see the risk that a developer could be tempted by the ease of only passing the id.</p>
+</blockquote>
+<h4>authorization-context.builder</h4>
+<p>We export an authorization context builder to prepare the parameter for the authorization service called &quot;authorization context&quot;.
+This is optional and not required.
+But it enables us to easily change the structure of the authorization context without touching many different places.</p>
+<h3>shared/domain/interface/*</h3>
+<h4>rolename.enum</h4>
+<p>An enum that holds all avaible role names.</p>
+<h4>permission.enum</h4>
+<p>A enum that holds all avaible permission names, however it&#39;s mixing all domain scopes atm.</p>
+<h2>Working other Internal MicroServices</h2>
+<blockquote>
+<p>Example FilesStorageService</p>
+</blockquote>
+<p>We have the files storage service application that is a bundle of modules of this repository.
+The application is startet as additional micro service.
+It exists the need that the server application can call the file service.
+We add a files storage client module to the server.
+This module exports a service to communicate with the file service.</p>
+<p>For communication it uses RabbitMQ.
+Every operation must already be authorized in the UC of the server. There is no need to do it again in files storage service.
+For this reason, we want the consumer of the RabbitMQ item to call the files storage service directly without authorization.</p>
+<h2>Legacy Tech Stack FeatherJS Hooks</h2>
+<p>In featherJS all the authorization is done in hooks. Mostly before hooks and sometimes in after hooks.
+Before and after means before, or after the database operation. For self writen services before, or after the call of the operation that should be executed.
+They work similar to express middleware and bring their own request context.</p>
+<p>It exists hooks that can be used for all http(s) calls, or for specific type based on CRUD operations.
+Additionally it also exists the find operations that are a http(s) GET requests without the ID of a specific element.
+Each function that adds to the hooks will be executed in order. Hooks for all methods first, then hooks for specific methodes.</p>
+<p>Each hooks exists for a featherJS service that exposes directly the api endpoints directly. Additional it exists a global hook pattern for the whole application.</p>
+<p>Example: <a href="https://github.com/hpi-schul-cloud/schulcloud-server/blob/main/src/services/lesson/hooks/index.js#L232">https://github.com/hpi-schul-cloud/schulcloud-server/blob/main/src/services/lesson/hooks/index.js#L232</a></p>
+<h2>Desired Changes in Future</h2>
+<p>Some small steps are done. But many next steps still exist.
+They follow our general target.</p>
+<h3>Next Steps</h3>
+<ol>
+<li>Implementation of Scope Based Permissions as generell solution instead of User Permissions that has only implicit school scopes for now.
+Remove populate logic in reference loader.
+Solve eager loading in coursegroups.</li>
+<li>Introduce RabbitMQ. Splitting Service(logic) from UC, that we can call services over the consumer for internal communication between micro services of already authorized operations.
+Think about: Move hasPermission checks from rules to a more generic place.
+Remove jwt decorator and cleanup copy logic.
+Move authorization-context.builder to authorization module.</li>
+<li>Remove inheritance from roles, because we want to write it explicitly into the collection documents.
+Moving role api endpoints to nestjs.
+Fixing of dashboard to handle roles in the right way as superhero.</li>
+<li>Switching entity based authorization to domain objects based in steps.</li>
+<li>Cleanup of feature flags from user permissions.
+Add existing feature flags to rules on places where it make sense.</li>
+<li>Introduce instance as a scope to have an implemenation that handles all scopes/rules/permissions/user types in the same way.</li>
+</ol>
+<h3>Refactoring Todos</h3>
+<ul>
+<li>Task module should fully use authorization service.</li>
+<li>News module should start to use authorization service.</li>
+</ul>
+<h3>Is Needed</h3>
+<ul>
+<li>We can introduce a new layer called &quot;policy&quot; that combines different rules (any of them has their own matching strategy) for a single domain object between authorization and rule to reduce complexity in a single rule.</li>
+<li>We can switch to a behaviour where rules register themself at the authorization service than.</li>
+</ul>
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 2;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'additional-page';
+            var COMPODOC_CURRENT_PAGE_URL = 'authorisation.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../../js/libs/custom-elements.min.js"></script>
+       <script src="../../js/libs/lit-html.js"></script>
+
+       <script src="../../js/menu-wc.js" defer></script>
+       <script nomodule src="../../js/menu-wc_es5.js" defer></script>
+
+       <script src="../../js/libs/bootstrap-native.js"></script>
+
+       <script src="../../js/libs/es6-shim.min.js"></script>
+       <script src="../../js/libs/EventDispatcher.js"></script>
+       <script src="../../js/libs/promise.min.js"></script>
+       <script src="../../js/libs/zepto.min.js"></script>
+
+       <script src="../../js/compodoc.js"></script>
+
+       <script src="../../js/tabs.js"></script>
+       <script src="../../js/menu.js"></script>
+       <script src="../../js/libs/clipboard.min.js"></script>
+       <script src="../../js/libs/prism.js"></script>
+       <script src="../../js/sourceCode.js"></script>
+          <script src="../../js/search/search.js"></script>
+          <script src="../../js/search/lunr.min.js"></script>
+          <script src="../../js/search/search-lunr.js"></script>
+          <script src="../../js/search/search_index.js"></script>
+       <script src="../../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

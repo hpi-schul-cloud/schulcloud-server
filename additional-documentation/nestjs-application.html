@@ -1,0 +1,308 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>schulcloud-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content additional-page">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>HPI Schul-Cloud NestJS server</h1>
+<p>This application extends the existing server-application based on feathers and express by introducing dependency injection supporting unit testing and modularization, the possibility to develop against interfaces, and start implementation of modules using TypeScript.</p>
+<p>You find the whole <a href="https://hpi-schul-cloud.github.io/schulcloud-server/additional-documentation/nestjs-application.html">documentation published as GitHub Page</a></p>
+<h2>Requirements</h2>
+<ul>
+<li>Node.js (see <code>.nvmrc</code> for version)</li>
+<li>MongoDB (<code>4.x</code>)</li>
+<li>RabbitMQ (configure using <code>RABBITMQ_URL</code>, see <code>default.schema.json</code>)</li>
+<li>S3 Object Storage e.g. MinIO locally</li>
+</ul>
+<h3>preconditions</h3>
+<ol>
+<li>Have a MongoDB started, run <code>mongod</code></li>
+<li>Have some seed data in database, use <code>npm run setup</code> to reset the db and apply seed data</li>
+<li>Have RabbitMQ started, run <code>docker run -d -p 5672:5672 -p 15672:15672 --name rabbitmq rabbitmq:3.8.9-management</code>. This starts RabbitMQ on port 5672 and a web admin console at localhost:15672 (use guest:guest to login).</li>
+<li>Have MinIO (S3 compatible object storage), run [optional if you need files-storage module]</li>
+</ol>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">docker run \
+  --name minioS3storage \
+  -p 9000:9000 \
+  -p 9001:9001 \
+  -e &quot;MINIO_ROOT_USER=`miniouser`&quot; \
+  -e &quot;MINIO_ROOT_PASSWORD=miniouser&quot; \
+  quay.io/minio/minio server /data --console-address &quot;:9001&quot;</code></pre></div><ol start="5">
+<li>Have ErWIn-IDM started [currently not needed, but will be mandatory in the future]. For more information look <a href="https://hpi-schul-cloud.github.io/schulcloud-server/additional-documentation/nestjs-application/keycloak.html">here</a>.</li>
+</ol>
+<p>Change directory to the <code>schulcloud-server</code> root folder. Execute following command to setup the ErWIn-IDM container:</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">docker run \
+  --name erwinidm \
+  -p 8080:8080 \
+  -p 8443:8443 \
+  -v &quot;$PWD/backup/idm/keycloak:/tmp/realms&quot; \
+  ghcr.io/hpi-schul-cloud/erwin-idm/dev:latest \
+  &quot;&amp;&amp; /opt/keycloak/bin/kc.sh import --dir /tmp/realms&quot;</code></pre></div><p>To add seed data into ErWIn-IDM, use <code>npm run setup:idm</code> to reset and apply seed data.</p>
+<p>See <a href="https://hpi-schul-cloud.github.io/schulcloud-server/additional-documentation/nestjs-application/keycloak.html">ErWIn-IDM specific documentation</a> to learn how to add the ErWIn-IDM identity broker feature.</p>
+<ol start="6">
+<li>Add secrets to systems (optional)</li>
+</ol>
+<p>The systems of the seed data do not contain any secrets, so connecting to those systems will fail.
+You can add these secrets by putting them into your env vars. E.g. if you add <code>SANIS_CLIENT_ID=&lt;actual secret&gt;</code> into your .env file, the secret will be written into the db, when you run the database setup. You need to add the env var <code>AES_KEY</code> as well to encrypt those secrets in the DB.
+The real secrets can be found in the password store.</p>
+<p>While exporting the systems to JSON the secrets will be replaced by placeholders following the pattern <code>&lt;capitalized alias&gt;_&lt;capitalized property name&gt;</code>. So the system with alias &quot;sanis&quot; and the secret property &quot;clientId&quot; will be replaced by &quot;SANIS_CLIENT_ID&quot;</p>
+<h3>How to start the application</h3>
+<p>Beside existing <a href="/">scripts</a>, for the nestJS application the following scripts have been added. Try not changing the scripts as they should match what NestJS defines by default. Execute <code>npm run ...</code></p>
+<ul>
+<li><code>nest:prebuild</code> remove existing data from previous build</li>
+<li><code>nest:build</code> compile the applications typescript ressources from apps/server to dist folder, keeps legacy js-code where it is</li>
+<li><code>nest:build:all</code> currently executes <code>nest:build</code>, could additionaly build static assets</li>
+<li><code>nest:start</code> starts the nest application on <code>localhost:3030</code></li>
+<li><code>nest:start:dev</code> run application without build from sources in dev-mode with hot-reload</li>
+<li><code>nest:start:debug</code> run application in dev-mode with hot-reload and debug port opened on port :9229</li>
+<li><code>nest:start:prod</code> start applicaiton in production mode, requires <code>nest:build</code> to be executed beforehand</li>
+</ul>
+<h4>It exist a <strong>file storage</strong> module. It is started as a microservice on port :4444</h4>
+<ul>
+<li><code>nest:start:files-storage</code> starts the nest <strong>file storage</strong></li>
+<li><code>nest:start:files-storage:dev</code> run <strong>file storage</strong> without build from sources in dev-mode with hot-reload</li>
+<li><code>nest:start:files-storage:debug</code> run <strong>file storage</strong> in dev-mode with hot-reload and debug port opened on port :9229</li>
+<li><code>nest:start:files-storage:prod</code> start <strong>file storage</strong> in production mode, requires <code>nest:build</code> to be executed beforehand</li>
+</ul>
+<h4>How to build and serve the documentation</h4>
+<ul>
+<li><code>nest:docs:build</code> builds code documentation and module relations into /documentation folder</li>
+<li><code>nest:docs:serve</code> builds code documentation and module relations into /documentation folder and serves it on port :8080 with hot reload on changes</li>
+</ul>
+<h4>How to start the server console</h4>
+<p>The console offers management capabilities of the application.</p>
+<ul>
+<li><code>nest:console</code> after nest:build in production or</li>
+<li><code>nest:console:dev</code> for development</li>
+</ul>
+<p>To run a specific command run <code>npm run nest:console:dev -- command &lt;param&gt;</code>. The <code>--</code>is required for npm to send params to the console. Use <code>--help</code>to get an overview about existing commands.</p>
+<h2>How to test the nest-application with jest</h2>
+<p>NestJS must not use _.test.[ts|js] as filename but instead either *.spec.ts for unit tests or *.api.spec.ts API tests. This ensures legacy/feathers/mocha tests can be separated from jest test suites.</p>
+<p>The application must pass the following statement which executes separate checks:</p>
+<ul>
+<li><code>nest:test</code> executes all jest (NestJS) tests with coverage and eslint</li>
+</ul>
+<p>To test a subset, use</p>
+<ul>
+<li><p><code>nest:test:all</code> execute unit and API tests</p>
+</li>
+<li><p><code>nest:test:api</code> execute API tests only</p>
+</li>
+<li><p><code>nest:test:unit</code> execute unit tests only</p>
+</li>
+<li><p><code>nest:test:cov</code> executes all jest tests with coverage check</p>
+</li>
+<li><p><code>nest:test:watch</code> executes changed tests again on save</p>
+</li>
+<li><p><code>nest:test:debug</code> executes tests with debugging</p>
+</li>
+<li><p><code>nest:lint</code> run eslint to report linter issues and apply formatting</p>
+</li>
+<li><p><code>nest:lint:fix</code> run eslint to report and auto-fix fixable linter issues and apply formatting</p>
+</li>
+</ul>
+<h2>Quality gates</h2>
+<p>With coverage on tests and static code analysis we ensure some quality gates which are all handled by running <code>nest:test</code>:</p>
+<ul>
+<li>ESLint with prettier ensures formatting and static code analysis to pass, see <code>.eslintrc.js</code> for details.</li>
+<li>Tests ensure functional requirements via unit &amp; API tests.</li>
+<li>Coverage on tests ensures a coverage of 80% on NestJS code, see <code>jest.config.ts</code> for details.</li>
+</ul>
+<p>Gates are part of pull request checks.</p>
+<h2>OpenAPI documentation</h2>
+<p>The NestJS applicaiton serves a documentation at <a href="http://localhost:3030/api/v3/docs/">:3030/api/v3/docs</a>. The JSON-representation can be found at <code>/api/v3/docs-json</code> to be used for generating a client application.</p>
+<p>Legacy/feathers Swagger UI documentation when running the server locally, it is served at <a href="http://localhost:3030/docs/">:3030/docs/</a>.</p>
+<h2>Legacy (feathers) testing with mocha</h2>
+<ul>
+<li><code>npm run test</code></li>
+<li>To run a single test, use <code>npm run mocha-single -- &lt;path/to/unit.test.js&gt;</code>.</li>
+</ul>
+<h3>How to get full documentation</h3>
+<p>The documentation is provided by compodoc, run <code>npm run nest:docs:serve</code>, check generated compodoc features, custom information can be found in additional information section. Your console will tell you, where it is served.</p>
+<p>The updated documentation is published as <a href="https://hpi-schul-cloud.github.io/schulcloud-server/additional-documentation/nestjs-application.html">GitHub Page</a></p>
+<h3>Content</h3>
+<p>For further reading, browse <code>apps/server/doc</code>.</p>
+<h4>NestJS CLI</h4>
+<p>To use the NestJS CLI, <a href="https://docs.nestjs.com/#installation">install the nest cli globally</a>.</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-bash">  npm i -g &#64;nestjs/cli</code></pre></div><p>Then you may use features like <code>nest g service foo</code> within of <code>/apps/server/src</code>.</p>
+<h4>Debugging</h4>
+<p>There are launch configurations available for VSCode in <code>.vscode/launch.default.json</code></p>
+<h3>Tech Stack</h3>
+<p>Feel free to find related documentation:</p>
+<ul>
+<li><a href="https://nestjs.com/">https://nestjs.com/</a></li>
+<li><a href="https://jestjs.io/">https://jestjs.io/</a></li>
+<li><a href="https://mikro-orm.io/">https://mikro-orm.io/</a></li>
+<li><a href="https://min.io/">https://min.io/</a></li>
+<li><a href="https://www.rabbitmq.com/">https://www.rabbitmq.com/</a></li>
+</ul>
+<h2>Configuration</h2>
+<p><a href="https://github.com/hpi-schul-cloud/schulcloud-server/blob/main/config/README.md">https://github.com/hpi-schul-cloud/schulcloud-server/blob/main/config/README.md</a></p>
+<h2>NestJS Modules</h2>
+<h3>Authorisation</h3>
+<p><a href="https://github.com/hpi-schul-cloud/schulcloud-server/blob/main/apps/server/src/modules/authorization/README.md">https://github.com/hpi-schul-cloud/schulcloud-server/blob/main/apps/server/src/modules/authorization/README.md</a></p>
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'additional-page';
+            var COMPODOC_CURRENT_PAGE_URL = 'nestjs-application.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

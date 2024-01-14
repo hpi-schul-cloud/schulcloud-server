@@ -1,0 +1,2866 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>schulcloud-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content miscellaneous-typealiases">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Miscellaneous</li>
+  <li class="breadcrumb-item">Type aliases</li>
+</ol>
+
+<section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <ul class="index-list">
+                        <li>
+                            <a href="#AjaxPostBodyParams" title="apps/server/src/modules/h5p-editor/controller/dto/ajax/post.body.params.ts" ><b>AjaxPostBodyParams</b>&nbsp;&nbsp;&nbsp;(apps/.../post.body.params.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#AnyBoardDo" title="apps/server/src/shared/domain/domainobject/board/types/any-board-do.ts" ><b>AnyBoardDo</b>&nbsp;&nbsp;&nbsp;(apps/.../any-board-do.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#AnyContentElementDo" title="apps/server/src/shared/domain/domainobject/board/types/any-content-element-do.ts" ><b>AnyContentElementDo</b>&nbsp;&nbsp;&nbsp;(apps/.../any-content-element-do.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#AnyContentElementResponse" title="apps/server/src/modules/board/controller/dto/element/any-content-element.response.ts" ><b>AnyContentElementResponse</b>&nbsp;&nbsp;&nbsp;(apps/.../any-content-element.response.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#AnyElementContentBody" title="apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts" ><b>AnyElementContentBody</b>&nbsp;&nbsp;&nbsp;(apps/.../update-element-content.body.params.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#AnyProvisioningOptions" title="apps/server/src/modules/legacy-school/domain/school-system-options.do.ts" ><b>AnyProvisioningOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../school-system-options.do.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#AnyProvisioningOptionsInterface" title="apps/server/src/modules/legacy-school/interface/any-provisioning-options-interface.ts" ><b>AnyProvisioningOptionsInterface</b>&nbsp;&nbsp;&nbsp;(apps/.../any-provisioning-options-interface.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#AnyProvisioningOptionsResponse" title="apps/server/src/modules/legacy-school/controller/dto/response/any-provisioning-options.response.ts" ><b>AnyProvisioningOptionsResponse</b>&nbsp;&nbsp;&nbsp;(apps/.../any-provisioning-options.response.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#AxiosHeadersKeyValue" title="apps/server/src/shared/testing/factory/axios-response.factory.ts" ><b>AxiosHeadersKeyValue</b>&nbsp;&nbsp;&nbsp;(apps/.../axios-response.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#AxiosResponseProps" title="apps/server/src/shared/testing/factory/axios-response.factory.ts" ><b>AxiosResponseProps</b>&nbsp;&nbsp;&nbsp;(apps/.../axios-response.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#BaseEntityReference" title="apps/server/src/shared/domain/entity/base.entity.ts" ><b>BaseEntityReference</b>&nbsp;&nbsp;&nbsp;(apps/.../base.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#BasicToolConfigDto" title="apps/server/src/modules/tool/external-tool/uc/dto/external-tool.types.ts" ><b>BasicToolConfigDto</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#BoardCopyParams" title="apps/server/src/modules/learnroom/service/board-copy.service.ts" ><b>BoardCopyParams</b>&nbsp;&nbsp;&nbsp;(apps/.../board-copy.service.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#BoardDoCopyParams" title="apps/server/src/modules/board/service/board-do-copy-service/board-do-copy.service.ts" ><b>BoardDoCopyParams</b>&nbsp;&nbsp;&nbsp;(apps/.../board-do-copy.service.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#BoardElementProps" title="apps/server/src/shared/domain/entity/legacy-board/boardelement.entity.ts" ><b>BoardElementProps</b>&nbsp;&nbsp;&nbsp;(apps/.../boardelement.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#BoardElementReference" title="apps/server/src/shared/domain/entity/legacy-board/boardelement.entity.ts" ><b>BoardElementReference</b>&nbsp;&nbsp;&nbsp;(apps/.../boardelement.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#BoardProps" title="apps/server/src/shared/domain/entity/legacy-board/board.entity.ts" ><b>BoardProps</b>&nbsp;&nbsp;&nbsp;(apps/.../board.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ColumnBoardInfo" title="apps/server/src/shared/domain/domainobject/board/types/column-board-info.ts" ><b>ColumnBoardInfo</b>&nbsp;&nbsp;&nbsp;(apps/.../column-board-info.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ColumnBoardMetaData" title="apps/server/src/modules/learnroom/types/room-board.types.ts" ><b>ColumnBoardMetaData</b>&nbsp;&nbsp;&nbsp;(apps/.../room-board.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ColumnBoardTargetProps" title="apps/server/src/shared/domain/entity/legacy-board/column-board-target.entity.ts" ><b>ColumnBoardTargetProps</b>&nbsp;&nbsp;&nbsp;(apps/.../column-board-target.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#CommonCartridgeFileBuilderOptions" title="apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts" ><b>CommonCartridgeFileBuilderOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../common-cartridge-file-builder.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ComponentProperties" title="apps/server/src/shared/domain/entity/lesson.entity.ts" ><b>ComponentProperties</b>&nbsp;&nbsp;&nbsp;(apps/.../lesson.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ConnectionOptions" title="apps/server/src/infra/database/mongo-memory-database/types.ts" ><b>ConnectionOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ContextExternalToolDto" title="apps/server/src/modules/tool/context-external-tool/uc/dto/context-external-tool.types.ts" ><b>ContextExternalToolDto</b>&nbsp;&nbsp;&nbsp;(apps/.../context-external-tool.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ContextExternalToolQuery" title="apps/server/src/modules/tool/context-external-tool/uc/dto/context-external-tool.types.ts" ><b>ContextExternalToolQuery</b>&nbsp;&nbsp;&nbsp;(apps/.../context-external-tool.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ContextExternalToolTemplateInfo" title="apps/server/src/modules/tool/external-tool/uc/dto/external-tool-configuration.types.ts" ><b>ContextExternalToolTemplateInfo</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool-configuration.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#CopyDictionary" title="apps/server/src/modules/copy-helper/types/copy.types.ts" ><b>CopyDictionary</b>&nbsp;&nbsp;&nbsp;(apps/.../copy.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#CopyStatus" title="apps/server/src/modules/copy-helper/types/copy.types.ts" ><b>CopyStatus</b>&nbsp;&nbsp;&nbsp;(apps/.../copy.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#Counted" title="apps/server/src/shared/domain/types/counted.ts" ><b>Counted</b>&nbsp;&nbsp;&nbsp;(apps/.../counted.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#CourseCopyParams" title="apps/server/src/modules/learnroom/service/course-copy.service.ts" ><b>CourseCopyParams</b>&nbsp;&nbsp;&nbsp;(apps/.../course-copy.service.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#CustomParameterDto" title="apps/server/src/modules/tool/external-tool/uc/dto/external-tool.types.ts" ><b>CustomParameterDto</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#DashboardProps" title="apps/server/src/shared/domain/entity/dashboard.entity.ts" ><b>DashboardProps</b>&nbsp;&nbsp;&nbsp;(apps/.../dashboard.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#EmptyResultQueryType" title="apps/server/src/shared/repo/scope.ts" ><b>EmptyResultQueryType</b>&nbsp;&nbsp;&nbsp;(apps/.../scope.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#EntitiesWithFiles" title="apps/server/src/modules/files-storage-client/interfaces/types.ts" ><b>EntitiesWithFiles</b>&nbsp;&nbsp;&nbsp;(apps/.../types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#EntityId" title="apps/server/src/shared/domain/types/entity-id.ts" ><b>EntityId</b>&nbsp;&nbsp;&nbsp;(apps/.../entity-id.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#EntityWithEmbeddedFiles" title="apps/server/src/modules/files-storage-client/interfaces/types.ts" ><b>EntityWithEmbeddedFiles</b>&nbsp;&nbsp;&nbsp;(apps/.../types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ErrorLogMessage" title="apps/server/src/core/logger/types/logging.types.ts" ><b>ErrorLogMessage</b>&nbsp;&nbsp;&nbsp;(apps/.../logging.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ExternalToolCreate" title="apps/server/src/modules/tool/external-tool/uc/dto/external-tool.types.ts" ><b>ExternalToolCreate</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ExternalToolDto" title="apps/server/src/modules/tool/external-tool/uc/dto/external-tool.types.ts" ><b>ExternalToolDto</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ExternalToolUpdate" title="apps/server/src/modules/tool/external-tool/uc/dto/external-tool.types.ts" ><b>ExternalToolUpdate</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#FeathersServiceParams" title="apps/server/src/infra/feathers/feathers-service.provider.ts" ><b>FeathersServiceParams</b>&nbsp;&nbsp;&nbsp;(apps/.../feathers-service.provider.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#FeathersServiceResponse" title="apps/server/src/infra/feathers/feathers-service.provider.ts" ><b>FeathersServiceResponse</b>&nbsp;&nbsp;&nbsp;(apps/.../feathers-service.provider.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#FileUrlReplacement" title="apps/server/src/modules/files-storage-client/service/copy-files.service.ts" ><b>FileUrlReplacement</b>&nbsp;&nbsp;&nbsp;(apps/.../copy-files.service.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#GenericData" title="apps/server/src/modules/rocketchat/rocket-chat.service.ts" ><b>GenericData</b>&nbsp;&nbsp;&nbsp;(apps/.../rocket-chat.service.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#GridElementContent" title="apps/server/src/shared/domain/entity/dashboard.entity.ts" ><b>GridElementContent</b>&nbsp;&nbsp;&nbsp;(apps/.../dashboard.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#GridElementWithPosition" title="apps/server/src/shared/domain/entity/dashboard.entity.ts" ><b>GridElementWithPosition</b>&nbsp;&nbsp;&nbsp;(apps/.../dashboard.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#GridPosition" title="apps/server/src/shared/domain/entity/dashboard.entity.ts" ><b>GridPosition</b>&nbsp;&nbsp;&nbsp;(apps/.../dashboard.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#GridPositionWithGroupIndex" title="apps/server/src/shared/domain/entity/dashboard.entity.ts" ><b>GridPositionWithGroupIndex</b>&nbsp;&nbsp;&nbsp;(apps/.../dashboard.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IColumnBoardProperties" title="apps/server/src/shared/testing/factory/domainobject/board/column-board.do.factory.ts" ><b>IColumnBoardProperties</b>&nbsp;&nbsp;&nbsp;(apps/.../column-board.do.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ICommonCartridgeLessonContentProps" title="apps/server/src/modules/learnroom/common-cartridge/common-cartridge-lesson-content-element.ts" ><b>ICommonCartridgeLessonContentProps</b>&nbsp;&nbsp;&nbsp;(apps/.../common-cartridge-lesson-content-element.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ICommonCartridgeLtiResourceProps" title="apps/server/src/modules/learnroom/common-cartridge/common-cartridge-lti-resource.ts" ><b>ICommonCartridgeLtiResourceProps</b>&nbsp;&nbsp;&nbsp;(apps/.../common-cartridge-lti-resource.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ICommonCartridgeManifestProps" title="apps/server/src/modules/learnroom/common-cartridge/common-cartridge-manifest-element.ts" ><b>ICommonCartridgeManifestProps</b>&nbsp;&nbsp;&nbsp;(apps/.../common-cartridge-manifest-element.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ICommonCartridgeMetadataProps" title="apps/server/src/modules/learnroom/common-cartridge/common-cartridge-metadata-element.ts" ><b>ICommonCartridgeMetadataProps</b>&nbsp;&nbsp;&nbsp;(apps/.../common-cartridge-metadata-element.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ICommonCartridgeOrganizationProps" title="apps/server/src/modules/learnroom/common-cartridge/common-cartridge-organization-item-element.ts" ><b>ICommonCartridgeOrganizationProps</b>&nbsp;&nbsp;&nbsp;(apps/.../common-cartridge-organization-item-element.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ICommonCartridgeResourceProps" title="apps/server/src/modules/learnroom/common-cartridge/common-cartridge-resource-item-element.ts" ><b>ICommonCartridgeResourceProps</b>&nbsp;&nbsp;&nbsp;(apps/.../common-cartridge-resource-item-element.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ICommonCartridgeWebContentResourceProps" title="apps/server/src/modules/learnroom/common-cartridge/common-cartridge-web-content-resource.ts" ><b>ICommonCartridgeWebContentResourceProps</b>&nbsp;&nbsp;&nbsp;(apps/.../common-cartridge-web-content-resource.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ICommonCartridgeWebLinkResourceProps" title="apps/server/src/modules/learnroom/common-cartridge/common-cartridge-web-link-resource.ts" ><b>ICommonCartridgeWebLinkResourceProps</b>&nbsp;&nbsp;&nbsp;(apps/.../common-cartridge-web-link-resource.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IdmAccount" title="apps/server/src/shared/domain/interface/account.ts" ><b>IdmAccount</b>&nbsp;&nbsp;&nbsp;(apps/.../account.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IdmAccountProperties" title="apps/server/src/shared/domain/entity/account.entity.ts" ><b>IdmAccountProperties</b>&nbsp;&nbsp;&nbsp;(apps/.../account.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IdmAccountUpdate" title="apps/server/src/shared/domain/interface/account.ts" ><b>IdmAccountUpdate</b>&nbsp;&nbsp;&nbsp;(apps/.../account.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IExternalToolProperties" title="apps/server/src/modules/tool/external-tool/entity/external-tool.entity.ts" ><b>IExternalToolProperties</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IImportUserRoleName" title="apps/server/src/shared/domain/entity/import-user.entity.ts" ><b>IImportUserRoleName</b>&nbsp;&nbsp;&nbsp;(apps/.../import-user.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IInputFormatsConfig" title="apps/server/src/shared/controller/transformer/sanitize-html.transformer.ts" ><b>IInputFormatsConfig</b>&nbsp;&nbsp;&nbsp;(apps/.../sanitize-html.transformer.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ILtiToolProperties" title="apps/server/src/shared/domain/entity/ltitool.entity.ts" ><b>ILtiToolProperties</b>&nbsp;&nbsp;&nbsp;(apps/.../ltitool.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ISession" title="apps/server/src/shared/domain/types/session.ts" ><b>ISession</b>&nbsp;&nbsp;&nbsp;(apps/.../session.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IUpdateNews" title="apps/server/src/shared/domain/types/news.types.ts" ><b>IUpdateNews</b>&nbsp;&nbsp;&nbsp;(apps/.../news.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IUserLoginMigration" title="apps/server/src/shared/domain/entity/user-login-migration.entity.ts" ><b>IUserLoginMigration</b>&nbsp;&nbsp;&nbsp;(apps/.../user-login-migration.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IUserRoleName" title="apps/server/src/shared/domain/interface/rolename.enum.ts" ><b>IUserRoleName</b>&nbsp;&nbsp;&nbsp;(apps/.../rolename.enum.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#IVideoConferenceProperties" title="apps/server/src/shared/domain/entity/video-conference.entity.ts" ><b>IVideoConferenceProperties</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#LearnroomMetadata" title="apps/server/src/shared/domain/types/learnroom.types.ts" ><b>LearnroomMetadata</b>&nbsp;&nbsp;&nbsp;(apps/.../learnroom.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#LessonCopyParams" title="apps/server/src/modules/lesson/types/lesson-copy.params.ts" ><b>LessonCopyParams</b>&nbsp;&nbsp;&nbsp;(apps/.../lesson-copy.params.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#LessonCopyParentParams" title="apps/server/src/modules/lesson/types/lesson-copy-parent.params.ts" ><b>LessonCopyParentParams</b>&nbsp;&nbsp;&nbsp;(apps/.../lesson-copy-parent.params.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#LessonMetaData" title="apps/server/src/modules/learnroom/types/room-board.types.ts" ><b>LessonMetaData</b>&nbsp;&nbsp;&nbsp;(apps/.../room-board.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#LogMessage" title="apps/server/src/core/logger/types/logging.types.ts" ><b>LogMessage</b>&nbsp;&nbsp;&nbsp;(apps/.../logging.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#LogMessageData" title="apps/server/src/core/logger/types/logging.types.ts" ><b>LogMessageData</b>&nbsp;&nbsp;&nbsp;(apps/.../logging.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#LogMessageDataObject" title="apps/server/src/core/logger/types/logging.types.ts" ><b>LogMessageDataObject</b>&nbsp;&nbsp;&nbsp;(apps/.../logging.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#LogMessageWithContext" title="apps/server/src/core/logger/types/logging.types.ts" ><b>LogMessageWithContext</b>&nbsp;&nbsp;&nbsp;(apps/.../logging.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#Lti11ToolConfigCreate" title="apps/server/src/modules/tool/external-tool/uc/dto/external-tool.types.ts" ><b>Lti11ToolConfigCreate</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#Lti11ToolConfigUpdate" title="apps/server/src/modules/tool/external-tool/uc/dto/external-tool.types.ts" ><b>Lti11ToolConfigUpdate</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MetaData" title="apps/server/src/modules/meta-tag-extractor/types/meta-data.type.ts" ><b>MetaData</b>&nbsp;&nbsp;&nbsp;(apps/.../meta-data.type.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MetaDataEntityType" title="apps/server/src/modules/meta-tag-extractor/types/meta-data.type.ts" ><b>MetaDataEntityType</b>&nbsp;&nbsp;&nbsp;(apps/.../meta-data.type.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#MongoDatabaseModuleOptions" title="apps/server/src/infra/database/mongo-memory-database/types.ts" ><b>MongoDatabaseModuleOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#NewsPermission" title="apps/server/src/modules/news/uc/news.uc.ts" ><b>NewsPermission</b>&nbsp;&nbsp;&nbsp;(apps/.../news.uc.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#NewsTarget" title="apps/server/src/shared/domain/types/news.types.ts" ><b>NewsTarget</b>&nbsp;&nbsp;&nbsp;(apps/.../news.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#NexboardResponse" title="apps/server/src/modules/lesson/service/nexboard.service.ts" ><b>NexboardResponse</b>&nbsp;&nbsp;&nbsp;(apps/.../nexboard.service.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#Oauth2ToolConfigCreate" title="apps/server/src/modules/tool/external-tool/uc/dto/external-tool.types.ts" ><b>Oauth2ToolConfigCreate</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#Oauth2ToolConfigUpdate" title="apps/server/src/modules/tool/external-tool/uc/dto/external-tool.types.ts" ><b>Oauth2ToolConfigUpdate</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#PadResponse" title="apps/server/src/modules/lesson/service/etherpad.service.ts" ><b>PadResponse</b>&nbsp;&nbsp;&nbsp;(apps/.../etherpad.service.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ParentData" title="apps/server/src/modules/board/repo/recursive-save.visitor.ts" ><b>ParentData</b>&nbsp;&nbsp;&nbsp;(apps/.../recursive-save.visitor.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#PartialBy" title="apps/server/src/modules/tool/external-tool/uc/dto/external-tool.types.ts" ><b>PartialBy</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#Persitence" title="apps/server/src/modules/tldraw/types/persistence-type.ts" ><b>Persitence</b>&nbsp;&nbsp;&nbsp;(apps/.../persistence-type.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ProvisioningOptionsInterface" title="apps/server/src/modules/legacy-school/interface/provisioning-options-interface.ts" ><b>ProvisioningOptionsInterface</b>&nbsp;&nbsp;&nbsp;(apps/.../provisioning-options-interface.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ReadableStreamWithFileTypeProps" title="apps/server/src/shared/testing/factory/readable-stream-with-file-type.factory.ts" ><b>ReadableStreamWithFileTypeProps</b>&nbsp;&nbsp;&nbsp;(apps/.../readable-stream-with-file-type.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#RepoType" title="apps/server/src/modules/authorization/domain/service/reference.loader.ts" ><b>RepoType</b>&nbsp;&nbsp;&nbsp;(apps/.../reference.loader.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#RequestLoggingBody" title="apps/server/src/core/logger/interfaces/legacy-logger.interface.ts" ><b>RequestLoggingBody</b>&nbsp;&nbsp;&nbsp;(apps/.../legacy-logger.interface.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#Role" title="apps/server/src/modules/user/controller/dto/resolved-user.response.ts" ><b>Role</b>&nbsp;&nbsp;&nbsp;(apps/.../resolved-user.response.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#RoomBoardDTO" title="apps/server/src/modules/learnroom/types/room-board.types.ts" ><b>RoomBoardDTO</b>&nbsp;&nbsp;&nbsp;(apps/.../room-board.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#RoomBoardElementDTO" title="apps/server/src/modules/learnroom/types/room-board.types.ts" ><b>RoomBoardElementDTO</b>&nbsp;&nbsp;&nbsp;(apps/.../room-board.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#SchoolExternalToolDto" title="apps/server/src/modules/tool/school-external-tool/uc/dto/school-external-tool.types.ts" ><b>SchoolExternalToolDto</b>&nbsp;&nbsp;&nbsp;(apps/.../school-external-tool.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#SchoolExternalToolQuery" title="apps/server/src/modules/tool/school-external-tool/uc/dto/school-external-tool.types.ts" ><b>SchoolExternalToolQuery</b>&nbsp;&nbsp;&nbsp;(apps/.../school-external-tool.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#SchoolExternalToolQueryInput" title="apps/server/src/modules/tool/school-external-tool/uc/dto/school-external-tool.types.ts" ><b>SchoolExternalToolQueryInput</b>&nbsp;&nbsp;&nbsp;(apps/.../school-external-tool.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#SchoolSpecificFileCopyServiceCopyParams" title="apps/server/src/modules/board/service/board-do-copy-service/school-specific-file-copy.interface.ts" ><b>SchoolSpecificFileCopyServiceCopyParams</b>&nbsp;&nbsp;&nbsp;(apps/.../school-specific-file-copy.interface.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#SchoolSpecificFileCopyServiceProps" title="apps/server/src/modules/board/service/board-do-copy-service/school-specific-file-copy.interface.ts" ><b>SchoolSpecificFileCopyServiceProps</b>&nbsp;&nbsp;&nbsp;(apps/.../school-specific-file-copy.interface.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#SchoolYearTransientParams" title="apps/server/src/modules/school/testing/school-year.factory.ts" ><b>SchoolYearTransientParams</b>&nbsp;&nbsp;&nbsp;(apps/.../school-year.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#SchoolYearTransientParams" title="apps/server/src/shared/testing/factory/schoolyear.factory.ts" ><b>SchoolYearTransientParams</b>&nbsp;&nbsp;&nbsp;(apps/.../schoolyear.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#SchulConneXProvisioningOptionsInterface" title="apps/server/src/modules/legacy-school/interface/schulconnex-provisioning-options-interface.ts" ><b>SchulConneXProvisioningOptionsInterface</b>&nbsp;&nbsp;&nbsp;(apps/.../schulconnex-provisioning-options-interface.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ScopeOperator" title="apps/server/src/shared/repo/scope.ts" ><b>ScopeOperator</b>&nbsp;&nbsp;&nbsp;(apps/.../scope.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#SearchOptions" title="apps/server/src/infra/identity-management/identity-management.service.ts" ><b>SearchOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../identity-management.service.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#SeedFederalStateProperties" title="apps/server/src/modules/management/seed-data/federalstates.ts" ><b>SeedFederalStateProperties</b>&nbsp;&nbsp;&nbsp;(apps/.../federalstates.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#SeedRoleProperties" title="apps/server/src/modules/management/seed-data/roles.ts" ><b>SeedRoleProperties</b>&nbsp;&nbsp;&nbsp;(apps/.../roles.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#SeedSchoolProperties" title="apps/server/src/modules/management/seed-data/schools.ts" ><b>SeedSchoolProperties</b>&nbsp;&nbsp;&nbsp;(apps/.../schools.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#SeedSchoolYearProperties" title="apps/server/src/modules/management/seed-data/schoolyears.ts" ><b>SeedSchoolYearProperties</b>&nbsp;&nbsp;&nbsp;(apps/.../schoolyears.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ShareTokenContext" title="apps/server/src/modules/sharing/domainobject/share-token.do.ts" ><b>ShareTokenContext</b>&nbsp;&nbsp;&nbsp;(apps/.../share-token.do.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ShareTokenPayload" title="apps/server/src/modules/sharing/domainobject/share-token.do.ts" ><b>ShareTokenPayload</b>&nbsp;&nbsp;&nbsp;(apps/.../share-token.do.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ShareTokenString" title="apps/server/src/modules/sharing/domainobject/share-token.do.ts" ><b>ShareTokenString</b>&nbsp;&nbsp;&nbsp;(apps/.../share-token.do.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#SortOrderMap" title="apps/server/src/shared/domain/interface/find-options.ts" ><b>SortOrderMap</b>&nbsp;&nbsp;&nbsp;(apps/.../find-options.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#SourceType" title="apps/server/src/modules/news/controller/dto/news.response.ts" ><b>SourceType</b>&nbsp;&nbsp;&nbsp;(apps/.../news.response.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#Strategies" title="apps/server/src/modules/authentication/decorator/auth.decorator.ts" ><b>Strategies</b>&nbsp;&nbsp;&nbsp;(apps/.../auth.decorator.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#SystemPartial" title="apps/server/src/modules/management/seed-data/systems.ts" ><b>SystemPartial</b>&nbsp;&nbsp;&nbsp;(apps/.../systems.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#SystemType" title="apps/server/src/shared/domain/types/system.type.ts" ><b>SystemType</b>&nbsp;&nbsp;&nbsp;(apps/.../system.type.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#TaskCopyParams" title="apps/server/src/modules/task/service/task-copy.service.ts" ><b>TaskCopyParams</b>&nbsp;&nbsp;&nbsp;(apps/.../task-copy.service.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#TaskCopyParentParams" title="apps/server/src/modules/task/types/task-copy-parent.params.ts" ><b>TaskCopyParentParams</b>&nbsp;&nbsp;&nbsp;(apps/.../task-copy-parent.params.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#TaskParentDescriptions" title="apps/server/src/shared/domain/entity/task.entity.ts" ><b>TaskParentDescriptions</b>&nbsp;&nbsp;&nbsp;(apps/.../task.entity.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#UserImportPermissions" title="apps/server/src/modules/user-import/uc/user-import.uc.ts" ><b>UserImportPermissions</b>&nbsp;&nbsp;&nbsp;(apps/.../user-import.uc.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#UserPreferences" title="apps/server/src/modules/account/uc/account.uc.ts" ><b>UserPreferences</b>&nbsp;&nbsp;&nbsp;(apps/.../account.uc.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#UserQuery" title="apps/server/src/modules/user/service/user-query.type.ts" ><b>UserQuery</b>&nbsp;&nbsp;&nbsp;(apps/.../user-query.type.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ValidatableTool" title="apps/server/src/modules/tool/common/service/validation/common-tool-validation.service.ts" ><b>ValidatableTool</b>&nbsp;&nbsp;&nbsp;(apps/.../common-tool-validation.service.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ValidationErrorLogMessage" title="apps/server/src/core/logger/types/logging.types.ts" ><b>ValidationErrorLogMessage</b>&nbsp;&nbsp;&nbsp;(apps/.../logging.types.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#ValueOf" title="apps/server/src/shared/domain/types/value-of.ts" ><b>ValueOf</b>&nbsp;&nbsp;&nbsp;(apps/.../value-of.ts)</a>
+                        </li>
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    <h3>apps/server/src/modules/h5p-editor/controller/dto/ajax/post.body.params.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="AjaxPostBodyParams"></a>
+                    <span class="name "><b>AjaxPostBodyParams</b><a href="#AjaxPostBodyParams"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>LibrariesBodyParams | ContentBodyParams | LibraryParametersBodyParams | undefined</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/domainobject/board/types/any-board-do.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="AnyBoardDo"></a>
+                    <span class="name "><b>AnyBoardDo</b><a href="#AnyBoardDo"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../miscellaneous/typealiases.html#AnyContentElementDo" target="_self" >ColumnBoard | Column | Card | AnyContentElementDo | SubmissionItem</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/domainobject/board/types/any-content-element-do.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="AnyContentElementDo"></a>
+                    <span class="name "><b>AnyContentElementDo</b><a href="#AnyContentElementDo"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../interfaces/File.html" target="_self" >DrawingElement | ExternalToolElement | FileElement | LinkElement | RichTextElement | SubmissionContainerElement</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/board/controller/dto/element/any-content-element.response.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="AnyContentElementResponse"></a>
+                    <span class="name "><b>AnyContentElementResponse</b><a href="#AnyContentElementResponse"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../interfaces/File.html" target="_self" >FileElementResponse | LinkElementResponse | RichTextElementResponse | SubmissionContainerElementResponse | ExternalToolElementResponse | DrawingElementResponse</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/board/controller/dto/element/update-element-content.body.params.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="AnyElementContentBody"></a>
+                    <span class="name "><b>AnyElementContentBody</b><a href="#AnyElementContentBody"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../interfaces/File.html" target="_self" >FileContentBody | DrawingContentBody | LinkContentBody | RichTextContentBody | SubmissionContainerContentBody | ExternalToolContentBody</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/legacy-school/domain/school-system-options.do.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="AnyProvisioningOptions"></a>
+                    <span class="name "><b>AnyProvisioningOptions</b><a href="#AnyProvisioningOptions"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../classes/SchulConneXProvisioningOptions.html" target="_self" >SchulConneXProvisioningOptions</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/legacy-school/interface/any-provisioning-options-interface.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="AnyProvisioningOptionsInterface"></a>
+                    <span class="name "><b>AnyProvisioningOptionsInterface</b><a href="#AnyProvisioningOptionsInterface"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../miscellaneous/typealiases.html#SchulConneXProvisioningOptionsInterface" target="_self" >SchulConneXProvisioningOptionsInterface</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/legacy-school/controller/dto/response/any-provisioning-options.response.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="AnyProvisioningOptionsResponse"></a>
+                    <span class="name "><b>AnyProvisioningOptionsResponse</b><a href="#AnyProvisioningOptionsResponse"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../classes/SchulConneXProvisioningOptionsResponse.html" target="_self" >SchulConneXProvisioningOptionsResponse</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/testing/factory/axios-response.factory.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="AxiosHeadersKeyValue"></a>
+                    <span class="name "><b>AxiosHeadersKeyValue</b><a href="#AxiosHeadersKeyValue"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="AxiosResponseProps"></a>
+                    <span class="name "><b>AxiosResponseProps</b><a href="#AxiosResponseProps"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/entity/base.entity.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="BaseEntityReference"></a>
+                    <span class="name "><b>BaseEntityReference</b><a href="#BaseEntityReference"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Describes the properties available for entities when used as</p>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>&quot;id&quot; | &quot;_id&quot;</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/tool/external-tool/uc/dto/external-tool.types.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="BasicToolConfigDto"></a>
+                    <span class="name "><b>BasicToolConfigDto</b><a href="#BasicToolConfigDto"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../classes/BasicToolConfig.html" target="_self" >BasicToolConfig</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="CustomParameterDto"></a>
+                    <span class="name "><b>CustomParameterDto</b><a href="#CustomParameterDto"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../classes/CustomParameter.html" target="_self" >CustomParameter</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ExternalToolCreate"></a>
+                    <span class="name "><b>ExternalToolCreate</b><a href="#ExternalToolCreate"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>ExternalToolDto&lt;BasicToolConfigDto | Lti11ToolConfigCreate | Oauth2ToolConfigCreate&gt;</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ExternalToolDto"></a>
+                    <span class="name "><b>ExternalToolDto</b><a href="#ExternalToolDto"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ExternalToolUpdate"></a>
+                    <span class="name "><b>ExternalToolUpdate</b><a href="#ExternalToolUpdate"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="Lti11ToolConfigCreate"></a>
+                    <span class="name "><b>Lti11ToolConfigCreate</b><a href="#Lti11ToolConfigCreate"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../classes/Lti11ToolConfig.html" target="_self" >Lti11ToolConfig</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="Lti11ToolConfigUpdate"></a>
+                    <span class="name "><b>Lti11ToolConfigUpdate</b><a href="#Lti11ToolConfigUpdate"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../classes/Lti11ToolConfig.html" target="_self" >PartialBy&lt;Lti11ToolConfig | secret&gt;</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="Oauth2ToolConfigCreate"></a>
+                    <span class="name "><b>Oauth2ToolConfigCreate</b><a href="#Oauth2ToolConfigCreate"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../classes/Oauth2ToolConfig.html" target="_self" >Oauth2ToolConfig</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="Oauth2ToolConfigUpdate"></a>
+                    <span class="name "><b>Oauth2ToolConfigUpdate</b><a href="#Oauth2ToolConfigUpdate"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../classes/Oauth2ToolConfig.html" target="_self" >PartialBy&lt;Oauth2ToolConfig | clientSecret&gt;</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="PartialBy"></a>
+                    <span class="name "><b>PartialBy</b><a href="#PartialBy"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/learnroom/service/board-copy.service.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="BoardCopyParams"></a>
+                    <span class="name "><b>BoardCopyParams</b><a href="#BoardCopyParams"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/board/service/board-do-copy-service/board-do-copy.service.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="BoardDoCopyParams"></a>
+                    <span class="name "><b>BoardDoCopyParams</b><a href="#BoardDoCopyParams"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/entity/legacy-board/boardelement.entity.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="BoardElementProps"></a>
+                    <span class="name "><b>BoardElementProps</b><a href="#BoardElementProps"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="BoardElementReference"></a>
+                    <span class="name "><b>BoardElementReference</b><a href="#BoardElementReference"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>Task | LessonEntity | ColumnBoardTarget</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/entity/legacy-board/board.entity.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="BoardProps"></a>
+                    <span class="name "><b>BoardProps</b><a href="#BoardProps"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/domainobject/board/types/column-board-info.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ColumnBoardInfo"></a>
+                    <span class="name "><b>ColumnBoardInfo</b><a href="#ColumnBoardInfo"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/learnroom/types/room-board.types.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ColumnBoardMetaData"></a>
+                    <span class="name "><b>ColumnBoardMetaData</b><a href="#ColumnBoardMetaData"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="LessonMetaData"></a>
+                    <span class="name "><b>LessonMetaData</b><a href="#LessonMetaData"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="RoomBoardDTO"></a>
+                    <span class="name "><b>RoomBoardDTO</b><a href="#RoomBoardDTO"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="RoomBoardElementDTO"></a>
+                    <span class="name "><b>RoomBoardElementDTO</b><a href="#RoomBoardElementDTO"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/entity/legacy-board/column-board-target.entity.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ColumnBoardTargetProps"></a>
+                    <span class="name "><b>ColumnBoardTargetProps</b><a href="#ColumnBoardTargetProps"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="CommonCartridgeFileBuilderOptions"></a>
+                    <span class="name "><b>CommonCartridgeFileBuilderOptions</b><a href="#CommonCartridgeFileBuilderOptions"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/entity/lesson.entity.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ComponentProperties"></a>
+                    <span class="name "><b>ComponentProperties</b><a href="#ComponentProperties"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/infra/database/mongo-memory-database/types.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ConnectionOptions"></a>
+                    <span class="name "><b>ConnectionOptions</b><a href="#ConnectionOptions"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>connection options not to be used in module options for the in memory db module as it is overriding the connection</p>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../miscellaneous/variables.html#dbName" target="_self" >&quot;type&quot; | &quot;driver&quot; | &quot;clientUrl&quot; | &quot;dbName&quot; | &quot;user&quot; | &quot;password&quot;</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MongoDatabaseModuleOptions"></a>
+                    <span class="name "><b>MongoDatabaseModuleOptions</b><a href="#MongoDatabaseModuleOptions"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../interfaces/Options.html" target="_self" >Omit&lt;MikroOrmModuleSyncOptions | ConnectionOptions&gt;</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/tool/context-external-tool/uc/dto/context-external-tool.types.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ContextExternalToolDto"></a>
+                    <span class="name "><b>ContextExternalToolDto</b><a href="#ContextExternalToolDto"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../interfaces/ContextExternalToolProps.html" target="_self" >ContextExternalToolProps</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ContextExternalToolQuery"></a>
+                    <span class="name "><b>ContextExternalToolQuery</b><a href="#ContextExternalToolQuery"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/tool/external-tool/uc/dto/external-tool-configuration.types.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ContextExternalToolTemplateInfo"></a>
+                    <span class="name "><b>ContextExternalToolTemplateInfo</b><a href="#ContextExternalToolTemplateInfo"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/copy-helper/types/copy.types.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="CopyDictionary"></a>
+                    <span class="name "><b>CopyDictionary</b><a href="#CopyDictionary"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../interfaces/AuthorizableObject.html" target="_self" >Map&lt;EntityId | AuthorizableObject&gt;</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="CopyStatus"></a>
+                    <span class="name "><b>CopyStatus</b><a href="#CopyStatus"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/types/counted.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="Counted"></a>
+                    <span class="name "><b>Counted</b><a href="#Counted"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Counted numbers inform about total counts beside the amount of items in T.</p>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>[T, number]</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/learnroom/service/course-copy.service.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="CourseCopyParams"></a>
+                    <span class="name "><b>CourseCopyParams</b><a href="#CourseCopyParams"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/entity/dashboard.entity.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="DashboardProps"></a>
+                    <span class="name "><b>DashboardProps</b><a href="#DashboardProps"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="GridElementContent"></a>
+                    <span class="name "><b>GridElementContent</b><a href="#GridElementContent"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="GridElementWithPosition"></a>
+                    <span class="name "><b>GridElementWithPosition</b><a href="#GridElementWithPosition"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="GridPosition"></a>
+                    <span class="name "><b>GridPosition</b><a href="#GridPosition"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="GridPositionWithGroupIndex"></a>
+                    <span class="name "><b>GridPositionWithGroupIndex</b><a href="#GridPositionWithGroupIndex"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/repo/scope.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="EmptyResultQueryType"></a>
+                    <span class="name "><b>EmptyResultQueryType</b><a href="#EmptyResultQueryType"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ScopeOperator"></a>
+                    <span class="name "><b>ScopeOperator</b><a href="#ScopeOperator"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>&quot;$and&quot; | &quot;$or&quot;</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/files-storage-client/interfaces/types.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="EntitiesWithFiles"></a>
+                    <span class="name "><b>EntitiesWithFiles</b><a href="#EntitiesWithFiles"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>Task | LessonEntity | Submission</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="EntityWithEmbeddedFiles"></a>
+                    <span class="name "><b>EntityWithEmbeddedFiles</b><a href="#EntityWithEmbeddedFiles"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../classes/Task.html" target="_self" >Task | LessonEntity</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/types/entity-id.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="EntityId"></a>
+                    <span class="name "><b>EntityId</b><a href="#EntityId"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>Entity id type</p>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/core/logger/types/logging.types.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ErrorLogMessage"></a>
+                    <span class="name "><b>ErrorLogMessage</b><a href="#ErrorLogMessage"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="LogMessage"></a>
+                    <span class="name "><b>LogMessage</b><a href="#LogMessage"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="LogMessageData"></a>
+                    <span class="name "><b>LogMessageData</b><a href="#LogMessageData"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>LogMessageDataObject | string | number | boolean | undefined</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="LogMessageDataObject"></a>
+                    <span class="name "><b>LogMessageDataObject</b><a href="#LogMessageDataObject"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="LogMessageWithContext"></a>
+                    <span class="name "><b>LogMessageWithContext</b><a href="#LogMessageWithContext"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ValidationErrorLogMessage"></a>
+                    <span class="name "><b>ValidationErrorLogMessage</b><a href="#ValidationErrorLogMessage"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/infra/feathers/feathers-service.provider.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FeathersServiceParams"></a>
+                    <span class="name "><b>FeathersServiceParams</b><a href="#FeathersServiceParams"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>Record&lt;string | any&gt;</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FeathersServiceResponse"></a>
+                    <span class="name "><b>FeathersServiceResponse</b><a href="#FeathersServiceResponse"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>Record&lt;string | any&gt; | any[]</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/files-storage-client/service/copy-files.service.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FileUrlReplacement"></a>
+                    <span class="name "><b>FileUrlReplacement</b><a href="#FileUrlReplacement"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/rocketchat/rocket-chat.service.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="GenericData"></a>
+                    <span class="name "><b>GenericData</b><a href="#GenericData"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>Record&lt;string | &gt;</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/testing/factory/domainobject/board/column-board.do.factory.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IColumnBoardProperties"></a>
+                    <span class="name "><b>IColumnBoardProperties</b><a href="#IColumnBoardProperties"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../interfaces/ColumnBoardProps.html" target="_self" >Readonly&lt;ColumnBoardProps&gt;</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/learnroom/common-cartridge/common-cartridge-lesson-content-element.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ICommonCartridgeLessonContentProps"></a>
+                    <span class="name "><b>ICommonCartridgeLessonContentProps</b><a href="#ICommonCartridgeLessonContentProps"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>This type represents the content of a Lesson.</p>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/learnroom/common-cartridge/common-cartridge-lti-resource.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ICommonCartridgeLtiResourceProps"></a>
+                    <span class="name "><b>ICommonCartridgeLtiResourceProps</b><a href="#ICommonCartridgeLtiResourceProps"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/learnroom/common-cartridge/common-cartridge-manifest-element.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ICommonCartridgeManifestProps"></a>
+                    <span class="name "><b>ICommonCartridgeManifestProps</b><a href="#ICommonCartridgeManifestProps"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/learnroom/common-cartridge/common-cartridge-metadata-element.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ICommonCartridgeMetadataProps"></a>
+                    <span class="name "><b>ICommonCartridgeMetadataProps</b><a href="#ICommonCartridgeMetadataProps"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/learnroom/common-cartridge/common-cartridge-organization-item-element.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ICommonCartridgeOrganizationProps"></a>
+                    <span class="name "><b>ICommonCartridgeOrganizationProps</b><a href="#ICommonCartridgeOrganizationProps"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/learnroom/common-cartridge/common-cartridge-resource-item-element.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ICommonCartridgeResourceProps"></a>
+                    <span class="name "><b>ICommonCartridgeResourceProps</b><a href="#ICommonCartridgeResourceProps"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>ICommonCartridgeLtiResourceProps | ICommonCartridgeWebContentResourceProps | ICommonCartridgeWebLinkResourceProps</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/learnroom/common-cartridge/common-cartridge-web-content-resource.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ICommonCartridgeWebContentResourceProps"></a>
+                    <span class="name "><b>ICommonCartridgeWebContentResourceProps</b><a href="#ICommonCartridgeWebContentResourceProps"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/learnroom/common-cartridge/common-cartridge-web-link-resource.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ICommonCartridgeWebLinkResourceProps"></a>
+                    <span class="name "><b>ICommonCartridgeWebLinkResourceProps</b><a href="#ICommonCartridgeWebLinkResourceProps"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/interface/account.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IdmAccount"></a>
+                    <span class="name "><b>IdmAccount</b><a href="#IdmAccount"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IdmAccountUpdate"></a>
+                    <span class="name "><b>IdmAccountUpdate</b><a href="#IdmAccountUpdate"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../classes/Account.html" target="_self" >Omit&lt;IdmAccount | id&gt;</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/entity/account.entity.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IdmAccountProperties"></a>
+                    <span class="name "><b>IdmAccountProperties</b><a href="#IdmAccountProperties"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../entitys/Account.html" target="_self" >Readonly&lt;Omit&lt;Account, BaseEntityWithTimestamps&gt;&gt;</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/tool/external-tool/entity/external-tool.entity.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IExternalToolProperties"></a>
+                    <span class="name "><b>IExternalToolProperties</b><a href="#IExternalToolProperties"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../entitys/ExternalToolEntity.html" target="_self" >Readonly&lt;Omit&lt;ExternalToolEntity, BaseEntityWithTimestamps&gt;&gt;</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/entity/import-user.entity.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IImportUserRoleName"></a>
+                    <span class="name "><b>IImportUserRoleName</b><a href="#IImportUserRoleName"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../entitys/Role.html" target="_self" >RoleName.ADMINISTRATOR | RoleName.TEACHER | RoleName.STUDENT</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/controller/transformer/sanitize-html.transformer.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IInputFormatsConfig"></a>
+                    <span class="name "><b>IInputFormatsConfig</b><a href="#IInputFormatsConfig"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/entity/ltitool.entity.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ILtiToolProperties"></a>
+                    <span class="name "><b>ILtiToolProperties</b><a href="#ILtiToolProperties"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../entitys/LtiTool.html" target="_self" >Readonly&lt;Omit&lt;LtiTool, BaseEntityWithTimestamps&gt;&gt;</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/types/session.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ISession"></a>
+                    <span class="name "><b>ISession</b><a href="#ISession"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/types/news.types.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IUpdateNews"></a>
+                    <span class="name "><b>IUpdateNews</b><a href="#IUpdateNews"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>news interface for updating news</p>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../interfaces/CreateNews.html" target="_self" >Partial&lt;CreateNews&gt;</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="NewsTarget"></a>
+                    <span class="name "><b>NewsTarget</b><a href="#NewsTarget"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>SchoolEntity | TeamEntity | Course</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/entity/user-login-migration.entity.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IUserLoginMigration"></a>
+                    <span class="name "><b>IUserLoginMigration</b><a href="#IUserLoginMigration"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../interfaces/User.html" target="_self" >Readonly&lt;Omit&lt;UserLoginMigrationEntity, BaseEntityWithTimestamps&gt;&gt;</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/interface/rolename.enum.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IUserRoleName"></a>
+                    <span class="name "><b>IUserRoleName</b><a href="#IUserRoleName"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../entitys/Role.html" target="_self" >RoleName.ADMINISTRATOR | RoleName.TEACHER | RoleName.STUDENT | RoleName.SUPERHERO | RoleName.EXPERT | RoleName.DEMOSTUDENT | RoleName.DEMOTEACHER</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/entity/video-conference.entity.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="IVideoConferenceProperties"></a>
+                    <span class="name "><b>IVideoConferenceProperties</b><a href="#IVideoConferenceProperties"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../entitys/VideoConference.html" target="_self" >Readonly&lt;Omit&lt;VideoConference, BaseEntityWithTimestamps&gt;&gt;</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/types/learnroom.types.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="LearnroomMetadata"></a>
+                    <span class="name "><b>LearnroomMetadata</b><a href="#LearnroomMetadata"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/lesson/types/lesson-copy.params.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="LessonCopyParams"></a>
+                    <span class="name "><b>LessonCopyParams</b><a href="#LessonCopyParams"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/lesson/types/lesson-copy-parent.params.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="LessonCopyParentParams"></a>
+                    <span class="name "><b>LessonCopyParentParams</b><a href="#LessonCopyParentParams"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/meta-tag-extractor/types/meta-data.type.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MetaData"></a>
+                    <span class="name "><b>MetaData</b><a href="#MetaData"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MetaDataEntityType"></a>
+                    <span class="name "><b>MetaDataEntityType</b><a href="#MetaDataEntityType"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>&quot;external&quot; | &quot;course&quot; | &quot;board&quot; | &quot;task&quot; | &quot;lesson&quot; | &quot;unknown&quot;</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/news/uc/news.uc.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="NewsPermission"></a>
+                    <span class="name "><b>NewsPermission</b><a href="#NewsPermission"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../miscellaneous/enumerations.html#Permission" target="_self" >Permission.NEWS_VIEW | Permission.NEWS_EDIT</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/lesson/service/nexboard.service.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="NexboardResponse"></a>
+                    <span class="name "><b>NexboardResponse</b><a href="#NexboardResponse"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/lesson/service/etherpad.service.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="PadResponse"></a>
+                    <span class="name "><b>PadResponse</b><a href="#PadResponse"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/board/repo/recursive-save.visitor.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ParentData"></a>
+                    <span class="name "><b>ParentData</b><a href="#ParentData"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/tldraw/types/persistence-type.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="Persitence"></a>
+                    <span class="name "><b>Persitence</b><a href="#Persitence"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/legacy-school/interface/provisioning-options-interface.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ProvisioningOptionsInterface"></a>
+                    <span class="name "><b>ProvisioningOptionsInterface</b><a href="#ProvisioningOptionsInterface"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>Partial&lt;literal type&gt;</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/testing/factory/readable-stream-with-file-type.factory.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ReadableStreamWithFileTypeProps"></a>
+                    <span class="name "><b>ReadableStreamWithFileTypeProps</b><a href="#ReadableStreamWithFileTypeProps"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/authorization/domain/service/reference.loader.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="RepoType"></a>
+                    <span class="name "><b>RepoType</b><a href="#RepoType"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>TaskRepo | CourseRepo | UserRepo | LegacySchoolRepo | TeamsRepo | CourseGroupRepo | SubmissionRepo | SchoolExternalToolRepo | BoardDoAuthorizableService | ContextExternalToolAuthorizableService | LessonService</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/core/logger/interfaces/legacy-logger.interface.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="RequestLoggingBody"></a>
+                    <span class="name "><b>RequestLoggingBody</b><a href="#RequestLoggingBody"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/user/controller/dto/resolved-user.response.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="Role"></a>
+                    <span class="name "><b>Role</b><a href="#Role"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/tool/school-external-tool/uc/dto/school-external-tool.types.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SchoolExternalToolDto"></a>
+                    <span class="name "><b>SchoolExternalToolDto</b><a href="#SchoolExternalToolDto"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../interfaces/SchoolExternalToolProps.html" target="_self" >SchoolExternalToolProps</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SchoolExternalToolQuery"></a>
+                    <span class="name "><b>SchoolExternalToolQuery</b><a href="#SchoolExternalToolQuery"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SchoolExternalToolQueryInput"></a>
+                    <span class="name "><b>SchoolExternalToolQueryInput</b><a href="#SchoolExternalToolQueryInput"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/board/service/board-do-copy-service/school-specific-file-copy.interface.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SchoolSpecificFileCopyServiceCopyParams"></a>
+                    <span class="name "><b>SchoolSpecificFileCopyServiceCopyParams</b><a href="#SchoolSpecificFileCopyServiceCopyParams"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SchoolSpecificFileCopyServiceProps"></a>
+                    <span class="name "><b>SchoolSpecificFileCopyServiceProps</b><a href="#SchoolSpecificFileCopyServiceProps"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/school/testing/school-year.factory.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SchoolYearTransientParams"></a>
+                    <span class="name "><b>SchoolYearTransientParams</b><a href="#SchoolYearTransientParams"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/testing/factory/schoolyear.factory.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SchoolYearTransientParams"></a>
+                    <span class="name "><b>SchoolYearTransientParams</b><a href="#SchoolYearTransientParams"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/legacy-school/interface/schulconnex-provisioning-options-interface.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SchulConneXProvisioningOptionsInterface"></a>
+                    <span class="name "><b>SchulConneXProvisioningOptionsInterface</b><a href="#SchulConneXProvisioningOptionsInterface"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../interfaces/Options.html" target="_self" >Required&lt;Pick&lt;ProvisioningOptionsInterface, &quot;groupProvisioningClassesEnabled&quot; | &quot;groupProvisioningCoursesEnabled&quot; | &quot;groupProvisioningOtherEnabled&quot;&gt;&gt;</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/infra/identity-management/identity-management.service.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SearchOptions"></a>
+                    <span class="name "><b>SearchOptions</b><a href="#SearchOptions"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/management/seed-data/federalstates.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SeedFederalStateProperties"></a>
+                    <span class="name "><b>SeedFederalStateProperties</b><a href="#SeedFederalStateProperties"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/management/seed-data/roles.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SeedRoleProperties"></a>
+                    <span class="name "><b>SeedRoleProperties</b><a href="#SeedRoleProperties"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/management/seed-data/schools.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SeedSchoolProperties"></a>
+                    <span class="name "><b>SeedSchoolProperties</b><a href="#SeedSchoolProperties"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/management/seed-data/schoolyears.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SeedSchoolYearProperties"></a>
+                    <span class="name "><b>SeedSchoolYearProperties</b><a href="#SeedSchoolYearProperties"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/sharing/domainobject/share-token.do.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ShareTokenContext"></a>
+                    <span class="name "><b>ShareTokenContext</b><a href="#ShareTokenContext"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ShareTokenPayload"></a>
+                    <span class="name "><b>ShareTokenPayload</b><a href="#ShareTokenPayload"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ShareTokenString"></a>
+                    <span class="name "><b>ShareTokenString</b><a href="#ShareTokenString"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/interface/find-options.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SortOrderMap"></a>
+                    <span class="name "><b>SortOrderMap</b><a href="#SortOrderMap"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>Partial&lt;Record&lt;T, SortOrder&gt;&gt;</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/news/controller/dto/news.response.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SourceType"></a>
+                    <span class="name "><b>SourceType</b><a href="#SourceType"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/authentication/decorator/auth.decorator.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="Strategies"></a>
+                    <span class="name "><b>Strategies</b><a href="#Strategies"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/management/seed-data/systems.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SystemPartial"></a>
+                    <span class="name "><b>SystemPartial</b><a href="#SystemPartial"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/types/system.type.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SystemType"></a>
+                    <span class="name "><b>SystemType</b><a href="#SystemType"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../miscellaneous/enumerations.html#SystemTypeEnum" target="_self" >SystemTypeEnum</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/task/service/task-copy.service.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="TaskCopyParams"></a>
+                    <span class="name "><b>TaskCopyParams</b><a href="#TaskCopyParams"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/task/types/task-copy-parent.params.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="TaskCopyParentParams"></a>
+                    <span class="name "><b>TaskCopyParentParams</b><a href="#TaskCopyParentParams"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/entity/task.entity.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="TaskParentDescriptions"></a>
+                    <span class="name "><b>TaskParentDescriptions</b><a href="#TaskParentDescriptions"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/user-import/uc/user-import.uc.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="UserImportPermissions"></a>
+                    <span class="name "><b>UserImportPermissions</b><a href="#UserImportPermissions"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>        <code><a href="../miscellaneous/enumerations.html#Permission" target="_self" >Permission.SCHOOL_IMPORT_USERS_MIGRATE | Permission.SCHOOL_IMPORT_USERS_UPDATE | Permission.SCHOOL_IMPORT_USERS_VIEW</a></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/account/uc/account.uc.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="UserPreferences"></a>
+                    <span class="name "><b>UserPreferences</b><a href="#UserPreferences"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>literal type</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/user/service/user-query.type.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="UserQuery"></a>
+                    <span class="name "><b>UserQuery</b><a href="#UserQuery"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/modules/tool/common/service/validation/common-tool-validation.service.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ValidatableTool"></a>
+                    <span class="name "><b>ValidatableTool</b><a href="#ValidatableTool"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code>SchoolExternalTool | ContextExternalTool</code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>    <h3>apps/server/src/shared/domain/types/value-of.ts</h3>
+    <section data-compodoc="block-typealias">
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ValueOf"></a>
+                    <span class="name "><b>ValueOf</b><a href="#ValueOf"><span class="icon ion-ios-link"></span></a></span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <div class="io-description"><p>The type of the values in T (counterpart to keyof)</p>
+</div>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                    <code>    <code></code>
+</code>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'miscellaneous-typealiases';
+            var COMPODOC_CURRENT_PAGE_URL = 'typealiases.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

@@ -1,0 +1,915 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>schulcloud-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >HydraSsoService</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>apps/server/src/modules/oauth/service/hydra.service.ts</code>
+        </p>
+
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#HOST" >HOST</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#generateConfig" >generateConfig</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#get" >get</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#initAuth" >initAuth</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Protected</span>
+                                <a href="#processCookies" >processCookies</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#processRedirect" >processRedirect</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(ltiRepo: <a href="../injectables/LtiToolRepo.html" target="_self">LtiToolRepo</a>, httpService: HttpService, oAuthEncryptionService: <a href="../interfaces/EncryptionService.html" target="_self">EncryptionService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/oauth/service/hydra.service.ts:19</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>ltiRepo</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/LtiToolRepo.html" target="_self" >LtiToolRepo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>httpService</td>
+                                                  
+                                                        <td>
+                                                                    <code>HttpService</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>oAuthEncryptionService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/EncryptionService.html" target="_self" >EncryptionService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/LegacyLogger.html" target="_self" >LegacyLogger</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="generateConfig"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>generateConfig</b></span>
+                        <a href="#generateConfig"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>generateConfig(oauthClientId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="99"
+                                    class="link-to-prism">apps/server/src/modules/oauth/service/hydra.service.ts:99</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>oauthClientId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;OauthConfigEntity&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="get"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>get</b></span>
+                        <a href="#get"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>get(url: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, axiosConfig: AxiosRequestConfig)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="126"
+                                    class="link-to-prism">apps/server/src/modules/oauth/service/hydra.service.ts:126</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>url</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>axiosConfig</td>
+                                            <td>
+                                                        <code>AxiosRequestConfig</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;AxiosResponse&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="initAuth"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>initAuth</b></span>
+                        <a href="#initAuth"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>initAuth(oauthConfig: <a href="../classes/OauthConfigEntity.html" target="_self">OauthConfigEntity</a>, axiosConfig: AxiosRequestConfig)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">apps/server/src/modules/oauth/service/hydra.service.ts:29</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>oauthConfig</td>
+                                            <td>
+                                                            <code><a href="../classes/OauthConfigEntity.html" target="_self" >OauthConfigEntity</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>axiosConfig</td>
+                                            <td>
+                                                        <code>AxiosRequestConfig</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;AxiosResponse&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="processCookies"></a>
+                    <span class="name">
+                            <span class="modifier">Protected</span>
+                        <span ><b>processCookies</b></span>
+                        <a href="#processCookies"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>processCookies(setCookies: string[], cookies: <a href="../classes/CookiesDto.html" target="_self">CookiesDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="79"
+                                    class="link-to-prism">apps/server/src/modules/oauth/service/hydra.service.ts:79</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>setCookies</td>
+                                            <td>
+                                                        <code>string[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>cookies</td>
+                                            <td>
+                                                            <code><a href="../classes/CookiesDto.html" target="_self" >CookiesDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/CookiesDto.html" target="_self" >CookiesDto</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="processRedirect"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>processRedirect</b></span>
+                        <a href="#processRedirect"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>processRedirect(dto: <a href="../classes/HydraRedirectDto.html" target="_self">HydraRedirectDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">apps/server/src/modules/oauth/service/hydra.service.ts:43</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>dto</td>
+                                            <td>
+                                                            <code><a href="../classes/HydraRedirectDto.html" target="_self" >HydraRedirectDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/HydraRedirectDto.html" target="_self" >Promise&lt;HydraRedirectDto&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="HOST"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>HOST</b></span>
+                        <a href="#HOST"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Configuration.get(&#x27;HOST&#x27;) as string</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/modules/oauth/service/hydra.service.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
+import { DefaultEncryptionService, EncryptionService } from &#x27;@infra/encryption&#x27;;
+import { AuthorizationParams } from &#x27;@modules/oauth/controller/dto/authorization.params&#x27;;
+import { CookiesDto } from &#x27;@modules/oauth/service/dto/cookies.dto&#x27;;
+import { HydraRedirectDto } from &#x27;@modules/oauth/service/dto/hydra.redirect.dto&#x27;;
+import { HttpService } from &#x27;@nestjs/axios&#x27;;
+import { Inject, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
+import { Injectable } from &#x27;@nestjs/common/decorators/core/injectable.decorator&#x27;;
+import { LtiToolDO } from &#x27;@shared/domain/domainobject/ltitool.do&#x27;;
+import { OauthConfigEntity } from &#x27;@shared/domain/entity&#x27;;
+import { LtiToolRepo } from &#x27;@shared/repo&#x27;;
+import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
+import { AxiosRequestConfig, AxiosResponse } from &#x27;axios&#x27;;
+import { nanoid } from &#x27;nanoid&#x27;;
+import QueryString from &#x27;qs&#x27;;
+import { Observable, firstValueFrom } from &#x27;rxjs&#x27;;
+
+@Injectable()
+export class HydraSsoService {
+	constructor(
+		private readonly ltiRepo: LtiToolRepo,
+		private readonly httpService: HttpService,
+		@Inject(DefaultEncryptionService) private readonly oAuthEncryptionService: EncryptionService,
+		private readonly logger: LegacyLogger
+	) {}
+
+	private readonly HOST: string &#x3D; Configuration.get(&#x27;HOST&#x27;) as string;
+
+	async initAuth(oauthConfig: OauthConfigEntity, axiosConfig: AxiosRequestConfig): Promise&lt;AxiosResponse&gt; {
+		const query &#x3D; QueryString.stringify({
+			response_type: oauthConfig.responseType,
+			scope: oauthConfig.scope,
+			client_id: oauthConfig.clientId,
+			redirect_uri: oauthConfig.redirectUri,
+			state: nanoid(15),
+		});
+		this.logger.log(&#x60;${oauthConfig.authEndpoint}?${query}&#x60;);
+		this.logger.log(axiosConfig);
+		const res: Promise&lt;AxiosResponse&gt; &#x3D; this.get(&#x60;${oauthConfig.authEndpoint}?${query}&#x60;, axiosConfig);
+		return res;
+	}
+
+	async processRedirect(dto: HydraRedirectDto): Promise&lt;HydraRedirectDto&gt; {
+		const localDto: HydraRedirectDto &#x3D; new HydraRedirectDto(dto);
+		let location &#x3D; &#x27;&#x27;;
+
+		if (typeof localDto.response.headers.location &#x3D;&#x3D;&#x3D; &#x27;string&#x27;) {
+			({ location } &#x3D; localDto.response.headers);
+		}
+
+		const isLocal &#x3D; !location.startsWith(&#x27;http&#x27;);
+		const isHydra &#x3D; location.startsWith(Configuration.get(&#x27;HYDRA_PUBLIC_URI&#x27;) as string);
+
+		// locations of schulcloud cookies are a relative path
+		if (isLocal) {
+			location &#x3D; &#x60;${this.HOST}${location}&#x60;;
+		}
+
+		if (localDto.response.headers[&#x27;set-cookie&#x27;]) {
+			localDto.cookies &#x3D; this.processCookies(localDto.response.headers[&#x27;set-cookie&#x27;], dto.cookies);
+		}
+
+		const headerCookies: string &#x3D; isHydra
+			? localDto.cookies.hydraCookies.join(&#x27;; &#x27;)
+			: localDto.cookies.localCookies.join(&#x27;; &#x27;);
+
+		localDto.axiosConfig.headers &#x3D; {
+			Referer: localDto.referer,
+			Cookie: headerCookies,
+		};
+		this.logger.log(localDto);
+		localDto.response &#x3D; await this.get(location, localDto.axiosConfig);
+		localDto.referer &#x3D; location;
+		localDto.currentRedirect +&#x3D; 1;
+
+		return localDto;
+	}
+
+	protected processCookies(setCookies: string[], cookies: CookiesDto): CookiesDto {
+		const { localCookies } &#x3D; cookies;
+		const { hydraCookies } &#x3D; cookies;
+
+		setCookies.forEach((item: string): void &#x3D;&gt; {
+			const cookie: string &#x3D; item.split(&#x27;;&#x27;)[0];
+			if (cookie.startsWith(&#x27;oauth2&#x27;) &amp;&amp; !hydraCookies.includes(cookie)) {
+				hydraCookies.push(cookie);
+			} else if (!localCookies.includes(cookie)) {
+				localCookies.push(cookie);
+			}
+		});
+
+		const cookiesDto &#x3D; new CookiesDto({
+			localCookies,
+			hydraCookies,
+		});
+		return cookiesDto;
+	}
+
+	async generateConfig(oauthClientId: string): Promise&lt;OauthConfigEntity&gt; {
+		const tool: LtiToolDO &#x3D; await this.ltiRepo.findByOauthClientId(oauthClientId);
+
+		// Needs to be checked, because the fields can be undefined
+		if (!tool.oAuthClientId || !tool.secret) {
+			throw new InternalServerErrorException(oauthClientId, &#x27;Suitable tool not found!&#x27;);
+		}
+
+		const hydraUri: string &#x3D; Configuration.get(&#x27;HYDRA_PUBLIC_URI&#x27;) as string;
+		const hydraOauthConfig &#x3D; new OauthConfigEntity({
+			authEndpoint: &#x60;${hydraUri}/oauth2/auth&#x60;,
+			clientId: tool.oAuthClientId,
+			clientSecret: this.oAuthEncryptionService.encrypt(tool.secret),
+			grantType: &#x27;authorization_code&#x27;,
+			issuer: &#x60;${hydraUri}/&#x60;,
+			jwksEndpoint: &#x60;${hydraUri}/.well-known/jwks.json&#x60;,
+			logoutEndpoint: &#x60;${hydraUri}/oauth2/sessions/logout&#x60;,
+			provider: &#x27;hydra&#x27;,
+			redirectUri: &#x60;${Configuration.get(&#x27;HOST&#x27;) as string}/api/v3/sso/hydra/${oauthClientId}&#x60;,
+			responseType: &#x27;code&#x27;,
+			scope: Configuration.get(&#x27;NEXTCLOUD_SCOPES&#x27;) as string, // Only Nextcloud is currently supported
+			tokenEndpoint: &#x60;${hydraUri}/oauth2/token&#x60;,
+		});
+
+		return hydraOauthConfig;
+	}
+
+	private get(url: string, axiosConfig: AxiosRequestConfig): Promise&lt;AxiosResponse&gt; {
+		const respObservable: Observable&lt;AxiosResponse&gt; &#x3D; this.httpService.get&lt;AuthorizationParams&gt;(url, axiosConfig);
+		const res: Promise&lt;AxiosResponse&gt; &#x3D; firstValueFrom(respObservable);
+		return res;
+	}
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'HydraSsoService.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

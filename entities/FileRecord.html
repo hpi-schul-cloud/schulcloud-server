@@ -1,0 +1,975 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>schulcloud-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content entity">
+                   <div class="content-data">
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Entities</li>
+  <li class="breadcrumb-item" >FileRecord</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>apps/server/src/modules/files-storage/entity/filerecord.entity.ts</code>
+        </p>
+
+
+            <p class="comment">
+                <h3>Description</h3>
+            </p>
+            <p class="comment">
+                <p>Note: The file record entity will not manage any entity relations by itself.
+That&#39;s why we do not map any relations in the entity class
+and instead just use the plain object ids.</p>
+
+            </p>
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#_creatorId" >_creatorId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#_isCopyFrom" >_isCopyFrom</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#_parentId" >_parentId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#_schoolId" >_schoolId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#deletedSince" >deletedSince</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#mimeType" >mimeType</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#name" >name</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                <a href="#parentType" >parentType</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#securityCheck" >securityCheck</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#size" >size</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_creatorId"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>_creatorId</b></span>
+                        <a href="#_creatorId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>ObjectId</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Property({fieldName: &#x27;creator&#x27;, nullable: true})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="132" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:132</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_isCopyFrom"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>_isCopyFrom</b></span>
+                        <a href="#_isCopyFrom"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>ObjectId</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Property({fieldName: &#x27;isCopyFrom&#x27;, nullable: true})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="150" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:150</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_parentId"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>_parentId</b></span>
+                        <a href="#_parentId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>ObjectId</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Index()<br />@Property({fieldName: &#x27;parent&#x27;})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="125" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:125</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="_schoolId"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>_schoolId</b></span>
+                        <a href="#_schoolId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>ObjectId</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Property({fieldName: &#x27;school&#x27;})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="143" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:143</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deletedSince"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>deletedSince</b></span>
+                        <a href="#deletedSince"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Index({options: undefined})<br />@Property({nullable: true})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="105" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:105</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mimeType"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>mimeType</b></span>
+                        <a href="#mimeType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Property()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="114" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:114</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="name"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>name</b></span>
+                        <a href="#name"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Property()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="111" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:111</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="parentType"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                        <span ><b>parentType</b></span>
+                        <a href="#parentType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#FileRecordParentType" target="_self" >FileRecordParentType</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Index()<br />@Enum()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="121" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:121</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="securityCheck"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>securityCheck</b></span>
+                        <a href="#securityCheck"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../classes/FileRecordSecurityCheck.html" target="_self" >FileRecordSecurityCheck</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Embedded(undefined, {object: true, nullable: false})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="117" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:117</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="size"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>size</b></span>
+                        <a href="#size"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Property()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="108" class="link-to-prism">apps/server/src/modules/files-storage/entity/filerecord.entity.ts:108</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { PreviewInputMimeTypes } from &#x27;@infra/preview-generator&#x27;;
+import { Embeddable, Embedded, Entity, Enum, Index, Property } from &#x27;@mikro-orm/core&#x27;;
+import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+import { BadRequestException } from &#x27;@nestjs/common&#x27;;
+import { BaseEntityWithTimestamps } from &#x27;@shared/domain/entity&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import path from &#x27;path&#x27;;
+import { v4 as uuid } from &#x27;uuid&#x27;;
+import { ErrorType } from &#x27;../error&#x27;;
+
+export enum ScanStatus {
+	PENDING &#x3D; &#x27;pending&#x27;,
+	VERIFIED &#x3D; &#x27;verified&#x27;,
+	BLOCKED &#x3D; &#x27;blocked&#x27;,
+	WONT_CHECK &#x3D; &#x27;wont_check&#x27;,
+	ERROR &#x3D; &#x27;error&#x27;,
+}
+
+export enum FileRecordParentType {
+	&#x27;User&#x27; &#x3D; &#x27;users&#x27;,
+	&#x27;School&#x27; &#x3D; &#x27;schools&#x27;,
+	&#x27;Course&#x27; &#x3D; &#x27;courses&#x27;,
+	&#x27;Task&#x27; &#x3D; &#x27;tasks&#x27;,
+	&#x27;Lesson&#x27; &#x3D; &#x27;lessons&#x27;,
+	&#x27;Submission&#x27; &#x3D; &#x27;submissions&#x27;,
+	&#x27;BoardNode&#x27; &#x3D; &#x27;boardnodes&#x27;,
+}
+
+export enum PreviewStatus {
+	PREVIEW_POSSIBLE &#x3D; &#x27;preview_possible&#x27;,
+	AWAITING_SCAN_STATUS &#x3D; &#x27;awaiting_scan_status&#x27;,
+	PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR &#x3D; &#x27;preview_not_possible_scan_status_error&#x27;,
+	PREVIEW_NOT_POSSIBLE_SCAN_STATUS_WONT_CHECK &#x3D; &#x27;preview_not_possible_scan_status_wont_check&#x27;,
+	PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED &#x3D; &#x27;preview_not_possible_scan_status_blocked&#x27;,
+	PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE &#x3D; &#x27;preview_not_possible_wrong_mime_type&#x27;,
+}
+
+export interface FileRecordSecurityCheckProperties {
+	status?: ScanStatus;
+	reason?: string;
+	requestToken?: string;
+}
+@Embeddable()
+export class FileRecordSecurityCheck {
+	@Enum()
+	status: ScanStatus &#x3D; ScanStatus.PENDING;
+
+	@Property()
+	reason &#x3D; &#x27;not yet scanned&#x27;;
+
+	@Property()
+	requestToken?: string &#x3D; uuid();
+
+	@Property()
+	createdAt &#x3D; new Date();
+
+	@Property()
+	updatedAt &#x3D; new Date();
+
+	constructor(props: FileRecordSecurityCheckProperties) {
+		if (props.status !&#x3D;&#x3D; undefined) {
+			this.status &#x3D; props.status;
+		}
+		if (props.reason !&#x3D;&#x3D; undefined) {
+			this.reason &#x3D; props.reason;
+		}
+		if (props.requestToken !&#x3D;&#x3D; undefined) {
+			this.requestToken &#x3D; props.requestToken;
+		}
+	}
+}
+
+export interface FileRecordProperties {
+	size: number;
+	name: string;
+	mimeType: string;
+	parentType: FileRecordParentType;
+	parentId: EntityId;
+	creatorId?: EntityId;
+	schoolId: EntityId;
+	deletedSince?: Date;
+	isCopyFrom?: EntityId;
+}
+
+interface ParentInfo {
+	schoolId: EntityId;
+	parentId: EntityId;
+	parentType: FileRecordParentType;
+}
+
+// TODO: EntityWithSchool
+
+/**
+ * Note: The file record entity will not manage any entity relations by itself.
+ * That&#x27;s why we do not map any relations in the entity class
+ * and instead just use the plain object ids.
+ */
+@Entity({ tableName: &#x27;filerecords&#x27; })
+@Index({ properties: [&#x27;_schoolId&#x27;, &#x27;_parentId&#x27;], options: { background: true } })
+// https://github.com/mikro-orm/mikro-orm/issues/1230
+@Index({ options: { &#x27;securityCheck.requestToken&#x27;: 1 } })
+export class FileRecord extends BaseEntityWithTimestamps {
+	@Index({ options: { expireAfterSeconds: 7 * 24 * 60 * 60 } })
+	@Property({ nullable: true })
+	deletedSince?: Date;
+
+	@Property()
+	size: number;
+
+	@Property()
+	name: string;
+
+	@Property()
+	mimeType: string; // TODO mime-type enum?
+
+	@Embedded(() &#x3D;&gt; FileRecordSecurityCheck, { object: true, nullable: false })
+	securityCheck: FileRecordSecurityCheck;
+
+	@Index()
+	@Enum()
+	parentType: FileRecordParentType;
+
+	@Index()
+	@Property({ fieldName: &#x27;parent&#x27; })
+	_parentId: ObjectId;
+
+	get parentId(): EntityId {
+		return this._parentId.toHexString();
+	}
+
+	@Property({ fieldName: &#x27;creator&#x27;, nullable: true })
+	_creatorId?: ObjectId;
+
+	get creatorId(): EntityId | undefined {
+		return this._creatorId?.toHexString();
+	}
+
+	set creatorId(userId: EntityId | undefined) {
+		this._creatorId &#x3D; userId !&#x3D;&#x3D; undefined ? new ObjectId(userId) : undefined;
+	}
+
+	@Property({ fieldName: &#x27;school&#x27; })
+	_schoolId: ObjectId;
+
+	get schoolId(): EntityId {
+		return this._schoolId.toHexString();
+	}
+
+	@Property({ fieldName: &#x27;isCopyFrom&#x27;, nullable: true })
+	_isCopyFrom?: ObjectId;
+
+	get isCopyFrom(): EntityId | undefined {
+		const result &#x3D; this._isCopyFrom?.toHexString();
+
+		return result;
+	}
+
+	constructor(props: FileRecordProperties) {
+		super();
+		this.size &#x3D; props.size;
+		this.name &#x3D; props.name;
+		this.mimeType &#x3D; props.mimeType;
+		this.parentType &#x3D; props.parentType;
+		this._parentId &#x3D; new ObjectId(props.parentId);
+		if (props.creatorId !&#x3D;&#x3D; undefined) {
+			this._creatorId &#x3D; new ObjectId(props.creatorId);
+		}
+		this._schoolId &#x3D; new ObjectId(props.schoolId);
+		if (props.isCopyFrom) {
+			this._isCopyFrom &#x3D; new ObjectId(props.isCopyFrom);
+		}
+		this.securityCheck &#x3D; new FileRecordSecurityCheck({});
+		this.deletedSince &#x3D; props.deletedSince;
+	}
+
+	public updateSecurityCheckStatus(status: ScanStatus, reason: string): void {
+		this.securityCheck.status &#x3D; status;
+		this.securityCheck.reason &#x3D; reason;
+		this.securityCheck.updatedAt &#x3D; new Date();
+		this.securityCheck.requestToken &#x3D; undefined;
+	}
+
+	public getSecurityToken(): string | undefined {
+		return this.securityCheck.requestToken;
+	}
+
+	public copy(userId: EntityId, targetParentInfo: ParentInfo): FileRecord {
+		const { size, name, mimeType, id } &#x3D; this;
+		const { parentType, parentId, schoolId } &#x3D; targetParentInfo;
+
+		const fileRecordCopy &#x3D; new FileRecord({
+			size,
+			name,
+			mimeType,
+			parentType,
+			parentId,
+			creatorId: userId,
+			schoolId,
+			isCopyFrom: id,
+		});
+
+		if (this.isVerified()) {
+			fileRecordCopy.securityCheck &#x3D; this.securityCheck;
+		}
+
+		return fileRecordCopy;
+	}
+
+	public markForDelete(): void {
+		this.deletedSince &#x3D; new Date();
+	}
+
+	public unmarkForDelete(): void {
+		this.deletedSince &#x3D; undefined;
+	}
+
+	public setName(name: string): void {
+		if (name.length &#x3D;&#x3D;&#x3D; 0) {
+			throw new BadRequestException(ErrorType.FILE_NAME_EMPTY);
+		}
+
+		this.name &#x3D; name;
+	}
+
+	public hasName(name: string): boolean {
+		const hasName &#x3D; this.name &#x3D;&#x3D;&#x3D; name;
+
+		return hasName;
+	}
+
+	public getName(): string {
+		return this.name;
+	}
+
+	public isBlocked(): boolean {
+		const isBlocked &#x3D; this.securityCheck.status &#x3D;&#x3D;&#x3D; ScanStatus.BLOCKED;
+
+		return isBlocked;
+	}
+
+	public hasScanStatusError(): boolean {
+		const hasError &#x3D; this.securityCheck.status &#x3D;&#x3D;&#x3D; ScanStatus.ERROR;
+
+		return hasError;
+	}
+
+	public hasScanStatusWontCheck(): boolean {
+		const hasWontCheckStatus &#x3D; this.securityCheck.status &#x3D;&#x3D;&#x3D; ScanStatus.WONT_CHECK;
+
+		return hasWontCheckStatus;
+	}
+
+	public isPending(): boolean {
+		const isPending &#x3D; this.securityCheck.status &#x3D;&#x3D;&#x3D; ScanStatus.PENDING;
+
+		return isPending;
+	}
+
+	public isVerified(): boolean {
+		const isVerified &#x3D; this.securityCheck.status &#x3D;&#x3D;&#x3D; ScanStatus.VERIFIED;
+
+		return isVerified;
+	}
+
+	public isPreviewPossible(): boolean {
+		const isPreviewPossible &#x3D; Object.values&lt;string&gt;(PreviewInputMimeTypes).includes(this.mimeType);
+
+		return isPreviewPossible;
+	}
+
+	public getParentInfo(): ParentInfo {
+		const { parentId, parentType, schoolId } &#x3D; this;
+
+		return { parentId, parentType, schoolId };
+	}
+
+	public getSchoolId(): EntityId {
+		return this.schoolId;
+	}
+
+	public getPreviewStatus(): PreviewStatus {
+		if (this.isBlocked()) {
+			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED;
+		}
+
+		if (!this.isPreviewPossible()) {
+			return PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE;
+		}
+
+		if (this.isVerified()) {
+			return PreviewStatus.PREVIEW_POSSIBLE;
+		}
+
+		if (this.isPending()) {
+			return PreviewStatus.AWAITING_SCAN_STATUS;
+		}
+
+		if (this.hasScanStatusWontCheck()) {
+			return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_WONT_CHECK;
+		}
+
+		return PreviewStatus.PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR;
+	}
+
+	public get fileNameWithoutExtension(): string {
+		const filenameObj &#x3D; path.parse(this.name);
+
+		return filenameObj.name;
+	}
+
+	public removeCreatorId(): void {
+		this.creatorId &#x3D; undefined;
+	}
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'entity';
+            var COMPODOC_CURRENT_PAGE_URL = 'FileRecord.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

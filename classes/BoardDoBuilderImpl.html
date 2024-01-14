@@ -1,0 +1,1699 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>schulcloud-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content class">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >BoardDoBuilderImpl</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>apps/server/src/modules/board/repo/board-do.builder-impl.ts</code>
+        </p>
+
+
+
+
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/BoardDoBuilder.html" target="_self" >BoardDoBuilder</a></code>
+            </p>
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#childrenMap" >childrenMap</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#buildCard" >buildCard</a>
+                            </li>
+                            <li>
+                                <a href="#buildChildren" >buildChildren</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#buildColumn" >buildColumn</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#buildColumnBoard" >buildColumnBoard</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#buildDomainObject" >buildDomainObject</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#buildDrawingElement" >buildDrawingElement</a>
+                            </li>
+                            <li>
+                                <a href="#buildExternalToolElement" >buildExternalToolElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#buildFileElement" >buildFileElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#buildLinkElement" >buildLinkElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#buildRichTextElement" >buildRichTextElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#buildSubmissionContainerElement" >buildSubmissionContainerElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#buildSubmissionItem" >buildSubmissionItem</a>
+                            </li>
+                            <li>
+                                <a href="#ensureBoardNodeType" >ensureBoardNodeType</a>
+                            </li>
+                            <li>
+                                <a href="#ensureLeafNode" >ensureLeafNode</a>
+                            </li>
+                            <li>
+                                <a href="#getChildren" >getChildren</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(descendants: BoardNode[])</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:32</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>descendants</td>
+                                                  
+                                                        <td>
+                                                                    <code>BoardNode[]</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="childrenMap"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>childrenMap</b></span>
+                        <a href="#childrenMap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Record&lt;string | BoardNode[]&gt;</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{}</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:32</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildCard"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>buildCard</b></span>
+                        <a href="#buildCard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildCard(boardNode: <a href="../entitys/CardNode.html" target="_self">CardNode</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="77"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:77</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../entitys/CardNode.html" target="_self" >CardNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Card.html" target="_self" >Card</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildChildren"></a>
+                    <span class="name">
+                        <span ><b>buildChildren</b></span>
+                        <a href="#buildChildren"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>buildChildren(boardNode: <a href="../entitys/BoardNode.html" target="_self">BoardNode</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="205"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:205</a></div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>T</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../entitys/BoardNode.html" target="_self" >BoardNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>T[]</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildColumn"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>buildColumn</b></span>
+                        <a href="#buildColumn"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildColumn(boardNode: <a href="../entitys/ColumnNode.html" target="_self">ColumnNode</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:62</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../entitys/ColumnNode.html" target="_self" >ColumnNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Column.html" target="_self" >Column</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildColumnBoard"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>buildColumnBoard</b></span>
+                        <a href="#buildColumnBoard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildColumnBoard(boardNode: <a href="../entitys/ColumnBoardNode.html" target="_self">ColumnBoardNode</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:45</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../entitys/ColumnBoardNode.html" target="_self" >ColumnBoardNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/ColumnBoard.html" target="_self" >ColumnBoard</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildDomainObject"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>buildDomainObject</b></span>
+                        <a href="#buildDomainObject"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildDomainObject(boardNode: <a href="../entitys/BoardNode.html" target="_self">BoardNode</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:41</a></div>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <b>Type parameters :</b>
+                            <ul class="type-parameters">
+                                    <li>T</li>
+                            </ul>
+                        </td>
+                    </tr>
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../entitys/BoardNode.html" target="_self" >BoardNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>T</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildDrawingElement"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>buildDrawingElement</b></span>
+                        <a href="#buildDrawingElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildDrawingElement(boardNode: <a href="../entitys/DrawingElementNode.html" target="_self">DrawingElementNode</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="145"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:145</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../entitys/DrawingElementNode.html" target="_self" >DrawingElementNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/DrawingElement.html" target="_self" >DrawingElement</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildExternalToolElement"></a>
+                    <span class="name">
+                        <span ><b>buildExternalToolElement</b></span>
+                        <a href="#buildExternalToolElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>buildExternalToolElement(boardNode: <a href="../entitys/ExternalToolElementNodeEntity.html" target="_self">ExternalToolElementNodeEntity</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="191"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:191</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../entitys/ExternalToolElementNodeEntity.html" target="_self" >ExternalToolElementNodeEntity</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/ExternalToolElement.html" target="_self" >ExternalToolElement</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildFileElement"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>buildFileElement</b></span>
+                        <a href="#buildFileElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildFileElement(boardNode: <a href="../entitys/FileElementNode.html" target="_self">FileElementNode</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:102</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../entitys/FileElementNode.html" target="_self" >FileElementNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/FileElement.html" target="_self" >FileElement</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildLinkElement"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>buildLinkElement</b></span>
+                        <a href="#buildLinkElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildLinkElement(boardNode: <a href="../entitys/LinkElementNode.html" target="_self">LinkElementNode</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="116"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:116</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../entitys/LinkElementNode.html" target="_self" >LinkElementNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/LinkElement.html" target="_self" >LinkElement</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildRichTextElement"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>buildRichTextElement</b></span>
+                        <a href="#buildRichTextElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildRichTextElement(boardNode: <a href="../entitys/RichTextElementNode.html" target="_self">RichTextElementNode</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="131"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:131</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../entitys/RichTextElementNode.html" target="_self" >RichTextElementNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/RichTextElement.html" target="_self" >RichTextElement</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildSubmissionContainerElement"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>buildSubmissionContainerElement</b></span>
+                        <a href="#buildSubmissionContainerElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildSubmissionContainerElement(boardNode: <a href="../entitys/SubmissionContainerElementNode.html" target="_self">SubmissionContainerElementNode</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="158"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:158</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../entitys/SubmissionContainerElementNode.html" target="_self" >SubmissionContainerElementNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/SubmissionContainerElement.html" target="_self" >SubmissionContainerElement</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="buildSubmissionItem"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>buildSubmissionItem</b></span>
+                        <a href="#buildSubmissionItem"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>buildSubmissionItem(boardNode: <a href="../entitys/SubmissionItemNode.html" target="_self">SubmissionItemNode</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="173"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:173</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../entitys/SubmissionItemNode.html" target="_self" >SubmissionItemNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/SubmissionItem.html" target="_self" >SubmissionItem</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ensureBoardNodeType"></a>
+                    <span class="name">
+                        <span ><b>ensureBoardNodeType</b></span>
+                        <a href="#ensureBoardNodeType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ensureBoardNodeType(boardNode: BoardNode | BoardNode[], type: <a href="../undefineds/BoardNodeType.html" target="_self">BoardNodeType | BoardNodeType[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="221"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:221</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                        <code>BoardNode | BoardNode[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>type</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#BoardNodeType" target="_self" >BoardNodeType | BoardNodeType[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ensureLeafNode"></a>
+                    <span class="name">
+                        <span ><b>ensureLeafNode</b></span>
+                        <a href="#ensureLeafNode"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>ensureLeafNode(boardNode: <a href="../entitys/BoardNode.html" target="_self">BoardNode</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="216"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:216</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../entitys/BoardNode.html" target="_self" >BoardNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getChildren"></a>
+                    <span class="name">
+                        <span ><b>getChildren</b></span>
+                        <a href="#getChildren"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getChildren(boardNode: <a href="../entitys/BoardNode.html" target="_self">BoardNode</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="210"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/board-do.builder-impl.ts:210</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../entitys/BoardNode.html" target="_self" >BoardNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>BoardNode[]</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+
+
+
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { NotImplementedException } from &#x27;@nestjs/common&#x27;;
+import {
+	AnyBoardDo,
+	Card,
+	Column,
+	ColumnBoard,
+	ExternalToolElement,
+	FileElement,
+	LinkElement,
+	RichTextElement,
+	SubmissionContainerElement,
+	SubmissionItem,
+} from &#x27;@shared/domain/domainobject&#x27;;
+import { DrawingElement } from &#x27;@shared/domain/domainobject/board/drawing-element.do&#x27;;
+import {
+	BoardNodeType,
+	type BoardDoBuilder,
+	type BoardNode,
+	type CardNode,
+	type ColumnBoardNode,
+	type ColumnNode,
+	type ExternalToolElementNodeEntity,
+	type FileElementNode,
+	type LinkElementNode,
+	type RichTextElementNode,
+	type SubmissionContainerElementNode,
+	type SubmissionItemNode,
+} from &#x27;@shared/domain/entity&#x27;;
+import { DrawingElementNode } from &#x27;@shared/domain/entity/boardnode/drawing-element-node.entity&#x27;;
+
+export class BoardDoBuilderImpl implements BoardDoBuilder {
+	private childrenMap: Record&lt;string, BoardNode[]&gt; &#x3D; {};
+
+	constructor(descendants: BoardNode[] &#x3D; []) {
+		for (const boardNode of descendants) {
+			this.childrenMap[boardNode.path] ||&#x3D; [];
+			this.childrenMap[boardNode.path].push(boardNode);
+		}
+	}
+
+	public buildDomainObject&lt;T extends AnyBoardDo&gt;(boardNode: BoardNode): T {
+		return boardNode.useDoBuilder(this) as T;
+	}
+
+	public buildColumnBoard(boardNode: ColumnBoardNode): ColumnBoard {
+		this.ensureBoardNodeType(this.getChildren(boardNode), BoardNodeType.COLUMN);
+
+		const columns &#x3D; this.buildChildren&lt;Column&gt;(boardNode);
+
+		const columnBoard &#x3D; new ColumnBoard({
+			id: boardNode.id,
+			title: boardNode.title ?? &#x27;&#x27;,
+			children: columns,
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+			context: boardNode.context,
+		});
+
+		return columnBoard;
+	}
+
+	public buildColumn(boardNode: ColumnNode): Column {
+		this.ensureBoardNodeType(this.getChildren(boardNode), BoardNodeType.CARD);
+
+		const cards &#x3D; this.buildChildren&lt;Card&gt;(boardNode);
+
+		const column &#x3D; new Column({
+			id: boardNode.id,
+			title: boardNode.title ?? &#x27;&#x27;,
+			children: cards,
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+		});
+		return column;
+	}
+
+	public buildCard(boardNode: CardNode): Card {
+		this.ensureBoardNodeType(this.getChildren(boardNode), [
+			BoardNodeType.FILE_ELEMENT,
+			BoardNodeType.LINK_ELEMENT,
+			BoardNodeType.RICH_TEXT_ELEMENT,
+			BoardNodeType.DRAWING_ELEMENT,
+			BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
+			BoardNodeType.EXTERNAL_TOOL,
+		]);
+
+		const elements &#x3D; this.buildChildren&lt;
+			ExternalToolElement | FileElement | LinkElement | RichTextElement | SubmissionContainerElement
+		&gt;(boardNode);
+
+		const card &#x3D; new Card({
+			id: boardNode.id,
+			title: boardNode.title ?? &#x27;&#x27;,
+			height: boardNode.height,
+			children: elements,
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+		});
+		return card;
+	}
+
+	public buildFileElement(boardNode: FileElementNode): FileElement {
+		this.ensureLeafNode(boardNode);
+
+		const element &#x3D; new FileElement({
+			id: boardNode.id,
+			caption: boardNode.caption,
+			alternativeText: boardNode.alternativeText,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+		});
+		return element;
+	}
+
+	public buildLinkElement(boardNode: LinkElementNode): LinkElement {
+		this.ensureLeafNode(boardNode);
+
+		const element &#x3D; new LinkElement({
+			id: boardNode.id,
+			url: boardNode.url,
+			title: boardNode.title,
+			imageUrl: boardNode.imageUrl,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+		});
+		return element;
+	}
+
+	public buildRichTextElement(boardNode: RichTextElementNode): RichTextElement {
+		this.ensureLeafNode(boardNode);
+
+		const element &#x3D; new RichTextElement({
+			id: boardNode.id,
+			text: boardNode.text,
+			inputFormat: boardNode.inputFormat,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+		});
+		return element;
+	}
+
+	public buildDrawingElement(boardNode: DrawingElementNode): DrawingElement {
+		this.ensureLeafNode(boardNode);
+
+		const element &#x3D; new DrawingElement({
+			id: boardNode.id,
+			description: boardNode.description,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+		});
+		return element;
+	}
+
+	public buildSubmissionContainerElement(boardNode: SubmissionContainerElementNode): SubmissionContainerElement {
+		this.ensureBoardNodeType(this.getChildren(boardNode), [BoardNodeType.SUBMISSION_ITEM]);
+		const elements &#x3D; this.buildChildren&lt;SubmissionItem&gt;(boardNode);
+
+		const element &#x3D; new SubmissionContainerElement({
+			id: boardNode.id,
+			children: elements,
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+			dueDate: boardNode.dueDate,
+		});
+
+		return element;
+	}
+
+	public buildSubmissionItem(boardNode: SubmissionItemNode): SubmissionItem {
+		this.ensureBoardNodeType(this.getChildren(boardNode), [
+			BoardNodeType.FILE_ELEMENT,
+			BoardNodeType.RICH_TEXT_ELEMENT,
+		]);
+		const elements &#x3D; this.buildChildren&lt;RichTextElement | FileElement&gt;(boardNode);
+
+		const element &#x3D; new SubmissionItem({
+			id: boardNode.id,
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+			completed: boardNode.completed,
+			userId: boardNode.userId,
+			children: elements,
+		});
+		return element;
+	}
+
+	buildExternalToolElement(boardNode: ExternalToolElementNodeEntity): ExternalToolElement {
+		this.ensureLeafNode(boardNode);
+
+		const element: ExternalToolElement &#x3D; new ExternalToolElement({
+			id: boardNode.id,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+			contextExternalToolId: boardNode.contextExternalTool?.id,
+		});
+
+		return element;
+	}
+
+	buildChildren&lt;T extends AnyBoardDo&gt;(boardNode: BoardNode): T[] {
+		const children &#x3D; this.getChildren(boardNode).map((node) &#x3D;&gt; node.useDoBuilder(this));
+		return children as T[];
+	}
+
+	getChildren(boardNode: BoardNode): BoardNode[] {
+		const children &#x3D; this.childrenMap[boardNode.pathOfChildren] || [];
+		const sortedChildren &#x3D; children.sort((a, b) &#x3D;&gt; a.position - b.position);
+		return sortedChildren;
+	}
+
+	ensureLeafNode(boardNode: BoardNode) {
+		const children &#x3D; this.getChildren(boardNode);
+		if (children.length !&#x3D;&#x3D; 0) throw new Error(&#x27;BoardNode is a leaf node but children were provided.&#x27;);
+	}
+
+	ensureBoardNodeType(boardNode: BoardNode | BoardNode[], type: BoardNodeType | BoardNodeType[]) {
+		const single &#x3D; (bn: BoardNode, t: BoardNodeType | BoardNodeType[]) &#x3D;&gt; {
+			const isValid &#x3D; Array.isArray(t) ? type.includes(bn.type) : t &#x3D;&#x3D;&#x3D; bn.type;
+			if (!isValid) {
+				throw new NotImplementedException(&#x60;Invalid node type &#x27;${bn.type}&#x27;&#x60;);
+			}
+		};
+
+		if (Array.isArray(boardNode)) {
+			boardNode.forEach((bn) &#x3D;&gt; single(bn, type));
+		} else {
+			single(boardNode, type);
+		}
+	}
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'BoardDoBuilderImpl.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

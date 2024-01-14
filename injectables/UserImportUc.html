@@ -1,0 +1,2095 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>schulcloud-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >UserImportUc</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>apps/server/src/modules/user-import/uc/user-import.uc.ts</code>
+        </p>
+
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#checkFeatureEnabled" >checkFeatureEnabled</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#checkNoExistingLdapBeforeStart" >checkNoExistingLdapBeforeStart</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#checkSchoolNotInMigration" >checkSchoolNotInMigration</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#checkSchoolNumber" >checkSchoolNumber</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#endSchoolInMaintenance" >endSchoolInMaintenance</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#endSchoolInUserMigration" >endSchoolInUserMigration</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findAllImportUsers" >findAllImportUsers</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findAllUnmatchedUsers" >findAllUnmatchedUsers</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getAccount" >getAccount</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getCurrentUser" >getCurrentUser</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getMigrationSystem" >getMigrationSystem</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#removeMatch" >removeMatch</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#saveAllUsersMatches" >saveAllUsersMatches</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#setMatch" >setMatch</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#startSchoolInUserMigration" >startSchoolInUserMigration</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateFlag" >updateFlag</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateUserAndAccount" >updateUserAndAccount</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, importUserRepo: <a href="../injectables/ImportUserRepo.html" target="_self">ImportUserRepo</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, systemRepo: <a href="../injectables/LegacySystemRepo.html" target="_self">LegacySystemRepo</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:35</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>accountService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AccountService.html" target="_self" >AccountService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>importUserRepo</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ImportUserRepo.html" target="_self" >ImportUserRepo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>authorizationService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AuthorizationService.html" target="_self" >AuthorizationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>schoolService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/LegacySchoolService.html" target="_self" >LegacySchoolService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>systemRepo</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/LegacySystemRepo.html" target="_self" >LegacySystemRepo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>userRepo</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/UserRepo.html" target="_self" >UserRepo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkFeatureEnabled"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>checkFeatureEnabled</b></span>
+                        <a href="#checkFeatureEnabled"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkFeatureEnabled(school: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="48"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:48</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>school</td>
+                                            <td>
+                                                            <code><a href="../classes/LegacySchoolDo.html" target="_self" >LegacySchoolDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>void | never</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkNoExistingLdapBeforeStart"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>checkNoExistingLdapBeforeStart</b></span>
+                        <a href="#checkNoExistingLdapBeforeStart"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkNoExistingLdapBeforeStart(school: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="305"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:305</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>school</td>
+                                            <td>
+                                                            <code><a href="../classes/LegacySchoolDo.html" target="_self" >LegacySchoolDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkSchoolNotInMigration"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>checkSchoolNotInMigration</b></span>
+                        <a href="#checkSchoolNotInMigration"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkSchoolNotInMigration(school: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="324"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:324</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>school</td>
+                                            <td>
+                                                            <code><a href="../classes/LegacySchoolDo.html" target="_self" >LegacySchoolDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>void | never</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkSchoolNumber"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>checkSchoolNumber</b></span>
+                        <a href="#checkSchoolNumber"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkSchoolNumber(school: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>, useCentralLdap: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="318"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:318</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>school</td>
+                                            <td>
+                                                            <code><a href="../classes/LegacySchoolDo.html" target="_self" >LegacySchoolDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>useCentralLdap</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>void | never</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="endSchoolInMaintenance"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>endSchoolInMaintenance</b></span>
+                        <a href="#endSchoolInMaintenance"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>endSchoolInMaintenance(currentUserId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="242"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:242</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUserId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="endSchoolInUserMigration"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>endSchoolInUserMigration</b></span>
+                        <a href="#endSchoolInUserMigration"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>endSchoolInUserMigration(currentUserId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="208"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:208</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUserId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findAllImportUsers"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findAllImportUsers</b></span>
+                        <a href="#findAllImportUsers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findAllImportUsers(currentUserId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, query: <a href="../interfaces/IImportUserScope.html" target="_self">IImportUserScope</a>, options?: IFindOptions<ImportUser>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="64"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:64</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Resolves with current users schools importusers and matched users.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUserId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>query</td>
+                                            <td>
+                                                            <code><a href="../interfaces/IImportUserScope.html" target="_self" >IImportUserScope</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                        <code>IFindOptions&lt;ImportUser&gt;</code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;Counted&lt;ImportUser[]&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findAllUnmatchedUsers"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findAllUnmatchedUsers</b></span>
+                        <a href="#findAllUnmatchedUsers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findAllUnmatchedUsers(currentUserId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, query: <a href="../interfaces/NameMatch.html" target="_self">NameMatch</a>, options?: <a href="../classes/User.html" target="_self">IFindOptions&lt;User&gt;</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="153"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:153</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Returns a list of users wich is not assigned as match to importusers.
+The result will filter by curernt users school by default.
+The current user must have permission to read schools users and view importusers.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUserId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>query</td>
+                                            <td>
+                                                            <code><a href="../interfaces/NameMatch.html" target="_self" >NameMatch</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>filters</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>options</td>
+                                            <td>
+                                                            <code><a href="../classes/User.html" target="_self" >IFindOptions&lt;User&gt;</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;Counted&lt;User[]&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getAccount"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getAccount</b></span>
+                        <a href="#getAccount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getAccount(user: <a href="../interfaces/User.html" target="_self">User</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="284"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:284</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>user</td>
+                                            <td>
+                                                            <code><a href="../interfaces/User.html" target="_self" >User</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../entitys/Account.html" target="_self" >Promise&lt;AccountDto&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getCurrentUser"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getCurrentUser</b></span>
+                        <a href="#getCurrentUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getCurrentUser(currentUserId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, permission: <a href="../undefineds/UserImportPermissions.html" target="_self">UserImportPermissions</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="255"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:255</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUserId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>permission</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#UserImportPermissions" target="_self" >UserImportPermissions</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;User&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getMigrationSystem"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getMigrationSystem</b></span>
+                        <a href="#getMigrationSystem"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getMigrationSystem()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="299"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:299</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/System.html" target="_self" >Promise&lt;SystemEntity&gt;</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="removeMatch"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>removeMatch</b></span>
+                        <a href="#removeMatch"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>removeMatch(currentUserId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, importUserId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="109"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:109</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUserId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>importUserId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;ImportUser&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="saveAllUsersMatches"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>saveAllUsersMatches</b></span>
+                        <a href="#saveAllUsersMatches"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>saveAllUsersMatches(currentUserId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="166"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:166</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUserId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="setMatch"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>setMatch</b></span>
+                        <a href="#setMatch"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>setMatch(currentUserId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, importUserId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userMatchId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="84"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:84</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Update a @User reference of an @ImportUser</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUserId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>importUserId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>userMatchId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;ImportUser&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                <p>importuser and matched user</p>
+
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="startSchoolInUserMigration"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>startSchoolInUserMigration</b></span>
+                        <a href="#startSchoolInUserMigration"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>startSchoolInUserMigration(currentUserId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, useCentralLdap)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="220"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:220</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Default value</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUserId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                            </td>
+
+                                        </tr>
+                                        <tr>
+                                                <td>useCentralLdap</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+                                            <td>
+                                                    <code>true</code>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateFlag"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>updateFlag</b></span>
+                        <a href="#updateFlag"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateFlag(currentUserId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, importUserId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, flagged: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="126"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:126</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUserId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>importUserId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>flagged</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;ImportUser&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateUserAndAccount"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>updateUserAndAccount</b></span>
+                        <a href="#updateUserAndAccount"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateUserAndAccount(importUser: <a href="../classes/ImportUser.html" target="_self">ImportUser</a>, school: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="262"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:262</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>importUser</td>
+                                            <td>
+                                                            <code><a href="../classes/ImportUser.html" target="_self" >ImportUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>school</td>
+                                            <td>
+                                                            <code><a href="../classes/LegacySchoolDo.html" target="_self" >LegacySchoolDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt; | undefined&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
+import { AccountService } from &#x27;@modules/account/services/account.service&#x27;;
+import { AccountDto } from &#x27;@modules/account/services/dto/account.dto&#x27;;
+import { AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
+import { UserAlreadyAssignedToImportUserError } from &#x27;@shared/common&#x27;;
+import { LegacySchoolDo } from &#x27;@shared/domain/domainobject&#x27;;
+import { Account, ImportUser, MatchCreator, SystemEntity, User } from &#x27;@shared/domain/entity&#x27;;
+import { IFindOptions, Permission } from &#x27;@shared/domain/interface&#x27;;
+import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch, SchoolFeature } from &#x27;@shared/domain/types&#x27;;
+import { ImportUserRepo, LegacySystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
+import { Logger } from &#x27;@src/core/logger&#x27;;
+import { AccountSaveDto } from &#x27;../../account/services/dto&#x27;;
+import {
+	MigrationMayBeCompleted,
+	MigrationMayNotBeCompleted,
+	SchoolIdDoesNotMatchWithUserSchoolId,
+	SchoolInUserMigrationEndLoggable,
+	SchoolInUserMigrationStartLoggable,
+	UserMigrationIsNotEnabled,
+} from &#x27;../loggable&#x27;;
+import {
+	LdapAlreadyPersistedException,
+	MigrationAlreadyActivatedException,
+	MissingSchoolNumberException,
+} from &#x27;./ldap-user-migration.error&#x27;;
+
+export type UserImportPermissions &#x3D;
+	| Permission.SCHOOL_IMPORT_USERS_MIGRATE
+	| Permission.SCHOOL_IMPORT_USERS_UPDATE
+	| Permission.SCHOOL_IMPORT_USERS_VIEW;
+
+@Injectable()
+export class UserImportUc {
+	constructor(
+		private readonly accountService: AccountService,
+		private readonly importUserRepo: ImportUserRepo,
+		private readonly authorizationService: AuthorizationService,
+		private readonly schoolService: LegacySchoolService,
+		private readonly systemRepo: LegacySystemRepo,
+		private readonly userRepo: UserRepo,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(UserImportUc.name);
+	}
+
+	private checkFeatureEnabled(school: LegacySchoolDo): void | never {
+		const enabled &#x3D; Configuration.get(&#x27;FEATURE_USER_MIGRATION_ENABLED&#x27;) as boolean;
+		const isLdapPilotSchool &#x3D; school.features &amp;&amp; school.features.includes(SchoolFeature.LDAP_UNIVENTION_MIGRATION);
+		if (!enabled &amp;&amp; !isLdapPilotSchool) {
+			this.logger.warning(new UserMigrationIsNotEnabled());
+			throw new InternalServerErrorException(&#x27;User Migration not enabled&#x27;);
+		}
+	}
+
+	/**
+	 * Resolves with current users schools importusers and matched users.
+	 * @param currentUserId
+	 * @param query
+	 * @param options
+	 * @returns
+	 */
+	async findAllImportUsers(
+		currentUserId: EntityId,
+		query: IImportUserScope,
+		options?: IFindOptions&lt;ImportUser&gt;
+	): Promise&lt;Counted&lt;ImportUser[]&gt;&gt; {
+		const currentUser &#x3D; await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
+		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(currentUser.school.id);
+		this.checkFeatureEnabled(school);
+		// TODO Change ImportUserRepo to DO to fix this workaround
+		const countedImportUsers &#x3D; await this.importUserRepo.findImportUsers(currentUser.school, query, options);
+		return countedImportUsers;
+	}
+
+	/**
+	 * Update a @User reference of an @ImportUser
+	 * @param currentUserId
+	 * @param importUserId
+	 * @param userMatchId
+	 * @returns importuser and matched user
+	 */
+	async setMatch(currentUserId: EntityId, importUserId: EntityId, userMatchId: EntityId): Promise&lt;ImportUser&gt; {
+		const currentUser &#x3D; await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
+		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(currentUser.school.id);
+		this.checkFeatureEnabled(school);
+		const importUser &#x3D; await this.importUserRepo.findById(importUserId);
+		const userMatch &#x3D; await this.userRepo.findById(userMatchId, true);
+
+		// check same school
+		if (!school.id || school.id !&#x3D;&#x3D; userMatch.school.id || school.id !&#x3D;&#x3D; importUser.school.id) {
+			this.logger.warning(
+				new SchoolIdDoesNotMatchWithUserSchoolId(userMatch.school.id, importUser.school.id, school.id)
+			);
+			throw new ForbiddenException(&#x27;not same school&#x27;);
+		}
+
+		// check user is not already assigned
+		const hasMatch &#x3D; await this.importUserRepo.hasMatch(userMatch);
+		if (hasMatch !&#x3D;&#x3D; null) throw new UserAlreadyAssignedToImportUserError();
+
+		importUser.setMatch(userMatch, MatchCreator.MANUAL);
+		await this.importUserRepo.save(importUser);
+
+		return importUser;
+	}
+
+	async removeMatch(currentUserId: EntityId, importUserId: EntityId): Promise&lt;ImportUser&gt; {
+		const currentUser &#x3D; await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
+		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(currentUser.school.id);
+		this.checkFeatureEnabled(school);
+		const importUser &#x3D; await this.importUserRepo.findById(importUserId);
+		// check same school
+		if (school.id !&#x3D;&#x3D; importUser.school.id) {
+			this.logger.warning(new SchoolIdDoesNotMatchWithUserSchoolId(&#x27;&#x27;, importUser.school.id, school.id));
+			throw new ForbiddenException(&#x27;not same school&#x27;);
+		}
+
+		importUser.revokeMatch();
+		await this.importUserRepo.save(importUser);
+
+		return importUser;
+	}
+
+	async updateFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean): Promise&lt;ImportUser&gt; {
+		const currentUser &#x3D; await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
+		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(currentUser.school.id);
+		this.checkFeatureEnabled(school);
+		const importUser &#x3D; await this.importUserRepo.findById(importUserId);
+
+		// check same school
+		if (school.id !&#x3D;&#x3D; importUser.school.id) {
+			this.logger.warning(new SchoolIdDoesNotMatchWithUserSchoolId(&#x27;&#x27;, importUser.school.id, school.id));
+			throw new ForbiddenException(&#x27;not same school&#x27;);
+		}
+
+		importUser.flagged &#x3D; flagged &#x3D;&#x3D;&#x3D; true;
+		await this.importUserRepo.save(importUser);
+
+		return importUser;
+	}
+
+	/**
+	 * Returns a list of users wich is not assigned as match to importusers.
+	 * The result will filter by curernt users school by default.
+	 * The current user must have permission to read schools users and view importusers.
+	 * @param currentUserId
+	 * @param query filters
+	 * @param options
+	 * @returns
+	 */
+	async findAllUnmatchedUsers(
+		currentUserId: EntityId,
+		query: NameMatch,
+		options?: IFindOptions&lt;User&gt;
+	): Promise&lt;Counted&lt;User[]&gt;&gt; {
+		const currentUser &#x3D; await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
+		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(currentUser.school.id);
+		this.checkFeatureEnabled(school);
+		// TODO Change to UserService to fix this workaround
+		const unmatchedCountedUsers &#x3D; await this.userRepo.findWithoutImportUser(currentUser.school, query, options);
+		return unmatchedCountedUsers;
+	}
+
+	async saveAllUsersMatches(currentUserId: EntityId): Promise&lt;void&gt; {
+		const currentUser &#x3D; await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
+		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(currentUser.school.id);
+		this.checkFeatureEnabled(school);
+		const filters: IImportUserScope &#x3D; { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
+		// TODO batch/paginated import?
+		const options: IFindOptions&lt;ImportUser&gt; &#x3D; {};
+		// TODO Change ImportUserRepo to DO to fix this workaround
+		const [importUsers, total] &#x3D; await this.importUserRepo.findImportUsers(currentUser.school, filters, options);
+		let migratedUser &#x3D; 0;
+		if (total &gt; 0) {
+			this.logger.notice({
+				getLogMessage: () &#x3D;&gt; {
+					return {
+						message: &#x27;start saving all matched users&#x27;,
+						numberOfMatchedUser: total,
+					};
+				},
+			});
+			for (const importUser of importUsers) {
+				// TODO: Find a better solution for this loop
+				// this needs to be synchronous, because otherwise it was leading to
+				// server crush when working with larger number of users (e.g. 1000)
+				// eslint-disable-next-line no-await-in-loop
+				await this.updateUserAndAccount(importUser, school);
+				migratedUser +&#x3D; 1;
+			}
+		}
+		this.logger.notice({
+			getLogMessage: () &#x3D;&gt; {
+				return {
+					message: &#x27;number of already migrated users from the total number&#x27;,
+					numberOfMigratedUser: &#x60;${migratedUser}/${total}&#x60;,
+				};
+			},
+		});
+		// TODO Change ImportUserRepo to DO to fix this workaround
+		// Delete all remaining importUser-objects that dont need to be ported
+		await this.importUserRepo.deleteImportUsersBySchool(currentUser.school);
+		await this.endSchoolInUserMigration(currentUserId);
+	}
+
+	private async endSchoolInUserMigration(currentUserId: EntityId): Promise&lt;void&gt; {
+		const currentUser &#x3D; await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
+		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(currentUser.school.id);
+		this.checkFeatureEnabled(school);
+		if (!school.externalId || school.inUserMigration !&#x3D;&#x3D; true || !school.inMaintenanceSince) {
+			this.logger.warning(new MigrationMayBeCompleted(school.inUserMigration));
+			throw new BadRequestException(&#x27;School cannot exit from user migration mode&#x27;);
+		}
+		school.inUserMigration &#x3D; false;
+		await this.schoolService.save(school);
+	}
+
+	async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap &#x3D; true): Promise&lt;void&gt; {
+		const currentUser &#x3D; await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
+		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(currentUser.school.id);
+		this.logger.notice(new SchoolInUserMigrationStartLoggable(currentUserId, school.name, useCentralLdap));
+		this.checkFeatureEnabled(school);
+		this.checkSchoolNumber(school, useCentralLdap);
+		this.checkSchoolNotInMigration(school);
+		await this.checkNoExistingLdapBeforeStart(school);
+
+		school.inUserMigration &#x3D; true;
+		school.inMaintenanceSince &#x3D; new Date();
+		school.externalId &#x3D; school.officialSchoolNumber;
+		if (useCentralLdap) {
+			const migrationSystem &#x3D; await this.getMigrationSystem();
+			if (school.systems &amp;&amp; !school.systems.includes(migrationSystem.id)) {
+				school.systems.push(migrationSystem.id);
+			}
+		}
+
+		await this.schoolService.save(school);
+	}
+
+	async endSchoolInMaintenance(currentUserId: EntityId): Promise&lt;void&gt; {
+		const currentUser &#x3D; await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
+		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(currentUser.school.id);
+		this.checkFeatureEnabled(school);
+		if (school.inUserMigration !&#x3D;&#x3D; false || !school.inMaintenanceSince || !school.externalId) {
+			this.logger.warning(new MigrationMayNotBeCompleted(school.inUserMigration));
+			throw new BadRequestException(&#x27;Sync cannot be activated for school&#x27;);
+		}
+		school.inMaintenanceSince &#x3D; undefined;
+		await this.schoolService.save(school);
+		this.logger.notice(new SchoolInUserMigrationEndLoggable(school.name));
+	}
+
+	private async getCurrentUser(currentUserId: EntityId, permission: UserImportPermissions): Promise&lt;User&gt; {
+		const currentUser &#x3D; await this.userRepo.findById(currentUserId, true);
+		this.authorizationService.checkAllPermissions(currentUser, [permission]);
+
+		return currentUser;
+	}
+
+	private async updateUserAndAccount(
+		importUser: ImportUser,
+		school: LegacySchoolDo
+	): Promise&lt;[User, Account] | undefined&gt; {
+		if (!importUser.user || !importUser.loginName || !school.externalId) {
+			return;
+		}
+		const { user } &#x3D; importUser;
+		user.ldapDn &#x3D; importUser.ldapDn;
+		user.externalId &#x3D; importUser.externalId;
+
+		const account: AccountDto &#x3D; await this.getAccount(user);
+
+		account.systemId &#x3D; importUser.system.id;
+		account.password &#x3D; undefined;
+		account.username &#x3D; &#x60;${school.externalId}/${importUser.loginName}&#x60;.toLowerCase();
+
+		await this.userRepo.save(user);
+		await this.accountService.save(account);
+		await this.importUserRepo.delete(importUser);
+	}
+
+	private async getAccount(user: User): Promise&lt;AccountDto&gt; {
+		let account: AccountDto | null &#x3D; await this.accountService.findByUserId(user.id);
+
+		if (!account) {
+			const newAccount: AccountSaveDto &#x3D; new AccountSaveDto({
+				userId: user.id,
+				username: user.email,
+			});
+
+			await this.accountService.saveWithValidation(newAccount);
+			account &#x3D; await this.accountService.findByUserIdOrFail(user.id);
+		}
+		return account;
+	}
+
+	private async getMigrationSystem(): Promise&lt;SystemEntity&gt; {
+		const systemId &#x3D; Configuration.get(&#x27;FEATURE_USER_MIGRATION_SYSTEM_ID&#x27;) as string;
+		const system &#x3D; await this.systemRepo.findById(systemId);
+		return system;
+	}
+
+	private async checkNoExistingLdapBeforeStart(school: LegacySchoolDo): Promise&lt;void&gt; {
+		if (school.systems &amp;&amp; school.systems?.length &gt; 0) {
+			for (const systemId of school.systems) {
+				// very unusual to have more than 1 system
+				// eslint-disable-next-line no-await-in-loop
+				const system: SystemEntity &#x3D; await this.systemRepo.findById(systemId);
+				if (system.ldapConfig) {
+					throw new LdapAlreadyPersistedException();
+				}
+			}
+		}
+	}
+
+	private checkSchoolNumber(school: LegacySchoolDo, useCentralLdap: boolean): void | never {
+		if (useCentralLdap &amp;&amp; !school.officialSchoolNumber) {
+			throw new MissingSchoolNumberException();
+		}
+	}
+
+	private checkSchoolNotInMigration(school: LegacySchoolDo): void | never {
+		if (school.inUserMigration !&#x3D;&#x3D; undefined &amp;&amp; school.inUserMigration !&#x3D;&#x3D; null) {
+			throw new MigrationAlreadyActivatedException();
+		}
+	}
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'UserImportUc.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

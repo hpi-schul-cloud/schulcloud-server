@@ -1,0 +1,348 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>schulcloud-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../../images/favicon.ico">
+	   <link rel="stylesheet" href="../../styles/style.css">
+        <link rel="stylesheet" href="../../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../../" class="navbar-brand">schulcloud-server documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content additional-page">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h1>Architecture mapping to Code</h1>
+<h2>Conventions</h2>
+<h3>File structure</h3>
+<p>The server app located in <code>/apps/server</code> is structured like. Beside each ts-file, a test file _.spec.ts has to be added for unit tests (hidden for simplification). Use index.ts files that combine a folders content and export all files from within of the folder using <code>export _ from &#39;./file&#39;</code> where this makes sense. When there are naming conflicts, use more specific names and correct concepts. Think about not to create sub-folders, when only one concept exist.</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-js">src/ // sourcecode &amp; unit tests
+    - config/  // for global definitions
+    - modules/ // for your NestJS modules
+        - [module] // where [module] could be like user, homework, school
+            - entity/
+                - &lt;entity&gt;.entity.ts // (where &lt;entity&gt; might be a user, news, ... owned by the module) exports entity class &amp; document type
+                - &lt;related-info&gt;.entity.ts // where related-info is a partial of another entity used in the entity above
+                - index.ts // exports all entities
+            - controller/ // where controllers define the api
+                - dto/ // dto&#39;s define api in/out types as a class with annotations
+                    - &lt;action-&gt;[params].ts // (like create-user.params.ts)
+                    - &lt;data-&gt;[response].ts // (like create-user.response.ts)
+                    - index.ts // exports all dto&#39;s
+                - &lt;module&gt;.controller.ts // defines rest api, references main service file
+                - &lt;other&gt;.controller.ts // think about a new module when require multiple controllers :)
+            - repo/ // repositories take care to load/persist/... entities
+                - schema/ // contains schema imports from legacy app or new definitions (might be replaced by OR mapper)
+                    - &lt;entity&gt;.schema.ts // exports (legacy-) mongoose schemas
+                - &lt;entity&gt;.repo.ts // where entity might be user, news, school
+            - service/ // for technical dependencies (libraries, infrastructure layer concerns)
+                - &lt;module&gt;.service.ts // the modules main service file, might be exported for other modules
+                - &lt;other&gt;.service.ts // use services not for features
+            - mapper/
+                - &lt;entity&gt;.mapper.ts // mapper for a domain entity, should contain mapDomainToResponse and mapFooToDomain
+            - uc/ // preferred for features
+                - &lt;login-user&gt;.uc.ts // one file per single use case (use a long name)
+            - &lt;module&gt;.module.ts // DI instructions to build the module
+    - shared/ // reused stuff without module ownership
+        - core/ // shared concepts (decorators, pipes, guards, errors, ...) folders might be added
+        - domain // (abstract) domain base entities which will be extended in the modules
+        - util/ // helpers, tools, utils can be located here (but find a better name)
+test/ // contains globalSetup and globalTeardown for MongoMemoryServer for tests
+</code></pre></div><p>For concepts (see <a href="https://docs.nestjs.com/first-steps">https://docs.nestjs.com/first-steps</a>) of NestJS put implementations in shared/core. You might use shared/utils for own solutions, assume TextUtils but when it contains text validators, move it better to shared/validators/text.validator.ts before merge. The core concepts of NestJS can be extended with ours (like repo).</p>
+<h3>File naming conventions</h3>
+<p>In TypeScript files: for Classes we use <code>PascalCase</code> (names start with uppercase letter), variables use lowercase for the first letter <code>camelCase</code>.</p>
+<p>When assigning names, they may end with a concept name:</p>
+<ul>
+<li><p>A Concept might be a known term which is widely used. Samples from NestJS: Controller, Provider, Module, Middleware, Exception, Pipe, Guard, Interceptor.</p>
+</li>
+<li><p>Beside we have own concepts like comparator, validator (generic ones should not be part of a modules (and located in shared folder btw) or repo, use-case which might be owned by a module.</p>
+</li>
+</ul>
+<p>In file names, we use lowercase and minus in the beginning and end with <code>.&lt;concept&gt;.ts</code></p>
+<h4>Samples</h4>
+<table class="table table-bordered compodoc-table">
+<thead>
+<tr>
+<th>File name</th>
+<th>Class name</th>
+<th>Concept</th>
+<th>Location</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>login-user.uc.ts</td>
+<td>LoginUserUc</td>
+<td>use case</td>
+<td>module/uc</td>
+</tr>
+<tr>
+<td>text.validator.ts</td>
+<td>TextValidator</td>
+<td>validator</td>
+<td>shared/validators</td>
+</tr>
+<tr>
+<td>user.repo.ts</td>
+<td>UserRepo</td>
+<td>repository</td>
+<td>module/repo</td>
+</tr>
+<tr>
+<td>parse-object-id.pipe.ts</td>
+<td>ParseObjectIdPipe</td>
+<td>pipe</td>
+<td>shared/pipes</td>
+</tr>
+</tbody>
+</table>
+<h2>Components</h2>
+<p>Components are defined as NestJS <a href="https://docs.nestjs.com/modules">Modules</a>. </p>
+<h3>Communication between components</h3>
+<p>To access other modules services, it can be injected anywhere. The usage is allowed only, when the module which owns that service has exported it in the modules definition.</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-TypeScript">// modules/feathers/feathers-service.provider.ts
+// modules/feathers/feathers.module.ts
+&#64;Module({
+    providers: [FeathersServiceProvider],
+    exports: [FeathersServiceProvider],
+})
+export class FeathersModule {}
+</code></pre></div><p>The feathers module is used to handle how the application is using legacy services, when access them, inject the <code>FeathersServiceProvider</code> but in your module definition, import the <code>FeathersModule</code>.</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-TypeScript">// your module, here modules/authorization/authorization.module.ts
+&#64;Module({
+    imports: [FeathersModule], // here import the services module
+    // providers: [AuthorizationService, FeathersAuthProvider],
+    // exports: [AuthorizationService],
+})
+export class AuthorizationModule {}
+
+// inside of your service, here feathers-auth.provider.ts
+&#64;Injectable()
+export class FeathersAuthProvider {
+
+    // inject the service in constructor
+    constructor(private feathersServiceProvider: FeathersServiceProvider) {}
+    
+    // ...
+
+    async getUserTargetPermissions(
+        // ...
+    ): Promise&lt;string[]&gt; {
+        const service = this.feathersServiceProvider.getService(`path`);
+        const result = await service.get(...)
+        // ...
+        return result;
+    }
+</code></pre></div><h3>Access legacy Code</h3>
+<p>Use the feathers module introduced above to get access to legacy services.</p>
+<p>It is important to introduce strong typing like it happened above in the FeathersAuthProvider. While the <code>FeathersServiceProvider</code> from the feathers module, has only an abstract implementation for all services, add a concrete service inside your module for a specific feathers-service, like above in <code>FeathersAuthProvider</code>.</p>
+<h3>Access NestJS injectable from Feathers</h3>
+<p>To access a NestJS service from a legacy Feathers service you need to make the NestJS service known to the Feathers service-collection in <code>main.ts</code>. <br>
+This possibility should not be used for new features in Feathers, but it can help if you want to refactor a Feathers service to NestJs although other Feathers services depend on it.</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-TypeScript">    // main.ts
+    async function bootstrap() {
+        // (...)
+        feathersExpress.services[&#39;nest-rocket-chat&#39;] = nestApp.get(RocketChatService);
+        // (...)
+    }</code></pre></div><p>Afterwards you can access it the same way as you access other Feathers services with
+<code>app.service(&#39;/nest-rocket-chat&#39;);</code></p>
+<h2>Layered Architecture</h2>
+<p>The different layers use separately defined objects that must be mapped when crossing layers.</p>
+<ul>
+<li>Never export entities through the service layer without DTO-mapping which is defined in the controller</li>
+<li>Concepts owned by a layer must not be shared with other layers</li>
+</ul>
+<p><img src="../../assets/object-ownership.svg" alt="" class="img-responsive"></p>
+<p>Further reading: <a href="https://khalilstemmler.com/articles/software-design-architecture/organizing-app-logic/">https://khalilstemmler.com/articles/software-design-architecture/organizing-app-logic/</a></p>
+<h3>Controller</h3>
+<p>A modules api layer is defined within of <a href="https://docs.nestjs.com/controllers">controllers</a>.</p>
+<p>The main responsibilities of a controller is to define the REST API interface as openAPI specification and map DTO&#39;s to match the logic layers interfaces.</p>
+<b>Example :</b><div><pre class="line-numbers"><code class="language-TypeScript">    &#64;Post()
+    async create(&#64;CurrentUser() currentUser: ICurrentUser, &#64;Body() params: CreateNewsParams): Promise&lt;NewsResponse&gt; {
+        const news = await this.newsUc.create(
+            currentUser.userId,
+            currentUser.schoolId,
+            NewsMapper.mapCreateNewsToDomain(params)
+        );
+        const dto = NewsMapper.mapToResponse(news);
+        return dto;
+    }</code></pre></div><h4>JWT-Authentication</h4>
+<p>For <strong>authentication</strong>, use <a href="https://docs.nestjs.com/guards">guards</a> like JwtAuthGuard. It can be applied to a whole controller or a single controller method only. Then, <a href="/apps/server/src/modules/authentication/interface/jwt-payload.ts">ICurrentUser</a> can be injected using the <code>@CurrentUser()</code> decorator.</p>
+<h4>Validation</h4>
+<p>Global settings of the core-module ensure <strong>request/response validation</strong> against the api definition. Simple input types might additionally use a custom <a href="https://docs.nestjs.com/pipes">pipe</a> while for complex types injected as query/body are validated by default when parsed as DTO class.</p>
+<h4>File naming</h4>
+<p>Complex input DTOs are defined like [create-news].params.ts (class-name: CreateNewsParams).</p>
+<p>When DTO&#39;s are shared between multiple modules, locate them in the layer-related shared folder.</p>
+<blockquote>
+<p><strong>Security:</strong> When exporting data, internal entities must be mapped to a response DTO class named like [news].response.dto. The mapping ensures which data of internal entities are exported.</p>
+</blockquote>
+<h4>openAPI specification</h4>
+<p>Defining the request/response DTOs in a controller will define the openAPI specification automatically. Additional <a href="https://docs.nestjs.com/techniques/validation">validation rules</a> and <a href="https://docs.nestjs.com/openapi/decorators">openAPI definitions</a> can be added using decorators. For simplification, openAPI decorators should define a type and if a property is required, while additional decorators can be used from class-validator to validate content.</p>
+<h4>Mapping</h4>
+<p>It is forbidden, to directly pass a DTO to a use-case or return an Entity (or other use-case result) via REST. In-between a mapper must transform the given data, to protect the logic layer from outside implications.</p>
+<p>The use of a mapper gives us the guarantee, that</p>
+<ul>
+<li>no additional data beside the known properties is published.<ul>
+<li>A plain object might contain more properties than defined in TS-interfaces.
+Sample: All school properties are published while only name &amp; id are intended to be published.</li>
+</ul>
+</li>
+<li>the API definition is complete</li>
+</ul>
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 2;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'additional-page';
+            var COMPODOC_CURRENT_PAGE_URL = 'file-structure.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../../js/libs/custom-elements.min.js"></script>
+       <script src="../../js/libs/lit-html.js"></script>
+
+       <script src="../../js/menu-wc.js" defer></script>
+       <script nomodule src="../../js/menu-wc_es5.js" defer></script>
+
+       <script src="../../js/libs/bootstrap-native.js"></script>
+
+       <script src="../../js/libs/es6-shim.min.js"></script>
+       <script src="../../js/libs/EventDispatcher.js"></script>
+       <script src="../../js/libs/promise.min.js"></script>
+       <script src="../../js/libs/zepto.min.js"></script>
+
+       <script src="../../js/compodoc.js"></script>
+
+       <script src="../../js/tabs.js"></script>
+       <script src="../../js/menu.js"></script>
+       <script src="../../js/libs/clipboard.min.js"></script>
+       <script src="../../js/libs/prism.js"></script>
+       <script src="../../js/sourceCode.js"></script>
+          <script src="../../js/search/search.js"></script>
+          <script src="../../js/search/lunr.min.js"></script>
+          <script src="../../js/search/search-lunr.js"></script>
+          <script src="../../js/search/search_index.js"></script>
+       <script src="../../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

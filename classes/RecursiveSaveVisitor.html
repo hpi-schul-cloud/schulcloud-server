@@ -1,0 +1,1718 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>schulcloud-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content class">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >RecursiveSaveVisitor</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>apps/server/src/modules/board/repo/recursive-save.visitor.ts</code>
+        </p>
+
+
+
+
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/BoardCompositeVisitor.html" target="_self" >BoardCompositeVisitor</a></code>
+            </p>
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#parentsMap" >parentsMap</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#createOrUpdateBoardNode" >createOrUpdateBoardNode</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#registerParentData" >registerParentData</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#save" >save</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#saveRecursive" >saveRecursive</a>
+                            </li>
+                            <li>
+                                <a href="#visitCard" >visitCard</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#visitChildren" >visitChildren</a>
+                            </li>
+                            <li>
+                                <a href="#visitColumn" >visitColumn</a>
+                            </li>
+                            <li>
+                                <a href="#visitColumnBoard" >visitColumnBoard</a>
+                            </li>
+                            <li>
+                                <a href="#visitDrawingElement" >visitDrawingElement</a>
+                            </li>
+                            <li>
+                                <a href="#visitExternalToolElement" >visitExternalToolElement</a>
+                            </li>
+                            <li>
+                                <a href="#visitFileElement" >visitFileElement</a>
+                            </li>
+                            <li>
+                                <a href="#visitLinkElement" >visitLinkElement</a>
+                            </li>
+                            <li>
+                                <a href="#visitRichTextElement" >visitRichTextElement</a>
+                            </li>
+                            <li>
+                                <a href="#visitSubmissionContainerElement" >visitSubmissionContainerElement</a>
+                            </li>
+                            <li>
+                                <a href="#visitSubmissionItem" >visitSubmissionItem</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(em: EntityManager, boardNodeRepo: <a href="../injectables/BoardNodeRepo.html" target="_self">BoardNodeRepo</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:41</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>em</td>
+                                                  
+                                                        <td>
+                                                                    <code>EntityManager</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>boardNodeRepo</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/BoardNodeRepo.html" target="_self" >BoardNodeRepo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="parentsMap"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>parentsMap</b></span>
+                        <a href="#parentsMap"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Map&lt;EntityId | ParentData&gt;</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Map()</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:41</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createOrUpdateBoardNode"></a>
+                    <span class="name">
+                        <span ><b>createOrUpdateBoardNode</b></span>
+                        <a href="#createOrUpdateBoardNode"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>createOrUpdateBoardNode(boardNode: <a href="../entitys/BoardNode.html" target="_self">BoardNode</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="220"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:220</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../entitys/BoardNode.html" target="_self" >BoardNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="registerParentData"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>registerParentData</b></span>
+                        <a href="#registerParentData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>registerParentData(parent: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>, child: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>, parentNode: <a href="../entitys/BoardNode.html" target="_self">BoardNode</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="206"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:206</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>parent</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardDo" target="_self" >AnyBoardDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>child</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardDo" target="_self" >AnyBoardDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>parentNode</td>
+                                            <td>
+                                                            <code><a href="../entitys/BoardNode.html" target="_self" >BoardNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="save"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>save</b></span>
+                        <a href="#save"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>save(domainObject: <a href="../entitys/Board.html" target="_self">AnyBoardDo | AnyBoardDo[]</a>, parent?: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:45</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>domainObject</td>
+                                            <td>
+                                                            <code><a href="../entitys/Board.html" target="_self" >AnyBoardDo | AnyBoardDo[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>parent</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardDo" target="_self" >AnyBoardDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="saveRecursive"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>saveRecursive</b></span>
+                        <a href="#saveRecursive"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>saveRecursive(boardNode: <a href="../entitys/BoardNode.html" target="_self">BoardNode</a>, anyBoardDo: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="214"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:214</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardNode</td>
+                                            <td>
+                                                            <code><a href="../entitys/BoardNode.html" target="_self" >BoardNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>anyBoardDo</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardDo" target="_self" >AnyBoardDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="visitCard"></a>
+                    <span class="name">
+                        <span ><b>visitCard</b></span>
+                        <a href="#visitCard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>visitCard(card: <a href="../classes/Card.html" target="_self">Card</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="86"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:86</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>card</td>
+                                            <td>
+                                                            <code><a href="../classes/Card.html" target="_self" >Card</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="visitChildren"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>visitChildren</b></span>
+                        <a href="#visitChildren"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>visitChildren(parent: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>, parentNode: <a href="../entitys/BoardNode.html" target="_self">BoardNode</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="199"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:199</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>parent</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardDo" target="_self" >AnyBoardDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>parentNode</td>
+                                            <td>
+                                                            <code><a href="../entitys/BoardNode.html" target="_self" >BoardNode</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="visitColumn"></a>
+                    <span class="name">
+                        <span ><b>visitColumn</b></span>
+                        <a href="#visitColumn"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>visitColumn(column: <a href="../classes/Column.html" target="_self">Column</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:73</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>column</td>
+                                            <td>
+                                                            <code><a href="../classes/Column.html" target="_self" >Column</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="visitColumnBoard"></a>
+                    <span class="name">
+                        <span ><b>visitColumnBoard</b></span>
+                        <a href="#visitColumnBoard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>visitColumnBoard(columnBoard: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="59"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:59</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>columnBoard</td>
+                                            <td>
+                                                            <code><a href="../classes/ColumnBoard.html" target="_self" >ColumnBoard</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="visitDrawingElement"></a>
+                    <span class="name">
+                        <span ><b>visitDrawingElement</b></span>
+                        <a href="#visitDrawingElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>visitDrawingElement(drawingElement: <a href="../classes/DrawingElement.html" target="_self">DrawingElement</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="144"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:144</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>drawingElement</td>
+                                            <td>
+                                                            <code><a href="../classes/DrawingElement.html" target="_self" >DrawingElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="visitExternalToolElement"></a>
+                    <span class="name">
+                        <span ><b>visitExternalToolElement</b></span>
+                        <a href="#visitExternalToolElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>visitExternalToolElement(externalToolElement: <a href="../classes/ExternalToolElement.html" target="_self">ExternalToolElement</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="183"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:183</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>externalToolElement</td>
+                                            <td>
+                                                            <code><a href="../classes/ExternalToolElement.html" target="_self" >ExternalToolElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="visitFileElement"></a>
+                    <span class="name">
+                        <span ><b>visitFileElement</b></span>
+                        <a href="#visitFileElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>visitFileElement(fileElement: <a href="../classes/FileElement.html" target="_self">FileElement</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="100"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:100</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>fileElement</td>
+                                            <td>
+                                                            <code><a href="../classes/FileElement.html" target="_self" >FileElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="visitLinkElement"></a>
+                    <span class="name">
+                        <span ><b>visitLinkElement</b></span>
+                        <a href="#visitLinkElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>visitLinkElement(linkElement: <a href="../classes/LinkElement.html" target="_self">LinkElement</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="114"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:114</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>linkElement</td>
+                                            <td>
+                                                            <code><a href="../classes/LinkElement.html" target="_self" >LinkElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="visitRichTextElement"></a>
+                    <span class="name">
+                        <span ><b>visitRichTextElement</b></span>
+                        <a href="#visitRichTextElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>visitRichTextElement(richTextElement: <a href="../classes/RichTextElement.html" target="_self">RichTextElement</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="130"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:130</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>richTextElement</td>
+                                            <td>
+                                                            <code><a href="../classes/RichTextElement.html" target="_self" >RichTextElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="visitSubmissionContainerElement"></a>
+                    <span class="name">
+                        <span ><b>visitSubmissionContainerElement</b></span>
+                        <a href="#visitSubmissionContainerElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>visitSubmissionContainerElement(submissionContainerElement: <a href="../classes/SubmissionContainerElement.html" target="_self">SubmissionContainerElement</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="157"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:157</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>submissionContainerElement</td>
+                                            <td>
+                                                            <code><a href="../classes/SubmissionContainerElement.html" target="_self" >SubmissionContainerElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="visitSubmissionItem"></a>
+                    <span class="name">
+                        <span ><b>visitSubmissionItem</b></span>
+                        <a href="#visitSubmissionItem"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>visitSubmissionItem(submissionItem: <a href="../classes/SubmissionItem.html" target="_self">SubmissionItem</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="170"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-save.visitor.ts:170</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>submissionItem</td>
+                                            <td>
+                                                            <code><a href="../classes/SubmissionItem.html" target="_self" >SubmissionItem</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+
+
+
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Utils } from &#x27;@mikro-orm/core&#x27;;
+import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
+import { ContextExternalToolEntity } from &#x27;@modules/tool/context-external-tool/entity&#x27;;
+import {
+	AnyBoardDo,
+	BoardCompositeVisitor,
+	Card,
+	Column,
+	ColumnBoard,
+	ExternalToolElement,
+	FileElement,
+	RichTextElement,
+	SubmissionContainerElement,
+	SubmissionItem,
+} from &#x27;@shared/domain/domainobject&#x27;;
+import { DrawingElement } from &#x27;@shared/domain/domainobject/board/drawing-element.do&#x27;;
+import { LinkElement } from &#x27;@shared/domain/domainobject/board/link-element.do&#x27;;
+import {
+	BoardNode,
+	CardNode,
+	ColumnBoardNode,
+	ColumnNode,
+	ExternalToolElementNodeEntity,
+	FileElementNode,
+	RichTextElementNode,
+	SubmissionContainerElementNode,
+	SubmissionItemNode,
+} from &#x27;@shared/domain/entity&#x27;;
+import { DrawingElementNode } from &#x27;@shared/domain/entity/boardnode/drawing-element-node.entity&#x27;;
+import { LinkElementNode } from &#x27;@shared/domain/entity/boardnode/link-element-node.entity&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
+
+import { BoardNodeRepo } from &#x27;./board-node.repo&#x27;;
+
+type ParentData &#x3D; {
+	boardNode: BoardNode;
+	position: number;
+};
+
+export class RecursiveSaveVisitor implements BoardCompositeVisitor {
+	private parentsMap: Map&lt;EntityId, ParentData&gt; &#x3D; new Map();
+
+	constructor(private readonly em: EntityManager, private readonly boardNodeRepo: BoardNodeRepo) {}
+
+	async save(domainObject: AnyBoardDo | AnyBoardDo[], parent?: AnyBoardDo): Promise&lt;void&gt; {
+		const domainObjects &#x3D; Utils.asArray(domainObject);
+
+		if (parent) {
+			const parentNode &#x3D; await this.boardNodeRepo.findById(parent.id);
+
+			domainObjects.forEach((child) &#x3D;&gt; {
+				this.registerParentData(parent, child, parentNode);
+			});
+		}
+
+		domainObjects.forEach((child) &#x3D;&gt; child.accept(this));
+	}
+
+	visitColumnBoard(columnBoard: ColumnBoard): void {
+		const parentData &#x3D; this.parentsMap.get(columnBoard.id);
+
+		const boardNode &#x3D; new ColumnBoardNode({
+			id: columnBoard.id,
+			title: columnBoard.title,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+			context: columnBoard.context,
+		});
+
+		this.saveRecursive(boardNode, columnBoard);
+	}
+
+	visitColumn(column: Column): void {
+		const parentData &#x3D; this.parentsMap.get(column.id);
+
+		const boardNode &#x3D; new ColumnNode({
+			id: column.id,
+			title: column.title,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+		});
+
+		this.saveRecursive(boardNode, column);
+	}
+
+	visitCard(card: Card): void {
+		const parentData &#x3D; this.parentsMap.get(card.id);
+
+		const boardNode &#x3D; new CardNode({
+			id: card.id,
+			height: card.height,
+			title: card.title,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+		});
+
+		this.saveRecursive(boardNode, card);
+	}
+
+	visitFileElement(fileElement: FileElement): void {
+		const parentData &#x3D; this.parentsMap.get(fileElement.id);
+
+		const boardNode &#x3D; new FileElementNode({
+			id: fileElement.id,
+			caption: fileElement.caption,
+			alternativeText: fileElement.alternativeText,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+		});
+
+		this.saveRecursive(boardNode, fileElement);
+	}
+
+	visitLinkElement(linkElement: LinkElement): void {
+		const parentData &#x3D; this.parentsMap.get(linkElement.id);
+
+		const boardNode &#x3D; new LinkElementNode({
+			id: linkElement.id,
+			url: linkElement.url,
+			title: linkElement.title,
+			imageUrl: linkElement.imageUrl,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+		});
+
+		this.createOrUpdateBoardNode(boardNode);
+		this.visitChildren(linkElement, boardNode);
+	}
+
+	visitRichTextElement(richTextElement: RichTextElement): void {
+		const parentData &#x3D; this.parentsMap.get(richTextElement.id);
+
+		const boardNode &#x3D; new RichTextElementNode({
+			id: richTextElement.id,
+			text: richTextElement.text,
+			inputFormat: richTextElement.inputFormat,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+		});
+
+		this.saveRecursive(boardNode, richTextElement);
+	}
+
+	visitDrawingElement(drawingElement: DrawingElement): void {
+		const parentData &#x3D; this.parentsMap.get(drawingElement.id);
+
+		const boardNode &#x3D; new DrawingElementNode({
+			id: drawingElement.id,
+			description: drawingElement.description ?? &#x27;&#x27;,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+		});
+
+		this.saveRecursive(boardNode, drawingElement);
+	}
+
+	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void {
+		const parentData &#x3D; this.parentsMap.get(submissionContainerElement.id);
+
+		const boardNode &#x3D; new SubmissionContainerElementNode({
+			id: submissionContainerElement.id,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+			dueDate: submissionContainerElement.dueDate,
+		});
+
+		this.saveRecursive(boardNode, submissionContainerElement);
+	}
+
+	visitSubmissionItem(submissionItem: SubmissionItem): void {
+		const parentData &#x3D; this.parentsMap.get(submissionItem.id);
+		const boardNode &#x3D; new SubmissionItemNode({
+			id: submissionItem.id,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+			completed: submissionItem.completed,
+			userId: submissionItem.userId,
+		});
+
+		this.saveRecursive(boardNode, submissionItem);
+	}
+
+	visitExternalToolElement(externalToolElement: ExternalToolElement): void {
+		const parentData: ParentData | undefined &#x3D; this.parentsMap.get(externalToolElement.id);
+
+		const boardNode: ExternalToolElementNodeEntity &#x3D; new ExternalToolElementNodeEntity({
+			id: externalToolElement.id,
+			contextExternalTool: externalToolElement.contextExternalToolId
+				? this.em.getReference(ContextExternalToolEntity, externalToolElement.contextExternalToolId)
+				: undefined,
+			parent: parentData?.boardNode,
+			position: parentData?.position,
+		});
+
+		this.createOrUpdateBoardNode(boardNode);
+		this.visitChildren(externalToolElement, boardNode);
+	}
+
+	private visitChildren(parent: AnyBoardDo, parentNode: BoardNode) {
+		parent.children.forEach((child) &#x3D;&gt; {
+			this.registerParentData(parent, child, parentNode);
+			child.accept(this);
+		});
+	}
+
+	private registerParentData(parent: AnyBoardDo, child: AnyBoardDo, parentNode: BoardNode) {
+		const position &#x3D; parent.children.findIndex((obj) &#x3D;&gt; obj.id &#x3D;&#x3D;&#x3D; child.id);
+		if (position &#x3D;&#x3D;&#x3D; -1) {
+			throw new Error(&#x60;Cannot get child position. Child doesnt belong to parent&#x60;);
+		}
+		this.parentsMap.set(child.id, { boardNode: parentNode, position });
+	}
+
+	private saveRecursive(boardNode: BoardNode, anyBoardDo: AnyBoardDo): void {
+		this.createOrUpdateBoardNode(boardNode);
+		this.visitChildren(anyBoardDo, boardNode);
+	}
+
+	// TODO make private (change tests)
+	createOrUpdateBoardNode(boardNode: BoardNode): void {
+		const existing &#x3D; this.em.getUnitOfWork().getById&lt;BoardNode&gt;(BoardNode.name, boardNode.id);
+		if (existing) {
+			this.em.assign(existing, boardNode);
+		} else {
+			this.em.persist(boardNode);
+		}
+	}
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'RecursiveSaveVisitor.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

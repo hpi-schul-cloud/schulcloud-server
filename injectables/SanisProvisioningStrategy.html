@@ -1,0 +1,979 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>schulcloud-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >SanisProvisioningStrategy</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts</code>
+        </p>
+
+
+
+            <p class="comment">
+                <h3>Extends</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../injectables/OidcProvisioningStrategy.html" target="_self" >OidcProvisioningStrategy</a></code>
+            </p>
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#addTeacherRoleIfAdmin" >addTeacherRoleIfAdmin</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#checkResponseValidation" >checkResponseValidation</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getData" >getData</a>
+                            </li>
+                            <li>
+                                <a href="#getType" >getType</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#isObjectEmpty" >isObjectEmpty</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#removeEmptyObjectsFromResponse" >removeEmptyObjectsFromResponse</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#apply" >apply</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(provisioningFeatures: <a href="../interfaces/IProvisioningFeatures.html" target="_self">IProvisioningFeatures</a>, oidcProvisioningService: <a href="../injectables/OidcProvisioningService.html" target="_self">OidcProvisioningService</a>, responseMapper: <a href="../injectables/SanisResponseMapper.html" target="_self">SanisResponseMapper</a>, httpService: HttpService)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:24</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>provisioningFeatures</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/IProvisioningFeatures.html" target="_self" >IProvisioningFeatures</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>oidcProvisioningService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/OidcProvisioningService.html" target="_self" >OidcProvisioningService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>responseMapper</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SanisResponseMapper.html" target="_self" >SanisResponseMapper</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>httpService</td>
+                                                  
+                                                        <td>
+                                                                    <code>HttpService</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="addTeacherRoleIfAdmin"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>addTeacherRoleIfAdmin</b></span>
+                        <a href="#addTeacherRoleIfAdmin"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>addTeacherRoleIfAdmin(externalUser: <a href="../classes/ExternalUserDto.html" target="_self">ExternalUserDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="130"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:130</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>externalUser</td>
+                                            <td>
+                                                            <code><a href="../classes/ExternalUserDto.html" target="_self" >ExternalUserDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkResponseValidation"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>checkResponseValidation</b></span>
+                        <a href="#checkResponseValidation"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkResponseValidation(response: <a href="../classes/SanisResponse.html" target="_self">SanisResponse</a>, groups: <a href="../interfaces/Group.html" target="_self">SanisResponseValidationGroups[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="118"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:118</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>response</td>
+                                            <td>
+                                                            <code><a href="../classes/SanisResponse.html" target="_self" >SanisResponse</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>groups</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Group.html" target="_self" >SanisResponseValidationGroups[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getData"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getData</b></span>
+                        <a href="#getData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getData(input: <a href="../classes/OauthDataStrategyInputDto.html" target="_self">OauthDataStrategyInputDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Inherited from         <code><a href="../classes/ProvisioningStrategy.html" target="_self" >ProvisioningStrategy</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:38</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>input</td>
+                                            <td>
+                                                            <code><a href="../classes/OauthDataStrategyInputDto.html" target="_self" >OauthDataStrategyInputDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/OauthDataDto.html" target="_self" >Promise&lt;OauthDataDto&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getType"></a>
+                    <span class="name">
+                        <span ><b>getType</b></span>
+                        <a href="#getType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>getType()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Inherited from         <code><a href="../classes/ProvisioningStrategy.html" target="_self" >ProvisioningStrategy</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:34</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#SystemProvisioningStrategy" target="_self" >SystemProvisioningStrategy</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isObjectEmpty"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>isObjectEmpty</b></span>
+                        <a href="#isObjectEmpty"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isObjectEmpty(obj)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="114"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:114</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>obj</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="removeEmptyObjectsFromResponse"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>removeEmptyObjectsFromResponse</b></span>
+                        <a href="#removeEmptyObjectsFromResponse"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>removeEmptyObjectsFromResponse(response: <a href="../classes/SanisResponse.html" target="_self">SanisResponse</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="88"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:88</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>response</td>
+                                            <td>
+                                                            <code><a href="../classes/SanisResponse.html" target="_self" >SanisResponse</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/SanisResponse.html" target="_self" >SanisResponse</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="apply"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>apply</b></span>
+                        <a href="#apply"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>apply(data: <a href="../classes/OauthDataDto.html" target="_self">OauthDataDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Inherited from         <code><a href="../classes/ProvisioningStrategy.html" target="_self" >ProvisioningStrategy</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:17</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/OauthDataDto.html" target="_self" >OauthDataDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/ProvisioningDto.html" target="_self" >Promise&lt;ProvisioningDto&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpService } from &#x27;@nestjs/axios&#x27;;
+import { Inject, Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
+import { ValidationErrorLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
+import { RoleName } from &#x27;@shared/domain/interface&#x27;;
+import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
+import { AxiosRequestConfig, AxiosResponse } from &#x27;axios&#x27;;
+import { plainToClass } from &#x27;class-transformer&#x27;;
+import { validate, ValidationError } from &#x27;class-validator&#x27;;
+import { firstValueFrom } from &#x27;rxjs&#x27;;
+import { IProvisioningFeatures, ProvisioningFeatures } from &#x27;../../config&#x27;;
+import {
+	ExternalGroupDto,
+	ExternalSchoolDto,
+	ExternalUserDto,
+	OauthDataDto,
+	OauthDataStrategyInputDto,
+} from &#x27;../../dto&#x27;;
+import { OidcProvisioningStrategy } from &#x27;../oidc/oidc.strategy&#x27;;
+import { OidcProvisioningService } from &#x27;../oidc/service/oidc-provisioning.service&#x27;;
+import { SanisGruppenResponse, SanisResponse, SanisResponseValidationGroups } from &#x27;./response&#x27;;
+import { SanisResponseMapper } from &#x27;./sanis-response.mapper&#x27;;
+
+@Injectable()
+export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
+	constructor(
+		@Inject(ProvisioningFeatures) protected readonly provisioningFeatures: IProvisioningFeatures,
+		protected readonly oidcProvisioningService: OidcProvisioningService,
+		private readonly responseMapper: SanisResponseMapper,
+		private readonly httpService: HttpService
+	) {
+		super(provisioningFeatures, oidcProvisioningService);
+	}
+
+	getType(): SystemProvisioningStrategy {
+		return SystemProvisioningStrategy.SANIS;
+	}
+
+	override async getData(input: OauthDataStrategyInputDto): Promise&lt;OauthDataDto&gt; {
+		if (!input.system.provisioningUrl) {
+			throw new InternalServerErrorException(
+				&#x60;Sanis system with id: ${input.system.systemId} is missing a provisioning url&#x60;
+			);
+		}
+
+		const axiosConfig: AxiosRequestConfig &#x3D; {
+			headers: {
+				Authorization: &#x60;Bearer ${input.accessToken}&#x60;,
+				&#x27;Accept-Encoding&#x27;: &#x27;gzip&#x27;,
+			},
+		};
+
+		const axiosResponse: AxiosResponse&lt;SanisResponse&gt; &#x3D; await firstValueFrom(
+			this.httpService.get(input.system.provisioningUrl, axiosConfig)
+		);
+
+		const fixedData: SanisResponse &#x3D; this.removeEmptyObjectsFromResponse(axiosResponse.data);
+
+		const response: SanisResponse &#x3D; plainToClass(SanisResponse, fixedData);
+
+		await this.checkResponseValidation(response, [
+			SanisResponseValidationGroups.USER,
+			SanisResponseValidationGroups.SCHOOL,
+		]);
+
+		const externalUser: ExternalUserDto &#x3D; this.responseMapper.mapToExternalUserDto(axiosResponse.data);
+		this.addTeacherRoleIfAdmin(externalUser);
+
+		const externalSchool: ExternalSchoolDto &#x3D; this.responseMapper.mapToExternalSchoolDto(axiosResponse.data);
+
+		let externalGroups: ExternalGroupDto[] | undefined;
+		if (this.provisioningFeatures.schulconnexGroupProvisioningEnabled) {
+			await this.checkResponseValidation(response, [SanisResponseValidationGroups.GROUPS]);
+
+			externalGroups &#x3D; this.responseMapper.mapToExternalGroupDtos(axiosResponse.data);
+		}
+
+		const oauthData: OauthDataDto &#x3D; new OauthDataDto({
+			system: input.system,
+			externalSchool,
+			externalUser,
+			externalGroups,
+		});
+
+		return oauthData;
+	}
+
+	// This is a temporary fix to a problem with moin.schule and should be resolved after 12.12.23
+	private removeEmptyObjectsFromResponse(response: SanisResponse): SanisResponse {
+		const fixedResponse: SanisResponse &#x3D; { ...response };
+
+		if (fixedResponse?.personenkontexte?.length &amp;&amp; fixedResponse.personenkontexte[0].gruppen) {
+			const groups: SanisGruppenResponse[] &#x3D; fixedResponse.personenkontexte[0].gruppen;
+
+			for (const group of groups) {
+				group.sonstige_gruppenzugehoerige &#x3D; group.sonstige_gruppenzugehoerige?.filter(
+					(relation) &#x3D;&gt; !this.isObjectEmpty(relation)
+				);
+
+				if (!group.sonstige_gruppenzugehoerige?.length) {
+					group.sonstige_gruppenzugehoerige &#x3D; undefined;
+				}
+			}
+
+			fixedResponse.personenkontexte[0].gruppen &#x3D; groups.filter((group) &#x3D;&gt; !this.isObjectEmpty(group));
+
+			if (!fixedResponse.personenkontexte[0].gruppen.length) {
+				fixedResponse.personenkontexte[0].gruppen &#x3D; undefined;
+			}
+		}
+
+		return fixedResponse;
+	}
+
+	private isObjectEmpty(obj: unknown): boolean {
+		return typeof obj &#x3D;&#x3D;&#x3D; &#x27;object&#x27; &amp;&amp; !!obj &amp;&amp; !Object.keys(obj).some((key) &#x3D;&gt; obj[key] !&#x3D;&#x3D; undefined);
+	}
+
+	private async checkResponseValidation(response: SanisResponse, groups: SanisResponseValidationGroups[]) {
+		const validationErrors: ValidationError[] &#x3D; await validate(response, {
+			always: true,
+			forbidUnknownValues: false,
+			groups,
+		});
+
+		if (validationErrors.length) {
+			throw new ValidationErrorLoggableException(validationErrors);
+		}
+	}
+
+	private addTeacherRoleIfAdmin(externalUser: ExternalUserDto): void {
+		if (externalUser.roles &amp;&amp; externalUser.roles.includes(RoleName.ADMINISTRATOR)) {
+			externalUser.roles.push(RoleName.TEACHER);
+		}
+	}
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'SanisProvisioningStrategy.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

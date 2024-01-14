@@ -1,0 +1,2487 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>schulcloud-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content injectable">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Injectables</li>
+  <li class="breadcrumb-item" >H5PEditorUc</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>apps/server/src/modules/h5p-editor/uc/h5p.uc.ts</code>
+        </p>
+
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#fakeUndefinedAsString" >fakeUndefinedAsString</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#changeUserType" >changeUserType</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#checkContentPermission" >checkContentPermission</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#createAugmentedLumiUser" >createAugmentedLumiUser</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#createH5pContentGetMetadata" >createH5pContentGetMetadata</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteH5pContent" >deleteH5pContent</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getAjax" >getAjax</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getContentFile" >getContentFile</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getContentParameters" >getContentParameters</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getEmptyH5pEditor" >getEmptyH5pEditor</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getH5pEditor" >getH5pEditor</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getH5pPlayer" >getH5pPlayer</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getLibraryFile" >getLibraryFile</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getRange" >getRange</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getTemporaryFile" >getTemporaryFile</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getUserLanguage" >getUserLanguage</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#postAjax" >postAjax</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#saveH5pContentGetMetadata" >saveH5pContentGetMetadata</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(h5pEditor: H5PEditor, h5pPlayer: H5PPlayer, h5pAjaxEndpoint: H5PAjaxEndpoint, libraryService: <a href="../injectables/LibraryStorage.html" target="_self">LibraryStorage</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, authorizationReferenceService: <a href="../injectables/AuthorizationReferenceService.html" target="_self">AuthorizationReferenceService</a>, h5pContentRepo: <a href="../injectables/H5PContentRepo.html" target="_self">H5PContentRepo</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:41</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>h5pEditor</td>
+                                                  
+                                                        <td>
+                                                                    <code>H5PEditor</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>h5pPlayer</td>
+                                                  
+                                                        <td>
+                                                                    <code>H5PPlayer</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>h5pAjaxEndpoint</td>
+                                                  
+                                                        <td>
+                                                                    <code>H5PAjaxEndpoint</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>libraryService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/LibraryStorage.html" target="_self" >LibraryStorage</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>userService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/UserService.html" target="_self" >UserService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>authorizationReferenceService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AuthorizationReferenceService.html" target="_self" >AuthorizationReferenceService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>h5pContentRepo</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/H5PContentRepo.html" target="_self" >H5PContentRepo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-methods">
+    
+    <h3 id="methods">
+        Methods
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="changeUserType"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>changeUserType</b></span>
+                        <a href="#changeUserType"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>changeUserType(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="375"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:375</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >LumiIUser</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkContentPermission"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>checkContentPermission</b></span>
+                        <a href="#checkContentPermission"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkContentPermission(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, parentType: <a href="../undefineds/H5PContentParentType.html" target="_self">H5PContentParentType</a>, parentId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:52</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>parentType</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#H5PContentParentType" target="_self" >H5PContentParentType</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>parentId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>context</td>
+                                            <td>
+                                                            <code><a href="../interfaces/AuthorizationContext.html" target="_self" >AuthorizationContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createAugmentedLumiUser"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>createAugmentedLumiUser</b></span>
+                        <a href="#createAugmentedLumiUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createAugmentedLumiUser(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, contentParentType: <a href="../undefineds/H5PContentParentType.html" target="_self">H5PContentParentType</a>, contentParentId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="389"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:389</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>contentParentType</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#H5PContentParentType" target="_self" >H5PContentParentType</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>contentParentId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createH5pContentGetMetadata"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>createH5pContentGetMetadata</b></span>
+                        <a href="#createH5pContentGetMetadata"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createH5pContentGetMetadata(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params, metadata: <a href="../interfaces/Meta.html" target="_self">IContentMetadata</a>, mainLibraryUbername: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, parentType: <a href="../undefineds/H5PContentParentType.html" target="_self">H5PContentParentType</a>, parentId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="327"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:327</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>params</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>metadata</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Meta.html" target="_self" >IContentMetadata</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>mainLibraryUbername</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>parentType</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#H5PContentParentType" target="_self" >H5PContentParentType</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>parentId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;literal type&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteH5pContent"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteH5pContent</b></span>
+                        <a href="#deleteH5pContent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteH5pContent(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, contentId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="308"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:308</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>contentId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getAjax"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getAjax</b></span>
+                        <a href="#getAjax"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getAjax(query: <a href="../classes/AjaxGetQueryParams.html" target="_self">AjaxGetQueryParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="94"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:94</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>query</td>
+                                            <td>
+                                                            <code><a href="../classes/AjaxGetQueryParams.html" target="_self" >AjaxGetQueryParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;IHubInfo | ILibraryDetailedDataForClient | IAjaxResponse | undefined&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getContentFile"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getContentFile</b></span>
+                        <a href="#getContentFile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getContentFile(contentId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, file: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, req: Request, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="186"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:186</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>contentId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>file</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                                        <code>Request</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;GetLibraryFile&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getContentParameters"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getContentParameters</b></span>
+                        <a href="#getContentParameters"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getContentParameters(contentId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="171"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:171</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>contentId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getEmptyH5pEditor"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getEmptyH5pEditor</b></span>
+                        <a href="#getEmptyH5pEditor"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getEmptyH5pEditor(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, language: <a href="../undefineds/LanguageType.html" target="_self">LanguageType</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="277"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:277</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>language</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#LanguageType" target="_self" >LanguageType</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getH5pEditor"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getH5pEditor</b></span>
+                        <a href="#getH5pEditor"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getH5pEditor(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, contentId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, language: <a href="../undefineds/LanguageType.html" target="_self">LanguageType</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="291"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:291</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>contentId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>language</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#LanguageType" target="_self" >LanguageType</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getH5pPlayer"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getH5pPlayer</b></span>
+                        <a href="#getH5pPlayer"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getH5pPlayer(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, contentId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="266"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:266</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>contentId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;IPlayerModel&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getLibraryFile"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getLibraryFile</b></span>
+                        <a href="#getLibraryFile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getLibraryFile(ubername: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, file: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="217"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:217</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>ubername</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>file</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;GetLibraryFile&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getRange"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>getRange</b></span>
+                        <a href="#getRange"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getRange(req: Request)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:70</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+                        <div class="io-description"><p>Returns a callback that parses the request range.</p>
+</div>
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                                        <code>Request</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>(filesize: number) &#x3D;&gt; any</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getTemporaryFile"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getTemporaryFile</b></span>
+                        <a href="#getTemporaryFile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getTemporaryFile(file: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, req: Request, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="231"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:231</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>file</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>req</td>
+                                            <td>
+                                                        <code>Request</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;GetLibraryFile&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getUserLanguage"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getUserLanguage</b></span>
+                        <a href="#getUserLanguage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getUserLanguage(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="403"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:403</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;string&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="postAjax"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>postAjax</b></span>
+                        <a href="#postAjax"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>postAjax(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, query: <a href="../classes/AjaxPostQueryParams.html" target="_self">AjaxPostQueryParams</a>, body: <a href="../undefineds/AjaxPostBodyParams.html" target="_self">AjaxPostBodyParams</a>, contentFile?: <a href="../interfaces/File.html" target="_self">Express.Multer.File</a>, h5pFile?: <a href="../interfaces/File.html" target="_self">Express.Multer.File</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="119"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:119</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>query</td>
+                                            <td>
+                                                            <code><a href="../classes/AjaxPostQueryParams.html" target="_self" >AjaxPostQueryParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>body</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#AjaxPostBodyParams" target="_self" >AjaxPostBodyParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>contentFile</td>
+                                            <td>
+                                                            <code><a href="../interfaces/File.html" target="_self" >Express.Multer.File</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>h5pFile</td>
+                                            <td>
+                                                            <code><a href="../interfaces/File.html" target="_self" >Express.Multer.File</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;AjaxSuccessResponse | literal type | [] | undefined&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="saveH5pContentGetMetadata"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>saveH5pContentGetMetadata</b></span>
+                        <a href="#saveH5pContentGetMetadata"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>saveH5pContentGetMetadata(contentId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params, metadata: <a href="../interfaces/Meta.html" target="_self">IContentMetadata</a>, mainLibraryUbername: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, parentType: <a href="../undefineds/H5PContentParentType.html" target="_self">H5PContentParentType</a>, parentId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="351"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:351</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>contentId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>params</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>metadata</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Meta.html" target="_self" >IContentMetadata</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>mainLibraryUbername</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>parentType</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#H5PContentParentType" target="_self" >H5PContentParentType</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>parentId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;literal type&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="fakeUndefinedAsString"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>fakeUndefinedAsString</b></span>
+                        <a href="#fakeUndefinedAsString"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>() &#x3D;&gt; {...}</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="62" class="link-to-prism">apps/server/src/modules/h5p-editor/uc/h5p.uc.ts:62</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+	AjaxSuccessResponse,
+	H5PAjaxEndpoint,
+	H5PEditor,
+	H5PPlayer,
+	IContentMetadata,
+	IEditorModel,
+	IPlayerModel,
+	IUser as LumiIUser,
+} from &#x27;@lumieducation/h5p-server&#x27;;
+import {
+	IAjaxResponse,
+	IHubInfo,
+	ILibraryDetailedDataForClient,
+	ILibraryOverviewForClient,
+} from &#x27;@lumieducation/h5p-server/build/src/types&#x27;;
+import {
+	BadRequestException,
+	HttpException,
+	Injectable,
+	NotAcceptableException,
+	NotFoundException,
+} from &#x27;@nestjs/common&#x27;;
+import { LanguageType } from &#x27;@shared/domain/entity&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { ICurrentUser } from &#x27;@src/modules/authentication&#x27;;
+import { AuthorizationContext, AuthorizationContextBuilder } from &#x27;@src/modules/authorization&#x27;;
+import { AuthorizationReferenceService } from &#x27;@src/modules/authorization/domain&#x27;;
+import { UserService } from &#x27;@src/modules/user&#x27;;
+import { Request } from &#x27;express&#x27;;
+import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams } from &#x27;../controller/dto&#x27;;
+import { H5PContentParentType } from &#x27;../entity&#x27;;
+import { H5PContentMapper } from &#x27;../mapper/h5p-content.mapper&#x27;;
+import { H5PErrorMapper } from &#x27;../mapper/h5p-error.mapper&#x27;;
+import { H5PContentRepo } from &#x27;../repo&#x27;;
+import { LibraryStorage } from &#x27;../service&#x27;;
+import { LumiUserWithContentData } from &#x27;../types/lumi-types&#x27;;
+import { GetLibraryFile } from &#x27;./dto/h5p-getLibraryFile&#x27;;
+
+@Injectable()
+export class H5PEditorUc {
+	constructor(
+		private readonly h5pEditor: H5PEditor,
+		private readonly h5pPlayer: H5PPlayer,
+		private readonly h5pAjaxEndpoint: H5PAjaxEndpoint,
+		private readonly libraryService: LibraryStorage,
+		private readonly userService: UserService,
+		private readonly authorizationReferenceService: AuthorizationReferenceService,
+		private readonly h5pContentRepo: H5PContentRepo
+	) {}
+
+	private async checkContentPermission(
+		userId: EntityId,
+		parentType: H5PContentParentType,
+		parentId: EntityId,
+		context: AuthorizationContext
+	) {
+		const allowedType &#x3D; H5PContentMapper.mapToAllowedAuthorizationEntityType(parentType);
+		await this.authorizationReferenceService.checkPermissionByReferences(userId, allowedType, parentId, context);
+	}
+
+	private fakeUndefinedAsString &#x3D; () &#x3D;&gt; {
+		const value &#x3D; undefined as unknown as string;
+		return value;
+	};
+
+	/**
+	 * Returns a callback that parses the request range.
+	 */
+	private getRange(req: Request) {
+		return (filesize: number) &#x3D;&gt; {
+			const range &#x3D; req.range(filesize);
+
+			if (range) {
+				if (range &#x3D;&#x3D;&#x3D; -2) {
+					throw new BadRequestException(&#x27;invalid range&#x27;);
+				}
+
+				if (range &#x3D;&#x3D;&#x3D; -1) {
+					throw new BadRequestException(&#x27;unsatisfiable range&#x27;);
+				}
+
+				if (range.length &gt; 1) {
+					throw new BadRequestException(&#x27;multipart ranges are unsupported&#x27;);
+				}
+
+				return range[0];
+			}
+
+			return undefined;
+		};
+	}
+
+	public async getAjax(
+		query: AjaxGetQueryParams,
+		currentUser: ICurrentUser
+	): Promise&lt;IHubInfo | ILibraryDetailedDataForClient | IAjaxResponse | undefined&gt; {
+		const user &#x3D; this.changeUserType(currentUser);
+		const language &#x3D; await this.getUserLanguage(currentUser);
+		const h5pErrorMapper &#x3D; new H5PErrorMapper();
+
+		try {
+			const result &#x3D; await this.h5pAjaxEndpoint.getAjax(
+				query.action,
+				query.machineName,
+				query.majorVersion,
+				query.minorVersion,
+				language,
+				user
+			);
+			return result;
+		} catch (err) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			h5pErrorMapper.mapH5pError(err);
+			return undefined;
+		}
+	}
+
+	public async postAjax(
+		currentUser: ICurrentUser,
+		query: AjaxPostQueryParams,
+		body: AjaxPostBodyParams,
+		contentFile?: Express.Multer.File,
+		h5pFile?: Express.Multer.File
+	): Promise&lt;
+		| AjaxSuccessResponse
+		| {
+				height?: number;
+				mime: string;
+				path: string;
+				width?: number;
+		  }
+		| ILibraryOverviewForClient[]
+		| undefined
+	&gt; {
+		const user &#x3D; this.changeUserType(currentUser);
+		const language &#x3D; await this.getUserLanguage(currentUser);
+		const h5pErrorMapper &#x3D; new H5PErrorMapper();
+
+		try {
+			const result &#x3D; await this.h5pAjaxEndpoint.postAjax(
+				query.action,
+				body,
+				language,
+				user,
+				contentFile &amp;&amp; {
+					data: contentFile.buffer,
+					mimetype: contentFile.mimetype,
+					name: contentFile.originalname,
+					size: contentFile.size,
+				},
+				query.id,
+				undefined,
+				h5pFile &amp;&amp; {
+					data: h5pFile.buffer,
+					mimetype: h5pFile.mimetype,
+					name: h5pFile.originalname,
+					size: h5pFile.size,
+				},
+				undefined // TODO: HubID?
+			);
+
+			return result;
+		} catch (err) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			h5pErrorMapper.mapH5pError(err);
+			return undefined;
+		}
+	}
+
+	public async getContentParameters(contentId: string, currentUser: ICurrentUser) {
+		const { parentType, parentId } &#x3D; await this.h5pContentRepo.findById(contentId);
+		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.read([]));
+
+		const user &#x3D; this.changeUserType(currentUser);
+
+		try {
+			const result &#x3D; await this.h5pAjaxEndpoint.getContentParameters(contentId, user);
+
+			return result;
+		} catch (err) {
+			throw new NotFoundException();
+		}
+	}
+
+	public async getContentFile(
+		contentId: string,
+		file: string,
+		req: Request,
+		currentUser: ICurrentUser
+	): Promise&lt;GetLibraryFile&gt; {
+		const { parentType, parentId } &#x3D; await this.h5pContentRepo.findById(contentId);
+		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.read([]));
+
+		const user &#x3D; this.changeUserType(currentUser);
+
+		try {
+			const rangeCallback &#x3D; this.getRange(req);
+			const { mimetype, range, stats, stream } &#x3D; await this.h5pAjaxEndpoint.getContentFile(
+				contentId,
+				file,
+				user,
+				rangeCallback
+			);
+
+			return {
+				data: stream,
+				contentType: mimetype,
+				contentLength: stats.size,
+				contentRange: range, // Range can be undefined, typings from @lumieducation/h5p-server are wrong
+			};
+		} catch (err) {
+			throw new NotFoundException();
+		}
+	}
+
+	public async getLibraryFile(ubername: string, file: string): Promise&lt;GetLibraryFile&gt; {
+		try {
+			const { mimetype, size, stream } &#x3D; await this.libraryService.getLibraryFile(ubername, file);
+
+			return {
+				data: stream,
+				contentType: mimetype,
+				contentLength: size as number,
+			};
+		} catch (err) {
+			throw new NotFoundException();
+		}
+	}
+
+	public async getTemporaryFile(file: string, req: Request, currentUser: ICurrentUser): Promise&lt;GetLibraryFile&gt; {
+		const user &#x3D; this.changeUserType(currentUser);
+
+		try {
+			const rangeCallback &#x3D; this.getRange(req);
+			const adapterRangeCallback: (filesize: number) &#x3D;&gt; { end: number; start: number } &#x3D; (filesize) &#x3D;&gt; {
+				let returnValue &#x3D; { start: 0, end: 0 };
+
+				if (rangeCallback) {
+					const result &#x3D; rangeCallback(filesize);
+
+					if (result) {
+						returnValue &#x3D; { start: result.start, end: result.end };
+					}
+				}
+
+				return returnValue;
+			};
+			const { mimetype, range, stats, stream } &#x3D; await this.h5pAjaxEndpoint.getTemporaryFile(
+				file,
+				user,
+				adapterRangeCallback
+			);
+
+			return {
+				data: stream,
+				contentType: mimetype,
+				contentLength: stats.size,
+				contentRange: range, // Range can be undefined, typings from @lumieducation/h5p-server are wrong
+			};
+		} catch (err) {
+			throw new NotFoundException();
+		}
+	}
+
+	public async getH5pPlayer(currentUser: ICurrentUser, contentId: string): Promise&lt;IPlayerModel&gt; {
+		const { parentType, parentId } &#x3D; await this.h5pContentRepo.findById(contentId);
+		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.read([]));
+
+		const user &#x3D; this.changeUserType(currentUser);
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		const playerModel: IPlayerModel &#x3D; await this.h5pPlayer.render(contentId, user);
+
+		return playerModel;
+	}
+
+	public async getEmptyH5pEditor(currentUser: ICurrentUser, language: LanguageType) {
+		const user &#x3D; this.changeUserType(currentUser);
+		const fakeUndefinedString &#x3D; this.fakeUndefinedAsString();
+
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+		const createdH5PEditor: IEditorModel &#x3D; await this.h5pEditor.render(
+			fakeUndefinedString, // Lumi typings are wrong because they dont &quot;use strict&quot;, this method actually accepts both string and undefined
+			language,
+			user
+		);
+
+		return createdH5PEditor;
+	}
+
+	public async getH5pEditor(currentUser: ICurrentUser, contentId: string, language: LanguageType) {
+		const { parentType, parentId } &#x3D; await this.h5pContentRepo.findById(contentId);
+		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.write([]));
+
+		const user &#x3D; this.changeUserType(currentUser);
+
+		const [editorModel, content] &#x3D; await Promise.all([
+			this.h5pEditor.render(contentId, language, user) as Promise&lt;IEditorModel&gt;,
+			this.h5pEditor.getContent(contentId, user),
+		]);
+
+		return {
+			editorModel,
+			content,
+		};
+	}
+
+	public async deleteH5pContent(currentUser: ICurrentUser, contentId: string): Promise&lt;boolean&gt; {
+		const { parentType, parentId } &#x3D; await this.h5pContentRepo.findById(contentId);
+		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.write([]));
+
+		const user &#x3D; this.changeUserType(currentUser);
+		let deletedContent &#x3D; false;
+		try {
+			await this.h5pEditor.deleteContent(contentId, user);
+			deletedContent &#x3D; true;
+		} catch (error) {
+			deletedContent &#x3D; false;
+			throw new HttpException(&#x27;message&#x27;, 400, {
+				cause: new NotAcceptableException(error as string, &#x27;content not found&#x27;),
+			});
+		}
+
+		return deletedContent;
+	}
+
+	public async createH5pContentGetMetadata(
+		currentUser: ICurrentUser,
+		params: unknown,
+		metadata: IContentMetadata,
+		mainLibraryUbername: string,
+		parentType: H5PContentParentType,
+		parentId: EntityId
+	): Promise&lt;{ id: string; metadata: IContentMetadata }&gt; {
+		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.write([]));
+
+		const user &#x3D; this.createAugmentedLumiUser(currentUser, parentType, parentId);
+		const fakeAsString &#x3D; this.fakeUndefinedAsString();
+
+		const newContentId &#x3D; await this.h5pEditor.saveOrUpdateContentReturnMetaData(
+			fakeAsString, // Lumi typings are wrong because they dont &quot;use strict&quot;, this method actually accepts both string and undefined
+			params,
+			metadata,
+			mainLibraryUbername,
+			user
+		);
+
+		return newContentId;
+	}
+
+	public async saveH5pContentGetMetadata(
+		contentId: string,
+		currentUser: ICurrentUser,
+		params: unknown,
+		metadata: IContentMetadata,
+		mainLibraryUbername: string,
+		parentType: H5PContentParentType,
+		parentId: EntityId
+	): Promise&lt;{ id: string; metadata: IContentMetadata }&gt; {
+		await this.checkContentPermission(currentUser.userId, parentType, parentId, AuthorizationContextBuilder.write([]));
+
+		const user &#x3D; this.createAugmentedLumiUser(currentUser, parentType, parentId);
+
+		const newContentId &#x3D; await this.h5pEditor.saveOrUpdateContentReturnMetaData(
+			contentId,
+			params,
+			metadata,
+			mainLibraryUbername,
+			user
+		);
+
+		return newContentId;
+	}
+
+	private changeUserType(currentUser: ICurrentUser): LumiIUser {
+		const user: LumiIUser &#x3D; {
+			canCreateRestricted: false,
+			canInstallRecommended: false,
+			canUpdateAndInstallLibraries: false,
+			email: &#x27;&#x27;,
+			id: currentUser.userId,
+			name: &#x27;&#x27;,
+			type: &#x27;&#x27;,
+		};
+
+		return user;
+	}
+
+	private createAugmentedLumiUser(
+		currentUser: ICurrentUser,
+		contentParentType: H5PContentParentType,
+		contentParentId: EntityId
+	) {
+		const user &#x3D; new LumiUserWithContentData(this.changeUserType(currentUser), {
+			parentType: contentParentType,
+			parentId: contentParentId,
+			schoolId: currentUser.schoolId,
+		});
+
+		return user;
+	}
+
+	private async getUserLanguage(currentUser: ICurrentUser): Promise&lt;string&gt; {
+		const languageUser &#x3D; await this.userService.findById(currentUser.userId);
+		let userLanguage &#x3D; LanguageType.DE;
+		if (languageUser?.language) {
+			userLanguage &#x3D; languageUser.language;
+		}
+		return userLanguage;
+	}
+}
+</code></pre>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
+            var COMPODOC_CURRENT_PAGE_URL = 'H5PEditorUc.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>
