@@ -18,6 +18,7 @@ import { TldrawWs } from '../controller';
 import { MetricsService } from '../metrics';
 import { TldrawRepo } from './tldraw.repo';
 import { YMongodb } from './y-mongodb';
+import { HttpService } from '@nestjs/axios';
 
 describe('TldrawBoardRepo', () => {
 	let app: INestApplication;
@@ -47,6 +48,10 @@ describe('TldrawBoardRepo', () => {
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
+				},
+				{
+					provide: HttpService,
+					useValue: createMock<HttpService>(),
 				},
 			],
 		}).compile();

@@ -47,10 +47,8 @@ describe('TldrawService', () => {
 				await repo.create(drawing);
 				const result = await repo.findByDocName(drawing.docName);
 				await service.deleteByDocName(drawing.docName);
-				const emptyResult = await repo.findByDocName(drawing.docName);
 
 				expect(result.length).toEqual(1);
-				expect(emptyResult.length).toEqual(0);
 				await expect(repo.findByDocName(drawing.docName)).rejects.toThrow(NotFoundException);
 			});
 

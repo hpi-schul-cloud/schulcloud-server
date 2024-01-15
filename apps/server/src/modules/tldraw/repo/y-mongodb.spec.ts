@@ -15,6 +15,7 @@ import { MetricsService } from '../metrics';
 import { TldrawBoardRepo } from './tldraw-board.repo';
 import { TldrawRepo } from './tldraw.repo';
 import { YMongodb } from './y-mongodb';
+import { HttpService } from '@nestjs/axios';
 
 jest.mock('yjs', () => {
 	const moduleMock: unknown = {
@@ -46,6 +47,10 @@ describe('YMongoDb', () => {
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
+				},
+				{
+					provide: HttpService,
+					useValue: createMock<HttpService>(),
 				},
 			],
 		}).compile();
