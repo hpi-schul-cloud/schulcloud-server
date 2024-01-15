@@ -24,67 +24,67 @@
 <title>cluster_TldrawWsTestModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-195 652,-195 652,-70 8,-70"/>
 </g>
-<g id="clust3" class="cluster">
-<title>cluster_TldrawWsTestModule_imports</title>
-<polygon fill="none" stroke="black" points="542,-78 542,-130 644,-130 644,-78 542,-78"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_TldrawWsTestModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 534,-130 534,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="126,-78 126,-130 644,-130 644,-78 126,-78"/>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_TldrawWsTestModule_imports</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 118,-130 118,-78 16,-78"/>
 </g>
 <!-- CoreModule -->
 <g id="node1" class="node">
 <title>CoreModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="636.26,-122 633.26,-126 612.26,-126 609.26,-122 549.74,-122 549.74,-86 636.26,-86 636.26,-122"/>
-<text text-anchor="middle" x="593" y="-99.8" font-family="Times,serif" font-size="14.00">CoreModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="110.26,-122 107.26,-126 86.26,-126 83.26,-122 23.74,-122 23.74,-86 110.26,-86 110.26,-122"/>
+<text text-anchor="middle" x="67" y="-99.8" font-family="Times,serif" font-size="14.00">CoreModule</text>
 </g>
 <!-- TldrawWsTestModule -->
 <g id="node2" class="node">
 <title>TldrawWsTestModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="443.24,-187 440.24,-191 419.24,-191 416.24,-187 300.76,-187 300.76,-151 443.24,-151 443.24,-187"/>
-<text text-anchor="middle" x="372" y="-164.8" font-family="Times,serif" font-size="14.00">TldrawWsTestModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="377.24,-187 374.24,-191 353.24,-191 350.24,-187 234.76,-187 234.76,-151 377.24,-151 377.24,-187"/>
+<text text-anchor="middle" x="306" y="-164.8" font-family="Times,serif" font-size="14.00">TldrawWsTestModule</text>
 </g>
 <!-- CoreModule&#45;&gt;TldrawWsTestModule -->
 <g id="edge1" class="edge">
 <title>CoreModule&#45;&gt;TldrawWsTestModule</title>
-<path fill="none" stroke="black" d="M593,-122.11C593,-141.34 593,-169 593,-169 593,-169 453.45,-169 453.45,-169"/>
-<polygon fill="black" stroke="black" points="453.45,-165.5 443.45,-169 453.45,-172.5 453.45,-165.5"/>
+<path fill="none" stroke="black" d="M67,-122.11C67,-141.34 67,-169 67,-169 67,-169 224.62,-169 224.62,-169"/>
+<polygon fill="black" stroke="black" points="224.62,-172.5 234.62,-169 224.62,-165.5 224.62,-172.5"/>
 </g>
 <!-- MetricsService -->
 <g id="node3" class="node">
 <title>MetricsService</title>
-<ellipse fill="#fdb462" stroke="black" cx="457" cy="-104" rx="69.47" ry="18"/>
-<text text-anchor="middle" x="457" y="-99.8" font-family="Times,serif" font-size="14.00">MetricsService</text>
+<ellipse fill="#fdb462" stroke="black" cx="567" cy="-104" rx="69.47" ry="18"/>
+<text text-anchor="middle" x="567" y="-99.8" font-family="Times,serif" font-size="14.00">MetricsService</text>
 </g>
 <!-- MetricsService&#45;&gt;TldrawWsTestModule -->
 <g id="edge2" class="edge">
 <title>MetricsService&#45;&gt;TldrawWsTestModule</title>
-<path fill="none" stroke="black" d="M415.44,-118.75C415.44,-118.75 415.44,-140.59 415.44,-140.59"/>
-<polygon fill="black" stroke="black" points="411.94,-140.59 415.44,-150.59 418.94,-140.59 411.94,-140.59"/>
+<path fill="none" stroke="black" d="M567,-122.11C567,-141.34 567,-169 567,-169 567,-169 387.32,-169 387.32,-169"/>
+<polygon fill="black" stroke="black" points="387.32,-165.5 377.32,-169 387.32,-172.5 387.32,-165.5"/>
 </g>
 <!-- TldrawBoardRepo -->
 <g id="node4" class="node">
 <title>TldrawBoardRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="287" cy="-104" rx="82.81" ry="18"/>
-<text text-anchor="middle" x="287" y="-99.8" font-family="Times,serif" font-size="14.00">TldrawBoardRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="397" cy="-104" rx="82.81" ry="18"/>
+<text text-anchor="middle" x="397" y="-99.8" font-family="Times,serif" font-size="14.00">TldrawBoardRepo</text>
 </g>
 <!-- TldrawBoardRepo&#45;&gt;TldrawWsTestModule -->
 <g id="edge3" class="edge">
 <title>TldrawBoardRepo&#45;&gt;TldrawWsTestModule</title>
-<path fill="none" stroke="black" d="M335.27,-118.75C335.27,-118.75 335.27,-140.59 335.27,-140.59"/>
-<polygon fill="black" stroke="black" points="331.77,-140.59 335.27,-150.59 338.77,-140.59 331.77,-140.59"/>
+<path fill="none" stroke="black" d="M345.73,-118.43C345.73,-118.43 345.73,-140.89 345.73,-140.89"/>
+<polygon fill="black" stroke="black" points="342.23,-140.89 345.73,-150.89 349.23,-140.89 342.23,-140.89"/>
 </g>
 <!-- TldrawWsService -->
 <g id="node5" class="node">
 <title>TldrawWsService</title>
-<ellipse fill="#fdb462" stroke="black" cx="105" cy="-104" rx="80.99" ry="18"/>
-<text text-anchor="middle" x="105" y="-99.8" font-family="Times,serif" font-size="14.00">TldrawWsService</text>
+<ellipse fill="#fdb462" stroke="black" cx="215" cy="-104" rx="80.99" ry="18"/>
+<text text-anchor="middle" x="215" y="-99.8" font-family="Times,serif" font-size="14.00">TldrawWsService</text>
 </g>
 <!-- TldrawWsService&#45;&gt;TldrawWsTestModule -->
 <g id="edge4" class="edge">
 <title>TldrawWsService&#45;&gt;TldrawWsTestModule</title>
-<path fill="none" stroke="black" d="M105,-122.11C105,-141.34 105,-169 105,-169 105,-169 290.45,-169 290.45,-169"/>
-<polygon fill="black" stroke="black" points="290.45,-172.5 300.45,-169 290.45,-165.5 290.45,-172.5"/>
+<path fill="none" stroke="black" d="M265.19,-118.1C265.19,-118.1 265.19,-140.72 265.19,-140.72"/>
+<polygon fill="black" stroke="black" points="261.69,-140.72 265.19,-150.72 268.69,-140.72 261.69,-140.72"/>
 </g>
 </g>
 </svg>
