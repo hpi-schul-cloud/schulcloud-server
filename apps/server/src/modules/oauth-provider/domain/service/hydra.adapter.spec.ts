@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { axiosResponseFactory } from '@shared/testing';
+import { axiosErrorFactory, axiosResponseFactory } from '@shared/testing';
 import { AxiosRequestConfig } from 'axios';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { OauthProviderFeatures } from '../../oauth-provider-config';
 import {
 	acceptConsentRequestBodyFactory,
@@ -15,6 +15,7 @@ import {
 	providerOauthClientFactory,
 	rejectRequestBodyFactory,
 } from '../../testing';
+import { HydraOauthFailedLoggableException } from '../error';
 import {
 	AcceptConsentRequestBody,
 	AcceptLoginRequestBody,
@@ -150,6 +151,24 @@ describe('HydraService', () => {
 				const result: ProviderOauthClient[] = await service.listOAuth2Clients(1, 0, 'client1', 'clientOwner');
 
 				expect(result).toEqual(data);
+			});
+		});
+
+		describe('when hydra returns an axios error', () => {
+			it('should throw an error', async () => {
+				httpService.request.mockReturnValueOnce(throwError(() => axiosErrorFactory.build()));
+
+				await expect(service.listOAuth2Clients()).rejects.toThrow(HydraOauthFailedLoggableException);
+			});
+		});
+
+		describe('when an unknown error occurs during the request', () => {
+			it('should throw an error', async () => {
+				const error = new Error();
+
+				httpService.request.mockReturnValueOnce(throwError(() => error));
+
+				await expect(service.listOAuth2Clients()).rejects.toThrow(error);
 			});
 		});
 	});

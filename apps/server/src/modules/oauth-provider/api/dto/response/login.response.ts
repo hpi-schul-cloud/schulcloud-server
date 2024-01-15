@@ -7,7 +7,7 @@ export class LoginResponse {
 		this.client = props.client;
 		this.client_id = props.client_id;
 		this.challenge = props.challenge;
-		this.oidc_context = props.oidc_context;
+		this.oidc_context = new OidcContextResponse(props.oidc_context);
 		this.request_url = props.request_url;
 		this.skip = props.skip;
 		this.requested_access_token_audience = props.requested_access_token_audience;

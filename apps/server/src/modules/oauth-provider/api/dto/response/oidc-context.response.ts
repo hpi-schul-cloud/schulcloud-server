@@ -1,4 +1,3 @@
-import { Optional } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class OidcContextResponse {
@@ -22,7 +21,6 @@ export class OidcContextResponse {
 	@ApiProperty()
 	login_hint: string;
 
-	@Optional()
 	@ApiProperty()
 	ui_locales: string[];
 }
