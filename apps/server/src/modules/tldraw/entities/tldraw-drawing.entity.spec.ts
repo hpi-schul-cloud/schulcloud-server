@@ -14,12 +14,6 @@ describe('tldraw entity', () => {
 
 				expect(tldraw).toBeInstanceOf(TldrawDrawing);
 			});
-
-			it('should throw with empty docName', () => {
-				const call = () => tldrawEntityFactory.build({ docName: '' });
-
-				expect(call).toThrow();
-			});
 		});
 	});
 });

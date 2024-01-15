@@ -6,7 +6,7 @@ describe('WebsocketCloseErrorLoggable', () => {
 			const error = new Error('test');
 			const errorMessage = 'message';
 
-			const loggable = new WebsocketCloseErrorLoggable(error, errorMessage);
+			const loggable = new WebsocketCloseErrorLoggable(errorMessage, error);
 			return { loggable, error, errorMessage };
 		};
 

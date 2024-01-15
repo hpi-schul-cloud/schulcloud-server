@@ -1,6 +1,5 @@
 import { Entity, Index, Property } from '@mikro-orm/core';
-import { BadRequestException } from '@nestjs/common';
-import { BaseEntity } from '@shared/domain/entity';
+import { BaseEntity } from '@shared/domain/entity/base.entity';
 
 export interface TldrawDrawingProps {
 	_id?: string;
@@ -35,7 +34,6 @@ export class TldrawDrawing extends BaseEntity {
 
 	constructor(props: TldrawDrawingProps) {
 		super();
-		if (!props.docName) throw new BadRequestException('Tldraw element should have name.');
 		this.docName = props.docName;
 		this.version = props.version;
 		this.value = props.value;

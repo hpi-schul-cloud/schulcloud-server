@@ -89,7 +89,9 @@ export class TldrawWsService {
 		try {
 			ws.close();
 		} catch (err) {
-			this.logger.warning(new WebsocketCloseErrorLoggable(err as Error));
+			this.logger.warning(
+				new WebsocketCloseErrorLoggable('Error while closing websocket, it may already be closed', err as Error)
+			);
 		}
 	}
 

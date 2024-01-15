@@ -10,7 +10,7 @@ import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { AuthorizationModule } from '@modules/authorization';
 import { config } from './config';
 import { TldrawDrawing } from './entities';
-import { TldrawController } from './controller/tldraw.controller';
+import { TldrawController } from './controller';
 import { TldrawService } from './service';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
 

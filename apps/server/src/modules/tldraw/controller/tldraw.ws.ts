@@ -82,6 +82,6 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 
 	private closeClientAndLogError(client: WebSocket, code: WsCloseCodeEnum, data: string, err: Error): void {
 		client.close(code, data);
-		this.logger.warning(new WebsocketCloseErrorLoggable(err, `(${code}) ${data}`));
+		this.logger.warning(new WebsocketCloseErrorLoggable(`(${code}) ${data}`, err));
 	}
 }
