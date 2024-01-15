@@ -23,6 +23,7 @@ import { join } from 'path';
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
 
+import { ColumnBoardService } from '@modules/board';
 import { AppStartLoggable } from './helpers/app-start-loggable';
 import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
@@ -86,6 +87,8 @@ async function bootstrap() {
 	feathersExpress.services['nest-feathers-roster-service'] = nestApp.get(FeathersRosterService);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
 	feathersExpress.services['nest-group-service'] = nestApp.get(GroupService);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+	feathersExpress.services['nest-column-board-service'] = nestApp.get(ColumnBoardService);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
 	feathersExpress.services['nest-system-rule'] = nestApp.get(SystemRule);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
