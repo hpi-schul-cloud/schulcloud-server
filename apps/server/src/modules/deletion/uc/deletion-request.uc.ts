@@ -19,7 +19,7 @@ import { DomainOperationBuilder } from '@shared/domain/builder/domain-operation.
 import { DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../builder';
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 import { DeletionRequest, DeletionLog } from '../domain';
-import { DeletionOperationModel, DeletionStatusModel } from '../domain/types';
+import { DeletionOperationModel } from '../domain/types';
 import { DeletionRequestService, DeletionLogService } from '../services';
 
 @Injectable()
@@ -81,13 +81,11 @@ export class DeletionRequestUc {
 			deletionRequest.status
 		);
 
-		if (deletionRequest.status === DeletionStatusModel.SUCCESS) {
-			const deletionLog: DeletionLog[] = await this.deletionLogService.findByDeletionRequestId(deletionRequestId);
-			const domainOperation: DomainOperation[] = deletionLog.map((log) =>
-				DomainOperationBuilder.build(log.domain, log.modifiedCount, log.deletedCount)
-			);
-			response = { ...response, statistics: domainOperation };
-		}
+		const deletionLog: DeletionLog[] = await this.deletionLogService.findByDeletionRequestId(deletionRequestId);
+		const domainOperation: DomainOperation[] = deletionLog.map((log) =>
+			DomainOperationBuilder.build(log.domain, log.modifiedCount, log.deletedCount)
+		);
+		response = { ...response, statistics: domainOperation };
 
 		return response;
 	}
