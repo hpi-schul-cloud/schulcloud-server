@@ -26,7 +26,14 @@ export class ContextExternalToolValidationService {
 
 		const loadedExternalTool: ExternalTool = await this.externalToolService.findById(loadedSchoolExternalTool.toolId);
 
-		this.commonToolValidationService.checkCustomParameterEntries(loadedExternalTool, contextExternalTool);
+		const errors: ValidationError[] = this.commonToolValidationService.validateParameters(
+			loadedExternalTool,
+			contextExternalTool
+		);
+
+		if (errors.length) {
+			throw errors[0];
+		}
 	}
 
 	private async checkDuplicateUsesInContext(contextExternalTool: ContextExternalTool) {
