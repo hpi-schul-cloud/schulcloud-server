@@ -7,12 +7,12 @@ import { SchoolForExternalInviteResponse, SchoolResponse } from './dto/response'
 import { SchoolUc } from './school.uc';
 
 @ApiTags('School')
-@Authenticate('jwt')
 @Controller('school')
 export class SchoolController {
 	constructor(private readonly schoolUc: SchoolUc) {}
 
 	@Get('/id/:schoolId')
+	@Authenticate('jwt')
 	public async getSchoolById(
 		@Param() urlParams: SchoolUrlParams,
 		@CurrentUser() user: ICurrentUser
@@ -23,6 +23,7 @@ export class SchoolController {
 	}
 
 	@Get('/list-for-external-invite')
+	@Authenticate('jwt')
 	public async getSchoolListForExternalInvite(
 		@Query() query: SchoolQueryParams,
 		@CurrentUser() user: ICurrentUser
