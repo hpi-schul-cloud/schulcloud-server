@@ -1,23 +1,23 @@
+import { EncryptionModule } from '@infra/encryption';
+import { OauthProviderServiceModule } from '@modules/oauth-provider';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
-import { OauthProviderServiceModule } from '@infra/oauth-provider';
-import { EncryptionModule } from '@infra/encryption';
 import { ExternalToolRepo } from '@shared/repo';
+import { LoggerModule } from '@src/core/logger';
+import { CommonToolModule } from '../common';
+import { ToolContextMapper } from '../common/mapper/tool-context.mapper';
 import { ToolConfigModule } from '../tool-config.module';
 import { ExternalToolMetadataMapper } from './mapper';
-import { ToolContextMapper } from '../common/mapper/tool-context.mapper';
 import {
 	ExternalToolConfigurationService,
 	ExternalToolLogoService,
+	ExternalToolMetadataService,
 	ExternalToolParameterValidationService,
 	ExternalToolService,
 	ExternalToolServiceMapper,
 	ExternalToolValidationService,
 	ExternalToolVersionIncrementService,
-	ExternalToolMetadataService,
 } from './service';
-import { CommonToolModule } from '../common';
 
 @Module({
 	imports: [CommonToolModule, ToolConfigModule, LoggerModule, OauthProviderServiceModule, EncryptionModule, HttpModule],

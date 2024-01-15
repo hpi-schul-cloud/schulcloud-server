@@ -1,3 +1,2 @@
-export * from './oauth-provider.module';
-export * from './oauth-provider-api.module';
-export * from './interface/token-auth-method.enum';
+export { OauthProviderServiceModule } from './oauth-provider-service.module';
+export { TokenAuthMethod } from './domain/interface/token-auth-method.enum';

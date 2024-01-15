@@ -44,13 +44,6 @@
 	"CALENDAR_URI": "https://schul.tech:3000",
 	"HYDRA_URI": "http://hydra:9000",
 	"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": true,
-	"SESSION": {
-		"SAME_SITE": "lax",
-		"SECURE": false,
-		"HTTP_ONLY": true,
-		"EXPIRES_SECONDS": 2592000000,
-		"SECRET": "testSecret"
-	},
 	"FWU_CONTENT": {
 		"S3_ENDPOINT": "http://localhost:4568",
 		"S3_REGION": "eu-central-1",
