@@ -65,6 +65,10 @@ describe('TldrawBoardRepo', () => {
 		jest.useFakeTimers();
 	});
 
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
 	afterAll(async () => {
 		await app.close();
 	});

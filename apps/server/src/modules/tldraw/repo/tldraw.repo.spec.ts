@@ -36,11 +36,20 @@ describe('TldrawRepo', () => {
 
 	describe('create', () => {
 		describe('when called', () => {
-			it('should create new drawing node', async () => {
+			const setup = async () => {
 				const drawing = tldrawEntityFactory.build();
 
 				await repo.create(drawing);
 				em.clear();
+
+				return {
+					drawing,
+				};
+			};
+
+			it('should create new drawing node', async () => {
+				const { drawing } = await setup();
+
 				const result = await em.find(TldrawDrawing, {});
 
 				expect(result[0]._id).toEqual(drawing._id);
@@ -84,10 +93,20 @@ describe('TldrawRepo', () => {
 
 	describe('delete', () => {
 		describe('when finding by docName and deleting all records', () => {
-			it('should delete all records', async () => {
+
+			const setup = async () => {
 				const drawing = tldrawEntityFactory.build();
 
 				await repo.create(drawing);
+
+				return {
+					drawing,
+				};
+			};
+
+			it('should delete all records', async () => {
+				const { drawing } = await setup();
+
 				const results = await repo.findByDocName(drawing.docName);
 				await repo.delete(results);
 

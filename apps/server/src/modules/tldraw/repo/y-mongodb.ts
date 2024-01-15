@@ -119,15 +119,15 @@ export class YMongodb {
 		let currentPartId: number | undefined = doc.part;
 		for (let i = docIndex + 1; i < docs.length; i += 1) {
 			const part = docs[i];
-			if (part.clock === doc.clock) {
-				if (part.part === undefined || currentPartId !== part.part - 1) {
-					throw new Error('Could not merge updates together because a part is missing');
-				}
-				parts.push(Buffer.from(part.value.buffer));
-				currentPartId = part.part;
-			} else {
+
+			if (!this.isSameClock(part, doc)) {
 				break;
 			}
+
+			this.checkIfCurrentPartId(part, currentPartId);
+
+			parts.push(Buffer.from(part.value.buffer));
+			currentPartId = part.part;
 		}
 
 		return parts;
@@ -165,7 +165,7 @@ export class YMongodb {
 	}
 
 	private async getCurrentUpdateClock(docName: string): Promise<number> {
-		return this.getMongoBulkData(
+		const updates = await this.getMongoBulkData(
 			{
 				...this.createDocumentUpdateKey(docName, 0),
 				clock: {
@@ -174,12 +174,11 @@ export class YMongodb {
 				},
 			},
 			{ reverse: true, limit: 1 }
-		).then((updates) => {
-			if (updates.length === 0 || updates[0].clock == null) {
-				return -1;
-			}
-			return updates[0].clock;
-		});
+		);
+
+		const clock = this.extractClock(updates);
+
+		return clock;
 	}
 
 	private async writeStateVector(docName: string, sv: Uint8Array, clock: number): Promise<void> {
@@ -249,6 +248,23 @@ export class YMongodb {
 		await this.writeStateVector(docName, stateVector, clock);
 		await this.clearUpdatesRange(docName, 0, clock);
 		return clock;
+	}
+
+	private isSameClock(doc1: TldrawDrawing, doc2: TldrawDrawing): boolean {
+		return doc1.clock === doc2.clock;
+	}
+
+	private checkIfCurrentPartId(part: TldrawDrawing, currentPartId: number | undefined) {
+		if (part.part === undefined || currentPartId !== part.part - 1) {
+			throw new Error('Could not merge updates together because a part is missing');
+		}
+	}
+
+	private extractClock(updates: TldrawDrawing[]) {
+		if (updates.length === 0 || updates[0].clock == null) {
+			return -1;
+		}
+		return updates[0].clock;
 	}
 
 	/**

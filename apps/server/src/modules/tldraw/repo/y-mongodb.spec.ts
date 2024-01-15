@@ -110,17 +110,22 @@ describe('YMongoDb', () => {
 		const setup = () => {
 			const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValue();
 
-			return {
-				applyUpdateSpy,
-			};
-		};
-
-		it('should merge multiple documents with the same name in the database into two (one main document and one with update)', async () => {
-			const { applyUpdateSpy } = setup();
 			const drawing1 = tldrawEntityFactory.build({ clock: 1, part: undefined });
 			const drawing2 = tldrawEntityFactory.build({ clock: 2, part: undefined });
 			const drawing3 = tldrawEntityFactory.build({ clock: 3, part: undefined });
 			const drawing4 = tldrawEntityFactory.build({ clock: 4, part: undefined });
+
+			return {
+				applyUpdateSpy,
+				drawing1,
+				drawing2,
+				drawing3,
+				drawing4,
+			};
+		};
+
+		it('should merge multiple documents with the same name in the database into two (one main document and one with update)', async () => {
+			const { applyUpdateSpy, drawing1, drawing2, drawing3, drawing4 } = setup();
 
 			await em.persistAndFlush([drawing1, drawing2, drawing3, drawing4]);
 			em.clear();
@@ -155,16 +160,20 @@ describe('YMongoDb', () => {
 			const setup = () => {
 				const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValue();
 
+				const drawing1 = tldrawEntityFactory.build({ clock: 1, part: 1 });
+				const drawing2 = tldrawEntityFactory.build({ clock: 1, part: 2 });
+				const drawing3 = tldrawEntityFactory.build({ clock: 2, part: 1 });
+
 				return {
 					applyUpdateSpy,
+					drawing1,
+					drawing2,
+					drawing3,
 				};
 			};
 
 			it('should return ydoc from the database', async () => {
-				const { applyUpdateSpy } = setup();
-				const drawing1 = tldrawEntityFactory.build({ clock: 1, part: 1 });
-				const drawing2 = tldrawEntityFactory.build({ clock: 1, part: 2 });
-				const drawing3 = tldrawEntityFactory.build({ clock: 2, part: 1 });
+				const { applyUpdateSpy, drawing1, drawing2, drawing3 } = setup();
 
 				await em.persistAndFlush([drawing1, drawing2, drawing3]);
 				em.clear();
@@ -175,10 +184,7 @@ describe('YMongoDb', () => {
 			});
 
 			it('should not return ydoc if part is missing', async () => {
-				const { applyUpdateSpy } = setup();
-				const drawing1 = tldrawEntityFactory.build({ clock: 1, part: 1 });
-				const drawing2 = tldrawEntityFactory.build({ clock: 1, part: 3 });
-				const drawing3 = tldrawEntityFactory.build({ clock: 1, part: 4 });
+				const { applyUpdateSpy, drawing1, drawing2, drawing3 } = setup();
 
 				await em.persistAndFlush([drawing1, drawing2, drawing3]);
 				em.clear();
