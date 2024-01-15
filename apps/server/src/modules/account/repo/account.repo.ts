@@ -1,10 +1,10 @@
 import { AnyEntity, EntityName, Primary } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { AccountEntity } from '@shared/domain/entity/account.entity';
 import { SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
+import { AccountEntity } from '../entity/account.entity';
 
 @Injectable()
 export class AccountRepo extends BaseRepo<AccountEntity> {

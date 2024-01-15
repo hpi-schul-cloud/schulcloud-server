@@ -9,7 +9,7 @@ import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { DeletionLogEntity, DeletionRequestEntity } from '@src/modules/deletion/entity';
 import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
-import { AccountEntity } from './account.entity';
+import { AccountEntity } from '@src/modules/account/entity/account.entity';
 import {
 	BoardNode,
 	CardNode,

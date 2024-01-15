@@ -86,7 +86,7 @@ describe('LocalStrategy', () => {
 
 		describe('when an account has no password', () => {
 			it('should throw unauthorized error', async () => {
-				const accountNoPassword = { ...mockAccount };
+				const accountNoPassword = { ...mockAccount } as Account;
 				delete accountNoPassword.password;
 				authenticationServiceMock.loadAccount.mockResolvedValueOnce(accountNoPassword);
 				await expect(strategy.validate(mockAccount.username, mockPassword)).rejects.toThrow(UnauthorizedException);
@@ -102,12 +102,10 @@ describe('LocalStrategy', () => {
 
 		describe('when an account has no user id', () => {
 			it('should throw error', async () => {
-				const accountNoUser = { ...mockAccount };
+				const accountNoUser = { ...mockAccount } as Account;
 				delete accountNoUser.userId;
 				authenticationServiceMock.loadAccount.mockResolvedValueOnce(accountNoUser);
-				await expect(strategy.validate('mockUsername', mockPassword)).rejects.toThrow(
-					new Error(`login failing, because account ${mockAccount.id} has no userId`)
-				);
+				await expect(strategy.validate('mockUsername', mockPassword)).rejects.toThrow(new UnauthorizedException());
 			});
 		});
 	});

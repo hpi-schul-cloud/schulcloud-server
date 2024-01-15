@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 
 import { faker } from '@faker-js/faker';
-import { AccountEntity, Role, SchoolRolePermission, SchoolRoles, User } from '@shared/domain/entity';
+import { Role, SchoolRolePermission, SchoolRoles, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { PermissionService } from '@shared/domain/service';
 import { EntityId } from '@shared/domain/types';
@@ -23,6 +23,7 @@ import { AccountEntityToDoMapper } from '../repo/mapper';
 import { AccountValidationService } from '../services/account.validation.service';
 import { AccountUc } from './account.uc';
 import { ResolvedAccountDto, ResolvedSearchListAccountDto } from './dto/resolved-account.dto';
+import { AccountEntity } from '../entity/account.entity';
 
 describe('AccountUc', () => {
 	let module: TestingModule;

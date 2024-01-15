@@ -1,5 +1,6 @@
-import { AccountEntity, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { ObjectId } from 'bson';
+import { AccountEntity } from '@src/modules/account/entity/account.entity';
 import { setupEntities } from '../setup-entities';
 import { schoolFactory } from './school.factory';
 import { UserAndAccountParams, UserAndAccountTestFactory } from './user-and-account.test.factory';

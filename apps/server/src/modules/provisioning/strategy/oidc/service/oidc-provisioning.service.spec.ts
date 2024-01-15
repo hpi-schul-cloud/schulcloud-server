@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account/services/account.service';
-import { Account } from '@src/modules/account/domain';
+import { AccountSave } from '@src/modules/account/domain';
 import { Group, GroupService, GroupTypes } from '@modules/group';
 import {
 	FederalStateService,
@@ -622,12 +622,12 @@ describe('OidcProvisioningService', () => {
 
 			it('should create a new account', async () => {
 				const { externalUser, schoolId, systemId, hash } = setupUser();
-				const account: Account = new Account({
+				const account: AccountSave = {
 					userId: 'userId',
 					username: hash,
 					systemId,
 					activated: true,
-				});
+				} as AccountSave;
 
 				userService.findByExternalId.mockResolvedValue(null);
 

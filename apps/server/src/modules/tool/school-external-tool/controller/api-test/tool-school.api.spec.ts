@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AccountEntity, SchoolEntity, User } from '@shared/domain/entity';
+import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
 	TestApiClient,
@@ -17,6 +17,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { schoolToolConfigurationStatusFactory } from '@shared/testing/factory';
+import { AccountEntity } from '@src/modules/account/entity/account.entity';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../entity';

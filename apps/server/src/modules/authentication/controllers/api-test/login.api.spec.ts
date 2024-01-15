@@ -3,7 +3,7 @@ import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { ServerTestModule } from '@modules/server/server.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AccountEntity, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { accountFactory, roleFactory, schoolFactory, systemEntityFactory, userFactory } from '@shared/testing';
 import axios from 'axios';
@@ -11,6 +11,7 @@ import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
+import { AccountEntity } from '@src/modules/account/entity/account.entity';
 import { ICurrentUser } from '../../interface';
 import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams, OauthLoginResponse } from '../dto';
 

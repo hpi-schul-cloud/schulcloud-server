@@ -20,7 +20,7 @@ export class UserMigrationService {
 		const account: Account = await this.accountService.findByUserIdOrFail(currentUserId);
 
 		const userDOCopy: UserDO = new UserDO({ ...userDO });
-		const accountCopy: Account = new Account({ ...account.getProps() });
+		const accountCopy: Account = new Account(account.getProps());
 
 		try {
 			await this.doMigration(userDO, externalUserId, account, targetSystemId);

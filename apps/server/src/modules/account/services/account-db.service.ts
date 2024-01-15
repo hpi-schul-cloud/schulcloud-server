@@ -1,7 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
-import { AccountEntity } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import bcrypt from 'bcryptjs';
 import { AccountEntityToDoMapper } from '../repo/mapper';
@@ -9,6 +8,7 @@ import { AccountRepo } from '../repo/account.repo';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { Account, AccountSave } from '../domain';
+import { AccountEntity } from '../entity/account.entity';
 
 // HINT: do more empty lines :)
 

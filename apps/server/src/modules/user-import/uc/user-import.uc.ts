@@ -1,16 +1,17 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AccountService } from '@modules/account/services/account.service';
-import { Account, AccountSave } from '@src/modules/account/domain/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { AccountEntity, ImportUser, MatchCreator, SystemEntity, User } from '@shared/domain/entity';
+import { ImportUser, MatchCreator, SystemEntity, User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch, SchoolFeature } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import { Account, AccountSave } from '@src/modules/account/domain/account';
+import { AccountEntity } from '@src/modules/account/entity/account.entity';
 import {
 	MigrationMayBeCompleted,
 	MigrationMayNotBeCompleted,

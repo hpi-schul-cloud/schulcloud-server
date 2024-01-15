@@ -93,7 +93,7 @@ describe(UserMigrationService.name, () => {
 				});
 
 				userService.findById.mockResolvedValueOnce({ ...user });
-				accountService.findByUserIdOrFail.mockResolvedValueOnce({ ...accountDto });
+				accountService.findByUserIdOrFail.mockResolvedValueOnce(new Account(accountDto.getProps()));
 
 				return {
 					user,
@@ -140,10 +140,12 @@ describe(UserMigrationService.name, () => {
 
 				await service.migrateUser(userId, targetExternalId, targetSystemId);
 
-				expect(accountService.save).toHaveBeenCalledWith({
-					...accountDto,
-					systemId: targetSystemId,
-				});
+				expect(accountService.save).toHaveBeenCalledWith(
+					new Account({
+						...accountDto.getProps(),
+						systemId: targetSystemId,
+					})
+				);
 			});
 		});
 
@@ -181,7 +183,7 @@ describe(UserMigrationService.name, () => {
 				const error = new Error('Cannot save');
 
 				userService.findById.mockResolvedValueOnce({ ...user });
-				accountService.findByUserIdOrFail.mockResolvedValueOnce({ ...accountDto });
+				accountService.findByUserIdOrFail.mockResolvedValueOnce(new Account(accountDto.getProps()));
 
 				userService.save.mockRejectedValueOnce(error);
 				accountService.save.mockRejectedValueOnce(error);

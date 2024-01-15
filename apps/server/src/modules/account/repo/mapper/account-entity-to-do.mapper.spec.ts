@@ -1,6 +1,6 @@
 import { accountFactory } from '@shared/testing';
-import { AccountEntity } from '@shared/domain/entity';
 import { AccountEntityToDoMapper } from './account-entity-to-do.mapper';
+import { AccountEntity } from '../../entity/account.entity';
 
 describe('AccountEntityToDoMapper', () => {
 	beforeEach(() => {

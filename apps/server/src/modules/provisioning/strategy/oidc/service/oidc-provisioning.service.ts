@@ -17,7 +17,7 @@ import { ExternalSource, LegacySchoolDo, RoleReference, UserDO } from '@shared/d
 import { FederalStateEntity, SchoolYearEntity } from '@shared/domain/entity';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { Account, AccountSave } from '@src/modules/account/domain';
+import { AccountSave } from '@src/modules/account/domain';
 import { ObjectId } from 'bson';
 import CryptoJS from 'crypto-js';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../../dto';

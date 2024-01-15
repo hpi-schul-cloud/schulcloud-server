@@ -8,7 +8,6 @@ import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-ad
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AccountEntity } from '@shared/domain/entity';
 import { IdmAccount } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, cleanupCollections } from '@shared/testing';
@@ -24,6 +23,7 @@ import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
 import { Account, AccountSave } from '../domain';
+import { AccountEntity } from '../entity/account.entity';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;

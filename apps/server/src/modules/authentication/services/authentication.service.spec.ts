@@ -21,12 +21,12 @@ describe('AuthenticationService', () => {
 	let accountService: DeepMocked<AccountService>;
 	let jwtService: DeepMocked<JwtService>;
 
-	const mockAccount: Account = {
+	const mockAccount: Account = new Account({
 		id: 'mockAccountId',
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		username: 'mockedUsername',
-	};
+	});
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -65,7 +65,7 @@ describe('AuthenticationService', () => {
 		describe('when resolving an account without system id', () => {
 			it('should find an account', async () => {
 				accountService.searchByUsernameExactMatch.mockResolvedValueOnce([
-					[{ ...mockAccount, systemId: 'mockSystemId' }, mockAccount],
+					[{ ...mockAccount, systemId: 'mockSystemId' } as Account, mockAccount],
 					2,
 				]);
 				const account = await authenticationService.loadAccount('username');
@@ -75,7 +75,10 @@ describe('AuthenticationService', () => {
 
 		describe('when resolving an account with system id', () => {
 			it('should find an account', async () => {
-				accountService.findByUsernameAndSystemId.mockResolvedValueOnce({ ...mockAccount, systemId: 'mockSystemId' });
+				accountService.findByUsernameAndSystemId.mockResolvedValueOnce({
+					...mockAccount,
+					systemId: 'mockSystemId',
+				} as Account);
 				const account = await authenticationService.loadAccount('username', 'mockSystemId');
 				expect(account).toEqual({ ...mockAccount, systemId: 'mockSystemId' });
 			});

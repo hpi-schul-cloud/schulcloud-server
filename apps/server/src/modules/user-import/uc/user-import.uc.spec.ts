@@ -17,6 +17,7 @@ import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { federalStateFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory';
 import { LoggerModule } from '@src/core/logger';
+import { Account } from '@src/modules/account/domain';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,
@@ -500,13 +501,15 @@ describe('[ImportUserModule]', () => {
 				permissionServiceSpy = authorizationService.checkAllPermissions.mockReturnValue();
 				importUserRepoFindImportUsersSpy = importUserRepo.findImportUsers.mockResolvedValue([[], 0]);
 				accountServiceFindByUserIdSpy = accountService.findByUserId
-					.mockResolvedValue({
-						id: 'dummyId',
-						userId: currentUser.id,
-						username: currentUser.email,
-						createdAt: new Date(),
-						updatedAt: new Date(),
-					})
+					.mockResolvedValue(
+						new Account({
+							id: 'dummyId',
+							userId: currentUser.id,
+							username: currentUser.email,
+							createdAt: new Date(),
+							updatedAt: new Date(),
+						})
+					)
 					.mockResolvedValueOnce(null);
 				importUserRepoDeleteImportUsersBySchoolSpy = importUserRepo.deleteImportUsersBySchool.mockResolvedValue();
 				importUserRepoDeleteImportUserSpy = importUserRepo.delete.mockResolvedValue();

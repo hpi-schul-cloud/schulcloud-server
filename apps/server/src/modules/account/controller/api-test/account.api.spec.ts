@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AccountEntity, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import {
 	TestApiClient,
@@ -19,6 +19,7 @@ import {
 	PatchMyPasswordParams,
 } from '@src/modules/account/controller/dto';
 import { ServerTestModule } from '@src/modules/server/server.module';
+import { AccountEntity } from '../../entity/account.entity';
 
 describe('Account Controller (API)', () => {
 	const basePath = '/account';

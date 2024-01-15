@@ -1,9 +1,9 @@
 /* istanbul ignore file */
-import { AccountEntity, IdmAccountProperties, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-
 import { ObjectId } from 'bson';
 import { DeepPartial } from 'fishery';
+import { AccountEntity, IdmAccountProperties } from '@src/modules/account/entity/account.entity';
 import { BaseFactory } from './base.factory';
 
 export const defaultTestPassword = 'DummyPasswd!1';

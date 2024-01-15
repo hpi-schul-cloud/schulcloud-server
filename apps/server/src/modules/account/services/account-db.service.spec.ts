@@ -4,7 +4,6 @@ import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import { AccountEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { accountFactory, setupEntities, userFactory } from '@shared/testing';
 import { IdentityManagementService } from '@src/infra/identity-management';
@@ -17,6 +16,7 @@ import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
+import { AccountEntity } from '../entity/account.entity';
 
 describe('AccountDbService', () => {
 	let module: TestingModule;

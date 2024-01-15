@@ -6,7 +6,7 @@ import {
 	ForbiddenOperationError,
 	ValidationError,
 } from '@shared/common/error';
-import { AccountEntity, Role, SchoolEntity, User } from '@shared/domain/entity';
+import { Role, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { PermissionService } from '@shared/domain/service';
 import { EntityId } from '@shared/domain/types';
@@ -27,6 +27,7 @@ import { Account, AccountSave } from '../domain';
 import { AccountValidationService } from '../services/account.validation.service';
 import { ResolvedAccountDto, ResolvedSearchListAccountDto } from './dto/resolved-account.dto';
 import { AccountUcMapper } from './mapper/account-uc.mapper';
+import { AccountEntity } from '../entity/account.entity';
 
 type UserPreferences = {
 	// first login completed
