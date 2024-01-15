@@ -93,7 +93,6 @@ describe('TldrawRepo', () => {
 
 	describe('delete', () => {
 		describe('when finding by docName and deleting all records', () => {
-
 			const setup = async () => {
 				const drawing = tldrawEntityFactory.build();
 

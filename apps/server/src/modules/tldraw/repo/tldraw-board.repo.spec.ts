@@ -175,7 +175,7 @@ describe('TldrawBoardRepo', () => {
 			it('should return ydoc', async () => {
 				const { storeGetYDocSpy } = setup();
 
-				const result = await repo.getYDocFromMdb('test')
+				const result = await repo.getYDocFromMdb('test');
 
 				expect(result).toBeInstanceOf(Doc);
 				storeGetYDocSpy.mockRestore();
