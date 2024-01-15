@@ -7,6 +7,7 @@ import { IFindOptions } from '@shared/domain/interface';
 
 import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { externalToolFactory, ltiToolDOFactory, pseudonymFactory, userDoFactory } from '@shared/testing/factory';
+import { Logger } from '@src/core/logger';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 import { PseudonymService } from './pseudonym.service';
@@ -29,6 +30,10 @@ describe('PseudonymService', () => {
 				{
 					provide: ExternalToolPseudonymRepo,
 					useValue: createMock<ExternalToolPseudonymRepo>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();

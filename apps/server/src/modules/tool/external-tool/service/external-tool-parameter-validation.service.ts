@@ -2,16 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import { CustomParameter } from '../../common/domain';
 import { autoParameters, CustomParameterScope } from '../../common/enum';
-import { CommonToolValidationService } from '../../common/service';
+import { ToolParameterTypeValidationUtil } from '../../common/service';
 import { ExternalTool } from '../domain';
 import { ExternalToolService } from './external-tool.service';
 
 @Injectable()
 export class ExternalToolParameterValidationService {
-	constructor(
-		private readonly externalToolService: ExternalToolService,
-		private readonly commonToolValidationService: CommonToolValidationService
-	) {}
+	constructor(private readonly externalToolService: ExternalToolService) {}
 
 	async validateCommon(externalTool: ExternalTool | Partial<ExternalTool>): Promise<void> {
 		if (!(await this.isNameUnique(externalTool))) {
@@ -117,7 +114,7 @@ export class ExternalToolParameterValidationService {
 
 	private isDefaultValueOfValidType(param: CustomParameter): boolean {
 		if (param.default) {
-			const isValid: boolean = this.commonToolValidationService.isValueValidForType(param.type, param.default);
+			const isValid: boolean = ToolParameterTypeValidationUtil.isValueValidForType(param.type, param.default);
 
 			return isValid;
 		}

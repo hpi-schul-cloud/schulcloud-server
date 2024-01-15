@@ -96,7 +96,7 @@ describe('ToolSchoolController (API)', () => {
 				version: 1,
 				parameters: [
 					{ name: 'param1', value: 'value' },
-					{ name: 'param2', value: '' },
+					{ name: 'param2', value: 'false' },
 				],
 				isDeactivated: false,
 			};
@@ -150,7 +150,7 @@ describe('ToolSchoolController (API)', () => {
 				toolVersion: postParams.version,
 				parameters: [
 					{ name: 'param1', value: 'value' },
-					{ name: 'param2', value: undefined },
+					{ name: 'param2', value: 'false' },
 				],
 			});
 
