@@ -160,7 +160,7 @@ describe('WebSocketController (WsAdapter)', () => {
 
 			expect(wsCloseSpy).toHaveBeenCalledWith(
 				WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
-				WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE
+				Buffer.from(WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE)
 			);
 
 			httpGetCallSpy.mockRestore();
@@ -177,7 +177,7 @@ describe('WebSocketController (WsAdapter)', () => {
 
 			expect(wsCloseSpy).toHaveBeenCalledWith(
 				WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
-				WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE
+				Buffer.from(WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE)
 			);
 
 			httpGetCallSpy.mockRestore();
@@ -206,7 +206,7 @@ describe('WebSocketController (WsAdapter)', () => {
 
 			expect(wsCloseSpy).toHaveBeenCalledWith(
 				WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE,
-				WsCloseMessageEnum.WS_CLIENT_BAD_REQUEST_MESSAGE
+				Buffer.from(WsCloseMessageEnum.WS_CLIENT_BAD_REQUEST_MESSAGE)
 			);
 
 			wsCloseSpy.mockRestore();
@@ -231,7 +231,7 @@ describe('WebSocketController (WsAdapter)', () => {
 
 			expect(wsCloseSpy).toHaveBeenCalledWith(
 				WsCloseCodeEnum.WS_CLIENT_NOT_FOUND_CODE,
-				WsCloseMessageEnum.WS_CLIENT_NOT_FOUND_MESSAGE
+				Buffer.from(WsCloseMessageEnum.WS_CLIENT_NOT_FOUND_MESSAGE)
 			);
 
 			authorizeConnectionSpy.mockRestore();
@@ -253,7 +253,7 @@ describe('WebSocketController (WsAdapter)', () => {
 
 			expect(wsCloseSpy).toHaveBeenCalledWith(
 				WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
-				WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE
+				Buffer.from(WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE)
 			);
 
 			wsCloseSpy.mockRestore();
@@ -298,7 +298,7 @@ describe('WebSocketController (WsAdapter)', () => {
 			expect(setupConnectionSpy).toHaveBeenCalledWith(expect.anything(), 'TEST');
 			expect(wsCloseSpy).toHaveBeenCalledWith(
 				WsCloseCodeEnum.WS_CLIENT_ESTABLISHING_CONNECTION_CODE,
-				WsCloseMessageEnum.WS_CLIENT_ESTABLISHING_CONNECTION_MESSAGE
+				Buffer.from(WsCloseMessageEnum.WS_CLIENT_ESTABLISHING_CONNECTION_MESSAGE)
 			);
 
 			wsCloseSpy.mockRestore();

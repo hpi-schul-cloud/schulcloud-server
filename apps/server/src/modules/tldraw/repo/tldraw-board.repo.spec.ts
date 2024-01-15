@@ -4,6 +4,7 @@ import WebSocket from 'ws';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { Doc } from 'yjs';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { HttpService } from '@nestjs/axios';
 import { Logger } from '@src/core/logger';
 import { ConfigModule } from '@nestjs/config';
 import { MongoMemoryDatabaseModule } from '@infra/database';
@@ -18,7 +19,6 @@ import { TldrawWs } from '../controller';
 import { MetricsService } from '../metrics';
 import { TldrawRepo } from './tldraw.repo';
 import { YMongodb } from './y-mongodb';
-import { HttpService } from '@nestjs/axios';
 
 describe('TldrawBoardRepo', () => {
 	let app: INestApplication;

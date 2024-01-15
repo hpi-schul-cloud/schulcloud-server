@@ -7,6 +7,7 @@ import { Logger } from '@src/core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import * as Yjs from 'yjs';
 import { createConfigModuleOptions } from '@src/config';
+import { HttpService } from '@nestjs/axios';
 import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { TldrawWs } from '../controller';
@@ -15,7 +16,6 @@ import { MetricsService } from '../metrics';
 import { TldrawBoardRepo } from './tldraw-board.repo';
 import { TldrawRepo } from './tldraw.repo';
 import { YMongodb } from './y-mongodb';
-import { HttpService } from '@nestjs/axios';
 
 jest.mock('yjs', () => {
 	const moduleMock: unknown = {
