@@ -14,7 +14,7 @@ export type CommonCartridgeWebLinkResourcePropsV110 = {
 };
 
 export class CommonCartridgeWebLinkResourceV110 extends CommonCartridgeResource {
-	public constructor(private readonly props: CommonCartridgeWebLinkResourcePropsV110) {
+	constructor(private readonly props: CommonCartridgeWebLinkResourcePropsV110) {
 		super(props);
 	}
 

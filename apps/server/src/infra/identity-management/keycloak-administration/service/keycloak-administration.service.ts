@@ -8,7 +8,7 @@ export class KeycloakAdministrationService {
 
 	private static AUTHORIZATION_TIMEBOX_MS = 59 * 1000;
 
-	public constructor(
+	constructor(
 		private readonly kcAdminClient: KeycloakAdminClient,
 		@Inject(KeycloakSettings) private readonly kcSettings: IKeycloakSettings
 	) {

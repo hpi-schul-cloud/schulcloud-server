@@ -10,7 +10,7 @@ export type CommonCartridgeMetadataElementPropsV110 = {
 };
 
 export class CommonCartridgeMetadataElementV110 extends CommonCartridgeElement {
-	public constructor(private readonly props: CommonCartridgeMetadataElementPropsV110) {
+	constructor(private readonly props: CommonCartridgeMetadataElementPropsV110) {
 		super(props);
 	}
 

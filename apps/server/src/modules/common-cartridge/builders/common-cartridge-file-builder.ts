@@ -27,7 +27,7 @@ export class CommonCartridgeFileBuilder {
 
 	private metadata?: CommonCartridgeElement;
 
-	public constructor(private readonly props: CommonCartridgeFileBuilderProps) {}
+	constructor(private readonly props: CommonCartridgeFileBuilderProps) {}
 
 	public addMetadata(props: CommonCartridgeElementProps): CommonCartridgeFileBuilder {
 		this.metadata = CommonCartridgeElementFactory.createElement({

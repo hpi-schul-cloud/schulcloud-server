@@ -23,7 +23,7 @@ export class CommonCartridgeWebContentResourceV110 extends CommonCartridgeResour
 		CommonCartridgeIntendedUseType.UNSPECIFIED,
 	];
 
-	public constructor(private readonly props: CommonCartridgeWebContentResourcePropsV110) {
+	constructor(private readonly props: CommonCartridgeWebContentResourcePropsV110) {
 		super(props);
 		checkIntendedUse(props.intendedUse, CommonCartridgeWebContentResourceV110.SUPPORTED_INTENDED_USES);
 	}

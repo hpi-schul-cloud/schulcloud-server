@@ -8,7 +8,7 @@ export type CommonCartridgeOrganizationsWrapperElementPropsV110 = {
 };
 
 export class CommonCartridgeOrganizationsWrapperElementV110 extends CommonCartridgeElement {
-	public constructor(private readonly props: CommonCartridgeOrganizationsWrapperElementPropsV110) {
+	constructor(private readonly props: CommonCartridgeOrganizationsWrapperElementPropsV110) {
 		super(props);
 	}
 

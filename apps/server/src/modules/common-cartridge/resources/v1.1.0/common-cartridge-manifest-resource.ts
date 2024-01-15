@@ -18,7 +18,7 @@ export type CommonCartridgeManifestResourcePropsV110 = {
 };
 
 export class CommonCartridgeManifestResourceV110 extends CommonCartridgeResource {
-	public constructor(private readonly props: CommonCartridgeManifestResourcePropsV110) {
+	constructor(private readonly props: CommonCartridgeManifestResourcePropsV110) {
 		super(props);
 	}
 

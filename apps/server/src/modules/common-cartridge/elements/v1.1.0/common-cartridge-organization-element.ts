@@ -11,7 +11,7 @@ export type CommonCartridgeOrganizationElementPropsV110 = {
 };
 
 export class CommonCartridgeOrganizationElementV110 extends CommonCartridgeElement {
-	public constructor(protected readonly props: CommonCartridgeOrganizationElementPropsV110) {
+	constructor(protected readonly props: CommonCartridgeOrganizationElementPropsV110) {
 		super(props);
 	}
 

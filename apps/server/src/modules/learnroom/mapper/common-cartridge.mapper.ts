@@ -15,7 +15,7 @@ import { LearnroomConfig } from '../learnroom.config';
 
 @Injectable()
 export class CommonCartridgeMapper {
-	public constructor(private readonly configService: ConfigService<LearnroomConfig, true>) {}
+	constructor(private readonly configService: ConfigService<LearnroomConfig, true>) {}
 
 	public mapCourseToMetadata(course: Course): CommonCartridgeElementProps {
 		return {

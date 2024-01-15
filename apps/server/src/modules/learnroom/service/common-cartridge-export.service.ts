@@ -13,7 +13,7 @@ import { CourseService } from './course.service';
 
 @Injectable()
 export class CommonCartridgeExportService {
-	public constructor(
+	constructor(
 		private readonly courseService: CourseService,
 		private readonly lessonService: LessonService,
 		private readonly taskService: TaskService,
