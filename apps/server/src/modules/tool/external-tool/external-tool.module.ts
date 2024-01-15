@@ -11,7 +11,6 @@ import { ExternalToolMetadataMapper } from './mapper';
 import {
 	ExternalToolConfigurationService,
 	ExternalToolLogoService,
-	ExternalToolMetadataService,
 	ExternalToolParameterValidationService,
 	ExternalToolService,
 	ExternalToolServiceMapper,
@@ -30,7 +29,6 @@ import {
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
 		ExternalToolRepo,
-		ExternalToolMetadataService,
 		ExternalToolMetadataMapper,
 		ToolContextMapper,
 	],
@@ -40,7 +38,6 @@ import {
 		ExternalToolVersionIncrementService,
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
-		ExternalToolMetadataService,
 	],
 })
 export class ExternalToolModule {}
