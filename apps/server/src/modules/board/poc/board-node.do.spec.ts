@@ -1,5 +1,5 @@
 import { boardNodeFactory } from './board-node.factory';
-import { INITIAL_PATH, joinPath } from './path-utils';
+import { ROOT_PATH, joinPath } from './path-utils';
 
 describe('BoardNode', () => {
 	describe('a new instance', () => {
@@ -25,9 +25,9 @@ describe('BoardNode', () => {
 			expect(boardNode.level).toBe(0);
 		});
 
-		it('should have initial path', () => {
+		it('should have root path', () => {
 			const { boardNode } = setup();
-			expect(boardNode.path).toBe(INITIAL_PATH);
+			expect(boardNode.path).toBe(ROOT_PATH);
 		});
 	});
 
@@ -151,7 +151,7 @@ describe('BoardNode', () => {
 
 			child.removeFromParent(parent);
 
-			expect(child.path).toEqual(INITIAL_PATH);
+			expect(child.path).toEqual(ROOT_PATH);
 		});
 	});
 
@@ -193,7 +193,7 @@ describe('BoardNode', () => {
 
 			parent.removeChild(child);
 
-			expect(child.path).toEqual(INITIAL_PATH);
+			expect(child.path).toEqual(ROOT_PATH);
 		});
 	});
 });

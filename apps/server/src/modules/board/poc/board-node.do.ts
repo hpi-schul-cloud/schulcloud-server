@@ -1,6 +1,6 @@
 import { DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
-import { INITIAL_PATH, PATH_SEPARATOR, joinPath } from './path-utils';
+import { ROOT_PATH, PATH_SEPARATOR, joinPath } from './path-utils';
 
 export interface BoardNodeProps {
 	id: EntityId;
@@ -43,6 +43,7 @@ export class BoardNode extends DomainObject<BoardNodeProps> {
 	}
 
 	addToParent(parent: BoardNode, position?: { index1: string; index2: string }): void {
+		// TODO remove from potential previous parent (and its children)?
 		if (this.parentId !== parent.id) {
 			this.props.path = joinPath(parent.path, parent.id);
 			// TODO set index (position)
@@ -55,7 +56,7 @@ export class BoardNode extends DomainObject<BoardNodeProps> {
 
 	removeFromParent(parent: BoardNode): void {
 		if (this.parentId === parent.id) {
-			this.props.path = INITIAL_PATH;
+			this.props.path = ROOT_PATH;
 			// TODO set index (position)
 			this.props.level = 0;
 		}
