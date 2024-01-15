@@ -9,6 +9,7 @@ export class Migration20240108111130 extends Migration {
 		console.log(`removed ${deletedCount} records`);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/require-await
 	async down(): Promise<void> {
 		// do nothing
 		console.error(`Migration down not implemented. You might need to restore database from backup!`);
