@@ -3,17 +3,19 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, SchoolEntity, User } from '@shared/domain/entity';
+import { Account, ColumnBoardNode, ExternalToolElementNodeEntity, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	accountFactory,
+	columnBoardNodeFactory,
 	contextExternalToolEntityFactory,
 	customParameterEntityFactory,
+	externalToolElementNodeFactory,
 	externalToolEntityFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
 import { schoolToolConfigurationStatusFactory } from '@shared/testing/factory';
@@ -562,9 +564,14 @@ describe('ToolSchoolController (API)', () => {
 					contextId: new ObjectId().toHexString(),
 				});
 
-				const schoolExternalToolMetadata: SchoolExternalToolMetadataResponse = new SchoolExternalToolMetadataResponse({
-					contextExternalToolCountPerContext: { course: 3, boardElement: 2 },
-				});
+				const board: ColumnBoardNode = columnBoardNodeFactory.buildWithId();
+				const externalToolElements: ExternalToolElementNodeEntity[] = externalToolElementNodeFactory.buildListWithId(
+					2,
+					{
+						contextExternalTool: boardExternalToolEntitys[0],
+						parent: board,
+					}
+				);
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 					Permission.SCHOOL_TOOL_ADMIN,
@@ -576,12 +583,14 @@ describe('ToolSchoolController (API)', () => {
 					schoolExternalToolEntity,
 					...courseExternalToolEntitys,
 					...boardExternalToolEntitys,
+					board,
+					...externalToolElements,
 				]);
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
-				return { loggedInClient, schoolExternalToolEntity, schoolExternalToolMetadata };
+				return { loggedInClient, schoolExternalToolEntity };
 			};
 
 			it('should return the metadata of schoolExternalTool', async () => {
@@ -592,8 +601,8 @@ describe('ToolSchoolController (API)', () => {
 				expect(response.statusCode).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual<SchoolExternalToolMetadataResponse>({
 					contextExternalToolCountPerContext: {
-						course: 3,
-						boardElement: 2,
+						course: 1,
+						boardElement: 1,
 					},
 				});
 			});
