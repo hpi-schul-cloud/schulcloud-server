@@ -2,7 +2,7 @@ import { Entity, Index, Property } from '@mikro-orm/core';
 import { BaseEntity } from '@shared/domain/entity/base.entity';
 
 export interface TldrawDrawingProps {
-	_id?: string;
+	id?: string;
 	docName: string;
 	version: string;
 	clock?: number;
@@ -37,14 +37,8 @@ export class TldrawDrawing extends BaseEntity {
 		this.docName = props.docName;
 		this.version = props.version;
 		this.value = props.value;
-		if (typeof props.clock === 'number') {
-			this.clock = props.clock;
-		}
-		if (props.action) {
-			this.action = props.action;
-		}
-		if (typeof props.part === 'number') {
-			this.part = props.part;
-		}
+		this.clock = props.clock;
+		this.action = props.action;
+		this.part = props.part;
 	}
 }

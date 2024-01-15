@@ -51,6 +51,7 @@ export class TldrawWsService {
 			throw new Error('REDIS_URI is not set');
 		}
 
+		// TODO może przenieść to do innego serwisu TldrawRedisService - bo można przetestować łatwiej (metoda build or sth by tworzyła te połączenia) zrobić factory i zawołać w tym serwisie
 		this.sub = new Redis(redisUri, {
 			maxRetriesPerRequest: null,
 		});
@@ -77,9 +78,10 @@ export class TldrawWsService {
 					.flushDocument(doc.name)
 					.then(() => this.sub.unsubscribe(doc.name, doc.awarenessChannel))
 					.then(() => doc.destroy())
-					.catch((err) =>
-						this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while flushing doc', err as Error))
-					);
+					.catch((err) => {
+						this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while flushing doc', err as Error));
+						throw err;
+					});
 				this.docs.delete(doc.name);
 				this.metricsService.decrementNumberOfBoardsOnServerCounter();
 			}
@@ -92,6 +94,7 @@ export class TldrawWsService {
 			this.logger.warning(
 				new WebsocketCloseErrorLoggable('Error while closing websocket, it may already be closed', err as Error)
 			);
+			throw err;
 		}
 	}
 
@@ -123,9 +126,10 @@ export class TldrawWsService {
 	public updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): void {
 		const isOriginWSConn = doc.connections.has(origin as WebSocket);
 		if (isOriginWSConn) {
-			this.pub
-				.publish(doc.name, Buffer.from(update))
-				.catch((err) => this.logger.warning(new RedisPublishErrorLoggable('document', err as Error)));
+			this.pub.publish(doc.name, Buffer.from(update)).catch((err) => {
+				this.logger.warning(new RedisPublishErrorLoggable('document', err as Error));
+				throw err;
+			});
 		}
 
 		this.propagateUpdate(update, doc);
@@ -153,32 +157,34 @@ export class TldrawWsService {
 	 * @return {WsSharedDocDo}
 	 */
 	public getYDoc(docName: string): WsSharedDocDo {
-		return map.setIfUndefined(this.docs, docName, () => {
+		const wsSharedDocDo = map.setIfUndefined(this.docs, docName, () => {
 			const doc = new WsSharedDocDo(docName, this.gcEnabled);
 			doc.awareness.on('update', (connectionsUpdate: AwarenessConnectionsUpdate, wsConnection: WebSocket | null) =>
 				this.awarenessUpdateHandler(connectionsUpdate, wsConnection, doc)
 			);
 			doc.on('update', (update: Uint8Array, origin) => this.updateHandler(update, origin, doc));
 
-			this.sub
+			this.sub // TODO przenieść do nowego serwisu
 				.subscribe(doc.name, doc.awarenessChannel)
 				.then(() => this.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message, doc)))
-				.catch((err) =>
+				.catch((err) => {
 					this.logger.warning(
 						new WsSharedDocErrorLoggable(doc.name, 'Error while subscribing to Redis channels', err as Error)
-					)
-				);
+					);
+					throw err;
+				});
 
-			this.tldrawBoardRepo
-				.updateDocument(docName, doc)
-				.catch((err) =>
-					this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while updating document', err as Error))
-				);
+			this.tldrawBoardRepo.updateDocument(docName, doc).catch((err) => {
+				this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while updating document', err as Error));
+				throw err;
+			});
 
 			this.docs.set(docName, doc);
 			this.metricsService.incrementNumberOfBoardsOnServerCounter();
 			return doc;
 		});
+
+		return wsSharedDocDo;
 	}
 
 	public async createDbIndex(): Promise<void> {
@@ -204,9 +210,10 @@ export class TldrawWsService {
 					break;
 				case WSMessageType.AWARENESS: {
 					const update = decoding.readVarUint8Array(decoder);
-					this.pub
-						.publish(doc.awarenessChannel, Buffer.from(update))
-						.catch((err) => this.logger.warning(new RedisPublishErrorLoggable('awareness', err as Error)));
+					this.pub.publish(doc.awarenessChannel, Buffer.from(update)).catch((err) => {
+						this.logger.warning(new RedisPublishErrorLoggable('awareness', err as Error));
+						throw err;
+					});
 					applyAwarenessUpdate(doc.awareness, update, conn);
 					break;
 				}
@@ -215,6 +222,7 @@ export class TldrawWsService {
 			}
 		} catch (err) {
 			this.logger.warning(new WebsocketMessageErrorLoggable(err as Error));
+			throw err;
 		}
 	}
 
