@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Course } from '@shared/domain/entity';
 import { CourseRepo, UserRepo } from '@shared/repo';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { CourseService } from './course.service';
 
 describe('CourseService', () => {
@@ -23,6 +24,10 @@ describe('CourseService', () => {
 				{
 					provide: CourseRepo,
 					useValue: createMock<CourseRepo>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();

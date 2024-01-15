@@ -2,10 +2,11 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { Injectable } from '@nestjs/common';
 import { Task } from '@shared/domain/entity';
 import { DomainOperation, IFindOptions } from '@shared/domain/interface';
-import { Counted, DomainModel, EntityId } from '@shared/domain/types';
+import { Counted, DomainModel, EntityId, StatusModel } from '@shared/domain/types';
 import { TaskRepo } from '@shared/repo';
 import { DomainOperationBuilder } from '@shared/domain/builder';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
+import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { SubmissionService } from './submission.service';
 
 @Injectable()
@@ -14,7 +15,7 @@ export class TaskService {
 		private readonly taskRepo: TaskRepo,
 		private readonly submissionService: SubmissionService,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
-		private readonly logger: LegacyLogger
+		private readonly logger: Logger
 	) {
 		this.logger.setContext(TaskService.name);
 	}
@@ -48,7 +49,15 @@ export class TaskService {
 	}
 
 	async deleteTasksByOnlyCreator(creatorId: EntityId): Promise<DomainOperation> {
-		this.logger.log(`Deleting Tasks where creatorId ${creatorId} is only parent`);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Deleting data from Task',
+				DomainModel.TASK,
+				creatorId,
+				StatusModel.PENDING
+			)
+		);
+
 		const [tasksByOnlyCreatorId, counterOfTasksOnlyWithCreatorId] = await this.taskRepo.findByOnlyCreatorId(creatorId);
 
 		if (counterOfTasksOnlyWithCreatorId > 0) {
@@ -57,15 +66,29 @@ export class TaskService {
 		}
 
 		const result = DomainOperationBuilder.build(DomainModel.TASK, 0, counterOfTasksOnlyWithCreatorId);
-		this.logger.log(
-			`Successfully deleted ${counterOfTasksOnlyWithCreatorId} where creatorId ${creatorId} is only parent`
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully deleted data from Task',
+				DomainModel.TASK,
+				creatorId,
+				StatusModel.FINISHED,
+				counterOfTasksOnlyWithCreatorId,
+				0
+			)
 		);
 
 		return result;
 	}
 
 	async removeCreatorIdFromTasks(creatorId: EntityId): Promise<DomainOperation> {
-		this.logger.log(`Deleting creatorId ${creatorId} from Tasks`);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Deleting user data from Task',
+				DomainModel.TASK,
+				creatorId,
+				StatusModel.PENDING
+			)
+		);
 		const [tasksByCreatorIdWithCoursesAndLessons, counterOfTasksWithCoursesorLessons] =
 			await this.taskRepo.findByCreatorIdWithCourseAndLesson(creatorId);
 
@@ -75,12 +98,28 @@ export class TaskService {
 		}
 
 		const result = DomainOperationBuilder.build(DomainModel.TASK, counterOfTasksWithCoursesorLessons, 0);
-		this.logger.log(`Successfully updated ${counterOfTasksWithCoursesorLessons} Tasks without creatorId ${creatorId}`);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully deleted user data from Task',
+				DomainModel.TASK,
+				creatorId,
+				StatusModel.FINISHED,
+				counterOfTasksWithCoursesorLessons,
+				0
+			)
+		);
 		return result;
 	}
 
 	async removeUserFromFinished(userId: EntityId): Promise<DomainOperation> {
-		this.logger.log(`Deleting userId ${userId} from Archve collection in Tasks`);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Deleting user data from Task archive collection',
+				DomainModel.TASK,
+				userId,
+				StatusModel.PENDING
+			)
+		);
 		const [tasksWithUserInFinished, counterOfTasksWithUserInFinished] = await this.taskRepo.findByUserIdInFinished(
 			userId
 		);
@@ -92,8 +131,15 @@ export class TaskService {
 		}
 
 		const result = DomainOperationBuilder.build(DomainModel.TASK, counterOfTasksWithUserInFinished, 0);
-		this.logger.log(
-			`Successfully updated ${counterOfTasksWithUserInFinished} Tasks without userId ${userId} in archive collection in Tasks`
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully deleted user data from Task archive collection',
+				DomainModel.TASK,
+				userId,
+				StatusModel.FINISHED,
+				counterOfTasksWithUserInFinished,
+				0
+			)
 		);
 
 		return result;
