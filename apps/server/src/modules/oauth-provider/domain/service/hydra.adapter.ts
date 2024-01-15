@@ -147,8 +147,6 @@ export class HydraAdapter extends OauthProviderService {
 	}
 
 	public async getOAuth2Client(id: string): Promise<ProviderOauthClient> {
-		console.log(`${this.oauthProviderFeatures.hydraUri}/clients/${id}`);
-
 		const response: ProviderOauthClient = await this.request<ProviderOauthClient>(
 			'GET',
 			`${this.oauthProviderFeatures.hydraUri}/clients/${id}`
