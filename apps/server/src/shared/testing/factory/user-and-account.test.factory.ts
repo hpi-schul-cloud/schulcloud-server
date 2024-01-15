@@ -1,7 +1,6 @@
 import { SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from 'bson';
 import _ from 'lodash';
 import { AccountEntity } from '@src/modules/account/entity/account.entity';
 import { accountFactory } from './account.factory';
@@ -17,7 +16,7 @@ interface UserParams {
 
 interface AccountParams {
 	username?: string;
-	systemId?: EntityId | ObjectId;
+	systemId?: EntityId;
 }
 
 export interface UserAndAccountParams extends UserParams, AccountParams {}

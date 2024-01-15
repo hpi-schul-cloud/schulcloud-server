@@ -107,7 +107,7 @@ describe('AccountDbService', () => {
 
 				const mockTeacherAccount = accountFactory.buildWithId();
 
-				accountRepo.findByUserId.mockImplementation((userId: EntityId | ObjectId): Promise<AccountEntity | null> => {
+				accountRepo.findByUserId.mockImplementation((userId: EntityId): Promise<AccountEntity | null> => {
 					if (userId === mockTeacherUser.id) {
 						return Promise.resolve(mockTeacherAccount);
 					}
@@ -134,7 +134,7 @@ describe('AccountDbService', () => {
 	describe('findByUsernameAndSystemId', () => {
 		describe('when user name and system id exists', () => {
 			const setup = () => {
-				const mockAccountWithSystemId = accountFactory.withSystemId(new ObjectId()).build();
+				const mockAccountWithSystemId = accountFactory.withSystemId(new ObjectId().toHexString()).build();
 				accountRepo.findByUsernameAndSystemId.mockResolvedValue(mockAccountWithSystemId);
 				return { mockAccountWithSystemId };
 			};
@@ -150,9 +150,9 @@ describe('AccountDbService', () => {
 
 		describe('when only system id exists', () => {
 			const setup = () => {
-				const mockAccountWithSystemId = accountFactory.withSystemId(new ObjectId()).build();
+				const mockAccountWithSystemId = accountFactory.withSystemId(new ObjectId().toHexString()).build();
 				accountRepo.findByUsernameAndSystemId.mockImplementation(
-					(username: string, systemId: EntityId | ObjectId): Promise<AccountEntity | null> => {
+					(username: string, systemId: EntityId): Promise<AccountEntity | null> => {
 						if (mockAccountWithSystemId.username === username && mockAccountWithSystemId.systemId === systemId) {
 							return Promise.resolve(mockAccountWithSystemId);
 						}
@@ -173,9 +173,9 @@ describe('AccountDbService', () => {
 
 		describe('when only user name exists', () => {
 			const setup = () => {
-				const mockAccountWithSystemId = accountFactory.withSystemId(new ObjectId()).build();
+				const mockAccountWithSystemId = accountFactory.withSystemId(new ObjectId().toHexString()).build();
 				accountRepo.findByUsernameAndSystemId.mockImplementation(
-					(username: string, systemId: EntityId | ObjectId): Promise<AccountEntity | null> => {
+					(username: string, systemId: EntityId): Promise<AccountEntity | null> => {
 						if (mockAccountWithSystemId.username === username && mockAccountWithSystemId.systemId === systemId) {
 							return Promise.resolve(mockAccountWithSystemId);
 						}
@@ -210,14 +210,12 @@ describe('AccountDbService', () => {
 					password: defaultPassword,
 				});
 
-				accountRepo.findMultipleByUserId.mockImplementation(
-					(userIds: (EntityId | ObjectId)[]): Promise<AccountEntity[]> => {
-						const accounts = [mockStudentAccount, mockTeacherAccount].filter((tempAccount) =>
-							userIds.find((userId) => tempAccount.userId?.toString() === userId)
-						);
-						return Promise.resolve(accounts);
-					}
-				);
+				accountRepo.findMultipleByUserId.mockImplementation((userIds: EntityId[]): Promise<AccountEntity[]> => {
+					const accounts = [mockStudentAccount, mockTeacherAccount].filter((tempAccount) =>
+						userIds.find((userId) => tempAccount.userId?.toString() === userId)
+					);
+					return Promise.resolve(accounts);
+				});
 				return { mockStudentUser, mockStudentAccount, mockTeacherUser, mockTeacherAccount };
 			};
 			it('should return multiple accountDtos', async () => {
@@ -234,14 +232,12 @@ describe('AccountDbService', () => {
 				const mockTeacherAccount = accountFactory.buildWithId();
 				const mockStudentAccount = accountFactory.buildWithId();
 
-				accountRepo.findMultipleByUserId.mockImplementation(
-					(userIds: (EntityId | ObjectId)[]): Promise<AccountEntity[]> => {
-						const accounts = [mockStudentAccount, mockTeacherAccount].filter((tempAccount) =>
-							userIds.find((userId) => tempAccount.userId?.toString() === userId)
-						);
-						return Promise.resolve(accounts);
-					}
-				);
+				accountRepo.findMultipleByUserId.mockImplementation((userIds: EntityId[]): Promise<AccountEntity[]> => {
+					const accounts = [mockStudentAccount, mockTeacherAccount].filter((tempAccount) =>
+						userIds.find((userId) => tempAccount.userId?.toString() === userId)
+					);
+					return Promise.resolve(accounts);
+				});
 				return {};
 			};
 			it('should return empty array on mismatch', async () => {
@@ -280,7 +276,7 @@ describe('AccountDbService', () => {
 					userId: mockTeacherUser.id,
 					password: defaultPassword,
 				});
-				accountRepo.findByUserIdOrFail.mockImplementation((userId: EntityId | ObjectId): Promise<AccountEntity> => {
+				accountRepo.findByUserIdOrFail.mockImplementation((userId: EntityId): Promise<AccountEntity> => {
 					if (mockTeacherUser.id === userId) {
 						return Promise.resolve(mockTeacherAccount);
 					}
@@ -304,7 +300,7 @@ describe('AccountDbService', () => {
 				mockTeacherAccountDto.username = 'changedUsername@example.org';
 				mockTeacherAccountDto.activated = false;
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
-				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id);
+				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id.toHexString());
 				accountRepo.save.mockResolvedValue();
 
 				return { mockTeacherAccountDto, mockTeacherAccount };
@@ -334,7 +330,7 @@ describe('AccountDbService', () => {
 				mockTeacherAccountDto.username = 'changedUsername@example.org';
 				mockTeacherAccountDto.systemId = '123456789012';
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
-				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id);
+				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id.toHexString());
 				accountRepo.save.mockResolvedValue();
 
 				return { mockTeacherAccountDto, mockTeacherAccount };
@@ -348,7 +344,7 @@ describe('AccountDbService', () => {
 					id: mockTeacherAccount.id,
 					username: mockTeacherAccountDto.username,
 					activated: mockTeacherAccount.activated,
-					systemId: new ObjectId(mockTeacherAccountDto.systemId),
+					systemId: mockTeacherAccountDto.systemId,
 					userId: mockTeacherAccount.userId,
 				});
 			});
@@ -363,7 +359,7 @@ describe('AccountDbService', () => {
 				mockTeacherAccountDto.username = 'changedUsername@example.org';
 				mockTeacherAccountDto.userId = mockStudentUser.id;
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
-				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id);
+				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id.toHexString());
 				accountRepo.save.mockResolvedValue();
 
 				return { mockStudentUser, mockTeacherAccountDto, mockTeacherAccount };
@@ -378,7 +374,7 @@ describe('AccountDbService', () => {
 					username: mockTeacherAccountDto.username,
 					activated: mockTeacherAccount.activated,
 					systemId: mockTeacherAccount.systemId,
-					userId: new ObjectId(mockStudentUser.id),
+					userId: mockStudentUser.id,
 				});
 			});
 		});
@@ -392,7 +388,7 @@ describe('AccountDbService', () => {
 				mockTeacherAccountDto.systemId = undefined;
 
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
-				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id);
+				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id.toHexString());
 				accountRepo.save.mockResolvedValue();
 
 				return { mockTeacherAccountDto, mockTeacherAccount };
@@ -436,8 +432,8 @@ describe('AccountDbService', () => {
 				expect(ret).toBeDefined();
 				expect(ret).toMatchObject({
 					username: accountToSave.username,
-					userId: new ObjectId(accountToSave.userId),
-					systemId: new ObjectId(accountToSave.systemId),
+					userId: accountToSave.userId,
+					systemId: accountToSave.systemId,
 					createdAt: accountToSave.createdAt,
 					updatedAt: accountToSave.updatedAt,
 				});
@@ -536,7 +532,7 @@ describe('AccountDbService', () => {
 				} as Account;
 
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
-				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id);
+				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id.toHexString());
 				accountRepo.save.mockResolvedValue();
 
 				return { mockTeacherAccount, spy, account };
@@ -562,7 +558,7 @@ describe('AccountDbService', () => {
 				const newUsername = 'newUsername';
 
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
-				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id);
+				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id.toHexString());
 
 				return { mockTeacherAccount, mockTeacherAccountDto, newUsername };
 			};
@@ -586,7 +582,7 @@ describe('AccountDbService', () => {
 				const theNewDate = new Date();
 
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
-				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id);
+				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id.toHexString());
 
 				return { mockTeacherAccount, mockTeacherAccountDto, theNewDate };
 			};
@@ -657,7 +653,7 @@ describe('AccountDbService', () => {
 				const newPassword = 'newPassword';
 
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
-				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id);
+				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id.toHexString());
 
 				return { mockTeacherAccount, newPassword };
 			};
@@ -682,14 +678,14 @@ describe('AccountDbService', () => {
 				const mockTeacherAccount = accountFactory.buildWithId();
 
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
-				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id);
+				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id.toHexString());
 
 				return { mockTeacherAccount };
 			};
 			it('should delete account via repo', async () => {
 				const { mockTeacherAccount } = setup();
 				await accountService.delete(mockTeacherAccount.id);
-				expect(accountRepo.deleteById).toHaveBeenCalledWith(new ObjectId(mockTeacherAccount.id));
+				expect(accountRepo.deleteById).toHaveBeenCalledWith(new ObjectId(mockTeacherAccount.id).toHexString());
 			});
 		});
 
@@ -721,7 +717,7 @@ describe('AccountDbService', () => {
 				});
 
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
-				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id);
+				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id.toHexString());
 
 				return { mockTeacherUser, mockTeacherAccount };
 			};
@@ -742,7 +738,7 @@ describe('AccountDbService', () => {
 				const limit = 10;
 				const mockTeacherAccount = accountFactory.buildWithId();
 				const mockStudentAccount = accountFactory.buildWithId();
-				const mockAccountWithSystemId = accountFactory.withSystemId(new ObjectId()).build();
+				const mockAccountWithSystemId = accountFactory.withSystemId(new ObjectId().toHexString()).build();
 				const mockAccounts = [mockTeacherAccount, mockStudentAccount, mockAccountWithSystemId];
 
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
@@ -750,7 +746,7 @@ describe('AccountDbService', () => {
 					[mockTeacherAccount, mockStudentAccount, mockAccountWithSystemId],
 					3,
 				]);
-				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id);
+				accountLookupServiceMock.getInternalId.mockResolvedValue(mockTeacherAccount._id.toHexString());
 
 				return { partialUserName, skip, limit, mockTeacherAccount, mockAccounts };
 			};

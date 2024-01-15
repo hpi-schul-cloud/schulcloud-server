@@ -410,7 +410,7 @@ describe('AccountValidationService', () => {
 				const oprhanAccount = accountFactory.buildWithId({
 					username: 'orphan@account',
 					userId: undefined,
-					systemId: new ObjectId(),
+					systemId: new ObjectId().toHexString(),
 				});
 
 				userRepo.findByEmail.mockResolvedValueOnce([]);

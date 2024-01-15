@@ -14,7 +14,6 @@ describe('AccountLookupService', () => {
 	let configServiceMock: DeepMocked<ConfigService>;
 
 	const internalId = new ObjectId().toHexString();
-	const internalIdAsObjectId = new ObjectId(internalId);
 	const externalId = v1();
 	const accountMock: IdmAccount = {
 		id: externalId,
@@ -49,18 +48,10 @@ describe('AccountLookupService', () => {
 	});
 
 	describe('getInternalId', () => {
-		describe('when id is already an internal id as ObjectId', () => {
-			it('should return the id as is', async () => {
-				const result = await accountLookupService.getInternalId(internalIdAsObjectId);
-				expect(result).toStrictEqual(internalIdAsObjectId);
-			});
-		});
-
 		describe('when id is already an internal id as string', () => {
-			it('should return the id as ObjectId', async () => {
+			it('should return the id as is', async () => {
 				const result = await accountLookupService.getInternalId(internalId);
-				expect(result).toBeInstanceOf(ObjectId);
-				expect(result?.toHexString()).toBe(internalId);
+				expect(result).toStrictEqual(internalId);
 			});
 		});
 
@@ -73,8 +64,7 @@ describe('AccountLookupService', () => {
 			it('should return the internal id', async () => {
 				setup();
 				const result = await accountLookupService.getInternalId(accountMock.id);
-				expect(result).toBeInstanceOf(ObjectId);
-				expect(result?.toHexString()).toBe(accountMock.attDbcAccountId);
+				expect(result).toBe(accountMock.attDbcAccountId);
 			});
 		});
 
@@ -107,7 +97,7 @@ describe('AccountLookupService', () => {
 
 			it('should return the external id', async () => {
 				setup();
-				const result = await accountLookupService.getExternalId(internalIdAsObjectId);
+				const result = await accountLookupService.getExternalId(internalId);
 				expect(result).toBe(externalId);
 			});
 		});
@@ -119,7 +109,7 @@ describe('AccountLookupService', () => {
 
 			it('should return null', async () => {
 				setup();
-				const result = await accountLookupService.getExternalId(internalIdAsObjectId);
+				const result = await accountLookupService.getExternalId(internalId);
 				expect(result).toBeNull();
 			});
 		});

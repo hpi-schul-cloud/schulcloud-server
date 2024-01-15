@@ -11,8 +11,6 @@ import { Permission, RoleName } from '@shared/domain/interface';
 import { PermissionService } from '@shared/domain/service';
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
-// TODO: module internals should be imported with relative paths, AccountEntity should be moved to this module
-
 import { ICurrentUser } from '@modules/authentication';
 import { AccountService } from '..';
 import { AccountConfig } from '../account-config';

@@ -24,13 +24,13 @@ export class AccountLookupService {
 	 * @param id the id the should be converted to the internal id.
 	 * @returns the converted id or null if conversion failed.
 	 */
-	async getInternalId(id: EntityId | ObjectId): Promise<ObjectId | null> {
+	async getInternalId(id: EntityId | ObjectId): Promise<EntityId | null> {
 		if (id instanceof ObjectId || ObjectId.isValid(id)) {
-			return new ObjectId(id);
+			return new ObjectId(id).toHexString();
 		}
 		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
 			const account = await this.idmService.findAccountById(id);
-			return new ObjectId(account.attDbcAccountId);
+			return new ObjectId(account.attDbcAccountId).toHexString();
 		}
 		return null;
 	}

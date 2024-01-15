@@ -53,7 +53,7 @@ describe('account repo', () => {
 	describe('findByUsernameAndSystemId', () => {
 		describe('When username and systemId are given', () => {
 			const setup = async () => {
-				const accountToFind = accountFactory.withSystemId(new ObjectId(10)).build();
+				const accountToFind = accountFactory.withSystemId(new ObjectId(10).toHexString()).build();
 				await em.persistAndFlush(accountToFind);
 				em.clear();
 				return accountToFind;
@@ -68,7 +68,7 @@ describe('account repo', () => {
 
 		describe('When username and systemId are not given', () => {
 			it('should return null', async () => {
-				const account = await repo.findByUsernameAndSystemId('', new ObjectId(undefined));
+				const account = await repo.findByUsernameAndSystemId('', new ObjectId(undefined).toHexString());
 				expect(account).toBeNull();
 			});
 		});

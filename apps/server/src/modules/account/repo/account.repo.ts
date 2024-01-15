@@ -1,5 +1,4 @@
 import { AnyEntity, EntityName, Primary } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
@@ -16,23 +15,20 @@ export class AccountRepo extends BaseRepo<AccountEntity> {
 	 * Finds an account by user id.
 	 * @param userId the user id
 	 */
-	// TODO: here only EntityIds should arrive => hard to determine because this is used by feathers/js part
-	async findByUserId(userId: EntityId | ObjectId): Promise<AccountEntity | null> {
-		// TODO: you can use userId directly, without constructing an objectId => AccountEntity still uses ObjectId
-		return this._em.findOne(AccountEntity, { userId: new ObjectId(userId) });
+	async findByUserId(userId: EntityId): Promise<AccountEntity | null> {
+		return this._em.findOne(AccountEntity, { userId });
 	}
 
-	async findMultipleByUserId(userIds: EntityId[] | ObjectId[]): Promise<AccountEntity[]> {
-		const objectIds = userIds.map((id: EntityId | ObjectId) => new ObjectId(id));
-		return this._em.find(AccountEntity, { userId: objectIds });
+	async findMultipleByUserId(userIds: EntityId[]): Promise<AccountEntity[]> {
+		return this._em.find(AccountEntity, { userId: userIds });
 	}
 
-	async findByUserIdOrFail(userId: EntityId | ObjectId): Promise<AccountEntity> {
-		return this._em.findOneOrFail(AccountEntity, { userId: new ObjectId(userId) });
+	async findByUserIdOrFail(userId: EntityId): Promise<AccountEntity> {
+		return this._em.findOneOrFail(AccountEntity, { userId });
 	}
 
-	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<AccountEntity | null> {
-		return this._em.findOne(AccountEntity, { username, systemId: new ObjectId(systemId) });
+	async findByUsernameAndSystemId(username: string, systemId: EntityId): Promise<AccountEntity | null> {
+		return this._em.findOne(AccountEntity, { username, systemId });
 	}
 
 	getObjectReference<Entity extends AnyEntity<Entity>>(
@@ -58,7 +54,7 @@ export class AccountRepo extends BaseRepo<AccountEntity> {
 		return this.searchByUsername(username, skip, limit, false);
 	}
 
-	async deleteById(accountId: EntityId | ObjectId): Promise<void> {
+	async deleteById(accountId: EntityId): Promise<void> {
 		const account = await this.findById(accountId);
 		return this.delete(account);
 	}
