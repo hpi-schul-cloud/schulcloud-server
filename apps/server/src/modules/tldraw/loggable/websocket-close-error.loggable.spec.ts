@@ -4,21 +4,18 @@ describe('WebsocketCloseErrorLoggable', () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const error = new Error('test');
-			const loggable = new WebsocketCloseErrorLoggable(error);
+			const errorMessage = 'message';
 
-			return { loggable, error };
+			const loggable = new WebsocketCloseErrorLoggable(error, errorMessage);
+			return { loggable, error, errorMessage };
 		};
 
 		it('should return a loggable message', () => {
-			const { loggable, error } = setup();
+			const { loggable, error, errorMessage } = setup();
 
 			const message = loggable.getLogMessage();
 
-			expect(message).toEqual({
-				message: 'Error while closing the websocket connection - it may already be closed',
-				type: 'WEBSOCKET_CLOSE_ERROR',
-				error,
-			});
+			expect(message).toEqual({ message: errorMessage, error, type: 'WEBSOCKET_CLOSE_ERROR' });
 		});
 	});
 });

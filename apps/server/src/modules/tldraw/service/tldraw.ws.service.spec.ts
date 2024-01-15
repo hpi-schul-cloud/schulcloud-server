@@ -9,6 +9,10 @@ import * as AwarenessProtocol from 'y-protocols/awareness';
 import * as Ioredis from 'ioredis';
 import { encoding } from 'lib0';
 import { TldrawWsFactory } from '@shared/testing/factory/tldraw.ws.factory';
+import { HttpService } from '@nestjs/axios';
+import { of, throwError } from 'rxjs';
+import { AxiosResponse } from 'axios';
+import { axiosResponseFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -53,6 +57,7 @@ describe('TldrawWSService', () => {
 	let boardRepo: TldrawBoardRepo;
 	let metricsService: MetricsService;
 	let logger: DeepMocked<Logger>;
+	let httpService: DeepMocked<HttpService>;
 
 	const gatewayPort = 3346;
 	const wsUrl = TestConnection.getWsUrl(gatewayPort);
@@ -82,11 +87,16 @@ describe('TldrawWSService', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: HttpService,
+					useValue: createMock<HttpService>(),
+				},
 			],
 		}).compile();
 
 		configService = testingModule.get(ConfigService);
 		service = testingModule.get(TldrawWsService);
+		httpService = testingModule.get(HttpService);
 		metricsService = testingModule.get(MetricsService);
 		boardRepo = testingModule.get(TldrawBoardRepo);
 		logger = testingModule.get(Logger);
@@ -122,7 +132,7 @@ describe('TldrawWSService', () => {
 		it('should throw if REDIS_URI is not set', () => {
 			const configSpy = jest.spyOn(configService, 'get').mockReturnValue(null);
 
-			expect(() => new TldrawWsService(configService, boardRepo, logger, metricsService)).toThrow(
+			expect(() => new TldrawWsService(configService, boardRepo, logger, httpService, metricsService)).toThrow(
 				'REDIS_URI is not set'
 			);
 			configSpy.mockRestore();
@@ -132,7 +142,7 @@ describe('TldrawWSService', () => {
 	describe('send', () => {
 		describe('when client is not connected to WS', () => {
 			const setup = async () => {
-				ws = await TestConnection.setupWs(wsUrl);
+				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 				const clientMessageMock = 'test-message';
 
 				const closeConSpy = jest.spyOn(service, 'closeConn').mockReturnValueOnce();
@@ -194,7 +204,7 @@ describe('TldrawWSService', () => {
 
 		describe('when websocket has ready state Open (0)', () => {
 			const setup = async () => {
-				ws = await TestConnection.setupWs(wsUrl);
+				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 				const clientMessageMock = 'test-message';
 
 				const sendSpy = jest.spyOn(service, 'send');
@@ -762,6 +772,56 @@ describe('TldrawWSService', () => {
 				ws.close();
 				sendSpy.mockRestore();
 			});
+		});
+	});
+
+	describe('authorizeConnection', () => {
+		it('should call properly method', async () => {
+			const params = { drawingName: 'drawingName', token: 'token' };
+			const response: AxiosResponse<null> = axiosResponseFactory.build({
+				status: 200,
+			});
+
+			httpService.get.mockReturnValueOnce(of(response));
+
+			await expect(service.authorizeConnection(params.drawingName, params.token)).resolves.not.toThrow();
+			httpService.get.mockRestore();
+		});
+
+		it('should properly setup REST GET call params', async () => {
+			const params = { drawingName: 'drawingName', token: 'token' };
+			const response: AxiosResponse<null> = axiosResponseFactory.build({
+				status: 200,
+			});
+			const expectedUrl = 'http://localhost:3030/api/v3/elements/drawingName/permission';
+			const expectedHeaders = {
+				headers: {
+					Accept: 'Application/json',
+					Authorization: `Bearer ${params.token}`,
+				},
+			};
+			httpService.get.mockReturnValueOnce(of(response));
+
+			await service.authorizeConnection(params.drawingName, params.token);
+
+			expect(httpService.get).toHaveBeenCalledWith(expectedUrl, expectedHeaders);
+			httpService.get.mockRestore();
+		});
+
+		it('should throw error for http response', async () => {
+			const params = { drawingName: 'drawingName', token: 'token' };
+			const error = new Error('unknown error');
+			httpService.get.mockReturnValueOnce(throwError(() => error));
+
+			await expect(service.authorizeConnection(params.drawingName, params.token)).rejects.toThrow();
+			httpService.get.mockRestore();
+		});
+
+		it('should throw error for lack of token', async () => {
+			const params = { drawingName: 'drawingName', token: 'token' };
+
+			await expect(service.authorizeConnection(params.drawingName, '')).rejects.toThrow();
+			httpService.get.mockRestore();
 		});
 	});
 });

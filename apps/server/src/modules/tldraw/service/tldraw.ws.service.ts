@@ -1,9 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import WebSocket from 'ws';
 import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
 import { decoding, encoding, map } from 'lib0';
 import { readSyncMessage, writeSyncStep1, writeUpdate } from 'y-protocols/sync';
+import { firstValueFrom } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
 import { Buffer } from 'node:buffer';
 import { Redis } from 'ioredis';
 import { Logger } from '@src/core/logger';
@@ -37,6 +39,7 @@ export class TldrawWsService {
 		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly tldrawBoardRepo: TldrawBoardRepo,
 		private readonly logger: Logger,
+		private readonly httpService: HttpService,
 		private readonly metricsService: MetricsService
 	) {
 		this.logger.setContext(TldrawWsService.name);
@@ -352,5 +355,21 @@ export class TldrawWsService {
 			}
 		}
 		return changedClients;
+	}
+
+	public async authorizeConnection(drawingName: string, token: string) {
+		if (!token) {
+			throw new UnauthorizedException('Token was not given');
+		}
+		const headers = {
+			Accept: 'Application/json',
+			Authorization: `Bearer ${token}`,
+		};
+
+		await firstValueFrom(
+			this.httpService.get(`${this.configService.get<string>('API_HOST')}/v3/elements/${drawingName}/permission`, {
+				headers,
+			})
+		);
 	}
 }

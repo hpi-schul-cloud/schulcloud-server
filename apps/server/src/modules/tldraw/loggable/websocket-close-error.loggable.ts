@@ -1,11 +1,11 @@
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class WebsocketCloseErrorLoggable implements Loggable {
-	constructor(private readonly error: Error) {}
+	constructor(private readonly error: Error, private readonly message: string) {}
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			message: `Error while closing the websocket connection - it may already be closed`,
+			message: this.message,
 			type: `WEBSOCKET_CLOSE_ERROR`,
 			error: this.error,
 		};

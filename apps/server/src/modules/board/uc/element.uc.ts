@@ -60,6 +60,11 @@ export class ElementUc extends BaseUc {
 		return element;
 	}
 
+	async checkElementReadPermission(userId: EntityId, elementId: EntityId): Promise<void> {
+		const element = await this.elementService.findById(elementId);
+		await this.checkPermission(userId, element, Action.read);
+	}
+
 	async createSubmissionItem(
 		userId: EntityId,
 		contentElementId: EntityId,

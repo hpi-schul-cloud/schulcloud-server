@@ -4,6 +4,7 @@ import { cleanupCollections } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
+import { NotFoundException } from '@nestjs/common';
 import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { TldrawRepo } from './tldraw.repo';
@@ -75,10 +76,8 @@ describe('TldrawRepo', () => {
 				expect(result[0]._id).toEqual(drawing._id);
 			});
 
-			it('should not find any record giving wrong docName', async () => {
-				const result = await repo.findByDocName('invalid-name');
-
-				expect(result.length).toEqual(0);
+			it('should throw NotFoundException for wrong docName', async () => {
+				await expect(repo.findByDocName('invalid-name')).rejects.toThrow(NotFoundException);
 			});
 		});
 	});
@@ -91,9 +90,9 @@ describe('TldrawRepo', () => {
 				await repo.create(drawing);
 				const results = await repo.findByDocName(drawing.docName);
 				await repo.delete(results);
-				const emptyResults = await repo.findByDocName(drawing.docName);
 
-				expect(emptyResults.length).toEqual(0);
+				expect(results.length).not.toEqual(0);
+				await expect(repo.findByDocName(drawing.docName)).rejects.toThrow(NotFoundException);
 			});
 		});
 	});

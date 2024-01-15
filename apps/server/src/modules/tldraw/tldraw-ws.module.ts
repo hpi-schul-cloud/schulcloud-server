@@ -5,6 +5,7 @@ import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
+import { HttpModule } from '@nestjs/axios';
 import { TldrawDrawing } from './entities';
 import { MetricsService } from './metrics';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
@@ -19,6 +20,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 };
 @Module({
 	imports: [
+		HttpModule,
 		LoggerModule,
 		CoreModule,
 		MikroOrmModule.forRoot({
