@@ -13,6 +13,7 @@ import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
 import { UserService } from './user.service';
@@ -54,6 +55,10 @@ describe('UserService', () => {
 				{
 					provide: AccountService,
 					useValue: createMock<AccountService>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();

@@ -2,6 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { FilesService } from './files.service';
 import { FilesRepo } from '../repo';
 import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
@@ -19,6 +20,10 @@ describe(FilesService.name, () => {
 				{
 					provide: FilesRepo,
 					useValue: createMock<FilesRepo>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
