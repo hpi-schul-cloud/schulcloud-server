@@ -65,12 +65,12 @@ export class FilesStorageUC {
 	private async uploadFileWithBusboy(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecord> {
 		const promise = new Promise<FileRecord>((resolve, reject) => {
 			const bb = busboy({ headers: req.headers, defParamCharset: 'utf8' });
-			let fileRecordPromise: Promise<FileRecord>;
+			let promise2: Promise<FileRecord>;
 
 			bb.on('file', (_name, file, info) => {
 				const fileDto = FileDtoBuilder.buildFromRequest(info, file);
 
-				fileRecordPromise = RequestContext.createAsync(this.em, () => {
+				promise2 = RequestContext.createAsync(this.em, () => {
 					const record = this.filesStorageService.uploadFile(userId, params, fileDto);
 
 					return record;
@@ -78,9 +78,14 @@ export class FilesStorageUC {
 			});
 
 			bb.on('finish', () => {
-				fileRecordPromise
-					.then((result) => resolve(result))
+				promise2
+					.then((result) => {
+						resolve(result);
+						console.log('fileclose', result);
+						return result;
+					})
 					.catch((error) => {
+						this.logger.error({ message: 'could not upload file', error: error as Error });
 						req.unpipe(bb);
 						reject(error);
 					});
