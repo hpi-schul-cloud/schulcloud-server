@@ -6,12 +6,12 @@ export class TestConnection {
 		return wsUrl;
 	};
 
-	public static setupWs = async (wsUrl: string, docName?: string): Promise<WebSocket> => {
+	public static setupWs = async (wsUrl: string, docName?: string, headers?: object): Promise<WebSocket> => {
 		let ws: WebSocket;
 		if (docName) {
-			ws = new WebSocket(`${wsUrl}/${docName}`);
+			ws = new WebSocket(`${wsUrl}/${docName}`, headers);
 		} else {
-			ws = new WebSocket(`${wsUrl}`);
+			ws = new WebSocket(`${wsUrl}`, headers);
 		}
 		await new Promise((resolve) => {
 			ws.on('open', resolve);

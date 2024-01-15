@@ -20,6 +20,7 @@ export class CommonToolService {
 		const configurationStatus: ContextExternalToolConfigurationStatus = new ContextExternalToolConfigurationStatus({
 			isOutdatedOnScopeContext: true,
 			isOutdatedOnScopeSchool: true,
+			isDeactivated: false,
 		});
 
 		if (
@@ -32,6 +33,10 @@ export class CommonToolService {
 		} else {
 			configurationStatus.isOutdatedOnScopeContext = true;
 			configurationStatus.isOutdatedOnScopeSchool = true;
+		}
+
+		if (externalTool.isDeactivated || schoolExternalTool.status?.isDeactivated) {
+			configurationStatus.isDeactivated = true;
 		}
 
 		return configurationStatus;

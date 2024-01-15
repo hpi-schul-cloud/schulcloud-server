@@ -8,14 +8,15 @@ import { EntityId } from '@shared/domain/types';
 import { AnyProvisioningOptions, SchoolSystemOptions, SchoolSystemOptionsBuilder } from '../domain';
 import { ProvisioningOptionsInterface } from '../interface';
 import { ProvisioningStrategyMissingLoggableException } from '../loggable';
-import { SchoolSystemOptionsService } from '../service';
+import { ProvisioningOptionsUpdateService, SchoolSystemOptionsService } from '../service';
 
 @Injectable()
 export class SchoolSystemOptionsUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
 		private readonly systemService: SystemService,
-		private readonly schoolSystemOptionsService: SchoolSystemOptionsService
+		private readonly schoolSystemOptionsService: SchoolSystemOptionsService,
+		private readonly provisioningOptionsUpdateService: ProvisioningOptionsUpdateService
 	) {}
 
 	public async getProvisioningOptions(
@@ -56,9 +57,12 @@ export class SchoolSystemOptionsUc {
 			throw new ProvisioningStrategyMissingLoggableException(systemId);
 		}
 
-		const provisioningOptions: AnyProvisioningOptions = new SchoolSystemOptionsBuilder(
+		const schoolSystemOptionsBuilder: SchoolSystemOptionsBuilder = new SchoolSystemOptionsBuilder(
 			system.provisioningStrategy
-		).buildProvisioningOptions(requestedProvisioningOptions);
+		);
+
+		const newProvisioningOptions: AnyProvisioningOptions =
+			schoolSystemOptionsBuilder.buildProvisioningOptions(requestedProvisioningOptions);
 
 		const existingSchoolSystemOptions: SchoolSystemOptions | null =
 			await this.schoolSystemOptionsService.findBySchoolIdAndSystemId(schoolId, systemId);
@@ -67,7 +71,7 @@ export class SchoolSystemOptionsUc {
 			id: existingSchoolSystemOptions?.id ?? new ObjectId().toHexString(),
 			systemId,
 			schoolId,
-			provisioningOptions,
+			provisioningOptions: newProvisioningOptions,
 		});
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
@@ -75,6 +79,15 @@ export class SchoolSystemOptionsUc {
 			user,
 			schoolSystemOptions,
 			AuthorizationContextBuilder.read([Permission.SCHOOL_SYSTEM_EDIT])
+		);
+
+		const currentProvisioningOptions: AnyProvisioningOptions =
+			existingSchoolSystemOptions?.provisioningOptions ?? schoolSystemOptionsBuilder.getDefaultProvisioningOptions();
+		await this.provisioningOptionsUpdateService.handleUpdate(
+			schoolId,
+			systemId,
+			newProvisioningOptions,
+			currentProvisioningOptions
 		);
 
 		const savedSchoolSystemOptions: SchoolSystemOptions = await this.schoolSystemOptionsService.save(

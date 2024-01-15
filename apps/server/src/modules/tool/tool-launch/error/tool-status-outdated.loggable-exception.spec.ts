@@ -12,7 +12,8 @@ describe('ToolStatusOutdatedLoggableException', () => {
 				userId,
 				toolId,
 				toolConfigStatus.isOutdatedOnScopeSchool,
-				toolConfigStatus.isOutdatedOnScopeContext
+				toolConfigStatus.isOutdatedOnScopeContext,
+				toolConfigStatus.isDeactivated
 			);
 
 			return {
@@ -34,6 +35,7 @@ describe('ToolStatusOutdatedLoggableException', () => {
 					toolId: 'toolId',
 					isOutdatedOnScopeSchool: false,
 					isOutdatedOnScopeContext: false,
+					isDeactivated: false,
 				},
 			});
 		});
