@@ -1,11 +1,11 @@
-import { EntityManager, RequestContext } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/core';
 import { AuthorizationContext } from '@modules/authorization';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Counted, EntityId } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { AxiosRequestConfig } from 'axios';
 import busboy from 'busboy';
 import { Request } from 'express';
 import { firstValueFrom } from 'rxjs';
@@ -25,7 +25,6 @@ import {
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
-import { GetFileResponse } from '../interface';
 import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
@@ -70,11 +69,7 @@ export class FilesStorageUC {
 			bb.on('file', (_name, file, info) => {
 				const fileDto = FileDtoBuilder.buildFromRequest(info, file);
 
-				promise2 = RequestContext.createAsync(this.em, () => {
-					const record = this.filesStorageService.uploadFile(userId, params, fileDto);
-
-					return record;
-				});
+				promise2 = this.filesStorageService.uploadFile(userId, params, fileDto);
 			});
 
 			bb.on('finish', () => {
