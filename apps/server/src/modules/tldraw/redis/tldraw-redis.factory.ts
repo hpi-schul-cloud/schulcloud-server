@@ -1,0 +1,29 @@
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { TldrawConfig } from '@modules/tldraw/config';
+import { Redis } from 'ioredis';
+import { RedisGeneralErrorLoggable } from '@modules/tldraw/loggable';
+import { Logger } from '@src/core/logger';
+
+@Injectable()
+export class TldrawRedisFactory {
+	private readonly redisUri: string;
+
+	constructor(private readonly configService: ConfigService<TldrawConfig, true>, private readonly logger: Logger) {
+		this.redisUri = this.configService.get<string>('REDIS_URI');
+
+		if (!this.redisUri) {
+			throw new Error('REDIS_URI is not set');
+		}
+	}
+
+	public build(connectionType: 'PUB' | 'SUB') {
+		const redis = new Redis(this.redisUri, {
+			maxRetriesPerRequest: null,
+		});
+
+		redis.on('error', (err) => this.logger.warning(new RedisGeneralErrorLoggable(connectionType, err)));
+
+		return redis;
+	}
+}

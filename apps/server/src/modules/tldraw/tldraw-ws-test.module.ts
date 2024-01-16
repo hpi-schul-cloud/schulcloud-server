@@ -11,6 +11,7 @@ import { TldrawWsService } from './service';
 import { config } from './config';
 import { TldrawWs } from './controller';
 import { TldrawDrawing } from './entities';
+import { TldrawRedisFactory } from './redis';
 
 const imports = [
 	HttpModule,
@@ -19,7 +20,15 @@ const imports = [
 	MongoMemoryDatabaseModule.forRoot({ entities: [TldrawDrawing] }),
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
 ];
-const providers = [TldrawWs, TldrawWsService, TldrawBoardRepo, TldrawRepo, YMongodb, MetricsService];
+const providers = [
+	TldrawWs,
+	TldrawWsService,
+	TldrawBoardRepo,
+	TldrawRepo,
+	YMongodb,
+	MetricsService,
+	TldrawRedisFactory,
+];
 @Module({
 	imports,
 	providers,

@@ -10,8 +10,8 @@ import { Buffer } from 'node:buffer';
 import { Redis } from 'ioredis';
 import { Logger } from '@src/core/logger';
 import { applyUpdate } from 'yjs';
+import { TldrawRedisFactory } from '../redis';
 import {
-	RedisGeneralErrorLoggable,
 	RedisPublishErrorLoggable,
 	WebsocketCloseErrorLoggable,
 	WebsocketMessageErrorLoggable,
@@ -40,27 +40,15 @@ export class TldrawWsService {
 		private readonly tldrawBoardRepo: TldrawBoardRepo,
 		private readonly logger: Logger,
 		private readonly httpService: HttpService,
-		private readonly metricsService: MetricsService
+		private readonly metricsService: MetricsService,
+		private readonly tldrawRedisFactory: TldrawRedisFactory
 	) {
 		this.logger.setContext(TldrawWsService.name);
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
 		this.gcEnabled = this.configService.get<boolean>('TLDRAW_GC_ENABLED');
-		const redisUri: string = this.configService.get<string>('REDIS_URI');
 
-		if (!redisUri) {
-			throw new Error('REDIS_URI is not set');
-		}
-
-		// TODO może przenieść to do innego serwisu TldrawRedisService - bo można przetestować łatwiej (metoda build or sth by tworzyła te połączenia) zrobić factory i zawołać w tym serwisie
-		this.sub = new Redis(redisUri, {
-			maxRetriesPerRequest: null,
-		});
-		this.sub.on('error', (err) => this.logger.warning(new RedisGeneralErrorLoggable('SUB', err)));
-
-		this.pub = new Redis(redisUri, {
-			maxRetriesPerRequest: null,
-		});
-		this.pub.on('error', (err) => this.logger.warning(new RedisGeneralErrorLoggable('PUB', err)));
+		this.sub = this.tldrawRedisFactory.build('SUB');
+		this.pub = this.tldrawRedisFactory.build('PUB');
 	}
 
 	/**
@@ -72,19 +60,7 @@ export class TldrawWsService {
 			const controlledIds = doc.connections.get(ws) as Set<number>;
 			doc.connections.delete(ws);
 			removeAwarenessStates(doc.awareness, Array.from(controlledIds), null);
-			if (doc.connections.size === 0) {
-				// if persisted, we store state and destroy ydocument
-				this.tldrawBoardRepo
-					.flushDocument(doc.name)
-					.then(() => this.sub.unsubscribe(doc.name, doc.awarenessChannel))
-					.then(() => doc.destroy())
-					.catch((err) => {
-						this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while flushing doc', err as Error));
-						throw err;
-					});
-				this.docs.delete(doc.name);
-				this.metricsService.decrementNumberOfBoardsOnServerCounter();
-			}
+			this.storeStateAndDestroyYDocIfPersisted(doc);
 			this.metricsService.decrementNumberOfUsersOnServerCounter();
 		}
 
@@ -159,25 +135,12 @@ export class TldrawWsService {
 	public getYDoc(docName: string): WsSharedDocDo {
 		const wsSharedDocDo = map.setIfUndefined(this.docs, docName, () => {
 			const doc = new WsSharedDocDo(docName, this.gcEnabled);
-			doc.awareness.on('update', (connectionsUpdate: AwarenessConnectionsUpdate, wsConnection: WebSocket | null) =>
-				this.awarenessUpdateHandler(connectionsUpdate, wsConnection, doc)
-			);
+			this.subscribeOnAwarenessUpdate(doc);
 			doc.on('update', (update: Uint8Array, origin) => this.updateHandler(update, origin, doc));
 
-			this.sub // TODO przenieść do nowego serwisu
-				.subscribe(doc.name, doc.awarenessChannel)
-				.then(() => this.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message, doc)))
-				.catch((err) => {
-					this.logger.warning(
-						new WsSharedDocErrorLoggable(doc.name, 'Error while subscribing to Redis channels', err as Error)
-					);
-					throw err;
-				});
+			this.subscribeOnDocument(doc);
 
-			this.tldrawBoardRepo.updateDocument(docName, doc).catch((err) => {
-				this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while updating document', err as Error));
-				throw err;
-			});
+			this.updateDocument(docName, doc);
 
 			this.docs.set(docName, doc);
 			this.metricsService.incrementNumberOfBoardsOnServerCounter();
@@ -210,10 +173,7 @@ export class TldrawWsService {
 					break;
 				case WSMessageType.AWARENESS: {
 					const update = decoding.readVarUint8Array(decoder);
-					this.pub.publish(doc.awarenessChannel, Buffer.from(update)).catch((err) => {
-						this.logger.warning(new RedisPublishErrorLoggable('awareness', err as Error));
-						throw err;
-					});
+					this.publishAwarenessUpdate(doc, update);
 					applyAwarenessUpdate(doc.awareness, update, conn);
 					break;
 				}
@@ -310,6 +270,22 @@ export class TldrawWsService {
 		this.metricsService.incrementNumberOfUsersOnServerCounter();
 	}
 
+	private storeStateAndDestroyYDocIfPersisted(doc: WsSharedDocDo) {
+		if (doc.connections.size === 0) {
+			// if persisted, we store state and destroy ydocument
+			this.tldrawBoardRepo
+				.flushDocument(doc.name)
+				.then(() => this.sub.unsubscribe(doc.name, doc.awarenessChannel))
+				.then(() => doc.destroy())
+				.catch((err) => {
+					this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while flushing doc', err as Error));
+					throw err;
+				});
+			this.docs.delete(doc.name);
+			this.metricsService.decrementNumberOfBoardsOnServerCounter();
+		}
+	}
+
 	private propagateUpdate(update: Uint8Array, doc: WsSharedDocDo): void {
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, WSMessageType.SYNC);
@@ -381,5 +357,37 @@ export class TldrawWsService {
 				headers,
 			})
 		);
+	}
+
+	private subscribeOnAwarenessUpdate(doc: WsSharedDocDo) {
+		doc.awareness.on('update', (connectionsUpdate: AwarenessConnectionsUpdate, wsConnection: WebSocket | null) =>
+			this.awarenessUpdateHandler(connectionsUpdate, wsConnection, doc)
+		);
+	}
+
+	private subscribeOnDocument(doc: WsSharedDocDo) {
+		this.sub
+			.subscribe(doc.name, doc.awarenessChannel)
+			.then(() => this.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message, doc)))
+			.catch((err) => {
+				this.logger.warning(
+					new WsSharedDocErrorLoggable(doc.name, 'Error while subscribing to Redis channels', err as Error)
+				);
+				throw err;
+			});
+	}
+
+	private updateDocument(docName: string, doc: WsSharedDocDo) {
+		this.tldrawBoardRepo.updateDocument(docName, doc).catch((err) => {
+			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while updating document', err as Error));
+			throw err;
+		});
+	}
+
+	private publishAwarenessUpdate(doc: WsSharedDocDo, update: Uint8Array) {
+		this.pub.publish(doc.awarenessChannel, Buffer.from(update)).catch((err) => {
+			this.logger.warning(new RedisPublishErrorLoggable('awareness', err as Error));
+			throw err;
+		});
 	}
 }

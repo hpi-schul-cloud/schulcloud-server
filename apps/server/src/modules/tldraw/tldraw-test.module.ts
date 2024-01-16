@@ -11,6 +11,7 @@ import { config } from './config';
 import { TldrawController } from './controller/tldraw.controller';
 import { TldrawService } from './service/tldraw.service';
 import { TldrawRepo } from './repo/tldraw.repo';
+import { TldrawRedisFactory } from './redis';
 
 const imports = [
 	MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions }),
@@ -19,7 +20,7 @@ const imports = [
 	RedisModule,
 	HttpModule,
 ];
-const providers = [Logger, TldrawService, TldrawRepo, MetricsService];
+const providers = [Logger, TldrawService, TldrawRepo, MetricsService, TldrawRedisFactory];
 @Module({
 	imports,
 	providers,
