@@ -19,6 +19,7 @@ import { TldrawWs } from '../controller';
 import { MetricsService } from '../metrics';
 import { TldrawRepo } from './tldraw.repo';
 import { YMongodb } from './y-mongodb';
+import { TldrawRedisFactory } from '../redis';
 
 describe('TldrawBoardRepo', () => {
 	let app: INestApplication;
@@ -41,6 +42,7 @@ describe('TldrawBoardRepo', () => {
 				TldrawBoardRepo,
 				YMongodb,
 				MetricsService,
+				TldrawRedisFactory,
 				{
 					provide: TldrawRepo,
 					useValue: createMock<TldrawRepo>(),
@@ -209,13 +211,18 @@ describe('TldrawBoardRepo', () => {
 			});
 
 			it('should log error if update fails', () => {
-				const storeUpdateSpy = jest
-					.spyOn(repo.mdb, 'storeUpdateTransactional')
-					.mockRejectedValueOnce(new Error('test error'));
+				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdateTransactional').mockImplementationOnce(() => {
+					throw new Error('test error');
+				});
 				const { calculateDiffSpy, errorLogSpy } = setup();
 				const diffArray = new Uint8Array();
 
-				repo.updateStoredDocWithDiff('test', diffArray);
+				try {
+					repo.updateStoredDocWithDiff('test', diffArray);
+				} catch (e) {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+					expect(e.message).toMatch('error');
+				}
 
 				expect(storeUpdateSpy).toHaveBeenCalled();
 				expect(errorLogSpy).toHaveBeenCalled();
