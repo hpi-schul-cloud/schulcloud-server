@@ -1,6 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
@@ -17,6 +16,7 @@ import { AccountServiceDb } from './account-db.service';
 import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountEntity } from '../entity/account.entity';
+import { AccountConfig } from '../account-config';
 
 describe('AccountDbService', () => {
 	let module: TestingModule;
@@ -45,7 +45,7 @@ describe('AccountDbService', () => {
 				},
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService<ServerConfig, true>>(),
+					useValue: createMock<ConfigService<AccountConfig, true>>(),
 				},
 				{
 					provide: IdentityManagementService,

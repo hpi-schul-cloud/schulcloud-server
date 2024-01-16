@@ -1,9 +1,9 @@
 import { IdentityManagementService } from '@infra/identity-management';
-import { ServerConfig } from '@modules/server/server.config';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
+import { AccountConfig } from '../account-config';
 
 /**
  * Service to convert between internal and external ids.
@@ -15,7 +15,7 @@ import { ObjectId } from 'bson';
 export class AccountLookupService {
 	constructor(
 		private readonly idmService: IdentityManagementService,
-		private readonly configService: ConfigService<ServerConfig, true>
+		private readonly configService: ConfigService<AccountConfig, true>
 	) {}
 
 	/**
