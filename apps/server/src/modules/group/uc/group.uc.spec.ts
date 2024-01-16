@@ -7,11 +7,12 @@ import { classFactory } from '@modules/class/domain/testing/factory/class.factor
 import { SchoolYearService } from '@modules/legacy-school';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
+import { School, SchoolService } from '@modules/school/domain';
+import { schoolFactory } from '@modules/school/testing';
 import { LegacySystemService, SystemDto } from '@modules/system';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ReferencedEntityNotFoundLoggable } from '@shared/common/loggable';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { SchoolYearEntity, User } from '@shared/domain/entity';
@@ -27,8 +28,6 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { School, SchoolService } from '@modules/school/domain';
-import { schoolFactory } from '@modules/school/testing';
 import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupTypes } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
@@ -336,7 +335,7 @@ describe('GroupUc', () => {
 								name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
 								type: ClassRootType.CLASS,
 								externalSourceName: clazz.source,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								schoolYear: schoolYear.name,
 								isUpgradable: false,
 								studentCount: 2,
@@ -348,7 +347,7 @@ describe('GroupUc', () => {
 									: successorClass.name,
 								type: ClassRootType.CLASS,
 								externalSourceName: successorClass.source,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								schoolYear: nextSchoolYear.name,
 								isUpgradable: false,
 								studentCount: 2,
@@ -360,7 +359,7 @@ describe('GroupUc', () => {
 									: classWithoutSchoolYear.name,
 								type: ClassRootType.CLASS,
 								externalSourceName: classWithoutSchoolYear.source,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								isUpgradable: false,
 								studentCount: 2,
 							},
@@ -368,7 +367,7 @@ describe('GroupUc', () => {
 								id: group.id,
 								name: group.name,
 								type: ClassRootType.GROUP,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								studentCount: 0,
 							},
 							{
@@ -376,8 +375,8 @@ describe('GroupUc', () => {
 								name: groupWithSystem.name,
 								type: ClassRootType.GROUP,
 								externalSourceName: system.displayName,
-								teacherNames: [teacherUser.lastName],
-								studentCount: 1,
+								teacherNames: [],
+								studentCount: 0,
 							},
 						],
 						total: 5,
@@ -420,7 +419,7 @@ describe('GroupUc', () => {
 									: classWithoutSchoolYear.name,
 								type: ClassRootType.CLASS,
 								externalSourceName: classWithoutSchoolYear.source,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								isUpgradable: false,
 								studentCount: 2,
 							},
@@ -429,7 +428,7 @@ describe('GroupUc', () => {
 								name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
 								type: ClassRootType.CLASS,
 								externalSourceName: clazz.source,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								schoolYear: schoolYear.name,
 								isUpgradable: false,
 								studentCount: 2,
@@ -439,14 +438,14 @@ describe('GroupUc', () => {
 								name: groupWithSystem.name,
 								type: ClassRootType.GROUP,
 								externalSourceName: system.displayName,
-								teacherNames: [teacherUser.lastName],
-								studentCount: 1,
+								teacherNames: [],
+								studentCount: 0,
 							},
 							{
 								id: group.id,
 								name: group.name,
 								type: ClassRootType.GROUP,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								studentCount: 0,
 							},
 						],
@@ -476,7 +475,7 @@ describe('GroupUc', () => {
 								id: group.id,
 								name: group.name,
 								type: ClassRootType.GROUP,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								studentCount: 0,
 							},
 						],
@@ -504,7 +503,7 @@ describe('GroupUc', () => {
 									: successorClass.name,
 								externalSourceName: successorClass.source,
 								type: ClassRootType.CLASS,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								schoolYear: nextSchoolYear.name,
 								isUpgradable: false,
 								studentCount: 2,
@@ -698,7 +697,7 @@ describe('GroupUc', () => {
 
 			describe('when no pagination is given', () => {
 				it('should return all classes sorted by name', async () => {
-					const { adminUser, teacherUser, clazz, group, groupWithSystem, system, schoolYear } = setup();
+					const { adminUser, clazz, group, groupWithSystem, system, schoolYear } = setup();
 
 					const result: Page<ClassInfoDto> = await uc.findAllClasses(adminUser.id, adminUser.school.id);
 
@@ -709,7 +708,7 @@ describe('GroupUc', () => {
 								name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
 								type: ClassRootType.CLASS,
 								externalSourceName: clazz.source,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								schoolYear: schoolYear.name,
 								isUpgradable: false,
 								studentCount: 2,
@@ -718,7 +717,7 @@ describe('GroupUc', () => {
 								id: group.id,
 								name: group.name,
 								type: ClassRootType.GROUP,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								studentCount: 0,
 							},
 							{
@@ -726,8 +725,8 @@ describe('GroupUc', () => {
 								name: groupWithSystem.name,
 								type: ClassRootType.GROUP,
 								externalSourceName: system.displayName,
-								teacherNames: [teacherUser.lastName],
-								studentCount: 1,
+								teacherNames: [],
+								studentCount: 0,
 							},
 						],
 						total: 3,
@@ -748,7 +747,7 @@ describe('GroupUc', () => {
 
 			describe('when sorting by external source name in descending order', () => {
 				it('should return all classes sorted by external source name in descending order', async () => {
-					const { adminUser, teacherUser, clazz, group, groupWithSystem, system, schoolYear } = setup();
+					const { adminUser, clazz, group, groupWithSystem, system, schoolYear } = setup();
 
 					const result: Page<ClassInfoDto> = await uc.findAllClasses(
 						adminUser.id,
@@ -768,7 +767,7 @@ describe('GroupUc', () => {
 								name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
 								type: ClassRootType.CLASS,
 								externalSourceName: clazz.source,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								schoolYear: schoolYear.name,
 								isUpgradable: false,
 								studentCount: 2,
@@ -778,14 +777,14 @@ describe('GroupUc', () => {
 								name: groupWithSystem.name,
 								type: ClassRootType.GROUP,
 								externalSourceName: system.displayName,
-								teacherNames: [teacherUser.lastName],
-								studentCount: 1,
+								teacherNames: [],
+								studentCount: 0,
 							},
 							{
 								id: group.id,
 								name: group.name,
 								type: ClassRootType.GROUP,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								studentCount: 0,
 							},
 						],
@@ -796,7 +795,7 @@ describe('GroupUc', () => {
 
 			describe('when using pagination', () => {
 				it('should return the selected page', async () => {
-					const { adminUser, teacherUser, group } = setup();
+					const { adminUser, group } = setup();
 
 					const result: Page<ClassInfoDto> = await uc.findAllClasses(
 						adminUser.id,
@@ -815,7 +814,7 @@ describe('GroupUc', () => {
 								id: group.id,
 								name: group.name,
 								type: ClassRootType.GROUP,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								studentCount: 0,
 							},
 						],
@@ -948,7 +947,7 @@ describe('GroupUc', () => {
 							name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
 							type: ClassRootType.CLASS,
 							externalSourceName: clazz.source,
-							teacherNames: [teacherUser.lastName],
+							teacherNames: [],
 							schoolYear: schoolYear.name,
 							isUpgradable: false,
 							studentCount: 2,
@@ -957,25 +956,12 @@ describe('GroupUc', () => {
 							id: group.id,
 							name: group.name,
 							type: ClassRootType.GROUP,
-							teacherNames: [teacherUser.lastName],
+							teacherNames: [],
 							studentCount: 0,
 						},
 					],
 					total: 2,
 				});
-			});
-
-			it('should log the missing user', async () => {
-				const { teacherUser, clazz, group, notFoundReferenceId } = setup();
-
-				await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
-
-				expect(logger.warning).toHaveBeenCalledWith(
-					new ReferencedEntityNotFoundLoggable(Class.name, clazz.id, UserDO.name, notFoundReferenceId)
-				);
-				expect(logger.warning).toHaveBeenCalledWith(
-					new ReferencedEntityNotFoundLoggable(Group.name, group.id, UserDO.name, notFoundReferenceId)
-				);
 			});
 		});
 	});

@@ -42,8 +42,7 @@ export class GroupController {
 			pagination.skip,
 			pagination.limit,
 			sortingQuery.sortBy,
-			sortingQuery.sortOrder,
-			filterParams.loadUsers
+			sortingQuery.sortOrder
 		);
 
 		const response: ClassInfoSearchListResponse = GroupResponseMapper.mapToClassInfosToListResponse(

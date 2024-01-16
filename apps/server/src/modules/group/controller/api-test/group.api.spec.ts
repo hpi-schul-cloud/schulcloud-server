@@ -7,13 +7,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Role, SchoolEntity, SchoolYearEntity, SystemEntity, User } from '@shared/domain/entity';
 import { RoleName, SortOrder } from '@shared/domain/interface';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	groupEntityFactory,
 	roleFactory,
 	schoolFactory,
 	schoolYearFactory,
 	systemEntityFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
 import { ObjectId } from 'bson';
@@ -121,14 +121,14 @@ describe('Group (API)', () => {
 							type: ClassRootType.GROUP,
 							name: group.name,
 							externalSourceName: system.displayName,
-							teachers: [adminUser.lastName],
+							teachers: [],
 							studentCount: 0,
 						},
 						{
 							id: clazz.id,
 							type: ClassRootType.CLASS,
 							name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
-							teachers: [teacherUser.lastName],
+							teachers: [],
 							schoolYear: schoolYear.name,
 							isUpgradable: false,
 							studentCount: 0,
