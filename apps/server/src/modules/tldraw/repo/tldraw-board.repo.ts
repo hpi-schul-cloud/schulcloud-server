@@ -21,10 +21,10 @@ export class TldrawBoardRepo {
 		return yDoc;
 	}
 
-	public updateStoredDocWithDiff(docName: string, diff: Uint8Array): void {
+	public async updateStoredDocWithDiff(docName: string, diff: Uint8Array): Promise<void> {
 		const calc = calculateDiff(diff);
 		if (calc > 0) {
-			this.mdb.storeUpdateTransactional(docName, diff).catch((err) => {
+			await this.mdb.storeUpdateTransactional(docName, diff).catch((err) => {
 				this.logger.warning(new MongoTransactionErrorLoggable(err as Error));
 				throw err;
 			});
@@ -35,7 +35,7 @@ export class TldrawBoardRepo {
 		const persistedYdoc = await this.getYDocFromMdb(docName);
 		const persistedStateVector = encodeStateVector(persistedYdoc);
 		const diff = encodeStateAsUpdate(ydoc, persistedStateVector);
-		this.updateStoredDocWithDiff(docName, diff);
+		await this.updateStoredDocWithDiff(docName, diff);
 
 		applyUpdate(ydoc, encodeStateAsUpdate(persistedYdoc));
 

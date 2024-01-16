@@ -30,11 +30,6 @@ describe('TldrawBoardRepo', () => {
 	const gatewayPort = 3346;
 	const wsUrl = TestConnection.getWsUrl(gatewayPort);
 
-	const delay = (ms: number) =>
-		new Promise((resolve) => {
-			setTimeout(resolve, ms);
-		});
-
 	beforeAll(async () => {
 		const testingModule = await Test.createTestingModule({
 			imports: [
@@ -69,7 +64,7 @@ describe('TldrawBoardRepo', () => {
 		app.useWebSocketAdapter(new WsAdapter(app));
 		await app.init();
 
-		// jest.useFakeTimers();
+		jest.useFakeTimers();
 	});
 
 	afterEach(() => {
@@ -202,12 +197,12 @@ describe('TldrawBoardRepo', () => {
 				};
 			};
 
-			it('should call store update method', () => {
+			it('should call store update method', async () => {
 				const { calculateDiffSpy } = setup();
 				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdateTransactional').mockResolvedValueOnce(1);
 				const diffArray = new Uint8Array();
 
-				repo.updateStoredDocWithDiff('test', diffArray);
+				await repo.updateStoredDocWithDiff('test', diffArray);
 
 				expect(storeUpdateSpy).toHaveBeenCalled();
 				calculateDiffSpy.mockRestore();
@@ -216,17 +211,11 @@ describe('TldrawBoardRepo', () => {
 
 			it('should log error if update fails', async () => {
 				const { calculateDiffSpy, errorLogSpy } = setup();
-				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdateTransactional').mockImplementationOnce(() => {
-					throw new Error('test error');
-				});
+				const storeUpdateSpy = jest
+					.spyOn(repo.mdb, 'storeUpdateTransactional')
+					.mockRejectedValueOnce(new Error('test error'));
 				const diffArray = new Uint8Array();
-				try {
-					repo.updateStoredDocWithDiff('test', diffArray);
-				} catch (e) {
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-					expect(e.message).toMatch('test error');
-				}
-				await delay(100);
+				await expect(repo.updateStoredDocWithDiff('test', diffArray)).rejects.toThrow('test error');
 
 				expect(storeUpdateSpy).toHaveBeenCalled();
 				expect(errorLogSpy).toHaveBeenCalled();
@@ -246,11 +235,11 @@ describe('TldrawBoardRepo', () => {
 				};
 			};
 
-			it('should not call store update method', () => {
+			it('should not call store update method', async () => {
 				const { storeUpdateSpy, calculateDiffSpy } = setup();
 				const diffArray = new Uint8Array();
 
-				repo.updateStoredDocWithDiff('test', diffArray);
+				await repo.updateStoredDocWithDiff('test', diffArray);
 
 				expect(storeUpdateSpy).not.toHaveBeenCalled();
 				calculateDiffSpy.mockRestore();
