@@ -8,7 +8,7 @@ import { createMock } from '@golevelup/ts-jest';
 import * as Yjs from 'yjs';
 import { createConfigModuleOptions } from '@src/config';
 import { HttpService } from '@nestjs/axios';
-import { TldrawRedisFactory } from '@modules/tldraw/redis';
+import { TldrawRedisFactory } from '../redis';
 import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { TldrawWs } from '../controller';
