@@ -48,6 +48,7 @@ describe('GroupUc', () => {
 	let schoolService: DeepMocked<SchoolService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {

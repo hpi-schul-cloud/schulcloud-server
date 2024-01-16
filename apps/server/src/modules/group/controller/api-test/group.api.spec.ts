@@ -104,7 +104,7 @@ describe('Group (API)', () => {
 			};
 
 			it('should return the classes of his school', async () => {
-				const { adminClient, group, clazz, system, adminUser, teacherUser, schoolYear } = await setup();
+				const { adminClient, group, clazz, system, schoolYear } = await setup();
 
 				const response = await adminClient.get(`/class`).query({
 					skip: 0,
