@@ -15,7 +15,7 @@ import { AxiosResponse } from 'axios';
 import { axiosResponseFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { TldrawRedisFactory } from '../redis';
@@ -25,7 +25,6 @@ import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../repo';
 import { TestConnection, tldrawTestConfig } from '../testing';
 import { WsSharedDocDo } from '../domain';
 import { TldrawWsService } from '.';
-import { TldrawConfig } from '../config';
 import { MetricsService } from '../metrics';
 
 jest.mock('yjs', () => {
@@ -53,13 +52,10 @@ jest.mock('y-protocols/sync', () => {
 describe('TldrawWSService', () => {
 	let app: INestApplication;
 	let ws: WebSocket;
-	let configService: ConfigService<TldrawConfig, true>;
 	let service: TldrawWsService;
 	let boardRepo: TldrawBoardRepo;
-	let metricsService: MetricsService;
 	let logger: DeepMocked<Logger>;
 	let httpService: DeepMocked<HttpService>;
-	let redisFactory: DeepMocked<TldrawRedisFactory>;
 
 	const gatewayPort = 3346;
 	const wsUrl = TestConnection.getWsUrl(gatewayPort);
@@ -97,13 +93,10 @@ describe('TldrawWSService', () => {
 			],
 		}).compile();
 
-		configService = testingModule.get(ConfigService);
 		service = testingModule.get(TldrawWsService);
 		httpService = testingModule.get(HttpService);
-		metricsService = testingModule.get(MetricsService);
 		boardRepo = testingModule.get(TldrawBoardRepo);
 		logger = testingModule.get(Logger);
-		redisFactory = testingModule.get(TldrawRedisFactory);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
 		await app.init();
