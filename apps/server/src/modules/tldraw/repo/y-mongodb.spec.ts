@@ -8,6 +8,7 @@ import { createMock } from '@golevelup/ts-jest';
 import * as Yjs from 'yjs';
 import { createConfigModuleOptions } from '@src/config';
 import { HttpService } from '@nestjs/axios';
+import { TldrawRedisFactory } from '@modules/tldraw/redis';
 import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { TldrawWs } from '../controller';
@@ -44,6 +45,7 @@ describe('YMongoDb', () => {
 				TldrawRepo,
 				YMongodb,
 				MetricsService,
+				TldrawRedisFactory,
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
@@ -163,12 +165,16 @@ describe('YMongoDb', () => {
 				const drawing1 = tldrawEntityFactory.build({ clock: 1, part: 1 });
 				const drawing2 = tldrawEntityFactory.build({ clock: 1, part: 2 });
 				const drawing3 = tldrawEntityFactory.build({ clock: 2, part: 1 });
+				const drawing4 = tldrawEntityFactory.build({ clock: 1, part: 3 });
+				const drawing5 = tldrawEntityFactory.build({ clock: 1, part: 4 });
 
 				return {
 					applyUpdateSpy,
 					drawing1,
 					drawing2,
 					drawing3,
+					drawing4,
+					drawing5,
 				};
 			};
 
@@ -184,9 +190,9 @@ describe('YMongoDb', () => {
 			});
 
 			it('should not return ydoc if part is missing', async () => {
-				const { applyUpdateSpy, drawing1, drawing2, drawing3 } = setup();
+				const { applyUpdateSpy, drawing1, drawing4, drawing5 } = setup();
 
-				await em.persistAndFlush([drawing1, drawing2, drawing3]);
+				await em.persistAndFlush([drawing1, drawing4, drawing5]);
 				em.clear();
 				const doc = await mdb.getYDoc('test-name');
 
