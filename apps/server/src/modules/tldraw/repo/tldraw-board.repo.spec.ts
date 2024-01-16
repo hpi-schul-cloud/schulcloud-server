@@ -30,6 +30,11 @@ describe('TldrawBoardRepo', () => {
 	const gatewayPort = 3346;
 	const wsUrl = TestConnection.getWsUrl(gatewayPort);
 
+	const delay = (ms: number) =>
+		new Promise((resolve) => {
+			setTimeout(resolve, ms);
+		});
+
 	beforeAll(async () => {
 		const testingModule = await Test.createTestingModule({
 			imports: [
@@ -64,7 +69,7 @@ describe('TldrawBoardRepo', () => {
 		app.useWebSocketAdapter(new WsAdapter(app));
 		await app.init();
 
-		jest.useFakeTimers();
+		// jest.useFakeTimers();
 	});
 
 	afterEach(() => {
@@ -189,18 +194,17 @@ describe('TldrawBoardRepo', () => {
 		describe('when the difference between update and current drawing is more than 0', () => {
 			const setup = () => {
 				const calculateDiffSpy = jest.spyOn(YjsUtils, 'calculateDiff').mockReturnValueOnce(1);
-				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdateTransactional').mockResolvedValueOnce(1);
 				const errorLogSpy = jest.spyOn(logger, 'warning');
 
 				return {
 					calculateDiffSpy,
-					storeUpdateSpy,
 					errorLogSpy,
 				};
 			};
 
 			it('should call store update method', () => {
-				const { storeUpdateSpy, calculateDiffSpy } = setup();
+				const { calculateDiffSpy } = setup();
+				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdateTransactional').mockResolvedValueOnce(1);
 				const diffArray = new Uint8Array();
 
 				repo.updateStoredDocWithDiff('test', diffArray);
@@ -210,19 +214,19 @@ describe('TldrawBoardRepo', () => {
 				storeUpdateSpy.mockRestore();
 			});
 
-			it('should log error if update fails', () => {
+			it('should log error if update fails', async () => {
+				const { calculateDiffSpy, errorLogSpy } = setup();
 				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdateTransactional').mockImplementationOnce(() => {
 					throw new Error('test error');
 				});
-				const { calculateDiffSpy, errorLogSpy } = setup();
 				const diffArray = new Uint8Array();
-
 				try {
 					repo.updateStoredDocWithDiff('test', diffArray);
 				} catch (e) {
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-					expect(e.message).toMatch('error');
+					expect(e.message).toMatch('test error');
 				}
+				await delay(100);
 
 				expect(storeUpdateSpy).toHaveBeenCalled();
 				expect(errorLogSpy).toHaveBeenCalled();
