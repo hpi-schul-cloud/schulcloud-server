@@ -2,10 +2,13 @@ import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication
 import {
 	Controller,
 	Get,
+	HttpStatus,
 	NotFoundException,
 	Param,
+	ParseFilePipeBuilder,
 	Post,
 	Query,
+	Req,
 	Res,
 	StreamableFile,
 	UploadedFile,
@@ -13,15 +16,22 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags } from '@nestjs/swagger';
+import {
+	ApiBadRequestResponse,
+	ApiBody,
+	ApiConsumes,
+	ApiCreatedResponse,
+	ApiInternalServerErrorResponse,
+	ApiOperation,
+	ApiTags,
+} from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
 import { Response } from 'express';
-import { memoryStorage } from 'multer';
 import { CourseMapper } from '../mapper/course.mapper';
 import { CourseImportUc } from '../uc';
 import { CourseExportUc } from '../uc/course-export.uc';
 import { CourseUc } from '../uc/course.uc';
-import { CourseMetadataListResponse, CourseQueryParams, CourseUrlParams } from './dto';
+import { CourseImportBodyParams, CourseMetadataListResponse, CourseQueryParams, CourseUrlParams } from './dto';
 
 @ApiTags('Courses')
 @Authenticate('jwt')
@@ -64,11 +74,26 @@ export class CourseController {
 	}
 
 	@Post('import')
-	@UseInterceptors(FileInterceptor('file', { storage: memoryStorage(), limits: { fileSize: 1000 * 1000 * 1000 * 2 } })) // 2GB file size limit
+	@UseInterceptors(FileInterceptor('file'))
+	@ApiOperation({ summary: 'Imports a course from a Common Cartridge file.' })
+	@ApiConsumes('multipart/form-data')
+	@ApiBody({ type: CourseImportBodyParams, required: true })
+	@ApiCreatedResponse({ description: 'Course was successfully imported.' })
+	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
+	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
 	public async importCourse(
+		@UploadedFile(
+			new ParseFilePipeBuilder()
+				.addMaxSizeValidator({ maxSize: 1000 * 1000 * 1000 * 2 }) // 2GB
+				// .addFileTypeValidator({ fileType: '.imscc' })
+				.build({ fileIsRequired: true, errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY })
+		)
+		file: Express.Multer.File,
 		@CurrentUser() currentUser: ICurrentUser,
-		@UploadedFile() file: Express.Multer.File
+		@Req() request: Request
 	): Promise<void> {
+		console.log(file);
+		console.log(request);
 		await this.courseImportUc.importFromCommonCartridge(currentUser.userId, file.buffer);
 	}
 }

@@ -43,6 +43,23 @@ describe('CommonCartridgeImportService', () => {
 
 				expect(result.name).toBe('201510-AMH-2020-70C-12218-US History Since 1877');
 			});
+
+			it('should return course with teachers set', async () => {
+				const { user, buffer } = await setup();
+
+				const result = await sut.importCourse(user, buffer);
+
+				expect(result.teachers).toHaveLength(1);
+				expect(result.teachers[0]).toStrictEqual(user);
+			});
+
+			it('should return course with school set', async () => {
+				const { user, buffer } = await setup();
+
+				const result = await sut.importCourse(user, buffer);
+
+				expect(result.school).toStrictEqual(user.school);
+			});
 		});
 	});
 });
