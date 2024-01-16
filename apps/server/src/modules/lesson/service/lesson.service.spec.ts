@@ -4,6 +4,7 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType } from '@shared/domain/entity';
 import { lessonFactory, setupEntities } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { LessonRepo } from '../repository';
 import { LessonService } from './lesson.service';
 
@@ -25,6 +26,10 @@ describe('LessonService', () => {
 				{
 					provide: FilesStorageClientAdapterService,
 					useValue: createMock<FilesStorageClientAdapterService>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
