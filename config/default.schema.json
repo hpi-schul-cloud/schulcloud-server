@@ -1435,6 +1435,24 @@
 				"API_KEY": ""
 			}
 		},
+		"TLDRAW_ADMIN_API_CLIENT": {
+			"type": "object",
+			"description": "Configuration of the Tldraw's Admin API client.",
+			"properties": {
+				"BASE_URL": {
+					"type": "string",
+					"description": "Base URL of the Tldraw's Admin API."
+				},
+				"API_KEY": {
+					"type": "string",
+					"description": "API key for accessing the Tldraw's Admin API."
+				}
+			},
+			"default": {
+				"BASE_URL": "http://localhost:3349",
+				"API_KEY": ""
+			}
+		},
 		"TLDRAW": {
 			"type": "object",
 			"description": "Tldraw managing variables.",
