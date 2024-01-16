@@ -47,7 +47,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 				return;
 			}
 			try {
-				this.tldrawWsService.setupWSConnection(client, docName);
+				await this.tldrawWsService.setupWSConnection(client, docName);
 			} catch (err) {
 				this.closeClientAndLogError(
 					client,

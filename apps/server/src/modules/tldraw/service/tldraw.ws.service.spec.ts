@@ -325,7 +325,7 @@ describe('TldrawWSService', () => {
 
 				const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockReturnValueOnce();
 				const sendSpy = jest.spyOn(service, 'send');
-				const getYDocSpy = jest.spyOn(service, 'getYDoc').mockReturnValueOnce(doc);
+				const getYDocSpy = jest.spyOn(service, 'getYDoc').mockResolvedValueOnce(doc);
 				const { msg } = createMessage([0]);
 				jest.spyOn(AwarenessProtocol, 'encodeAwarenessUpdate').mockReturnValueOnce(msg);
 
@@ -339,7 +339,7 @@ describe('TldrawWSService', () => {
 			it('should send to every client', async () => {
 				const { messageHandlerSpy, sendSpy, getYDocSpy } = await setup();
 
-				service.setupWSConnection(ws, 'TEST');
+				await service.setupWSConnection(ws, 'TEST');
 
 				expect(sendSpy).toHaveBeenCalledTimes(2);
 				ws.close();
@@ -369,7 +369,7 @@ describe('TldrawWSService', () => {
 			it('should close connection', async () => {
 				const { closeConnSpy } = await setup();
 
-				service.setupWSConnection(ws, 'TEST');
+				await service.setupWSConnection(ws, 'TEST');
 				await delay(10);
 
 				expect(closeConnSpy).toHaveBeenCalled();
@@ -419,7 +419,7 @@ describe('TldrawWSService', () => {
 			it('should close connection', async () => {
 				const { messageHandlerSpy, closeConnSpy } = await setup();
 
-				service.setupWSConnection(ws, 'TEST');
+				await service.setupWSConnection(ws, 'TEST');
 				await delay(10);
 
 				expect(closeConnSpy).toHaveBeenCalled();
@@ -447,12 +447,7 @@ describe('TldrawWSService', () => {
 			it('should log error', async () => {
 				const { flushDocumentSpy, errorLogSpy } = await setup();
 
-				try {
-					service.setupWSConnection(ws, 'TEST');
-				} catch (e) {
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-					expect(e.message).toMatch('error');
-				}
+				await expect(service.setupWSConnection(ws, 'TEST')).rejects.toThrow('error');
 				await delay(10);
 
 				expect(flushDocumentSpy).toHaveBeenCalled();
@@ -541,7 +536,7 @@ describe('TldrawWSService', () => {
 			it('should handle message', async () => {
 				const { messageHandlerSpy, msg, readSyncMessageSpy } = await setup([0, 1]);
 
-				service.setupWSConnection(ws, 'TEST');
+				await service.setupWSConnection(ws, 'TEST');
 				ws.emit('message', msg);
 
 				expect(messageHandlerSpy).toHaveBeenCalledTimes(1);
@@ -557,7 +552,7 @@ describe('TldrawWSService', () => {
 				const { msg, errorLogSpy } = await setup([1, 1]);
 
 				try {
-					service.setupWSConnection(ws, 'TEST');
+					await service.setupWSConnection(ws, 'TEST');
 					ws.emit('message', msg);
 				} catch (e) {
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
@@ -574,9 +569,9 @@ describe('TldrawWSService', () => {
 
 	describe('getYDoc', () => {
 		describe('when getting yDoc by name', () => {
-			it('should assign to service docs map and return instance', () => {
+			it('should assign to service docs map and return instance', async () => {
 				const docName = 'get-test';
-				const doc = service.getYDoc(docName);
+				const doc = await service.getYDoc(docName);
 
 				expect(doc).toBeInstanceOf(WsSharedDocDo);
 				expect(service.docs.get(docName)).not.toBeUndefined();
@@ -614,7 +609,7 @@ describe('TldrawWSService', () => {
 
 					let doc: WsSharedDocDo | null = null;
 					try {
-						doc = service.getYDoc('test-redis-fail');
+						doc = await service.getYDoc('test-redis-fail');
 					} catch (e) {
 						// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 						expect(e.message).toMatch('error');
@@ -646,7 +641,7 @@ describe('TldrawWSService', () => {
 
 					let doc: WsSharedDocDo | null = null;
 					try {
-						doc = service.getYDoc('test-update-fail');
+						doc = await service.getYDoc('test-update-fail');
 					} catch (e) {
 						// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 						expect(e.message).toMatch('error');

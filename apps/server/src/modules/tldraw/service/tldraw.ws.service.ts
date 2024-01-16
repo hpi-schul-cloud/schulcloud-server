@@ -132,15 +132,15 @@ export class TldrawWsService {
 	 * @param {string} docName - the name of the Y.Doc to find or create
 	 * @return {WsSharedDocDo}
 	 */
-	public getYDoc(docName: string): WsSharedDocDo {
-		const wsSharedDocDo = map.setIfUndefined(this.docs, docName, () => {
+	public async getYDoc(docName: string): Promise<WsSharedDocDo> {
+		const wsSharedDocDo = await map.setIfUndefined(this.docs, docName, async () => {
 			const doc = new WsSharedDocDo(docName, this.gcEnabled);
 			this.subscribeOnAwarenessUpdate(doc);
 			doc.on('update', (update: Uint8Array, origin) => this.updateHandler(update, origin, doc));
 
 			this.subscribeOnDocument(doc);
 
-			this.updateDocument(docName, doc);
+			await this.updateDocument(docName, doc);
 
 			this.docs.set(docName, doc);
 			this.metricsService.incrementNumberOfBoardsOnServerCounter();
@@ -207,10 +207,10 @@ export class TldrawWsService {
 	 * @param {WebSocket} ws
 	 * @param {string} docName
 	 */
-	public setupWSConnection(ws: WebSocket, docName: string): void {
+	public async setupWSConnection(ws: WebSocket, docName: string): Promise<void> {
 		ws.binaryType = 'arraybuffer';
 		// get doc, initialize if it does not exist yet
-		const doc = this.getYDoc(docName);
+		const doc = await this.getYDoc(docName);
 		doc.connections.set(ws, new Set());
 
 		// listen and reply to events
@@ -377,8 +377,8 @@ export class TldrawWsService {
 			});
 	}
 
-	private updateDocument(docName: string, doc: WsSharedDocDo) {
-		this.tldrawBoardRepo.updateDocument(docName, doc).catch((err) => {
+	private async updateDocument(docName: string, doc: WsSharedDocDo) {
+		await this.tldrawBoardRepo.updateDocument(docName, doc).catch((err) => {
 			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while updating document', err as Error));
 			throw err;
 		});
