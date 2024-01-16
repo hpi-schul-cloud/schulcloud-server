@@ -154,8 +154,8 @@ describe('AccountService Integration', () => {
 		expect(foundDbAccount).toEqual(
 			expect.objectContaining<Partial<AccountEntity>>({
 				username: createdAccount.username,
-				userId: createdAccount.userId,
-				systemId: createdAccount.systemId,
+				userId: new ObjectId(createdAccount.userId),
+				systemId: new ObjectId(createdAccount.systemId),
 			})
 		);
 	};

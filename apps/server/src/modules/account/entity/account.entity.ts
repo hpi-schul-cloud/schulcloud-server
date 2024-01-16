@@ -1,6 +1,6 @@
 import { Entity, Property, Index } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { EntityId } from '@shared/domain/types';
 
 export type IdmAccountProperties = Readonly<Omit<AccountEntity, keyof BaseEntityWithTimestamps>>;
 
@@ -21,10 +21,10 @@ export class AccountEntity extends BaseEntityWithTimestamps {
 	credentialHash?: string;
 
 	@Property({ nullable: true, unique: false })
-	userId?: EntityId;
+	userId?: ObjectId;
 
 	@Property({ nullable: true })
-	systemId?: EntityId;
+	systemId?: ObjectId;
 
 	@Property({ nullable: true })
 	lasttriedFailedLogin?: Date;

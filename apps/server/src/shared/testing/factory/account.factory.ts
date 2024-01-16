@@ -9,7 +9,7 @@ import { BaseFactory } from './base.factory';
 export const defaultTestPassword = 'DummyPasswd!1';
 export const defaultTestPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
 class AccountFactory extends BaseFactory<AccountEntity, IdmAccountProperties> {
-	withSystemId(id: EntityId): this {
+	withSystemId(id: EntityId | ObjectId): this {
 		const params: DeepPartial<IdmAccountProperties> = { systemId: id };
 
 		return this.params(params);
@@ -27,14 +27,14 @@ class AccountFactory extends BaseFactory<AccountEntity, IdmAccountProperties> {
 
 	withAllProperties(): this {
 		return this.params({
-			userId: new ObjectId().toHexString(),
+			userId: new ObjectId(),
 			username: 'username',
 			activated: true,
 			credentialHash: 'credentialHash',
 			expiresAt: new Date(),
 			lasttriedFailedLogin: new Date(),
 			password: defaultTestPassword,
-			systemId: new ObjectId().toHexString(),
+			systemId: new ObjectId(),
 			token: 'token',
 		}).afterBuild((acc) => {
 			return {
@@ -59,6 +59,6 @@ export const accountFactory = AccountFactory.define(AccountEntity, ({ sequence }
 	return {
 		username: `account${sequence}`,
 		password: defaultTestPasswordHash,
-		userId: new ObjectId().toHexString(),
+		userId: new ObjectId(),
 	};
 });

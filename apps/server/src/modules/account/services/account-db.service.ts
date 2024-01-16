@@ -39,7 +39,7 @@ export class AccountServiceDb extends AbstractAccountService {
 		return AccountEntityToDoMapper.mapToDto(accountEntity);
 	}
 
-	async findByUsernameAndSystemId(username: string, systemId: EntityId): Promise<Account | null> {
+	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account | null> {
 		const accountEntity = await this.accountRepo.findByUsernameAndSystemId(username, systemId);
 		return accountEntity ? AccountEntityToDoMapper.mapToDto(accountEntity) : null;
 	}
@@ -51,8 +51,8 @@ export class AccountServiceDb extends AbstractAccountService {
 		if (accountSave.id) {
 			const internalId = await this.getInternalId(accountSave.id);
 			account = await this.accountRepo.findById(internalId);
-			account.userId = accountSave.userId;
-			account.systemId = accountSave.systemId ? accountSave.systemId : undefined;
+			account.userId = new ObjectId(accountSave.userId);
+			account.systemId = accountSave.systemId ? new ObjectId(accountSave.systemId) : undefined;
 			account.username = accountSave.username;
 			account.activated = accountSave.activated;
 			account.expiresAt = accountSave.expiresAt;
@@ -66,8 +66,8 @@ export class AccountServiceDb extends AbstractAccountService {
 			await this.accountRepo.save(account);
 		} else {
 			account = new AccountEntity({
-				userId: accountSave.userId,
-				systemId: accountSave.systemId ? accountSave.systemId : undefined,
+				userId: new ObjectId(accountSave.userId),
+				systemId: accountSave.systemId ? new ObjectId(accountSave.systemId) : undefined,
 				username: accountSave.username,
 				activated: accountSave.activated,
 				expiresAt: accountSave.expiresAt,
@@ -133,7 +133,7 @@ export class AccountServiceDb extends AbstractAccountService {
 		return bcrypt.compare(comparePassword, account.password); // hint: first get result, then return seperately
 	}
 
-	private async getInternalId(id: EntityId): Promise<EntityId> {
+	private async getInternalId(id: EntityId | ObjectId): Promise<ObjectId> {
 		const internalId = await this.accountLookupService.getInternalId(id);
 		if (!internalId) {
 			throw new EntityNotFoundError(`Account with id ${id.toString()} not found`);
