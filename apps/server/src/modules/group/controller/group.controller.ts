@@ -6,13 +6,13 @@ import { ErrorResponse } from '@src/core/error/dto';
 import { GroupUc } from '../uc';
 import { ClassInfoDto, ResolvedGroupDto } from '../uc/dto';
 import {
+	ClassCallerParams,
 	ClassFilterParams,
 	ClassInfoSearchListResponse,
 	ClassSortParams,
 	GroupIdParams,
-	GroupResponse,
 	GroupPaginationParams,
-	ClassCallerParams,
+	GroupResponse,
 } from './dto';
 import { GroupResponseMapper } from './mapper';
 
@@ -42,7 +42,8 @@ export class GroupController {
 			pagination.skip,
 			pagination.limit,
 			sortingQuery.sortBy,
-			sortingQuery.sortOrder
+			sortingQuery.sortOrder,
+			filterParams.loadUsers
 		);
 
 		const response: ClassInfoSearchListResponse = GroupResponseMapper.mapToClassInfosToListResponse(
