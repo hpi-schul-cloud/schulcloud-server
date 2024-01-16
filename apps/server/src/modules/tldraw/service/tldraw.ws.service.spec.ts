@@ -450,6 +450,7 @@ describe('TldrawWSService', () => {
 				try {
 					service.setupWSConnection(ws, 'TEST');
 				} catch (e) {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 					expect(e.message).toMatch('error');
 				}
 				await delay(10);
@@ -488,6 +489,7 @@ describe('TldrawWSService', () => {
 			try {
 				service.updateHandler(msg, socketMock, doc);
 			} catch (e) {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				expect(e.message).toMatch('error');
 			}
 
@@ -504,6 +506,7 @@ describe('TldrawWSService', () => {
 			try {
 				service.updateHandler(msg, socketMock, doc);
 			} catch (e) {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				expect(e.message).toMatch('error');
 			}
 
@@ -557,6 +560,7 @@ describe('TldrawWSService', () => {
 					service.setupWSConnection(ws, 'TEST');
 					ws.emit('message', msg);
 				} catch (e) {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 					expect(e.message).toMatch('error');
 				}
 
@@ -612,6 +616,7 @@ describe('TldrawWSService', () => {
 					try {
 						doc = service.getYDoc('test-redis-fail');
 					} catch (e) {
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 						expect(e.message).toMatch('error');
 					}
 
@@ -643,6 +648,7 @@ describe('TldrawWSService', () => {
 					try {
 						doc = service.getYDoc('test-update-fail');
 					} catch (e) {
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 						expect(e.message).toMatch('error');
 					}
 
