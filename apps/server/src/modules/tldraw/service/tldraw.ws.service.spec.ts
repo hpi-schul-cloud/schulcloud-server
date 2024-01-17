@@ -330,7 +330,7 @@ describe('TldrawWSService', () => {
 				doc.awareness.states.set(2, ['test2']);
 
 				const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockReturnValueOnce();
-				const sendSpy = jest.spyOn(service, 'send');
+				const sendSpy = jest.spyOn(service, 'send').mockImplementation(() => {});
 				const getYDocSpy = jest.spyOn(service, 'getYDoc').mockResolvedValueOnce(doc);
 				const { msg } = createMessage([0]);
 				jest.spyOn(AwarenessProtocol, 'encodeAwarenessUpdate').mockReturnValueOnce(msg);
@@ -346,6 +346,7 @@ describe('TldrawWSService', () => {
 				const { messageHandlerSpy, sendSpy, getYDocSpy } = await setup();
 
 				await service.setupWSConnection(ws, 'TEST');
+				ws.emit('pong');
 
 				await delay(200);
 
