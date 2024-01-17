@@ -522,6 +522,7 @@ export interface FileRecordProperties {
 	schoolId: EntityId;
 	deletedSince?: Date;
 	isCopyFrom?: EntityId;
+	isUploading?: boolean;
 }
 
 interface ParentInfo {
@@ -561,6 +562,9 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	@Index()
 	@Enum()
 	parentType: FileRecordParentType;
+
+	@Property({ nullable: true })
+	isUploading?: boolean;
 
 	@Index()
 	@Property({ fieldName: &#x27;parent&#x27; })
@@ -603,6 +607,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		this.name &#x3D; props.name;
 		this.mimeType &#x3D; props.mimeType;
 		this.parentType &#x3D; props.parentType;
+		this.isUploading &#x3D; props.isUploading;
 		this._parentId &#x3D; new ObjectId(props.parentId);
 		if (props.creatorId !&#x3D;&#x3D; undefined) {
 			this._creatorId &#x3D; new ObjectId(props.creatorId);
@@ -752,6 +757,10 @@ export class FileRecord extends BaseEntityWithTimestamps {
 
 	public removeCreatorId(): void {
 		this.creatorId &#x3D; undefined;
+	}
+
+	public markAsUploaded(): void {
+		this.isUploading &#x3D; undefined;
 	}
 }
 </code></pre>

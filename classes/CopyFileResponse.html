@@ -184,7 +184,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="66" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:66</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="70" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:70</a></div>
                             </td>
                         </tr>
 
@@ -257,7 +257,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="74" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:74</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="78" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:78</a></div>
                         </td>
                     </tr>
 
@@ -294,7 +294,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="81" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:81</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="85" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:85</a></div>
                         </td>
                     </tr>
 
@@ -330,7 +330,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="77" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:77</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="81" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:81</a></div>
                         </td>
                     </tr>
 
@@ -365,6 +365,7 @@ export class FileRecordResponse {
 		this.creatorId &#x3D; fileRecord.creatorId;
 		this.mimeType &#x3D; fileRecord.mimeType;
 		this.parentType &#x3D; fileRecord.parentType;
+		this.isUploading &#x3D; fileRecord.isUploading;
 		this.deletedSince &#x3D; fileRecord.deletedSince;
 		this.previewStatus &#x3D; fileRecord.getPreviewStatus();
 	}
@@ -396,6 +397,9 @@ export class FileRecordResponse {
 
 	@ApiProperty({ enum: FileRecordParentType, enumName: &#x27;FileRecordParentType&#x27; })
 	parentType: FileRecordParentType;
+
+	@ApiPropertyOptional()
+	isUploading?: boolean;
 
 	@ApiProperty({ enum: PreviewStatus, enumName: &#x27;PreviewStatus&#x27; })
 	previewStatus: PreviewStatus;

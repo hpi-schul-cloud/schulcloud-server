@@ -169,6 +169,13 @@
                                         </a>
                                 </li>
                                 <li>
+                                            <span class="modifier">Optional</span>
+                                        <a href="#isUploading" 
+>
+                                            isUploading
+                                        </a>
+                                </li>
+                                <li>
                                         <a href="#mimeType" 
 >
                                             mimeType
@@ -314,6 +321,44 @@
                                     <tr>
                                         <td class="col-md-4">
                                             <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="isUploading"></a>
+                                        <span class="name "><b>isUploading</b>
+                                            <a href="#isUploading">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>isUploading:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
 
                                         </td>
                                     </tr>
@@ -614,6 +659,7 @@ export interface FileRecordProperties {
 	schoolId: EntityId;
 	deletedSince?: Date;
 	isCopyFrom?: EntityId;
+	isUploading?: boolean;
 }
 
 interface ParentInfo {
@@ -653,6 +699,9 @@ export class FileRecord extends BaseEntityWithTimestamps {
 	@Index()
 	@Enum()
 	parentType: FileRecordParentType;
+
+	@Property({ nullable: true })
+	isUploading?: boolean;
 
 	@Index()
 	@Property({ fieldName: &#x27;parent&#x27; })
@@ -695,6 +744,7 @@ export class FileRecord extends BaseEntityWithTimestamps {
 		this.name &#x3D; props.name;
 		this.mimeType &#x3D; props.mimeType;
 		this.parentType &#x3D; props.parentType;
+		this.isUploading &#x3D; props.isUploading;
 		this._parentId &#x3D; new ObjectId(props.parentId);
 		if (props.creatorId !&#x3D;&#x3D; undefined) {
 			this._creatorId &#x3D; new ObjectId(props.creatorId);
@@ -844,6 +894,10 @@ export class FileRecord extends BaseEntityWithTimestamps {
 
 	public removeCreatorId(): void {
 		this.creatorId &#x3D; undefined;
+	}
+
+	public markAsUploaded(): void {
+		this.isUploading &#x3D; undefined;
 	}
 }
 </code></pre>

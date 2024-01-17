@@ -194,7 +194,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="84" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:84</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="88" class="link-to-prism">apps/server/src/modules/files-storage/controller/dto/file-storage.response.ts:88</a></div>
                             </td>
                         </tr>
 
@@ -308,7 +308,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/PaginationResponse.html#source" target="_self" >PaginationResponse:91</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/PaginationResponse.html#source" target="_self" >PaginationResponse:95</a></code>
 </div>
                         </td>
                     </tr>
@@ -475,6 +475,7 @@ export class FileRecordResponse {
 		this.creatorId &#x3D; fileRecord.creatorId;
 		this.mimeType &#x3D; fileRecord.mimeType;
 		this.parentType &#x3D; fileRecord.parentType;
+		this.isUploading &#x3D; fileRecord.isUploading;
 		this.deletedSince &#x3D; fileRecord.deletedSince;
 		this.previewStatus &#x3D; fileRecord.getPreviewStatus();
 	}
@@ -506,6 +507,9 @@ export class FileRecordResponse {
 
 	@ApiProperty({ enum: FileRecordParentType, enumName: &#x27;FileRecordParentType&#x27; })
 	parentType: FileRecordParentType;
+
+	@ApiPropertyOptional()
+	isUploading?: boolean;
 
 	@ApiProperty({ enum: PreviewStatus, enumName: &#x27;PreviewStatus&#x27; })
 	previewStatus: PreviewStatus;

@@ -24,203 +24,203 @@
 <title>cluster_ContextExternalToolModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 2161,-268 2161,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_ContextExternalToolModule_providers</title>
-<polygon fill="none" stroke="black" points="781,-78 781,-130 2153,-130 2153,-78 781,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_ContextExternalToolModule_exports</title>
-<polygon fill="none" stroke="black" points="347,-208 347,-260 1382,-260 1382,-208 347,-208"/>
+<polygon fill="none" stroke="black" points="897,-208 897,-260 1932,-260 1932,-208 897,-208"/>
 </g>
 <g id="clust3" class="cluster">
 <title>cluster_ContextExternalToolModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 773,-130 773,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="1396,-78 1396,-130 2153,-130 2153,-78 1396,-78"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_ContextExternalToolModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 1388,-130 1388,-78 16,-78"/>
 </g>
 <!-- CommonToolModule -->
 <g id="node1" class="node">
 <title>CommonToolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="765.11,-122 762.11,-126 741.11,-126 738.11,-122 626.89,-122 626.89,-86 765.11,-86 765.11,-122"/>
-<text text-anchor="middle" x="696" y="-99.8" font-family="Times,serif" font-size="14.00">CommonToolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="2145.11,-122 2142.11,-126 2121.11,-126 2118.11,-122 2006.89,-122 2006.89,-86 2145.11,-86 2145.11,-122"/>
+<text text-anchor="middle" x="2076" y="-99.8" font-family="Times,serif" font-size="14.00">CommonToolModule</text>
 </g>
 <!-- ContextExternalToolModule -->
 <g id="node6" class="node">
 <title>ContextExternalToolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="875.75,-187 872.75,-191 851.75,-191 848.75,-187 698.25,-187 698.25,-151 875.75,-151 875.75,-187"/>
-<text text-anchor="middle" x="787" y="-164.8" font-family="Times,serif" font-size="14.00">ContextExternalToolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1425.75,-187 1422.75,-191 1401.75,-191 1398.75,-187 1248.25,-187 1248.25,-151 1425.75,-151 1425.75,-187"/>
+<text text-anchor="middle" x="1337" y="-164.8" font-family="Times,serif" font-size="14.00">ContextExternalToolModule</text>
 </g>
 <!-- CommonToolModule&#45;&gt;ContextExternalToolModule -->
 <g id="edge1" class="edge">
 <title>CommonToolModule&#45;&gt;ContextExternalToolModule</title>
-<path fill="none" stroke="black" d="M731.59,-122.11C731.59,-122.11 731.59,-140.99 731.59,-140.99"/>
-<polygon fill="black" stroke="black" points="728.09,-140.99 731.59,-150.99 735.09,-140.99 728.09,-140.99"/>
+<path fill="none" stroke="black" d="M2076,-122.22C2076,-142.37 2076,-172 2076,-172 2076,-172 1435.77,-172 1435.77,-172"/>
+<polygon fill="black" stroke="black" points="1435.77,-168.5 1425.77,-172 1435.77,-175.5 1435.77,-168.5"/>
 </g>
 <!-- ExternalToolModule -->
 <g id="node2" class="node">
 <title>ExternalToolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="608.92,-122 605.92,-126 584.92,-126 581.92,-122 475.08,-122 475.08,-86 608.92,-86 608.92,-122"/>
-<text text-anchor="middle" x="542" y="-99.8" font-family="Times,serif" font-size="14.00">ExternalToolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1988.92,-122 1985.92,-126 1964.92,-126 1961.92,-122 1855.08,-122 1855.08,-86 1988.92,-86 1988.92,-122"/>
+<text text-anchor="middle" x="1922" y="-99.8" font-family="Times,serif" font-size="14.00">ExternalToolModule</text>
 </g>
 <!-- ExternalToolModule&#45;&gt;ContextExternalToolModule -->
 <g id="edge2" class="edge">
 <title>ExternalToolModule&#45;&gt;ContextExternalToolModule</title>
-<path fill="none" stroke="black" d="M556.69,-122.24C556.69,-137.57 556.69,-157 556.69,-157 556.69,-157 687.96,-157 687.96,-157"/>
-<polygon fill="black" stroke="black" points="687.96,-160.5 697.96,-157 687.96,-153.5 687.96,-160.5"/>
+<path fill="none" stroke="black" d="M1889.84,-122.22C1889.84,-140.83 1889.84,-167 1889.84,-167 1889.84,-167 1435.82,-167 1435.82,-167"/>
+<polygon fill="black" stroke="black" points="1435.82,-163.5 1425.82,-167 1435.82,-170.5 1435.82,-163.5"/>
 </g>
 <!-- LoggerModule -->
 <g id="node3" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="456.98,-122 453.98,-126 432.98,-126 429.98,-122 357.02,-122 357.02,-86 456.98,-86 456.98,-122"/>
-<text text-anchor="middle" x="407" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1836.98,-122 1833.98,-126 1812.98,-126 1809.98,-122 1737.02,-122 1737.02,-86 1836.98,-86 1836.98,-122"/>
+<text text-anchor="middle" x="1787" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;ContextExternalToolModule -->
 <g id="edge3" class="edge">
 <title>LoggerModule&#45;&gt;ContextExternalToolModule</title>
-<path fill="none" stroke="black" d="M407,-122.03C407,-139.06 407,-162 407,-162 407,-162 687.91,-162 687.91,-162"/>
-<polygon fill="black" stroke="black" points="687.91,-165.5 697.91,-162 687.91,-158.5 687.91,-165.5"/>
+<path fill="none" stroke="black" d="M1787,-122.03C1787,-139.06 1787,-162 1787,-162 1787,-162 1435.91,-162 1435.91,-162"/>
+<polygon fill="black" stroke="black" points="1435.91,-158.5 1425.91,-162 1435.91,-165.5 1435.91,-158.5"/>
 </g>
 <!-- SchoolExternalToolModule -->
 <g id="node4" class="node">
 <title>SchoolExternalToolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="339.3,-122 336.3,-126 315.3,-126 312.3,-122 166.7,-122 166.7,-86 339.3,-86 339.3,-122"/>
-<text text-anchor="middle" x="253" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1719.3,-122 1716.3,-126 1695.3,-126 1692.3,-122 1546.7,-122 1546.7,-86 1719.3,-86 1719.3,-122"/>
+<text text-anchor="middle" x="1633" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolModule</text>
 </g>
 <!-- SchoolExternalToolModule&#45;&gt;ContextExternalToolModule -->
 <g id="edge4" class="edge">
 <title>SchoolExternalToolModule&#45;&gt;ContextExternalToolModule</title>
-<path fill="none" stroke="black" d="M253,-122.22C253,-140.83 253,-167 253,-167 253,-167 688.22,-167 688.22,-167"/>
-<polygon fill="black" stroke="black" points="688.22,-170.5 698.22,-167 688.22,-163.5 688.22,-170.5"/>
+<path fill="none" stroke="black" d="M1600.34,-122.24C1600.34,-137.57 1600.34,-157 1600.34,-157 1600.34,-157 1435.79,-157 1435.79,-157"/>
+<polygon fill="black" stroke="black" points="1435.79,-153.5 1425.79,-157 1435.79,-160.5 1435.79,-153.5"/>
 </g>
 <!-- ToolConfigModule -->
 <g id="node5" class="node">
 <title>ToolConfigModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="148.38,-122 145.38,-126 124.38,-126 121.38,-122 23.62,-122 23.62,-86 148.38,-86 148.38,-122"/>
-<text text-anchor="middle" x="86" y="-99.8" font-family="Times,serif" font-size="14.00">ToolConfigModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1528.38,-122 1525.38,-126 1504.38,-126 1501.38,-122 1403.62,-122 1403.62,-86 1528.38,-86 1528.38,-122"/>
+<text text-anchor="middle" x="1466" y="-99.8" font-family="Times,serif" font-size="14.00">ToolConfigModule</text>
 </g>
 <!-- ToolConfigModule&#45;&gt;ContextExternalToolModule -->
 <g id="edge5" class="edge">
 <title>ToolConfigModule&#45;&gt;ContextExternalToolModule</title>
-<path fill="none" stroke="black" d="M86,-122.22C86,-142.37 86,-172 86,-172 86,-172 688.22,-172 688.22,-172"/>
-<polygon fill="black" stroke="black" points="688.22,-175.5 698.22,-172 688.22,-168.5 688.22,-175.5"/>
+<path fill="none" stroke="black" d="M1414.72,-122.11C1414.72,-122.11 1414.72,-140.99 1414.72,-140.99"/>
+<polygon fill="black" stroke="black" points="1411.22,-140.99 1414.72,-150.99 1418.22,-140.99 1411.22,-140.99"/>
 </g>
 <!-- ContextExternalToolAuthorizableService  -->
 <g id="node7" class="node">
 <title>ContextExternalToolAuthorizableService </title>
-<polygon fill="#fb8072" stroke="black" points="1374.26,-252 1121.74,-252 1121.74,-216 1374.26,-216 1374.26,-252"/>
-<text text-anchor="middle" x="1248" y="-229.8" font-family="Times,serif" font-size="14.00">ContextExternalToolAuthorizableService </text>
+<polygon fill="#fb8072" stroke="black" points="1924.26,-252 1671.74,-252 1671.74,-216 1924.26,-216 1924.26,-252"/>
+<text text-anchor="middle" x="1798" y="-229.8" font-family="Times,serif" font-size="14.00">ContextExternalToolAuthorizableService </text>
 </g>
 <!-- ContextExternalToolModule&#45;&gt;ContextExternalToolAuthorizableService  -->
 <g id="edge6" class="edge">
 <title>ContextExternalToolModule&#45;&gt;ContextExternalToolAuthorizableService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M875.92,-177C983.53,-177 1150.49,-177 1150.49,-177 1150.49,-177 1150.49,-205.96 1150.49,-205.96"/>
-<polygon fill="black" stroke="black" points="1146.99,-205.96 1150.49,-215.96 1153.99,-205.96 1146.99,-205.96"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M1426.05,-177C1532.19,-177 1695.39,-177 1695.39,-177 1695.39,-177 1695.39,-205.96 1695.39,-205.96"/>
+<polygon fill="black" stroke="black" points="1691.89,-205.96 1695.39,-215.96 1698.89,-205.96 1691.89,-205.96"/>
 </g>
 <!-- ContextExternalToolService  -->
 <g id="node8" class="node">
 <title>ContextExternalToolService </title>
-<polygon fill="#fb8072" stroke="black" points="1103.68,-252 924.32,-252 924.32,-216 1103.68,-216 1103.68,-252"/>
-<text text-anchor="middle" x="1014" y="-229.8" font-family="Times,serif" font-size="14.00">ContextExternalToolService </text>
+<polygon fill="#fb8072" stroke="black" points="1653.68,-252 1474.32,-252 1474.32,-216 1653.68,-216 1653.68,-252"/>
+<text text-anchor="middle" x="1564" y="-229.8" font-family="Times,serif" font-size="14.00">ContextExternalToolService </text>
 </g>
 <!-- ContextExternalToolModule&#45;&gt;ContextExternalToolService  -->
 <g id="edge7" class="edge">
 <title>ContextExternalToolModule&#45;&gt;ContextExternalToolService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M875.97,-182C912.09,-182 945.48,-182 945.48,-182 945.48,-182 945.48,-205.81 945.48,-205.81"/>
-<polygon fill="black" stroke="black" points="941.98,-205.81 945.48,-215.81 948.98,-205.81 941.98,-205.81"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M1425.88,-182C1464.6,-182 1501.3,-182 1501.3,-182 1501.3,-182 1501.3,-205.81 1501.3,-205.81"/>
+<polygon fill="black" stroke="black" points="1497.8,-205.81 1501.3,-215.81 1504.8,-205.81 1497.8,-205.81"/>
 </g>
 <!-- ContextExternalToolValidationService  -->
 <g id="node9" class="node">
 <title>ContextExternalToolValidationService </title>
-<polygon fill="#fb8072" stroke="black" points="906.28,-252 667.72,-252 667.72,-216 906.28,-216 906.28,-252"/>
-<text text-anchor="middle" x="787" y="-229.8" font-family="Times,serif" font-size="14.00">ContextExternalToolValidationService </text>
+<polygon fill="#fb8072" stroke="black" points="1456.28,-252 1217.72,-252 1217.72,-216 1456.28,-216 1456.28,-252"/>
+<text text-anchor="middle" x="1337" y="-229.8" font-family="Times,serif" font-size="14.00">ContextExternalToolValidationService </text>
 </g>
 <!-- ContextExternalToolModule&#45;&gt;ContextExternalToolValidationService  -->
 <g id="edge8" class="edge">
 <title>ContextExternalToolModule&#45;&gt;ContextExternalToolValidationService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M787,-187.11C787,-187.11 787,-205.99 787,-205.99"/>
-<polygon fill="black" stroke="black" points="783.5,-205.99 787,-215.99 790.5,-205.99 783.5,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M1337,-187.11C1337,-187.11 1337,-205.99 1337,-205.99"/>
+<polygon fill="black" stroke="black" points="1333.5,-205.99 1337,-215.99 1340.5,-205.99 1333.5,-205.99"/>
 </g>
 <!-- ToolReferenceService  -->
 <g id="node10" class="node">
 <title>ToolReferenceService </title>
-<polygon fill="#fb8072" stroke="black" points="649.15,-252 504.85,-252 504.85,-216 649.15,-216 649.15,-252"/>
-<text text-anchor="middle" x="577" y="-229.8" font-family="Times,serif" font-size="14.00">ToolReferenceService </text>
+<polygon fill="#fb8072" stroke="black" points="1199.15,-252 1054.85,-252 1054.85,-216 1199.15,-216 1199.15,-252"/>
+<text text-anchor="middle" x="1127" y="-229.8" font-family="Times,serif" font-size="14.00">ToolReferenceService </text>
 </g>
 <!-- ContextExternalToolModule&#45;&gt;ToolReferenceService  -->
 <g id="edge9" class="edge">
 <title>ContextExternalToolModule&#45;&gt;ToolReferenceService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M697.83,-182C666.12,-182 638.14,-182 638.14,-182 638.14,-182 638.14,-205.81 638.14,-205.81"/>
-<polygon fill="black" stroke="black" points="634.64,-205.81 638.14,-215.81 641.64,-205.81 634.64,-205.81"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M1248.25,-182C1190.93,-182 1127,-182 1127,-182 1127,-182 1127,-205.81 1127,-205.81"/>
+<polygon fill="black" stroke="black" points="1123.5,-205.81 1127,-215.81 1130.5,-205.81 1123.5,-205.81"/>
 </g>
 <!-- ToolVersionService  -->
 <g id="node11" class="node">
 <title>ToolVersionService </title>
-<polygon fill="#fb8072" stroke="black" points="487.24,-252 354.76,-252 354.76,-216 487.24,-216 487.24,-252"/>
-<text text-anchor="middle" x="421" y="-229.8" font-family="Times,serif" font-size="14.00">ToolVersionService </text>
+<polygon fill="#fb8072" stroke="black" points="1037.24,-252 904.76,-252 904.76,-216 1037.24,-216 1037.24,-252"/>
+<text text-anchor="middle" x="971" y="-229.8" font-family="Times,serif" font-size="14.00">ToolVersionService </text>
 </g>
 <!-- ContextExternalToolModule&#45;&gt;ToolVersionService  -->
 <g id="edge10" class="edge">
 <title>ContextExternalToolModule&#45;&gt;ToolVersionService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M698.14,-177C607.85,-177 481.21,-177 481.21,-177 481.21,-177 481.21,-205.96 481.21,-205.96"/>
-<polygon fill="black" stroke="black" points="477.71,-205.96 481.21,-215.96 484.71,-205.96 477.71,-205.96"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M1248.25,-177C1156.73,-177 1027.29,-177 1027.29,-177 1027.29,-177 1027.29,-205.96 1027.29,-205.96"/>
+<polygon fill="black" stroke="black" points="1023.79,-205.96 1027.29,-215.96 1030.79,-205.96 1023.79,-205.96"/>
 </g>
 <!-- ContextExternalToolAuthorizableService -->
 <g id="node12" class="node">
 <title>ContextExternalToolAuthorizableService</title>
-<ellipse fill="#fdb462" stroke="black" cx="1973" cy="-104" rx="171.87" ry="18"/>
-<text text-anchor="middle" x="1973" y="-99.8" font-family="Times,serif" font-size="14.00">ContextExternalToolAuthorizableService</text>
+<ellipse fill="#fdb462" stroke="black" cx="1208" cy="-104" rx="171.87" ry="18"/>
+<text text-anchor="middle" x="1208" y="-99.8" font-family="Times,serif" font-size="14.00">ContextExternalToolAuthorizableService</text>
 </g>
 <!-- ContextExternalToolAuthorizableService&#45;&gt;ContextExternalToolModule -->
 <g id="edge11" class="edge">
 <title>ContextExternalToolAuthorizableService&#45;&gt;ContextExternalToolModule</title>
-<path fill="none" stroke="black" d="M1973,-122.22C1973,-142.37 1973,-172 1973,-172 1973,-172 886.14,-172 886.14,-172"/>
-<polygon fill="black" stroke="black" points="886.14,-168.5 876.14,-172 886.14,-175.5 886.14,-168.5"/>
+<path fill="none" stroke="black" d="M1314.03,-118.43C1314.03,-118.43 1314.03,-140.89 1314.03,-140.89"/>
+<polygon fill="black" stroke="black" points="1310.53,-140.89 1314.03,-150.89 1317.53,-140.89 1310.53,-140.89"/>
 </g>
 <!-- ContextExternalToolService -->
 <g id="node13" class="node">
 <title>ContextExternalToolService</title>
-<ellipse fill="#fdb462" stroke="black" cx="1662" cy="-104" rx="121.55" ry="18"/>
-<text text-anchor="middle" x="1662" y="-99.8" font-family="Times,serif" font-size="14.00">ContextExternalToolService</text>
+<ellipse fill="#fdb462" stroke="black" cx="897" cy="-104" rx="121.55" ry="18"/>
+<text text-anchor="middle" x="897" y="-99.8" font-family="Times,serif" font-size="14.00">ContextExternalToolService</text>
 </g>
 <!-- ContextExternalToolService&#45;&gt;ContextExternalToolModule -->
 <g id="edge12" class="edge">
 <title>ContextExternalToolService&#45;&gt;ContextExternalToolModule</title>
-<path fill="none" stroke="black" d="M1662,-122.22C1662,-140.83 1662,-167 1662,-167 1662,-167 886.12,-167 886.12,-167"/>
-<polygon fill="black" stroke="black" points="886.12,-163.5 876.12,-167 886.12,-170.5 886.12,-163.5"/>
+<path fill="none" stroke="black" d="M961.7,-119.33C961.7,-134.98 961.7,-157 961.7,-157 961.7,-157 1238.06,-157 1238.06,-157"/>
+<polygon fill="black" stroke="black" points="1238.06,-160.5 1248.06,-157 1238.06,-153.5 1238.06,-160.5"/>
 </g>
 <!-- ContextExternalToolValidationService -->
 <g id="node14" class="node">
 <title>ContextExternalToolValidationService</title>
-<ellipse fill="#fdb462" stroke="black" cx="1360" cy="-104" rx="162.08" ry="18"/>
-<text text-anchor="middle" x="1360" y="-99.8" font-family="Times,serif" font-size="14.00">ContextExternalToolValidationService</text>
+<ellipse fill="#fdb462" stroke="black" cx="595" cy="-104" rx="162.08" ry="18"/>
+<text text-anchor="middle" x="595" y="-99.8" font-family="Times,serif" font-size="14.00">ContextExternalToolValidationService</text>
 </g>
 <!-- ContextExternalToolValidationService&#45;&gt;ContextExternalToolModule -->
 <g id="edge13" class="edge">
 <title>ContextExternalToolValidationService&#45;&gt;ContextExternalToolModule</title>
-<path fill="none" stroke="black" d="M1286.05,-120.16C1286.05,-137.32 1286.05,-162 1286.05,-162 1286.05,-162 885.93,-162 885.93,-162"/>
-<polygon fill="black" stroke="black" points="885.93,-158.5 875.93,-162 885.93,-165.5 885.93,-158.5"/>
+<path fill="none" stroke="black" d="M595,-122.03C595,-139.06 595,-162 595,-162 595,-162 1238.23,-162 1238.23,-162"/>
+<polygon fill="black" stroke="black" points="1238.23,-165.5 1248.23,-162 1238.23,-158.5 1238.23,-165.5"/>
 </g>
 <!-- ToolReferenceService -->
 <g id="node15" class="node">
 <title>ToolReferenceService</title>
-<ellipse fill="#fdb462" stroke="black" cx="1082" cy="-104" rx="97.23" ry="18"/>
-<text text-anchor="middle" x="1082" y="-99.8" font-family="Times,serif" font-size="14.00">ToolReferenceService</text>
+<ellipse fill="#fdb462" stroke="black" cx="317" cy="-104" rx="97.23" ry="18"/>
+<text text-anchor="middle" x="317" y="-99.8" font-family="Times,serif" font-size="14.00">ToolReferenceService</text>
 </g>
 <!-- ToolReferenceService&#45;&gt;ContextExternalToolModule -->
 <g id="edge14" class="edge">
 <title>ToolReferenceService&#45;&gt;ContextExternalToolModule</title>
-<path fill="none" stroke="black" d="M1044.24,-120.77C1044.24,-136.3 1044.24,-157 1044.24,-157 1044.24,-157 885.89,-157 885.89,-157"/>
-<polygon fill="black" stroke="black" points="885.89,-153.5 875.89,-157 885.89,-160.5 885.89,-153.5"/>
+<path fill="none" stroke="black" d="M317,-122.22C317,-140.83 317,-167 317,-167 317,-167 1237.82,-167 1237.82,-167"/>
+<polygon fill="black" stroke="black" points="1237.82,-170.5 1247.82,-167 1237.82,-163.5 1237.82,-170.5"/>
 </g>
 <!-- ToolVersionService -->
 <g id="node16" class="node">
 <title>ToolVersionService</title>
-<ellipse fill="#fdb462" stroke="black" cx="878" cy="-104" rx="88.6" ry="18"/>
-<text text-anchor="middle" x="878" y="-99.8" font-family="Times,serif" font-size="14.00">ToolVersionService</text>
+<ellipse fill="#fdb462" stroke="black" cx="113" cy="-104" rx="88.6" ry="18"/>
+<text text-anchor="middle" x="113" y="-99.8" font-family="Times,serif" font-size="14.00">ToolVersionService</text>
 </g>
 <!-- ToolVersionService&#45;&gt;ContextExternalToolModule -->
 <g id="edge15" class="edge">
 <title>ToolVersionService&#45;&gt;ContextExternalToolModule</title>
-<path fill="none" stroke="black" d="M832.54,-119.73C832.54,-119.73 832.54,-140.65 832.54,-140.65"/>
-<polygon fill="black" stroke="black" points="829.04,-140.65 832.54,-150.65 836.04,-140.65 829.04,-140.65"/>
+<path fill="none" stroke="black" d="M113,-122.22C113,-142.37 113,-172 113,-172 113,-172 1237.99,-172 1237.99,-172"/>
+<polygon fill="black" stroke="black" points="1237.99,-175.5 1247.99,-172 1237.99,-168.5 1237.99,-175.5"/>
 </g>
 </g>
 </svg>
