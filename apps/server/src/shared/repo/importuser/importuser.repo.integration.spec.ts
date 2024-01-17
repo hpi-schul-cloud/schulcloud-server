@@ -1,12 +1,11 @@
-import { EntityManager } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
-import { cleanupCollections, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
-
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { MikroORM, NotFoundError } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { Test, TestingModule } from '@nestjs/testing';
 import { IImportUserRoleName, ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { MatchCreatorScope } from '@shared/domain/types';
+import { cleanupCollections, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { ImportUserRepo } from '.';
 
 describe('ImportUserRepo', () => {
@@ -776,6 +775,26 @@ describe('ImportUserRepo', () => {
 				await expect(async () => em.persistAndFlush(importUserWithSameMatch)).rejects.toThrowError(
 					'duplicate key error'
 				);
+			});
+		});
+	});
+
+	describe('saveImportUsers', () => {
+		describe('with existing importusers', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+				const importUser = importUserFactory.build({ school });
+				const otherImportUser = importUserFactory.build({ school });
+
+				return { importUser, otherImportUser };
+			};
+
+			it('should persist importUsers', async () => {
+				const { importUser, otherImportUser } = setup();
+
+				await repo.saveImportUsers([importUser, otherImportUser]);
+
+				await expect(em.findAndCount(ImportUser, {})).resolves.toEqual([[importUser, otherImportUser], 2]);
 			});
 		});
 	});

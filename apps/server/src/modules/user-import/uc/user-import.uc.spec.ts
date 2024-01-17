@@ -1,11 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account/services/account.service';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { BadRequestException, ForbiddenException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
@@ -17,6 +16,9 @@ import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { federalStateFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory';
 import { LoggerModule } from '@src/core/logger';
+import { IUserImportFeatures, UserImportFeatures } from '../config';
+import { UserImportConfigurationFailureLoggableException } from '../loggable';
+import { FetchImportUsersService } from '../service';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,
@@ -34,7 +36,8 @@ describe('[ImportUserModule]', () => {
 		let systemRepo: DeepMocked<LegacySystemRepo>;
 		let userRepo: DeepMocked<UserRepo>;
 		let authorizationService: DeepMocked<AuthorizationService>;
-		let configurationSpy: jest.SpyInstance;
+		let userImportFeatures: IUserImportFeatures;
+		let fetchImportUsersService: DeepMocked<FetchImportUsersService>;
 
 		beforeAll(async () => {
 			module = await Test.createTestingModule({
@@ -69,6 +72,18 @@ describe('[ImportUserModule]', () => {
 						provide: AuthorizationService,
 						useValue: createMock<AuthorizationService>(),
 					},
+					{
+						provide: UserImportFeatures,
+						useValue: {
+							userMigrationEnabled: true,
+							userMigrationSystemId: 'someId',
+							userMigrationFetching: {},
+						},
+					},
+					{
+						provide: FetchImportUsersService,
+						useValue: createMock<FetchImportUsersService>(),
+					},
 				],
 			}).compile();
 			uc = module.get(UserImportUc); // TODO UserRepo not available in UserUc?!
@@ -78,6 +93,8 @@ describe('[ImportUserModule]', () => {
 			systemRepo = module.get(LegacySystemRepo);
 			userRepo = module.get(UserRepo);
 			authorizationService = module.get(AuthorizationService);
+			userImportFeatures = module.get<IUserImportFeatures>(UserImportFeatures);
+			fetchImportUsersService = module.get(FetchImportUsersService);
 		});
 
 		afterAll(async () => {
@@ -96,15 +113,8 @@ describe('[ImportUserModule]', () => {
 
 		const setConfig = (systemId?: string) => {
 			const mockSystemId = systemId || new ObjectId().toString();
-			configurationSpy = jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
-				if (config === 'FEATURE_USER_MIGRATION_SYSTEM_ID') {
-					return mockSystemId;
-				}
-				if (config === 'FEATURE_USER_MIGRATION_ENABLED') {
-					return true;
-				}
-				return null;
-			});
+			userImportFeatures.userMigrationSystemId = mockSystemId;
+			userImportFeatures.userMigrationEnabled = true;
 		};
 
 		const createMockSchoolDo = (school?: SchoolEntity): LegacySchoolDo => {
@@ -616,13 +626,12 @@ describe('[ImportUserModule]', () => {
 				schoolServiceSaveSpy.mockRestore();
 				schoolServiceSpy.mockRestore();
 				systemRepoSpy.mockRestore();
-				configurationSpy.mockRestore();
 				dateSpy.mockRestore();
 			});
-			it('Should fetch system id from configuration', async () => {
+			it('Should fetch system id from user import features ', async () => {
 				await uc.startSchoolInUserMigration(currentUser.id);
 
-				expect(configurationSpy).toHaveBeenCalledWith('FEATURE_USER_MIGRATION_SYSTEM_ID');
+				expect(userImportFeatures.userMigrationSystemId).toBeDefined();
 				expect(systemRepoSpy).toHaveBeenCalledWith(system.id);
 			});
 			it('Should request authorization service', async () => {
@@ -751,6 +760,34 @@ describe('[ImportUserModule]', () => {
 				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValueOnce(createMockSchoolDo(school));
 				const result4 = () => uc.endSchoolInMaintenance(currentUser.id);
 				await expect(result4).rejects.toThrowError(BadRequestException);
+			});
+		});
+
+		describe('fetchImportUsers', () => {
+			describe('when user migration fetching endpoint is missing', () => {
+				it('should throw an error', async () => {
+					userImportFeatures.userMigrationFetching.endpoint = undefined;
+
+					await expect(uc.fetchImportUsers(new ObjectId().toString())).rejects.toThrowError(
+						UserImportConfigurationFailureLoggableException
+					);
+				});
+			});
+
+			describe('when current user is not allowed to fetch import users', () => {
+				const setup = () => {
+					userImportFeatures.userMigrationFetching.endpoint = 'https://mocked-endpoint.com';
+					userRepo.findById.mockResolvedValueOnce(userFactory.buildWithId());
+					authorizationService.checkAllPermissions.mockImplementation(() => {
+						throw new UnauthorizedException();
+					});
+				};
+
+				it('should throw an error', async () => {
+					setup();
+
+					await expect(uc.fetchImportUsers(new ObjectId().toString())).rejects.toThrowError(UnauthorizedException);
+				});
 			});
 		});
 	});

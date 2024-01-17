@@ -1,9 +1,15 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
+import { AccountSaveDto } from '@modules/account';
 import { AccountService } from '@modules/account/services/account.service';
 import { AccountDto } from '@modules/account/services/dto/account.dto';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+	BadRequestException,
+	ForbiddenException,
+	Inject,
+	Injectable,
+	InternalServerErrorException,
+} from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { Account, ImportUser, MatchCreator, SystemEntity, User } from '@shared/domain/entity';
@@ -11,15 +17,19 @@ import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch, SchoolFeature } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { AccountSaveDto } from '../../account/services/dto';
+import { AxiosResponse } from 'axios';
+import { SanisResponse } from '../../provisioning';
+import { IUserImportFeatures, UserImportFeatures } from '../config';
 import {
 	MigrationMayBeCompleted,
 	MigrationMayNotBeCompleted,
 	SchoolIdDoesNotMatchWithUserSchoolId,
 	SchoolInUserMigrationEndLoggable,
 	SchoolInUserMigrationStartLoggable,
+	UserImportConfigurationFailureLoggableException,
 	UserMigrationIsNotEnabled,
 } from '../loggable';
+import { FetchImportUsersService } from '../service';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,
@@ -40,13 +50,15 @@ export class UserImportUc {
 		private readonly schoolService: LegacySchoolService,
 		private readonly systemRepo: LegacySystemRepo,
 		private readonly userRepo: UserRepo,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		@Inject(UserImportFeatures) private readonly userImportFeatures: IUserImportFeatures,
+		private readonly fetchImportUserService: FetchImportUsersService
 	) {
 		this.logger.setContext(UserImportUc.name);
 	}
 
 	private checkFeatureEnabled(school: LegacySchoolDo): void | never {
-		const enabled = Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean;
+		const enabled = this.userImportFeatures.userMigrationEnabled;
 		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeature.LDAP_UNIVENTION_MIGRATION);
 		if (!enabled && !isLdapPilotSchool) {
 			this.logger.warning(new UserMigrationIsNotEnabled());
@@ -61,7 +73,7 @@ export class UserImportUc {
 	 * @param options
 	 * @returns
 	 */
-	async findAllImportUsers(
+	public async findAllImportUsers(
 		currentUserId: EntityId,
 		query: IImportUserScope,
 		options?: IFindOptions<ImportUser>
@@ -81,7 +93,7 @@ export class UserImportUc {
 	 * @param userMatchId
 	 * @returns importuser and matched user
 	 */
-	async setMatch(currentUserId: EntityId, importUserId: EntityId, userMatchId: EntityId): Promise<ImportUser> {
+	public async setMatch(currentUserId: EntityId, importUserId: EntityId, userMatchId: EntityId): Promise<ImportUser> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
@@ -106,7 +118,7 @@ export class UserImportUc {
 		return importUser;
 	}
 
-	async removeMatch(currentUserId: EntityId, importUserId: EntityId): Promise<ImportUser> {
+	public async removeMatch(currentUserId: EntityId, importUserId: EntityId): Promise<ImportUser> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
@@ -123,7 +135,7 @@ export class UserImportUc {
 		return importUser;
 	}
 
-	async updateFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean): Promise<ImportUser> {
+	public async updateFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean): Promise<ImportUser> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
@@ -150,7 +162,7 @@ export class UserImportUc {
 	 * @param options
 	 * @returns
 	 */
-	async findAllUnmatchedUsers(
+	public async findAllUnmatchedUsers(
 		currentUserId: EntityId,
 		query: NameMatch,
 		options?: IFindOptions<User>
@@ -163,7 +175,7 @@ export class UserImportUc {
 		return unmatchedCountedUsers;
 	}
 
-	async saveAllUsersMatches(currentUserId: EntityId): Promise<void> {
+	public async saveAllUsersMatches(currentUserId: EntityId): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
@@ -217,7 +229,7 @@ export class UserImportUc {
 		await this.schoolService.save(school);
 	}
 
-	async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
+	public async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.logger.notice(new SchoolInUserMigrationStartLoggable(currentUserId, school.name, useCentralLdap));
@@ -239,7 +251,7 @@ export class UserImportUc {
 		await this.schoolService.save(school);
 	}
 
-	async endSchoolInMaintenance(currentUserId: EntityId): Promise<void> {
+	public async endSchoolInMaintenance(currentUserId: EntityId): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
@@ -297,7 +309,7 @@ export class UserImportUc {
 	}
 
 	private async getMigrationSystem(): Promise<SystemEntity> {
-		const systemId = Configuration.get('FEATURE_USER_MIGRATION_SYSTEM_ID') as string;
+		const systemId = this.userImportFeatures.userMigrationSystemId;
 		const system = await this.systemRepo.findById(systemId);
 		return system;
 	}
@@ -325,5 +337,39 @@ export class UserImportUc {
 		if (school.inUserMigration !== undefined && school.inUserMigration !== null) {
 			throw new MigrationAlreadyActivatedException();
 		}
+	}
+
+	public async fetchImportUsers(currentUserId: EntityId): Promise<void> {
+		if (!this.userImportFeatures.userMigrationFetching.endpoint) {
+			throw new UserImportConfigurationFailureLoggableException();
+		}
+		const currentUser: User = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
+
+		const { officialSchoolNumber } = currentUser.school;
+		if (!officialSchoolNumber) {
+			throw new MissingSchoolNumberException();
+		}
+		const { endpoint, clientId, clientSecret } = this.userImportFeatures.userMigrationFetching;
+		const fetchedData: AxiosResponse<SanisResponse[]> = await this.fetchImportUserService.getData(
+			endpoint,
+			officialSchoolNumber,
+			clientId,
+			clientSecret
+		);
+
+		const filteredFetchedData: SanisResponse[] = await this.fetchImportUserService.filterAlreadyFetchedData(
+			fetchedData.data,
+			this.userImportFeatures.userMigrationSystemId
+		);
+
+		const mappedImportUsers: ImportUser[] = this.fetchImportUserService.mapToImportUser(
+			filteredFetchedData,
+			currentUser.school.id,
+			this.userImportFeatures.userMigrationSystemId
+		);
+
+		// TODO: doing match.
+
+		await this.importUserRepo.saveImportUsers(mappedImportUsers);
 	}
 }

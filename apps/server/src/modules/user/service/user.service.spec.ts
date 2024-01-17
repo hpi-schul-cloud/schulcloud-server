@@ -329,7 +329,7 @@ describe('UserService', () => {
 					externalId: 'externalId',
 				});
 
-				userDORepo.findByExternalId.mockResolvedValue(user);
+				userDORepo.findByExternalIds.mockResolvedValue(user);
 
 				const result: UserDO | null = await service.findByExternalId('externalId', 'systemId');
 
@@ -339,7 +339,7 @@ describe('UserService', () => {
 
 		describe('when a user with this external id does not exist', () => {
 			it('should return null', async () => {
-				userDORepo.findByExternalId.mockResolvedValue(null);
+				userDORepo.findByExternalIds.mockResolvedValue(null);
 
 				const result: UserDO | null = await service.findByExternalId('externalId', 'systemId');
 

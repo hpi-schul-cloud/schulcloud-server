@@ -1,6 +1,12 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import {
+	ApiCreatedResponse,
+	ApiOperation,
+	ApiServiceUnavailableResponse,
+	ApiTags,
+	ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller';
 import { ImportUser, User } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
@@ -112,5 +118,18 @@ export class ImportUserController {
 	@Post('startSync')
 	async endSchoolInMaintenance(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.userImportUc.endSchoolInMaintenance(currentUser.userId);
+	}
+
+	@Post('fetchImportUsers')
+	@ApiOperation({
+		summary: 'Fetch import users',
+		description:
+			'Fetches import users from specific user migration fetching endpoint which will be set in ImportUserConfiguration. ',
+	})
+	@ApiCreatedResponse()
+	@ApiUnauthorizedResponse()
+	@ApiServiceUnavailableResponse()
+	async fetchImportUsers(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
+		await this.userImportUc.fetchImportUsers(currentUser.userId);
 	}
 }
