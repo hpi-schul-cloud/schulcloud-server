@@ -881,9 +881,6 @@
                             <a href="#setupEntities" title="apps/server/src/shared/testing/setup-entities.ts" ><b>setupEntities</b>&nbsp;&nbsp;&nbsp;(apps/.../setup-entities.ts)</a>
                         </li>
                         <li>
-                            <a href="#setupSessions" title="apps/server/src/modules/server/server.module.ts" ><b>setupSessions</b>&nbsp;&nbsp;&nbsp;(apps/.../server.module.ts)</a>
-                        </li>
-                        <li>
                             <a href="#sharedAdminPermissions" title="apps/server/src/shared/testing/user-role-permissions.ts" ><b>sharedAdminPermissions</b>&nbsp;&nbsp;&nbsp;(apps/.../user-role-permissions.ts)</a>
                         </li>
                         <li>
@@ -5777,63 +5774,6 @@ must use</p>
 
         </tbody>
     </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="setupSessions"></a>
-                    <span class="name">
-                        <span ><b>setupSessions</b></span>
-                        <a href="#setupSessions"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>(
-	consumer: MiddlewareConsumer,
-	redisClient: RedisClientType | undefined,
-	logger: LegacyLogger
-) &#x3D;&gt; {
-	const sessionDuration: number &#x3D; Configuration.get(&#x27;SESSION__EXPIRES_SECONDS&#x27;) as number;
-
-	let store: RedisStore | undefined;
-	if (redisClient) {
-		store &#x3D; new RedisStore({
-			client: redisClient,
-			ttl: sessionDuration,
-		});
-	} else {
-		logger.warn(
-			&#x27;The RedisStore for sessions is not setup, since the environment variable REDIS_URI is not defined. Sessions are using the build-in MemoryStore. This should not be used in production!&#x27;
-		);
-	}
-
-	consumer
-		.apply(
-			session({
-				store,
-				secret: Configuration.get(&#x27;SESSION__SECRET&#x27;) as string,
-				resave: false,
-				saveUninitialized: false,
-				name: Configuration.has(&#x27;SESSION__NAME&#x27;) ? (Configuration.get(&#x27;SESSION__NAME&#x27;) as string) : undefined,
-				proxy: Configuration.has(&#x27;SESSION__PROXY&#x27;) ? (Configuration.get(&#x27;SESSION__PROXY&#x27;) as boolean) : undefined,
-				cookie: {
-					secure: Configuration.get(&#x27;SESSION__SECURE&#x27;) as boolean,
-					sameSite: Configuration.get(&#x27;SESSION__SAME_SITE&#x27;) as boolean | &#x27;lax&#x27; | &#x27;strict&#x27; | &#x27;none&#x27;,
-					httpOnly: Configuration.get(&#x27;SESSION__HTTP_ONLY&#x27;) as boolean,
-					maxAge: sessionDuration * 1000,
-				},
-			})
-		)
-		.forRoutes(&#x27;*&#x27;);
-}</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
 </section>
     <h3>apps/server/src/modules/tldraw/tldraw.module.ts</h3>
     <section data-compodoc="block-properties">
@@ -7701,7 +7641,6 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions }),
 	LoggerModule,
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
-	RedisModule,
 	HttpModule,
 ]</code>
                     </td>
