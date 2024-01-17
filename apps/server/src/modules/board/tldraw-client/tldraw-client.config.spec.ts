@@ -17,7 +17,7 @@ describe(getTldrawClientConfig.name, () => {
 	describe('when called', () => {
 		const setup = () => {
 			const baseUrl = 'http://tldraw-server-svc:3349';
-			const apiKey = '652559c2-93da-42ad-94e1-640e3afbaca0';
+			const apiKey = 'a4a20e6a-8036-4603-aba6-378006fedce2';
 
 			Configuration.set('TLDRAW_ADMIN_API_CLIENT___BASE_URL', baseUrl);
 			Configuration.set('TLDRAW_ADMIN_API_CLIENT__API_KEY', apiKey);
