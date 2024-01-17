@@ -95,8 +95,6 @@ describe('TldrawWSService', () => {
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
 		await app.init();
-
-		jest.useFakeTimers();
 	});
 
 	afterAll(async () => {
@@ -364,13 +362,15 @@ describe('TldrawWSService', () => {
 			};
 
 			it('should close connection', async () => {
-				const { closeConnSpy } = await setup();
+				const { flushDocumentSpy, redisUnsubscribeSpy, closeConnSpy } = await setup();
 
 				await service.setupWSConnection(ws, 'TEST');
 
 				expect(closeConnSpy).toHaveBeenCalled();
 				ws.close();
 				closeConnSpy.mockRestore();
+				flushDocumentSpy.mockRestore();
+				redisUnsubscribeSpy.mockRestore();
 			});
 		});
 
