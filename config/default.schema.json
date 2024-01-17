@@ -1401,6 +1401,11 @@
 			"default": false,
 			"description": "Enables the copying of ctl tools when copying a course."
 		},
+		"FEATURE_SHOW_MIGRATION_WIZARD": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the migration wizard on the school administration page in the migration section."
+		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",
 			"description": "TSP School Syncer properties",
