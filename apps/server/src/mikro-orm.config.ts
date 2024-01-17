@@ -18,7 +18,7 @@ export const mikroOrmConfig: MikroOrmModuleSyncOptions = {
 	*/
 	migrations: {
 		tableName: 'migrations', // name of database table with log of executed transactions
-		path: './dist/apps/server/src/migrations/mikro-orm', // path to the folder with migrations
+		path: './dist/apps/server/migrations/mikro-orm', // path to the folder with migrations
 		pathTs: './apps/server/src/migrations/mikro-orm', // path to the folder with TS migrations (if used, we should put path to compiled files in `path`)
 		glob: '!(*.d).{js,ts}', // how to match migration files (all .js and .ts files, but not .d.ts)
 		transactional: false, // wrap each migration in a transaction
