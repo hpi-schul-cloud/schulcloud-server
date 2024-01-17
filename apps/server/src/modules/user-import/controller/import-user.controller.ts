@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import {
 	ApiCreatedResponse,
@@ -27,7 +27,6 @@ import {
 } from './dto';
 
 @ApiTags('UserImport')
-@Authenticate('jwt')
 @Controller('user/import')
 export class ImportUserController {
 	constructor(private readonly userImportUc: UserImportUc, private readonly userUc: UserImportUc) {}
@@ -120,7 +119,7 @@ export class ImportUserController {
 		await this.userImportUc.endSchoolInMaintenance(currentUser.userId);
 	}
 
-	@Post('fetchImportUsers')
+	@Post('fetch-import-user')
 	@ApiOperation({
 		summary: 'Fetch import users',
 		description:
@@ -129,6 +128,7 @@ export class ImportUserController {
 	@ApiCreatedResponse()
 	@ApiUnauthorizedResponse()
 	@ApiServiceUnavailableResponse()
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	async fetchImportUsers(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.userImportUc.fetchImportUsers(currentUser.userId);
 	}

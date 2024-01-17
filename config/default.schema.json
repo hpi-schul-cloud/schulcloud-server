@@ -1164,11 +1164,15 @@
 			"default": "",
 			"description": "SystemId for migration of users from system. To use this please set FEATURE_USER_MIGRATION_CENTRAL_LDAP in the client"
 		},
-		"FEATURE_USER_MIGRATION_FETCHING": {
+		"FEATURE_USER_MIGRATION_OAUTH_FETCHING": {
 			"type": "object",
-			"description": "Configuration regarding fetching users for user migration.",
+			"description": "Configuration regarding fetching users with oauth client credentials flow for user migration.",
 			"properties": {
-				"ENDPOINT": {
+				"TOKEN_ENDPOINT": {
+					"type": "string",
+					"description": "Endpoint to receive access token for calling fetch endpoint."
+				},
+				"FETCH_ENDPOINT": {
 					"type": "string",
 					"description": "Endpoint for fetching users."
 				},
@@ -1181,9 +1185,10 @@
 					"description": "Client secret for fetching users."
 				},
 				"default": {
-					"endpoint": "",
-					"clientId": "",
-					"clientSecret": ""
+					"TOKEN_ENDPOINT": "",
+					"FETCH_ENDPOINT": "",
+					"CLIENT_ID": "",
+					"CLIENT_SECRET": ""
 				}
 			}
 		},

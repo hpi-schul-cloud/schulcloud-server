@@ -28,6 +28,6 @@ import { OAuthService } from './service/oauth.service';
 		LegacySchoolModule,
 	],
 	providers: [OAuthService, OauthAdapterService, HydraSsoService, LtiToolRepo],
-	exports: [OAuthService, HydraSsoService],
+	exports: [OAuthService, HydraSsoService, OauthAdapterService],
 })
 export class OauthModule {}

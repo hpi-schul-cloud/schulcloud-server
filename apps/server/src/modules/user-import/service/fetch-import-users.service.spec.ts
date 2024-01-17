@@ -1,3 +1,3 @@
-import { FetchImportUsersService } from './fetch-import-users.service';
+import { OauthFetchImportUsersService } from './oauth-fetch-import-users.service';
 
-describe(FetchImportUsersService.name, () => {});
+describe(OauthFetchImportUsersService.name, () => {});

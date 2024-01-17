@@ -5,7 +5,7 @@ import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
 import { TokenRequestLoggableException } from '../loggable';
-import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
+import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse, AccessTokenRequest } from './dto';
 
 @Injectable()
 export class OauthAdapterService {
@@ -22,7 +22,7 @@ export class OauthAdapterService {
 
 	public sendAuthenticationCodeTokenRequest(
 		tokenEndpoint: string,
-		payload: AuthenticationCodeGrantTokenRequest
+		payload: AuthenticationCodeGrantTokenRequest | AccessTokenRequest
 	): Promise<OauthTokenResponse> {
 		const urlEncodedPayload: string = QueryString.stringify(payload);
 		const responseTokenObservable = this.httpService.post<OauthTokenResponse>(tokenEndpoint, urlEncodedPayload, {

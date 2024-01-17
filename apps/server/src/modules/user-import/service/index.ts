@@ -1,1 +1,1 @@
-export { FetchImportUsersService } from './fetch-import-users.service';
+export { OauthFetchImportUsersService } from './oauth-fetch-import-users.service';

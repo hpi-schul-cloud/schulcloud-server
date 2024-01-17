@@ -18,7 +18,7 @@ import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory
 import { LoggerModule } from '@src/core/logger';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import { UserImportConfigurationFailureLoggableException } from '../loggable';
-import { FetchImportUsersService } from '../service';
+import { OauthFetchImportUsersService } from '../service';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,
@@ -37,7 +37,7 @@ describe('[ImportUserModule]', () => {
 		let userRepo: DeepMocked<UserRepo>;
 		let authorizationService: DeepMocked<AuthorizationService>;
 		let userImportFeatures: IUserImportFeatures;
-		let fetchImportUsersService: DeepMocked<FetchImportUsersService>;
+		let fetchImportUsersService: DeepMocked<OauthFetchImportUsersService>;
 
 		beforeAll(async () => {
 			module = await Test.createTestingModule({
@@ -81,8 +81,8 @@ describe('[ImportUserModule]', () => {
 						},
 					},
 					{
-						provide: FetchImportUsersService,
-						useValue: createMock<FetchImportUsersService>(),
+						provide: OauthFetchImportUsersService,
+						useValue: createMock<OauthFetchImportUsersService>(),
 					},
 				],
 			}).compile();
@@ -94,7 +94,7 @@ describe('[ImportUserModule]', () => {
 			userRepo = module.get(UserRepo);
 			authorizationService = module.get(AuthorizationService);
 			userImportFeatures = module.get<IUserImportFeatures>(UserImportFeatures);
-			fetchImportUsersService = module.get(FetchImportUsersService);
+			fetchImportUsersService = module.get(OauthFetchImportUsersService);
 		});
 
 		afterAll(async () => {
@@ -766,7 +766,7 @@ describe('[ImportUserModule]', () => {
 		describe('fetchImportUsers', () => {
 			describe('when user migration fetching endpoint is missing', () => {
 				it('should throw an error', async () => {
-					userImportFeatures.userMigrationFetching.endpoint = undefined;
+					userImportFeatures.userMigrationOauthFetching.endpoint = undefined;
 
 					await expect(uc.fetchImportUsers(new ObjectId().toString())).rejects.toThrowError(
 						UserImportConfigurationFailureLoggableException
@@ -776,7 +776,7 @@ describe('[ImportUserModule]', () => {
 
 			describe('when current user is not allowed to fetch import users', () => {
 				const setup = () => {
-					userImportFeatures.userMigrationFetching.endpoint = 'https://mocked-endpoint.com';
+					userImportFeatures.userMigrationOauthFetching.endpoint = 'https://mocked-endpoint.com';
 					userRepo.findById.mockResolvedValueOnce(userFactory.buildWithId());
 					authorizationService.checkAllPermissions.mockImplementation(() => {
 						throw new UnauthorizedException();
