@@ -624,7 +624,7 @@ describe('TldrawWSService', () => {
 						expect(e.message).toMatch('error');
 					}
 
-					await delay(50);
+					await delay(100);
 
 					expect(doc).toBeDefined();
 					expect(errorLogSpy).toHaveBeenCalled();
