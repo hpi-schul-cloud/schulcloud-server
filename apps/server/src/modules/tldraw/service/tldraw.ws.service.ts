@@ -138,7 +138,12 @@ export class TldrawWsService {
 			this.subscribeOnAwarenessUpdate(doc);
 			doc.on('update', (update: Uint8Array, origin) => this.updateHandler(update, origin, doc));
 
-			this.subscribeOnDocument(doc);
+			this.subscribeOnDocument(doc).catch((err) => {
+				this.logger.warning(
+					new WsSharedDocErrorLoggable(doc.name, 'Error while subscribing to Redis channels', err as Error)
+				);
+				throw err;
+			});
 
 			await this.updateDocument(docName, doc);
 
@@ -366,15 +371,9 @@ export class TldrawWsService {
 	}
 
 	private subscribeOnDocument(doc: WsSharedDocDo) {
-		this.sub
+		return this.sub
 			.subscribe(doc.name, doc.awarenessChannel)
-			.then(() => this.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message, doc)))
-			.catch((err) => {
-				this.logger.warning(
-					new WsSharedDocErrorLoggable(doc.name, 'Error while subscribing to Redis channels', err as Error)
-				);
-				throw err;
-			});
+			.then(() => this.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message, doc)));
 	}
 
 	private async updateDocument(docName: string, doc: WsSharedDocDo) {

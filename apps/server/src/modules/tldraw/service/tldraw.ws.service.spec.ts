@@ -624,9 +624,10 @@ describe('TldrawWSService', () => {
 						expect(e.message).toMatch('error');
 					}
 
-					await delay(100);
+					await delay(200);
 
 					expect(doc).toBeDefined();
+					expect(redisSubscribeSpy).toHaveBeenCalled();
 					expect(errorLogSpy).toHaveBeenCalled();
 				});
 			});
