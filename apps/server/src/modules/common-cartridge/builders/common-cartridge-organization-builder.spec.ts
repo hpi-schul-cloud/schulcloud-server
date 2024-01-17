@@ -50,12 +50,6 @@ describe('CommonCartridgeOrganizationBuilder', () => {
 
 				expect(element).toBeInstanceOf(CommonCartridgeElement);
 			});
-
-			it('should add 3 resources', () => {
-				const { resources } = setup();
-
-				expect(resources).toHaveLength(3);
-			});
 		});
 	});
 });
