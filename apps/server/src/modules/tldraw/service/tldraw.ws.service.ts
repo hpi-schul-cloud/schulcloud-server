@@ -99,13 +99,15 @@ export class TldrawWsService {
 	 * @param {any} origin
 	 * @param {WsSharedDocDo} doc
 	 */
-	public updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): void {
+	public async updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): Promise<void> {
 		const isOriginWSConn = doc.connections.has(origin as WebSocket);
 		if (isOriginWSConn) {
-			this.pub.publish(doc.name, Buffer.from(update)).catch((err) => {
+			try {
+				await this.pub.publish(doc.name, Buffer.from(update));
+			} catch (err) {
 				this.logger.warning(new RedisPublishErrorLoggable('document', err as Error));
 				throw err;
-			});
+			}
 		}
 
 		this.propagateUpdate(update, doc);
@@ -138,12 +140,7 @@ export class TldrawWsService {
 			this.subscribeOnAwarenessUpdate(doc);
 			doc.on('update', (update: Uint8Array, origin) => this.updateHandler(update, origin, doc));
 
-			this.subscribeOnDocument(doc).catch((err) => {
-				this.logger.warning(
-					new WsSharedDocErrorLoggable(doc.name, 'Error while subscribing to Redis channels', err as Error)
-				);
-				throw err;
-			});
+			await this.subscribeOnDocument(doc);
 
 			await this.updateDocument(docName, doc);
 
@@ -370,10 +367,19 @@ export class TldrawWsService {
 		);
 	}
 
-	private subscribeOnDocument(doc: WsSharedDocDo) {
-		return this.sub
-			.subscribe(doc.name, doc.awarenessChannel)
-			.then(() => this.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message, doc)));
+	private async subscribeOnDocument(doc: WsSharedDocDo) {
+		try {
+			await this.sub
+				.subscribe(doc.name, doc.awarenessChannel)
+				.then(() =>
+					this.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message, doc))
+				);
+		} catch (err) {
+			this.logger.warning(
+				new WsSharedDocErrorLoggable(doc.name, 'Error while subscribing to Redis channels', err as Error)
+			);
+			throw err;
+		}
 	}
 
 	private async updateDocument(docName: string, doc: WsSharedDocDo) {
@@ -384,9 +390,11 @@ export class TldrawWsService {
 	}
 
 	private publishAwarenessUpdate(doc: WsSharedDocDo, update: Uint8Array) {
-		this.pub.publish(doc.awarenessChannel, Buffer.from(update)).catch((err) => {
+		try {
+			void this.pub.publish(doc.awarenessChannel, Buffer.from(update));
+		} catch (err) {
 			this.logger.warning(new RedisPublishErrorLoggable('awareness', err as Error));
 			throw err;
-		});
+		}
 	}
 }
