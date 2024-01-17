@@ -332,6 +332,7 @@ describe('TldrawWSService', () => {
 				const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockReturnValueOnce();
 				const sendSpy = jest.spyOn(service, 'send').mockImplementation(() => {});
 				const getYDocSpy = jest.spyOn(service, 'getYDoc').mockResolvedValueOnce(doc);
+				const closeConnSpy = jest.spyOn(service, 'closeConn').mockImplementation(() => {});
 				const { msg } = createMessage([0]);
 				jest.spyOn(AwarenessProtocol, 'encodeAwarenessUpdate').mockReturnValueOnce(msg);
 
@@ -339,22 +340,25 @@ describe('TldrawWSService', () => {
 					messageHandlerSpy,
 					sendSpy,
 					getYDocSpy,
+					closeConnSpy,
 				};
 			};
 
 			it('should send to every client', async () => {
-				const { messageHandlerSpy, sendSpy, getYDocSpy } = await setup();
+				const { messageHandlerSpy, sendSpy, getYDocSpy, closeConnSpy } = await setup();
 
 				await service.setupWSConnection(ws, 'TEST');
+				await delay(10);
 				ws.emit('pong');
 
-				await delay(200);
+				await delay(100);
 
 				expect(sendSpy).toHaveBeenCalledTimes(2);
 				ws.close();
 				messageHandlerSpy.mockRestore();
 				sendSpy.mockRestore();
 				getYDocSpy.mockRestore();
+				closeConnSpy.mockRestore();
 			});
 		});
 	});
@@ -416,11 +420,10 @@ describe('TldrawWSService', () => {
 				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 
 				const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockReturnValueOnce();
-				const closeConnSpy = jest.spyOn(service, 'closeConn');
+				const closeConnSpy = jest.spyOn(service, 'closeConn').mockImplementation(() => {});
 				jest.spyOn(ws, 'ping').mockImplementationOnce(() => {
 					throw new Error('error');
 				});
-				jest.spyOn(service, 'send').mockImplementationOnce(() => {});
 				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce({});
 
 				return {
@@ -434,7 +437,7 @@ describe('TldrawWSService', () => {
 
 				await service.setupWSConnection(ws, 'TEST');
 
-				await delay(200);
+				await delay(100);
 
 				expect(closeConnSpy).toHaveBeenCalled();
 				ws.close();
