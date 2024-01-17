@@ -9,7 +9,6 @@ import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm }
 import { AccountRepo } from './repo/account.repo';
 import { AccountServiceDb } from './services/account-db.service';
 import { AccountServiceIdm } from './services/account-idm.service';
-import { AccountLookupService } from './services/account-lookup.service';
 import { AccountService } from './services/account.service';
 import { AccountValidationService } from './services/account.validation.service';
 import { AccountConfig } from './account-config';
@@ -31,7 +30,6 @@ function accountIdmToDtoMapperFactory(configService: ConfigService<AccountConfig
 		AccountServiceDb,
 		AccountServiceIdm,
 		AccountService,
-		AccountLookupService,
 		AccountValidationService,
 		{
 			provide: AccountIdmToDoMapper,

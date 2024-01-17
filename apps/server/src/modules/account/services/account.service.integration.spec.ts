@@ -18,7 +18,6 @@ import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../repo/mapper';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
-import { AccountLookupService } from './account-lookup.service';
 import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
@@ -96,7 +95,6 @@ describe('AccountService Integration', () => {
 				AccountRepo,
 				UserRepo,
 				AccountValidationService,
-				AccountLookupService,
 				{
 					provide: AccountIdmToDoMapper,
 					useValue: new AccountIdmToDoMapperDb(),

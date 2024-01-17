@@ -1,22 +1,25 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config/dist/config.service';
 import { EntityNotFoundError } from '@shared/common';
 import { Counted, EntityId } from '@shared/domain/types';
+import { IdentityManagementService } from '@src/infra/identity-management/identity-management.service';
 import bcrypt from 'bcryptjs';
-import { AccountEntityToDoMapper } from '../repo/mapper';
-import { AccountRepo } from '../repo/account.repo';
-import { AccountLookupService } from './account-lookup.service';
-import { AbstractAccountService } from './account.service.abstract';
-import { Account, AccountSave } from '../domain';
+import { AccountConfig } from '../account-config';
+import { Account, AccountSave } from '../domain/account';
 import { AccountEntity } from '../entity/account.entity';
+import { AccountRepo } from '../repo/account.repo';
+import { AccountEntityToDoMapper } from '../repo/mapper/account-entity-to-do.mapper';
 
 // HINT: do more empty lines :)
 
 @Injectable()
-export class AccountServiceDb extends AbstractAccountService {
-	constructor(private readonly accountRepo: AccountRepo, private readonly accountLookupService: AccountLookupService) {
-		super();
-	}
+export class AccountServiceDb {
+	constructor(
+		private readonly accountRepo: AccountRepo,
+		private readonly idmService: IdentityManagementService,
+		private readonly configService: ConfigService<AccountConfig, true>
+	) {}
 
 	async findById(id: EntityId): Promise<Account> {
 		const internalId = await this.getInternalId(id);
@@ -134,11 +137,28 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	private async getInternalId(id: EntityId | ObjectId): Promise<ObjectId> {
-		const internalId = await this.accountLookupService.getInternalId(id);
+		const internalId = await this.getInternalIdImpl(id);
 		if (!internalId) {
 			throw new EntityNotFoundError(`Account with id ${id.toString()} not found`);
 		}
 		return internalId;
+	}
+
+	/**
+	 * Converts an external id to the internal id, if the id is already an internal id, it will be returned as is.
+	 * IMPORTANT: This method will not guarantee that the id is valid, it will only try to convert it.
+	 * @param id the id the should be converted to the internal id.
+	 * @returns the converted id or null if conversion failed.
+	 */
+	private async getInternalIdImpl(id: EntityId | ObjectId): Promise<ObjectId | null> {
+		if (id instanceof ObjectId || ObjectId.isValid(id)) {
+			return new ObjectId(id);
+		}
+		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
+			const account = await this.idmService.findAccountById(id);
+			return new ObjectId(account.attDbcAccountId);
+		}
+		return null;
 	}
 
 	private encryptPassword(password: string): Promise<string> {
