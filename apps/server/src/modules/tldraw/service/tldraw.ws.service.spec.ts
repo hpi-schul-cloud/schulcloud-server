@@ -106,6 +106,10 @@ describe('TldrawWSService', () => {
 		await app.close();
 	});
 
+	afterEach(() => {
+		jest.clearAllMocks();
+	});
+
 	const createMessage = (values: number[]) => {
 		const encoder = encoding.createEncoder();
 		values.forEach((val) => {
@@ -451,6 +455,8 @@ describe('TldrawWSService', () => {
 
 				await expect(service.setupWSConnection(ws, 'TEST')).rejects.toThrow('error');
 
+				await delay(50);
+
 				expect(flushDocumentSpy).toHaveBeenCalled();
 				expect(errorLogSpy).toHaveBeenCalled();
 				ws.close();
@@ -495,7 +501,7 @@ describe('TldrawWSService', () => {
 
 		it('should log error when publish to Redis throws', async () => {
 			const { doc, socketMock, msg, errorLogSpy } = await setup();
-			jest.spyOn(Ioredis.Redis.prototype, 'publish').mockImplementationOnce(() => {
+			const publishSpy = jest.spyOn(Ioredis.Redis.prototype, 'publish').mockImplementationOnce(() => {
 				throw new Error('error');
 			});
 
@@ -506,8 +512,11 @@ describe('TldrawWSService', () => {
 				expect(e.message).toMatch('error');
 			}
 
+			await delay(50);
+
 			expect(errorLogSpy).toHaveBeenCalled();
 			ws.close();
+			publishSpy.mockRestore();
 		});
 	});
 
@@ -538,6 +547,8 @@ describe('TldrawWSService', () => {
 				await service.setupWSConnection(ws, 'TEST');
 				ws.emit('message', msg);
 
+				await delay(50);
+
 				expect(messageHandlerSpy).toHaveBeenCalledTimes(1);
 				ws.close();
 				messageHandlerSpy.mockRestore();
@@ -557,6 +568,8 @@ describe('TldrawWSService', () => {
 					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 					expect(e.message).toMatch('error');
 				}
+
+				await delay(50);
 
 				expect(errorLogSpy).toHaveBeenCalled();
 				ws.close();
@@ -610,6 +623,8 @@ describe('TldrawWSService', () => {
 						// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 						expect(e.message).toMatch('error');
 					}
+
+					await delay(50);
 
 					expect(doc).toBeDefined();
 					expect(errorLogSpy).toHaveBeenCalled();
