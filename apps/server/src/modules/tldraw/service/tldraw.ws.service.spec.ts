@@ -60,11 +60,6 @@ describe('TldrawWSService', () => {
 	const gatewayPort = 3346;
 	const wsUrl = TestConnection.getWsUrl(gatewayPort);
 
-	const delay = (ms: number) =>
-		new Promise((resolve) => {
-			setTimeout(resolve, ms);
-		});
-
 	beforeAll(async () => {
 		const testingModule = await Test.createTestingModule({
 			imports: [
@@ -100,6 +95,8 @@ describe('TldrawWSService', () => {
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
 		await app.init();
+
+		jest.useFakeTimers();
 	});
 
 	afterAll(async () => {
@@ -370,7 +367,6 @@ describe('TldrawWSService', () => {
 				const { closeConnSpy } = await setup();
 
 				await service.setupWSConnection(ws, 'TEST');
-				await delay(10);
 
 				expect(closeConnSpy).toHaveBeenCalled();
 				ws.close();
@@ -420,7 +416,6 @@ describe('TldrawWSService', () => {
 				const { messageHandlerSpy, closeConnSpy } = await setup();
 
 				await service.setupWSConnection(ws, 'TEST');
-				await delay(10);
 
 				expect(closeConnSpy).toHaveBeenCalled();
 				ws.close();
@@ -448,7 +443,6 @@ describe('TldrawWSService', () => {
 				const { flushDocumentSpy, errorLogSpy } = await setup();
 
 				await expect(service.setupWSConnection(ws, 'TEST')).rejects.toThrow('error');
-				await delay(10);
 
 				expect(flushDocumentSpy).toHaveBeenCalled();
 				expect(errorLogSpy).toHaveBeenCalled();
@@ -493,10 +487,10 @@ describe('TldrawWSService', () => {
 		});
 
 		it('should log error when publish to Redis throws', async () => {
+			const { doc, socketMock, msg, errorLogSpy } = await setup();
 			jest.spyOn(Ioredis.Redis.prototype, 'publish').mockImplementationOnce(() => {
 				throw new Error('error');
 			});
-			const { doc, socketMock, msg, errorLogSpy } = await setup();
 
 			try {
 				service.updateHandler(msg, socketMock, doc);
@@ -504,8 +498,6 @@ describe('TldrawWSService', () => {
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				expect(e.message).toMatch('error');
 			}
-
-			await delay(10);
 
 			expect(errorLogSpy).toHaveBeenCalled();
 			ws.close();
@@ -559,8 +551,6 @@ describe('TldrawWSService', () => {
 					expect(e.message).toMatch('error');
 				}
 
-				await delay(10);
-
 				expect(errorLogSpy).toHaveBeenCalled();
 				ws.close();
 			});
@@ -594,8 +584,7 @@ describe('TldrawWSService', () => {
 					const { redisOnSpy, redisSubscribeSpy } = setup();
 					redisSubscribeSpy.mockResolvedValueOnce(1);
 
-					const doc = service.getYDoc('test-redis');
-					await delay(20);
+					const doc = await service.getYDoc('test-redis');
 
 					expect(doc).toBeDefined();
 					expect(redisOnSpy).toHaveBeenCalled();
@@ -615,8 +604,6 @@ describe('TldrawWSService', () => {
 						expect(e.message).toMatch('error');
 					}
 
-					await delay(20);
-
 					expect(doc).toBeDefined();
 					expect(errorLogSpy).toHaveBeenCalled();
 				});
@@ -635,21 +622,10 @@ describe('TldrawWSService', () => {
 
 				it('should log error when failed', async () => {
 					const { errorLogSpy, updateDocSpy } = setup();
-					updateDocSpy.mockImplementationOnce(() => {
-						throw new Error('error');
-					});
+					updateDocSpy.mockRejectedValueOnce(new Error('error'));
 
-					let doc: WsSharedDocDo | null = null;
-					try {
-						doc = await service.getYDoc('test-update-fail');
-					} catch (e) {
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-						expect(e.message).toMatch('error');
-					}
+					await expect(service.getYDoc('test-update-fail')).rejects.toThrow('error');
 
-					await delay(20);
-
-					expect(doc).toBeDefined();
 					expect(errorLogSpy).toHaveBeenCalled();
 				});
 			});
