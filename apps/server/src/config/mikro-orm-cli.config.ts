@@ -2,9 +2,9 @@ import type { MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs/typings';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { FileEntity } from '@modules/files/entity';
 import { FileRecord } from '@modules/files-storage/entity';
-import { DB_PASSWORD, DB_URL, DB_USERNAME } from './config';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from './index';
 
-export const mikroOrmConfig: MikroOrmModuleSyncOptions = {
+export const mikroOrmCliConfig: MikroOrmModuleSyncOptions = {
 	// TODO repeats server module definitions
 	type: 'mongo',
 	clientUrl: DB_URL,
@@ -32,4 +32,4 @@ export const mikroOrmConfig: MikroOrmModuleSyncOptions = {
 	},
 };
 
-export default mikroOrmConfig;
+export default mikroOrmCliConfig;

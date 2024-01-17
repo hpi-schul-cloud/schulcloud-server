@@ -10,7 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { ConsoleModule } from 'nestjs-console';
 import { ServerConsole } from './server.console';
-import { mikroOrmConfig } from '../mikro-orm.config';
+import { mikroOrmCliConfig } from '../config/mikro-orm-cli.config';
 
 @Module({
 	imports: [
@@ -20,7 +20,7 @@ import { mikroOrmConfig } from '../mikro-orm.config';
 		FilesModule,
 		ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 		...((Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean) ? [KeycloakModule] : []),
-		MikroOrmModule.forRoot(mikroOrmConfig),
+		MikroOrmModule.forRoot(mikroOrmCliConfig),
 	],
 	providers: [
 		/** add console services as providers */
