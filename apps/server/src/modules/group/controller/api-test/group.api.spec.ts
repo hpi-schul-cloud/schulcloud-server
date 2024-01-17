@@ -104,7 +104,7 @@ describe('Group (API)', () => {
 			};
 
 			it('should return the classes of his school', async () => {
-				const { adminClient, group, classEntity, system, adminUser, teacherUser, schoolYear } = await setup();
+				const { adminClient, group, classEntity, system, schoolYear } = await setup();
 
 				const response = await adminClient.get(`/class`).query({
 					skip: 0,
@@ -121,14 +121,14 @@ describe('Group (API)', () => {
 							type: ClassRootType.GROUP,
 							name: group.name,
 							externalSourceName: system.displayName,
-							teachers: [adminUser.lastName],
+							teachers: [],
 							studentCount: 0,
 						},
 						{
 							id: classEntity.id,
 							type: ClassRootType.CLASS,
 							name: classEntity.gradeLevel ? `${classEntity.gradeLevel}${classEntity.name}` : classEntity.name,
-							teachers: [teacherUser.lastName],
+							teachers: [],
 							schoolYear: schoolYear.name,
 							isUpgradable: false,
 							studentCount: 0,
