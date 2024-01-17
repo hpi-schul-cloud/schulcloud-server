@@ -1,15 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AuthorizationService } from '@modules/authorization';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationService } from '../../authorization';
 import { ProviderOauthClient } from '../domain';
 import { OauthProviderService } from '../domain/service/oauth-provider.service';
 import { providerOauthClientFactory } from '../testing';
 import { OauthProviderClientCrudUc } from './oauth-provider.client-crud.uc';
 
-describe('OauthProviderUc', () => {
+describe(OauthProviderClientCrudUc.name, () => {
 	let module: TestingModule;
 	let uc: OauthProviderClientCrudUc;
 

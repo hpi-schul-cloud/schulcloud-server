@@ -29,7 +29,7 @@ import { OauthProviderClientCrudUc } from './oauth-provider.client-crud.uc';
 import { OauthProviderConsentFlowUc } from './oauth-provider.consent-flow.uc';
 import { OauthProviderLoginFlowUc } from './oauth-provider.login-flow.uc';
 import { OauthProviderLogoutFlowUc } from './oauth-provider.logout-flow.uc';
-import { OauthProviderUc } from './oauth-provider.uc';
+import { OauthProviderSessionUc } from './oauth-provider.session.uc';
 
 @Controller('oauth2')
 @ApiTags('Oauth2')
@@ -38,7 +38,7 @@ export class OauthProviderController {
 		private readonly consentFlowUc: OauthProviderConsentFlowUc,
 		private readonly logoutFlowUc: OauthProviderLogoutFlowUc,
 		private readonly crudUc: OauthProviderClientCrudUc,
-		private readonly oauthProviderUc: OauthProviderUc,
+		private readonly oauthProviderUc: OauthProviderSessionUc,
 		private readonly oauthProviderLoginFlowUc: OauthProviderLoginFlowUc
 	) {}
 

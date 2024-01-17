@@ -4,7 +4,7 @@ import { ProviderConsentSessionResponse } from '../domain';
 import { OauthProviderService } from '../domain/service/oauth-provider.service';
 
 @Injectable()
-export class OauthProviderUc {
+export class OauthProviderSessionUc {
 	constructor(private readonly oauthProviderService: OauthProviderService) {}
 
 	public async listConsentSessions(userId: EntityId): Promise<ProviderConsentSessionResponse[]> {

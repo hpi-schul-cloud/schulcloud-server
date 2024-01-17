@@ -9,7 +9,7 @@ import {
 	OauthProviderController,
 	OauthProviderLoginFlowUc,
 	OauthProviderLogoutFlowUc,
-	OauthProviderUc,
+	OauthProviderSessionUc,
 } from './api';
 import { OauthProviderServiceModule } from './oauth-provider-service.module';
 import { OauthProviderModule } from './oauth-provider.module';
@@ -24,7 +24,7 @@ import { OauthProviderModule } from './oauth-provider.module';
 		UserModule,
 	],
 	providers: [
-		OauthProviderUc,
+		OauthProviderSessionUc,
 		OauthProviderClientCrudUc,
 		OauthProviderConsentFlowUc,
 		OauthProviderLogoutFlowUc,

@@ -4,7 +4,7 @@ import { ProviderRedirectResponse } from '../domain';
 import { OauthProviderService } from '../domain/service/oauth-provider.service';
 import { OauthProviderLogoutFlowUc } from './oauth-provider.logout-flow.uc';
 
-describe('OauthProviderUc', () => {
+describe(OauthProviderLogoutFlowUc.name, () => {
 	let module: TestingModule;
 	let uc: OauthProviderLogoutFlowUc;
 

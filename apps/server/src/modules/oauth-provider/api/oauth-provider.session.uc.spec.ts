@@ -4,18 +4,18 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ProviderConsentSessionResponse } from '../domain';
 import { OauthProviderService } from '../domain/service/oauth-provider.service';
 import { providerConsentSessionResponseFactory } from '../testing';
-import { OauthProviderUc } from './oauth-provider.uc';
+import { OauthProviderSessionUc } from './oauth-provider.session.uc';
 
-describe('OauthProviderUc', () => {
+describe(OauthProviderSessionUc.name, () => {
 	let module: TestingModule;
-	let uc: OauthProviderUc;
+	let uc: OauthProviderSessionUc;
 
 	let providerService: DeepMocked<OauthProviderService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				OauthProviderUc,
+				OauthProviderSessionUc,
 				{
 					provide: OauthProviderService,
 					useValue: createMock<OauthProviderService>(),
@@ -23,7 +23,7 @@ describe('OauthProviderUc', () => {
 			],
 		}).compile();
 
-		uc = module.get(OauthProviderUc);
+		uc = module.get(OauthProviderSessionUc);
 		providerService = module.get(OauthProviderService);
 	});
 

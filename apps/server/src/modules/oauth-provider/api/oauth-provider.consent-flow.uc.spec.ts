@@ -19,7 +19,7 @@ import {
 } from '../testing';
 import { OauthProviderConsentFlowUc } from './oauth-provider.consent-flow.uc';
 
-describe('OauthProviderConsentFlowUc', () => {
+describe(OauthProviderConsentFlowUc.name, () => {
 	let module: TestingModule;
 	let uc: OauthProviderConsentFlowUc;
 
