@@ -60,6 +60,11 @@ describe('TldrawWSService', () => {
 	const gatewayPort = 3346;
 	const wsUrl = TestConnection.getWsUrl(gatewayPort);
 
+	const delay = (ms: number) =>
+		new Promise((resolve) => {
+			setTimeout(resolve, ms);
+		});
+
 	beforeAll(async () => {
 		const testingModule = await Test.createTestingModule({
 			imports: [
@@ -335,6 +340,8 @@ describe('TldrawWSService', () => {
 				const { messageHandlerSpy, sendSpy, getYDocSpy } = await setup();
 
 				await service.setupWSConnection(ws, 'TEST');
+
+				await delay(50);
 
 				expect(sendSpy).toHaveBeenCalledTimes(2);
 				ws.close();
