@@ -344,6 +344,7 @@ export class UserImportUc {
 			throw new UserImportConfigurationFailureLoggableException();
 		}
 		const currentUser: User = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
+		const system: SystemEntity = await this.getMigrationSystem();
 
 		const { officialSchoolNumber } = currentUser.school;
 		if (!officialSchoolNumber) {
@@ -364,8 +365,8 @@ export class UserImportUc {
 
 		const mappedImportUsers: ImportUser[] = this.fetchImportUserService.mapToImportUser(
 			filteredFetchedData,
-			currentUser.school.id,
-			this.userImportFeatures.userMigrationSystemId
+			currentUser.school,
+			system
 		);
 
 		// TODO: doing match.

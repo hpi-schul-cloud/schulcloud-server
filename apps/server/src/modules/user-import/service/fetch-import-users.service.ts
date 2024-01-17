@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject';
-import { ImportUser } from '@shared/domain/entity';
+import { ImportUser, SchoolEntity, SystemEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { lastValueFrom } from 'rxjs';
@@ -56,19 +56,21 @@ export class FetchImportUsersService {
 		return filteredData;
 	}
 
-	public mapToImportUser(data: SanisResponse[], school: EntityId, systemId: EntityId): ImportUser[] {
-		// const schoolEntity: SchoolEntity =
-
+	public mapToImportUser(data: SanisResponse[], school: SchoolEntity, system: SystemEntity): ImportUser[] {
 		const importUsers: ImportUser[] = data.map((sanisUser: SanisResponse): ImportUser => {
 			const importUser = new ImportUser({
 				school,
-				system: systemId,
+				system,
 				ldapDn: 'asds',
 				externalId: sanisUser.pid,
 				firstName: sanisUser.person.name.vorname,
 				lastName: sanisUser.person.name.familienname,
 				email: 'asdasd',
 			});
+
+			return importUser;
 		});
+
+		return importUsers;
 	}
 }
