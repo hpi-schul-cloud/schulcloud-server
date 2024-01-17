@@ -1,8 +1,8 @@
+import { ProviderOauthClient } from '@modules/oauth-provider/domain';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ProviderOauthClient } from '@infra/oauth-provider/dto';
-import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { TokenEndpointAuthMethod, ToolConfigType } from '../../common/enum';
 import { Oauth2ToolConfig } from '../domain';
+import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 
 describe('ExternalToolServiceMapper', () => {
 	let module: TestingModule;
@@ -34,7 +34,7 @@ describe('ExternalToolServiceMapper', () => {
 				frontchannelLogoutUri: 'frontchannelLogoutUri',
 				skipConsent: false,
 			});
-			const expected: ProviderOauthClient = {
+			const expected: Partial<ProviderOauthClient> = {
 				client_name: toolName,
 				client_id: 'clientId',
 				client_secret: 'clientSecret',
@@ -45,7 +45,7 @@ describe('ExternalToolServiceMapper', () => {
 				subject_type: 'pairwise',
 			};
 
-			const result: ProviderOauthClient = mapper.mapDoToProviderOauthClient(toolName, oauth2Config);
+			const result: Partial<ProviderOauthClient> = mapper.mapDoToProviderOauthClient(toolName, oauth2Config);
 
 			expect(result).toEqual(expected);
 		});

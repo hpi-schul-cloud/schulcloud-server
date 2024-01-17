@@ -1,5 +1,5 @@
 import { EncryptionModule } from '@infra/encryption';
-import { OauthProviderServiceModule } from '@infra/oauth-provider';
+import { OauthProviderServiceModule } from '@modules/oauth-provider';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ExternalToolRepo } from '@shared/repo';

@@ -1,6 +1,6 @@
 import { Page } from '@shared/domain/domainobject';
 import { GroupTypes } from '../../domain';
-import { ClassInfoDto, ResolvedGroupDto } from '../../uc/dto';
+import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from '../../uc/dto';
 import {
 	ClassInfoResponse,
 	ClassInfoSearchListResponse,
@@ -17,17 +17,17 @@ const typeMapping: Record<GroupTypes, GroupTypeResponse> = {
 };
 
 export class GroupResponseMapper {
-	static mapToClassInfosToListResponse(
+	public static mapToClassInfoSearchListResponse(
 		classInfos: Page<ClassInfoDto>,
 		skip?: number,
 		limit?: number
 	): ClassInfoSearchListResponse {
-		const mappedData: ClassInfoResponse[] = classInfos.data.map((classInfo) =>
-			this.mapToClassInfoToResponse(classInfo)
+		const classInfoResponses: ClassInfoResponse[] = classInfos.data.map((classInfo) =>
+			this.mapToClassInfoResponse(classInfo)
 		);
 
 		const response: ClassInfoSearchListResponse = new ClassInfoSearchListResponse(
-			mappedData,
+			classInfoResponses,
 			classInfos.total,
 			skip,
 			limit
@@ -36,8 +36,8 @@ export class GroupResponseMapper {
 		return response;
 	}
 
-	private static mapToClassInfoToResponse(classInfo: ClassInfoDto): ClassInfoResponse {
-		const mapped = new ClassInfoResponse({
+	private static mapToClassInfoResponse(classInfo: ClassInfoDto): ClassInfoResponse {
+		const classInfoResponse: ClassInfoResponse = new ClassInfoResponse({
 			id: classInfo.id,
 			type: classInfo.type,
 			name: classInfo.name,
@@ -48,32 +48,36 @@ export class GroupResponseMapper {
 			studentCount: classInfo.studentCount,
 		});
 
-		return mapped;
+		return classInfoResponse;
 	}
 
 	static mapToGroupResponse(resolvedGroup: ResolvedGroupDto): GroupResponse {
-		const mapped: GroupResponse = new GroupResponse({
+		const externalSource: ExternalSourceResponse | undefined = resolvedGroup.externalSource
+			? new ExternalSourceResponse({
+					externalId: resolvedGroup.externalSource.externalId,
+					systemId: resolvedGroup.externalSource.systemId,
+			  })
+			: undefined;
+
+		const users: GroupUserResponse[] = resolvedGroup.users.map(
+			(user: ResolvedGroupUser): GroupUserResponse =>
+				new GroupUserResponse({
+					id: user.user.id as string,
+					role: user.role.name,
+					firstName: user.user.firstName,
+					lastName: user.user.lastName,
+				})
+		);
+
+		const groupResponse: GroupResponse = new GroupResponse({
 			id: resolvedGroup.id,
 			name: resolvedGroup.name,
 			type: typeMapping[resolvedGroup.type],
-			externalSource: resolvedGroup.externalSource
-				? new ExternalSourceResponse({
-						externalId: resolvedGroup.externalSource.externalId,
-						systemId: resolvedGroup.externalSource.systemId,
-				  })
-				: undefined,
-			users: resolvedGroup.users.map(
-				(user) =>
-					new GroupUserResponse({
-						id: user.user.id as string,
-						role: user.role.name,
-						firstName: user.user.firstName,
-						lastName: user.user.lastName,
-					})
-			),
+			externalSource,
+			users,
 			organizationId: resolvedGroup.organizationId,
 		});
 
-		return mapped;
+		return groupResponse;
 	}
 }
