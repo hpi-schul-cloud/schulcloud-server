@@ -224,7 +224,7 @@ export class LessonCopyService {
 				copiedContent.push(linkContent);
 				copiedContentStatus.push(embeddedTaskStatus);
 			}
-			if (element.component === ComponentType.NEXBOARD && nexboardEnabled) {
+			if (element.component === ComponentType.NEXBOARD) {
 				const nexboardStatus = {
 					title: element.title,
 					type: CopyElementType.LESSON_CONTENT_NEXBOARD,
