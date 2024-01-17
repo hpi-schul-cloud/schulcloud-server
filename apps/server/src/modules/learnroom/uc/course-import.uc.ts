@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -16,9 +16,9 @@ export class CourseImportUc {
 	) {}
 
 	public async importFromCommonCartridge(userId: EntityId, file: Buffer): Promise<void> {
-		// if (!this.configService.get<boolean>('FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED')) {
-		// 	throw new NotFoundException();
-		// }
+		if (!this.configService.get<boolean>('FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED')) {
+			throw new NotFoundException();
+		}
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 

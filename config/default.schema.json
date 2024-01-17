@@ -180,7 +180,7 @@
 			"default": "",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
 		},
-		"BLOCKLIST_OF_EMAIL_DOMAINS":{
+		"BLOCKLIST_OF_EMAIL_DOMAINS": {
 			"type": "string",
 			"default": "",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
@@ -1173,6 +1173,11 @@
 			"default": false,
 			"description": "Toggle for the IMSCC course download feature."
 		},
+		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the Common Cartridge course upload/import feature."
+		},
 		"GHOST_BASE_URL": {
 			"type": "string",
 			"format": "uri",
@@ -1437,7 +1442,14 @@
 		"TLDRAW": {
 			"type": "object",
 			"description": "Tldraw managing variables.",
-			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_COLLECTION_NAME", "DB_FLUSH_SIZE", "DB_MULTIPLE_COLLECTIONS"],
+			"required": [
+				"PING_TIMEOUT",
+				"SOCKET_PORT",
+				"GC_ENABLED",
+				"DB_COLLECTION_NAME",
+				"DB_FLUSH_SIZE",
+				"DB_MULTIPLE_COLLECTIONS"
+			],
 			"properties": {
 				"SOCKET_PORT": {
 					"type": "number",

@@ -8,6 +8,7 @@ import type { SchoolConfig } from '@modules/school';
 import type { UserConfig } from '@modules/user';
 import type { CoreModuleConfig } from '@src/core';
 import { MailConfig } from '@src/infra/mail/interfaces/mail-config';
+import { LearnroomConfig } from '../learnroom';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -25,7 +26,8 @@ export interface ServerConfig
 		CommonCartridgeConfig,
 		SchoolConfig,
 		MailConfig,
-		XApiKeyConfig {
+		XApiKeyConfig,
+		LearnroomConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 }
@@ -52,6 +54,9 @@ const config: ServerConfig = {
 	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)
 		.split(',')
 		.map((domain) => domain.trim()),
+	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED: Configuration.get(
+		'FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED'
+	) as boolean,
 };
 
 export const serverConfig = () => config;
