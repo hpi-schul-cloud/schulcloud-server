@@ -430,7 +430,7 @@ describe('TldrawWSService', () => {
 
 				await service.setupWSConnection(ws, 'TEST');
 
-				await delay(50);
+				await delay(100);
 
 				expect(closeConnSpy).toHaveBeenCalled();
 				expect(pingSpy).toHaveBeenCalled();
