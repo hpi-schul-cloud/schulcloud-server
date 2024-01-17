@@ -6,5 +6,6 @@ export const tldrawTestConfig = () => {
 		conf.REDIS_URI = 'redis://127.0.0.1:6379';
 	}
 	conf.TLDRAW_DB_FLUSH_SIZE = 2;
+	conf.TLDRAW_PING_TIMEOUT = 0;
 	return conf;
 };

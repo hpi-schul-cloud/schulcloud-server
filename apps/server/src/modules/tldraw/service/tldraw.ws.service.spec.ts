@@ -345,7 +345,7 @@ describe('TldrawWSService', () => {
 
 				await service.setupWSConnection(ws, 'TEST');
 
-				await delay(50);
+				await delay(200);
 
 				expect(sendSpy).toHaveBeenCalledTimes(2);
 				ws.close();
@@ -413,23 +413,29 @@ describe('TldrawWSService', () => {
 
 				const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockReturnValueOnce();
 				const closeConnSpy = jest.spyOn(service, 'closeConn');
-				jest.spyOn(ws, 'ping').mockImplementationOnce(() => {
+				const pingSpy = jest.spyOn(ws, 'ping').mockImplementationOnce(() => {
 					throw new Error('error');
 				});
+				jest.spyOn(service, 'send').mockImplementationOnce(() => {});
 
 				return {
+					pingSpy,
 					messageHandlerSpy,
 					closeConnSpy,
 				};
 			};
 
 			it('should close connection', async () => {
-				const { messageHandlerSpy, closeConnSpy } = await setup();
+				const { pingSpy, messageHandlerSpy, closeConnSpy } = await setup();
 
 				await service.setupWSConnection(ws, 'TEST');
 
+				await delay(50);
+
 				expect(closeConnSpy).toHaveBeenCalled();
+				expect(pingSpy).toHaveBeenCalled();
 				ws.close();
+				pingSpy.mockRestore();
 				messageHandlerSpy.mockRestore();
 				closeConnSpy.mockRestore();
 			});
