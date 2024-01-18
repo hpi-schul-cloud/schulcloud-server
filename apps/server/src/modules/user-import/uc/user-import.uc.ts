@@ -17,8 +17,6 @@ import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch, SchoolFeature } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { AxiosResponse } from 'axios';
-import { SanisResponse } from '../../provisioning';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import {
 	MigrationMayBeCompleted,
@@ -26,10 +24,8 @@ import {
 	SchoolIdDoesNotMatchWithUserSchoolId,
 	SchoolInUserMigrationEndLoggable,
 	SchoolInUserMigrationStartLoggable,
-	UserImportConfigurationFailureLoggableException,
 	UserMigrationIsNotEnabled,
 } from '../loggable';
-import { OauthFetchImportUsersService } from '../service';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,
@@ -51,8 +47,7 @@ export class UserImportUc {
 		private readonly systemRepo: LegacySystemRepo,
 		private readonly userRepo: UserRepo,
 		private readonly logger: Logger,
-		@Inject(UserImportFeatures) private readonly userImportFeatures: IUserImportFeatures,
-		private readonly oauthFetchImportUsersService: OauthFetchImportUsersService
+		@Inject(UserImportFeatures) private readonly userImportFeatures: IUserImportFeatures
 	) {
 		this.logger.setContext(UserImportUc.name);
 	}
@@ -336,54 +331,6 @@ export class UserImportUc {
 	private checkSchoolNotInMigration(school: LegacySchoolDo): void | never {
 		if (school.inUserMigration !== undefined && school.inUserMigration !== null) {
 			throw new MigrationAlreadyActivatedException();
-		}
-	}
-
-	// TODO: move to own uc
-	public async fetchImportUsers(currentUserId: EntityId): Promise<void> {
-		this.checkUserMigrationOauthFetching();
-		const currentUser: User = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
-
-		const { officialSchoolNumber } = currentUser.school;
-		if (!officialSchoolNumber) {
-			throw new MissingSchoolNumberException();
-		}
-
-		const { tokenEndpoint, fetchEndpoint, clientId, clientSecret } = this.userImportFeatures.userMigrationOauthFetching;
-		// TODO: remove non-null assertion
-		const fetchedData: AxiosResponse<SanisResponse[]> = await this.oauthFetchImportUsersService.getData(
-			tokenEndpoint!,
-			fetchEndpoint!,
-			officialSchoolNumber,
-			clientId!,
-			clientSecret!
-		);
-
-		const filteredFetchedData: SanisResponse[] = this.oauthFetchImportUsersService.filterAlreadyFetchedData(
-			fetchedData.data,
-			this.userImportFeatures.userMigrationSystemId
-		);
-
-		const system: SystemEntity = await this.getMigrationSystem();
-		const mappedImportUsers: ImportUser[] = this.oauthFetchImportUsersService.mapToImportUser(
-			filteredFetchedData,
-			currentUser.school,
-			system
-		);
-
-		// TODO: doing match.
-
-		await this.importUserRepo.saveImportUsers(mappedImportUsers);
-	}
-
-	private checkUserMigrationOauthFetching(): void {
-		if (
-			!this.userImportFeatures.userMigrationOauthFetching.tokenEndpoint &&
-			!this.userImportFeatures.userMigrationOauthFetching.fetchEndpoint &&
-			!this.userImportFeatures.userMigrationOauthFetching.clientId &&
-			!this.userImportFeatures.userMigrationOauthFetching.clientSecret
-		) {
-			throw new UserImportConfigurationFailureLoggableException();
 		}
 	}
 }

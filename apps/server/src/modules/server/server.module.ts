@@ -2,6 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
 import { MailModule } from '@infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
+import { SchulconnexClientModule } from '@infra/schulconnex-client';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { AccountApiModule } from '@modules/account/account-api.module';
@@ -35,6 +36,7 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
+import { UserImportConfigModule } from '../user-import/user-import-config.module';
 import { ServerController } from './controller/server.controller';
 import { serverConfig } from './server.config';
 
@@ -50,7 +52,14 @@ const serverModules = [
 	LessonApiModule,
 	NewsModule,
 	UserApiModule,
+	SchulconnexClientModule.forRoot({
+		apiUrl: Configuration.get('SCHULCONNEX_CLIENT__API_URL') as string,
+		tokenEndpoint: Configuration.get('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT') as string,
+		clientId: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_ID') as string,
+		clientSecret: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_SECRET') as string,
+	}),
 	ImportUserModule,
+	UserImportConfigModule,
 	LearnroomApiModule,
 	FilesStorageClientModule,
 	SystemApiModule,

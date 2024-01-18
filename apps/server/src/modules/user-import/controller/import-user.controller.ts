@@ -10,10 +10,8 @@ import {
 import { PaginationParams } from '@shared/controller';
 import { ImportUser, User } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
-import { ImportUserMapper } from '../mapper/import-user.mapper';
-import { UserMatchMapper } from '../mapper/user-match.mapper';
-import { UserImportUc } from '../uc/user-import.uc';
-
+import { ImportUserMapper, UserMatchMapper } from '../mapper';
+import { UserImportFetchUc, UserImportUc } from '../uc';
 import {
 	FilterImportUserParams,
 	FilterUserParams,
@@ -29,7 +27,7 @@ import {
 @ApiTags('UserImport')
 @Controller('user/import')
 export class ImportUserController {
-	constructor(private readonly userImportUc: UserImportUc, private readonly userUc: UserImportUc) {}
+	constructor(private readonly userImportUc: UserImportUc, private readonly userImportFetchUc: UserImportFetchUc) {}
 
 	@Get()
 	async findAllImportUsers(
@@ -93,7 +91,7 @@ export class ImportUserController {
 		const options: IFindOptions<User> = { pagination };
 
 		const query = UserMatchMapper.mapToDomain(scope);
-		const [userList, total] = await this.userUc.findAllUnmatchedUsers(currentUser.userId, query, options);
+		const [userList, total] = await this.userImportUc.findAllUnmatchedUsers(currentUser.userId, query, options);
 		const { skip, limit } = pagination;
 		const dtoList = userList.map((user) => UserMatchMapper.mapToResponse(user));
 		const response = new UserMatchListResponse(dtoList, total, skip, limit);
@@ -130,6 +128,6 @@ export class ImportUserController {
 	@ApiServiceUnavailableResponse()
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	async fetchImportUsers(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
-		await this.userImportUc.fetchImportUsers(currentUser.userId);
+		await this.userImportFetchUc.fetchImportUsers(currentUser.userId);
 	}
 }

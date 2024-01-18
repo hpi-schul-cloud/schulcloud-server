@@ -11,7 +11,7 @@ import {
 	SanisResponse,
 	SanisRole,
 	SanisSonstigeGruppenzugehoerigeResponse,
-} from './response';
+} from '../../../../infra/schulconnex-client/response';
 
 const RoleMapping: Record<SanisRole, RoleName> = {
 	[SanisRole.LEHR]: RoleName.TEACHER,

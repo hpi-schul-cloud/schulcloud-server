@@ -27,7 +27,7 @@ import {
 	SanisResponse,
 	SanisResponseValidationGroups,
 	SanisRole,
-} from './response';
+} from '../../../../infra/schulconnex-client/response';
 import { SanisResponseMapper } from './sanis-response.mapper';
 import { SanisProvisioningStrategy } from './sanis.strategy';
 import ArgsType = jest.ArgsType;

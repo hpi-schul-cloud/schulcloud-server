@@ -1164,34 +1164,6 @@
 			"default": "",
 			"description": "SystemId for migration of users from system. To use this please set FEATURE_USER_MIGRATION_CENTRAL_LDAP in the client"
 		},
-		"FEATURE_USER_MIGRATION_OAUTH_FETCHING": {
-			"type": "object",
-			"description": "Configuration regarding fetching users with oauth client credentials flow for user migration.",
-			"properties": {
-				"TOKEN_ENDPOINT": {
-					"type": "string",
-					"description": "Endpoint to receive access token for calling fetch endpoint."
-				},
-				"FETCH_ENDPOINT": {
-					"type": "string",
-					"description": "Endpoint for fetching users."
-				},
-				"CLIENT_ID": {
-					"type": "string",
-					"description": "Client id for fetching users."
-				},
-				"CLIENT_SECRET": {
-					"type": "string",
-					"description": "Client secret for fetching users."
-				},
-				"default": {
-					"TOKEN_ENDPOINT": "",
-					"FETCH_ENDPOINT": "",
-					"CLIENT_ID": "",
-					"CLIENT_SECRET": ""
-				}
-			}
-		},
 		"FEATURE_COPY_SERVICE_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1516,6 +1488,36 @@
 			"type": "string",
 			"default": "http://localhost:3349",
 			"description": "Address for tldraw management app"
+		},
+		"SCHULCONNEX_CLIENT": {
+			"type": "object",
+			"description": "Configuration of the schulcloud's schulconnex client.",
+			"properties": {
+				"API_URL": {
+					"type": "string",
+					"description": "Base URL of the schulconnex API.",
+					"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/"]
+				},
+				"TOKEN_ENDPOINT": {
+					"type": "string",
+					"description": "Token endpoint of the schulconnex API.",
+					"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/oauth2/token"]
+				},
+				"CLIENT_ID": {
+					"type": "string",
+					"description": "Client ID for accessing the schulconnex API."
+				},
+				"CLIENT_SECRET": {
+					"type": "string",
+					"description": "Client secret for accessing the schulconnex API."
+				}
+			},
+			"default": {
+				"API_URL": "",
+				"TOKEN_ENDPOINT": "",
+				"CLIENT_ID": "",
+				"CLIENT_SECRET": ""
+			}
 		}
 	},
 	"required": [],

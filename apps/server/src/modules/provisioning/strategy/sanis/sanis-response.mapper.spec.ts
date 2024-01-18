@@ -13,7 +13,7 @@ import {
 	SanisResponse,
 	SanisRole,
 	SanisSonstigeGruppenzugehoerigeResponse,
-} from './response';
+} from '../../../../infra/schulconnex-client/response';
 import { SanisResponseMapper } from './sanis-response.mapper';
 
 describe('SanisResponseMapper', () => {

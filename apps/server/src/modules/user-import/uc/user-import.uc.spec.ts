@@ -4,7 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account/services/account.service';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { BadRequestException, ForbiddenException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
@@ -17,8 +17,6 @@ import { federalStateFactory, importUserFactory, schoolFactory, userFactory } fr
 import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory';
 import { LoggerModule } from '@src/core/logger';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
-import { UserImportConfigurationFailureLoggableException } from '../loggable';
-import { OauthFetchImportUsersService } from '../service';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,
@@ -37,7 +35,6 @@ describe('[ImportUserModule]', () => {
 		let userRepo: DeepMocked<UserRepo>;
 		let authorizationService: DeepMocked<AuthorizationService>;
 		let userImportFeatures: IUserImportFeatures;
-		let fetchImportUsersService: DeepMocked<OauthFetchImportUsersService>;
 
 		beforeAll(async () => {
 			module = await Test.createTestingModule({
@@ -80,10 +77,6 @@ describe('[ImportUserModule]', () => {
 							userMigrationFetching: {},
 						},
 					},
-					{
-						provide: OauthFetchImportUsersService,
-						useValue: createMock<OauthFetchImportUsersService>(),
-					},
 				],
 			}).compile();
 			uc = module.get(UserImportUc); // TODO UserRepo not available in UserUc?!
@@ -94,7 +87,6 @@ describe('[ImportUserModule]', () => {
 			userRepo = module.get(UserRepo);
 			authorizationService = module.get(AuthorizationService);
 			userImportFeatures = module.get<IUserImportFeatures>(UserImportFeatures);
-			fetchImportUsersService = module.get(OauthFetchImportUsersService);
 		});
 
 		afterAll(async () => {
@@ -760,34 +752,6 @@ describe('[ImportUserModule]', () => {
 				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValueOnce(createMockSchoolDo(school));
 				const result4 = () => uc.endSchoolInMaintenance(currentUser.id);
 				await expect(result4).rejects.toThrowError(BadRequestException);
-			});
-		});
-
-		describe('fetchImportUsers', () => {
-			describe('when user migration fetching endpoint is missing', () => {
-				it('should throw an error', async () => {
-					userImportFeatures.userMigrationOauthFetching.endpoint = undefined;
-
-					await expect(uc.fetchImportUsers(new ObjectId().toString())).rejects.toThrowError(
-						UserImportConfigurationFailureLoggableException
-					);
-				});
-			});
-
-			describe('when current user is not allowed to fetch import users', () => {
-				const setup = () => {
-					userImportFeatures.userMigrationOauthFetching.endpoint = 'https://mocked-endpoint.com';
-					userRepo.findById.mockResolvedValueOnce(userFactory.buildWithId());
-					authorizationService.checkAllPermissions.mockImplementation(() => {
-						throw new UnauthorizedException();
-					});
-				};
-
-				it('should throw an error', async () => {
-					setup();
-
-					await expect(uc.fetchImportUsers(new ObjectId().toString())).rejects.toThrowError(UnauthorizedException);
-				});
 			});
 		});
 	});
