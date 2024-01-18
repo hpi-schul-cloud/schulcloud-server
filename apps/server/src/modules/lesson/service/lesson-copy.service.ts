@@ -166,7 +166,6 @@ export class LessonCopyService {
 		contentStatus: CopyStatus[];
 	}> {
 		const etherpadEnabled = Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean;
-		const nexboardEnabled = Configuration.get('FEATURE_NEXBOARD_ENABLED') as boolean;
 		const nexboardCopyEnabled = Configuration.get('FEATURE_NEXBOARD_COPY_ENABLED') as boolean;
 		const copiedContent: ComponentProperties[] = [];
 		const copiedContentStatus: CopyStatus[] = [];
