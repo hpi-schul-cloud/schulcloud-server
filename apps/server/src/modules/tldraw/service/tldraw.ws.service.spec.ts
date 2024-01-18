@@ -421,7 +421,7 @@ describe('TldrawWSService', () => {
 
 				const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockReturnValueOnce();
 				const closeConnSpy = jest.spyOn(service, 'closeConn').mockResolvedValue();
-				jest.spyOn(ws, 'ping').mockImplementationOnce(() => {
+				const pingSpy = jest.spyOn(ws, 'ping').mockImplementationOnce(() => {
 					throw new Error('error');
 				});
 				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce({});
@@ -429,20 +429,23 @@ describe('TldrawWSService', () => {
 				return {
 					messageHandlerSpy,
 					closeConnSpy,
+					pingSpy,
 				};
 			};
 
 			it('should close connection', async () => {
-				const { messageHandlerSpy, closeConnSpy } = await setup();
+				const { messageHandlerSpy, closeConnSpy, pingSpy } = await setup();
 
 				await service.setupWSConnection(ws, 'TEST');
 
-				await delay(100);
+				await delay(200);
 
 				expect(closeConnSpy).toHaveBeenCalled();
+				expect(pingSpy).toHaveBeenCalled();
 				ws.close();
 				messageHandlerSpy.mockRestore();
 				closeConnSpy.mockRestore();
+				pingSpy.mockRestore();
 			});
 		});
 
