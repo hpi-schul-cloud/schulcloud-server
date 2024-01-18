@@ -1,5 +1,17 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query, Res } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpCode,
+	HttpStatus,
+	NotImplementedException,
+	Param,
+	Post,
+	Query,
+	Res,
+} from '@nestjs/common';
 import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
@@ -190,4 +202,18 @@ export class ToolController {
 
 		return mapped;
 	}
+
+	@Get(':externalToolId/datasheet')
+	@ApiOperation({ summary: 'Returns a pdf of the external tool information' })
+	async getDatasheet(@CurrentUser() currentUser: ICurrentUser, @Param() params: ExternalToolIdParams) {
+		await this.externalToolUc.getDatasheet(currentUser.userId, params.externalToolId);
+	} /*: Promise<ExternalToolResponse> {
+		const externalTool: ExternalTool = await this.externalToolUc.getExternalTool(
+			currentUser.userId,
+			params.externalToolId
+		);
+		const mapped: ExternalToolResponse = ExternalToolResponseMapper.mapToExternalToolResponse(externalTool);
+
+		return mapped;
+	} */
 }

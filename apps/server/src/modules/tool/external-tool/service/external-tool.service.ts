@@ -150,4 +150,8 @@ export class ExternalToolService {
 		config.redirectUris = oauthClient.redirect_uris;
 		config.frontchannelLogoutUri = oauthClient.frontchannel_logout_uri;
 	}
+
+	public async getExternalToolData(externalToolId) {
+		// TODO N21-1626 implement
+	}
 }

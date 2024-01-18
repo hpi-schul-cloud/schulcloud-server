@@ -6,7 +6,7 @@ import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
-import { ExternalTool, ExternalToolConfig, ExternalToolMetadata } from '../domain';
+import { ExternalTool, ExternalToolConfig, ExternalToolMetadata, ExternalToolData } from '../domain';
 import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
 
@@ -91,5 +91,11 @@ export class ExternalToolUc {
 	private async ensurePermission(userId: EntityId, permission: Permission) {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [permission]);
+	}
+
+	public async getDatasheet(userId: EntityId, externalToolId: EntityId) {
+		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+
+		const dataSheetData: ExternalToolData = await this.externalToolService.getExternalToolData(externalToolId);
 	}
 }
