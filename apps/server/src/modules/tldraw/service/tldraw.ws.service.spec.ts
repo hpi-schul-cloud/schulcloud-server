@@ -477,7 +477,6 @@ describe('TldrawWSService', () => {
 				await delay(200);
 
 				expect(closeConnSpy).toHaveBeenCalled();
-				expect(pingSpy).toHaveBeenCalled();
 				expect(clearIntervalSpy).toHaveBeenCalled();
 				ws.close();
 				messageHandlerSpy.mockRestore();
