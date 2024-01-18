@@ -1,9 +1,8 @@
-import { DomainModel } from '../types';
+import { DomainModel, EntityId, OperationModel } from '../types';
 
 export interface DomainOperation {
 	domain: DomainModel;
-	modifiedCount: number;
-	deletedCount: number;
-	modifiedRef?: string[];
-	deletedRef?: string[];
+	operation: OperationModel;
+	count: number;
+	refs: EntityId[];
 }

@@ -7,9 +7,9 @@ import { DeletionOperationModel } from '../domain/types';
 export interface DeletionLogEntityProps {
 	id?: EntityId;
 	domain: DomainModel;
-	operation?: DeletionOperationModel;
-	modifiedCount: number;
-	deletedCount: number;
+	operation: DeletionOperationModel;
+	count: number;
+	refs: EntityId[];
 	deletionRequestId?: ObjectId;
 	performedAt?: Date;
 	createdAt?: Date;
@@ -21,14 +21,14 @@ export class DeletionLogEntity extends BaseEntityWithTimestamps {
 	@Property()
 	domain: DomainModel;
 
-	@Property({ nullable: true })
-	operation?: DeletionOperationModel;
+	@Property()
+	operation: DeletionOperationModel;
 
 	@Property()
-	modifiedCount: number;
+	count: number;
 
 	@Property()
-	deletedCount: number;
+	refs: EntityId[];
 
 	@Property({ nullable: true })
 	deletionRequestId?: ObjectId;
@@ -44,12 +44,9 @@ export class DeletionLogEntity extends BaseEntityWithTimestamps {
 		}
 
 		this.domain = props.domain;
-
-		if (props.operation !== undefined) {
-			this.operation = props.operation;
-		}
-		this.modifiedCount = props.modifiedCount;
-		this.deletedCount = props.deletedCount;
+		this.operation = props.operation;
+		this.count = props.count;
+		this.refs = props.refs;
 
 		if (props.deletionRequestId !== undefined) {
 			this.deletionRequestId = props.deletionRequestId;

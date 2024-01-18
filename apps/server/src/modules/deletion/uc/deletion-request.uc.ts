@@ -10,7 +10,7 @@ import { RocketChatUserService } from '@modules/rocketchat-user';
 import { TeamService } from '@modules/teams';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { DomainModel, EntityId } from '@shared/domain/types';
+import { DomainModel, EntityId, OperationModel } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { TaskService } from '@modules/task';
@@ -19,7 +19,6 @@ import { DomainOperationBuilder } from '@shared/domain/builder/domain-operation.
 import { DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../builder';
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 import { DeletionRequest, DeletionLog } from '../domain';
-import { DeletionOperationModel } from '../domain/types';
 import { DeletionRequestService, DeletionLogService } from '../services';
 
 @Injectable()
@@ -83,7 +82,7 @@ export class DeletionRequestUc {
 
 		const deletionLog: DeletionLog[] = await this.deletionLogService.findByDeletionRequestId(deletionRequestId);
 		const domainOperation: DomainOperation[] = deletionLog.map((log) =>
-			DomainOperationBuilder.build(log.domain, log.modifiedCount, log.deletedCount)
+			DomainOperationBuilder.build(log.domain, log.operation, log.count, log.refs)
 		);
 		response = { ...response, statistics: domainOperation };
 
@@ -124,24 +123,18 @@ export class DeletionRequestUc {
 	private async logDeletion(
 		deletionRequest: DeletionRequest,
 		domainModel: DomainModel,
-		operationModel: DeletionOperationModel,
-		updatedCount: number,
-		deletedCount: number
+		operation: OperationModel,
+		count: number,
+		refs: EntityId[]
 	): Promise<void> {
-		await this.deletionLogService.createDeletionLog(
-			deletionRequest.id,
-			domainModel,
-			operationModel,
-			updatedCount,
-			deletedCount
-		);
+		await this.deletionLogService.createDeletionLog(deletionRequest.id, domainModel, operation, count, refs);
 	}
 
 	private async removeAccount(deletionRequest: DeletionRequest) {
 		this.logger.debug({ action: 'removeAccount', deletionRequest });
 
 		await this.accountService.deleteByUserId(deletionRequest.targetRefId);
-		await this.logDeletion(deletionRequest, DomainModel.ACCOUNT, DeletionOperationModel.DELETE, 0, 1);
+		await this.logDeletion(deletionRequest, DomainModel.ACCOUNT, OperationModel.DELETE, 1, []);
 	}
 
 	private async removeUserRegistrationPin(deletionRequest: DeletionRequest) {
@@ -157,9 +150,9 @@ export class DeletionRequestUc {
 		await this.logDeletion(
 			deletionRequest,
 			DomainModel.REGISTRATIONPIN,
-			DeletionOperationModel.DELETE,
-			0,
-			deletedRegistrationPin
+			OperationModel.DELETE,
+			deletedRegistrationPin,
+			[]
 		);
 	}
 
@@ -167,7 +160,7 @@ export class DeletionRequestUc {
 		this.logger.debug({ action: 'removeUserFromClasses', deletionRequest });
 
 		const classesUpdated: number = await this.classService.deleteUserDataFromClasses(deletionRequest.targetRefId);
-		await this.logDeletion(deletionRequest, DomainModel.CLASS, DeletionOperationModel.UPDATE, classesUpdated, 0);
+		await this.logDeletion(deletionRequest, DomainModel.CLASS, OperationModel.UPDATE, classesUpdated, []);
 	}
 
 	private async removeUserFromCourseGroup(deletionRequest: DeletionRequest) {
@@ -176,27 +169,21 @@ export class DeletionRequestUc {
 		const courseGroupUpdated: number = await this.courseGroupService.deleteUserDataFromCourseGroup(
 			deletionRequest.targetRefId
 		);
-		await this.logDeletion(
-			deletionRequest,
-			DomainModel.COURSEGROUP,
-			DeletionOperationModel.UPDATE,
-			courseGroupUpdated,
-			0
-		);
+		await this.logDeletion(deletionRequest, DomainModel.COURSEGROUP, OperationModel.UPDATE, courseGroupUpdated, []);
 	}
 
 	private async removeUserFromCourse(deletionRequest: DeletionRequest) {
 		this.logger.debug({ action: 'removeUserFromCourse', deletionRequest });
 
 		const courseUpdated: number = await this.courseService.deleteUserDataFromCourse(deletionRequest.targetRefId);
-		await this.logDeletion(deletionRequest, DomainModel.COURSE, DeletionOperationModel.UPDATE, courseUpdated, 0);
+		await this.logDeletion(deletionRequest, DomainModel.COURSE, OperationModel.UPDATE, courseUpdated, []);
 	}
 
 	private async removeUsersDashboard(deletionRequest: DeletionRequest) {
 		this.logger.debug({ action: 'removeUsersDashboard', deletionRequest });
 
 		const dashboardDeleted: number = await this.dashboardService.deleteDashboardByUserId(deletionRequest.targetRefId);
-		await this.logDeletion(deletionRequest, DomainModel.DASHBOARD, DeletionOperationModel.DELETE, 0, dashboardDeleted);
+		await this.logDeletion(deletionRequest, DomainModel.DASHBOARD, OperationModel.DELETE, dashboardDeleted, []);
 	}
 
 	private async removeUsersFilesAndPermissions(deletionRequest: DeletionRequest) {
@@ -206,13 +193,7 @@ export class DeletionRequestUc {
 		const filesUpdated: number = await this.filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles(
 			deletionRequest.targetRefId
 		);
-		await this.logDeletion(
-			deletionRequest,
-			DomainModel.FILE,
-			DeletionOperationModel.UPDATE,
-			filesDeleted + filesUpdated,
-			0
-		);
+		await this.logDeletion(deletionRequest, DomainModel.FILE, OperationModel.UPDATE, filesDeleted + filesUpdated, []);
 	}
 
 	private async removeUsersDataFromFileRecords(deletionRequest: DeletionRequest) {
@@ -222,41 +203,35 @@ export class DeletionRequestUc {
 			deletionRequest.targetRefId
 		);
 
-		await this.logDeletion(
-			deletionRequest,
-			DomainModel.FILERECORDS,
-			DeletionOperationModel.UPDATE,
-			fileRecordsUpdated,
-			0
-		);
+		await this.logDeletion(deletionRequest, DomainModel.FILERECORDS, OperationModel.UPDATE, fileRecordsUpdated, []);
 	}
 
 	private async removeUserFromLessons(deletionRequest: DeletionRequest) {
 		this.logger.debug({ action: 'removeUserFromLessons', deletionRequest });
 
 		const lessonsUpdated: number = await this.lessonService.deleteUserDataFromLessons(deletionRequest.targetRefId);
-		await this.logDeletion(deletionRequest, DomainModel.LESSONS, DeletionOperationModel.UPDATE, lessonsUpdated, 0);
+		await this.logDeletion(deletionRequest, DomainModel.LESSONS, OperationModel.UPDATE, lessonsUpdated, []);
 	}
 
 	private async removeUsersPseudonyms(deletionRequest: DeletionRequest) {
 		this.logger.debug({ action: 'removeUsersPseudonyms', deletionRequest });
 
 		const pseudonymDeleted: number = await this.pseudonymService.deleteByUserId(deletionRequest.targetRefId);
-		await this.logDeletion(deletionRequest, DomainModel.PSEUDONYMS, DeletionOperationModel.DELETE, 0, pseudonymDeleted);
+		await this.logDeletion(deletionRequest, DomainModel.PSEUDONYMS, OperationModel.DELETE, pseudonymDeleted, []);
 	}
 
 	private async removeUserFromTeams(deletionRequest: DeletionRequest) {
 		this.logger.debug({ action: ' removeUserFromTeams', deletionRequest });
 
 		const teamsUpdated: number = await this.teamService.deleteUserDataFromTeams(deletionRequest.targetRefId);
-		await this.logDeletion(deletionRequest, DomainModel.TEAMS, DeletionOperationModel.UPDATE, teamsUpdated, 0);
+		await this.logDeletion(deletionRequest, DomainModel.TEAMS, OperationModel.UPDATE, teamsUpdated, []);
 	}
 
 	private async removeUser(deletionRequest: DeletionRequest) {
 		this.logger.debug({ action: 'removeUser', deletionRequest });
 
 		const userDeleted: number = await this.userService.deleteUser(deletionRequest.targetRefId);
-		await this.logDeletion(deletionRequest, DomainModel.USER, DeletionOperationModel.DELETE, 0, userDeleted);
+		await this.logDeletion(deletionRequest, DomainModel.USER, OperationModel.DELETE, userDeleted, []);
 	}
 
 	private async removeUserFromRocketChat(deletionRequest: DeletionRequest) {
@@ -271,9 +246,9 @@ export class DeletionRequestUc {
 		await this.logDeletion(
 			deletionRequest,
 			DomainModel.ROCKETCHATUSER,
-			DeletionOperationModel.DELETE,
-			0,
-			rocketChatUserDeleted
+			OperationModel.DELETE,
+			rocketChatUserDeleted,
+			[]
 		);
 	}
 
@@ -286,12 +261,14 @@ export class DeletionRequestUc {
 			deletionRequest.targetRefId
 		);
 
+		await this.logDeletion(deletionRequest, DomainModel.TASK, OperationModel.DELETE, tasksDeleted.count, []);
+
 		await this.logDeletion(
 			deletionRequest,
 			DomainModel.TASK,
-			DeletionOperationModel.UPDATE,
-			tasksModifiedByRemoveCreator.modifiedCount + tasksModifiedByRemoveUserFromFinished.modifiedCount,
-			tasksDeleted.deletedCount
+			OperationModel.UPDATE,
+			tasksModifiedByRemoveCreator.count + tasksModifiedByRemoveUserFromFinished.count,
+			[]
 		);
 	}
 }

@@ -1,4 +1,4 @@
-import { DomainModel } from '@shared/domain/types';
+import { DomainModel, OperationModel } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { DomainOperationBuilder } from '.';
 
@@ -9,21 +9,21 @@ describe(DomainOperationBuilder.name, () => {
 
 	const setup = () => {
 		const domain = DomainModel.PSEUDONYMS;
-		const modifiedCount = 0;
-		const modifiedRef = [];
-		const deletedRef = [new ObjectId().toHexString(), new ObjectId().toHexString()];
-		const deletedCount = 2;
+		const operation = OperationModel.DELETE;
+		const refs = [new ObjectId().toHexString(), new ObjectId().toHexString()];
+		const count = 2;
 
-		return { domain, modifiedCount, deletedCount, modifiedRef, deletedRef };
+		return { domain, count, operation, refs };
 	};
 
 	it('should build generic domainOperation with all attributes', () => {
-		const { domain, modifiedCount, deletedCount, modifiedRef, deletedRef } = setup();
+		const { domain, count, operation, refs } = setup();
 
-		const result = DomainOperationBuilder.build(domain, modifiedCount, deletedCount, modifiedRef, deletedRef);
+		const result = DomainOperationBuilder.build(domain, operation, count, refs);
 
 		expect(result.domain).toEqual(domain);
-		expect(result.modifiedCount).toEqual(modifiedCount);
-		expect(result.deletedCount).toEqual(deletedCount);
+		expect(result.operation).toEqual(operation);
+		expect(result.count).toEqual(count);
+		expect(result.refs).toEqual(refs);
 	});
 });

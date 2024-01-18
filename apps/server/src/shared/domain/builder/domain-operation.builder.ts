@@ -1,15 +1,9 @@
 import { DomainOperation } from '@shared/domain/interface';
-import { DomainModel } from '@shared/domain/types';
+import { DomainModel, EntityId, OperationModel } from '@shared/domain/types';
 
 export class DomainOperationBuilder {
-	static build(
-		domain: DomainModel,
-		modifiedCount: number,
-		deletedCount: number,
-		modifiedRef?: string[],
-		deletedRef?: string[]
-	): DomainOperation {
-		const domainOperation = { domain, modifiedCount, deletedCount, modifiedRef, deletedRef };
+	static build(domain: DomainModel, operation: OperationModel, count: number, refs: EntityId[]): DomainOperation {
+		const domainOperation = { domain, operation, count, refs };
 
 		return domainOperation;
 	}

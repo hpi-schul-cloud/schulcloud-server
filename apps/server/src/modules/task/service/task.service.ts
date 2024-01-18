@@ -2,7 +2,7 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { Injectable } from '@nestjs/common';
 import { Task } from '@shared/domain/entity';
 import { DomainOperation, IFindOptions } from '@shared/domain/interface';
-import { Counted, DomainModel, EntityId, StatusModel } from '@shared/domain/types';
+import { Counted, DomainModel, EntityId, OperationModel, StatusModel } from '@shared/domain/types';
 import { TaskRepo } from '@shared/repo';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { Logger } from '@src/core/logger';
@@ -65,7 +65,12 @@ export class TaskService {
 			await Promise.all(promiseDeletedTasks);
 		}
 
-		const result = DomainOperationBuilder.build(DomainModel.TASK, 0, counterOfTasksOnlyWithCreatorId);
+		const result = DomainOperationBuilder.build(
+			DomainModel.TASK,
+			OperationModel.DELETE,
+			counterOfTasksOnlyWithCreatorId,
+			[]
+		);
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully deleted data from Task',
@@ -97,7 +102,12 @@ export class TaskService {
 			await this.taskRepo.save(tasksByCreatorIdWithCoursesAndLessons);
 		}
 
-		const result = DomainOperationBuilder.build(DomainModel.TASK, counterOfTasksWithCoursesorLessons, 0);
+		const result = DomainOperationBuilder.build(
+			DomainModel.TASK,
+			OperationModel.UPDATE,
+			counterOfTasksWithCoursesorLessons,
+			[]
+		);
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully deleted user data from Task',
@@ -130,7 +140,12 @@ export class TaskService {
 			await this.taskRepo.save(tasksWithUserInFinished);
 		}
 
-		const result = DomainOperationBuilder.build(DomainModel.TASK, counterOfTasksWithUserInFinished, 0);
+		const result = DomainOperationBuilder.build(
+			DomainModel.TASK,
+			OperationModel.UPDATE,
+			counterOfTasksWithUserInFinished,
+			[]
+		);
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully deleted user data from Task archive collection',

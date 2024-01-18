@@ -50,16 +50,16 @@ describe(DeletionLogService.name, () => {
 				const deletionRequestId = '653e4833cc39e5907a1e18d2';
 				const domain = DomainModel.USER;
 				const operation = DeletionOperationModel.DELETE;
-				const modifiedCount = 0;
-				const deletedCount = 1;
+				const count = 1;
+				const refs = [new ObjectId().toHexString()];
 
-				return { deletionRequestId, domain, operation, modifiedCount, deletedCount };
+				return { deletionRequestId, domain, operation, count, refs };
 			};
 
 			it('should call deletionRequestRepo.create', async () => {
-				const { deletionRequestId, domain, operation, modifiedCount, deletedCount } = setup();
+				const { deletionRequestId, domain, operation, count, refs } = setup();
 
-				await service.createDeletionLog(deletionRequestId, domain, operation, modifiedCount, deletedCount);
+				await service.createDeletionLog(deletionRequestId, domain, operation, count, refs);
 
 				expect(deletionLogRepo.create).toHaveBeenCalledWith(
 					expect.objectContaining({
@@ -68,8 +68,8 @@ describe(DeletionLogService.name, () => {
 						deletionRequestId,
 						domain,
 						operation,
-						modifiedCount,
-						deletedCount,
+						count,
+						refs,
 					})
 				);
 			});
