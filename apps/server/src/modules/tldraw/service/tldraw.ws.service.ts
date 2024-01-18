@@ -55,12 +55,12 @@ export class TldrawWsService {
 	 * @param {WsSharedDocDo} doc
 	 * @param {WebSocket} ws
 	 */
-	public closeConn(doc: WsSharedDocDo, ws: WebSocket): void {
+	public async closeConn(doc: WsSharedDocDo, ws: WebSocket): Promise<void> {
 		if (doc.connections.has(ws)) {
 			const controlledIds = doc.connections.get(ws) as Set<number>;
 			doc.connections.delete(ws);
 			removeAwarenessStates(doc.awareness, Array.from(controlledIds), null);
-			this.storeStateAndDestroyYDocIfPersisted(doc);
+			await this.storeStateAndDestroyYDocIfPersisted(doc);
 			this.metricsService.decrementNumberOfUsersOnServerCounter();
 		}
 
@@ -81,16 +81,16 @@ export class TldrawWsService {
 	 */
 	public send(doc: WsSharedDocDo, conn: WebSocket, message: Uint8Array): void {
 		if (conn.readyState !== WSConnectionState.CONNECTING && conn.readyState !== WSConnectionState.OPEN) {
-			this.closeConn(doc, conn);
+			void this.closeConn(doc, conn);
 		}
 		try {
 			conn.send(message, (err: Error | undefined) => {
 				if (err != null) {
-					this.closeConn(doc, conn);
+					void this.closeConn(doc, conn);
 				}
 			});
 		} catch (e) {
-			this.closeConn(doc, conn);
+			void this.closeConn(doc, conn);
 		}
 	}
 
@@ -232,21 +232,21 @@ export class TldrawWsService {
 				try {
 					ws.ping();
 				} catch (e) {
-					this.closeConn(doc, ws);
+					void this.closeConn(doc, ws);
 					clearInterval(pingInterval);
 				}
 				return;
 			}
 
 			if (hasConn) {
-				this.closeConn(doc, ws);
+				void this.closeConn(doc, ws);
 			}
 
 			clearInterval(pingInterval);
 		}, this.pingTimeout);
 
 		ws.on('close', () => {
-			this.closeConn(doc, ws);
+			void this.closeConn(doc, ws);
 			clearInterval(pingInterval);
 		});
 
@@ -272,10 +272,10 @@ export class TldrawWsService {
 		this.metricsService.incrementNumberOfUsersOnServerCounter();
 	}
 
-	private storeStateAndDestroyYDocIfPersisted(doc: WsSharedDocDo) {
+	private async storeStateAndDestroyYDocIfPersisted(doc: WsSharedDocDo) {
 		if (doc.connections.size === 0) {
 			// if persisted, we store state and destroy ydocument
-			this.tldrawBoardRepo
+			await this.tldrawBoardRepo
 				.flushDocument(doc.name)
 				.then(() => this.sub.unsubscribe(doc.name, doc.awarenessChannel))
 				.then(() => doc.destroy())
