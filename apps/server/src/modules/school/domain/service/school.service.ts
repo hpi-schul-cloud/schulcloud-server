@@ -1,7 +1,7 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SchoolFeature } from '@shared/domain/types';
 import { IFindOptions } from '@shared/domain/interface/find-options';
+import { SchoolFeature } from '@shared/domain/types';
 import { EntityId } from '@shared/domain/types/entity-id';
 import { SchoolConfig } from '../../school.config';
 import { School, SchoolProps } from '../do';
@@ -41,6 +41,20 @@ export class SchoolService {
 		const schoolsForExternalInvite = schools.filter((school) => school.isEligibleForExternalInvite(ownSchoolId));
 
 		return schoolsForExternalInvite;
+	}
+
+	public async doesSchoolExist(schoolId: EntityId): Promise<boolean> {
+		try {
+			await this.schoolRepo.getSchoolById(schoolId);
+
+			return true;
+		} catch (error) {
+			if (error instanceof NotFoundException) {
+				return false;
+			}
+
+			throw error;
+		}
 	}
 
 	// TODO: The logic for setting this feature should better be part of the creation of a school object.

@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
@@ -321,6 +322,57 @@ describe('SchoolService', () => {
 				const result = await service.getSchoolsForExternalInvite(query, 'ownSchoolId');
 
 				expect(result).toEqual([schools[0]]);
+			});
+		});
+	});
+
+	describe('doesSchoolExist', () => {
+		describe('when school exists', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+
+				return { id: school.id };
+			};
+
+			it('should return true', async () => {
+				const { id } = setup();
+
+				const result = await service.doesSchoolExist(id);
+
+				expect(result).toEqual(true);
+			});
+		});
+
+		describe('when school does not exist', () => {
+			const setup = () => {
+				const id = '1';
+				schoolRepo.getSchoolById.mockRejectedValueOnce(new NotFoundException());
+
+				return { id };
+			};
+
+			it('should return false', async () => {
+				const { id } = setup();
+
+				const result = await service.doesSchoolExist(id);
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when school repo throws any other error than NotFoundException', () => {
+			const setup = () => {
+				const id = '1';
+				schoolRepo.getSchoolById.mockRejectedValueOnce(new Error());
+
+				return { id };
+			};
+
+			it('should throw this error', async () => {
+				const { id } = setup();
+
+				await expect(service.doesSchoolExist(id)).rejects.toThrowError();
 			});
 		});
 	});

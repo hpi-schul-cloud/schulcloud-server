@@ -232,4 +232,47 @@ describe('School Controller (API)', () => {
 			});
 		});
 	});
+
+	describe('doesSchoolExist', () => {
+		describe('when id in params is not a mongo id', () => {
+			it('should return 400', async () => {
+				const response = await testApiClient.get(`exists/id/123`);
+
+				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				expect(response.body.validationErrors).toEqual([
+					{ errors: ['schoolId must be a mongodb id'], field: ['schoolId'] },
+				]);
+			});
+		});
+
+		describe('when requested school is not found', () => {
+			it('should return false', async () => {
+				const someId = new ObjectId().toHexString();
+
+				const response = await testApiClient.get(`exists/id/${someId}`);
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual(false);
+			});
+		});
+
+		describe('when requested school is found', () => {
+			const setup = async () => {
+				const school = schoolFactory.build();
+				await em.persistAndFlush(school);
+
+				return { schoolId: school.id };
+			};
+
+			it('should return true', async () => {
+				const { schoolId } = await setup();
+
+				const response = await testApiClient.get(`exists/id/${schoolId}`);
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual(true);
+			});
+		});
+	});
 });

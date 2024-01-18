@@ -32,4 +32,11 @@ export class SchoolController {
 
 		return res;
 	}
+
+	@Get('/exists/id/:schoolId')
+	public async doesSchoolExist(@Param() urlParams: SchoolUrlParams): Promise<boolean> {
+		const res = await this.schoolUc.doesSchoolExist(urlParams.schoolId);
+
+		return res;
+	}
 }

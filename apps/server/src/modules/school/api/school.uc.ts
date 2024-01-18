@@ -49,4 +49,10 @@ export class SchoolUc {
 
 		return dtos;
 	}
+
+	public async doesSchoolExist(schoolId: EntityId): Promise<boolean> {
+		const result = await this.schoolService.doesSchoolExist(schoolId);
+
+		return result;
+	}
 }
