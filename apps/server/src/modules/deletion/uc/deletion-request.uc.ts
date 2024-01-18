@@ -125,7 +125,7 @@ export class DeletionRequestUc {
 		domainModel: DomainModel,
 		operation: OperationModel,
 		count: number,
-		refs: EntityId[]
+		refs: string[]
 	): Promise<void> {
 		await this.deletionLogService.createDeletionLog(deletionRequest.id, domainModel, operation, count, refs);
 	}
@@ -261,12 +261,18 @@ export class DeletionRequestUc {
 			deletionRequest.targetRefId
 		);
 
-		await this.logDeletion(deletionRequest, DomainModel.TASK, OperationModel.DELETE, tasksDeleted.count, []);
+		await this.logDeletion(
+			deletionRequest,
+			tasksDeleted.domain,
+			tasksDeleted.operation,
+			tasksDeleted.count,
+			tasksDeleted.refs
+		);
 
 		await this.logDeletion(
 			deletionRequest,
-			DomainModel.TASK,
-			OperationModel.UPDATE,
+			tasksModifiedByRemoveCreator.domain,
+			tasksModifiedByRemoveCreator.operation,
 			tasksModifiedByRemoveCreator.count + tasksModifiedByRemoveUserFromFinished.count,
 			[]
 		);

@@ -13,7 +13,7 @@ export class DeletionLogService {
 		domain: DomainModel,
 		operation: OperationModel,
 		count: number,
-		refs: EntityId[]
+		refs: string[]
 	): Promise<void> {
 		const newDeletionLog = new DeletionLog({
 			id: new ObjectId().toHexString(),

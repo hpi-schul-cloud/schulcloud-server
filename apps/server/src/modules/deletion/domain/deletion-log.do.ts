@@ -7,7 +7,7 @@ export interface DeletionLogProps extends AuthorizableObject {
 	domain: DomainModel;
 	operation: OperationModel;
 	count: number;
-	refs: EntityId[];
+	refs: string[];
 	deletionRequestId?: EntityId;
 	performedAt?: Date;
 }
@@ -33,7 +33,7 @@ export class DeletionLog extends DomainObject<DeletionLogProps> {
 		return this.props.count;
 	}
 
-	get refs(): EntityId[] {
+	get refs(): string[] {
 		return this.props.refs;
 	}
 

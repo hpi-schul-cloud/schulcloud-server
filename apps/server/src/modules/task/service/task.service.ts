@@ -69,7 +69,7 @@ export class TaskService {
 			DomainModel.TASK,
 			OperationModel.DELETE,
 			counterOfTasksOnlyWithCreatorId,
-			[]
+			this.getTasksId(tasksByOnlyCreatorId)
 		);
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
@@ -106,7 +106,7 @@ export class TaskService {
 			DomainModel.TASK,
 			OperationModel.UPDATE,
 			counterOfTasksWithCoursesorLessons,
-			[]
+			this.getTasksId(tasksByCreatorIdWithCoursesAndLessons)
 		);
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
@@ -144,7 +144,7 @@ export class TaskService {
 			DomainModel.TASK,
 			OperationModel.UPDATE,
 			counterOfTasksWithUserInFinished,
-			[]
+			this.getTasksId(tasksWithUserInFinished)
 		);
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
@@ -158,5 +158,9 @@ export class TaskService {
 		);
 
 		return result;
+	}
+
+	private getTasksId(tasks: Task[]): EntityId[] {
+		return tasks.map((task) => task.id);
 	}
 }

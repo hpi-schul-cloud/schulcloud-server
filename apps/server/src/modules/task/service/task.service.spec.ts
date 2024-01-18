@@ -118,7 +118,9 @@ describe('TaskService', () => {
 
 				taskRepo.findByOnlyCreatorId.mockResolvedValue([[taskWithoutCourse], 1]);
 
-				const expectedResult = DomainOperationBuilder.build(DomainModel.TASK, OperationModel.DELETE, 1, []);
+				const expectedResult = DomainOperationBuilder.build(DomainModel.TASK, OperationModel.DELETE, 1, [
+					taskWithoutCourse.id,
+				]);
 
 				return { creator, expectedResult };
 			};
@@ -150,7 +152,9 @@ describe('TaskService', () => {
 
 				taskRepo.findByCreatorIdWithCourseAndLesson.mockResolvedValue([[taskWithCourse], 1]);
 
-				const expectedResult = DomainOperationBuilder.build(DomainModel.TASK, OperationModel.UPDATE, 1, []);
+				const expectedResult = DomainOperationBuilder.build(DomainModel.TASK, OperationModel.UPDATE, 1, [
+					taskWithCourse.id,
+				]);
 				const taskWithCourseToUpdate = { ...taskWithCourse, creator: undefined };
 
 				return { creator, expectedResult, taskWithCourseToUpdate };
@@ -190,7 +194,9 @@ describe('TaskService', () => {
 
 				taskRepo.findByUserIdInFinished.mockResolvedValue([[finishedTask], 1]);
 
-				const expectedResult = DomainOperationBuilder.build(DomainModel.TASK, OperationModel.UPDATE, 1, []);
+				const expectedResult = DomainOperationBuilder.build(DomainModel.TASK, OperationModel.UPDATE, 1, [
+					finishedTask.id,
+				]);
 
 				return { creator, expectedResult };
 			};

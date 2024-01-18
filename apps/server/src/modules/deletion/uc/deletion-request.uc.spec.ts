@@ -213,15 +213,17 @@ describe(DeletionRequestUc.name, () => {
 					DomainModel.TASK,
 					OperationModel.UPDATE,
 					1,
-					[]
+					[new ObjectId().toHexString()]
 				);
 				const tasksModifiedByRemoveUserFromFinished = DomainOperationBuilder.build(
 					DomainModel.TASK,
 					OperationModel.UPDATE,
 					1,
-					[]
+					[new ObjectId().toHexString()]
 				);
-				const tasksDeleted = DomainOperationBuilder.build(DomainModel.TASK, OperationModel.DELETE, 1, []);
+				const tasksDeleted = DomainOperationBuilder.build(DomainModel.TASK, OperationModel.DELETE, 1, [
+					new ObjectId().toHexString(),
+				]);
 
 				registrationPinService.deleteRegistrationPinByEmail.mockResolvedValueOnce(2);
 				classService.deleteUserDataFromClasses.mockResolvedValueOnce(1);
