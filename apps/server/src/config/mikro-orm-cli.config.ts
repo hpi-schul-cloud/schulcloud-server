@@ -2,7 +2,10 @@ import type { MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs/typings';
 import { ALL_ENTITIES } from '@shared/domain/entity';
 import { FileEntity } from '@modules/files/entity';
 import { FileRecord } from '@modules/files-storage/entity';
+import path from 'path';
 import { DB_PASSWORD, DB_URL, DB_USERNAME } from './index';
+
+const migrationsPath = path.resolve(__dirname, '..', 'migrations', 'mikro-orm');
 
 export const mikroOrmCliConfig: MikroOrmModuleSyncOptions = {
 	// TODO repeats server module definitions
@@ -18,8 +21,8 @@ export const mikroOrmCliConfig: MikroOrmModuleSyncOptions = {
 	*/
 	migrations: {
 		tableName: 'migrations', // name of database table with log of executed transactions
-		path: './dist/apps/server/migrations/mikro-orm', // path to the folder with migrations
-		pathTs: './apps/server/src/migrations/mikro-orm', // path to the folder with TS migrations (if used, we should put path to compiled files in `path`)
+		path: migrationsPath, // path to the folder with migrations
+		pathTs: migrationsPath, // path to the folder with TS migrations (if used, we should put path to compiled files in `path`)
 		glob: '!(*.d).{js,ts}', // how to match migration files (all .js and .ts files, but not .d.ts)
 		transactional: false, // wrap each migration in a transaction
 		disableForeignKeys: true, // wrap statements with `set foreign_key_checks = 0` or equivalent
