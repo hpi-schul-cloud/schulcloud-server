@@ -15,7 +15,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from 'bson';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { DomainModel } from '@shared/domain/types';
+import { DomainModel, OperationModel } from '@shared/domain/types';
 import { TaskService } from '@modules/task';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { DeletionStatusModel } from '../domain/types';
@@ -209,9 +209,19 @@ describe(DeletionRequestUc.name, () => {
 					userId: deletionRequestToExecute.targetRefId,
 				});
 				const parentEmail = 'parent@parent.eu';
-				const tasksModifiedByRemoveCreatorId = DomainOperationBuilder.build(DomainModel.TASK, 1, 0);
-				const tasksModifiedByRemoveUserFromFinished = DomainOperationBuilder.build(DomainModel.TASK, 1, 0);
-				const tasksDeleted = DomainOperationBuilder.build(DomainModel.TASK, 0, 1);
+				const tasksModifiedByRemoveCreatorId = DomainOperationBuilder.build(
+					DomainModel.TASK,
+					OperationModel.UPDATE,
+					1,
+					[]
+				);
+				const tasksModifiedByRemoveUserFromFinished = DomainOperationBuilder.build(
+					DomainModel.TASK,
+					OperationModel.UPDATE,
+					1,
+					[]
+				);
+				const tasksDeleted = DomainOperationBuilder.build(DomainModel.TASK, OperationModel.DELETE, 1, []);
 
 				registrationPinService.deleteRegistrationPinByEmail.mockResolvedValueOnce(2);
 				classService.deleteUserDataFromClasses.mockResolvedValueOnce(1);
@@ -472,7 +482,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(13);
+				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(14);
 			});
 		});
 
@@ -519,8 +529,9 @@ describe(DeletionRequestUc.name, () => {
 				);
 				const statistics = DomainOperationBuilder.build(
 					deletionLogExecuted.domain,
-					deletionLogExecuted.modifiedCount,
-					deletionLogExecuted.deletedCount
+					deletionLogExecuted.operation,
+					deletionLogExecuted.count,
+					deletionLogExecuted.refs
 				);
 
 				const executedDeletionRequestSummary = DeletionRequestLogResponseBuilder.build(
@@ -572,8 +583,9 @@ describe(DeletionRequestUc.name, () => {
 				);
 				const statistics = DeletionLogStatisticBuilder.build(
 					deletionLogExecuted.domain,
-					deletionLogExecuted.modifiedCount,
-					deletionLogExecuted.deletedCount
+					deletionLogExecuted.operation,
+					deletionLogExecuted.count,
+					deletionLogExecuted.refs
 				);
 
 				const executedDeletionRequestSummary = DeletionRequestLogResponseBuilder.build(

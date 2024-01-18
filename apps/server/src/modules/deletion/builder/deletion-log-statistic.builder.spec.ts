@@ -1,4 +1,5 @@
-import { DomainModel } from '@shared/domain/types';
+import { DomainModel, OperationModel } from '@shared/domain/types';
+import { ObjectId } from 'bson';
 import { DeletionLogStatisticBuilder } from '.';
 
 describe(DeletionLogStatisticBuilder.name, () => {
@@ -9,14 +10,16 @@ describe(DeletionLogStatisticBuilder.name, () => {
 	it('should build generic deletionLogStatistic with all attributes', () => {
 		// Arrange
 		const domain = DomainModel.PSEUDONYMS;
-		const modifiedCount = 0;
-		const deletedCount = 2;
+		const operation = OperationModel.DELETE;
+		const count = 2;
+		const refs = [new ObjectId().toHexString(), new ObjectId().toHexString()];
 
-		const result = DeletionLogStatisticBuilder.build(domain, modifiedCount, deletedCount);
+		const result = DeletionLogStatisticBuilder.build(domain, operation, count, refs);
 
 		// Assert
 		expect(result.domain).toEqual(domain);
-		expect(result.modifiedCount).toEqual(modifiedCount);
-		expect(result.deletedCount).toEqual(deletedCount);
+		expect(result.operation).toEqual(operation);
+		expect(result.count).toEqual(count);
+		expect(result.refs).toEqual(refs);
 	});
 });
