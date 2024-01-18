@@ -351,7 +351,7 @@ describe('TldrawWSService', () => {
 				await delay(10);
 				ws.emit('pong');
 
-				await delay(100);
+				await delay(200);
 
 				expect(sendSpy).toHaveBeenCalledTimes(2);
 				ws.close();
@@ -446,6 +446,45 @@ describe('TldrawWSService', () => {
 				messageHandlerSpy.mockRestore();
 				closeConnSpy.mockRestore();
 				pingSpy.mockRestore();
+			});
+		});
+
+		describe('when pong not received', () => {
+			const setup = async () => {
+				ws = await TestConnection.setupWs(wsUrl, 'TEST');
+
+				const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockReturnValueOnce();
+				const closeConnSpy = jest.spyOn(service, 'closeConn').mockImplementation(() => Promise.resolve());
+				const pingSpy = jest.spyOn(ws, 'ping').mockImplementationOnce(() => {});
+				const sendSpy = jest.spyOn(service, 'send').mockImplementation(() => {});
+				const clearIntervalSpy = jest.spyOn(global, 'clearInterval');
+				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce({});
+
+				return {
+					messageHandlerSpy,
+					closeConnSpy,
+					pingSpy,
+					sendSpy,
+					clearIntervalSpy,
+				};
+			};
+
+			it('should close connection', async () => {
+				const { messageHandlerSpy, closeConnSpy, pingSpy, sendSpy, clearIntervalSpy } = await setup();
+
+				await service.setupWSConnection(ws, 'TEST');
+
+				await delay(200);
+
+				expect(closeConnSpy).toHaveBeenCalled();
+				expect(pingSpy).toHaveBeenCalled();
+				expect(clearIntervalSpy).toHaveBeenCalled();
+				ws.close();
+				messageHandlerSpy.mockRestore();
+				pingSpy.mockRestore();
+				closeConnSpy.mockRestore();
+				sendSpy.mockRestore();
+				clearIntervalSpy.mockRestore();
 			});
 		});
 
