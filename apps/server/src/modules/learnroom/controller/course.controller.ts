@@ -1,14 +1,14 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import {
 	Controller,
+	FileTypeValidator,
 	Get,
-	HttpStatus,
+	MaxFileSizeValidator,
 	NotFoundException,
 	Param,
-	ParseFilePipeBuilder,
+	ParseFilePipe,
 	Post,
 	Query,
-	Req,
 	Res,
 	StreamableFile,
 	UploadedFile,
@@ -31,6 +31,7 @@ import { CourseMapper } from '../mapper/course.mapper';
 import { CourseImportUc } from '../uc';
 import { CourseExportUc } from '../uc/course-export.uc';
 import { CourseUc } from '../uc/course.uc';
+import { CommonCartridgeFileValidator } from '../utils';
 import { CourseImportBodyParams, CourseMetadataListResponse, CourseQueryParams, CourseUrlParams } from './dto';
 
 @ApiTags('Courses')
@@ -82,18 +83,18 @@ export class CourseController {
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
 	public async importCourse(
-		@UploadedFile(
-			new ParseFilePipeBuilder()
-				.addMaxSizeValidator({ maxSize: 1000 * 1000 * 1000 * 2 }) // 2GB
-				// .addFileTypeValidator({ fileType: '.imscc' })
-				.build({ fileIsRequired: true, errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY })
-		)
-		file: Express.Multer.File,
 		@CurrentUser() currentUser: ICurrentUser,
-		@Req() request: Request
+		@UploadedFile(
+			new ParseFilePipe({
+				validators: [
+					new MaxFileSizeValidator({ maxSize: 1000 * 1000 * 1000 * 2 }), // TODO: move to config
+					new FileTypeValidator({ fileType: /application\/(zip|octet-stream)/ }),
+					new CommonCartridgeFileValidator(),
+				],
+			})
+		)
+		file: Express.Multer.File
 	): Promise<void> {
-		console.log(file);
-		console.log(request);
 		await this.courseImportUc.importFromCommonCartridge(currentUser.userId, file.buffer);
 	}
 }

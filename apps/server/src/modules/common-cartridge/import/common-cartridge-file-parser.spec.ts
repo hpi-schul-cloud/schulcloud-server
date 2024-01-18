@@ -46,7 +46,7 @@ describe('CommonCartridgeFileParser', () => {
 
 		describe('when file is not an archive', () => {
 			const setup = () => {
-				const file = Buffer.from('<manifest></manifest>');
+				const file = new AdmZip().toBuffer();
 
 				return { file };
 			};
