@@ -4,6 +4,7 @@ import {
 	Card,
 	Column,
 	ColumnBoard,
+	LearnstoreElement,
 	LinkElement,
 	SubmissionContainerElement,
 	SubmissionItem,
@@ -13,6 +14,10 @@ import { EntityId } from '@shared/domain/types';
 
 export class SwapInternalLinksVisitor implements BoardCompositeVisitor {
 	constructor(private readonly idMap: Map<EntityId, EntityId>) {}
+
+	visitLearnstoreElement(learnstoreElement: LearnstoreElement): void {
+		this.visitChildrenOf(learnstoreElement);
+	}
 
 	visitDrawingElement(drawingElement: DrawingElement): void {
 		this.visitChildrenOf(drawingElement);

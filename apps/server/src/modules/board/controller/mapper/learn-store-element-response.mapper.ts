@@ -1,4 +1,4 @@
-import { ContentElementType } from '@shared/domain';
+import { ContentElementType } from '@shared/domain/domainobject';
 import { LearnstoreElement } from '@shared/domain/domainobject/board/learnstore-element.do';
 import { LearnstoreElementContent, LearnstoreElementResponse, TimestampsResponse } from '../dto';
 import { BaseResponseMapper } from './base-mapper.interface';

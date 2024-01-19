@@ -7,7 +7,6 @@ import {
 	ExternalToolElement,
 	FileElement,
 	LearnstoreElement,
-	LearnstoreElementNodeEntity,
 	LinkElement,
 	RichTextElement,
 	SubmissionContainerElement,
@@ -27,6 +26,7 @@ import {
 	type RichTextElementNode,
 	type SubmissionContainerElementNode,
 	type SubmissionItemNode,
+	LearnstoreElementNodeEntity,
 } from '@shared/domain/entity';
 import { DrawingElementNode } from '@shared/domain/entity/boardnode/drawing-element-node.entity';
 
