@@ -1,4 +1,4 @@
-export { SchulconnexClientConfiguration } from './schulconnex-client-configuration';
+export { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
 export { SchulconnexClientModule } from './schulconnex-client.module';
 export { SchulconnexRestClient } from './schulconnex-rest-client.service';
 export {

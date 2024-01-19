@@ -9,18 +9,18 @@ import QueryString from 'qs';
 import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { SchulconnexPersonenInfoParams } from './request';
 import { SanisResponse } from './response';
-import { SchulconnexClientConfiguration } from './schulconnex-client-configuration';
+import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
 
 @Injectable()
 export class SchulconnexRestClient {
 	private readonly API_BASE_URL: string;
 
 	constructor(
-		private readonly config: SchulconnexClientConfiguration,
+		private readonly options: SchulconnexRestClientOptions,
 		private readonly httpService: HttpService,
 		private readonly oauthAdapterService: OauthAdapterService
 	) {
-		this.API_BASE_URL = config.apiUrl;
+		this.API_BASE_URL = options.apiUrl;
 	}
 
 	public async getPersonInfo(accessToken: string): Promise<SanisResponse> {
@@ -61,7 +61,7 @@ export class SchulconnexRestClient {
 	}
 
 	private async requestClientCredentialToken(): Promise<OAuthTokenDto> {
-		const { tokenEndpoint, clientId, clientSecret } = this.config;
+		const { tokenEndpoint, clientId, clientSecret } = this.options;
 
 		const payload: AccessTokenRequest = new AccessTokenRequest({
 			client_id: clientId,

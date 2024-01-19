@@ -1,4 +1,4 @@
-export interface SchulconnexClientConfiguration {
+export interface SchulconnexRestClientOptions {
 	apiUrl: string;
 
 	tokenEndpoint: string;
