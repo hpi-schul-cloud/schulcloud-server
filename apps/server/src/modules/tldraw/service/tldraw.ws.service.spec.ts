@@ -545,8 +545,7 @@ describe('TldrawWSService', () => {
 			try {
 				await service.updateHandler(msg, socketMock, doc);
 			} catch (e) {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				expect(e.message).toMatch('error');
+				expect(e).toEqual(new Error('error'));
 			}
 
 			expect(sendSpy).toHaveBeenCalled();
@@ -617,8 +616,7 @@ describe('TldrawWSService', () => {
 					await service.setupWSConnection(ws, 'TEST');
 					expect(() => ws.emit('message', msg)).toThrow('error');
 				} catch (e) {
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-					expect(e.message).toMatch('error');
+					expect(e).toEqual(new Error('error'));
 				}
 
 				await delay(20);
@@ -666,19 +664,14 @@ describe('TldrawWSService', () => {
 
 				it('should log error when failed', async () => {
 					const { errorLogSpy, redisSubscribeSpy } = setup();
-					redisSubscribeSpy.mockRejectedValueOnce(new Error('error'));
+					redisSubscribeSpy.mockImplementationOnce(() => {
+						throw new Error('error');
+					});
 
-					let doc: WsSharedDocDo | null = null;
-					try {
-						doc = await service.getYDoc('test-redis-fail');
-					} catch (e) {
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-						expect(e.message).toMatch('error');
-					}
+					await expect(service.getYDoc('test-redis-fail')).rejects.toThrow('error');
 
 					await delay(20);
 
-					expect(doc).toBeDefined();
 					expect(redisSubscribeSpy).toHaveBeenCalled();
 					expect(errorLogSpy).toHaveBeenCalled();
 				});
