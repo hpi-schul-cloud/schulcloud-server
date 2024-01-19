@@ -33,6 +33,7 @@ export class TldrawBoardRepo {
 
 	public async updateDocument(docName: string, ydoc: WsSharedDocDo): Promise<void> {
 		const persistedYdoc = await this.getYDocFromMdb(docName);
+		console.log(Object.fromEntries(persistedYdoc.getMap('shapes').entries()));
 		const persistedStateVector = encodeStateVector(persistedYdoc);
 		const diff = encodeStateAsUpdate(ydoc, persistedStateVector);
 		await this.updateStoredDocWithDiff(docName, diff);
