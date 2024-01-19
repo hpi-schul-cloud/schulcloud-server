@@ -8,12 +8,13 @@ import { AxiosRequestConfig, AxiosResponse, isAxiosError } from 'axios';
 import { lastValueFrom, Observable } from 'rxjs';
 import { SchulconnexPersonenInfoParams } from './request';
 import { SanisResponse } from './response';
+import { SchulconnexApiInterface } from './schulconnex-api.interface';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
 
 // TODO: test me
 @Injectable()
-export class SchulconnexRestClient {
-	private readonly API_BASE_URL: string;
+export class SchulconnexRestClient implements SchulconnexApiInterface {
+	public readonly API_BASE_URL: string;
 
 	constructor(
 		private readonly options: SchulconnexRestClientOptions,

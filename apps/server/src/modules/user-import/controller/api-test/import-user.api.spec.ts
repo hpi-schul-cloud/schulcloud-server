@@ -1,3 +1,4 @@
+import { SanisResponse, SchulconnexResponseFactory, SchulconnexRestClient } from '@infra/schulconnex-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import {
@@ -33,13 +34,18 @@ import {
 	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 import { IUserImportFeatures, UserImportFeatures } from '../../config';
 
 describe('ImportUser Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
+
 	let testApiClient: TestApiClient;
 	let userImportFeatures: IUserImportFeatures;
+	let axiosMock: MockAdapter;
+	let schulconnexRestClient: SchulconnexRestClient;
 
 	const authenticatedUser = async (permissions: Permission[] = [], features: SchoolFeature[] = []) => {
 		const system = systemEntityFactory.buildWithId(); // TODO no id?
@@ -70,6 +76,8 @@ describe('ImportUser Controller (API)', () => {
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'user/import');
 		userImportFeatures = app.get(UserImportFeatures);
+		axiosMock = new MockAdapter(axios);
+		schulconnexRestClient = app.get(SchulconnexRestClient);
 	});
 
 	afterAll(async () => {
@@ -1109,22 +1117,84 @@ describe('ImportUser Controller (API)', () => {
 		});
 
 		describe('[POST] fetchImportUsers', () => {
-			const setup = async () => {
-				const { account, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
-				const loggedInClient = await testApiClient.login(account);
-				userImportFeatures.userMigrationEnabled = true;
-				userImportFeatures.userMigrationSystemId = new ObjectId().toHexString();
-
-				return { loggedInClient, account, school };
-			};
-
 			describe('when user is not authenticated', () => {
+				const setup = () => {
+					const notLoggedInClient = new TestApiClient(app, 'user/import');
+
+					return { notLoggedInClient };
+				};
+
 				it('should return unauthorized', async () => {
-					await testApiClient.post('fetch-import-users').send().expect(HttpStatus.UNAUTHORIZED);
+					const { notLoggedInClient } = setup();
+
+					await notLoggedInClient.post('fetch-import-users').send().expect(HttpStatus.UNAUTHORIZED);
+				});
+			});
+
+			describe('when migration is not activated', () => {
+				const setup = async () => {
+					const { account } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
+					const loggedInClient = await testApiClient.login(account);
+
+					userImportFeatures.userMigrationEnabled = false;
+
+					return { loggedInClient };
+				};
+
+				it('should return with status forbidden', async () => {
+					const { loggedInClient } = await setup();
+
+					const response = await loggedInClient.post('fetch-import-users').send();
+
+					expect(response.body).toEqual({
+						type: 'USER_MIGRATION_IS_NOT_ENABLED',
+						title: 'User Migration Is Not Enabled',
+						message: 'Feature flag of user migration may be disable or the school is not an LDAP pilot',
+						code: HttpStatus.FORBIDDEN,
+					});
+				});
+			});
+
+			describe('when users school has no external id', () => {
+				const setup = async () => {
+					const { account, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
+					const loggedInClient = await testApiClient.login(account);
+
+					school.externalId = undefined;
+
+					return { loggedInClient };
+				};
+
+				it('should return with status bad request', async () => {
+					const { loggedInClient } = await setup();
+
+					const response = await loggedInClient.post('fetch-import-users').send();
+
+					expect(response.body).toEqual({
+						type: 'USER_IMPORT_SCHOOL_EXTERNAL_ID_MISSING',
+						title: 'User Import School External Id Missing',
+						message: 'Bad Request',
+						code: HttpStatus.BAD_REQUEST,
+					});
 				});
 			});
 
 			describe('when users fetched successful', () => {
+				const setup = async () => {
+					const { account, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
+					const loggedInClient = await testApiClient.login(account);
+
+					userImportFeatures.userMigrationEnabled = true;
+					userImportFeatures.userMigrationSystemId = new ObjectId().toHexString();
+
+					const schulconnexResponse: SanisResponse = SchulconnexResponseFactory.build();
+					axiosMock
+						.onGet(`${schulconnexRestClient.API_BASE_URL}/personen-info`)
+						.reply(HttpStatus.CREATED, schulconnexResponse);
+
+					return { loggedInClient, account, school };
+				};
+
 				it('should return with status created', async () => {
 					const { loggedInClient } = await setup();
 

@@ -1,7 +1,9 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import {
+	ApiBadRequestResponse,
 	ApiCreatedResponse,
+	ApiForbiddenResponse,
 	ApiOperation,
 	ApiServiceUnavailableResponse,
 	ApiTags,
@@ -126,6 +128,8 @@ export class ImportUserController {
 	@ApiCreatedResponse()
 	@ApiUnauthorizedResponse()
 	@ApiServiceUnavailableResponse()
+	@ApiBadRequestResponse()
+	@ApiForbiddenResponse()
 	async fetchImportUsers(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.userImportFetchUc.fetchImportUsers(currentUser.userId);
 	}

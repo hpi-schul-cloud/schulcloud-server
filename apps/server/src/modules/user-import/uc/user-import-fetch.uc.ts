@@ -59,7 +59,7 @@ export class UserImportFetchUc {
 
 	private async getUserAndCheckPermissions(userId: EntityId): Promise<User> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkAllPermissions(user, [Permission.SCHOOL_IMPORT_USERS_VIEW]);
+		this.authorizationService.checkAllPermissions(user, [Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
 
 		return user;
 	}

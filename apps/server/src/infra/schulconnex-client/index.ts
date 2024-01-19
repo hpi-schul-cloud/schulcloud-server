@@ -17,3 +17,4 @@ export {
 	SanisPersonenkontextResponse,
 	SanisSonstigeGruppenzugehoerigeResponse,
 } from './response/index';
+export { SchulconnexResponseFactory } from './schulconnex-response-factory';
