@@ -1,9 +1,9 @@
+import { Redis } from 'ioredis';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { TldrawConfig } from '@modules/tldraw/config';
-import { Redis } from 'ioredis';
-import { RedisGeneralErrorLoggable } from '@modules/tldraw/loggable';
 import { Logger } from '@src/core/logger';
+import { TldrawConfig } from '../config';
+import { RedisGeneralErrorLoggable } from '../loggable';
 
 @Injectable()
 export class TldrawRedisFactory {
