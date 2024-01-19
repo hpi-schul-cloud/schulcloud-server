@@ -67,8 +67,6 @@ describe('WebSocketController (WsAdapter)', () => {
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
 		await app.init();
-
-		jest.useFakeTimers();
 	});
 
 	afterAll(async () => {
