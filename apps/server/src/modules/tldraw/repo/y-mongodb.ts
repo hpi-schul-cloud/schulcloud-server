@@ -51,7 +51,7 @@ export class YMongodb {
 				try {
 					res = await fn();
 				} catch (err) {
-					this.logger.warning(new MongoTransactionErrorLoggable(err as Error));
+					this.logger.warning(new MongoTransactionErrorLoggable(err));
 				}
 
 				// once the last transaction for a given docName resolves, remove it from the queue

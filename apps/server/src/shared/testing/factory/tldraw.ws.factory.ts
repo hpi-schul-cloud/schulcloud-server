@@ -7,6 +7,10 @@ export class TldrawWsFactory {
 	}
 
 	public static createWebsocket(readyState: number): WebSocket {
-		return { readyState, close: () => {} } as WebSocket;
+		return {
+			readyState,
+			close: () => {},
+			send: () => {},
+		} as unknown as WebSocket;
 	}
 }

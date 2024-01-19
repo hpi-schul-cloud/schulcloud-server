@@ -25,7 +25,7 @@ export class TldrawBoardRepo {
 		const calc = calculateDiff(diff);
 		if (calc > 0) {
 			await this.mdb.storeUpdateTransactional(docName, diff).catch((err) => {
-				this.logger.warning(new MongoTransactionErrorLoggable(err as Error));
+				this.logger.warning(new MongoTransactionErrorLoggable(err));
 				throw err;
 			});
 		}

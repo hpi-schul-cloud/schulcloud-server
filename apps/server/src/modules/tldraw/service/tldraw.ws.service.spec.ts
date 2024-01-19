@@ -236,7 +236,7 @@ describe('TldrawWSService', () => {
 				const applyAwarenessUpdateSpy = jest.spyOn(AwarenessProtocol, 'applyAwarenessUpdate');
 				const syncProtocolUpdateSpy = jest
 					.spyOn(SyncProtocols, 'readSyncMessage')
-					.mockImplementationOnce((dec, enc) => {
+					.mockImplementationOnce((_dec, enc) => {
 						enc.bufs = [new Uint8Array(2), new Uint8Array(2)];
 						return 1;
 					});
@@ -393,28 +393,6 @@ describe('TldrawWSService', () => {
 			});
 		});
 
-		describe('when trying to close already closed connection', () => {
-			const setup = async () => {
-				ws = await TestConnection.setupWs(wsUrl);
-
-				jest.spyOn(ws, 'close').mockImplementationOnce(() => {
-					throw new Error('some error');
-				});
-			};
-
-			it('should throw error', async () => {
-				await setup();
-				try {
-					const doc = TldrawWsFactory.createWsSharedDocDo();
-					await service.closeConn(doc, ws);
-				} catch (err) {
-					expect(err).toBeDefined();
-				}
-
-				ws.close();
-			});
-		});
-
 		describe('when ping failed', () => {
 			const setup = async () => {
 				ws = await TestConnection.setupWs(wsUrl, 'TEST');
@@ -542,11 +520,7 @@ describe('TldrawWSService', () => {
 			const { sendSpy, doc, socketMock, msg, publishSpy } = await setup();
 			publishSpy.mockResolvedValueOnce(1);
 
-			try {
-				await service.updateHandler(msg, socketMock, doc);
-			} catch (e) {
-				expect(e).toEqual(new Error('error'));
-			}
+			await service.updateHandler(msg, socketMock, doc);
 
 			expect(sendSpy).toHaveBeenCalled();
 			ws.close();
@@ -573,7 +547,7 @@ describe('TldrawWSService', () => {
 
 				const errorLogSpy = jest.spyOn(logger, 'warning');
 				const messageHandlerSpy = jest.spyOn(service, 'messageHandler');
-				const readSyncMessageSpy = jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementationOnce((dec, enc) => {
+				const readSyncMessageSpy = jest.spyOn(SyncProtocols, 'readSyncMessage').mockImplementationOnce((_dec, enc) => {
 					enc.bufs = [new Uint8Array(2), new Uint8Array(2)];
 					return 1;
 				});
@@ -607,19 +581,10 @@ describe('TldrawWSService', () => {
 			});
 
 			it('should log error when publish to Redis throws', async () => {
-				const { msg, errorLogSpy, publishSpy } = await setup([1, 1]);
-				publishSpy.mockImplementationOnce(() => {
-					throw new Error('error');
-				});
+				const { errorLogSpy, publishSpy } = await setup([1, 1]);
+				publishSpy.mockRejectedValueOnce(new Error('error'));
 
-				try {
-					await service.setupWSConnection(ws, 'TEST');
-					expect(() => ws.emit('message', msg)).toThrow('error');
-				} catch (e) {
-					expect(e).toEqual(new Error('error'));
-				}
-
-				await delay(20);
+				await service.setupWSConnection(ws, 'TEST');
 
 				expect(errorLogSpy).toHaveBeenCalled();
 				ws.close();
@@ -663,17 +628,16 @@ describe('TldrawWSService', () => {
 				});
 
 				it('should log error when failed', async () => {
-					const { errorLogSpy, redisSubscribeSpy } = setup();
+					const { errorLogSpy, redisSubscribeSpy, redisOnSpy } = setup();
 					redisSubscribeSpy.mockImplementationOnce(() => {
 						throw new Error('error');
 					});
 
 					await expect(service.getYDoc('test-redis-fail')).rejects.toThrow('error');
 
-					await delay(20);
-
 					expect(redisSubscribeSpy).toHaveBeenCalled();
 					expect(errorLogSpy).toHaveBeenCalled();
+					redisOnSpy.mockRestore();
 				});
 			});
 
@@ -745,7 +709,7 @@ describe('TldrawWSService', () => {
 				on = jest.fn();
 			}
 
-			const doc = new WsSharedDocDo('TEST');
+			const doc = new WsSharedDocDo('TEST-AUH');
 			doc.awareness = new MockAwareness() as unknown as AwarenessProtocol.Awareness;
 			const awarenessMetaMock = new Map<number, { clock: number; lastUpdated: number }>();
 			awarenessMetaMock.set(1, { clock: 11, lastUpdated: 21 });

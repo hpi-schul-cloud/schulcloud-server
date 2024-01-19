@@ -34,14 +34,14 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 						client,
 						WsCloseCodeEnum.WS_CLIENT_NOT_FOUND_CODE,
 						WsCloseMessageEnum.WS_CLIENT_NOT_FOUND_MESSAGE,
-						err as Error
+						err
 					);
 				} else {
 					this.closeClientAndLogError(
 						client,
 						WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
 						WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE,
-						err as Error
+						err
 					);
 				}
 				return;
@@ -53,7 +53,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 					client,
 					WsCloseCodeEnum.WS_CLIENT_ESTABLISHING_CONNECTION_CODE,
 					WsCloseMessageEnum.WS_CLIENT_ESTABLISHING_CONNECTION_MESSAGE,
-					err as Error
+					err
 				);
 			}
 		} else {
@@ -80,7 +80,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		return parsedCookies;
 	}
 
-	private closeClientAndLogError(client: WebSocket, code: WsCloseCodeEnum, data: string, err: Error): void {
+	private closeClientAndLogError(client: WebSocket, code: WsCloseCodeEnum, data: string, err: unknown): void {
 		client.close(code, data);
 		this.logger.warning(new WebsocketCloseErrorLoggable(`(${code}) ${data}`, err));
 	}

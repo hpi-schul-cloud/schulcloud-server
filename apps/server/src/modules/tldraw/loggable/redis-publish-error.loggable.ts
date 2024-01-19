@@ -1,7 +1,13 @@
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class RedisPublishErrorLoggable implements Loggable {
-	constructor(private readonly type: 'document' | 'awareness', private readonly error: Error) {}
+	private error: Error | undefined;
+
+	constructor(private readonly type: 'document' | 'awareness', private readonly err: unknown) {
+		if (err instanceof Error) {
+			this.error = err;
+		}
+	}
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
