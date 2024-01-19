@@ -139,8 +139,7 @@ export class TldrawWsService {
 			const doc = new WsSharedDocDo(docName, this.gcEnabled);
 			this.registerAwarenessUpdateHandler(doc);
 			this.registerUpdateHandler(doc);
-
-			await this.subscribeToRedisChannels(doc);
+			void this.subscribeToRedisChannels(doc);
 
 			await this.updateDocument(docName, doc);
 
@@ -219,9 +218,7 @@ export class TldrawWsService {
 		console.log('DOCUMENT SHAPES ARRAY LENGTH: ', Array.from(doc.getMap('shapes').entries()).length);
 		console.log('DOC CONNS COUNT: ', doc.connections.size);
 		// listen and reply to events
-		ws.on('message', (message: ArrayBufferLike) => {
-			this.messageHandler(ws, doc, new Uint8Array(message));
-		});
+		ws.on('message', (message: ArrayBufferLike) => this.messageHandler(ws, doc, new Uint8Array(message)));
 
 		// Check if connection is still alive
 		let pongReceived = true;
@@ -229,8 +226,9 @@ export class TldrawWsService {
 			const hasConn = doc.connections.has(ws);
 
 			if (pongReceived) {
-				if (!hasConn) return;
 				pongReceived = false;
+
+				if (!hasConn) return;
 
 				try {
 					ws.ping();
