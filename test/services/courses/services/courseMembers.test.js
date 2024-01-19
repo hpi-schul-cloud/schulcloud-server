@@ -16,7 +16,7 @@ describe('course scope members service', () => {
 	before(async () => {
 		app = await appPromise();
 		courseMembersService = app.service('/courses/:scopeId/members');
-		server = app.listen(0);
+		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 	});
 

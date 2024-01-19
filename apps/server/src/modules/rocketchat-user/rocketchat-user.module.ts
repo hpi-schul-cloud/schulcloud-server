@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
+import { LoggerModule } from '@src/core/logger';
 import { RocketChatUserRepo } from './repo';
 import { RocketChatUserService } from './service/rocket-chat-user.service';
-import { RocketChatService } from '../rocketchat/rocket-chat.service';
 
 @Module({
-	providers: [RocketChatUserService, RocketChatUserRepo],
-	exports: [RocketChatService],
+	imports: [LoggerModule],
+	providers: [RocketChatUserRepo, RocketChatUserService],
+	exports: [RocketChatUserService],
 })
 export class RocketChatUserModule {}

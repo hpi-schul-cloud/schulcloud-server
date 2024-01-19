@@ -1,3 +1,4 @@
+import { schoolToolConfigurationStatusFactory } from '@shared/testing';
 import { SchoolExternalToolRequestMapper } from './school-external-tool-request.mapper';
 import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
 import { CustomParameterEntryParam, SchoolExternalToolPostParams } from '../controller/dto';
@@ -17,6 +18,7 @@ describe('SchoolExternalToolRequestMapper', () => {
 					version: 1,
 					schoolId: 'schoolId',
 					parameters: [param],
+					isDeactivated: true,
 				};
 
 				return {
@@ -35,6 +37,7 @@ describe('SchoolExternalToolRequestMapper', () => {
 					parameters: [{ name: param.name, value: param.value }],
 					schoolId: params.schoolId,
 					toolVersion: params.version,
+					status: schoolToolConfigurationStatusFactory.build({ isDeactivated: true }),
 				});
 			});
 		});
@@ -46,6 +49,7 @@ describe('SchoolExternalToolRequestMapper', () => {
 					version: 1,
 					schoolId: 'schoolId',
 					parameters: undefined,
+					isDeactivated: false,
 				};
 
 				return {
@@ -63,6 +67,7 @@ describe('SchoolExternalToolRequestMapper', () => {
 					parameters: [],
 					schoolId: params.schoolId,
 					toolVersion: params.version,
+					status: schoolToolConfigurationStatusFactory.build(),
 				});
 			});
 		});

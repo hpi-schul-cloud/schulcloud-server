@@ -1,9 +1,15 @@
 import { BadRequestException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class ToolStatusOutdatedLoggableException extends BadRequestException implements Loggable {
-	constructor(private readonly userId: EntityId, private readonly toolId: EntityId) {
+	constructor(
+		private readonly userId: EntityId,
+		private readonly toolId: EntityId,
+		private readonly isOutdatedOnScopeSchool: boolean,
+		private readonly isOutdatedOnScopeContext: boolean,
+		private readonly isDeactivated: boolean
+	) {
 		super();
 	}
 
@@ -15,6 +21,9 @@ export class ToolStatusOutdatedLoggableException extends BadRequestException imp
 			data: {
 				userId: this.userId,
 				toolId: this.toolId,
+				isOutdatedOnScopeSchool: this.isOutdatedOnScopeSchool,
+				isOutdatedOnScopeContext: this.isOutdatedOnScopeContext,
+				isDeactivated: this.isDeactivated,
 			},
 		};
 	}

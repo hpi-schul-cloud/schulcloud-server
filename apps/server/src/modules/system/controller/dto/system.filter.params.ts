@@ -1,6 +1,6 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { StringToBoolean } from '@shared/controller';
-import { SystemTypeEnum } from '@shared/domain';
+import { SystemTypeEnum } from '@shared/domain/types';
 import { IsBoolean, IsEnum, IsOptional } from 'class-validator';
 
 export class SystemFilterParams {

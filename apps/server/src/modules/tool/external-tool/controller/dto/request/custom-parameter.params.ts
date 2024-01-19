@@ -52,4 +52,8 @@ export class CustomParameterPostParams {
 	@IsBoolean()
 	@ApiProperty()
 	isOptional!: boolean;
+
+	@IsBoolean()
+	@ApiProperty()
+	isProtected!: boolean;
 }

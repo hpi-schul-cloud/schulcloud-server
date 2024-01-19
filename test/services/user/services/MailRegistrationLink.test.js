@@ -12,7 +12,7 @@ describe('MailRegistrationLinkService', () => {
 	before(async () => {
 		app = await appPromise();
 		mailRegistrationLinkService = app.service('/users/mail/registrationLink');
-		server = app.listen(0);
+		server = await app.listen(0);
 	});
 
 	after((done) => {

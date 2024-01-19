@@ -10,7 +10,7 @@ import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@modules/server/server.module';
 import { ResolvedUserResponse } from '@modules/user/controller/dto';
 import { ApiValidationError } from '@shared/common';
-import { LanguageType } from '@shared/domain';
+import { LanguageType } from '@shared/domain/entity';
 import { cleanupCollections, mapUserToCurrentUser, roleFactory, userFactory } from '@shared/testing';
 
 const baseRouteName = '/user/me';

@@ -5,16 +5,16 @@ import { SanisResponse, SanisRole } from '@modules/provisioning';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, SystemEntity, User } from '@shared/domain';
+import { SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
-	cleanupCollections,
 	JwtTestFactory,
-	schoolFactory,
-	systemEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
+	cleanupCollections,
+	schoolFactory,
+	systemEntityFactory,
 	userFactory,
 	userLoginMigrationFactory,
 } from '@shared/testing';
@@ -446,9 +446,6 @@ describe('UserLoginMigrationController (API)', () => {
 							familienname: 'familienName',
 							vorname: 'vorname',
 						},
-						geschlecht: 'weiblich',
-						lokalisierung: 'not necessary',
-						vertrauensstufe: 'not necessary',
 					},
 					personenkontexte: [
 						{
@@ -458,9 +455,7 @@ describe('UserLoginMigrationController (API)', () => {
 								id: new UUID('aef1f4fd-c323-466e-962b-a84354c0e713').toString(),
 								kennung: officialSchoolNumber,
 								name: 'schulName',
-								typ: 'not necessary',
 							},
-							personenstatus: 'not necessary',
 						},
 					],
 				});

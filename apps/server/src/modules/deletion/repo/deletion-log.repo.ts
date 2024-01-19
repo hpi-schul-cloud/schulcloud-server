@@ -1,6 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { DeletionLog } from '../domain/deletion-log.do';
 import { DeletionLogEntity } from '../entity/deletion-log.entity';
 import { DeletionLogMapper } from './mapper/deletion-log.mapper';

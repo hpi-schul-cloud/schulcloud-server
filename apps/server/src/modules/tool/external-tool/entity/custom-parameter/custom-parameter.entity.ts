@@ -33,6 +33,9 @@ export class CustomParameterEntity {
 	@Property()
 	isOptional: boolean;
 
+	@Property({ default: false })
+	isProtected: boolean;
+
 	constructor(props: CustomParameterEntity) {
 		this.name = props.name;
 		this.displayName = props.displayName;
@@ -44,5 +47,6 @@ export class CustomParameterEntity {
 		this.regex = props.regex;
 		this.regexComment = props.regexComment;
 		this.isOptional = props.isOptional;
+		this.isProtected = props.isProtected;
 	}
 }

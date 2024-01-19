@@ -4,3 +4,4 @@ export * from './service/card.service';
 export * from './service/column-board.service';
 export * from './service/column.service';
 export * from './service/content-element.service';
+export * from './service/column-board-copy.service';

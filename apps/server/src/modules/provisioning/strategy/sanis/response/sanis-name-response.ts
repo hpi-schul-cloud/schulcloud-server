@@ -1,5 +1,9 @@
-export interface SanisNameResponse {
-	familienname?: string;
+import { IsString } from 'class-validator';
 
-	vorname?: string;
+export class SanisNameResponse {
+	@IsString()
+	familienname!: string;
+
+	@IsString()
+	vorname!: string;
 }

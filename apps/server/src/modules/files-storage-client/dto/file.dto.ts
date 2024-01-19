@@ -1,5 +1,5 @@
 import { FileRecordParentType } from '@infra/rabbitmq';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { FileDomainObjectProps } from '../interfaces';
 
 export class FileDto {

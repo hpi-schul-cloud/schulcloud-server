@@ -1,26 +1,6 @@
 import { ExternalToolLogoSizeExceededLoggableException } from './external-tool-logo-size-exceeded-loggable-exception';
 
 describe('ExternalToolLogoSizeExceededLoggableException', () => {
-	describe('constructor', () => {
-		const setup = () => {
-			const externalToolId = 'externalToolId';
-			const maxExternalToolLogoSizeInBytes = 100;
-
-			return { externalToolId, maxExternalToolLogoSizeInBytes };
-		};
-
-		it('should create an instance of ExternalToolLogoSizeExceededLoggableException', () => {
-			const { externalToolId, maxExternalToolLogoSizeInBytes } = setup();
-
-			const loggable = new ExternalToolLogoSizeExceededLoggableException(
-				externalToolId,
-				maxExternalToolLogoSizeInBytes
-			);
-
-			expect(loggable).toBeInstanceOf(ExternalToolLogoSizeExceededLoggableException);
-		});
-	});
-
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const externalToolId = 'externalToolId';

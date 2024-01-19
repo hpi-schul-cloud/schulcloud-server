@@ -2,6 +2,7 @@ import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from 
 import { DecodeHtmlEntities } from '@shared/controller';
 import {
 	AnyContentElementResponse,
+	DrawingElementResponse,
 	ExternalToolElementResponse,
 	FileElementResponse,
 	LinkElementResponse,
@@ -16,6 +17,7 @@ import { VisibilitySettingsResponse } from './visibility-settings.response';
 	FileElementResponse,
 	LinkElementResponse,
 	RichTextElementResponse,
+	DrawingElementResponse,
 	SubmissionContainerElementResponse
 )
 export class CardResponse {
@@ -49,6 +51,7 @@ export class CardResponse {
 				{ $ref: getSchemaPath(LinkElementResponse) },
 				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
+				{ $ref: getSchemaPath(DrawingElementResponse) },
 			],
 		},
 	})

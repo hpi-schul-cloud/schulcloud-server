@@ -20,7 +20,7 @@ describe('SchooolChange API integration tests', () => {
 
 	before(async () => {
 		app = await appPromise();
-		server = app.listen(0);
+		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 		nestAccountService = app.service('nest-account-service');
 		teamService = app.service('teams');

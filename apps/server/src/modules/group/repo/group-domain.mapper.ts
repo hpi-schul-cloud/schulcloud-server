@@ -1,14 +1,19 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { ExternalSource, ExternalSourceEntity, Role, SchoolEntity, SystemEntity, User } from '@shared/domain';
+import { ExternalSource } from '@shared/domain/domainobject';
+import { ExternalSourceEntity, Role, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
 import { Group, GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupUserEntity, GroupValidPeriodEntity } from '../entity';
 
 const GroupEntityTypesToGroupTypesMapping: Record<GroupEntityTypes, GroupTypes> = {
 	[GroupEntityTypes.CLASS]: GroupTypes.CLASS,
+	[GroupEntityTypes.COURSE]: GroupTypes.COURSE,
+	[GroupEntityTypes.OTHER]: GroupTypes.OTHER,
 };
 
-const GroupTypesToGroupEntityTypesMapping: Record<GroupTypes, GroupEntityTypes> = {
+export const GroupTypesToGroupEntityTypesMapping: Record<GroupTypes, GroupEntityTypes> = {
 	[GroupTypes.CLASS]: GroupEntityTypes.CLASS,
+	[GroupTypes.COURSE]: GroupEntityTypes.COURSE,
+	[GroupTypes.OTHER]: GroupEntityTypes.OTHER,
 };
 
 export class GroupDomainMapper {

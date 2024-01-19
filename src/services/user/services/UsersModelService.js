@@ -1,6 +1,6 @@
-const feathersMongooseService = require('feathers-mongoose');
 const auth = require('@feathersjs/authentication');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
+const feathersMongooseService = require('../../../utils/feathers-mongoose');
 const { userModel } = require('../model');
 const { addDates: addConsentDate } = require('../hooks/consent');
 const { enableQuery, enableQueryAfter, resolveToIds } = require('../../../hooks');

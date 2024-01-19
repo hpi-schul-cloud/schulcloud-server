@@ -64,6 +64,7 @@ describe(DeletionLogRepo.name, () => {
 					modifiedCount: domainObject.modifiedCount,
 					deletedCount: domainObject.deletedCount,
 					deletionRequestId: domainObject.deletionRequestId,
+					performedAt: domainObject.performedAt,
 					createdAt: domainObject.createdAt,
 					updatedAt: domainObject.updatedAt,
 				};
@@ -95,6 +96,7 @@ describe(DeletionLogRepo.name, () => {
 					modifiedCount: entity.modifiedCount,
 					deletedCount: entity.deletedCount,
 					deletionRequestId: entity.deletionRequestId?.toHexString(),
+					performedAt: entity.performedAt,
 					createdAt: entity.createdAt,
 					updatedAt: entity.updatedAt,
 				};
@@ -149,6 +151,7 @@ describe(DeletionLogRepo.name, () => {
 						domain: deletionLogEntity1.domain,
 						operation: deletionLogEntity1.operation,
 						deletionRequestId: deletionLogEntity1.deletionRequestId?.toHexString(),
+						performedAt: deletionLogEntity1.performedAt,
 						modifiedCount: deletionLogEntity1.modifiedCount,
 						deletedCount: deletionLogEntity1.deletedCount,
 						createdAt: deletionLogEntity1.createdAt,
@@ -159,6 +162,7 @@ describe(DeletionLogRepo.name, () => {
 						domain: deletionLogEntity2.domain,
 						operation: deletionLogEntity2.operation,
 						deletionRequestId: deletionLogEntity2.deletionRequestId?.toHexString(),
+						performedAt: deletionLogEntity2.performedAt,
 						modifiedCount: deletionLogEntity2.modifiedCount,
 						deletedCount: deletionLogEntity2.deletedCount,
 						createdAt: deletionLogEntity2.createdAt,

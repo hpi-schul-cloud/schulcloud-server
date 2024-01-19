@@ -1,4 +1,5 @@
-import { IImportUserRoleName, ImportUser, ImportUserProperties, MatchCreator, RoleName, User } from '@shared/domain';
+import { IImportUserRoleName, ImportUser, ImportUserProperties, MatchCreator, User } from '@shared/domain/entity';
+import { RoleName } from '@shared/domain/interface';
 import { DeepPartial } from 'fishery';
 import { v4 as uuidv4 } from 'uuid';
 import { BaseFactory } from './base.factory';

@@ -1,8 +1,8 @@
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DeletionRequestEntity } from '@src/modules/deletion/entity/deletion-request.entity';
-import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
-import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
+import { DomainModel } from '@shared/domain/types';
+import { DeletionStatusModel } from '../domain/types';
+import { DeletionRequestEntity } from '.';
 
 describe(DeletionRequestEntity.name, () => {
 	beforeAll(async () => {
@@ -16,7 +16,7 @@ describe(DeletionRequestEntity.name, () => {
 	const setup = () => {
 		const props = {
 			id: new ObjectId().toHexString(),
-			targetRefDomain: DeletionDomainModel.USER,
+			targetRefDomain: DomainModel.USER,
 			deleteAfter: new Date(),
 			targetRefId: new ObjectId().toHexString(),
 			status: DeletionStatusModel.REGISTERED,

@@ -1,8 +1,9 @@
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, TeamEntity, TeamUserEntity } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { TeamEntity, TeamUserEntity } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo';
 import { cleanupCollections, roleFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';

@@ -1,8 +1,8 @@
-import { RoleName } from '@shared/domain';
-import { ObjectId } from 'bson';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
-import { BaseFactory } from './base.factory';
+import { RoleName } from '@shared/domain/interface';
+import { ObjectId } from 'bson';
 import { userPermissions } from '../user-role-permissions';
+import { BaseFactory } from './base.factory';
 
 export const roleDtoFactory = BaseFactory.define<RoleDto, RoleDto>(RoleDto, () => {
 	return {

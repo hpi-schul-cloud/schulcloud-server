@@ -13,6 +13,7 @@ export class DeletionLogMapper {
 			modifiedCount: entity.modifiedCount,
 			deletedCount: entity.deletedCount,
 			deletionRequestId: entity.deletionRequestId?.toHexString(),
+			performedAt: entity.performedAt,
 		});
 	}
 
@@ -26,6 +27,7 @@ export class DeletionLogMapper {
 			modifiedCount: domainObject.modifiedCount,
 			deletedCount: domainObject.deletedCount,
 			deletionRequestId: new ObjectId(domainObject.deletionRequestId),
+			performedAt: domainObject.performedAt,
 		});
 	}
 

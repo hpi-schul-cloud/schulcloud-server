@@ -1,4 +1,4 @@
-const service = require('feathers-mongoose');
+const service = require('../../utils/feathers-mongoose');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
@@ -15,19 +15,19 @@ module.exports = function schoolServices() {
 	const app = this;
 
 	app.use('/schools/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
-
-	const options = {
-		Model: schoolModels.schoolModel,
-		paginate: {
-			default: 5,
-			max: 100, // this is the max currently used in the SHD
-		},
-		lean: {
-			virtuals: true,
-		},
-	};
-
-	app.use('/schools', service(options));
+	app.use(
+		'/schools',
+		service({
+			Model: schoolModels.schoolModel,
+			paginate: {
+				default: 5,
+				max: 100, // this is the max currently used in the SHD
+			},
+			lean: {
+				virtuals: true,
+			},
+		})
+	);
 	const schoolService = app.service('/schools');
 	schoolService.hooks(hooks);
 

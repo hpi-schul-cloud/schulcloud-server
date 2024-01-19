@@ -1,6 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId, SystemEntity } from '@shared/domain';
+import { SystemEntity } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { System, SystemProps } from '../domain';
 import { SystemDomainMapper } from './system-domain.mapper';
 

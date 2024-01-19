@@ -3,11 +3,7 @@ import { Loggable } from '@src/core/logger/interfaces';
 import { ErrorLogMessage } from '@src/core/logger/types';
 
 export class NotFoundLoggableException extends NotFoundException implements Loggable {
-	constructor(
-		private readonly resourceName: string,
-		private readonly identifierName: string,
-		private readonly resourceId: string
-	) {
+	constructor(private readonly resourceName: string, private readonly identifiers: Record<string, string>) {
 		super();
 	}
 
@@ -17,7 +13,7 @@ export class NotFoundLoggableException extends NotFoundException implements Logg
 			stack: this.stack,
 			data: {
 				resourceName: this.resourceName,
-				[this.identifierName]: this.resourceId,
+				...this.identifiers,
 			},
 		};
 

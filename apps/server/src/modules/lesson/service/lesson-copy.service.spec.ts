@@ -4,6 +4,7 @@ import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '
 import { CopyFilesService } from '@modules/files-storage-client';
 import { TaskCopyService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
+import { AuthorizableObject } from '@shared/domain/domain-object';
 import {
 	BaseEntity,
 	ComponentEtherpadProperties,
@@ -13,11 +14,10 @@ import {
 	ComponentProperties,
 	ComponentTextProperties,
 	ComponentType,
-	EntityId,
 	LessonEntity,
 	Material,
-} from '@shared/domain';
-import { AuthorizableObject } from '@shared/domain/domain-object';
+} from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import {
 	courseFactory,
 	lessonFactory,
@@ -1034,6 +1034,9 @@ describe('lesson copy service', () => {
 				if (config === 'FEATURE_NEXBOARD_ENABLED') {
 					return true;
 				}
+				if (config === 'FEATURE_NEXBOARD_COPY_ENABLED') {
+					return true;
+				}
 				return null;
 			});
 
@@ -1052,6 +1055,32 @@ describe('lesson copy service', () => {
 
 			const lessonContents = (status.copyEntity as LessonEntity).contents as ComponentProperties[];
 			expect(configurationSpy).toHaveBeenCalledWith('FEATURE_NEXBOARD_ENABLED');
+			expect(nexboardService.createNexboard).not.toHaveBeenCalled();
+			expect(lessonContents).toEqual([]);
+
+			configurationSpy = jest.spyOn(Configuration, 'get').mockReturnValue(true);
+		});
+
+		it('should not call neXboard service, if copy feature flag is false', async () => {
+			const { user, destinationCourse, originalLesson } = setup();
+			configurationSpy = jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
+				if (config === 'FEATURE_NEXBOARD_ENABLED') {
+					return true;
+				}
+				if (config === 'FEATURE_NEXBOARD_COPY_ENABLED') {
+					return false;
+				}
+				return null;
+			});
+
+			const status = await copyService.copyLesson({
+				originalLessonId: originalLesson.id,
+				destinationCourse,
+				user,
+			});
+
+			const lessonContents = (status.copyEntity as LessonEntity).contents as ComponentProperties[];
+			expect(configurationSpy).toHaveBeenCalledWith('FEATURE_NEXBOARD_COPY_ENABLED');
 			expect(nexboardService.createNexboard).not.toHaveBeenCalled();
 			expect(lessonContents).toEqual([]);
 

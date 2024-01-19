@@ -1,8 +1,9 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { BoardExternalReference, Column, ColumnBoard, EntityId } from '@shared/domain';
-import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService } from '@modules/authorization/domain';
 import { Action } from '@modules/authorization';
+import { AuthorizationService } from '@modules/authorization/domain';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { BoardExternalReference, Column, ColumnBoard } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
+import { LegacyLogger } from '@src/core/logger';
 import { CardService, ColumnBoardService, ColumnService } from '../service';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
 import { BaseUc } from './base.uc';

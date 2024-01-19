@@ -1,24 +1,29 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, Page } from '@shared/domain';
+import { Page } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import {
 	contextExternalToolFactory,
 	customParameterFactory,
 	externalToolFactory,
 	schoolExternalToolFactory,
+	schoolToolConfigurationStatusFactory,
 	setupEntities,
 } from '@shared/testing';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CustomParameter } from '../../common/domain';
-import { CustomParameterScope } from '../../common/enum';
+import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ContextExternalToolTemplateInfo } from '../uc';
 import { ExternalToolConfigurationService } from './external-tool-configuration.service';
+import { CommonToolService } from '../../common/service';
 
 describe('ExternalToolConfigurationService', () => {
 	let module: TestingModule;
 	let service: ExternalToolConfigurationService;
+	let commonToolService: DeepMocked<CommonToolService>;
 
 	let toolFeatures: IToolFeatures;
 
@@ -34,11 +39,16 @@ describe('ExternalToolConfigurationService', () => {
 						contextConfigurationEnabled: false,
 					},
 				},
+				{
+					provide: CommonToolService,
+					useValue: createMock<CommonToolService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(ExternalToolConfigurationService);
 		toolFeatures = module.get(ToolFeatures);
+		commonToolService = module.get(CommonToolService);
 	});
 
 	afterEach(() => {
@@ -56,9 +66,11 @@ describe('ExternalToolConfigurationService', () => {
 					externalToolFactory.buildWithId(undefined, 'usedToolId'),
 					externalToolFactory.buildWithId(undefined, 'unusedToolId'),
 				];
+
 				const externalTools: ExternalTool[] = [
 					...notHiddenTools,
 					externalToolFactory.buildWithId({ isHidden: true }, 'hiddenToolId'),
+					externalToolFactory.buildWithId({ isDeactivated: true }, 'deactivatedToolId'),
 				];
 				const externalToolsPage: Page<ExternalTool> = new Page<ExternalTool>(externalTools, externalTools.length);
 				const toolIdsInUse: EntityId[] = ['usedToolId', 'hiddenToolId'];
@@ -88,6 +100,14 @@ describe('ExternalToolConfigurationService', () => {
 				const result: ExternalTool[] = service.filterForAvailableTools(externalToolsPage, []);
 
 				expect(result.length).toBe(notHiddenTools.length);
+			});
+
+			it('should filter out deactivated tools', () => {
+				const { externalToolsPage, toolIdsInUse } = setup();
+
+				const result: ExternalTool[] = service.filterForAvailableTools(externalToolsPage, toolIdsInUse);
+
+				expect(result.some((tool) => tool.id !== 'deactivatedToolId')).toBe(true);
 			});
 		});
 	});
@@ -167,8 +187,25 @@ describe('ExternalToolConfigurationService', () => {
 				const availableSchoolExternalTools: SchoolExternalTool[] = [
 					schoolExternalToolFactory.buildWithId({ toolId: usedExternalToolId }, 'usedSchoolExternalToolId'),
 					schoolExternalToolFactory.buildWithId(undefined, 'unusedSchoolExternalToolId'),
+					schoolExternalToolFactory.buildWithId(undefined, 'deactivatedToolId'),
+					schoolExternalToolFactory.buildWithId(undefined, 'deactivatedToolId'),
+					schoolExternalToolFactory.buildWithId(undefined, 'deactivatedToolId'),
+					schoolExternalToolFactory.buildWithId(undefined, 'unusedSchoolExternalToolId'),
 					schoolExternalToolFactory.buildWithId({ toolId: usedExternalToolHiddenId }, 'usedSchoolExternalToolHiddenId'),
 				];
+
+				availableSchoolExternalTools.forEach((tool): void => {
+					if (tool.id === 'deactivatedToolId') {
+						tool.status = schoolToolConfigurationStatusFactory.build({
+							isDeactivated: true,
+							isOutdatedOnScopeSchool: false,
+						});
+					}
+					tool.status = schoolToolConfigurationStatusFactory.build({
+						isDeactivated: false,
+						isOutdatedOnScopeSchool: false,
+					});
+				});
 
 				return { externalTools, availableSchoolExternalTools };
 			};
@@ -182,6 +219,116 @@ describe('ExternalToolConfigurationService', () => {
 				);
 
 				expect(result.every((toolInfo: ContextExternalToolTemplateInfo) => !toolInfo.externalTool.isHidden)).toBe(true);
+			});
+
+			it('should filter out deactivated external tools', () => {
+				const { externalTools, availableSchoolExternalTools } = setup();
+
+				const result: ContextExternalToolTemplateInfo[] = service.filterForAvailableExternalTools(
+					externalTools,
+					availableSchoolExternalTools
+				);
+
+				expect(result.every((toolInfo: ContextExternalToolTemplateInfo) => !toolInfo.externalTool.isDeactivated)).toBe(
+					true
+				);
+			});
+
+			it('should filter out deactivated school external tools', () => {
+				const { externalTools, availableSchoolExternalTools } = setup();
+
+				const result: ContextExternalToolTemplateInfo[] = service.filterForAvailableExternalTools(
+					externalTools,
+					availableSchoolExternalTools
+				);
+
+				expect(
+					result.every(
+						(toolInfo: ContextExternalToolTemplateInfo) => !toolInfo.schoolExternalTool.status?.isDeactivated
+					)
+				).toBe(true);
+			});
+		});
+	});
+
+	describe('filterForContextRestrictions', () => {
+		describe('when tool has no context restrictions', () => {
+			const setup = () => {
+				const contextType = ToolContextType.COURSE;
+
+				const externalTool: ExternalTool = externalToolFactory.build({ restrictToContexts: [] });
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+
+				const availableTools: ContextExternalToolTemplateInfo[] = [{ externalTool, schoolExternalTool }];
+
+				commonToolService.isContextRestricted.mockReturnValueOnce(false);
+
+				return {
+					contextType,
+					availableTools,
+				};
+			};
+
+			it('should check if context is restricted', () => {
+				const { contextType, availableTools } = setup();
+
+				service.filterForContextRestrictions(availableTools, contextType);
+
+				expect(commonToolService.isContextRestricted).toHaveBeenCalledWith(availableTools[0].externalTool, contextType);
+			});
+
+			it('should pass the filter', () => {
+				const { contextType, availableTools } = setup();
+
+				const result: ContextExternalToolTemplateInfo[] = service.filterForContextRestrictions(
+					availableTools,
+					contextType
+				);
+
+				expect(result).toEqual(availableTools);
+			});
+		});
+
+		describe('when context restrictions are given', () => {
+			const setup = () => {
+				const contextType: ToolContextType = ToolContextType.COURSE;
+
+				const externalToolWithCourseRestriction: ExternalTool = externalToolFactory.build({
+					restrictToContexts: [ToolContextType.COURSE],
+				});
+				const externalToolWithBoardRestriction: ExternalTool = externalToolFactory.build({
+					restrictToContexts: [ToolContextType.BOARD_ELEMENT],
+				});
+
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
+
+				const availableTools: ContextExternalToolTemplateInfo[] = [
+					{ externalTool: externalToolWithCourseRestriction, schoolExternalTool },
+					{ externalTool: externalToolWithBoardRestriction, schoolExternalTool },
+				];
+
+				commonToolService.isContextRestricted.mockReturnValueOnce(false);
+				commonToolService.isContextRestricted.mockReturnValueOnce(true);
+
+				return {
+					contextType,
+					availableTools,
+					externalToolWithCourseRestriction,
+					schoolExternalTool,
+				};
+			};
+
+			it('should only return tools restricted to this context', () => {
+				const { contextType, availableTools, externalToolWithCourseRestriction, schoolExternalTool } = setup();
+
+				const result: ContextExternalToolTemplateInfo[] = service.filterForContextRestrictions(
+					availableTools,
+					contextType
+				);
+
+				expect(result).toEqual<ContextExternalToolTemplateInfo[]>([
+					{ externalTool: externalToolWithCourseRestriction, schoolExternalTool },
+				]);
 			});
 		});
 	});
@@ -207,6 +354,16 @@ describe('ExternalToolConfigurationService', () => {
 				service.filterParametersForScope(externalTool, scope);
 
 				expect(externalTool.parameters?.every((parameter: CustomParameter) => parameter.scope === scope)).toBe(true);
+			});
+		});
+	});
+
+	describe('getToolContextTypes', () => {
+		describe('when it is called', () => {
+			it('should return ToolContextTypes', () => {
+				const types: ToolContextType[] = service.getToolContextTypes();
+
+				expect(types).toEqual([ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT]);
 			});
 		});
 	});

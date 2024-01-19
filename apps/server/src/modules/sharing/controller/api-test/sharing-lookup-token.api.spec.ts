@@ -1,13 +1,13 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain';
+import { Permission } from '@shared/domain/interface';
 import { TestApiClient, UserAndAccountTestFactory, courseFactory, schoolFactory } from '@shared/testing';
-import { ServerTestModule } from '@modules/server';
+import { ShareTokenContextType, ShareTokenParentType } from '../../domainobject/share-token.do';
 import { ShareTokenService } from '../../service';
 import { ShareTokenInfoResponse } from '../dto';
-import { ShareTokenContextType, ShareTokenParentType } from '../../domainobject/share-token.do';
 
 describe(`share token lookup (api)`, () => {
 	let app: INestApplication;

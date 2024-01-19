@@ -372,4 +372,32 @@ describe('FileRecordRepo', () => {
 			await expect(repo.findBySecurityCheckRequestToken(token)).rejects.toThrow();
 		});
 	});
+
+	describe('findByCreatorId', () => {
+		const setup = () => {
+			const creator1 = new ObjectId().toHexString();
+			const creator2 = new ObjectId().toHexString();
+			const fileRecords1 = fileRecordFactory.buildList(4, {
+				creatorId: creator1,
+			});
+			const fileRecords2 = fileRecordFactory.buildList(3, {
+				creatorId: creator2,
+			});
+
+			return { fileRecords1, fileRecords2, creator1 };
+		};
+
+		it('should only find searched creator', async () => {
+			const { fileRecords1, fileRecords2, creator1 } = setup();
+
+			await em.persistAndFlush([...fileRecords1, ...fileRecords2]);
+			em.clear();
+
+			const [results, count] = await repo.findByCreatorId(creator1);
+
+			expect(count).toEqual(4);
+			expect(results).toHaveLength(4);
+			expect(results.map((o) => o.creatorId)).toEqual([creator1, creator1, creator1, creator1]);
+		});
+	});
 });

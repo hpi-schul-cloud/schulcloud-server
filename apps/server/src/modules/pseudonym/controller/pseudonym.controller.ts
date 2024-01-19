@@ -7,7 +7,7 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { Pseudonym } from '@shared/domain';
+import { Pseudonym } from '@shared/domain/domainobject';
 import { PseudonymMapper } from '../mapper/pseudonym.mapper';
 import { PseudonymUc } from '../uc';
 import { PseudonymResponse } from './dto';

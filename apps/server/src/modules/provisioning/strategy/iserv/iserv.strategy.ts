@@ -1,10 +1,14 @@
-import { Injectable } from '@nestjs/common';
-import { LegacySchoolDo, RoleName, RoleReference, User, UserDO } from '@shared/domain';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { LegacySchoolService } from '@modules/legacy-school';
+import {
+	IdTokenExtractionFailureLoggableException,
+	IdTokenUserNotFoundLoggableException,
+} from '@modules/oauth/loggable';
 import { UserService } from '@modules/user';
+import { Injectable } from '@nestjs/common';
+import { LegacySchoolDo, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { RoleName } from '@shared/domain/interface';
+import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { OAuthSSOError } from '@modules/oauth/loggable';
 import {
 	ExternalSchoolDto,
 	ExternalUserDto,
@@ -29,7 +33,7 @@ export class IservProvisioningStrategy extends ProvisioningStrategy {
 		const idToken: JwtPayload | null = jwt.decode(input.idToken, { json: true });
 
 		if (!idToken || !idToken.uuid) {
-			throw new OAuthSSOError('Failed to extract uuid', 'sso_jwt_problem');
+			throw new IdTokenExtractionFailureLoggableException('uuid');
 		}
 
 		const ldapUser: UserDO | null = await this.userService.findByExternalId(
@@ -38,10 +42,7 @@ export class IservProvisioningStrategy extends ProvisioningStrategy {
 		);
 		if (!ldapUser) {
 			const additionalInfo: string = await this.getAdditionalErrorInfo(idToken.email as string | undefined);
-			throw new OAuthSSOError(
-				`Failed to find user with Id ${idToken.uuid as string}${additionalInfo}`,
-				'sso_user_notfound'
-			);
+			throw new IdTokenUserNotFoundLoggableException(idToken?.uuid as string, additionalInfo);
 		}
 
 		const ldapSchool: LegacySchoolDo = await this.schoolService.getSchoolById(ldapUser.schoolId);
@@ -64,10 +65,10 @@ export class IservProvisioningStrategy extends ProvisioningStrategy {
 
 	async getAdditionalErrorInfo(email: string | undefined): Promise<string> {
 		if (email) {
-			const usersWithEmail: User[] = await this.userService.findByEmail(email);
+			const usersWithEmail: UserDO[] = await this.userService.findByEmail(email);
 			if (usersWithEmail.length > 0) {
-				const user: User = usersWithEmail[0];
-				return ` [schoolId: ${user.school.id}, currentLdapId: ${user.externalId ?? ''}]`;
+				const user: UserDO = usersWithEmail[0];
+				return ` [schoolId: ${user.schoolId}, currentLdapId: ${user.externalId ?? ''}]`;
 			}
 		}
 		return '';

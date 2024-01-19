@@ -1,4 +1,4 @@
-import { ComponentProperties, Course, LessonEntity, LessonProperties } from '@shared/domain';
+import { ComponentProperties, Course, LessonEntity, LessonProperties } from '@shared/domain/entity';
 
 import { BaseFactory } from './base.factory';
 import { courseFactory } from './course.factory';

@@ -22,6 +22,7 @@ import {
 	CardListResponse,
 	CardUrlParams,
 	CreateContentElementBodyParams,
+	DrawingElementResponse,
 	ExternalToolElementResponse,
 	FileElementResponse,
 	LearnstoreElementResponse,
@@ -134,6 +135,7 @@ export class CardController {
 				{ $ref: getSchemaPath(LinkElementResponse) },
 				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
+				{ $ref: getSchemaPath(DrawingElementResponse) },
 			],
 		},
 	})

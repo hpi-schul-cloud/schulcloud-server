@@ -1,5 +1,6 @@
 import { FilterQuery } from '@mikro-orm/core';
-import { EntityId, News } from '@shared/domain';
+import { News } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { EmptyResultQuery } from '../query';
 import { Scope } from '../scope';
 import { NewsTargetFilter } from './news-target-filter';

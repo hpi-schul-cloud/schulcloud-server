@@ -3,13 +3,14 @@ const { Semaphore } = require('async-mutex');
 const { UserRepo } = require('../repo');
 
 class UserAccountService {
-	constructor(options) {
-		this.options = options || {};
-	}
-
-	async setup(app) {
+	setup(app) {
 		this.app = app;
 		this.lock = new Semaphore(5);
+	}
+
+	// Feathers 5: at least one standard service method must be implemented to be considered a service
+	get() {
+		return undefined;
 	}
 
 	async createUserAndAccount(inputUser, inputAccount, school) {

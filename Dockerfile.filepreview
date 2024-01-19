@@ -1,4 +1,4 @@
 ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
-RUN apk add --no-cache imagemagick
+RUN apk add --no-cache imagemagick imagemagick-heic imagemagick-jpeg imagemagick-pdf imagemagick-raw imagemagick-svg imagemagick-tiff imagemagick-webp

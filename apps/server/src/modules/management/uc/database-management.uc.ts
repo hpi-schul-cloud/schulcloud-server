@@ -5,7 +5,7 @@ import { FileSystemAdapter } from '@infra/file-system';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { StorageProviderEntity, SystemEntity } from '@shared/domain';
+import { StorageProviderEntity, SystemEntity } from '@shared/domain/entity';
 import { LegacyLogger } from '@src/core/logger';
 import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { IsEnum, IsMongoId } from 'class-validator';
 import { ToolContextType } from '../../../../common/enum';
 

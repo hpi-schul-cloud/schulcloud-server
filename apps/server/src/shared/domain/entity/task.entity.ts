@@ -67,8 +67,8 @@ export class Task extends BaseEntityWithTimestamps implements LearnroomElement, 
 	teamSubmissions?: boolean;
 
 	@Index()
-	@ManyToOne('User', { fieldName: 'teacherId' })
-	creator: User;
+	@ManyToOne('User', { fieldName: 'teacherId', nullable: true })
+	creator?: User;
 
 	@Index()
 	@ManyToOne('Course', { fieldName: 'courseId', nullable: true })
@@ -128,7 +128,7 @@ export class Task extends BaseEntityWithTimestamps implements LearnroomElement, 
 		return finishedIds;
 	}
 
-	private getParent(): TaskParent | User {
+	private getParent(): TaskParent | User | undefined {
 		const parent = this.lesson || this.course || this.creator;
 
 		return parent;
@@ -136,9 +136,11 @@ export class Task extends BaseEntityWithTimestamps implements LearnroomElement, 
 
 	private getMaxSubmissions(): number {
 		const parent = this.getParent();
-		// For draft (user as parent) propaly user is not a student, but for maxSubmission one is valid result
-		const maxSubmissions = parent instanceof User ? 1 : parent.getStudentIds().length;
-
+		let maxSubmissions = 0;
+		if (parent) {
+			// For draft (user as parent) propaly user is not a student, but for maxSubmission one is valid result
+			maxSubmissions = parent instanceof User ? 1 : parent.getStudentIds().length;
+		}
 		return maxSubmissions;
 	}
 
@@ -320,6 +322,14 @@ export class Task extends BaseEntityWithTimestamps implements LearnroomElement, 
 
 	public unpublish(): void {
 		this.private = true;
+	}
+
+	public removeCreatorId(): void {
+		this.creator = undefined;
+	}
+
+	public removeUserFromFinished(userId: EntityId): void {
+		this.finished.remove((u) => u.id === userId);
 	}
 }
 

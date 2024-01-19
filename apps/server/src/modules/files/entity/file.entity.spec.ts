@@ -94,6 +94,50 @@ describe(FileEntity.name, () => {
 		});
 	});
 
+	describe('removCreatorId', () => {
+		describe('when called on a file that contains matching creatorId', () => {
+			const setup = () => {
+				const file = fileEntityFactory.build({
+					ownerId: mainUserId,
+					creatorId: mainUserId,
+				});
+
+				const expectedFile = copyFile(file);
+				expectedFile._creatorId = undefined;
+
+				return { file, expectedFile };
+			};
+			it('should properly remove this creatorId', () => {
+				const { file, expectedFile } = setup();
+
+				file.removeCreatorId(mainUserId);
+
+				expect(file).toEqual(expectedFile);
+			});
+		});
+
+		describe("when called on a file that doesn't have any permission with given refId", () => {
+			const setup = () => {
+				const file = fileEntityFactory.build({
+					ownerId: mainUserId,
+					creatorId: mainUserId,
+				});
+
+				const originalFile = copyFile(file);
+
+				const randomUserId = new ObjectId().toHexString();
+				return { file, originalFile, randomUserId };
+			};
+			it('should not modify the file in any way (including the other present permissions)', () => {
+				const { file, originalFile, randomUserId } = setup();
+
+				file.removeCreatorId(randomUserId);
+
+				expect(file).toEqual(originalFile);
+			});
+		});
+	});
+
 	describe('markForDeletion', () => {
 		describe('when called on some typical file', () => {
 			it('should properly mark the file for deletion', () => {

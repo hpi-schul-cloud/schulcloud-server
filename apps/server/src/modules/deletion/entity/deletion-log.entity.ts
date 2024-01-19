@@ -1,16 +1,17 @@
-import { Entity, Property } from '@mikro-orm/core';
-import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
-import { DeletionOperationModel } from '../domain/types/deletion-operation-model.enum';
+import { Entity, Index, Property } from '@mikro-orm/core';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
+import { DomainModel, EntityId } from '@shared/domain/types';
+import { ObjectId } from 'bson';
+import { DeletionOperationModel } from '../domain/types';
 
 export interface DeletionLogEntityProps {
 	id?: EntityId;
-	domain: DeletionDomainModel;
+	domain: DomainModel;
 	operation?: DeletionOperationModel;
-	modifiedCount?: number;
-	deletedCount?: number;
+	modifiedCount: number;
+	deletedCount: number;
 	deletionRequestId?: ObjectId;
+	performedAt?: Date;
 	createdAt?: Date;
 	updatedAt?: Date;
 }
@@ -18,19 +19,23 @@ export interface DeletionLogEntityProps {
 @Entity({ tableName: 'deletionlogs' })
 export class DeletionLogEntity extends BaseEntityWithTimestamps {
 	@Property()
-	domain: DeletionDomainModel;
+	domain: DomainModel;
 
 	@Property({ nullable: true })
 	operation?: DeletionOperationModel;
 
-	@Property({ nullable: true })
-	modifiedCount?: number;
+	@Property()
+	modifiedCount: number;
 
-	@Property({ nullable: true })
-	deletedCount?: number;
+	@Property()
+	deletedCount: number;
 
 	@Property({ nullable: true })
 	deletionRequestId?: ObjectId;
+
+	@Property({ nullable: true })
+	@Index({ options: { expireAfterSeconds: 7776000 } })
+	performedAt?: Date;
 
 	constructor(props: DeletionLogEntityProps) {
 		super();
@@ -43,14 +48,8 @@ export class DeletionLogEntity extends BaseEntityWithTimestamps {
 		if (props.operation !== undefined) {
 			this.operation = props.operation;
 		}
-
-		if (props.modifiedCount !== undefined) {
-			this.modifiedCount = props.modifiedCount;
-		}
-
-		if (props.deletedCount !== undefined) {
-			this.deletedCount = props.deletedCount;
-		}
+		this.modifiedCount = props.modifiedCount;
+		this.deletedCount = props.deletedCount;
 
 		if (props.deletionRequestId !== undefined) {
 			this.deletionRequestId = props.deletionRequestId;
@@ -62,6 +61,10 @@ export class DeletionLogEntity extends BaseEntityWithTimestamps {
 
 		if (props.updatedAt !== undefined) {
 			this.updatedAt = props.updatedAt;
+		}
+
+		if (props.performedAt !== undefined) {
+			this.performedAt = props.performedAt;
 		}
 	}
 }

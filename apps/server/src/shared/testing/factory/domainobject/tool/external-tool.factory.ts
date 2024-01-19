@@ -79,6 +79,7 @@ export const customParameterFactory = CustomParameterFactory.define(CustomParame
 		scope: CustomParameterScope.SCHOOL,
 		location: CustomParameterLocation.BODY,
 		isOptional: false,
+		isProtected: false,
 	};
 });
 
@@ -120,6 +121,7 @@ export const externalToolFactory = ExternalToolFactory.define(ExternalTool, ({ s
 		config: basicToolConfigFactory.build(),
 		logoUrl: 'https://logo.com/',
 		isHidden: false,
+		isDeactivated: false,
 		openNewTab: false,
 		version: 1,
 	};

@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { EntityId } from '@shared/domain/types';
 
 export class ProvisioningSystemDto {
 	systemId: EntityId;

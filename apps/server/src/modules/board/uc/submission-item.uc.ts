@@ -1,3 +1,4 @@
+import { Action, AuthorizationService } from '@modules/authorization';
 import {
 	BadRequestException,
 	forwardRef,
@@ -8,7 +9,6 @@ import {
 } from '@nestjs/common';
 import {
 	ContentElementType,
-	EntityId,
 	FileElement,
 	isFileElement,
 	isRichTextElement,
@@ -18,8 +18,8 @@ import {
 	SubmissionItem,
 	UserBoardRoles,
 	UserRoleEnum,
-} from '@shared/domain';
-import { AuthorizationService, Action } from '@modules/authorization';
+} from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { BaseUc } from './base.uc';
 

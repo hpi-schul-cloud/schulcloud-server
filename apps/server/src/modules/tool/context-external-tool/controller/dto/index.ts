@@ -5,4 +5,3 @@ export * from './context-external-tool-context.params';
 export * from './context-external-tool.response';
 export * from './tool-reference-list.response';
 export * from './tool-reference.response';
-export * from './tool-configuration-status.response';

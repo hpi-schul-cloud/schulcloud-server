@@ -4,21 +4,22 @@ describe('NotFoundLoggableException', () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const resourceName = 'School';
-			const identifierName = 'id';
-			const resourceId = 'schoolId';
+			const identifiers: Record<string, string> = {
+				id1: 'testId1',
+				id2: 'testId2',
+			};
 
-			const exception = new NotFoundLoggableException(resourceName, identifierName, resourceId);
+			const exception = new NotFoundLoggableException(resourceName, identifiers);
 
 			return {
 				exception,
 				resourceName,
-				identifierName,
-				resourceId,
+				identifiers,
 			};
 		};
 
 		it('should log the correct message', () => {
-			const { exception, resourceName, identifierName, resourceId } = setup();
+			const { exception, resourceName, identifiers } = setup();
 
 			const result = exception.getLogMessage();
 
@@ -27,7 +28,7 @@ describe('NotFoundLoggableException', () => {
 				stack: expect.any(String),
 				data: {
 					resourceName,
-					[identifierName]: resourceId,
+					...identifiers,
 				},
 			});
 		});

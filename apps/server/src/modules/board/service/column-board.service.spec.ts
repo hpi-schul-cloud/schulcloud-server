@@ -9,9 +9,9 @@ import {
 	Card,
 	ColumnBoard,
 	ContentElementFactory,
-	InputFormat,
 	RichTextElement,
-} from '@shared/domain';
+} from '@shared/domain/domainobject';
+import { InputFormat } from '@shared/domain/types';
 import { columnBoardNodeFactory, setupEntities } from '@shared/testing';
 import { columnBoardFactory, columnFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
 import { ObjectId } from 'bson';
@@ -67,12 +67,13 @@ describe(ColumnBoardService.name, () => {
 		const board = columnBoardFactory.build();
 		const boardId = board.id;
 		const column = columnFactory.build();
+		const courseId = new ObjectId().toHexString();
 		const externalReference: BoardExternalReference = {
-			id: new ObjectId().toHexString(),
+			id: courseId,
 			type: BoardExternalReferenceType.Course,
 		};
 
-		return { board, boardId, column, externalReference };
+		return { board, boardId, column, courseId, externalReference };
 	};
 
 	describe('findById', () => {
@@ -236,6 +237,28 @@ describe(ColumnBoardService.name, () => {
 			await service.delete(board);
 
 			expect(boardDoService.deleteWithDescendants).toHaveBeenCalledWith(board);
+		});
+	});
+
+	describe('deleteByCourseId', () => {
+		describe('when deleting by courseId', () => {
+			it('should call boardDoRepo.findIdsByExternalReference to find the board ids', async () => {
+				const { boardId, courseId, externalReference } = setup();
+
+				boardDoRepo.findIdsByExternalReference.mockResolvedValue([boardId]);
+
+				await service.deleteByCourseId(courseId);
+
+				expect(boardDoRepo.findIdsByExternalReference).toHaveBeenCalledWith(externalReference);
+			});
+
+			it('should call boardDoService.deleteWithDescendants to delete the board', async () => {
+				const { board, courseId } = setup();
+
+				await service.deleteByCourseId(courseId);
+
+				expect(boardDoService.deleteWithDescendants).toHaveBeenCalledWith(board);
+			});
 		});
 	});
 

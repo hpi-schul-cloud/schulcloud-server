@@ -8,6 +8,8 @@ const courseCalendarSetup = require('./courseCalendar');
 
 const hooks = require('./hooks');
 
+const calendarUri = Configuration.get('CALENDAR_URI');
+
 /**
  * converts a jsonApi-event to a plain event
  * @param event {object}
@@ -34,34 +36,36 @@ const convertJsonApiToEvent = (event) => {
  * @param body
  * @returns {object} - valid json-api body for calendar-service
  */
-const convertEventToJsonApi = (body) => ({
-	data: [
-		{
-			type: 'event',
-			attributes: {
-				summary: body.summary,
-				location: body.location,
-				description: body.description,
-				dtstart: body.startDate,
-				dtend: body.endDate || new Date(new Date(body.startDate).getTime() + body.duration).toISOString(),
-				dtstamp: new Date(),
-				transp: 'OPAQUE',
-				sequence: 0,
-				repeat_freq: body.frequency,
-				repeat_wkst: body.weekday,
-				repeat_until: body.repeat_until,
-				'x-sc-courseId': body.courseId,
-				'x-sc-teamId': body.teamId,
-				'x-sc-featureVideoConference': body.featureVideoConference === 'on',
-				'x-sc-courseTimeId': body.courseTimeId,
+const convertEventToJsonApi = (body) => {
+	return {
+		data: [
+			{
+				type: 'event',
+				attributes: {
+					summary: body.summary,
+					location: body.location,
+					description: body.description,
+					dtstart: body.startDate,
+					dtend: body.endDate || new Date(new Date(body.startDate).getTime() + body.duration).toISOString(),
+					dtstamp: new Date(),
+					transp: 'OPAQUE',
+					sequence: 0,
+					repeat_freq: body.frequency,
+					repeat_wkst: body.weekday,
+					repeat_until: body.repeat_until,
+					'x-sc-courseId': body.courseId,
+					'x-sc-teamId': body.teamId,
+					'x-sc-featureVideoConference': body.featureVideoConference === 'on',
+					'x-sc-courseTimeId': body.courseTimeId,
+				},
+				relationships: {
+					'scope-ids': [body.scopeId],
+					'separate-users': false,
+				},
 			},
-			relationships: {
-				'scope-ids': [body.scopeId],
-				'separate-users': false,
-			},
-		},
-	],
-});
+		],
+	};
+};
 
 class Service {
 	constructor(options) {
@@ -172,11 +176,9 @@ class Service {
 	}
 
 	create(data, params) {
-		const serviceUrls = this.app.get('services') || {};
-
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${serviceUrls.calendar}/events/`,
+			uri: `${calendarUri}/events/`,
 			method: 'POST',
 			headers: {
 				Authorization: userId,
@@ -201,10 +203,9 @@ class Service {
 	}
 
 	find(params) {
-		const serviceUrls = this.app.get('services') || {};
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${serviceUrls.calendar}/events?${queryString.stringify(params.query)}`,
+			uri: `${calendarUri}/events?${queryString.stringify(params.query)}`,
 			headers: {
 				Authorization: userId,
 			},
@@ -229,11 +230,9 @@ class Service {
 	}
 
 	remove(id, params) {
-		const serviceUrls = this.app.get('services') || {};
-
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${serviceUrls.calendar}/events/${id}`,
+			uri: `${calendarUri}/events/${id}`,
 			headers: {
 				Authorization: userId,
 			},
@@ -251,11 +250,9 @@ class Service {
 	}
 
 	update(id, data, params) {
-		const serviceUrls = this.app.get('services') || {};
-
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${serviceUrls.calendar}/events/${id}`,
+			uri: `${calendarUri}/events/${id}`,
 			method: 'PUT',
 			headers: {
 				Authorization: userId,

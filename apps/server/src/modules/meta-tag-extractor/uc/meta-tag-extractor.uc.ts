@@ -1,6 +1,6 @@
 import { AuthorizationService } from '@modules/authorization';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { MetaTagExtractorService } from '../service';
 import { MetaData } from '../types';
 

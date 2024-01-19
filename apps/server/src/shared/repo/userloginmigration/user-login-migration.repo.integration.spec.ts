@@ -2,7 +2,9 @@ import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, SystemEntity, UserLoginMigrationDO } from '@shared/domain';
+import { SchoolEntity, SystemEntity } from '@shared/domain/entity';
+
+import { UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { cleanupCollections, schoolFactory, systemEntityFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
@@ -71,6 +73,19 @@ describe('UserLoginMigrationRepo', () => {
 
 				expect(result).toMatchObject(expected);
 				expect(result.id).toBeDefined();
+			});
+
+			it('should be able to update a UserLoginMigration to the database', async () => {
+				const { domainObject } = await setup();
+
+				await repo.save(domainObject);
+				em.clear();
+
+				domainObject.mandatorySince = new Date();
+				await repo.save(domainObject);
+
+				const result = em.find(UserLoginMigrationEntity, { id: domainObject.id });
+				expect(result).toBeDefined();
 			});
 		});
 	});

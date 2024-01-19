@@ -1,4 +1,4 @@
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { FileRequestInfo } from './file-request-info';
 
 export interface CopyFilesRequestInfo {

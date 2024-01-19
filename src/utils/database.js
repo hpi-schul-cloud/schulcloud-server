@@ -26,7 +26,7 @@ const encodeMongoURI = (urlString) => {
 function addAuthenticationToMongooseOptions(username, password, mongooseOptions) {
 	const auth = {};
 	if (username) {
-		auth.user = username;
+		auth.username = username;
 	}
 	if (password) {
 		auth.password = password;
@@ -78,25 +78,18 @@ function connect() {
 	mongoose.Promise = global.Promise;
 	const options = getConnectionOptions();
 
-	logger.info(
-		'connect to database host',
-		options.url,
-		options.username ? `with username ${options.username}` : 'without user',
-		options.password ? 'and' : 'and without',
-		'password'
-	);
+	logger.info('connect to database host');
 
 	const mongooseOptions = {
 		autoIndex: NODE_ENV !== ENVIRONMENTS.PRODUCTION,
-		poolSize: MONGOOSE_CONNECTION_POOL_SIZE,
+		maxPoolSize: MONGOOSE_CONNECTION_POOL_SIZE, // https://mongoosejs.com/docs/migrating_to_6.html#mongodb-driver-40
 		useNewUrlParser: true,
-		useFindAndModify: false,
-		useCreateIndex: true,
-		useUnifiedTopology: true,
 	};
 
 	addAuthenticationToMongooseOptions(options.username, options.password, mongooseOptions);
-
+	// https://mongoosejs.com/docs/6.x/docs/migrating_to_6.html#strictquery-is-removed-and-replaced-by-strict
+	// https://mongoosejs.com/docs/7.x/docs/migrating_to_7.html#strictquery
+	mongoose.set('strictQuery', false);
 	return mongoose.connect(encodeMongoURI(options.url), mongooseOptions).then((resolved) => {
 		// handle errors that appear after connection setup
 		mongoose.connection.on('error', (err) => {

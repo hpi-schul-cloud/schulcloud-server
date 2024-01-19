@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { DomainModel } from '@shared/domain/types';
 import { deletionLogFactory } from './testing/factory/deletion-log.factory';
 import { DeletionLog } from './deletion-log.do';
-import { DeletionOperationModel } from './types/deletion-operation-model.enum';
-import { DeletionDomainModel } from './types/deletion-domain-model.enum';
+import { DeletionOperationModel } from './types';
 
 describe(DeletionLog.name, () => {
 	describe('constructor', () => {
@@ -36,11 +36,12 @@ describe(DeletionLog.name, () => {
 			const setup = () => {
 				const props = {
 					id: new ObjectId().toHexString(),
-					domain: DeletionDomainModel.USER,
+					domain: DomainModel.USER,
 					operation: DeletionOperationModel.DELETE,
 					modifiedCount: 0,
 					deletedCount: 1,
 					deletionRequestId: new ObjectId().toHexString(),
+					performedAt: new Date(),
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				};
@@ -59,6 +60,7 @@ describe(DeletionLog.name, () => {
 					modifiedCount: deletionLogDo.modifiedCount,
 					deletedCount: deletionLogDo.deletedCount,
 					deletionRequestId: deletionLogDo.deletionRequestId,
+					performedAt: deletionLogDo.performedAt,
 					createdAt: deletionLogDo.createdAt,
 					updatedAt: deletionLogDo.updatedAt,
 				};

@@ -1,7 +1,9 @@
 import { MikroORM } from '@mikro-orm/core';
 import { roleFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { Permission, Role, RoleName } from '..';
+import { Permission, RoleName } from '../interface';
+import { Role } from './role.entity';
+// import { Permission,  } from '..';
 
 describe('Role Entity', () => {
 	let orm: MikroORM;

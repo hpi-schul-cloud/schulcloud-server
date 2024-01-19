@@ -1,4 +1,5 @@
 import { ExternalToolElement } from '../external-tool-element.do';
+import { DrawingElement } from '../drawing-element.do';
 import { FileElement } from '../file-element.do';
 import { LearnstoreElement } from '../learnstore-element.do';
 import { LinkElement } from '../link-element.do';
@@ -8,6 +9,7 @@ import type { AnyBoardDo } from './any-board-do';
 
 export type AnyContentElementDo =
 	| LearnstoreElement
+	| DrawingElement
 	| ExternalToolElement
 	| FileElement
 	| LinkElement
@@ -17,6 +19,7 @@ export type AnyContentElementDo =
 export const isAnyContentElement = (element: AnyBoardDo): element is AnyContentElementDo => {
 	const result =
 		element instanceof LearnstoreElement ||
+		element instanceof DrawingElement ||
 		element instanceof ExternalToolElement ||
 		element instanceof FileElement ||
 		element instanceof LinkElement ||

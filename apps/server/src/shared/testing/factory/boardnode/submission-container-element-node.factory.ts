@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { SubmissionContainerElementNode, SubmissionContainerNodeProps } from '@shared/domain';
+import { SubmissionContainerElementNode, SubmissionContainerNodeProps } from '@shared/domain/entity';
 import { BaseFactory } from '../base.factory';
 
 export const submissionContainerElementNodeFactory = BaseFactory.define<

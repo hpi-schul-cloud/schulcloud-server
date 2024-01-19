@@ -1,7 +1,10 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ServerTestModule } from '@modules/server/server.module';
+import { TaskListResponse } from '@modules/task/controller/dto';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { InputFormat, Permission } from '@shared/domain';
+import { Permission } from '@shared/domain/interface';
+import { InputFormat } from '@shared/domain/types';
 import {
 	TestApiClient,
 	UserAndAccountTestFactory,
@@ -10,8 +13,6 @@ import {
 	submissionFactory,
 	taskFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@modules/server/server.module';
-import { TaskListResponse } from '@modules/task/controller/dto';
 
 const tomorrow = new Date(Date.now() + 86400000);
 

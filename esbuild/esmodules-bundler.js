@@ -31,6 +31,9 @@ const options = [
 	{
 		pathToResolutionModeError: 'node_modules/strtok3/lib/types.d.ts',
 	},
+	{
+		noExportedMember: 'node_modules/@feathersjs/express/lib/declarations.d.ts',
+	},
 ];
 
 const globalOptions = {
@@ -41,11 +44,16 @@ const globalOptions = {
 	loader: { '.js': 'jsx' },
 };
 
-function replace(pathToResolutionModeError) {
-	const file = resolve(__dirname, '..', pathToResolutionModeError);
+function replace(type, filePath) {
+	const file = resolve(__dirname, '..', filePath);
 	fs.readFile(file, 'utf8', (err, data) => {
 		if (err) throw err;
-		const result = data.replace(/resolution-mode="require"/g, '');
+		let result = data;
+		if (type === 'pathToResolutionModeError') {
+			result = data.replace(/resolution-mode="require"/g, '');
+		} else if (type === 'noExportedMember') {
+			result = `// @ts-nocheck\n\n${data}`;
+		}
 
 		fs.writeFile(file, result, 'utf8', (err) => {
 			if (err) throw err;
@@ -54,7 +62,7 @@ function replace(pathToResolutionModeError) {
 }
 
 for (const option of options) {
-	const { entryPoint, outdir, pathToResolutionModeError } = option;
+	const { entryPoint, outdir, pathToResolutionModeError, noExportedMember } = option;
 	try {
 		if (entryPoint && outdir) {
 			build({
@@ -71,7 +79,10 @@ for (const option of options) {
 
 		// remove resolution-mode="require" from file because it provokes an error in the commonjs build
 		if (pathToResolutionModeError) {
-			replace(pathToResolutionModeError);
+			replace('pathToResolutionModeError', pathToResolutionModeError);
+		}
+		if (noExportedMember) {
+			replace('noExportedMember', noExportedMember);
 		}
 	} catch (e) {
 		process.exit(1);

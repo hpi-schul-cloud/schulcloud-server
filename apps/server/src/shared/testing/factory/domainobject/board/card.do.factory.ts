@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { Card, CardProps } from '@shared/domain';
+import { Card, CardProps } from '@shared/domain/domainobject';
 import { ObjectId } from 'bson';
 import { BaseFactory } from '../../base.factory';
 

@@ -9,7 +9,7 @@ import { DeletionRequestEntity } from '../entity';
 import { DeletionRequest } from '../domain/deletion-request.do';
 import { deletionRequestEntityFactory } from '../entity/testing/factory/deletion-request.entity.factory';
 import { deletionRequestFactory } from '../domain/testing/factory/deletion-request.factory';
-import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
+import { DeletionStatusModel } from '../domain/types';
 
 describe(DeletionRequestRepo.name, () => {
 	let module: TestingModule;

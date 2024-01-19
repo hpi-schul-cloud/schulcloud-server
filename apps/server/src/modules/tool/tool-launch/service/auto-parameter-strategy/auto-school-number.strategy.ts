@@ -1,6 +1,6 @@
 import { LegacySchoolService } from '@modules/legacy-school';
 import { Injectable } from '@nestjs/common';
-import { LegacySchoolDo } from '@shared/domain';
+import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { AutoParameterStrategy } from './auto-parameter.strategy';

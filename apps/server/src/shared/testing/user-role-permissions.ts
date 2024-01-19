@@ -2,7 +2,7 @@
 	This permission set is based on the current state of dBildungscloud.
 	Last Update: 2023-03-21
 */
-import { Permission } from '@shared/domain';
+import { Permission } from '@shared/domain/interface';
 
 export const userPermissions = [
 	Permission.BASE_VIEW,
@@ -131,6 +131,8 @@ export const adminPermissions = [
 	Permission.SCHOOL_LOGO_MANAGE,
 	Permission.SCHOOL_CHAT_MANAGE,
 	Permission.SCHOOL_STUDENT_TEAM_MANAGE,
+	Permission.SCHOOL_SYSTEM_EDIT,
+	Permission.SCHOOL_SYSTEM_VIEW,
 	Permission.SYSTEM_EDIT,
 	Permission.SYNC_START,
 	Permission.SCHOOL_PERMISSION_VIEW,

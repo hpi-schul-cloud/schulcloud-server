@@ -1,4 +1,4 @@
-import { RoleReference, UserDO } from '@shared/domain';
+import { RoleReference, UserDO } from '@shared/domain/domainobject';
 import { groupFactory, roleFactory, userDoFactory } from '@shared/testing';
 
 import { ObjectId } from 'bson';

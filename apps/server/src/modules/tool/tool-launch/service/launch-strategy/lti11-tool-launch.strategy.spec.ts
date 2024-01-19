@@ -3,7 +3,8 @@ import { PseudonymService } from '@modules/pseudonym/service';
 import { UserService } from '@modules/user';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Pseudonym, RoleName, UserDO } from '@shared/domain';
+import { Pseudonym, UserDO } from '@shared/domain/domainobject';
+import { RoleName } from '@shared/domain/interface';
 import {
 	contextExternalToolFactory,
 	externalToolFactory,

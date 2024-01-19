@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CopyElementType, CopyHelperService } from '@modules/copy-helper';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ComponentProperties, ComponentType } from '@shared/domain';
+import { ComponentProperties, ComponentType } from '@shared/domain/entity';
 import {
 	courseFactory,
 	legacyFileEntityMockFactory,

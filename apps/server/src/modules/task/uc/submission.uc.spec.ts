@@ -1,8 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Counted, Permission, Submission } from '@shared/domain';
-import { setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Submission } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
+import { Counted } from '@shared/domain/types';
+import { setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
 import { SubmissionService } from '../service/submission.service';
 import { SubmissionUc } from './submission.uc';
 

@@ -1,4 +1,4 @@
-import { ContentElementType, ExternalToolElement } from '@shared/domain';
+import { ContentElementType, ExternalToolElement } from '@shared/domain/domainobject';
 import { ExternalToolElementContent, ExternalToolElementResponse, TimestampsResponse } from '../dto';
 import { BaseResponseMapper } from './base-mapper.interface';
 

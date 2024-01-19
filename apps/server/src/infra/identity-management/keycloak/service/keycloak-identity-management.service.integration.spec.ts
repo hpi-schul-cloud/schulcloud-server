@@ -1,12 +1,12 @@
+import { KeycloakAdministrationService } from '@infra/identity-management/keycloak-administration/service/keycloak-administration.service';
+import { KeycloakModule } from '@infra/identity-management/keycloak/keycloak.module';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ServerModule } from '@modules/server';
 import { HttpModule } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IdmAccount, IdmAccountUpdate } from '@shared/domain';
-import { KeycloakAdministrationService } from '@infra/identity-management/keycloak-administration/service/keycloak-administration.service';
-import { KeycloakModule } from '@infra/identity-management/keycloak/keycloak.module';
-import { ServerModule } from '@modules/server';
+import { IdmAccount, IdmAccountUpdate } from '@shared/domain/interface';
 import { v1 } from 'uuid';
 import { IdentityManagementService } from '../../identity-management.service';
 import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';

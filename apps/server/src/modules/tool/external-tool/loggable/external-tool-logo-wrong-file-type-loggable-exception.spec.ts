@@ -1,14 +1,6 @@
 import { ExternalToolLogoWrongFileTypeLoggableException } from './external-tool-logo-wrong-file-type-loggable-exception';
 
 describe('ExternalToolLogoWrongFileTypeLoggableException', () => {
-	describe('constructor', () => {
-		it('should create an instance of ExternalToolLogoSizeExceededLoggableException', () => {
-			const loggable = new ExternalToolLogoWrongFileTypeLoggableException();
-
-			expect(loggable).toBeInstanceOf(ExternalToolLogoWrongFileTypeLoggableException);
-		});
-	});
-
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const loggable = new ExternalToolLogoWrongFileTypeLoggableException();

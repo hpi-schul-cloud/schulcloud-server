@@ -11,7 +11,9 @@ import { CourseService } from '@modules/learnroom';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, ExternalToolElement, LegacySchoolDo, Permission } from '@shared/domain';
+
+import { BoardDoAuthorizable, ExternalToolElement, LegacySchoolDo } from '@shared/domain/domainobject';
+import { Permission } from '@shared/domain/interface';
 import {
 	contextExternalToolFactory,
 	courseFactory,

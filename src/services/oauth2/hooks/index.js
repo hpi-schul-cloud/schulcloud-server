@@ -2,9 +2,12 @@
 const { authenticate } = require('@feathersjs/authentication');
 
 const { NotFound } = require('@feathersjs/errors');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { Forbidden, MethodNotAllowed } = require('../../../errors');
 const globalHooks = require('../../../hooks');
 const Hydra = require('../hydra');
+
+const webUri = Configuration.get('HOST');
 
 const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
 const iframeSubject = (pseudonym, url) => `<iframe src="${url}/oauth2/username/${pseudonym}" ${properties}></iframe>`;
@@ -81,7 +84,7 @@ const setIdToken = (hook) => {
 				const name = user.displayName ? user.displayName : `${user.firstName} ${user.lastName}`;
 				hook.data.session = {
 					id_token: {
-						iframe: iframeSubject(pseudonym, hook.app.settings.services.web),
+						iframe: iframeSubject(pseudonym, webUri),
 						email: scope.includes('email') ? user.email : undefined,
 						name: scope.includes('profile') ? name : undefined,
 						userId: scope.includes('profile') ? user._id : undefined,
@@ -102,7 +105,7 @@ const setIdToken = (hook) => {
 };
 
 const injectLoginRequest = (hook) =>
-	Hydra(hook.app.settings.services.hydra)
+	Hydra(Configuration.get('HYDRA_URI'))
 		.getLoginRequest(hook.id)
 		.then((loginRequest) => {
 			hook.params.loginRequest = loginRequest;
@@ -110,7 +113,7 @@ const injectLoginRequest = (hook) =>
 		});
 
 const injectConsentRequest = (hook) =>
-	Hydra(hook.app.settings.services.hydra)
+	Hydra(Configuration.get('HYDRA_URI'))
 		.getConsentRequest(hook.id)
 		.then((consentRequest) => {
 			hook.params.consentRequest = consentRequest;

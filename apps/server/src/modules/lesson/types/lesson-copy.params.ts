@@ -1,4 +1,5 @@
-import { Course, EntityId, User } from '@shared/domain';
+import { Course, User } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 
 export type LessonCopyParams = {
 	originalLessonId: EntityId;

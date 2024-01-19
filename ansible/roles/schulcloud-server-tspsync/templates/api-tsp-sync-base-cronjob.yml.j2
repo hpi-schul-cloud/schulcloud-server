@@ -27,6 +27,21 @@ spec:
             command: ['/bin/sh','-c']
             args: ['curl -H "X-API-Key: $SYNC_API_KEY" "http://{{ API_TSP_SYNC_SVC|default("api-tsp-sync-svc", true) }}:3030/api/v1/sync?target=tsp-base" | python3 -m json.tool']
           restartPolicy: OnFailure
+{% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
+          affinity:
+            podAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: app.kubernetes.io/part-of
+                      operator: In
+                      values:
+                      - schulcloud-verbund
+                  topologyKey: "kubernetes.io/hostname"
+                  namespaceSelector: {}
+{% endif %}
         metadata:
           labels:
             app: api-tsp-sync-cronjob

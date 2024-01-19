@@ -2,17 +2,11 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 
-import { MikroORM, NotFoundError } from '@mikro-orm/core';
-import {
-	IImportUserRoleName,
-	ImportUser,
-	MatchCreator,
-	MatchCreatorScope,
-	RoleName,
-	SchoolEntity,
-	User,
-} from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@infra/database';
+import { MikroORM, NotFoundError } from '@mikro-orm/core';
+import { IImportUserRoleName, ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
+import { RoleName } from '@shared/domain/interface';
+import { MatchCreatorScope } from '@shared/domain/types';
 import { ImportUserRepo } from '.';
 
 describe('ImportUserRepo', () => {

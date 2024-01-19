@@ -3,17 +3,16 @@ const request = require('request-promise-native');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const hooks = require('./hooks');
 
+const calendarUri = Configuration.get('CALENDAR_URI');
 class CourseCalendarService {
 	constructor(app) {
 		this.app = app;
 	}
 
 	remove(id, params) {
-		const serviceUrls = this.app.get('services') || {};
-
 		const userId = (params.query || {}).userId || (params.account || {}).userId || params.payload.userId;
 		const options = {
-			uri: `${serviceUrls.calendar}/scopes/${id}`,
+			uri: `${calendarUri}/scopes/${id}`,
 			headers: {
 				Authorization: userId,
 			},

@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ValidationError } from '@mikro-orm/core';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ValidationError } from '@shared/common';
 import { contextExternalToolFactory, externalToolFactory } from '@shared/testing';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
@@ -70,6 +70,7 @@ describe('ContextExternalToolValidationService', () => {
 				contextExternalToolService.findContextExternalTools.mockResolvedValue([
 					contextExternalToolFactory.buildWithId({ displayName: 'Tool 2' }),
 				]);
+				commonToolValidationService.validateParameters.mockReturnValue([]);
 
 				return {
 					externalTool,
@@ -101,10 +102,7 @@ describe('ContextExternalToolValidationService', () => {
 
 				await service.validate(contextExternalTool);
 
-				expect(commonToolValidationService.checkCustomParameterEntries).toBeCalledWith(
-					externalTool,
-					contextExternalTool
-				);
+				expect(commonToolValidationService.validateParameters).toBeCalledWith(externalTool, contextExternalTool);
 			});
 
 			it('should not throw UnprocessableEntityException', async () => {
@@ -165,6 +163,36 @@ describe('ContextExternalToolValidationService', () => {
 						)
 					);
 				});
+			});
+		});
+
+		describe('when the parameter validation fails', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+					displayName: 'Tool 1',
+				});
+
+				const error: ValidationError = new ValidationError('');
+
+				externalToolService.findById.mockResolvedValue(externalTool);
+				contextExternalToolService.findContextExternalTools.mockResolvedValue([
+					contextExternalToolFactory.buildWithId({ displayName: 'Tool 2' }),
+				]);
+				commonToolValidationService.validateParameters.mockReturnValue([error]);
+
+				return {
+					externalTool,
+					contextExternalTool,
+					error,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { contextExternalTool, error } = setup();
+
+				await expect(service.validate(contextExternalTool)).rejects.toThrow(error);
 			});
 		});
 	});

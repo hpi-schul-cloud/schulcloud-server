@@ -1,6 +1,6 @@
 /* istanbul ignore file */
+import { DeletionConsoleModule } from '@src/modules/deletion-console';
 import { BootstrapConsole } from 'nestjs-console';
-import { DeletionConsoleModule } from '@modules/deletion';
 
 async function run() {
 	const bootstrap = new BootstrapConsole({

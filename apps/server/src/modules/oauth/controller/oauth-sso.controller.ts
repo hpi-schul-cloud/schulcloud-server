@@ -41,6 +41,6 @@ export class OauthSSOController {
 				`No bearer token in header for authorization process of user ${currentUser.userId} on oauth system ${oauthClientId}`
 			);
 		}
-		return this.hydraUc.requestAuthCode(currentUser.userId, jwt, oauthClientId);
+		return this.hydraUc.requestAuthCode(jwt, oauthClientId);
 	}
 }

@@ -21,7 +21,7 @@ appPromise
 			)
 			.exec();
 
-		info(`LDAP Schools ended their Maintenance mode: ${resultLdapSchools.nModified} schools updated`);
+		info(`LDAP Schools ended their Maintenance mode: ${resultLdapSchools.modifiedCount} schools updated`);
 
 		return process.exit(0);
 	})

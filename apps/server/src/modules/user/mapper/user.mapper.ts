@@ -1,5 +1,5 @@
-import { Role, User } from '@shared/domain';
 import { UserDto } from '@modules/user/uc/dto/user.dto';
+import { Role, User } from '@shared/domain/entity';
 
 export class UserMapper {
 	static mapFromEntityToDto(entity: User): UserDto {

@@ -1,4 +1,4 @@
-import { SystemEntity } from '@shared/domain';
+import { SystemEntity } from '@shared/domain/entity';
 import { Scope } from '../scope';
 
 export class SystemScope extends Scope<SystemEntity> {

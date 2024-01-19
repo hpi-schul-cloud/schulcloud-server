@@ -1,8 +1,12 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, ContentElementType, RichTextElementNode } from '@shared/domain';
+import { BoardExternalReferenceType, ContentElementType } from '@shared/domain/domainobject';
+import { RichTextElementNode } from '@shared/domain/entity';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
@@ -10,10 +14,7 @@ import {
 	courseFactory,
 	submissionContainerElementNodeFactory,
 	submissionItemNodeFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@modules/server/server.module';
 import { AnyContentElementResponse, SubmissionContainerElementResponse } from '../dto';
 
 const baseRouteName = '/cards';

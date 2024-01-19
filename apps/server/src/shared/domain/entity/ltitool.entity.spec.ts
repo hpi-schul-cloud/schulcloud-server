@@ -1,4 +1,4 @@
-import { LtiPrivacyPermission, LtiTool } from '@shared/domain';
+import { LtiPrivacyPermission, LtiTool } from '@shared/domain/entity';
 import { setupEntities } from '@shared/testing';
 import { ltiToolFactory } from '@shared/testing/factory/ltitool.factory';
 

@@ -2,7 +2,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, UserLoginMigrationDO } from '@shared/domain';
+
+import { UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { Permission } from '@shared/domain/interface';
 import { setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { UserLoginMigrationNotFoundLoggableException } from '../loggable';
 import { SchoolMigrationService, UserLoginMigrationRevertService, UserLoginMigrationService } from '../service';

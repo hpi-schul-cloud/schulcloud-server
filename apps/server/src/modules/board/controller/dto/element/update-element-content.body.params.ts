@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
-import { ContentElementType } from '@shared/domain';
+import { ContentElementType } from '@shared/domain/domainobject';
 import { InputFormat } from '@shared/domain/types';
 import { Type } from 'class-transformer';
 import { IsDate, IsEnum, IsMongoId, IsOptional, IsString, ValidateNested } from 'class-validator';
@@ -61,6 +61,21 @@ export class LinkElementContentBody extends ElementContentBody {
 	@ValidateNested()
 	@ApiProperty({})
 	content!: LinkContentBody;
+}
+
+export class DrawingContentBody {
+	@IsString()
+	@ApiProperty()
+	description!: string;
+}
+
+export class DrawingElementContentBody extends ElementContentBody {
+	@ApiProperty({ type: ContentElementType.DRAWING })
+	type!: ContentElementType.DRAWING;
+
+	@ValidateNested()
+	@ApiProperty()
+	content!: DrawingContentBody;
 }
 
 export class RichTextContentBody {
@@ -133,6 +148,7 @@ export class LearnstoreElementContentBody extends ElementContentBody {
 
 export type AnyElementContentBody =
 	| FileContentBody
+	| DrawingContentBody
 	| LinkContentBody
 	| RichTextContentBody
 	| SubmissionContainerContentBody
@@ -151,6 +167,8 @@ export class UpdateElementContentBodyParams {
 				{ value: SubmissionContainerElementContentBody, name: ContentElementType.SUBMISSION_CONTAINER },
 				{ value: ExternalToolElementContentBody, name: ContentElementType.EXTERNAL_TOOL },
 				{ value: LearnstoreElementContentBody, name: ContentElementType.LEARNSTORE },
+				{ value: ExternalToolElementContentBody, name: ContentElementType.DRAWING },
+				{ value: DrawingElementContentBody, name: ContentElementType.DRAWING },
 			],
 		},
 		keepDiscriminatorProperty: true,
@@ -163,6 +181,7 @@ export class UpdateElementContentBodyParams {
 			{ $ref: getSchemaPath(SubmissionContainerElementContentBody) },
 			{ $ref: getSchemaPath(ExternalToolElementContentBody) },
 			{ $ref: getSchemaPath(LearnstoreElementContentBody) },
+			{ $ref: getSchemaPath(DrawingElementContentBody) },
 		],
 	})
 	data!:
@@ -171,5 +190,6 @@ export class UpdateElementContentBodyParams {
 		| RichTextElementContentBody
 		| SubmissionContainerElementContentBody
 		| ExternalToolElementContentBody
-		| LearnstoreElementContentBody;
+		| LearnstoreElementContentBody
+		| DrawingElementContentBody;
 }

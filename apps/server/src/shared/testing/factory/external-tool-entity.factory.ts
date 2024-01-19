@@ -85,6 +85,7 @@ export const customParameterEntityFactory = BaseFactory.define<CustomParameterEn
 			scope: CustomParameterScope.SCHOOL,
 			type: CustomParameterType.STRING,
 			isOptional: false,
+			isProtected: false,
 		};
 	}
 );
@@ -102,6 +103,7 @@ export const externalToolEntityFactory = ExternalToolEntityFactory.define(
 			}),
 			parameters: [customParameterEntityFactory.build()],
 			isHidden: false,
+			isDeactivated: false,
 			openNewTab: true,
 			version: 1,
 		};

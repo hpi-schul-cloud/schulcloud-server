@@ -2,6 +2,7 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TeamsRepo } from '@shared/repo';
 import { setupEntities, teamFactory, teamUserFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { TeamService } from './team.service';
 
 describe('TeamService', () => {
@@ -17,6 +18,10 @@ describe('TeamService', () => {
 				{
 					provide: TeamsRepo,
 					useValue: createMock<TeamsRepo>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();

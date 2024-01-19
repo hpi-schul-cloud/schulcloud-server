@@ -1,4 +1,4 @@
-import { User } from '@shared/domain';
+import { User } from '@shared/domain/entity';
 import { UserInfoResponse } from '../controller/dto';
 
 export class UserInfoMapper {

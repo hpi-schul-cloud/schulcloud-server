@@ -7,7 +7,8 @@ import { SystemDto } from '@modules/system/service';
 import { UserService } from '@modules/user';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, LegacySchoolDo, SchoolFeatures, UserDO, UserLoginMigrationDO } from '@shared/domain';
+import { LegacySchoolDo, UserDO, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { UserLoginMigrationRepo } from '@shared/repo';
 import { legacySchoolDoFactory, userDoFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import {
@@ -277,14 +278,14 @@ describe(UserLoginMigrationService.name, () => {
 
 			it('should add the OAUTH_PROVISIONING_ENABLED feature to the schools feature list', async () => {
 				const { schoolId, school } = setup();
-				const existingFeature: SchoolFeatures = 'otherFeature' as SchoolFeatures;
+				const existingFeature: SchoolFeature = 'otherFeature' as SchoolFeature;
 				school.features = [existingFeature];
 
 				await service.startMigration(schoolId);
 
 				expect(schoolService.save).toHaveBeenCalledWith(
 					expect.objectContaining<Partial<LegacySchoolDo>>({
-						features: [existingFeature, SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+						features: [existingFeature, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 					})
 				);
 			});
@@ -318,7 +319,7 @@ describe(UserLoginMigrationService.name, () => {
 
 				expect(schoolService.save).toHaveBeenCalledWith(
 					expect.objectContaining<Partial<LegacySchoolDo>>({
-						features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 					})
 				);
 			});
@@ -648,7 +649,7 @@ describe(UserLoginMigrationService.name, () => {
 
 				expect(schoolService.removeFeature).toHaveBeenCalledWith(
 					userLoginMigration.schoolId,
-					SchoolFeatures.ENABLE_LDAP_SYNC_DURING_MIGRATION
+					SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION
 				);
 			});
 

@@ -1,4 +1,4 @@
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import crypto from 'crypto';
 import path from 'path';
 import { PreviewParams } from '../controller/dto';

@@ -116,7 +116,7 @@ const db = {};
 // TODO move to homeworks/submission repository, test it there and reuse it here only
 db.findHomeworks = (userId) => HomeworkModel.find({ teacherId: userId }).lean().exec();
 db.findGroupSubmissions = (userId) => SubmissionModel.find({ teamMembers: userId }).lean().exec();
-db.findSubmissions = (userId) => SubmissionModel.find({ stundentId: userId }).lean().exec();
+db.findSubmissions = (userId) => SubmissionModel.find({ studentId: userId }).lean().exec();
 db.findArchivedHomework = (userId) => HomeworkModel.find({ archived: userId }).lean().exec();
 // TODO find solution without cleanup it before
 db.cleanupUnexpectedHomeworks = () =>

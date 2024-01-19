@@ -1,23 +1,6 @@
 import { IdTokenCreationLoggableException } from './id-token-creation-exception.loggable';
 
 describe('IdTokenCreationExceptionLoggable', () => {
-	describe('constructor', () => {
-		const setup = () => {
-			const clientId = 'clientId';
-			const userId = 'userId';
-
-			return { clientId, userId };
-		};
-
-		it('should create an instance of IdTokenCreationExceptionLoggable', () => {
-			const { clientId, userId } = setup();
-
-			const loggable = new IdTokenCreationLoggableException(clientId, userId);
-
-			expect(loggable).toBeInstanceOf(IdTokenCreationLoggableException);
-		});
-	});
-
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const clientId = 'clientId';

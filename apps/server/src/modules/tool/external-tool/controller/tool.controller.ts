@@ -13,25 +13,26 @@ import {
 } from '@nestjs/swagger';
 import { ValidationError } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
-import { IFindOptions, Page } from '@shared/domain';
+import { Page } from '@shared/domain/domainobject';
+import { IFindOptions } from '@shared/domain/interface';
 import { LegacyLogger } from '@src/core/logger';
 import { Response } from 'express';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { ExternalTool, ExternalToolMetadata } from '../domain';
 import { ExternalToolLogo } from '../domain/external-tool-logo';
 
-import { ExternalToolRequestMapper, ExternalToolResponseMapper, ExternalToolMetadataMapper } from '../mapper';
+import { ExternalToolMetadataMapper, ExternalToolRequestMapper, ExternalToolResponseMapper } from '../mapper';
 import { ExternalToolLogoService } from '../service';
 import { ExternalToolCreate, ExternalToolUc, ExternalToolUpdate } from '../uc';
 import {
 	ExternalToolCreateParams,
 	ExternalToolIdParams,
+	ExternalToolMetadataResponse,
 	ExternalToolResponse,
 	ExternalToolSearchListResponse,
 	ExternalToolSearchParams,
 	ExternalToolUpdateParams,
 	SortExternalToolParams,
-	ExternalToolMetadataResponse,
 } from './dto';
 
 @ApiTags('Tool')

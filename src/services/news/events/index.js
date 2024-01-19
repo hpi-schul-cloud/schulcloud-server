@@ -7,6 +7,7 @@ const removeTeamNews = (app) => async (deletedTeam) => {
 				target: deletedTeam._id,
 				targetModel: 'teams',
 			},
+			adapter: { multi: ['remove'] },
 		});
 	} catch (e) {
 		logger.warning(`Cannot remove news for team ${deletedTeam._id}`, e);

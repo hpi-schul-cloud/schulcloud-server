@@ -1,5 +1,5 @@
 import { NotFoundException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class UserLoginMigrationNotFoundLoggableException extends NotFoundException implements Loggable {

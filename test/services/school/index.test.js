@@ -575,6 +575,42 @@ describe('school service', () => {
 	});
 });
 
+describe('find schools', () => {
+	let app;
+	let server;
+	let schoolsService;
+
+	before(async () => {
+		app = await appPromise();
+		server = await app.listen();
+		schoolsService = app.service('schools');
+	});
+
+	after(async () => {
+		await server.close();
+	});
+
+	afterEach(async () => {
+		await testObjects.cleanup();
+	});
+
+	beforeEach('set data samples', async () => {
+		await testObjects.createTestSchool({});
+		await testObjects.createTestSchool({});
+		await testObjects.createTestSchool({});
+	});
+
+	it('find with pagination and limit', async () => {
+		const result = await schoolsService.find({ query: { $limit: 2 } });
+		expect(result.data.length).to.be.equal(2);
+	});
+
+	it('find should return all schools when $limit = false', async () => {
+		const result = await schoolsService.find({ query: { $limit: false } });
+		expect(result.data.length).to.be.equal(result.total);
+	});
+});
+
 describe('years service', () => {
 	let app;
 	let server;

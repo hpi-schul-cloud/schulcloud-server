@@ -1,4 +1,4 @@
-import { ExternalSource } from '@shared/domain';
+import { ExternalSource } from '@shared/domain/domainobject';
 import { GroupTypes } from '../../domain';
 import { ResolvedGroupUser } from './resolved-group-user';
 

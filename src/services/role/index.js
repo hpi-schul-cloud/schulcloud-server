@@ -1,4 +1,4 @@
-const service = require('feathers-mongoose');
+const service = require('../../utils/feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 
@@ -37,6 +37,7 @@ module.exports = function setup() {
 
 	app.use('/roles', service(options));
 	const roleService = app.service('/roles');
+
 	roleService.hooks({
 		before: hooks.before(),
 		after: hooks.after,

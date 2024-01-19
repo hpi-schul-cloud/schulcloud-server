@@ -1,12 +1,14 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { GetFile, S3ClientAdapter } from '@infra/s3-client';
-import { UnprocessableEntityException } from '@nestjs/common';
+import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Logger } from '@src/core/logger';
-import { Readable } from 'node:stream';
+import { PassThrough, Readable } from 'node:stream';
+import { ErrorType } from './interface/error-status.enum';
 import { PreviewGeneratorService } from './preview-generator.service';
 
-const streamMock = jest.fn();
+let streamMock = jest.fn();
 const resizeMock = jest.fn();
 const coalesceMock = jest.fn();
 const selectFrameMock = jest.fn();
@@ -16,7 +18,7 @@ const imageMagickMock = () => {
 		resize: resizeMock,
 		selectFrame: selectFrameMock,
 		coalesce: coalesceMock,
-		data: Readable.from('text'),
+		data: Buffer.from('text'),
 	};
 };
 jest.mock('gm', () => {
@@ -38,6 +40,21 @@ const createFile = (contentRange?: string, contentType?: string): GetFile => {
 	};
 
 	return fileResponse;
+};
+
+const createMockStream = (err: Error | null = null) => {
+	const stdout = new PassThrough();
+	const stderr = new PassThrough();
+
+	streamMock = jest
+		.fn()
+		.mockImplementation(
+			(_format: string, callback: (err: Error | null, stdout: PassThrough, stderr: PassThrough) => void) => {
+				callback(err, stdout, stderr);
+			}
+		);
+
+	return { stdout, stderr };
 };
 
 describe('PreviewGeneratorService', () => {
@@ -92,15 +109,14 @@ describe('PreviewGeneratorService', () => {
 						const originFile = createFile(undefined, 'image/jpeg');
 						s3ClientAdapter.get.mockResolvedValueOnce(originFile);
 
-						const data = Readable.from('text');
-						streamMock.mockReturnValueOnce(data);
+						const data = Buffer.from('text');
+						const { stdout } = createMockStream();
 
-						const expectedFileData = {
-							data,
-							mimeType: params.previewOptions.format,
-						};
+						process.nextTick(() => {
+							stdout.write(data);
+						});
 
-						return { params, originFile, expectedFileData };
+						return { params, originFile };
 					};
 
 					it('should call storageClient get method with originFilePath', async () => {
@@ -125,12 +141,18 @@ describe('PreviewGeneratorService', () => {
 
 						await service.generatePreview(params);
 
-						expect(streamMock).toHaveBeenCalledWith(params.previewOptions.format);
+						expect(streamMock).toHaveBeenCalledWith(params.previewOptions.format, expect.any(Function));
 						expect(streamMock).toHaveBeenCalledTimes(1);
 					});
 
 					it('should call S3ClientAdapters create method', async () => {
-						const { params, expectedFileData } = setup();
+						const { params } = setup();
+
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+						const expectedFileData = expect.objectContaining({
+							data: expect.any(PassThrough),
+							mimeType: params.previewOptions.format,
+						});
 
 						await service.generatePreview(params);
 
@@ -161,15 +183,14 @@ describe('PreviewGeneratorService', () => {
 						const originFile = createFile(undefined, 'application/pdf');
 						s3ClientAdapter.get.mockResolvedValueOnce(originFile);
 
-						const data = Readable.from('text');
-						streamMock.mockReturnValueOnce(data);
+						const data = Buffer.from('text');
+						const { stdout } = createMockStream();
 
-						const expectedFileData = {
-							data,
-							mimeType: params.previewOptions.format,
-						};
+						process.nextTick(() => {
+							stdout.write(data);
+						});
 
-						return { params, originFile, expectedFileData };
+						return { params, originFile };
 					};
 
 					it('should call imagemagicks selectFrameMock method', async () => {
@@ -195,15 +216,14 @@ describe('PreviewGeneratorService', () => {
 						const originFile = createFile(undefined, 'image/gif');
 						s3ClientAdapter.get.mockResolvedValueOnce(originFile);
 
-						const data = Readable.from('text');
-						streamMock.mockReturnValueOnce(data);
+						const data = Buffer.from('text');
+						const { stdout } = createMockStream();
 
-						const expectedFileData = {
-							data,
-							mimeType: params.previewOptions.format,
-						};
+						process.nextTick(() => {
+							stdout.write(data);
+						});
 
-						return { params, originFile, expectedFileData };
+						return { params, originFile };
 					};
 
 					it('should call imagemagicks coalesce method', async () => {
@@ -237,7 +257,7 @@ describe('PreviewGeneratorService', () => {
 					it('should throw UnprocessableEntityException', async () => {
 						const { params } = setup();
 
-						const error = new UnprocessableEntityException();
+						const error = new UnprocessableEntityException(ErrorType.CREATE_PREVIEW_NOT_POSSIBLE);
 						await expect(service.generatePreview(params)).rejects.toThrowError(error);
 					});
 				});
@@ -246,7 +266,7 @@ describe('PreviewGeneratorService', () => {
 					it('should throw UnprocessableEntityException', async () => {
 						const { params } = setup('text/plain');
 
-						const error = new UnprocessableEntityException();
+						const error = new UnprocessableEntityException(ErrorType.CREATE_PREVIEW_NOT_POSSIBLE);
 						await expect(service.generatePreview(params)).rejects.toThrowError(error);
 					});
 				});
@@ -266,15 +286,14 @@ describe('PreviewGeneratorService', () => {
 				const originFile = createFile(undefined, 'image/jpeg');
 				s3ClientAdapter.get.mockResolvedValueOnce(originFile);
 
-				const data = Readable.from('text');
-				streamMock.mockReturnValueOnce(data);
+				const data = Buffer.from('text');
+				const { stdout } = createMockStream();
 
-				const expectedFileData = {
-					data,
-					mimeType: params.previewOptions.format,
-				};
+				process.nextTick(() => {
+					stdout.write(data);
+				});
 
-				return { params, originFile, expectedFileData };
+				return { params, originFile };
 			};
 
 			it('should not call imagemagicks resize method', async () => {
@@ -284,6 +303,76 @@ describe('PreviewGeneratorService', () => {
 
 				expect(resizeMock).not.toHaveBeenCalledWith(params.previewOptions.width, undefined, '>');
 				expect(resizeMock).not.toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('WHEN STDERR stream has an error', () => {
+			const setup = () => {
+				const params = {
+					originFilePath: 'file/test.jpeg',
+					previewFilePath: 'preview/text.webp',
+					previewOptions: {
+						format: 'webp',
+					},
+				};
+				const originFile = createFile(undefined, 'image/jpeg');
+				s3ClientAdapter.get.mockResolvedValueOnce(originFile);
+
+				const data1 = Buffer.from('imagemagick ');
+				const data2 = Buffer.from('is not found');
+				const { stderr } = createMockStream();
+
+				process.nextTick(() => {
+					stderr.write(data1);
+					stderr.write(data2);
+					stderr.end();
+				});
+
+				const expectedError = new InternalServerErrorException(ErrorType.CREATE_PREVIEW_NOT_POSSIBLE);
+
+				return { params, originFile, expectedError };
+			};
+
+			it('should throw error', async () => {
+				const { params, expectedError } = setup();
+
+				await expect(service.generatePreview(params)).rejects.toThrowError(expectedError);
+			});
+
+			it('should have external error in getLogMessage', async () => {
+				const { params } = setup();
+				try {
+					await service.generatePreview(params);
+				} catch (error) {
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+					expect(error.getLogMessage().error).toEqual(new Error('imagemagick is not found'));
+				}
+			});
+		});
+
+		describe('WHEN GM library has an error', () => {
+			const setup = () => {
+				const params = {
+					originFilePath: 'file/test.jpeg',
+					previewFilePath: 'preview/text.webp',
+					previewOptions: {
+						format: 'webp',
+					},
+				};
+				const originFile = createFile(undefined, 'image/jpeg');
+				s3ClientAdapter.get.mockResolvedValueOnce(originFile);
+
+				createMockStream(new Error('imagemagic is not found'));
+
+				const expectedError = new InternalServerErrorException(ErrorType.CREATE_PREVIEW_NOT_POSSIBLE);
+
+				return { params, originFile, expectedError };
+			};
+
+			it('should throw error', async () => {
+				const { params, expectedError } = setup();
+
+				await expect(service.generatePreview(params)).rejects.toThrowError(expectedError);
 			});
 		});
 	});

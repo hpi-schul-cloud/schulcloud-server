@@ -31,10 +31,10 @@ const replaceUserWithTombstone = async (id, replaceData = {}) => {
 	)
 		.lean()
 		.exec();
-	if (replaceResult.n !== 1) {
+	if (replaceResult.modifiedCount !== 1) {
 		throw new NotFound('could not find user to replace with tombstone');
 	}
-	if (replaceResult.ok !== 1 || replaceResult.nModified !== 1) {
+	if (!replaceResult.acknowledged || replaceResult.modifiedCount !== 1) {
 		throw new GeneralError('db error during replacement of user with tombstone');
 	}
 	return getUser(id);

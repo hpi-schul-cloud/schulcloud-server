@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
-import { ReferenceLoader } from './reference.loader';
-import { AuthorizationContext, AuthorizableReferenceType } from '../type';
+import { EntityId } from '@shared/domain/types';
 import { ForbiddenLoggableException } from '../error';
+import { AuthorizableReferenceType, AuthorizationContext } from '../type';
 import { AuthorizationService } from './authorization.service';
+import { ReferenceLoader } from './reference.loader';
 
 /**
  * Should by use only internal in authorization module. See ticket: BC-3990

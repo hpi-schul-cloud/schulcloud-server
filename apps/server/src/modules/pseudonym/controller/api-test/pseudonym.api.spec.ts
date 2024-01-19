@@ -1,19 +1,19 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { ServerTestModule } from '@modules/server';
+import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
+import { HttpStatus, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { SchoolEntity } from '@shared/domain/entity';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	cleanupCollections,
 	externalToolEntityFactory,
 	externalToolPseudonymEntityFactory,
 	schoolFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Response } from 'supertest';
-import { SchoolEntity } from '@shared/domain';
-import { ServerTestModule } from '@modules/server';
-import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { UUID } from 'bson';
+import { Response } from 'supertest';
 import { ExternalToolPseudonymEntity } from '../../entity';
 import { PseudonymResponse } from '../dto';
 

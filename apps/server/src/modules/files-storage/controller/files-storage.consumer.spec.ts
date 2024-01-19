@@ -2,7 +2,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ALL_ENTITIES, EntityId } from '@shared/domain';
+import { ALL_ENTITIES } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { courseFactory, fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { FileRecord, FileRecordParentType } from '../entity';
@@ -213,6 +214,53 @@ describe('FilesStorageConsumer', () => {
 				const { parentId } = setup();
 
 				const response = await service.deleteFilesOfParent(parentId);
+
+				expect(response).toStrictEqual({ message: [] });
+			});
+		});
+	});
+
+	describe('removeCreatorIdFromFileRecords()', () => {
+		describe('WHEN valid file exists', () => {
+			const setup = () => {
+				const creatorId = new ObjectId().toHexString();
+
+				const fileRecords = fileRecordFactory.buildList(3, { creatorId });
+				filesStorageService.getFileRecordsByCreatorId.mockResolvedValue([fileRecords, fileRecords.length]);
+
+				return { creatorId, fileRecords };
+			};
+
+			it('should call filesStorageService.getFileRecordsByCreatorId', async () => {
+				const { creatorId } = setup();
+
+				await service.removeCreatorIdFromFileRecords(creatorId);
+
+				expect(filesStorageService.getFileRecordsByCreatorId).toBeCalledWith(creatorId);
+			});
+
+			it('should call filesStorageService.removeCreatorIdFromFileRecords with params', async () => {
+				const { creatorId, fileRecords } = setup();
+
+				await service.removeCreatorIdFromFileRecords(creatorId);
+
+				expect(filesStorageService.removeCreatorIdFromFileRecords).toBeCalledWith(fileRecords);
+			});
+		});
+
+		describe('WHEN no file exists', () => {
+			const setup = () => {
+				const creatorId = new ObjectId().toHexString();
+
+				filesStorageService.getFileRecordsByCreatorId.mockResolvedValue([[], 0]);
+
+				return { creatorId };
+			};
+
+			it('should return RpcMessage with empty array', async () => {
+				const { creatorId } = setup();
+
+				const response = await service.removeCreatorIdFromFileRecords(creatorId);
 
 				expect(response).toStrictEqual({ message: [] });
 			});

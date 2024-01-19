@@ -1,12 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ObjectId } from '@mikro-orm/mongodb';
-import { HttpService } from '@nestjs/axios';
-import { Test, TestingModule } from '@nestjs/testing';
 import { AntivirusService } from '@infra/antivirus';
 import { S3ClientAdapter } from '@infra/s3-client';
+import { EntityManager } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { AuthorizationReferenceService } from '@modules/authorization/domain';
+import { HttpService } from '@nestjs/axios';
+import { Test, TestingModule } from '@nestjs/testing';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
@@ -72,6 +73,10 @@ describe('FilesStorageUC', () => {
 				{
 					provide: PreviewService,
 					useValue: createMock<PreviewService>(),
+				},
+				{
+					provide: EntityManager,
+					useValue: createMock<EntityManager>(),
 				},
 			],
 		}).compile();

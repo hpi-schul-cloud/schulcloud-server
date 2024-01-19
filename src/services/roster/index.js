@@ -8,6 +8,8 @@ const { excludeAttributesFromSanitization } = require('../../hooks/sanitizationE
 const { isValid: isValidObjectId } = require('../../helper/compare').ObjectId;
 const { ApplicationError } = require('../../errors');
 
+const webUri = Configuration.get('HOST');
+
 module.exports = function roster() {
 	const app = this;
 
@@ -58,7 +60,7 @@ module.exports = function roster() {
 			return {
 				data: {
 					user_id: userParam,
-					username: oauth2.getSubject(pseudonym, app.settings.services.web),
+					username: oauth2.getSubject(pseudonym, webUri),
 					type: user.roles.map((role) => role.name).some((roleName) => roleName === 'teacher') ? 'teacher' : 'student',
 				},
 			};
@@ -206,13 +208,13 @@ module.exports = function roster() {
 					students: users.data.map((user) => {
 						return {
 							user_id: user.pseudonym,
-							username: oauth2.getSubject(user.pseudonym, app.settings.services.web),
+							username: oauth2.getSubject(user.pseudonym, webUri),
 						};
 					}),
 					teachers: teachers.data.map((user) => {
 						return {
 							user_id: user.pseudonym,
-							username: oauth2.getSubject(user.pseudonym, app.settings.services.web),
+							username: oauth2.getSubject(user.pseudonym, webUri),
 						};
 					}),
 				},

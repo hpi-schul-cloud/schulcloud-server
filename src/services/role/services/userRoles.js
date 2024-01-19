@@ -3,7 +3,7 @@ const { lookupSchool } = require('../../../hooks');
 const { restrictGetToCurrentUser } = require('../hooks/userRoles');
 const rolesModel = require('../model');
 
-const hooks = {
+const userRolesHooks = {
 	before: {
 		all: [authenticate('jwt'), lookupSchool],
 		get: [
@@ -51,5 +51,5 @@ class UserRoles {
 
 module.exports = {
 	UserRoles,
-	userRolesHooks: hooks,
+	userRolesHooks,
 };

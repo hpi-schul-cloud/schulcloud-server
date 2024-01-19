@@ -1,4 +1,4 @@
-const { userRoleHooks } = require('./userRoles');
+const { userRolesHooks } = require('./userRoles');
 
 const filterPermissions = (userRoles, schoolPermissions) => {
 	const permissions = [];
@@ -33,5 +33,5 @@ class UserPermissions {
 
 module.exports = {
 	UserPermissions,
-	userPermissionsHooks: userRoleHooks,
+	userPermissionsHooks: userRolesHooks,
 };

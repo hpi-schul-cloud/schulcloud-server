@@ -1,6 +1,6 @@
 import { HttpService } from '@nestjs/axios';
 import { HttpException, Inject } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { AxiosResponse } from 'axios';
 import { lastValueFrom } from 'rxjs';

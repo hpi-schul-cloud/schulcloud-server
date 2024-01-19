@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain';
 import { CopyFiles } from '@infra/s3-client';
+import { EntityId } from '@shared/domain/types';
 import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
 

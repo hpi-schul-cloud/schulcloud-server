@@ -1,16 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain';
-import { setupEntities, userFactory } from '@shared/testing';
+import { Permission } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
+import { setupEntities, userFactory } from '@shared/testing';
+import { ForbiddenLoggableException } from '../error';
 import { AuthorizationContextBuilder } from '../mapper';
+import { Rule } from '../type';
 import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';
-import { ForbiddenLoggableException } from '../error';
 import { ReferenceLoader } from './reference.loader';
 import { RuleManager } from './rule-manager';
-import { Rule } from '../type';
 
 class TestRule implements Rule {
 	constructor(private returnValueOfhasPermission: boolean) {}

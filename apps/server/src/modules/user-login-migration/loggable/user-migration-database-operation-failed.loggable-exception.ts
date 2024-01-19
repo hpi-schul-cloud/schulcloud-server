@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { ErrorUtils } from '@src/core/error/utils';
 import { ErrorLogMessage, Loggable } from '@src/core/logger';
 

@@ -2,7 +2,8 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SystemEntity, SystemTypeEnum } from '@shared/domain';
+import { SystemEntity } from '@shared/domain/entity';
+import { SystemTypeEnum } from '@shared/domain/types';
 import { LegacySystemRepo } from '@shared/repo';
 import { systemEntityFactory } from '@shared/testing';
 
@@ -36,28 +37,6 @@ describe('system repo', () => {
 	describe('findById', () => {
 		afterEach(async () => {
 			await em.nativeDelete(SystemEntity, {});
-		});
-
-		it('should return right keys', async () => {
-			const system = systemEntityFactory.build();
-			await em.persistAndFlush([system]);
-			const result = await repo.findById(system.id);
-			expect(Object.keys(result).sort()).toEqual(
-				[
-					'createdAt',
-					'updatedAt',
-					'type',
-					'url',
-					'alias',
-					'displayName',
-					'oauthConfig',
-					'oidcConfig',
-					'ldapConfig',
-					'_id',
-					'provisioningStrategy',
-					'provisioningUrl',
-				].sort()
-			);
 		});
 
 		it('should return a System that matched by id', async () => {

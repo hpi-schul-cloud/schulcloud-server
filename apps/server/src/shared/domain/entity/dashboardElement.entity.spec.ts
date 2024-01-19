@@ -1,5 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
-import { LearnroomMetadata, LearnroomTypes } from '@shared/domain';
+
+import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
 import { GridElement } from './dashboard.entity';
 
 const learnroomMock = (id: string, name: string) => {

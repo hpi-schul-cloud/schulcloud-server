@@ -1,5 +1,6 @@
-import { EntityId, ExternalSource, type UserDO } from '@shared/domain';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { ExternalSource, type UserDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { GroupTypes } from './group-types';
 import { GroupUser } from './group-user';
 
@@ -28,6 +29,10 @@ export class Group extends DomainObject<GroupProps> {
 
 	get users(): GroupUser[] {
 		return this.props.users;
+	}
+
+	set users(value: GroupUser[]) {
+		this.props.users = value;
 	}
 
 	get externalSource(): ExternalSource | undefined {

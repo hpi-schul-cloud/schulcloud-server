@@ -6,7 +6,7 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { Permission } from '@shared/domain';
+import { Permission } from '@shared/domain/interface';
 import {
 	cleanupCollections,
 	courseFactory,

@@ -1,22 +1,6 @@
 import { ExternalToolLogoFetchFailedLoggableException } from './external-tool-logo-fetch-failed-loggable-exception';
 
 describe('ExternalToolLogoFetchFailedLoggableException', () => {
-	describe('constructor', () => {
-		const setup = () => {
-			const logoUrl = 'logoUrl';
-
-			return { logoUrl };
-		};
-
-		it('should create an instance of ExternalToolLogoNotFoundLoggableException', () => {
-			const { logoUrl } = setup();
-
-			const loggable = new ExternalToolLogoFetchFailedLoggableException(logoUrl, undefined);
-
-			expect(loggable).toBeInstanceOf(ExternalToolLogoFetchFailedLoggableException);
-		});
-	});
-
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const logoUrl = 'logoUrl';

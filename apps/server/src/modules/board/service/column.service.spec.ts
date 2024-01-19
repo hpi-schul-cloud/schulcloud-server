@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Column } from '@shared/domain';
+import { Column } from '@shared/domain/domainobject';
 import { setupEntities } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { BoardDoRepo } from '../repo';

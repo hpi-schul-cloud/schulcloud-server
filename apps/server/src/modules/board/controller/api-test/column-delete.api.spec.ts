@@ -5,7 +5,8 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { BoardExternalReferenceType, CardNode, ColumnNode } from '@shared/domain';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { CardNode, ColumnNode } from '@shared/domain/entity';
 import {
 	cardNodeFactory,
 	cleanupCollections,

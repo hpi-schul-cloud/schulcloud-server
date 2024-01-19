@@ -8,6 +8,8 @@ import { GroupValidPeriodEntity } from './group-valid-period.entity';
 
 export enum GroupEntityTypes {
 	CLASS = 'class',
+	COURSE = 'course',
+	OTHER = 'other',
 }
 
 export interface GroupEntityProps {

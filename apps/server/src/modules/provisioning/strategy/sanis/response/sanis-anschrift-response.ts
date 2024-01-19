@@ -1,9 +1,7 @@
-export interface SanisAnschriftResponse {
-	adresszeile?: string;
+import { IsOptional, IsString } from 'class-validator';
 
-	postleitzahl?: string;
-
+export class SanisAnschriftResponse {
+	@IsString()
+	@IsOptional()
 	ort?: string;
-
-	ortsteil?: string;
 }

@@ -1,4 +1,4 @@
-import { SchoolYearProperties } from '@shared/domain';
+import { SchoolYearProperties } from '@shared/domain/entity';
 import { schoolYearFactory } from '@shared/testing/factory/schoolyear.factory';
 import { DeepPartial } from 'fishery';
 

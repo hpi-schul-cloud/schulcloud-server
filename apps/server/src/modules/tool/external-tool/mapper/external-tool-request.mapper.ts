@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SortOrderMap } from '@shared/domain';
+import { SortOrderMap } from '@shared/domain/interface';
 import {
 	CustomParameterLocation,
 	CustomParameterLocationParams,
@@ -8,6 +8,7 @@ import {
 	CustomParameterType,
 	CustomParameterTypeParams,
 } from '../../common/enum';
+import { ExternalToolSearchQuery } from '../../common/interface';
 import {
 	BasicToolConfigParams,
 	CustomParameterPostParams,
@@ -20,6 +21,7 @@ import {
 	Oauth2ToolConfigUpdateParams,
 	SortExternalToolParams,
 } from '../controller/dto';
+import { ExternalTool } from '../domain';
 import {
 	BasicToolConfigDto,
 	CustomParameterDto,
@@ -30,8 +32,6 @@ import {
 	Oauth2ToolConfigCreate,
 	Oauth2ToolConfigUpdate,
 } from '../uc';
-import { ExternalTool } from '../domain';
-import { ExternalToolSearchQuery } from '../../common/interface';
 
 const scopeMapping: Record<CustomParameterScopeTypeParams, CustomParameterScope> = {
 	[CustomParameterScopeTypeParams.GLOBAL]: CustomParameterScope.GLOBAL,
@@ -79,8 +79,10 @@ export class ExternalToolRequestMapper {
 			config: mappedConfig,
 			parameters: mappedCustomParameter,
 			isHidden: externalToolUpdateParams.isHidden,
+			isDeactivated: externalToolUpdateParams.isDeactivated,
 			openNewTab: externalToolUpdateParams.openNewTab,
 			version,
+			restrictToContexts: externalToolUpdateParams.restrictToContexts,
 		};
 	}
 
@@ -105,8 +107,10 @@ export class ExternalToolRequestMapper {
 			config: mappedConfig,
 			parameters: mappedCustomParameter,
 			isHidden: externalToolCreateParams.isHidden,
+			isDeactivated: externalToolCreateParams.isDeactivated,
 			openNewTab: externalToolCreateParams.openNewTab,
 			version,
+			restrictToContexts: externalToolCreateParams.restrictToContexts,
 		};
 	}
 
@@ -151,6 +155,7 @@ export class ExternalToolRequestMapper {
 				location: locationMapping[customParameterParam.location],
 				type: typeMapping[customParameterParam.type],
 				isOptional: customParameterParam.isOptional,
+				isProtected: customParameterParam.isProtected,
 			};
 		});
 	}

@@ -1,4 +1,4 @@
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 
 // todo: it look like it is required not optional
 export type TaskCopyParentParams = {

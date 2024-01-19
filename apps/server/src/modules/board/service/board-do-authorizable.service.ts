@@ -1,3 +1,4 @@
+import { AuthorizationLoaderService } from '@modules/authorization';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import {
 	AnyBoardDo,
@@ -5,13 +6,12 @@ import {
 	BoardExternalReferenceType,
 	BoardRoles,
 	ColumnBoard,
-	Course,
-	EntityId,
 	UserBoardRoles,
 	UserRoleEnum,
-} from '@shared/domain';
+} from '@shared/domain/domainobject';
+import { Course } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
-import { AuthorizationLoaderService } from '@modules/authorization';
 import { BoardDoRepo } from '../repo';
 
 @Injectable()

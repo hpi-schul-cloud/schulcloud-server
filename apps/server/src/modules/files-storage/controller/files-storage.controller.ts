@@ -127,6 +127,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 422, type: UnprocessableEntityException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiHeader({ name: 'Range', required: false })
+	@ApiHeader({ name: 'If-None-Match', required: false })
 	@Get('/preview/:fileRecordId/:fileName')
 	@RequestTimeout(config().INCOMING_REQUEST_TIMEOUT)
 	async downloadPreview(

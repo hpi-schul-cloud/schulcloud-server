@@ -22,6 +22,7 @@ describe('IservIdmLDAPStrategy', () => {
 	});
 
 	after(() => {
+		app.unuse('/ldap');
 		app.use('/ldap', originalLdapService);
 	});
 
@@ -29,6 +30,7 @@ describe('IservIdmLDAPStrategy', () => {
 		function MockLdapService() {
 			return {
 				setup: () => {},
+				get: () => {},
 				searchCollection: sinon.fake.returns([
 					{ dn: 'o=Testschule,dc=de', o: 'Testschule' },
 					{ dn: 'o=hvk,dc=schule', description: 'Heinrich-von-Kleist-Schule', o: 'hvk' },
@@ -37,6 +39,7 @@ describe('IservIdmLDAPStrategy', () => {
 		}
 
 		beforeEach(() => {
+			app.unuse('/ldap');
 			ldapServiceMock = new MockLdapService();
 			app.use('/ldap', ldapServiceMock);
 		});
@@ -86,6 +89,7 @@ describe('IservIdmLDAPStrategy', () => {
 		function MockLdapService() {
 			return {
 				setup: () => {},
+				get: () => {},
 				searchCollection: sinon.fake.returns([
 					{
 						dn: 'cn=student1,ou=users,o=Testschule,dc=de',
@@ -153,6 +157,7 @@ describe('IservIdmLDAPStrategy', () => {
 		}
 
 		beforeEach(() => {
+			app.unuse('/ldap');
 			ldapServiceMock = new MockLdapService();
 			app.use('/ldap', ldapServiceMock);
 		});
@@ -206,6 +211,7 @@ describe('IservIdmLDAPStrategy', () => {
 		function MockLdapService() {
 			return {
 				setup: () => {},
+				get: () => {},
 				searchCollection: sinon.fake.returns([
 					{
 						dn: 'cn=klasse9a,ou=groups,o=Testschule,dc=de',
@@ -228,6 +234,7 @@ describe('IservIdmLDAPStrategy', () => {
 		}
 
 		beforeEach(() => {
+			app.unuse('/ldap');
 			ldapServiceMock = new MockLdapService();
 			app.use('/ldap', ldapServiceMock);
 		});

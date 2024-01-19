@@ -95,7 +95,7 @@ describe('OAuthController', () => {
 
 			await controller.requestAuthToken(currentUser, request, oauthClientId);
 
-			expect(hydraOauthUc.requestAuthCode).toBeCalledWith(currentUser.userId, expect.any(String), oauthClientId);
+			expect(hydraOauthUc.requestAuthCode).toBeCalledWith(expect.any(String), oauthClientId);
 		});
 
 		it('should throw UnauthorizedException', async () => {

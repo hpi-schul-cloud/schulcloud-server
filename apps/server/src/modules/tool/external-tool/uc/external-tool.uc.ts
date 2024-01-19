@@ -1,14 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId, IFindOptions, Page, Permission, User } from '@shared/domain';
 import { AuthorizationService } from '@modules/authorization';
+import { Injectable } from '@nestjs/common';
+import { Page } from '@shared/domain/domainobject';
+import { User } from '@shared/domain/entity';
+import { IFindOptions, Permission } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { ExternalToolSearchQuery } from '../../common/interface';
+import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
 import { ExternalTool, ExternalToolConfig, ExternalToolMetadata } from '../domain';
-import {
-	ExternalToolLogoService,
-	ExternalToolService,
-	ExternalToolValidationService,
-	ExternalToolMetadataService,
-} from '../service';
+import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
 
 @Injectable()
@@ -18,7 +17,7 @@ export class ExternalToolUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly toolValidationService: ExternalToolValidationService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly externalToolMetadataService: ExternalToolMetadataService
+		private readonly commonToolMetadataService: CommonToolMetadataService
 	) {}
 
 	async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
@@ -84,7 +83,7 @@ export class ExternalToolUc {
 		// TODO N21-1496: Change External Tools to use authorizationService.checkPermission
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
-		const metadata: ExternalToolMetadata = await this.externalToolMetadataService.getMetadata(toolId);
+		const metadata: ExternalToolMetadata = await this.commonToolMetadataService.getMetadataForExternalTool(toolId);
 
 		return metadata;
 	}

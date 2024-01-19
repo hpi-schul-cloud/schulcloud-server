@@ -38,7 +38,7 @@ appPromise
 				{ inMaintenanceSince: MAINTENANCE_START_DATE }
 			)
 			.exec();
-		info(`LDAP Schools set in Maintenance mode: ${resultLdapSchools.nModified} schools updated`);
+		info(`LDAP Schools set in Maintenance mode: ${resultLdapSchools.modifiedCount} schools updated`);
 
 		const resultNonLdapSchools = await schoolModel
 			.updateMany(
@@ -50,7 +50,7 @@ appPromise
 				{ currentYear: nextSchoolYearId._id }
 			)
 			.exec();
-		info(`Non-LDAP Schools changed year: ${resultNonLdapSchools.nModified} schools updated`);
+		info(`Non-LDAP Schools changed year: ${resultNonLdapSchools.modifiedCount} schools updated`);
 
 		return process.exit(0);
 	})

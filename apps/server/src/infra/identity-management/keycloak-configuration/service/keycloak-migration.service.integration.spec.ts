@@ -1,9 +1,9 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { Account } from '@shared/domain/entity';
 import { accountFactory, cleanupCollections } from '@shared/testing';
 import { LoggerModule } from '@src/core/logger';
 import { v1 } from 'uuid';

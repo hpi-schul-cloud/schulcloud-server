@@ -23,6 +23,7 @@ const restrictToUsersOwnCoursesIfNotLocal = ifNotLocal(restrictToUsersOwnCourses
 const {
 	addWholeClassToCourse,
 	deleteWholeClassFromCourse,
+	removeColumnBoard,
 	courseInviteHook,
 	patchPermissionHook,
 	restrictChangesToArchivedCourse,
@@ -134,7 +135,7 @@ const courseHooks = {
 		create: [addWholeClassToCourse],
 		update: [],
 		patch: [addWholeClassToCourse],
-		remove: [],
+		remove: [removeColumnBoard],
 	},
 };
 

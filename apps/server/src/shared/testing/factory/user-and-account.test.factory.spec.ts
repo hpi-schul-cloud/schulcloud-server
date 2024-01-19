@@ -1,4 +1,4 @@
-import { Account, User } from '@shared/domain';
+import { Account, User } from '@shared/domain/entity';
 import { ObjectId } from 'bson';
 import { setupEntities } from '../setup-entities';
 import { schoolFactory } from './school.factory';

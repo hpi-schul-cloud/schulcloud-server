@@ -1,22 +1,6 @@
 import { ExternalToolLogoFetchedLoggable } from './external-tool-logo-fetched-loggable';
 
 describe('ExternalToolLogoFetchedLoggable', () => {
-	describe('constructor', () => {
-		const setup = () => {
-			const logoUrl = 'logoUrl';
-
-			return { logoUrl };
-		};
-
-		it('should create an instance of ExternalToolLogoFetchedLoggable', () => {
-			const { logoUrl } = setup();
-
-			const loggable = new ExternalToolLogoFetchedLoggable(logoUrl);
-
-			expect(loggable).toBeInstanceOf(ExternalToolLogoFetchedLoggable);
-		});
-	});
-
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const logoUrl = 'logoUrl';

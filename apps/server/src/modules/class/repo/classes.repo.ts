@@ -1,7 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { Class } from '../domain';
 import { ClassEntity } from '../entity';
 import { ClassMapper } from './mapper';
@@ -42,7 +42,7 @@ export class ClassesRepo {
 				(classId) => !existingEntities.find((entity) => entity.id === classId)
 			);
 
-			throw new NotFoundLoggableException(Class.name, 'id', missingEntityIds.toString());
+			throw new NotFoundLoggableException(Class.name, { id: missingEntityIds.toString() });
 		}
 
 		existingEntities.forEach((entity) => {

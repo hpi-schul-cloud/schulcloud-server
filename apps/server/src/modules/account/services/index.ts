@@ -1,2 +1,2 @@
 export * from './account.service';
-export { AccountDto } from './dto';
+export { AccountDto, AccountSaveDto } from './dto';

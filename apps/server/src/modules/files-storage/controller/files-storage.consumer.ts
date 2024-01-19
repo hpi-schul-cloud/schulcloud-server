@@ -3,7 +3,7 @@ import { CopyFileDO, FileDO, FilesStorageEvents, FilesStorageExchange } from '@i
 import { RpcMessage } from '@infra/rabbitmq/rpc-message';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
@@ -69,6 +69,24 @@ export class FilesStorageConsumer {
 		await this.filesStorageService.deleteFilesOfParent(fileRecords);
 
 		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);
+
+		return { message: response.data };
+	}
+
+	@RabbitRPC({
+		exchange: FilesStorageExchange,
+		routingKey: FilesStorageEvents.REMOVE_CREATORID_OF_FILES,
+		queue: FilesStorageEvents.REMOVE_CREATORID_OF_FILES,
+	})
+	@UseRequestContext()
+	public async removeCreatorIdFromFileRecords(@RabbitPayload() payload: EntityId): Promise<RpcMessage<FileDO[]>> {
+		this.logger.debug({ action: 'removeCreatorIdFromFileRecords', payload });
+
+		const [fileRecords, total] = await this.filesStorageService.getFileRecordsByCreatorId(payload);
+		let updatedFileRecords = await this.filesStorageService.removeCreatorIdFromFileRecords(fileRecords);
+		updatedFileRecords = updatedFileRecords ?? [];
+
+		const response = FilesStorageMapper.mapToFileRecordListResponse(updatedFileRecords, total);
 
 		return { message: response.data };
 	}

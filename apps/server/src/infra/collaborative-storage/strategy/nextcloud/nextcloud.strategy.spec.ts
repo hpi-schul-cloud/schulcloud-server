@@ -1,18 +1,20 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UnprocessableEntityException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { LtiPrivacyPermission, LtiRoleType, Pseudonym, RoleName, User, UserDO } from '@shared/domain';
-import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { LtiToolRepo } from '@shared/repo';
-import { ltiToolDOFactory, pseudonymFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
 import { TeamDto, TeamUserDto } from '@modules/collaborative-storage/services/dto/team.dto';
 import { PseudonymService } from '@modules/pseudonym';
 import { ExternalToolService } from '@modules/tool/external-tool/service';
 import { UserService } from '@modules/user';
-import { NextcloudStrategy } from './nextcloud.strategy';
-import { NextcloudClient } from './nextcloud.client';
+import { UnprocessableEntityException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Pseudonym, UserDO } from '@shared/domain/domainobject';
+import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { LtiPrivacyPermission, LtiRoleType, User } from '@shared/domain/entity';
+import { RoleName } from '@shared/domain/interface';
+import { LtiToolRepo } from '@shared/repo';
+import { ltiToolDOFactory, pseudonymFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
+import { LegacyLogger } from '@src/core/logger';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
+import { NextcloudClient } from './nextcloud.client';
+import { NextcloudStrategy } from './nextcloud.strategy';
 
 class NextcloudStrategySpec extends NextcloudStrategy {
 	static specGenerateGroupId(dto: TeamRolePermissionsDto): string {

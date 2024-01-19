@@ -1,5 +1,6 @@
 /* istanbul ignore file */
-import { InputFormat, RichTextElementNode, RichTextElementNodeProps } from '@shared/domain';
+import { RichTextElementNode, RichTextElementNodeProps } from '@shared/domain/entity';
+import { InputFormat } from '@shared/domain/types';
 import { BaseFactory } from '../base.factory';
 
 export const richTextElementNodeFactory = BaseFactory.define<RichTextElementNode, RichTextElementNodeProps>(

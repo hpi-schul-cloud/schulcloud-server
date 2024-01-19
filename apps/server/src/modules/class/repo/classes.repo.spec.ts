@@ -1,10 +1,10 @@
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
 import { Test } from '@nestjs/testing';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { SchoolEntity } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@infra/database';
+import { SchoolEntity } from '@shared/domain/entity';
 import { cleanupCollections, schoolFactory } from '@shared/testing';
 import { Class } from '../domain';
 import { ClassEntity } from '../entity';

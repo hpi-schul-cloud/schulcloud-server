@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { LanguageType } from '@shared/domain';
+import { LanguageType } from '@shared/domain/entity';
 import { IsEnum } from 'class-validator';
 
 export class ChangeLanguageParams {

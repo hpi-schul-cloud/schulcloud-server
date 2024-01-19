@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
 import { DomainObject } from '@shared/domain/domain-object'; // fix import if it is avaible
+import { EntityId } from '@shared/domain/types';
 import type { AnyBoardDo, BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
 export abstract class BoardComposite<T extends BoardCompositeProps> extends DomainObject<T> {

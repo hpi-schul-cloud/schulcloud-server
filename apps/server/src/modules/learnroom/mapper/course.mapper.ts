@@ -1,4 +1,4 @@
-import { Course } from '@shared/domain';
+import { Course } from '@shared/domain/entity';
 import { CourseMetadataResponse } from '../controller/dto';
 
 export class CourseMapper {

@@ -3,11 +3,8 @@
 	"host": "localhost",
 	"port": "PORT",
 	"mongodb": "MONGO_URI",
-	"public": "../public/",
+	"public": "./public/",
 	"services": {
-		"calendar": "CALENDAR_URI",
-		"content": "CONTENT_URI",
-		"hydra": "HYDRA_URI",
-		"web": "HOST"
+		"hydra": "HYDRA_URI"
 	}
 }

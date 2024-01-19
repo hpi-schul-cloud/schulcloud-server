@@ -9,9 +9,10 @@ import {
 	FileElementNode,
 	LinkElementNode,
 	RichTextElementNode,
+	DrawingElementNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
-} from '@shared/domain';
+} from '@shared/domain/entity';
 import {
 	cardFactory,
 	columnBoardFactory,
@@ -23,6 +24,7 @@ import {
 	linkElementFactory,
 	richTextElementFactory,
 	setupEntities,
+	drawingElementFactory,
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
@@ -120,6 +122,16 @@ describe(RecursiveSaveVisitor.name, () => {
 
 			expect(richTextElement.accept).toHaveBeenCalledWith(visitor);
 		});
+
+		it('should visit the children (drawing)', () => {
+			const drawingElement = drawingElementFactory.build();
+			jest.spyOn(drawingElement, 'accept');
+			const card = cardFactory.build({ children: [drawingElement] });
+
+			card.accept(visitor);
+
+			expect(drawingElement.accept).toHaveBeenCalledWith(visitor);
+		});
 	});
 
 	describe('when visiting a file element composite', () => {
@@ -166,6 +178,21 @@ describe(RecursiveSaveVisitor.name, () => {
 				id: richTextElement.id,
 				type: BoardNodeType.RICH_TEXT_ELEMENT,
 				text: richTextElement.text,
+			};
+			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
+		});
+	});
+
+	describe('when visiting a drawing element composite', () => {
+		it('should create or update the node', () => {
+			const drawingElement = drawingElementFactory.build();
+			jest.spyOn(visitor, 'createOrUpdateBoardNode');
+
+			visitor.visitDrawingElement(drawingElement);
+
+			const expectedNode: Partial<DrawingElementNode> = {
+				id: drawingElement.id,
+				type: BoardNodeType.DRAWING_ELEMENT,
 			};
 			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
 		});

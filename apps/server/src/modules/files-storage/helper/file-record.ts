@@ -36,6 +36,7 @@ export function createFileRecord(
 		parentId: params.parentId,
 		creatorId: userId,
 		schoolId: params.schoolId,
+		isUploading: true,
 	});
 
 	return entity;

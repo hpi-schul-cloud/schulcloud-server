@@ -1,4 +1,4 @@
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { EntitiesWithFiles, FileRequestInfo } from '../interfaces';
 import { FilesStorageClientMapper } from './files-storage-client.mapper';
 

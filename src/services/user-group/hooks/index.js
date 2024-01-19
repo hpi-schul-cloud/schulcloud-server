@@ -7,6 +7,7 @@ const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToU
 const {
 	addWholeClassToCourse,
 	deleteWholeClassFromCourse,
+	removeColumnBoard,
 	courseInviteHook,
 	patchPermissionHook,
 	restrictChangesToArchivedCourse,
@@ -63,5 +64,5 @@ exports.after = {
 	create: [addWholeClassToCourse],
 	update: [],
 	patch: [addWholeClassToCourse],
-	remove: [],
+	remove: [removeColumnBoard],
 };

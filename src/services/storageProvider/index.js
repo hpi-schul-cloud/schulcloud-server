@@ -1,4 +1,4 @@
-const service = require('feathers-mongoose');
+const service = require('../../utils/feathers-mongoose');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
 

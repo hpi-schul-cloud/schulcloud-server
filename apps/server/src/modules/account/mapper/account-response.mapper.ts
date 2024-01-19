@@ -1,5 +1,5 @@
-import { Account } from '@shared/domain';
 import { AccountDto } from '@modules/account/services/dto/account.dto';
+import { Account } from '@shared/domain/entity';
 import { AccountResponse } from '../controller/dto';
 
 export class AccountResponseMapper {

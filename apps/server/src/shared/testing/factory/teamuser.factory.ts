@@ -1,9 +1,9 @@
-import { Role, TeamUserEntity } from '@shared/domain';
+import { Role, TeamUserEntity } from '@shared/domain/entity';
 import { BaseFactory } from '@shared/testing/factory/base.factory';
-import { DeepPartial } from 'fishery';
+import { roleFactory } from '@shared/testing/factory/role.factory';
 import { schoolFactory } from '@shared/testing/factory/school.factory';
 import { userFactory } from '@shared/testing/factory/user.factory';
-import { roleFactory } from '@shared/testing/factory/role.factory';
+import { DeepPartial } from 'fishery';
 
 class TeamUserFactory extends BaseFactory<TeamUserEntity, TeamUserEntity> {
 	withRoleAndUserId(role: Role, userId: string): this {

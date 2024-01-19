@@ -1,17 +1,13 @@
-import { EntityName, NotFoundError } from '@mikro-orm/core';
+import { EntityData, EntityName, NotFoundError } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { ILtiToolProperties, LtiPrivacyPermission, LtiTool } from '@shared/domain';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
+import { LtiPrivacyPermission, LtiTool } from '@shared/domain/entity';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 
 @Injectable()
-export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperties> {
+export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool> {
 	get entityName(): EntityName<LtiTool> {
 		return LtiTool;
-	}
-
-	entityFactory(props: ILtiToolProperties): LtiTool {
-		return new LtiTool(props);
 	}
 
 	async findByName(name: string): Promise<LtiToolDO[]> {
@@ -66,7 +62,7 @@ export class LtiToolRepo extends BaseDORepo<LtiToolDO, LtiTool, ILtiToolProperti
 		});
 	}
 
-	protected mapDOToEntityProperties(entityDO: LtiToolDO): ILtiToolProperties {
+	protected mapDOToEntityProperties(entityDO: LtiToolDO): EntityData<LtiTool> {
 		return {
 			name: entityDO.name,
 			url: entityDO.url,

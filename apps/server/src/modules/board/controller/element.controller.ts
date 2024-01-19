@@ -4,6 +4,7 @@ import {
 	Controller,
 	Delete,
 	ForbiddenException,
+	Get,
 	HttpCode,
 	NotFoundException,
 	Param,
@@ -18,6 +19,8 @@ import {
 	AnyContentElementResponse,
 	ContentElementUrlParams,
 	CreateSubmissionItemBodyParams,
+	DrawingElementContentBody,
+	DrawingElementResponse,
 	ExternalToolElementContentBody,
 	ExternalToolElementResponse,
 	FileElementContentBody,
@@ -69,6 +72,7 @@ export class ElementController {
 		SubmissionContainerElementContentBody,
 		ExternalToolElementContentBody,
 		LinkElementContentBody,
+		DrawingElementContentBody,
 		LearnstoreElementContentBody
 	)
 	@ApiResponse({
@@ -80,6 +84,7 @@ export class ElementController {
 				{ $ref: getSchemaPath(LinkElementResponse) },
 				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
+				{ $ref: getSchemaPath(DrawingElementResponse) },
 				{ $ref: getSchemaPath(LearnstoreElementResponse) },
 			],
 		},
@@ -139,5 +144,18 @@ export class ElementController {
 		const response = mapper.mapSubmissionItemToResponse(submissionItem);
 
 		return response;
+	}
+
+	@ApiOperation({ summary: 'Check if user has read permission for any board element.' })
+	@ApiResponse({ status: 200 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Get(':contentElementId/permission')
+	async readPermission(
+		@Param() urlParams: ContentElementUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.elementUc.checkElementReadPermission(currentUser.userId, urlParams.contentElementId);
 	}
 }

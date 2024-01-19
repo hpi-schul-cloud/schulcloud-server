@@ -1,25 +1,28 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, Permission, SchoolEntity } from '@shared/domain';
+import { Course, SchoolEntity } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	cleanupCollections,
 	contextExternalToolEntityFactory,
 	courseFactory,
+	customParameterFactory,
 	externalToolEntityFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
+	contextExternalToolConfigurationStatusResponseFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@modules/server';
+
 import { Response } from 'supertest';
-import { ToolContextType } from '../../../common/enum';
+import { CustomParameterLocation, CustomParameterScope, ToolContextType } from '../../../common/enum';
 import { ExternalToolEntity } from '../../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
 import { ContextExternalToolContextParams, ToolReferenceListResponse, ToolReferenceResponse } from '../dto';
-import { ToolConfigurationStatusResponse } from '../dto/tool-configuration-status.response';
 
 describe('ToolReferenceController (API)', () => {
 	let app: INestApplication;
@@ -114,6 +117,18 @@ describe('ToolReferenceController (API)', () => {
 				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 					logoBase64: 'logoBase64',
+					parameters: [
+						customParameterFactory.build({
+							name: 'schoolMockParameter',
+							scope: CustomParameterScope.SCHOOL,
+							location: CustomParameterLocation.PATH,
+						}),
+						customParameterFactory.build({
+							name: 'contextMockParameter',
+							scope: CustomParameterScope.CONTEXT,
+							location: CustomParameterLocation.PATH,
+						}),
+					],
 				});
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
@@ -160,7 +175,10 @@ describe('ToolReferenceController (API)', () => {
 						{
 							contextToolId: contextExternalToolEntity.id,
 							displayName: contextExternalToolEntity.displayName as string,
-							status: ToolConfigurationStatusResponse.LATEST,
+							status: contextExternalToolConfigurationStatusResponseFactory.build({
+								isOutdatedOnScopeSchool: false,
+								isOutdatedOnScopeContext: false,
+							}),
 							logoUrl: `http://localhost:3030/api/v3/tools/external-tools/${externalToolEntity.id}/logo`,
 							openInNewTab: externalToolEntity.openNewTab,
 						},
@@ -233,6 +251,18 @@ describe('ToolReferenceController (API)', () => {
 				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
 					logoBase64: 'logoBase64',
+					parameters: [
+						customParameterFactory.build({
+							name: 'schoolMockParameter',
+							scope: CustomParameterScope.SCHOOL,
+							location: CustomParameterLocation.PATH,
+						}),
+						customParameterFactory.build({
+							name: 'contextMockParameter',
+							scope: CustomParameterScope.CONTEXT,
+							location: CustomParameterLocation.PATH,
+						}),
+					],
 				});
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 					school,
@@ -277,7 +307,10 @@ describe('ToolReferenceController (API)', () => {
 				expect(response.body).toEqual<ToolReferenceResponse>({
 					contextToolId: contextExternalToolEntity.id,
 					displayName: contextExternalToolEntity.displayName as string,
-					status: ToolConfigurationStatusResponse.LATEST,
+					status: contextExternalToolConfigurationStatusResponseFactory.build({
+						isOutdatedOnScopeSchool: false,
+						isOutdatedOnScopeContext: false,
+					}),
 					logoUrl: `http://localhost:3030/api/v3/tools/external-tools/${externalToolEntity.id}/logo`,
 					openInNewTab: externalToolEntity.openNewTab,
 				});

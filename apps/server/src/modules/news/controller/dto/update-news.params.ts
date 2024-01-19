@@ -1,7 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller';
+import { InputFormat } from '@shared/domain/types';
 import { IsDate, IsOptional, IsString } from 'class-validator';
-import { InputFormat } from '@shared/domain';
 
 /**
  * DTO for Updating a news document.
@@ -18,7 +18,7 @@ export class UpdateNewsParams {
 
 	@IsOptional()
 	@IsString()
-	@SanitizeHtml(InputFormat.RICH_TEXT)
+	@SanitizeHtml(InputFormat.RICH_TEXT_CK5_SIMPLE)
 	@ApiPropertyOptional({
 		description: 'Content of the News entity',
 	})

@@ -4,7 +4,7 @@ import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolService } from '@modules/tool/external-tool/service';
 import { UserService } from '@modules/user';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
-import { Pseudonym, UserDO } from '@shared/domain/';
+import { Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
 import { LtiToolRepo } from '@shared/repo/ltitool/';
 import { LegacyLogger } from '@src/core/logger';

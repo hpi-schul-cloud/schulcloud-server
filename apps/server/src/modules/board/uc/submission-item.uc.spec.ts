@@ -1,6 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Action, AuthorizationService } from '@modules/authorization';
+import {
+	BadRequestException,
+	ForbiddenException,
+	NotFoundException,
+	UnprocessableEntityException,
+} from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, BoardRoles, ContentElementType, UserRoleEnum } from '@shared/domain';
+import { BoardDoAuthorizable, BoardRoles, ContentElementType, UserRoleEnum } from '@shared/domain/domainobject';
 import {
 	fileElementFactory,
 	richTextElementFactory,
@@ -10,13 +17,6 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { Action, AuthorizationService } from '@modules/authorization';
-import {
-	BadRequestException,
-	ForbiddenException,
-	NotFoundException,
-	UnprocessableEntityException,
-} from '@nestjs/common';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { SubmissionItemUc } from './submission-item.uc';
 

@@ -1,12 +1,13 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, News, NewsTargetModel } from '@shared/domain';
-import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
 import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { FeathersAuthorizationService } from '@modules/authorization';
 import { CreateNewsParams, NewsListResponse, NewsResponse, UpdateNewsParams } from '@modules/news/controller/dto';
 import { ServerTestModule } from '@modules/server/server.module';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { News } from '@shared/domain/entity';
+import { EntityId, NewsTargetModel } from '@shared/domain/types';
+import { API_VALIDATION_ERROR_TYPE } from '@src/core/error/server-error-types';
 import { Request } from 'express';
 import moment from 'moment';
 import request from 'supertest';

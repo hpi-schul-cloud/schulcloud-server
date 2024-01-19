@@ -1,4 +1,4 @@
-import { Role, TeamEntity, TeamProperties, TeamUserEntity } from '@shared/domain';
+import { Role, TeamEntity, TeamProperties, TeamUserEntity } from '@shared/domain/entity';
 import { BaseFactory } from '@shared/testing/factory/base.factory';
 import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 import { DeepPartial } from 'fishery';

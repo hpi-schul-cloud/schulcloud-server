@@ -1,27 +1,35 @@
 import { Embeddable, Embedded, Entity, Property } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from './base.entity';
 
 export interface FederalStateProperties {
 	name: string;
 	abbreviation: string;
 	logoUrl: string;
-	counties?: County[];
+	counties?: CountyEmbeddable[];
 	createdAt: Date;
 	updatedAt: Date;
 }
 
 @Embeddable()
-export class County {
-	constructor(county: County) {
+export class CountyEmbeddable {
+	constructor(county: CountyEmbeddable) {
+		this._id = county._id;
 		this.name = county.name;
 		this.countyId = county.countyId;
 		this.antaresKey = county.antaresKey;
 	}
 
+	@Property()
+	_id: ObjectId;
+
+	@Property()
 	name: string;
 
+	@Property()
 	countyId: number;
 
+	@Property()
 	antaresKey: string;
 }
 
@@ -36,8 +44,8 @@ export class FederalStateEntity extends BaseEntityWithTimestamps {
 	@Property()
 	logoUrl: string;
 
-	@Embedded(() => County, { array: true, nullable: true })
-	counties?: County[];
+	@Embedded(() => CountyEmbeddable, { array: true, nullable: true })
+	counties?: CountyEmbeddable[];
 
 	constructor(props: FederalStateProperties) {
 		super();
@@ -46,5 +54,6 @@ export class FederalStateEntity extends BaseEntityWithTimestamps {
 		this.logoUrl = props.logoUrl;
 		this.updatedAt = props.updatedAt;
 		this.createdAt = props.createdAt;
+		this.counties = props.counties;
 	}
 }

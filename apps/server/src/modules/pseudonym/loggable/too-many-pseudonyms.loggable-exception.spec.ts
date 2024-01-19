@@ -1,22 +1,6 @@
 import { TooManyPseudonymsLoggableException } from './too-many-pseudonyms.loggable-exception';
 
 describe('TooManyPseudonymsLoggableException', () => {
-	describe('constructor', () => {
-		const setup = () => {
-			const pseudonym = 'pseudonym';
-
-			return { pseudonym };
-		};
-
-		it('should create an instance of TooManyPseudonymsLoggableException', () => {
-			const { pseudonym } = setup();
-
-			const loggable = new TooManyPseudonymsLoggableException(pseudonym);
-
-			expect(loggable).toBeInstanceOf(TooManyPseudonymsLoggableException);
-		});
-	});
-
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const pseudonym = 'pseudonym';

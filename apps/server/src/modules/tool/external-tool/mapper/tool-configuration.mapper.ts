@@ -3,10 +3,12 @@ import {
 	ContextExternalToolConfigurationTemplateResponse,
 	SchoolExternalToolConfigurationTemplateListResponse,
 	SchoolExternalToolConfigurationTemplateResponse,
+	ToolContextTypesListResponse,
 } from '../controller/dto';
 import { ExternalTool } from '../domain';
 import { ContextExternalToolTemplateInfo } from '../uc';
 import { ExternalToolResponseMapper } from './external-tool-response.mapper';
+import { ToolContextType } from '../../common/enum';
 
 export class ToolConfigurationMapper {
 	static mapToSchoolExternalToolConfigurationTemplateResponse(
@@ -68,5 +70,11 @@ export class ToolConfigurationMapper {
 		const mapped = new ContextExternalToolConfigurationTemplateListResponse(mappedTools);
 
 		return mapped;
+	}
+
+	static mapToToolContextTypesListResponse(toolContextTypes: ToolContextType[]): ToolContextTypesListResponse {
+		const mappedTypes = new ToolContextTypesListResponse(toolContextTypes);
+
+		return mappedTypes;
 	}
 }

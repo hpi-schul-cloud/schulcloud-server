@@ -13,7 +13,7 @@ describe('oauth2 token test', () => {
 
 	before(async () => {
 		app = await appPromise();
-		server = app.listen(0);
+		server = await app.listen(0);
 		nestServices = await setupNestServices(app);
 		createHook = (clientId, userId, scopes) => ({
 			app,

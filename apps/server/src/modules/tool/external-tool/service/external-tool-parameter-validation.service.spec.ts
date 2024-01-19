@@ -17,7 +17,6 @@ describe('ExternalToolParameterValidationService', () => {
 	let service: ExternalToolParameterValidationService;
 
 	let externalToolService: DeepMocked<ExternalToolService>;
-	let commonToolValidationService: DeepMocked<CommonToolValidationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -36,9 +35,6 @@ describe('ExternalToolParameterValidationService', () => {
 
 		service = module.get(ExternalToolParameterValidationService);
 		externalToolService = module.get(ExternalToolService);
-		commonToolValidationService = module.get(CommonToolValidationService);
-
-		commonToolValidationService.isValueValidForType.mockReturnValue(true);
 	});
 
 	afterAll(async () => {
@@ -342,7 +338,6 @@ describe('ExternalToolParameterValidationService', () => {
 				const externalTool: ExternalTool = externalToolFactory.buildWithId({ parameters: [parameter] });
 
 				externalToolService.findExternalToolByName.mockResolvedValue(externalTool);
-				commonToolValidationService.isValueValidForType.mockReturnValue(false);
 
 				return {
 					externalTool,

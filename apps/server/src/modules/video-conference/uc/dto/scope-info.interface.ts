@@ -1,4 +1,4 @@
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 
 export interface ScopeInfo {
 	scopeId: EntityId;

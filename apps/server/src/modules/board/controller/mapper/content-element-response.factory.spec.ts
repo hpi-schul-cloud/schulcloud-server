@@ -1,6 +1,7 @@
 import { NotImplementedException } from '@nestjs/common';
 import {
 	fileElementFactory,
+	drawingElementFactory,
 	linkElementFactory,
 	richTextElementFactory,
 	submissionContainerElementFactory,
@@ -8,6 +9,7 @@ import {
 import {
 	FileElementResponse,
 	LinkElementResponse,
+	DrawingElementResponse,
 	RichTextElementResponse,
 	SubmissionContainerElementResponse,
 } from '../dto';
@@ -35,6 +37,14 @@ describe(ContentElementResponseFactory.name, () => {
 		const result = ContentElementResponseFactory.mapToResponse(richTextElement);
 
 		expect(result).toBeInstanceOf(RichTextElementResponse);
+	});
+
+	it('should return instance of DrawingElementResponse', () => {
+		const drawingElement = drawingElementFactory.build();
+
+		const result = ContentElementResponseFactory.mapToResponse(drawingElement);
+
+		expect(result).toBeInstanceOf(DrawingElementResponse);
 	});
 
 	it('should return instance of SubmissionContainerElementResponse', () => {

@@ -1,8 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { contextExternalToolFactory, externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
-import { ToolConfigurationStatus } from '../../common/enum';
+import {
+	contextExternalToolFactory,
+	externalToolFactory,
+	schoolExternalToolFactory,
+	toolConfigurationStatusFactory,
+} from '@shared/testing';
 import { ExternalToolLogoService, ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { ToolReference } from '../domain';
@@ -76,10 +80,15 @@ describe('ToolReferenceService', () => {
 					.buildWithId(undefined, contextExternalToolId);
 				const logoUrl = 'logoUrl';
 
-				contextExternalToolService.findById.mockResolvedValueOnce(contextExternalTool);
+				contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findById.mockResolvedValueOnce(externalTool);
-				toolVersionService.determineToolConfigurationStatus.mockResolvedValue(ToolConfigurationStatus.OUTDATED);
+				toolVersionService.determineToolConfigurationStatus.mockReturnValue(
+					toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeSchool: true,
+						isOutdatedOnScopeContext: false,
+					})
+				);
 				externalToolLogoService.buildLogoUrl.mockReturnValue(logoUrl);
 
 				return {
@@ -123,7 +132,10 @@ describe('ToolReferenceService', () => {
 					logoUrl,
 					displayName: contextExternalTool.displayName as string,
 					openInNewTab: externalTool.openNewTab,
-					status: ToolConfigurationStatus.OUTDATED,
+					status: toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeSchool: true,
+						isOutdatedOnScopeContext: false,
+					}),
 					contextToolId: contextExternalToolId,
 				});
 			});

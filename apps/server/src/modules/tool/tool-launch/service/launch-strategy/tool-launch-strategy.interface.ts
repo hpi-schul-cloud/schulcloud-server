@@ -1,4 +1,4 @@
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { ToolLaunchData, ToolLaunchRequest } from '../../types';
 import { ToolLaunchParams } from './tool-launch-params.interface';
 
