@@ -3,10 +3,10 @@ import { OAuthGrantType } from '@modules/oauth/interface/oauth-grant-type.enum';
 import { TokenRequestMapper } from '@modules/oauth/mapper/token-request.mapper';
 import { AccessTokenRequest, OauthTokenResponse } from '@modules/oauth/service/dto';
 import { HttpService } from '@nestjs/axios';
-import { HttpStatus, Injectable } from '@nestjs/common';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { Injectable } from '@nestjs/common';
+import { AxiosRequestConfig, AxiosResponse, isAxiosError } from 'axios';
 import QueryString from 'qs';
-import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { firstValueFrom, lastValueFrom, Observable } from 'rxjs';
 import { SchulconnexPersonenInfoParams } from './request';
 import { SanisResponse } from './response';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
@@ -23,7 +23,35 @@ export class SchulconnexRestClient {
 		this.API_BASE_URL = options.apiUrl;
 	}
 
-	public async getPersonInfo(accessToken: string): Promise<SanisResponse> {
+	// TODO: N21-1678 use this in provisioning module
+	public async getPersonInfo(accessToken: string, options?: { overrideUrl: string }): Promise<SanisResponse> {
+		const request: Observable<AxiosResponse<SanisResponse>> = this.httpService.get(
+			options?.overrideUrl ?? `${this.API_BASE_URL}/person-info`,
+			this.createAxiosConfig(accessToken)
+		);
+
+		const response: Promise<SanisResponse> = this.resolveRequest<SanisResponse>(request);
+
+		return response;
+	}
+
+	public async getPersonenInfo(params: SchulconnexPersonenInfoParams): Promise<SanisResponse[]> {
+		const token: OAuthTokenDto = await this.requestClientCredentialToken();
+
+		const request: Observable<AxiosResponse<SanisResponse[]>> = this.httpService.get(
+			`${this.API_BASE_URL}/personen-info`,
+			{
+				...this.createAxiosConfig(token.accessToken),
+				params,
+			}
+		);
+
+		const response: Promise<SanisResponse[]> = this.resolveRequest<SanisResponse[]>(request);
+
+		return response;
+	}
+
+	private createAxiosConfig(accessToken: string): AxiosRequestConfig {
 		const axiosConfig: AxiosRequestConfig = {
 			headers: {
 				Authorization: `Bearer ${accessToken}`,
@@ -31,33 +59,7 @@ export class SchulconnexRestClient {
 			},
 		};
 
-		const axiosResponse: AxiosResponse<SanisResponse> = await firstValueFrom(
-			this.httpService.get(`${this.API_BASE_URL}/person-info`, axiosConfig)
-		);
-
-		return axiosResponse.data;
-	}
-
-	public async getPersonenInfo(params: SchulconnexPersonenInfoParams): Promise<SanisResponse[]> {
-		try {
-			const token: OAuthTokenDto = await this.requestClientCredentialToken();
-
-			const response: AxiosResponse<SanisResponse[]> = await lastValueFrom(
-				this.httpService.get(`${this.API_BASE_URL}/personen-info`, {
-					headers: { Authorization: `Bearer ${token.accessToken}`, AcceptEncoding: 'gzip' },
-					params: QueryString.stringify(params),
-				})
-			);
-
-			if (response.status !== HttpStatus.OK) {
-				throw new Error(`HTTP request failed with status ${response.status}`);
-			}
-
-			return response.data;
-		} catch (e: unknown) {
-			// TODO: what we want to throw?
-			throw new Error('Failed to fetch personen-info from schulconnex');
-		}
+		return axiosConfig;
 	}
 
 	private async requestClientCredentialToken(): Promise<OAuthTokenDto> {
@@ -76,5 +78,20 @@ export class SchulconnexRestClient {
 
 		const tokenDto: OAuthTokenDto = TokenRequestMapper.mapTokenResponseToDto(responseToken);
 		return tokenDto;
+	}
+
+	private async resolveRequest<T>(observable: Observable<AxiosResponse<T>>): Promise<T> {
+		let responseToken: AxiosResponse<T>;
+		try {
+			responseToken = await lastValueFrom(observable);
+		} catch (error: unknown) {
+			if (isAxiosError(error)) {
+				// TODO throw loggable exception
+				throw new Error('Failed to use schulconnex api');
+			}
+			throw error;
+		}
+
+		return responseToken.data;
 	}
 }

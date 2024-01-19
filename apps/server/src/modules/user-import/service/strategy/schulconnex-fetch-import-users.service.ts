@@ -21,9 +21,10 @@ export class SchulconnexFetchImportUsersService extends AbstractOauthFetchImport
 
 	public async getData(params: SanisOauthFetchParams): Promise<SanisResponse[]> {
 		const response: SanisResponse[] = await this.schulconnexRestClient.getPersonenInfo({
-			vollstaendig: 'personen',
-			organisationId: params.externalSchoolId,
+			vollstaendig: 'personen,personenkontexte,organisationen',
+			'organisation.id': params.externalSchoolId,
 		});
+
 		return response;
 	}
 

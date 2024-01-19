@@ -42,6 +42,7 @@ export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
 			);
 		}
 
+		// TODO: N21-1678 use the schulconnex rest client
 		const axiosConfig: AxiosRequestConfig = {
 			headers: {
 				Authorization: `Bearer ${input.accessToken}`,

@@ -1,5 +1,6 @@
 export interface SchulconnexPersonenInfoParams {
-	organisationId: string;
+	'organisation.id': string;
+
 	// TODO: handle vollstaending better in constructor to have something like ?vollstaendig=personen,gruppen...&organisation.id=123
-	vollstaendig: string;
+	vollstaendig?: string;
 }
