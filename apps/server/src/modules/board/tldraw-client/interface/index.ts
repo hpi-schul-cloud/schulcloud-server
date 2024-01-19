@@ -1,1 +1,1 @@
-export * from './deletion-client-config.interface';
+export * from './tldraw-client-config.interface';

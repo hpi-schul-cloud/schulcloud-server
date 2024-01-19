@@ -3,7 +3,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
-import { DeletionClientConfig } from '../interface';
+import { TldrawClientConfig } from '../interface';
 
 @Injectable()
 export class DrawingElementAdapterService {
@@ -16,18 +16,18 @@ export class DrawingElementAdapterService {
 	constructor(
 		private logger: LegacyLogger,
 		private readonly httpService: HttpService,
-		private readonly configService: ConfigService<DeletionClientConfig, true>
+		private readonly configService: ConfigService<TldrawClientConfig, true>
 	) {
 		this.logger.setContext(DrawingElementAdapterService.name);
 
 		this.baseUrl = this.configService.get<string>('TLDRAW_ADMIN_API_CLIENT_BASE_URL');
 		this.apiKey = this.configService.get<string>('TLDRAW_ADMIN_API_CLIENT_API_KEY');
 
-		this.tldrawDocumentEndpoint = new URL('/api/v3/tldraw-document/', this.baseUrl).toString();
+		this.tldrawDocumentEndpoint = new URL('/api/v3/tldraw-document', this.baseUrl).toString();
 	}
 
 	async deleteDrawingBinData(docName: string): Promise<void> {
-		await firstValueFrom(this.httpService.delete(`${this.tldrawDocumentEndpoint}${docName}`, this.defaultHeaders()));
+		await firstValueFrom(this.httpService.delete(`${this.tldrawDocumentEndpoint}/${docName}`, this.defaultHeaders()));
 	}
 
 	private apiKeyHeader() {

@@ -1,6 +1,5 @@
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { DeletionClientConfig } from './interface';
 import { getTldrawClientConfig } from './tldraw-client.config';
 
 describe(getTldrawClientConfig.name, () => {
@@ -22,7 +21,7 @@ describe(getTldrawClientConfig.name, () => {
 			Configuration.set('TLDRAW_ADMIN_API_CLIENT__BASE_URL', baseUrl);
 			Configuration.set('TLDRAW_ADMIN_API_CLIENT__API_KEY', apiKey);
 
-			const expectedConfig: DeletionClientConfig = {
+			const expectedConfig = {
 				TLDRAW_ADMIN_API_CLIENT_BASE_URL: baseUrl,
 				TLDRAW_ADMIN_API_CLIENT_API_KEY: apiKey,
 			};
