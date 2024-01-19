@@ -7,9 +7,9 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { schoolSystemOptionsFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
-import { AnyProvisioningOptions, SchoolSystemOptions } from '../domain';
+import { AnyProvisioningOptions, SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
 import { ProvisioningStrategyMissingLoggableException } from '../loggable';
-import { SchoolSystemOptionsService } from '../service';
+import { ProvisioningOptionsUpdateService, SchoolSystemOptionsService } from '../service';
 import { SchoolSystemOptionsUc } from './school-system-options.uc';
 
 describe(SchoolSystemOptionsUc.name, () => {
@@ -19,6 +19,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let systemService: DeepMocked<SystemService>;
 	let schoolSystemOptionsService: DeepMocked<SchoolSystemOptionsService>;
+	let provisioningOptionsUpdateService: DeepMocked<ProvisioningOptionsUpdateService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -38,6 +39,10 @@ describe(SchoolSystemOptionsUc.name, () => {
 					provide: SchoolSystemOptionsService,
 					useValue: createMock<SchoolSystemOptionsService>(),
 				},
+				{
+					provide: ProvisioningOptionsUpdateService,
+					useValue: createMock<ProvisioningOptionsUpdateService>(),
+				},
 			],
 		}).compile();
 
@@ -45,6 +50,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		systemService = module.get(SystemService);
 		schoolSystemOptionsService = module.get(SchoolSystemOptionsService);
+		provisioningOptionsUpdateService = module.get(ProvisioningOptionsUpdateService);
 	});
 
 	afterAll(async () => {
@@ -124,6 +130,11 @@ describe(SchoolSystemOptionsUc.name, () => {
 				const system: System = systemFactory.build({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 				const schoolSystemOptions: SchoolSystemOptions = schoolSystemOptionsFactory.build({
 					systemId: system.id,
+					provisioningOptions: new SchulConneXProvisioningOptions().set({
+						groupProvisioningClassesEnabled: true,
+						groupProvisioningCoursesEnabled: true,
+						groupProvisioningOtherEnabled: true,
+					}),
 				});
 
 				systemService.findById.mockResolvedValueOnce(system);
@@ -151,6 +162,24 @@ describe(SchoolSystemOptionsUc.name, () => {
 					user,
 					new SchoolSystemOptions({ ...schoolSystemOptions.getProps(), id: expect.any(String) }),
 					AuthorizationContextBuilder.read([Permission.SCHOOL_SYSTEM_EDIT])
+				);
+			});
+
+			it('should execute additional update actions', async () => {
+				const { user, schoolSystemOptions } = setup();
+
+				await uc.createOrUpdateProvisioningOptions(
+					user.id,
+					schoolSystemOptions.schoolId,
+					schoolSystemOptions.systemId,
+					schoolSystemOptions.provisioningOptions
+				);
+
+				expect(provisioningOptionsUpdateService.handleUpdate).toHaveBeenCalledWith(
+					schoolSystemOptions.schoolId,
+					schoolSystemOptions.systemId,
+					schoolSystemOptions.provisioningOptions,
+					new SchulConneXProvisioningOptions()
 				);
 			});
 
@@ -189,60 +218,93 @@ describe(SchoolSystemOptionsUc.name, () => {
 				const system: System = systemFactory.build({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 				const schoolSystemOptions: SchoolSystemOptions = schoolSystemOptionsFactory.build({
 					systemId: system.id,
+					provisioningOptions: new SchulConneXProvisioningOptions().set({
+						groupProvisioningClassesEnabled: false,
+						groupProvisioningCoursesEnabled: false,
+						groupProvisioningOtherEnabled: false,
+					}),
+				});
+				const newOptions: AnyProvisioningOptions = new SchulConneXProvisioningOptions().set({
+					groupProvisioningClassesEnabled: true,
+					groupProvisioningCoursesEnabled: true,
+					groupProvisioningOtherEnabled: true,
 				});
 
 				systemService.findById.mockResolvedValueOnce(system);
 				schoolSystemOptionsService.findBySchoolIdAndSystemId.mockResolvedValueOnce(schoolSystemOptions);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				schoolSystemOptionsService.save.mockResolvedValueOnce(schoolSystemOptions);
+				schoolSystemOptionsService.save.mockResolvedValueOnce(
+					new SchoolSystemOptions({ ...schoolSystemOptions.getProps(), provisioningOptions: newOptions })
+				);
 
 				return {
 					user,
 					schoolSystemOptions,
+					newOptions,
 				};
 			};
 
 			it('should check the permissions', async () => {
-				const { user, schoolSystemOptions } = setup();
+				const { user, schoolSystemOptions, newOptions } = setup();
 
 				await uc.createOrUpdateProvisioningOptions(
 					user.id,
 					schoolSystemOptions.schoolId,
 					schoolSystemOptions.systemId,
-					schoolSystemOptions.provisioningOptions
+					newOptions
 				);
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 					user,
-					schoolSystemOptions,
+					new SchoolSystemOptions({ ...schoolSystemOptions.getProps(), provisioningOptions: newOptions }),
 					AuthorizationContextBuilder.read([Permission.SCHOOL_SYSTEM_EDIT])
 				);
 			});
 
-			it('should save the options', async () => {
-				const { user, schoolSystemOptions } = setup();
+			it('should execute additional update actions', async () => {
+				const { user, schoolSystemOptions, newOptions } = setup();
 
 				await uc.createOrUpdateProvisioningOptions(
 					user.id,
 					schoolSystemOptions.schoolId,
 					schoolSystemOptions.systemId,
-					schoolSystemOptions.provisioningOptions
+					newOptions
 				);
 
-				expect(schoolSystemOptionsService.save).toHaveBeenCalledWith(schoolSystemOptions);
+				expect(provisioningOptionsUpdateService.handleUpdate).toHaveBeenCalledWith(
+					schoolSystemOptions.schoolId,
+					schoolSystemOptions.systemId,
+					newOptions,
+					schoolSystemOptions.provisioningOptions
+				);
+			});
+
+			it('should save the options', async () => {
+				const { user, schoolSystemOptions, newOptions } = setup();
+
+				await uc.createOrUpdateProvisioningOptions(
+					user.id,
+					schoolSystemOptions.schoolId,
+					schoolSystemOptions.systemId,
+					newOptions
+				);
+
+				expect(schoolSystemOptionsService.save).toHaveBeenCalledWith(
+					new SchoolSystemOptions({ ...schoolSystemOptions.getProps(), provisioningOptions: newOptions })
+				);
 			});
 
 			it('should return the options', async () => {
-				const { user, schoolSystemOptions } = setup();
+				const { user, schoolSystemOptions, newOptions } = setup();
 
 				const result: AnyProvisioningOptions = await uc.createOrUpdateProvisioningOptions(
 					user.id,
 					schoolSystemOptions.schoolId,
 					schoolSystemOptions.systemId,
-					schoolSystemOptions.provisioningOptions
+					newOptions
 				);
 
-				expect(result).toEqual(schoolSystemOptions.provisioningOptions);
+				expect(result).toEqual(newOptions);
 			});
 		});
 

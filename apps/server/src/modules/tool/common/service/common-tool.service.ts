@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ContextExternalTool } from '../../context-external-tool/domain';
-import { ToolContextType } from '../enum';
 import { ContextExternalToolConfigurationStatus } from '../domain';
+import { ToolContextType } from '../enum';
 import { ToolVersion } from '../interface';
 
 // TODO N21-1337 remove class when tool versioning is removed
@@ -20,6 +20,7 @@ export class CommonToolService {
 		const configurationStatus: ContextExternalToolConfigurationStatus = new ContextExternalToolConfigurationStatus({
 			isOutdatedOnScopeContext: true,
 			isOutdatedOnScopeSchool: true,
+			isIncompleteOnScopeContext: false,
 			isDeactivated: false,
 		});
 

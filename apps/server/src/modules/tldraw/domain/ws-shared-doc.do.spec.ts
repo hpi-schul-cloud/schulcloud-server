@@ -51,7 +51,7 @@ describe('WsSharedDocDo', () => {
 
 	describe('ydoc client awareness change handler', () => {
 		const setup = async () => {
-			ws = await TestConnection.setupWs(wsUrl);
+			ws = await TestConnection.setupWs(wsUrl, 'TEST');
 
 			class MockAwareness {
 				on = jest.fn();

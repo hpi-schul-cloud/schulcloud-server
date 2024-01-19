@@ -98,7 +98,7 @@ describe('ToolContextController (API)', () => {
 					contextType: ToolContextType.COURSE,
 					parameters: [
 						{ name: 'param1', value: 'value' },
-						{ name: 'param2', value: '' },
+						{ name: 'param2', value: 'true' },
 					],
 					toolVersion: 1,
 				};
@@ -128,7 +128,7 @@ describe('ToolContextController (API)', () => {
 					contextType: postParams.contextType,
 					parameters: [
 						{ name: 'param1', value: 'value' },
-						{ name: 'param2', value: undefined },
+						{ name: 'param2', value: 'true' },
 					],
 					toolVersion: postParams.toolVersion,
 				});

@@ -127,6 +127,11 @@ const deleteWholeClassFromCourse = (hook) => {
 		});
 };
 
+const removeColumnBoard = async (context) => {
+	const courseId = context.id;
+	await context.app.service('nest-column-board-service').deleteByCourseId(courseId);
+};
+
 /**
  * remove all substitution teacher which are also teachers
  * @param hook - contains and request body
@@ -185,6 +190,7 @@ const restrictChangesToArchivedCourse = async (context) => {
 module.exports = {
 	addWholeClassToCourse,
 	deleteWholeClassFromCourse,
+	removeColumnBoard,
 	removeSubstitutionDuplicates,
 	courseInviteHook,
 	patchPermissionHook,

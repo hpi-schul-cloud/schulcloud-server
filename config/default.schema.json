@@ -534,6 +534,7 @@
 		"API_HOST": {
 			"type": "string",
 			"format": "uri",
+			"default": "http://localhost:3030/api",
 			"pattern": ".*(?<!/)$",
 			"description": "The server endpoint, for external calls like Antivirus service. When called from docker container, can be http://host.docker.internal:3030"
 		},
@@ -1374,11 +1375,6 @@
 			"default": false,
 			"description": "Enables external tools on the column board"
 		},
-		"FEATURE_PROVISIONING_OPTIONS_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "enables to view the page to set group provisioning options for a school and system pair"
-		},
 		"CTL_TOOLS": {
 			"type": "object",
 			"description": "CTL Tools properties",
@@ -1404,6 +1400,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the calculation of the outdated status of an external tool without the usage of the db attribute version"
+		},
+		"FEATURE_CTL_TOOLS_COPY_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the copying of ctl tools when copying a course."
 		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",

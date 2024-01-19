@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountDto, AccountService } from '@modules/account';
 import { OauthCurrentUser } from '@modules/authentication/interface';
 import { RoleService } from '@modules/role';
@@ -12,7 +13,7 @@ import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { Logger } from '@src/core/logger';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
 import { UserService } from './user.service';
@@ -54,6 +55,10 @@ describe('UserService', () => {
 				{
 					provide: AccountService,
 					useValue: createMock<AccountService>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
@@ -346,11 +351,11 @@ describe('UserService', () => {
 	describe('findByEmail is called', () => {
 		describe('when a user with this email exists', () => {
 			it('should return the user', async () => {
-				const user: User = userFactory.buildWithId();
+				const user: UserDO = userDoFactory.buildWithId();
 
-				userRepo.findByEmail.mockResolvedValue([user]);
+				userDORepo.findByEmail.mockResolvedValue([user]);
 
-				const result: User[] = await service.findByEmail(user.email);
+				const result: UserDO[] = await service.findByEmail(user.email);
 
 				expect(result).toEqual([user]);
 			});

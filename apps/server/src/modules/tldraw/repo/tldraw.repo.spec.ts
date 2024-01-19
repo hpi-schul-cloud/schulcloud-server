@@ -1,9 +1,10 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@shared/testing';
-import { tldrawEntityFactory } from '@src/modules/tldraw/factory';
-import { TldrawDrawing } from '@src/modules/tldraw/entities';
 import { MongoMemoryDatabaseModule } from '@infra/database';
+import { NotFoundException } from '@nestjs/common';
+import { tldrawEntityFactory } from '../factory';
+import { TldrawDrawing } from '../entities';
 import { TldrawRepo } from './tldraw.repo';
 
 describe(TldrawRepo.name, () => {
@@ -68,9 +69,8 @@ describe(TldrawRepo.name, () => {
 				expect(result[0]._id).toEqual(drawing._id);
 			});
 
-			it('should not find any record giving wrong docName', async () => {
-				const result = await repo.findByDocName('invalid-name');
-				expect(result.length).toEqual(0);
+			it('should throw NotFoundException for wrong docName', async () => {
+				await expect(repo.findByDocName('invalid-name')).rejects.toThrow(NotFoundException);
 			});
 		});
 	});
@@ -84,8 +84,8 @@ describe(TldrawRepo.name, () => {
 				const results = await repo.findByDocName(drawing.docName);
 				await repo.delete(results);
 
-				const emptyResults = await repo.findByDocName(drawing.docName);
-				expect(emptyResults.length).toEqual(0);
+				expect(results.length).not.toEqual(0);
+				await expect(repo.findByDocName(drawing.docName)).rejects.toThrow(NotFoundException);
 			});
 		});
 	});
