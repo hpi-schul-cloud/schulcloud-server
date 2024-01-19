@@ -33,18 +33,14 @@ export class TldrawBoardRepo {
 
 	public async updateDocument(docName: string, ydoc: WsSharedDocDo): Promise<void> {
 		const persistedYdoc = await this.getYDocFromMdb(docName);
-		console.log(Object.fromEntries(persistedYdoc.getMap('shapes').entries()));
+		console.log('DOCUMENT SHAPES ARRAY LENGTH: ', Array.from(persistedYdoc.getMap('shapes').entries()).length);
 		const persistedStateVector = encodeStateVector(persistedYdoc);
 		const diff = encodeStateAsUpdate(ydoc, persistedStateVector);
 		await this.updateStoredDocWithDiff(docName, diff);
 
 		applyUpdate(ydoc, encodeStateAsUpdate(persistedYdoc));
 
-		ydoc.on('update', (update: Uint8Array) => {
-			this.mdb
-				.storeUpdateTransactional(docName, update)
-				.catch((err) => this.logger.warning(new MongoTransactionErrorLoggable(err as Error)));
-		});
+		ydoc.on('update', (update: Uint8Array) => this.mdb.storeUpdateTransactional(docName, update));
 
 		persistedYdoc.destroy();
 	}

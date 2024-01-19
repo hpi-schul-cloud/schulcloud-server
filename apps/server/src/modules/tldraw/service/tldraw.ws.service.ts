@@ -275,14 +275,15 @@ export class TldrawWsService {
 	private async storeStateAndDestroyYDocIfPersisted(doc: WsSharedDocDo) {
 		if (doc.connections.size === 0) {
 			// if persisted, we store state and destroy ydocument
-			await this.tldrawBoardRepo
-				.flushDocument(doc.name)
-				.then(() => this.sub.unsubscribe(doc.name, doc.awarenessChannel))
-				.then(() => doc.destroy())
-				.catch((err) => {
-					this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while flushing doc', err as Error));
-					throw err;
-				});
+			try {
+				await this.tldrawBoardRepo.flushDocument(doc.name);
+				await this.sub.unsubscribe(doc.name, doc.awarenessChannel);
+				doc.destroy();
+			} catch (err) {
+				this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while flushing doc', err as Error));
+				throw err;
+			}
+
 			this.docs.delete(doc.name);
 			this.metricsService.decrementNumberOfBoardsOnServerCounter();
 		}
@@ -384,10 +385,12 @@ export class TldrawWsService {
 	}
 
 	private async updateDocument(docName: string, doc: WsSharedDocDo) {
-		await this.tldrawBoardRepo.updateDocument(docName, doc).catch((err) => {
+		try {
+			await this.tldrawBoardRepo.updateDocument(docName, doc);
+		} catch (err) {
 			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while updating document', err as Error));
 			throw err;
-		});
+		}
 	}
 
 	private publishAwarenessUpdate(doc: WsSharedDocDo, update: Uint8Array) {
