@@ -369,11 +369,8 @@ export class TldrawWsService {
 
 	private async subscribeOnDocument(doc: WsSharedDocDo) {
 		try {
-			await this.sub
-				.subscribe(doc.name, doc.awarenessChannel)
-				.then(() =>
-					this.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message, doc))
-				);
+			await this.sub.subscribe(doc.name, doc.awarenessChannel);
+			this.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message, doc));
 		} catch (err) {
 			this.logger.warning(
 				new WsSharedDocErrorLoggable(doc.name, 'Error while subscribing to Redis channels', err as Error)
