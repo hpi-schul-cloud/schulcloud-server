@@ -21,6 +21,7 @@ export class SchoolResponseMapper {
 			features,
 			county,
 			systemIds,
+			inUserMigration: schoolProps.inUserMigration,
 			inMaintenance: school.isInMaintenance(),
 			isExternal: school.isExternal(),
 			years,

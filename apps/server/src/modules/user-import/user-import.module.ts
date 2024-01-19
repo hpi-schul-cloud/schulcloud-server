@@ -1,14 +1,15 @@
+import { AccountModule } from '@modules/account';
+import { AuthorizationModule } from '@modules/authorization';
 import { LegacySchoolModule } from '@modules/legacy-school';
+import { UserLoginMigrationModule } from '@modules/user-login-migration';
 import { Module } from '@nestjs/common';
 import { ImportUserRepo, LegacySchoolRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { AccountModule } from '../account';
-import { AuthorizationModule } from '../authorization';
 import { ImportUserController } from './controller/import-user.controller';
 import { UserImportUc } from './uc/user-import.uc';
 
 @Module({
-	imports: [LoggerModule, AccountModule, LegacySchoolModule, AuthorizationModule],
+	imports: [LoggerModule, AccountModule, LegacySchoolModule, AuthorizationModule, UserLoginMigrationModule],
 	controllers: [ImportUserController],
 	providers: [UserImportUc, ImportUserRepo, LegacySchoolRepo, LegacySystemRepo, UserRepo],
 	exports: [],
