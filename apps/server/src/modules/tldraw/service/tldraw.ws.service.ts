@@ -213,8 +213,11 @@ export class TldrawWsService {
 		ws.binaryType = 'arraybuffer';
 		// get doc, initialize if it does not exist yet
 		const doc = await this.getYDoc(docName);
+
 		doc.connections.set(ws, new Set());
 
+		console.log('DOCUMENT SHAPES ARRAY LENGTH: ', Array.from(doc.getMap('shapes').entries()).length);
+		console.log('DOC CONNS COUNT: ', doc.connections.size);
 		// listen and reply to events
 		ws.on('message', (message: ArrayBufferLike) => {
 			this.messageHandler(ws, doc, new Uint8Array(message));
