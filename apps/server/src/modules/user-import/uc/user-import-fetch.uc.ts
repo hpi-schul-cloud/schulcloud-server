@@ -34,7 +34,7 @@ export class UserImportFetchUc {
 			externalSchoolId: externalId,
 		});
 
-		const filteredFetchedData: SanisResponse[] = this.schulconnexFetchImportUsersService.filterAlreadyFetchedData(
+		const filteredFetchedData: SanisResponse[] = this.schulconnexFetchImportUsersService.filterAlreadyMigratedUser(
 			fetchedData,
 			this.userImportFeatures.userMigrationSystemId
 		);

@@ -49,7 +49,7 @@ export class SchulconnexFetchImportUsersService extends AbstractOauthFetchImport
 		return importUsers;
 	}
 
-	public filterAlreadyFetchedData(data: SanisResponse[], systemId: EntityId): SanisResponse[] {
+	public filterAlreadyMigratedUser(data: SanisResponse[], systemId: EntityId): SanisResponse[] {
 		const filteredData: SanisResponse[] = data.filter(async (user: SanisResponse): Promise<boolean> => {
 			const foundUser: UserDO | null = await this.userService.findByExternalId(user.pid, systemId);
 
