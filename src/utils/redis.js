@@ -3,6 +3,7 @@ const redis = require('redis');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { GeneralError } = require('../errors');
+const logger = require('../logger');
 
 let redisClient = false;
 
@@ -13,9 +14,12 @@ async function initializeRedisClient() {
 				url: Configuration.get('REDIS_URI'),
 				// Legacy mode is needed for compatibility with v4, see https://github.com/redis/node-redis/blob/HEAD/docs/v3-to-v4.md#legacy-mode
 				legacyMode: true,
-				disableOfflineQueue: true,
 			});
 			await redisClient.connect();
+
+			redisClient.on('error', (err) => {
+				logger.warn('Redis client error, but it should reconnect on its own.', err);
+			});
 		} catch (err) {
 			throw new GeneralError('Redis connection failed!', err);
 		}
