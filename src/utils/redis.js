@@ -19,7 +19,7 @@ async function initializeRedisClient() {
 
 			// The error event must be handled, otherwise the app crashes on redis connection errors.
 			redisClient.on('error', (err) => {
-				logger.warn('Redis client error, but it should reconnect on its own.', err);
+				logger.warning('Redis client error, but it should reconnect on its own.', err);
 			});
 		} catch (err) {
 			throw new GeneralError('Redis connection failed!', err);
