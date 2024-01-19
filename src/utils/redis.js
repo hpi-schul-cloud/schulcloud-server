@@ -13,6 +13,7 @@ async function initializeRedisClient() {
 				url: Configuration.get('REDIS_URI'),
 				// Legacy mode is needed for compatibility with v4, see https://github.com/redis/node-redis/blob/HEAD/docs/v3-to-v4.md#legacy-mode
 				legacyMode: true,
+				disableOfflineQueue: true,
 			});
 			await redisClient.connect();
 		} catch (err) {
