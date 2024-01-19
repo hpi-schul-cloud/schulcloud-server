@@ -253,7 +253,7 @@ describe('School Controller (API)', () => {
 				const response = await testApiClient.get(`exists/id/${someId}`);
 
 				expect(response.status).toEqual(HttpStatus.OK);
-				expect(response.body).toEqual(false);
+				expect(response.body).toEqual({ exists: false });
 			});
 		});
 
@@ -271,7 +271,7 @@ describe('School Controller (API)', () => {
 				const response = await testApiClient.get(`exists/id/${schoolId}`);
 
 				expect(response.status).toEqual(HttpStatus.OK);
-				expect(response.body).toEqual(true);
+				expect(response.body).toEqual({ exists: true });
 			});
 		});
 	});

@@ -4,6 +4,7 @@ import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { SchoolQueryParams, SchoolUrlParams } from './dto/param';
 import { SchoolForExternalInviteResponse, SchoolResponse } from './dto/response';
+import { SchoolExistsResponse } from './dto/response/school-exists.response';
 import { SchoolUc } from './school.uc';
 
 @ApiTags('School')
@@ -34,8 +35,10 @@ export class SchoolController {
 	}
 
 	@Get('/exists/id/:schoolId')
-	public async doesSchoolExist(@Param() urlParams: SchoolUrlParams): Promise<boolean> {
-		const res = await this.schoolUc.doesSchoolExist(urlParams.schoolId);
+	public async doesSchoolExist(@Param() urlParams: SchoolUrlParams): Promise<SchoolExistsResponse> {
+		const result = await this.schoolUc.doesSchoolExist(urlParams.schoolId);
+
+		const res = new SchoolExistsResponse({ exists: result });
 
 		return res;
 	}
