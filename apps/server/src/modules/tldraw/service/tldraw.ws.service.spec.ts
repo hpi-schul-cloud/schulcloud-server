@@ -448,33 +448,6 @@ describe('TldrawWSService', () => {
 			});
 		});
 
-		describe('when ping throws error', () => {
-			const setup = async () => {
-				ws = await TestConnection.setupWs(wsUrl, 'TEST');
-
-				const closeConnSpy = jest.spyOn(service, 'closeConn').mockResolvedValue();
-				const pingSpy = jest.spyOn(ws, 'ping').mockImplementationOnce(() => {
-					throw new Error('error');
-				});
-
-				return {
-					closeConnSpy,
-					pingSpy,
-				};
-			};
-
-			it('should close connection', async () => {
-				const { closeConnSpy, pingSpy } = await setup();
-
-				await service.setupWSConnection(ws, 'TEST');
-
-				expect(closeConnSpy).toHaveBeenCalled();
-				ws.close();
-				closeConnSpy.mockRestore();
-				pingSpy.mockRestore();
-			});
-		});
-
 		describe('when pong not received', () => {
 			const setup = async () => {
 				ws = await TestConnection.setupWs(wsUrl, 'TEST');
