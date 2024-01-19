@@ -174,7 +174,7 @@ export class TldrawWsService {
 					break;
 				case WSMessageType.AWARENESS: {
 					const update = decoding.readVarUint8Array(decoder);
-					this.publishAwarenessUpdate(doc, update);
+					void this.publishAwarenessUpdate(doc, update);
 					applyAwarenessUpdate(doc.awareness, update, conn);
 					break;
 				}
@@ -394,9 +394,9 @@ export class TldrawWsService {
 		}
 	}
 
-	private publishAwarenessUpdate(doc: WsSharedDocDo, update: Uint8Array) {
+	private async publishAwarenessUpdate(doc: WsSharedDocDo, update: Uint8Array) {
 		try {
-			void this.pub.publish(doc.awarenessChannel, Buffer.from(update));
+			await this.pub.publish(doc.awarenessChannel, Buffer.from(update));
 		} catch (err) {
 			this.logger.warning(new RedisPublishErrorLoggable('awareness', err as Error));
 			throw err;
