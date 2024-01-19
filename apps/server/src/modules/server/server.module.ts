@@ -109,7 +109,7 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	],
 	controllers: [ServerController],
 })
-export class ServerModule { }
+export class ServerModule {}
 
 /**
  * Server module used for testing.

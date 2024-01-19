@@ -28,7 +28,7 @@ export class CourseCopyService {
 		private readonly copyHelperService: CopyHelperService,
 		private readonly userRepo: UserRepo,
 		private readonly contextExternalToolService: ContextExternalToolService
-	) { }
+	) {}
 
 	async copyCourse({
 		userId,
