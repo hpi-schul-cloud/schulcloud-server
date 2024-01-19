@@ -137,10 +137,10 @@ export class TldrawWsService {
 	public async getYDoc(docName: string): Promise<WsSharedDocDo> {
 		const wsSharedDocDo = await map.setIfUndefined(this.docs, docName, async () => {
 			const doc = new WsSharedDocDo(docName, this.gcEnabled);
-			this.subscribeOnAwarenessUpdate(doc);
-			doc.on('update', (update: Uint8Array, origin) => this.updateHandler(update, origin, doc));
+			this.registerAwarenessUpdateHandler(doc);
+			this.registerUpdateHandler(doc);
 
-			await this.subscribeOnDocument(doc);
+			await this.subscribeToRedisChannels(doc);
 
 			await this.updateDocument(docName, doc);
 
@@ -361,13 +361,17 @@ export class TldrawWsService {
 		);
 	}
 
-	private subscribeOnAwarenessUpdate(doc: WsSharedDocDo) {
+	private registerAwarenessUpdateHandler(doc: WsSharedDocDo) {
 		doc.awareness.on('update', (connectionsUpdate: AwarenessConnectionsUpdate, wsConnection: WebSocket | null) =>
 			this.awarenessUpdateHandler(connectionsUpdate, wsConnection, doc)
 		);
 	}
 
-	private async subscribeOnDocument(doc: WsSharedDocDo) {
+	private registerUpdateHandler(doc: WsSharedDocDo) {
+		doc.on('update', (update: Uint8Array, origin) => this.updateHandler(update, origin, doc));
+	}
+
+	private async subscribeToRedisChannels(doc: WsSharedDocDo) {
 		try {
 			await this.sub.subscribe(doc.name, doc.awarenessChannel);
 			this.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message, doc));
