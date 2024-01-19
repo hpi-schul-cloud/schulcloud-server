@@ -10,6 +10,14 @@ import { axiosResponseFactory } from '@shared/testing';
 import { UUID } from 'bson';
 import * as classValidator from 'class-validator';
 import { of } from 'rxjs';
+import {
+	SanisGroupRole,
+	SanisGroupType,
+	SanisGruppenResponse,
+	SanisResponse,
+	SanisResponseValidationGroups,
+	SanisRole,
+} from '@infra/schulconnex-client';
 import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import {
 	ExternalGroupDto,
@@ -20,14 +28,6 @@ import {
 	ProvisioningSystemDto,
 } from '../../dto';
 import { OidcProvisioningService } from '../oidc/service/oidc-provisioning.service';
-import {
-	SanisGroupRole,
-	SanisGroupType,
-	SanisGruppenResponse,
-	SanisResponse,
-	SanisResponseValidationGroups,
-	SanisRole,
-} from '../../../../infra/schulconnex-client/response';
 import { SanisResponseMapper } from './sanis-response.mapper';
 import { SanisProvisioningStrategy } from './sanis.strategy';
 import ArgsType = jest.ArgsType;

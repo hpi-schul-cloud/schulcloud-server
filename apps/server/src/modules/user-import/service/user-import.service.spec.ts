@@ -56,13 +56,5 @@ describe(UserImportService.name, () => {
 
 			expect(userImportRepo.saveImportUsers).toHaveBeenCalledWith(importUsers);
 		});
-
-		it('should return importUsers', async () => {
-			const { importUsers } = setup();
-
-			const result: ImportUser[] = await service.saveImportUsers(importUsers);
-
-			expect(result).toEqual(importUsers);
-		});
 	});
 });

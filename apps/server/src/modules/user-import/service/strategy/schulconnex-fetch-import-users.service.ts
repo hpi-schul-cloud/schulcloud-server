@@ -2,7 +2,7 @@ import { SanisResponse, SchulconnexRestClient } from '@infra/schulconnex-client'
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject';
-import { ImportUser } from '@shared/domain/entity';
+import { ImportUser, SchoolEntity, SystemEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { AbstractOauthFetchImportUserStrategy } from './abstract-oauth-fetch-import-user.strategy';
 import { SanisOauthFetchParams } from './sanis-oauth-fetch-params';
@@ -28,10 +28,25 @@ export class SchulconnexFetchImportUsersService extends AbstractOauthFetchImport
 		return response;
 	}
 
-	// TODO: implement mapping
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public mapDataToUserImportEntity(response: SanisResponse[]): Promise<ImportUser> {
-		throw new Error('Method not implemented.');
+	public mapDataToUserImportEntities(
+		response: SanisResponse[],
+		system: SystemEntity,
+		school: SchoolEntity
+	): ImportUser[] {
+		const importUsers: ImportUser[] = response.map(
+			(sanisUser: SanisResponse): ImportUser =>
+				new ImportUser({
+					system,
+					school,
+					ldapDn: `uid=${sanisUser.person.name.vorname}.${sanisUser.person.name.familienname},`,
+					externalId: sanisUser.pid,
+					firstName: sanisUser.person.name.vorname,
+					lastName: sanisUser.person.name.familienname,
+					email: '',
+				})
+		);
+
+		return importUsers;
 	}
 
 	public filterAlreadyFetchedData(data: SanisResponse[], systemId: EntityId): SanisResponse[] {

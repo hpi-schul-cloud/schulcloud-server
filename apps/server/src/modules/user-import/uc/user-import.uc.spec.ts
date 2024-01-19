@@ -16,7 +16,7 @@ import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { federalStateFactory, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
 import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory';
 import { LoggerModule } from '@src/core/logger';
-import { IUserImportFeatures, UserImportFeatures } from '../config';
+import { UserImportService } from '../service';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,
@@ -34,7 +34,7 @@ describe('[ImportUserModule]', () => {
 		let systemRepo: DeepMocked<LegacySystemRepo>;
 		let userRepo: DeepMocked<UserRepo>;
 		let authorizationService: DeepMocked<AuthorizationService>;
-		let userImportFeatures: IUserImportFeatures;
+		let userImportService: DeepMocked<UserImportService>;
 
 		beforeAll(async () => {
 			module = await Test.createTestingModule({
@@ -70,15 +70,12 @@ describe('[ImportUserModule]', () => {
 						useValue: createMock<AuthorizationService>(),
 					},
 					{
-						provide: UserImportFeatures,
-						useValue: {
-							userMigrationEnabled: true,
-							userMigrationSystemId: 'someId',
-							userMigrationFetching: {},
-						},
+						provide: UserImportService,
+						useValue: createMock<UserImportService>(),
 					},
 				],
 			}).compile();
+
 			uc = module.get(UserImportUc); // TODO UserRepo not available in UserUc?!
 			accountService = module.get(AccountService);
 			importUserRepo = module.get(ImportUserRepo);
@@ -86,7 +83,7 @@ describe('[ImportUserModule]', () => {
 			systemRepo = module.get(LegacySystemRepo);
 			userRepo = module.get(UserRepo);
 			authorizationService = module.get(AuthorizationService);
-			userImportFeatures = module.get<IUserImportFeatures>(UserImportFeatures);
+			userImportService = module.get(UserImportService);
 		});
 
 		afterAll(async () => {
@@ -102,12 +99,6 @@ describe('[ImportUserModule]', () => {
 			expect(userRepo).toBeDefined();
 			expect(authorizationService).toBeDefined();
 		});
-
-		const setConfig = (systemId?: string) => {
-			const mockSystemId = systemId || new ObjectId().toString();
-			userImportFeatures.userMigrationSystemId = mockSystemId;
-			userImportFeatures.userMigrationEnabled = true;
-		};
 
 		const createMockSchoolDo = (school?: SchoolEntity): LegacySchoolDo => {
 			const name = school ? school.name : 'testSchool';
@@ -135,10 +126,6 @@ describe('[ImportUserModule]', () => {
 				federalState,
 			});
 		};
-
-		beforeEach(() => {
-			setConfig();
-		});
 
 		describe('[findAllImportUsers]', () => {
 			it('Should request authorization service', async () => {
@@ -609,7 +596,6 @@ describe('[ImportUserModule]', () => {
 				schoolServiceSaveSpy = schoolService.save.mockReturnValueOnce(Promise.resolve(createMockSchoolDo(school)));
 				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValue(createMockSchoolDo(school));
 				systemRepoSpy = systemRepo.findById.mockReturnValueOnce(Promise.resolve(system));
-				setConfig(system.id);
 				dateSpy = jest.spyOn(global, 'Date').mockReturnValue(currentDate as unknown as string);
 			});
 			afterEach(() => {
@@ -623,7 +609,7 @@ describe('[ImportUserModule]', () => {
 			it('Should fetch system id from user import features ', async () => {
 				await uc.startSchoolInUserMigration(currentUser.id);
 
-				expect(userImportFeatures.userMigrationSystemId).toBeDefined();
+				expect(userImportService.checkFeatureEnabled).toBeDefined();
 				expect(systemRepoSpy).toHaveBeenCalledWith(system.id);
 			});
 			it('Should request authorization service', async () => {

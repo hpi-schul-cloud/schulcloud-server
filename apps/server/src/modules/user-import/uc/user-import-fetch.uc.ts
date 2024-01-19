@@ -1,17 +1,19 @@
 import { SanisResponse } from '@infra/schulconnex-client';
 import { AuthorizationService } from '@modules/authorization';
 import { Inject, Injectable } from '@nestjs/common';
+import { ImportUser } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
-import { SchulconnexFetchImportUsersService } from '../service';
+import { SchulconnexFetchImportUsersService, UserImportService } from '../service';
 
 @Injectable()
 export class UserImportFetchUc {
 	constructor(
 		@Inject(UserImportFeatures) private readonly userImportFeatures: IUserImportFeatures,
 		private readonly schulconnexFetchImportUsersService: SchulconnexFetchImportUsersService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly userImportService: UserImportService
 	) {}
 
 	public async fetchImportUsers(currentUserId: EntityId): Promise<void> {
@@ -28,18 +30,21 @@ export class UserImportFetchUc {
 			externalSchoolId: externalId!,
 		});
 
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		// TODO: validate that userMigrationSystemId is set
 		const filteredFetchedData: SanisResponse[] = this.schulconnexFetchImportUsersService.filterAlreadyFetchedData(
 			fetchedData,
 			this.userImportFeatures.userMigrationSystemId
 		);
 
-		// TODO: map to import user
-		// const mappedImportUsers: ImportUser[] = this.schulconnexFetchImportUsersService.mapDataToUserImportEntity();
+		const system = await this.userImportService.getMigrationSystem();
+		const mappedImportUsers: ImportUser[] = this.schulconnexFetchImportUsersService.mapDataToUserImportEntities(
+			filteredFetchedData,
+			system,
+			currentUser.school
+		);
 
 		// TODO: do matching
 
-		// TODO: save
-		// await this.userImportService.saveImportUsers(mappedImportUsers);
+		await this.userImportService.saveImportUsers(mappedImportUsers);
 	}
 }

@@ -2,16 +2,16 @@ import { GroupTypes } from '@modules/group';
 import { Injectable } from '@nestjs/common';
 import { RoleName } from '@shared/domain/interface';
 import { Logger } from '@src/core/logger';
-import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
-import { GroupRoleUnknownLoggable } from '../../loggable';
 import {
-	SanisGroupRole,
-	SanisGroupType,
 	SanisGruppenResponse,
 	SanisResponse,
-	SanisRole,
 	SanisSonstigeGruppenzugehoerigeResponse,
-} from '../../../../infra/schulconnex-client/response';
+} from '@infra/schulconnex-client';
+import { SanisRole } from '@infra/schulconnex-client/response/sanis-role';
+import { SanisGroupRole } from '@infra/schulconnex-client/response/sanis-group-role';
+import { SanisGroupType } from '@infra/schulconnex-client/response/sanis-group-type';
+import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
+import { GroupRoleUnknownLoggable } from '../../loggable';
 
 const RoleMapping: Record<SanisRole, RoleName> = {
 	[SanisRole.LEHR]: RoleName.TEACHER,
