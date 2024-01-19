@@ -1,22 +1,26 @@
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { BaseDO, User } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object'; // fix import when it is avaible
-import type { AuthorizationContext, Rule } from '../type';
+import { BaseDO } from '@shared/domain/domainobject';
+import { User } from '@shared/domain/entity';
 import {
 	BoardDoRule,
 	ContextExternalToolRule,
 	CourseGroupRule,
 	CourseRule,
+	GroupRule,
 	LegacySchoolRule,
 	LessonRule,
 	SchoolExternalToolRule,
+	SchoolRule,
+	SchoolSystemOptionsRule,
 	SubmissionRule,
+	SystemRule,
 	TaskRule,
 	TeamRule,
 	UserLoginMigrationRule,
 	UserRule,
-	GroupRule,
 } from '../rules';
+import type { AuthorizationContext, Rule } from '../type';
 
 @Injectable()
 export class RuleManager {
@@ -35,7 +39,10 @@ export class RuleManager {
 		private readonly boardDoRule: BoardDoRule,
 		private readonly contextExternalToolRule: ContextExternalToolRule,
 		private readonly userLoginMigrationRule: UserLoginMigrationRule,
-		private readonly groupRule: GroupRule
+		private readonly schoolRule: SchoolRule,
+		private readonly groupRule: GroupRule,
+		private readonly systemRule: SystemRule,
+		private readonly schoolSystemOptionsRule: SchoolSystemOptionsRule
 	) {
 		this.rules = [
 			this.courseRule,
@@ -50,7 +57,10 @@ export class RuleManager {
 			this.boardDoRule,
 			this.contextExternalToolRule,
 			this.userLoginMigrationRule,
+			this.schoolRule,
 			this.groupRule,
+			this.systemRule,
+			this.schoolSystemOptionsRule,
 		];
 	}
 

@@ -1,15 +1,15 @@
+import { Action, AuthorizationService } from '@modules/authorization';
 import { ForbiddenException, forwardRef, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
 	AnyBoardDo,
 	AnyContentElementDo,
-	EntityId,
 	isSubmissionContainerElement,
 	isSubmissionItem,
 	SubmissionItem,
 	UserRoleEnum,
-} from '@shared/domain';
+} from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { AuthorizationService, Action } from '@modules/authorization';
 import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { SubmissionItemService } from '../service/submission-item.service';
@@ -58,6 +58,11 @@ export class ElementUc extends BaseUc {
 		}
 
 		return element;
+	}
+
+	async checkElementReadPermission(userId: EntityId, elementId: EntityId): Promise<void> {
+		const element = await this.elementService.findById(elementId);
+		await this.checkPermission(userId, element, Action.read);
 	}
 
 	async createSubmissionItem(

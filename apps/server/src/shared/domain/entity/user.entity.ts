@@ -1,8 +1,9 @@
-import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
-import { IEntityWithSchool } from '../interface';
+import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
+import { EntityWithSchool } from '../interface';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { Role } from './role.entity';
 import { SchoolEntity } from './school.entity';
+import { UserParentsEntity } from './user-parents.entity';
 
 export enum LanguageType {
 	DE = 'de',
@@ -11,7 +12,7 @@ export enum LanguageType {
 	UK = 'uk',
 }
 
-export interface IUserProperties {
+export interface UserProperties {
 	email: string;
 	firstName: string;
 	lastName: string;
@@ -27,6 +28,7 @@ export interface IUserProperties {
 	outdatedSince?: Date;
 	previousExternalId?: string;
 	birthday?: Date;
+	parents?: UserParentsEntity[];
 }
 
 @Entity({ tableName: 'users' })
@@ -35,7 +37,7 @@ export interface IUserProperties {
 @Index({ properties: ['externalId', 'school'] })
 @Index({ properties: ['school', 'ldapDn'] })
 @Index({ properties: ['school', 'roles'] })
-export class User extends BaseEntityWithTimestamps implements IEntityWithSchool {
+export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property()
 	@Index()
 	// @Unique()
@@ -100,7 +102,10 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 	@Property({ nullable: true })
 	birthday?: Date;
 
-	constructor(props: IUserProperties) {
+	@Embedded(() => UserParentsEntity, { array: true, nullable: true })
+	parents?: UserParentsEntity[];
+
+	constructor(props: UserProperties) {
 		super();
 		this.firstName = props.firstName;
 		this.lastName = props.lastName;
@@ -117,6 +122,7 @@ export class User extends BaseEntityWithTimestamps implements IEntityWithSchool 
 		this.outdatedSince = props.outdatedSince;
 		this.previousExternalId = props.previousExternalId;
 		this.birthday = props.birthday;
+		this.parents = props.parents;
 	}
 
 	public resolvePermissions(): string[] {

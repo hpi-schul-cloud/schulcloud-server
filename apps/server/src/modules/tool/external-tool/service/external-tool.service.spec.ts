@@ -1,10 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { UnprocessableEntityException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { IFindOptions, Page, SortOrder } from '@shared/domain';
-import { DefaultEncryptionService, IEncryptionService } from '@infra/encryption';
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { OauthProviderService } from '@infra/oauth-provider';
 import { ProviderOauthClient } from '@infra/oauth-provider/dto';
+import { UnprocessableEntityException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+
+import { Page } from '@shared/domain/domainobject';
+import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import {
 	externalToolFactory,
@@ -28,7 +30,7 @@ describe('ExternalToolService', () => {
 	let courseToolRepo: DeepMocked<ContextExternalToolRepo>;
 	let oauthProviderService: DeepMocked<OauthProviderService>;
 	let mapper: DeepMocked<ExternalToolServiceMapper>;
-	let encryptionService: DeepMocked<IEncryptionService>;
+	let encryptionService: DeepMocked<EncryptionService>;
 	let versionService: DeepMocked<ExternalToolVersionIncrementService>;
 
 	beforeAll(async () => {
@@ -49,7 +51,7 @@ describe('ExternalToolService', () => {
 				},
 				{
 					provide: DefaultEncryptionService,
-					useValue: createMock<IEncryptionService>(),
+					useValue: createMock<EncryptionService>(),
 				},
 				{
 					provide: SchoolExternalToolRepo,

@@ -1,29 +1,30 @@
+import { ColumnBoardCopyService } from '@modules/board';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { LessonCopyService } from '@modules/lesson';
+import { TaskCopyService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
+import { getResolvedValues } from '@shared/common/utils/promise';
+import { ColumnBoard } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
 import {
 	Board,
 	BoardElement,
 	BoardElementType,
-	ColumnBoard,
-	ColumnboardBoardElement,
 	ColumnBoardTarget,
+	ColumnboardBoardElement,
 	Course,
-	isColumnBoardTarget,
-	isLesson,
-	isTask,
-	LessonEntity,
 	LessonBoardElement,
+	LessonEntity,
 	Task,
 	TaskBoardElement,
 	User,
-} from '@shared/domain';
-import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
+	isColumnBoardTarget,
+	isLesson,
+	isTask,
+} from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { BoardRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { ColumnBoardCopyService } from '@modules/board/service/column-board-copy.service';
-import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { getResolvedValues } from '@modules/files-storage/helper';
-import { LessonCopyService } from '@modules/lesson/service';
-import { TaskCopyService } from '@modules/task/service';
 import { sortBy } from 'lodash';
 
 type BoardCopyParams = {
@@ -64,6 +65,8 @@ export class BoardCopyService {
 		if (status.copyEntity) {
 			boardCopy = status.copyEntity as Board;
 		}
+
+		status = await this.swapLinkedIdsInBoards(status);
 
 		try {
 			await this.boardRepo.save(boardCopy);
@@ -172,6 +175,29 @@ export class BoardCopyService {
 		});
 		boardStatus.elements = updatedElements;
 		return boardStatus;
+	}
+
+	private async swapLinkedIdsInBoards(copyStatus: CopyStatus): Promise<CopyStatus> {
+		const map = new Map<EntityId, EntityId>();
+		const copyDict = this.copyHelperService.buildCopyEntityDict(copyStatus);
+		copyDict.forEach((value, key) => map.set(key, value.id));
+
+		if (copyStatus.copyEntity instanceof Board && copyStatus.originalEntity instanceof Board) {
+			map.set(copyStatus.originalEntity.course.id, copyStatus.copyEntity.course.id);
+		}
+
+		const elements = copyStatus.elements ?? [];
+		const updatedElements = await Promise.all(
+			elements.map(async (el) => {
+				if (el.type === CopyElementType.COLUMNBOARD && el.copyEntity) {
+					el.copyEntity = await this.columnBoardCopyService.swapLinkedIds(el.copyEntity?.id, map);
+				}
+				return el;
+			})
+		);
+
+		copyStatus.elements = updatedElements;
+		return copyStatus;
 	}
 
 	private sortByOriginalOrder(resolved: [number, CopyStatus][]): CopyStatus[] {

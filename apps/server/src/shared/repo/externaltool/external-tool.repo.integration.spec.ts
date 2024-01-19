@@ -1,11 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
-import { EntityManager } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
-import { IFindOptions, Page, SortOrder } from '@shared/domain';
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
-import { cleanupCollections, externalToolEntityFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { ExternalToolSearchQuery } from '@modules/tool';
 import { CustomParameter } from '@modules/tool/common/domain';
 import {
@@ -18,6 +13,13 @@ import {
 } from '@modules/tool/common/enum';
 import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '@modules/tool/external-tool/domain';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Page } from '@shared/domain/domainobject';
+import { IFindOptions, SortOrder } from '@shared/domain/interface';
+
+import { ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
+import { cleanupCollections, externalToolEntityFactory } from '@shared/testing';
+import { LegacyLogger } from '@src/core/logger';
 
 describe('ExternalToolRepo', () => {
 	let module: TestingModule;
@@ -150,11 +152,13 @@ describe('ExternalToolRepo', () => {
 						location: CustomParameterLocation.BODY,
 						regexComment: 'mockComment',
 						isOptional: false,
+						isProtected: false,
 					}),
 				],
 				isHidden: true,
 				openNewTab: true,
 				version: 2,
+				isDeactivated: false,
 			});
 
 			return {

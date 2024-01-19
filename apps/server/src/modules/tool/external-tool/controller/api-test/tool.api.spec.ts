@@ -1,16 +1,22 @@
 import { Loaded } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain';
+import { ColumnBoardNode, ExternalToolElementNodeEntity, SchoolEntity } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
 import {
 	cleanupCollections,
+	columnBoardNodeFactory,
+	contextExternalToolEntityFactory,
+	externalToolElementNodeFactory,
 	externalToolEntityFactory,
 	externalToolFactory,
+	schoolExternalToolEntityFactory,
+	schoolFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@modules/server';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';
@@ -20,8 +26,15 @@ import {
 	CustomParameterTypeParams,
 	ToolConfigType,
 } from '../../../common/enum';
+import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
+import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ExternalToolEntity } from '../../entity';
-import { ExternalToolCreateParams, ExternalToolResponse, ExternalToolSearchListResponse } from '../dto';
+import {
+	ExternalToolCreateParams,
+	ExternalToolMetadataResponse,
+	ExternalToolResponse,
+	ExternalToolSearchListResponse,
+} from '../dto';
 
 describe('ToolController (API)', () => {
 	let app: INestApplication;
@@ -62,6 +75,7 @@ describe('ToolController (API)', () => {
 					displayName: 'User Friendly Name',
 					defaultValue: 'abc',
 					isOptional: false,
+					isProtected: false,
 					type: CustomParameterTypeParams.STRING,
 					regex: 'abc',
 					regexComment: 'Regex accepts "abc" as value.',
@@ -74,6 +88,7 @@ describe('ToolController (API)', () => {
 				baseUrl: 'https://link.to-my-tool.com/:key',
 			},
 			isHidden: false,
+			isDeactivated: false,
 			logoUrl: 'https://link.to-my-logo.com',
 			url: 'https://link.to-my-tool.com',
 			openNewTab: true,
@@ -125,6 +140,7 @@ describe('ToolController (API)', () => {
 							displayName: 'User Friendly Name',
 							defaultValue: 'abc',
 							isOptional: false,
+							isProtected: false,
 							type: CustomParameterTypeParams.STRING,
 							regex: 'abc',
 							regexComment: 'Regex accepts "abc" as value.',
@@ -137,6 +153,7 @@ describe('ToolController (API)', () => {
 						baseUrl: 'https://link.to-my-tool.com/:key',
 					},
 					isHidden: false,
+					isDeactivated: false,
 					logoUrl: 'https://link.to-my-logo.com',
 					url: 'https://link.to-my-tool.com',
 					openNewTab: true,
@@ -355,6 +372,7 @@ describe('ToolController (API)', () => {
 					displayName: 'User Friendly Name',
 					defaultValue: 'abc',
 					isOptional: false,
+					isProtected: false,
 					type: CustomParameterTypeParams.STRING,
 					regex: 'abc',
 					regexComment: 'Regex accepts "abc" as value.',
@@ -367,6 +385,7 @@ describe('ToolController (API)', () => {
 				baseUrl: 'https://link.to-my-tool.com/:key',
 			},
 			isHidden: false,
+			isDeactivated: false,
 			logoUrl: 'https://link.to-my-logo.com',
 			url: 'https://link.to-my-tool.com',
 			openNewTab: true,
@@ -421,6 +440,7 @@ describe('ToolController (API)', () => {
 							displayName: 'User Friendly Name',
 							defaultValue: 'abc',
 							isOptional: false,
+							isProtected: false,
 							type: CustomParameterTypeParams.STRING,
 							regex: 'abc',
 							regexComment: 'Regex accepts "abc" as value.',
@@ -433,6 +453,7 @@ describe('ToolController (API)', () => {
 						baseUrl: 'https://link.to-my-tool.com/:key',
 					},
 					isHidden: false,
+					isDeactivated: false,
 					logoUrl: 'https://link.to-my-logo.com',
 					url: 'https://link.to-my-tool.com',
 					openNewTab: true,
@@ -614,6 +635,91 @@ describe('ToolController (API)', () => {
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
 				expect(response.body).toBeInstanceOf(Buffer);
+			});
+		});
+	});
+
+	describe('[GET] tools/external-tools/:externalToolId/metadata', () => {
+		describe('when user is not authenticated', () => {
+			const setup = () => {
+				const toolId: string = new ObjectId().toHexString();
+
+				return { toolId };
+			};
+
+			it('should return unauthorized', async () => {
+				const { toolId } = setup();
+
+				const response: Response = await testApiClient.get(`${toolId}/metadata`);
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when externalToolId is given ', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
+
+				const school: SchoolEntity = schoolFactory.buildWithId();
+				const schoolExternalToolEntitys: SchoolExternalToolEntity[] = schoolExternalToolEntityFactory.buildList(2, {
+					tool: externalToolEntity,
+					school,
+				});
+
+				const courseTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildList(3, {
+					schoolTool: schoolExternalToolEntitys[0],
+					contextType: ContextExternalToolType.COURSE,
+					contextId: new ObjectId().toHexString(),
+				});
+
+				const boardTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildList(2, {
+					schoolTool: schoolExternalToolEntitys[1],
+					contextType: ContextExternalToolType.BOARD_ELEMENT,
+					contextId: new ObjectId().toHexString(),
+				});
+
+				const board: ColumnBoardNode = columnBoardNodeFactory.buildWithId();
+				const externalToolElements: ExternalToolElementNodeEntity[] = externalToolElementNodeFactory.buildListWithId(
+					2,
+					{
+						contextExternalTool: boardTools[0],
+						parent: board,
+					}
+				);
+
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
+				await em.persistAndFlush([
+					adminAccount,
+					adminUser,
+					school,
+					externalToolEntity,
+					...schoolExternalToolEntitys,
+					...courseTools,
+					...boardTools,
+					board,
+					...externalToolElements,
+				]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
+
+				return { loggedInClient, toolId, externalToolEntity };
+			};
+
+			it('should return the metadata of externalTool', async () => {
+				const { loggedInClient, externalToolEntity } = await setup();
+
+				const response: Response = await loggedInClient.get(`${externalToolEntity.id}/metadata`);
+
+				expect(response.statusCode).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual<ExternalToolMetadataResponse>({
+					schoolExternalToolCount: 2,
+					contextExternalToolCountPerContext: {
+						course: 1,
+						boardElement: 1,
+					},
+				});
 			});
 		});
 	});

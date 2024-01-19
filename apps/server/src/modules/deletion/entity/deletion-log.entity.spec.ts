@@ -1,8 +1,8 @@
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { DomainModel } from '@shared/domain/types';
 import { DeletionLogEntity } from './deletion-log.entity';
-import { DeletionOperationModel } from '../domain/types/deletion-operation-model.enum';
-import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
+import { DeletionOperationModel } from '../domain/types';
 
 describe(DeletionLogEntity.name, () => {
 	beforeAll(async () => {
@@ -14,11 +14,12 @@ describe(DeletionLogEntity.name, () => {
 			const setup = () => {
 				const props = {
 					id: new ObjectId().toHexString(),
-					domain: DeletionDomainModel.USER,
+					domain: DomainModel.USER,
 					operation: DeletionOperationModel.DELETE,
 					modifiedCount: 0,
 					deletedCount: 1,
 					deletionRequestId: new ObjectId(),
+					performedAt: new Date(),
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				};
@@ -49,6 +50,7 @@ describe(DeletionLogEntity.name, () => {
 					modifiedCount: entity.modifiedCount,
 					deletedCount: entity.deletedCount,
 					deletionRequestId: entity.deletionRequestId,
+					performedAt: entity.performedAt,
 					createdAt: entity.createdAt,
 					updatedAt: entity.updatedAt,
 				};

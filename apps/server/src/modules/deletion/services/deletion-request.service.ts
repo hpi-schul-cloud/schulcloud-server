@@ -1,10 +1,9 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DeletionRequestRepo } from '../repo/deletion-request.repo';
+import { Injectable } from '@nestjs/common';
+import { DomainModel, EntityId } from '@shared/domain/types';
 import { DeletionRequest } from '../domain/deletion-request.do';
-import { DeletionDomainModel } from '../domain/types/deletion-domain-model.enum';
-import { DeletionStatusModel } from '../domain/types/deletion-status-model.enum';
+import { DeletionStatusModel } from '../domain/types';
+import { DeletionRequestRepo } from '../repo/deletion-request.repo';
 
 @Injectable()
 export class DeletionRequestService {
@@ -12,7 +11,7 @@ export class DeletionRequestService {
 
 	async createDeletionRequest(
 		targetRefId: EntityId,
-		targetRefDomain: DeletionDomainModel,
+		targetRefDomain: DomainModel,
 		deleteInMinutes = 43200
 	): Promise<{ requestId: EntityId; deletionPlannedAt: Date }> {
 		const dateOfDeletion = new Date();

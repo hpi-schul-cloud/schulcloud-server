@@ -1,12 +1,13 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
-import { EntityId, UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain';
-import { ErrorStatus } from '@modules/video-conference/error/error-status.enum';
 import { UserService } from '@modules/user';
+import { ErrorStatus } from '@modules/video-conference/error/error-status.enum';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { BBBBaseMeetingConfig, BBBMeetingInfoResponse, BBBResponse, BBBRole, BBBService } from '../bbb';
-import { IScopeInfo, ScopeRef, VideoConferenceInfo, VideoConferenceState } from './dto';
-import { VideoConferenceService } from '../service';
-import { PermissionMapping } from '../mapper/video-conference.mapper';
 import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { PermissionMapping } from '../mapper/video-conference.mapper';
+import { VideoConferenceService } from '../service';
+import { ScopeInfo, ScopeRef, VideoConferenceInfo, VideoConferenceState } from './dto';
 
 @Injectable()
 export class VideoConferenceInfoUc {
@@ -27,7 +28,7 @@ export class VideoConferenceInfoUc {
 
 		await this.videoConferenceService.throwOnFeaturesDisabled(user.schoolId);
 
-		const scopeInfo: IScopeInfo = await this.videoConferenceService.getScopeInfo(currentUserId, scope.id, scope.scope);
+		const scopeInfo: ScopeInfo = await this.videoConferenceService.getScopeInfo(currentUserId, scope.id, scope.scope);
 
 		const bbbRole: BBBRole = await this.videoConferenceService.determineBbbRole(
 			currentUserId,

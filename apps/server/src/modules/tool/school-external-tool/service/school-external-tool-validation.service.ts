@@ -21,7 +21,14 @@ export class SchoolExternalToolValidationService {
 			this.checkVersionMatch(schoolExternalTool.toolVersion, loadedExternalTool.version);
 		}
 
-		this.commonToolValidationService.checkCustomParameterEntries(loadedExternalTool, schoolExternalTool);
+		const errors: ValidationError[] = this.commonToolValidationService.validateParameters(
+			loadedExternalTool,
+			schoolExternalTool
+		);
+
+		if (errors.length) {
+			throw errors[0];
+		}
 	}
 
 	private checkVersionMatch(schoolExternalToolVersion: number, externalToolVersion: number): void {

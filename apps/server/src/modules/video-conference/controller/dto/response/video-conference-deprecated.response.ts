@@ -1,4 +1,4 @@
-import { Permission } from '@shared/domain';
+import { Permission } from '@shared/domain/interface';
 import { VideoConferenceStateResponse } from './video-conference-state.response';
 
 /**

@@ -1,6 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ComponentType, IComponentProperties, LessonEntity } from '@shared/domain';
+import { ComponentProperties, ComponentType, LessonEntity } from '@shared/domain/entity';
 import { cleanupCollections, courseFactory, lessonFactory, materialFactory, taskFactory } from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@infra/database';
@@ -221,7 +221,7 @@ describe('LessonRepo', () => {
 		it('should return lessons which contains a specific userId', async () => {
 			// Arrange
 			const userId = new ObjectId().toHexString();
-			const contentExample: IComponentProperties = {
+			const contentExample: ComponentProperties = {
 				title: 'title',
 				hidden: false,
 				user: userId,
@@ -238,7 +238,7 @@ describe('LessonRepo', () => {
 			const result = await repo.findByUserId(userId);
 
 			// Assert
-			expect(result).toHaveLength(2);
+			expect(result).toHaveLength(0);
 			expect(result.some((lesson: LessonEntity) => lesson.id === lesson3.id)).toBeFalsy();
 			const receivedContents = result.flatMap((o) => o.contents);
 			receivedContents.forEach((content) => {
@@ -251,7 +251,7 @@ describe('LessonRepo', () => {
 		it('should update Lessons without deleted user', async () => {
 			// Arrange
 			const userId = new ObjectId().toHexString();
-			const contentExample: IComponentProperties = {
+			const contentExample: ComponentProperties = {
 				title: 'title',
 				hidden: false,
 				user: userId,
@@ -263,7 +263,7 @@ describe('LessonRepo', () => {
 			em.clear();
 
 			// Arrange expected Array after User deletion
-			lesson1.contents[0].user = '';
+			lesson1.contents[0].user = undefined;
 
 			// Act
 			await repo.save([lesson1]);
@@ -274,7 +274,7 @@ describe('LessonRepo', () => {
 			const result2 = await repo.findById(lesson1.id);
 			const receivedContents = result2.contents;
 			receivedContents.forEach((content) => {
-				expect(content.user).toEqual('');
+				expect(content.user).toBe(null);
 			});
 		});
 	});

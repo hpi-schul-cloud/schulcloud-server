@@ -1,3 +1,5 @@
+import { AccountService } from '@modules/account/services/account.service';
+import { AccountDto } from '@modules/account/services/dto/account.dto';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import {
@@ -6,15 +8,16 @@ import {
 	ForbiddenOperationError,
 	ValidationError,
 } from '@shared/common/error';
-import { Account, EntityId, Permission, PermissionService, Role, RoleName, SchoolEntity, User } from '@shared/domain';
+import { Account, Role, SchoolEntity, User } from '@shared/domain/entity';
+import { Permission, RoleName } from '@shared/domain/interface';
+import { PermissionService } from '@shared/domain/service';
+import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
-import { AccountService } from '@modules/account/services/account.service';
-import { AccountDto } from '@modules/account/services/dto/account.dto';
 
-import { BruteForcePrevention } from '@src/imports-from-feathers';
 import { ICurrentUser } from '@modules/authentication';
+import { BruteForcePrevention } from '@src/imports-from-feathers';
 import { ObjectId } from 'bson';
-import { IAccountConfig } from '../account-config';
+import { AccountConfig } from '../account-config';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
@@ -39,7 +42,7 @@ export class AccountUc {
 		private readonly userRepo: UserRepo,
 		private readonly permissionService: PermissionService,
 		private readonly accountValidationService: AccountValidationService,
-		private readonly configService: ConfigService<IAccountConfig, true>
+		private readonly configService: ConfigService<AccountConfig, true>
 	) {}
 
 	/**

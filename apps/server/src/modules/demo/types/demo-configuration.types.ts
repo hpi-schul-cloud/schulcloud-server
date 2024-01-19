@@ -1,6 +1,6 @@
-import { FederalStateNames } from '@modules/legacy-school/types';
-import { LessonCreateDto } from '@modules/lesson/types';
-import { RoleName } from '@shared/domain';
+import { FederalStateNames } from '@modules/legacy-school';
+import { LessonCreateDto } from '@modules/lesson';
+import { RoleName } from '@shared/domain/interface';
 
 export type SchoolConfig = {
 	name: string;

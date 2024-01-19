@@ -5,18 +5,18 @@ import { KeycloakConfigurationUc } from '../uc/keycloak-configuration.uc';
 
 const defaultError = new Error('IDM is not reachable or authentication failed.');
 
-interface IRetryOptions {
+interface RetryOptions {
 	retryCount?: number;
 	retryDelay?: number;
 }
 
-interface IMigrationOptions {
+interface MigrationOptions {
 	skip?: number;
 	query?: string;
 	verbose?: boolean;
 }
 
-interface ICleanOptions {
+interface CleanOptions {
 	pageSize?: number;
 }
 @Console({ command: 'idm', description: 'Prefixes all Identity Management (IDM) related console commands.' })
@@ -74,7 +74,7 @@ export class KeycloakConsole {
 			},
 		],
 	})
-	async clean(options: IRetryOptions & ICleanOptions): Promise<void> {
+	async clean(options: RetryOptions & CleanOptions): Promise<void> {
 		await this.repeatCommand(
 			'clean',
 			async () => {
@@ -96,7 +96,7 @@ export class KeycloakConsole {
 		description: 'Add all seed users to the IDM.',
 		options: KeycloakConsole.retryFlags,
 	})
-	async seed(options: IRetryOptions): Promise<void> {
+	async seed(options: RetryOptions): Promise<void> {
 		await this.repeatCommand(
 			'seed',
 			async () => {
@@ -118,7 +118,7 @@ export class KeycloakConsole {
 		description: 'Configures Keycloak identity providers.',
 		options: [...KeycloakConsole.retryFlags],
 	})
-	async configure(options: IRetryOptions): Promise<void> {
+	async configure(options: RetryOptions): Promise<void> {
 		await this.repeatCommand(
 			'configure',
 			async () => {
@@ -153,7 +153,7 @@ export class KeycloakConsole {
 			},
 		],
 	})
-	async migrate(options: IRetryOptions & IMigrationOptions): Promise<void> {
+	async migrate(options: RetryOptions & MigrationOptions): Promise<void> {
 		await this.repeatCommand(
 			'migrate',
 			async () => {

@@ -4,18 +4,22 @@ import { Action, AuthorizationContext, AuthorizationService } from '@modules/aut
 import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
 import { classFactory } from '@modules/class/domain/testing/factory/class.factory';
-import { LegacySchoolService, SchoolYearService } from '@modules/legacy-school';
+import { SchoolYearService } from '@modules/legacy-school';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
-import { SystemDto, SystemService } from '@modules/system';
+import { School, SchoolService } from '@modules/school/domain';
+import { schoolFactory } from '@modules/school/testing';
+import { LegacySystemService, SystemDto } from '@modules/system';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { LegacySchoolDo, Page, Permission, SchoolYearEntity, SortOrder, User, UserDO } from '@shared/domain';
+import { Page, UserDO } from '@shared/domain/domainobject';
+import { SchoolYearEntity, User } from '@shared/domain/entity';
+import { Permission, SortOrder } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import {
 	groupFactory,
-	legacySchoolDoFactory,
 	roleDtoFactory,
 	schoolYearFactory,
 	setupEntities,
@@ -23,13 +27,14 @@ import {
 	userDoFactory,
 	userFactory,
 } from '@shared/testing';
+import { Logger } from '@src/core/logger';
+import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupTypes } from '../domain';
+import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
 import { ClassInfoDto, ResolvedGroupDto } from './dto';
 import { ClassRootType } from './dto/class-root-type';
 import { GroupUc } from './group.uc';
-import { SchoolYearQueryType } from '../controller/dto/interface';
-import { UnknownQueryTypeLoggableException } from '../loggable';
 
 describe('GroupUc', () => {
 	let module: TestingModule;
@@ -37,12 +42,14 @@ describe('GroupUc', () => {
 
 	let groupService: DeepMocked<GroupService>;
 	let classService: DeepMocked<ClassService>;
-	let systemService: DeepMocked<SystemService>;
+	let systemService: DeepMocked<LegacySystemService>;
 	let userService: DeepMocked<UserService>;
 	let roleService: DeepMocked<RoleService>;
-	let schoolService: DeepMocked<LegacySchoolService>;
+	let schoolService: DeepMocked<SchoolService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	let logger: DeepMocked<Logger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -57,8 +64,8 @@ describe('GroupUc', () => {
 					useValue: createMock<ClassService>(),
 				},
 				{
-					provide: SystemService,
-					useValue: createMock<SystemService>(),
+					provide: LegacySystemService,
+					useValue: createMock<LegacySystemService>(),
 				},
 				{
 					provide: UserService,
@@ -69,8 +76,8 @@ describe('GroupUc', () => {
 					useValue: createMock<RoleService>(),
 				},
 				{
-					provide: LegacySchoolService,
-					useValue: createMock<LegacySchoolService>(),
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 				{
 					provide: AuthorizationService,
@@ -80,18 +87,23 @@ describe('GroupUc', () => {
 					provide: SchoolYearService,
 					useValue: createMock<SchoolYearService>(),
 				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 			],
 		}).compile();
 
 		uc = module.get(GroupUc);
 		groupService = module.get(GroupService);
 		classService = module.get(ClassService);
-		systemService = module.get(SystemService);
+		systemService = module.get(LegacySystemService);
 		userService = module.get(UserService);
 		roleService = module.get(RoleService);
-		schoolService = module.get(LegacySchoolService);
+		schoolService = module.get(SchoolService);
 		authorizationService = module.get(AuthorizationService);
 		schoolYearService = module.get(SchoolYearService);
+		logger = module.get(Logger);
 
 		await setupEntities();
 	});
@@ -107,7 +119,7 @@ describe('GroupUc', () => {
 	describe('findAllClasses', () => {
 		describe('when the user has no permission', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school: School = schoolFactory.build();
 				const user: User = userFactory.buildWithId();
 				const error = new ForbiddenException();
 
@@ -135,7 +147,7 @@ describe('GroupUc', () => {
 
 		describe('when accessing as a normal user', () => {
 			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+				const school: School = schoolFactory.build({ permissions: { teacher: { STUDENT_LIST: true } } });
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const teacherRole: RoleDto = roleDtoFactory.buildWithId({
@@ -200,11 +212,22 @@ describe('GroupUc', () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				classService.findAllByUserId.mockResolvedValueOnce([clazz, successorClass, classWithoutSchoolYear]);
-				groupService.findByUser.mockResolvedValueOnce([group, groupWithSystem]);
+				groupService.findGroupsByUserAndGroupTypes.mockResolvedValueOnce([group, groupWithSystem]);
 				classService.findClassesForSchool.mockResolvedValueOnce([clazz, successorClass, classWithoutSchoolYear]);
-				groupService.findClassesForSchool.mockResolvedValueOnce([group, groupWithSystem]);
+				groupService.findGroupsBySchoolIdAndGroupTypes.mockResolvedValueOnce([group, groupWithSystem]);
 				systemService.findById.mockResolvedValue(system);
 				userService.findById.mockImplementation((userId: string): Promise<UserDO> => {
+					if (userId === teacherUser.id) {
+						return Promise.resolve(teacherUserDo);
+					}
+
+					if (userId === studentUser.id) {
+						return Promise.resolve(studentUserDo);
+					}
+
+					throw new Error();
+				});
+				userService.findByIdOrNull.mockImplementation((userId: string): Promise<UserDO> => {
 					if (userId === teacherUser.id) {
 						return Promise.resolve(teacherUserDo);
 					}
@@ -249,7 +272,7 @@ describe('GroupUc', () => {
 
 				await uc.findAllClasses(teacherUser.id, teacherUser.school.id, SchoolYearQueryType.CURRENT_YEAR);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith<[User, LegacySchoolDo, AuthorizationContext]>(
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith<[User, School, AuthorizationContext]>(
 					teacherUser,
 					school,
 					{
@@ -268,6 +291,26 @@ describe('GroupUc', () => {
 					Permission.CLASS_FULL_ADMIN,
 					Permission.GROUP_FULL_ADMIN,
 				]);
+			});
+
+			describe('when accessing form course as a teacher', () => {
+				it('should call findClassesForSchool method from classService', async () => {
+					const { teacherUser } = setup();
+
+					await uc.findAllClasses(teacherUser.id, teacherUser.school.id, undefined, ClassRequestContext.COURSE);
+
+					expect(classService.findClassesForSchool).toHaveBeenCalled();
+				});
+			});
+
+			describe('when accessing form class overview as a teacher', () => {
+				it('should call findAllByUserId method from classService', async () => {
+					const { teacherUser } = setup();
+
+					await uc.findAllClasses(teacherUser.id, teacherUser.school.id, undefined, ClassRequestContext.CLASS_OVERVIEW);
+
+					expect(classService.findAllByUserId).toHaveBeenCalled();
+				});
 			});
 
 			describe('when no pagination is given', () => {
@@ -293,7 +336,7 @@ describe('GroupUc', () => {
 								name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
 								type: ClassRootType.CLASS,
 								externalSourceName: clazz.source,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								schoolYear: schoolYear.name,
 								isUpgradable: false,
 								studentCount: 2,
@@ -305,7 +348,7 @@ describe('GroupUc', () => {
 									: successorClass.name,
 								type: ClassRootType.CLASS,
 								externalSourceName: successorClass.source,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								schoolYear: nextSchoolYear.name,
 								isUpgradable: false,
 								studentCount: 2,
@@ -317,7 +360,7 @@ describe('GroupUc', () => {
 									: classWithoutSchoolYear.name,
 								type: ClassRootType.CLASS,
 								externalSourceName: classWithoutSchoolYear.source,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								isUpgradable: false,
 								studentCount: 2,
 							},
@@ -325,7 +368,7 @@ describe('GroupUc', () => {
 								id: group.id,
 								name: group.name,
 								type: ClassRootType.GROUP,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								studentCount: 0,
 							},
 							{
@@ -333,12 +376,23 @@ describe('GroupUc', () => {
 								name: groupWithSystem.name,
 								type: ClassRootType.GROUP,
 								externalSourceName: system.displayName,
-								teacherNames: [teacherUser.lastName],
-								studentCount: 1,
+								teacherNames: [],
+								studentCount: 0,
 							},
 						],
 						total: 5,
 					});
+				});
+
+				it('should call group service with allowed group types', async () => {
+					const { teacherUser } = setup();
+
+					await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
+
+					expect(groupService.findGroupsByUserAndGroupTypes).toHaveBeenCalledWith<[UserDO, GroupTypes[]]>(
+						expect.any(UserDO),
+						[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER]
+					);
 				});
 			});
 
@@ -350,6 +404,7 @@ describe('GroupUc', () => {
 						teacherUser.id,
 						teacherUser.school.id,
 						SchoolYearQueryType.CURRENT_YEAR,
+						undefined,
 						undefined,
 						undefined,
 						'externalSourceName',
@@ -365,7 +420,7 @@ describe('GroupUc', () => {
 									: classWithoutSchoolYear.name,
 								type: ClassRootType.CLASS,
 								externalSourceName: classWithoutSchoolYear.source,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								isUpgradable: false,
 								studentCount: 2,
 							},
@@ -374,7 +429,7 @@ describe('GroupUc', () => {
 								name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
 								type: ClassRootType.CLASS,
 								externalSourceName: clazz.source,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								schoolYear: schoolYear.name,
 								isUpgradable: false,
 								studentCount: 2,
@@ -384,14 +439,14 @@ describe('GroupUc', () => {
 								name: groupWithSystem.name,
 								type: ClassRootType.GROUP,
 								externalSourceName: system.displayName,
-								teacherNames: [teacherUser.lastName],
-								studentCount: 1,
+								teacherNames: [],
+								studentCount: 0,
 							},
 							{
 								id: group.id,
 								name: group.name,
 								type: ClassRootType.GROUP,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								studentCount: 0,
 							},
 						],
@@ -408,6 +463,7 @@ describe('GroupUc', () => {
 						teacherUser.id,
 						teacherUser.school.id,
 						SchoolYearQueryType.CURRENT_YEAR,
+						undefined,
 						2,
 						1,
 						'name',
@@ -420,7 +476,7 @@ describe('GroupUc', () => {
 								id: group.id,
 								name: group.name,
 								type: ClassRootType.GROUP,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								studentCount: 0,
 							},
 						],
@@ -448,7 +504,7 @@ describe('GroupUc', () => {
 									: successorClass.name,
 								externalSourceName: successorClass.source,
 								type: ClassRootType.CLASS,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								schoolYear: nextSchoolYear.name,
 								isUpgradable: false,
 								studentCount: 2,
@@ -489,8 +545,8 @@ describe('GroupUc', () => {
 		});
 
 		describe('when accessing as a user with elevated permission', () => {
-			const setup = () => {
-				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
+			const setup = (generateClasses = false) => {
+				const school: School = schoolFactory.build();
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const { adminUser } = UserAndAccountTestFactory.buildAdmin();
@@ -518,6 +574,15 @@ describe('GroupUc', () => {
 					roles: [{ id: studentUser.roles[0].id, name: studentUser.roles[0].name }],
 				});
 				const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
+				let clazzes: Class[] = [];
+				if (generateClasses) {
+					clazzes = classFactory.buildList(11, {
+						name: 'A',
+						teacherIds: [teacherUser.id],
+						source: 'LDAP',
+						year: schoolYear.id,
+					});
+				}
 				const clazz: Class = classFactory.build({
 					name: 'A',
 					teacherIds: [teacherUser.id],
@@ -546,11 +611,26 @@ describe('GroupUc', () => {
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(adminUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
-				classService.findClassesForSchool.mockResolvedValueOnce([clazz]);
-				groupService.findClassesForSchool.mockResolvedValueOnce([group, groupWithSystem]);
+				classService.findClassesForSchool.mockResolvedValueOnce([...clazzes, clazz]);
+				groupService.findGroupsBySchoolIdAndGroupTypes.mockResolvedValueOnce([group, groupWithSystem]);
 				systemService.findById.mockResolvedValue(system);
 
 				userService.findById.mockImplementation((userId: string): Promise<UserDO> => {
+					if (userId === teacherUser.id) {
+						return Promise.resolve(teacherUserDo);
+					}
+
+					if (userId === studentUser.id) {
+						return Promise.resolve(studentUserDo);
+					}
+
+					if (userId === adminUser.id) {
+						return Promise.resolve(adminUserDo);
+					}
+
+					throw new Error();
+				});
+				userService.findByIdOrNull.mockImplementation((userId: string): Promise<UserDO> => {
 					if (userId === teacherUser.id) {
 						return Promise.resolve(teacherUserDo);
 					}
@@ -595,7 +675,7 @@ describe('GroupUc', () => {
 
 				await uc.findAllClasses(adminUser.id, adminUser.school.id);
 
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith<[User, LegacySchoolDo, AuthorizationContext]>(
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith<[User, School, AuthorizationContext]>(
 					adminUser,
 					school,
 					{
@@ -618,7 +698,7 @@ describe('GroupUc', () => {
 
 			describe('when no pagination is given', () => {
 				it('should return all classes sorted by name', async () => {
-					const { adminUser, teacherUser, clazz, group, groupWithSystem, system, schoolYear } = setup();
+					const { adminUser, clazz, group, groupWithSystem, system, schoolYear } = setup();
 
 					const result: Page<ClassInfoDto> = await uc.findAllClasses(adminUser.id, adminUser.school.id);
 
@@ -629,7 +709,7 @@ describe('GroupUc', () => {
 								name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
 								type: ClassRootType.CLASS,
 								externalSourceName: clazz.source,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								schoolYear: schoolYear.name,
 								isUpgradable: false,
 								studentCount: 2,
@@ -638,7 +718,7 @@ describe('GroupUc', () => {
 								id: group.id,
 								name: group.name,
 								type: ClassRootType.GROUP,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								studentCount: 0,
 							},
 							{
@@ -646,22 +726,34 @@ describe('GroupUc', () => {
 								name: groupWithSystem.name,
 								type: ClassRootType.GROUP,
 								externalSourceName: system.displayName,
-								teacherNames: [teacherUser.lastName],
-								studentCount: 1,
+								teacherNames: [],
+								studentCount: 0,
 							},
 						],
 						total: 3,
 					});
 				});
+
+				it('should call group service with allowed group types', async () => {
+					const { teacherUser } = setup();
+
+					await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
+
+					expect(groupService.findGroupsBySchoolIdAndGroupTypes).toHaveBeenCalledWith<[EntityId, GroupTypes[]]>(
+						teacherUser.school.id,
+						[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER]
+					);
+				});
 			});
 
 			describe('when sorting by external source name in descending order', () => {
 				it('should return all classes sorted by external source name in descending order', async () => {
-					const { adminUser, teacherUser, clazz, group, groupWithSystem, system, schoolYear } = setup();
+					const { adminUser, clazz, group, groupWithSystem, system, schoolYear } = setup();
 
 					const result: Page<ClassInfoDto> = await uc.findAllClasses(
 						adminUser.id,
 						adminUser.school.id,
+						undefined,
 						undefined,
 						undefined,
 						undefined,
@@ -676,7 +768,7 @@ describe('GroupUc', () => {
 								name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
 								type: ClassRootType.CLASS,
 								externalSourceName: clazz.source,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								schoolYear: schoolYear.name,
 								isUpgradable: false,
 								studentCount: 2,
@@ -686,14 +778,14 @@ describe('GroupUc', () => {
 								name: groupWithSystem.name,
 								type: ClassRootType.GROUP,
 								externalSourceName: system.displayName,
-								teacherNames: [teacherUser.lastName],
-								studentCount: 1,
+								teacherNames: [],
+								studentCount: 0,
 							},
 							{
 								id: group.id,
 								name: group.name,
 								type: ClassRootType.GROUP,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								studentCount: 0,
 							},
 						],
@@ -704,11 +796,12 @@ describe('GroupUc', () => {
 
 			describe('when using pagination', () => {
 				it('should return the selected page', async () => {
-					const { adminUser, teacherUser, group } = setup();
+					const { adminUser, group } = setup();
 
 					const result: Page<ClassInfoDto> = await uc.findAllClasses(
 						adminUser.id,
 						adminUser.school.id,
+						undefined,
 						undefined,
 						1,
 						1,
@@ -722,12 +815,153 @@ describe('GroupUc', () => {
 								id: group.id,
 								name: group.name,
 								type: ClassRootType.GROUP,
-								teacherNames: [teacherUser.lastName],
+								teacherNames: [],
 								studentCount: 0,
 							},
 						],
 						total: 3,
 					});
+				});
+
+				it('should return classes with expected limit', async () => {
+					const { adminUser } = setup(true);
+
+					const result: Page<ClassInfoDto> = await uc.findAllClasses(
+						adminUser.id,
+						adminUser.school.id,
+						undefined,
+						undefined,
+						0,
+						5
+					);
+
+					expect(result.data.length).toEqual(5);
+				});
+
+				it('should return all classes without limit', async () => {
+					const { adminUser } = setup(true);
+
+					const result: Page<ClassInfoDto> = await uc.findAllClasses(
+						adminUser.id,
+						adminUser.school.id,
+						undefined,
+						undefined,
+						0,
+						-1
+					);
+
+					expect(result.data.length).toEqual(14);
+				});
+			});
+		});
+
+		describe('when class has a user referenced which is not existing', () => {
+			const setup = () => {
+				const school: School = schoolFactory.build();
+				const notFoundReferenceId = new ObjectId().toHexString();
+				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+				const teacherRole: RoleDto = roleDtoFactory.buildWithId({
+					id: teacherUser.roles[0].id,
+					name: teacherUser.roles[0].name,
+				});
+
+				const teacherUserDo: UserDO = userDoFactory.buildWithId({
+					id: teacherUser.id,
+					lastName: teacherUser.lastName,
+					roles: [{ id: teacherUser.roles[0].id, name: teacherUser.roles[0].name }],
+				});
+
+				const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
+				const clazz: Class = classFactory.build({
+					name: 'A',
+					teacherIds: [teacherUser.id, notFoundReferenceId],
+					source: 'LDAP',
+					year: schoolYear.id,
+				});
+				const system: SystemDto = new SystemDto({
+					id: new ObjectId().toHexString(),
+					displayName: 'External System',
+					type: 'oauth2',
+				});
+				const group: Group = groupFactory.build({
+					name: 'B',
+					users: [
+						{ userId: teacherUser.id, roleId: teacherUser.roles[0].id },
+						{ userId: notFoundReferenceId, roleId: teacherUser.roles[0].id },
+					],
+					externalSource: undefined,
+				});
+
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
+				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
+				classService.findAllByUserId.mockResolvedValueOnce([clazz]);
+				groupService.findGroupsByUserAndGroupTypes.mockResolvedValueOnce([group]);
+				systemService.findById.mockResolvedValue(system);
+
+				userService.findById.mockImplementation((userId: string): Promise<UserDO> => {
+					if (userId === teacherUser.id) {
+						return Promise.resolve(teacherUserDo);
+					}
+
+					throw new Error();
+				});
+				userService.findByIdOrNull.mockImplementation((userId: string): Promise<UserDO | null> => {
+					if (userId === teacherUser.id) {
+						return Promise.resolve(teacherUserDo);
+					}
+
+					if (userId === notFoundReferenceId) {
+						return Promise.resolve(null);
+					}
+
+					throw new Error();
+				});
+				roleService.findById.mockImplementation((roleId: string): Promise<RoleDto> => {
+					if (roleId === teacherUser.roles[0].id) {
+						return Promise.resolve(teacherRole);
+					}
+
+					throw new Error();
+				});
+				schoolYearService.findById.mockResolvedValue(schoolYear);
+
+				return {
+					teacherUser,
+					clazz,
+					group,
+					notFoundReferenceId,
+					schoolYear,
+				};
+			};
+
+			it('should return class without missing user', async () => {
+				const { teacherUser, clazz, group, schoolYear } = setup();
+
+				const result = await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
+
+				expect(result).toEqual<Page<ClassInfoDto>>({
+					data: [
+						{
+							id: clazz.id,
+							name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
+							type: ClassRootType.CLASS,
+							externalSourceName: clazz.source,
+							teacherNames: [],
+							schoolYear: schoolYear.name,
+							isUpgradable: false,
+							studentCount: 2,
+						},
+						{
+							id: group.id,
+							name: group.name,
+							type: ClassRootType.GROUP,
+							teacherNames: [],
+							studentCount: 0,
+						},
+					],
+					total: 2,
 				});
 			});
 		});
@@ -761,7 +995,7 @@ describe('GroupUc', () => {
 
 		describe('when the group is not found', () => {
 			const setup = () => {
-				groupService.findById.mockRejectedValue(new NotFoundLoggableException(Group.name, 'id', 'groupId'));
+				groupService.findById.mockRejectedValue(new NotFoundLoggableException(Group.name, { id: 'groupId' }));
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
 
@@ -815,8 +1049,10 @@ describe('GroupUc', () => {
 				groupService.findById.mockResolvedValueOnce(group);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
 				userService.findById.mockResolvedValueOnce(teacherUserDo);
+				userService.findByIdOrNull.mockResolvedValueOnce(teacherUserDo);
 				roleService.findById.mockResolvedValueOnce(teacherRole);
 				userService.findById.mockResolvedValueOnce(studentUserDo);
+				userService.findByIdOrNull.mockResolvedValueOnce(studentUserDo);
 				roleService.findById.mockResolvedValueOnce(studentRole);
 
 				return {

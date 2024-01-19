@@ -1,7 +1,9 @@
 import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
-import { Counted, Course, EntityId, IFindOptions, SchoolEntity, User } from '@shared/domain';
+import { Course, SchoolEntity, User } from '@shared/domain/entity';
+import { IFindOptions } from '@shared/domain/interface';
+import { Counted, EntityId } from '@shared/domain/types';
 import { CourseCreateDto } from '@src/modules/learnroom/types';
 import { BaseRepo } from '../base.repo';
 import { Scope } from '../scope';

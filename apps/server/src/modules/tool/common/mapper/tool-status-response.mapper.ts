@@ -1,14 +1,16 @@
-import { ToolConfigurationStatusResponse } from '../../context-external-tool/controller/dto';
-import { ToolConfigurationStatus } from '../enum';
-
-export const statusMapping: Record<ToolConfigurationStatus, ToolConfigurationStatusResponse> = {
-	[ToolConfigurationStatus.LATEST]: ToolConfigurationStatusResponse.LATEST,
-	[ToolConfigurationStatus.OUTDATED]: ToolConfigurationStatusResponse.OUTDATED,
-	[ToolConfigurationStatus.UNKNOWN]: ToolConfigurationStatusResponse.UNKNOWN,
-};
+import { ContextExternalToolConfigurationStatusResponse } from '../controller/dto';
+import { ContextExternalToolConfigurationStatus } from '../domain';
 
 export class ToolStatusResponseMapper {
-	static mapToResponse(status: ToolConfigurationStatus): ToolConfigurationStatusResponse {
-		return statusMapping[status];
+	static mapToResponse(status: ContextExternalToolConfigurationStatus): ContextExternalToolConfigurationStatusResponse {
+		const configurationStatus: ContextExternalToolConfigurationStatusResponse =
+			new ContextExternalToolConfigurationStatusResponse({
+				isOutdatedOnScopeSchool: status.isOutdatedOnScopeSchool,
+				isOutdatedOnScopeContext: status.isOutdatedOnScopeContext,
+				isIncompleteOnScopeContext: status.isIncompleteOnScopeContext,
+				isDeactivated: status.isDeactivated,
+			});
+
+		return configurationStatus;
 	}
 }

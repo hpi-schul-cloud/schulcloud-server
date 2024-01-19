@@ -1,7 +1,9 @@
 import { AuthorizationService } from '@modules/authorization';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId, Permission, User } from '@shared/domain';
+import { User } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { DemoSchoolCreateLoggable } from '../loggable';
 import { DemoSchoolService } from '../service/demo-school.service';

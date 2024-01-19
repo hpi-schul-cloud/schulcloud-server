@@ -1,14 +1,14 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { ErrorUtils } from '@src/core/error/utils';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { Observable, firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { URL, URLSearchParams } from 'url';
-import { CalendarMapper } from '../mapper/calendar.mapper';
 import { CalendarEventDto } from '../dto/calendar-event.dto';
-import { ICalendarEvent } from '../interface/calendar-event.interface';
+import { CalendarEvent } from '../interface/calendar-event.interface';
+import { CalendarMapper } from '../mapper/calendar.mapper';
 
 @Injectable()
 export class CalendarService {
@@ -34,7 +34,7 @@ export class CalendarService {
 				timeout: this.timeoutMs,
 			})
 		)
-			.then((resp: AxiosResponse<ICalendarEvent>) => this.calendarMapper.mapToDto(resp.data))
+			.then((resp: AxiosResponse<CalendarEvent>) => this.calendarMapper.mapToDto(resp.data))
 			.catch((error) => {
 				throw new InternalServerErrorException(
 					null,
@@ -47,7 +47,7 @@ export class CalendarService {
 		path: string,
 		queryParams: URLSearchParams,
 		config: AxiosRequestConfig
-	): Observable<AxiosResponse<ICalendarEvent>> {
+	): Observable<AxiosResponse<CalendarEvent>> {
 		const url: URL = new URL(this.baseURL);
 		url.pathname = path;
 		url.search = queryParams.toString();

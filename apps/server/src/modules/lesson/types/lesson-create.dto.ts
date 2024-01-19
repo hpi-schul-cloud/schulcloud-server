@@ -1,4 +1,5 @@
-import { EntityId, IComponentProperties } from '@shared/domain';
+import { ComponentProperties } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 
 export type LessonCreateDto = {
 	id?: EntityId;
@@ -7,7 +8,7 @@ export type LessonCreateDto = {
 	courseId: EntityId;
 	// courseGroup?: CourseGroup;
 	position?: number;
-	contents?: IComponentProperties[] | [];
+	contents?: ComponentProperties[] | [];
 	materialIds?: EntityId[];
 	taskIds?: EntityId[];
 };

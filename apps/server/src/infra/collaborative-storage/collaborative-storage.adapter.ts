@@ -1,10 +1,10 @@
 import { TeamPermissionsDto } from '@modules/collaborative-storage/services/dto/team-permissions.dto';
 import { TeamDto } from '@modules/collaborative-storage/services/dto/team.dto';
+import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { Inject, Injectable } from '@nestjs/common';
 import { LegacyLogger } from '@src/core/logger';
-import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { CollaborativeStorageAdapterMapper } from './mapper/collaborative-storage-adapter.mapper';
-import { ICollaborativeStorageStrategy } from './strategy/base.interface.strategy';
+import { CollaborativeStorageStrategy } from './strategy/base.interface.strategy';
 
 /**
  * Provides an Adapter to an external collaborative storage.
@@ -12,10 +12,10 @@ import { ICollaborativeStorageStrategy } from './strategy/base.interface.strateg
  */
 @Injectable()
 export class CollaborativeStorageAdapter {
-	strategy: ICollaborativeStorageStrategy;
+	strategy: CollaborativeStorageStrategy;
 
 	constructor(
-		@Inject('ICollaborativeStorageStrategy') strategy: ICollaborativeStorageStrategy,
+		@Inject('CollaborativeStorageStrategy') strategy: CollaborativeStorageStrategy,
 		private mapper: CollaborativeStorageAdapterMapper,
 		private logger: LegacyLogger
 	) {
@@ -27,7 +27,7 @@ export class CollaborativeStorageAdapter {
 	 * Set the strategy that should be used by the adapter
 	 * @param strategy The strategy
 	 */
-	setStrategy(strategy: ICollaborativeStorageStrategy) {
+	setStrategy(strategy: CollaborativeStorageStrategy) {
 		this.strategy = strategy;
 	}
 

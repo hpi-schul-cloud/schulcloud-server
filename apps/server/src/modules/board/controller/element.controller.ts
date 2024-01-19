@@ -1,8 +1,10 @@
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import {
 	Body,
 	Controller,
 	Delete,
 	ForbiddenException,
+	Get,
 	HttpCode,
 	NotFoundException,
 	Param,
@@ -12,13 +14,14 @@ import {
 } from '@nestjs/common';
 import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser, Authenticate, CurrentUser } from '@modules/authentication';
 import { CardUc } from '../uc';
 import { ElementUc } from '../uc/element.uc';
 import {
 	AnyContentElementResponse,
 	ContentElementUrlParams,
 	CreateSubmissionItemBodyParams,
+	DrawingElementContentBody,
+	DrawingElementResponse,
 	ExternalToolElementContentBody,
 	ExternalToolElementResponse,
 	FileElementContentBody,
@@ -67,7 +70,8 @@ export class ElementController {
 		RichTextElementContentBody,
 		SubmissionContainerElementContentBody,
 		ExternalToolElementContentBody,
-		LinkElementContentBody
+		LinkElementContentBody,
+		DrawingElementContentBody
 	)
 	@ApiResponse({
 		status: 201,
@@ -78,6 +82,7 @@ export class ElementController {
 				{ $ref: getSchemaPath(LinkElementResponse) },
 				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
+				{ $ref: getSchemaPath(DrawingElementResponse) },
 			],
 		},
 	})
@@ -136,5 +141,18 @@ export class ElementController {
 		const response = mapper.mapSubmissionItemToResponse(submissionItem);
 
 		return response;
+	}
+
+	@ApiOperation({ summary: 'Check if user has read permission for any board element.' })
+	@ApiResponse({ status: 200 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Get(':contentElementId/permission')
+	async readPermission(
+		@Param() urlParams: ContentElementUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.elementUc.checkElementReadPermission(currentUser.userId, urlParams.contentElementId);
 	}
 }

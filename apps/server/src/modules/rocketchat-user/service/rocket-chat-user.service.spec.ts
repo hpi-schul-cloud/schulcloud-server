@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { RocketChatUserService } from './rocket-chat-user.service';
 import { RocketChatUserRepo } from '../repo';
 import { rocketChatUserFactory } from '../domain/testing/rocket-chat-user.factory';
@@ -19,6 +20,10 @@ describe(RocketChatUserService.name, () => {
 				{
 					provide: RocketChatUserRepo,
 					useValue: createMock<RocketChatUserRepo>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
@@ -62,7 +67,7 @@ describe(RocketChatUserService.name, () => {
 		});
 	});
 
-	describe('deleteUserDataFromClasses', () => {
+	describe('delete RocketChatUser', () => {
 		describe('when deleting rocketChatUser', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();

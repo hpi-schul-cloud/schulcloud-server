@@ -1,4 +1,4 @@
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { CrudOperation } from '@shared/types';
 import { LogMessage, Loggable } from '@src/core/logger';
 

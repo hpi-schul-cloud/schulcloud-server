@@ -1,8 +1,8 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { MailConfig } from './interfaces/mail-config';
 import { Mail } from './mail.interface';
-import { IMailConfig } from './interfaces/mail-config';
 
 interface MailServiceOptions {
 	exchange: string;
@@ -16,9 +16,9 @@ export class MailService {
 	constructor(
 		private readonly amqpConnection: AmqpConnection,
 		@Inject('MAIL_SERVICE_OPTIONS') private readonly options: MailServiceOptions,
-		private readonly configService: ConfigService<IMailConfig, true>
+		private readonly configService: ConfigService<MailConfig, true>
 	) {
-		this.domainBlacklist = this.configService.get<string[]>('ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS');
+		this.domainBlacklist = this.configService.get<string[]>('BLOCKLIST_OF_EMAIL_DOMAINS');
 	}
 
 	public async send(data: Mail): Promise<void> {

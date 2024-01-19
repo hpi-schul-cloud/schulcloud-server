@@ -6,8 +6,9 @@ import {
 	contextExternalToolFactory,
 	externalToolFactory,
 	schoolExternalToolFactory,
+	toolConfigurationStatusFactory,
 } from '@shared/testing';
-import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
+import { ToolConfigType } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { BasicToolConfig, ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
@@ -17,9 +18,9 @@ import { ToolStatusOutdatedLoggableException } from '../error';
 import { LaunchRequestMethod, ToolLaunchData, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import {
 	BasicToolLaunchStrategy,
-	IToolLaunchParams,
 	Lti11ToolLaunchStrategy,
 	OAuth2ToolLaunchStrategy,
+	ToolLaunchParams,
 } from './launch-strategy';
 import { ToolLaunchService } from './tool-launch.service';
 import { ToolVersionService } from '../../context-external-tool/service/tool-version-service';
@@ -98,7 +99,7 @@ describe('ToolLaunchService', () => {
 					openNewTab: false,
 				});
 
-				const launchParams: IToolLaunchParams = {
+				const launchParams: ToolLaunchParams = {
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
@@ -107,7 +108,13 @@ describe('ToolLaunchService', () => {
 				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
 				externalToolService.findById.mockResolvedValue(externalTool);
 				basicToolLaunchStrategy.createLaunchData.mockResolvedValue(launchDataDO);
-				toolVersionService.determineToolConfigurationStatus.mockResolvedValueOnce(ToolConfigurationStatus.LATEST);
+				toolVersionService.determineToolConfigurationStatus.mockReturnValueOnce(
+					toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeContext: false,
+						isOutdatedOnScopeSchool: false,
+						isIncompleteOnScopeContext: false,
+					})
+				);
 
 				return {
 					launchDataDO,
@@ -165,7 +172,7 @@ describe('ToolLaunchService', () => {
 				const externalTool: ExternalTool = externalToolFactory.build();
 				externalTool.config.type = 'unknown' as ToolConfigType;
 
-				const launchParams: IToolLaunchParams = {
+				const launchParams: ToolLaunchParams = {
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
@@ -173,7 +180,13 @@ describe('ToolLaunchService', () => {
 
 				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
 				externalToolService.findById.mockResolvedValue(externalTool);
-				toolVersionService.determineToolConfigurationStatus.mockResolvedValueOnce(ToolConfigurationStatus.LATEST);
+				toolVersionService.determineToolConfigurationStatus.mockReturnValueOnce(
+					toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeContext: false,
+						isOutdatedOnScopeSchool: false,
+						isIncompleteOnScopeContext: false,
+					})
+				);
 
 				return {
 					launchParams,
@@ -189,7 +202,7 @@ describe('ToolLaunchService', () => {
 			});
 		});
 
-		describe('when tool configuration status is not LATEST', () => {
+		describe('when tool configuration status is not launchable', () => {
 			const setup = () => {
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 				const contextExternalTool: ContextExternalTool = contextExternalToolFactory
@@ -207,7 +220,7 @@ describe('ToolLaunchService', () => {
 					openNewTab: false,
 				});
 
-				const launchParams: IToolLaunchParams = {
+				const launchParams: ToolLaunchParams = {
 					externalTool,
 					schoolExternalTool,
 					contextExternalTool,
@@ -218,7 +231,14 @@ describe('ToolLaunchService', () => {
 				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
 				externalToolService.findById.mockResolvedValue(externalTool);
 				basicToolLaunchStrategy.createLaunchData.mockResolvedValue(launchDataDO);
-				toolVersionService.determineToolConfigurationStatus.mockResolvedValueOnce(ToolConfigurationStatus.OUTDATED);
+				toolVersionService.determineToolConfigurationStatus.mockReturnValueOnce(
+					toolConfigurationStatusFactory.build({
+						isOutdatedOnScopeContext: true,
+						isOutdatedOnScopeSchool: true,
+						isIncompleteOnScopeContext: false,
+						isDeactivated: true,
+					})
+				);
 
 				return {
 					launchParams,
@@ -232,7 +252,9 @@ describe('ToolLaunchService', () => {
 
 				const func = () => service.getLaunchData(userId, launchParams.contextExternalTool);
 
-				await expect(func).rejects.toThrow(new ToolStatusOutdatedLoggableException(userId, contextExternalToolId));
+				await expect(func).rejects.toThrow(
+					new ToolStatusOutdatedLoggableException(userId, contextExternalToolId, true, true, true)
+				);
 			});
 		});
 	});

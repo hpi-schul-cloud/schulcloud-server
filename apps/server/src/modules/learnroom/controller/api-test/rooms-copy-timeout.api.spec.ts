@@ -1,9 +1,12 @@
+import { createMock } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ICurrentUser } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain';
-import { ICurrentUser } from '@modules/authentication';
+import { Permission } from '@shared/domain/interface';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -12,11 +15,8 @@ import {
 	roleFactory,
 	userFactory,
 } from '@shared/testing';
-import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { Request } from 'express';
 import request from 'supertest';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { createMock } from '@golevelup/ts-jest';
 
 // config must be set outside before the server module is importat, otherwise the configuration is already set
 const configBefore = Configuration.toObject({ plainSecrets: true });

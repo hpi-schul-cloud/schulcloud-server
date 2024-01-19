@@ -12,7 +12,7 @@ import {
 	AutoSchoolNumberStrategy,
 } from '../auto-parameter-strategy';
 import { BasicToolLaunchStrategy } from './basic-tool-launch.strategy';
-import { IToolLaunchParams } from './tool-launch-params.interface';
+import { ToolLaunchParams } from './tool-launch-params.interface';
 
 describe('BasicToolLaunchStrategy', () => {
 	let module: TestingModule;
@@ -118,7 +118,7 @@ describe('BasicToolLaunchStrategy', () => {
 			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
 			const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
 
-			const data: IToolLaunchParams = {
+			const data: ToolLaunchParams = {
 				contextExternalTool,
 				schoolExternalTool,
 				externalTool,

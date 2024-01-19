@@ -1,10 +1,11 @@
 import { GetFile, S3ClientAdapter } from '@infra/s3-client';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
-import { subClass } from 'gm';
+import m, { subClass } from 'gm';
 import { PassThrough } from 'stream';
-import { PreviewFileOptions, PreviewOptions, PreviewResponseMessage } from './interface';
+import { PreviewFileOptions, PreviewInputMimeTypes, PreviewOptions, PreviewResponseMessage } from './interface';
 import { PreviewActionsLoggable } from './loggable/preview-actions.loggable';
+import { PreviewNotPossibleException } from './loggable/preview-exception';
 import { PreviewGeneratorBuilder } from './preview-generator.builder';
 
 @Injectable()
@@ -16,22 +17,38 @@ export class PreviewGeneratorService {
 	}
 
 	public async generatePreview(params: PreviewFileOptions): Promise<PreviewResponseMessage> {
-		this.logger.info(new PreviewActionsLoggable('PreviewGeneratorService.generatePreview:start', params));
-		const { originFilePath, previewFilePath, previewOptions } = params;
+		try {
+			this.logger.info(new PreviewActionsLoggable('PreviewGeneratorService.generatePreview:start', params));
+			const { originFilePath, previewFilePath, previewOptions } = params;
 
-		const original = await this.downloadOriginFile(originFilePath);
-		const preview = this.resizeAndConvert(original, previewOptions);
+			const original = await this.downloadOriginFile(originFilePath);
 
-		const file = PreviewGeneratorBuilder.buildFile(preview, params.previewOptions);
+			this.checkIfPreviewPossible(original, params);
 
-		await this.storageClient.create(previewFilePath, file);
+			const preview = await this.resizeAndConvert(original, previewOptions);
+			const file = PreviewGeneratorBuilder.buildFile(preview, params.previewOptions);
 
-		this.logger.info(new PreviewActionsLoggable('PreviewGeneratorService.generatePreview:end', params));
+			await this.storageClient.create(previewFilePath, file);
 
-		return {
-			previewFilePath,
-			status: true,
-		};
+			this.logger.info(new PreviewActionsLoggable('PreviewGeneratorService.generatePreview:end', params));
+
+			return {
+				previewFilePath,
+				status: true,
+			};
+		} catch (error) {
+			throw new PreviewNotPossibleException(params, error as Error);
+		}
+	}
+
+	private checkIfPreviewPossible(original: GetFile, params: PreviewFileOptions): void | UnprocessableEntityException {
+		const isPreviewPossible =
+			original.contentType && Object.values<string>(PreviewInputMimeTypes).includes(original.contentType);
+
+		if (!isPreviewPossible) {
+			this.logger.warning(new PreviewActionsLoggable('PreviewGeneratorService.previewNotPossible', params));
+			throw new UnprocessableEntityException('Unsupported file type for preview generation');
+		}
 	}
 
 	private async downloadOriginFile(pathToFile: string): Promise<GetFile> {
@@ -40,17 +57,55 @@ export class PreviewGeneratorService {
 		return file;
 	}
 
-	private resizeAndConvert(original: GetFile, previewParams: PreviewOptions): PassThrough {
+	private async resizeAndConvert(original: GetFile, previewParams: PreviewOptions): Promise<PassThrough> {
 		const { format, width } = previewParams;
 
 		const preview = this.imageMagick(original.data);
+
+		if (original.contentType === PreviewInputMimeTypes.APPLICATION_PDF) {
+			preview.selectFrame(0);
+		}
+
+		if (original.contentType === PreviewInputMimeTypes.IMAGE_GIF) {
+			preview.coalesce();
+		}
 
 		if (width) {
 			preview.resize(width, undefined, '>');
 		}
 
-		const result = preview.stream(format);
+		return this.convert(preview, format);
+	}
 
-		return result;
+	private convert(preview: m.State, format: string): Promise<PassThrough> {
+		const promise = new Promise<PassThrough>((resolve, reject) => {
+			preview.stream(format, (err, stdout, stderr) => {
+				if (err) {
+					reject(err);
+				}
+
+				const throughStream = new PassThrough();
+				stdout.pipe(throughStream);
+				stdout.on('data', () => {
+					resolve(throughStream);
+				});
+
+				const errorChunks: Array<Uint8Array> = [];
+				stderr.on('data', (chunk: Uint8Array) => {
+					errorChunks.push(chunk);
+				});
+
+				stderr.on('end', () => {
+					let errorMessage = '';
+					Buffer.concat(errorChunks).forEach((chunk) => {
+						errorMessage += String.fromCharCode(chunk);
+					});
+
+					reject(new Error(errorMessage));
+				});
+			});
+		});
+
+		return promise;
 	}
 }

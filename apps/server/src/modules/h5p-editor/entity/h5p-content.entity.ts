@@ -2,7 +2,8 @@ import { IContentMetadata, ILibraryName } from '@lumieducation/h5p-server';
 import { IContentAuthor, IContentChange } from '@lumieducation/h5p-server/build/src/types';
 import { Embeddable, Embedded, Entity, Enum, Index, JsonType, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseEntityWithTimestamps, EntityId } from '@shared/domain';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 
 @Embeddable()
 export class ContentMetadata implements IContentMetadata {
@@ -106,7 +107,7 @@ export enum H5PContentParentType {
 	'Lesson' = 'lessons',
 }
 
-export interface IH5PContentProperties {
+export interface H5PContentProperties {
 	creatorId: EntityId;
 	parentType: H5PContentParentType;
 	parentId: EntityId;
@@ -149,7 +150,7 @@ export class H5PContent extends BaseEntityWithTimestamps {
 	@Property({ type: JsonType })
 	content: unknown;
 
-	constructor({ parentType, parentId, creatorId, schoolId, metadata, content }: IH5PContentProperties) {
+	constructor({ parentType, parentId, creatorId, schoolId, metadata, content }: H5PContentProperties) {
 		super();
 
 		this.parentType = parentType;

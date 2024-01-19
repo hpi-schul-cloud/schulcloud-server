@@ -1,8 +1,11 @@
 import { BoardDoAuthorizableService } from '@modules/board';
+
+import { LessonService } from '@modules/lesson';
 import { ContextExternalToolAuthorizableService } from '@modules/tool';
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { BaseDO, EntityId } from '@shared/domain';
 import { AuthorizableObject } from '@shared/domain/domain-object';
+import { BaseDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import {
 	CourseGroupRepo,
 	CourseRepo,
@@ -13,7 +16,6 @@ import {
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
-import { LessonService } from '@modules/lesson';
 import { AuthorizableReferenceType } from '../type';
 
 type RepoType =
@@ -29,14 +31,14 @@ type RepoType =
 	| ContextExternalToolAuthorizableService
 	| LessonService;
 
-interface IRepoLoader {
+interface RepoLoader {
 	repo: RepoType;
 	populate?: boolean;
 }
 
 @Injectable()
 export class ReferenceLoader {
-	private repos: Map<AuthorizableReferenceType, IRepoLoader> = new Map();
+	private repos: Map<AuthorizableReferenceType, RepoLoader> = new Map();
 
 	constructor(
 		private readonly userRepo: UserRepo,
@@ -66,7 +68,7 @@ export class ReferenceLoader {
 		});
 	}
 
-	private resolveRepo(type: AuthorizableReferenceType): IRepoLoader {
+	private resolveRepo(type: AuthorizableReferenceType): RepoLoader {
 		const repo = this.repos.get(type);
 		if (repo) {
 			return repo;
@@ -78,7 +80,7 @@ export class ReferenceLoader {
 		objectName: AuthorizableReferenceType,
 		objectId: EntityId
 	): Promise<AuthorizableObject | BaseDO> {
-		const repoLoader: IRepoLoader = this.resolveRepo(objectName);
+		const repoLoader: RepoLoader = this.resolveRepo(objectName);
 
 		let object: AuthorizableObject | BaseDO;
 		if (repoLoader.populate) {

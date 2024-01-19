@@ -1,8 +1,20 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DatabaseObjectNotFoundException } from '@mikro-orm/core';
+
+import { CourseService } from '@modules/learnroom/service/course.service';
+import { ToolContextType } from '@modules/tool/common/enum';
+import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { ExternalToolService } from '@modules/tool/external-tool/service';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
+import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Course, LegacySchoolDo, Pseudonym, RoleName, SchoolEntity, UserDO } from '@shared/domain';
+import { LegacySchoolDo, Pseudonym, UserDO } from '@shared/domain/domainobject';
+import { Course, SchoolEntity } from '@shared/domain/entity';
+import { RoleName } from '@shared/domain/interface';
 import {
 	contextExternalToolFactory,
 	courseFactory,
@@ -15,15 +27,6 @@ import {
 	UserAndAccountTestFactory,
 	userDoFactory,
 } from '@shared/testing';
-import { CourseService } from '@modules/learnroom/service/course.service';
-import { ToolContextType } from '@modules/tool/common/enum';
-import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
-import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { ExternalToolService } from '@modules/tool/external-tool/service';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
-import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
-import { UserService } from '@modules/user';
 import { ObjectId } from 'bson';
 import { FeathersRosterService } from './feathers-roster.service';
 import { PseudonymService } from './pseudonym.service';
@@ -165,7 +168,7 @@ describe('FeathersRosterService', () => {
 				const func = service.getUsersMetadata(pseudonym.pseudonym);
 
 				await expect(func).rejects.toThrow(
-					new NotFoundLoggableException(UserDO.name, 'pseudonym', pseudonym.pseudonym)
+					new NotFoundLoggableException(UserDO.name, { pseudonym: pseudonym.pseudonym })
 				);
 			});
 		});
@@ -349,7 +352,7 @@ describe('FeathersRosterService', () => {
 				const func = service.getUserGroups(pseudonym.pseudonym, 'externalToolId');
 
 				await expect(func).rejects.toThrow(
-					new NotFoundLoggableException(UserDO.name, 'pseudonym', pseudonym.pseudonym)
+					new NotFoundLoggableException(UserDO.name, { pseudonym: pseudonym.pseudonym })
 				);
 			});
 		});
@@ -579,7 +582,7 @@ describe('FeathersRosterService', () => {
 				const func = service.getGroup('courseId', 'oauth2ClientId');
 
 				await expect(func).rejects.toThrow(
-					new NotFoundLoggableException(ExternalTool.name, 'config.clientId', 'oauth2ClientId')
+					new NotFoundLoggableException(ExternalTool.name, { 'config.clientId': 'oauth2ClientId' })
 				);
 			});
 		});
@@ -605,7 +608,7 @@ describe('FeathersRosterService', () => {
 				const func = service.getGroup('courseId', 'oauth2ClientId');
 
 				await expect(func).rejects.toThrow(
-					new NotFoundLoggableException(SchoolExternalTool.name, 'toolId', externalToolId)
+					new NotFoundLoggableException(SchoolExternalTool.name, { toolId: externalToolId })
 				);
 			});
 		});
@@ -628,7 +631,7 @@ describe('FeathersRosterService', () => {
 				const func = service.getGroup('courseId', 'oauth2ClientId');
 
 				await expect(func).rejects.toThrow(
-					new NotFoundLoggableException(ContextExternalTool.name, 'contextRef.id', 'courseId')
+					new NotFoundLoggableException(ContextExternalTool.name, { 'contextRef.id': 'courseId' })
 				);
 			});
 		});

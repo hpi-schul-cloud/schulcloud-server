@@ -3,23 +3,25 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthenticationService } from '@modules/authentication';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { OAuthTokenDto, OAuthService } from '@modules/oauth';
+import { OAuthService, OAuthTokenDto } from '@modules/oauth';
 import {
-	ProvisioningService,
 	ExternalSchoolDto,
 	ExternalUserDto,
 	OauthDataDto,
+	ProvisioningService,
 	ProvisioningSystemDto,
 } from '@modules/provisioning';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { LegacySchoolDo, Page, Permission, SystemEntity, User, UserLoginMigrationDO } from '@shared/domain';
+import { LegacySchoolDo, Page, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { SystemEntity, User } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
 	legacySchoolDoFactory,
 	setupEntities,
-	systemFactory,
+	systemEntityFactory,
 	userFactory,
 	userLoginMigrationDOFactory,
 } from '@shared/testing';
@@ -339,7 +341,7 @@ describe(UserLoginMigrationUc.name, () => {
 
 		describe('when external school and official school number is defined and school has to be migrated', () => {
 			const setup = () => {
-				const sourceSystem: SystemEntity = systemFactory
+				const sourceSystem: SystemEntity = systemEntityFactory
 					.withOauthConfig()
 					.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS });
 

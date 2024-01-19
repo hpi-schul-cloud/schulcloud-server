@@ -1,13 +1,13 @@
+import { PreviewInputMimeTypes } from '@infra/preview-generator';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ErrorType } from '../error';
-import { PreviewInputMimeTypes } from '../interface';
 import {
 	FileRecord,
 	FileRecordParentType,
+	FileRecordProperties,
 	FileRecordSecurityCheck,
-	IFileRecordProperties,
 	PreviewStatus,
 	ScanStatus,
 } from './filerecord.entity';
@@ -18,7 +18,7 @@ describe('FileRecord Entity', () => {
 	});
 
 	describe('when creating a new instance using the constructor', () => {
-		let props: IFileRecordProperties;
+		let props: FileRecordProperties;
 
 		beforeEach(() => {
 			props = {
@@ -32,7 +32,7 @@ describe('FileRecord Entity', () => {
 			};
 		});
 
-		it('should provide the target id as entity id', () => {
+		it('should provide target id', () => {
 			const parentId = new ObjectId().toHexString();
 			const fileRecord = new FileRecord({
 				...props,
@@ -41,7 +41,7 @@ describe('FileRecord Entity', () => {
 			expect(fileRecord.parentId).toEqual(parentId);
 		});
 
-		it('should provide the creator id as entity id', () => {
+		it('should provide creator id', () => {
 			const creatorId = new ObjectId().toHexString();
 			const fileRecord = new FileRecord({
 				...props,
@@ -50,7 +50,7 @@ describe('FileRecord Entity', () => {
 			expect(fileRecord.creatorId).toEqual(creatorId);
 		});
 
-		it('should provide the school id as entity id', () => {
+		it('should provide school id', () => {
 			const schoolId = new ObjectId().toHexString();
 			const fileRecord = new FileRecord({
 				...props,
@@ -59,13 +59,22 @@ describe('FileRecord Entity', () => {
 			expect(fileRecord.schoolId).toEqual(schoolId);
 		});
 
-		it('should provide the isCopyFrom as entity id', () => {
+		it('should provide isCopyFrom', () => {
 			const isCopyFrom = new ObjectId().toHexString();
 			const fileRecord = new FileRecord({
 				...props,
 				isCopyFrom,
 			});
 			expect(fileRecord.isCopyFrom).toEqual(isCopyFrom);
+		});
+
+		it('should provide isUploading', () => {
+			const isUploading = true;
+			const fileRecord = new FileRecord({
+				...props,
+				isUploading,
+			});
+			expect(fileRecord.isUploading).toEqual(isUploading);
 		});
 	});
 
@@ -830,6 +839,44 @@ describe('FileRecord Entity', () => {
 				const result = fileRecord.fileNameWithoutExtension;
 
 				expect(result).toEqual('.bild.123');
+			});
+		});
+	});
+
+	describe('removeCreatorId is called', () => {
+		describe('WHEN creatorId exists', () => {
+			const setup = () => {
+				const creatorId = new ObjectId().toHexString();
+				const fileRecord = fileRecordFactory.build({ creatorId });
+
+				return { fileRecord, creatorId };
+			};
+
+			it('should set it to undefined', () => {
+				const { fileRecord } = setup();
+
+				const result = fileRecord.removeCreatorId();
+
+				expect(result).toBe(undefined);
+			});
+		});
+	});
+
+	describe('markAsLoaded is called', () => {
+		describe('WHEN isUploading is true', () => {
+			const setup = () => {
+				const isUploading = true;
+				const fileRecord = fileRecordFactory.build({ isUploading });
+
+				return { fileRecord, isUploading };
+			};
+
+			it('should set it to undefined', () => {
+				const { fileRecord } = setup();
+				expect(fileRecord.isUploading).toBe(true);
+				const result = fileRecord.markAsUploaded();
+
+				expect(result).toBe(undefined);
 			});
 		});
 	});

@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
-import { IToolLaunchParams } from './tool-launch-params.interface';
+import { ToolLaunchParams } from './tool-launch-params.interface';
 
 @Injectable()
 export class BasicToolLaunchStrategy extends AbstractLaunchStrategy {
@@ -10,7 +10,7 @@ export class BasicToolLaunchStrategy extends AbstractLaunchStrategy {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		userId: EntityId,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		data: IToolLaunchParams
+		data: ToolLaunchParams
 	): Promise<PropertyData[]> {
 		return Promise.resolve([]);
 	}

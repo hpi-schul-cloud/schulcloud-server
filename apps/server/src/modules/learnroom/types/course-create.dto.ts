@@ -1,4 +1,5 @@
-import { CourseFeature, EntityId } from '@shared/domain';
+import { CourseFeature } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 
 export type CourseCreateDto = {
 	id?: EntityId;

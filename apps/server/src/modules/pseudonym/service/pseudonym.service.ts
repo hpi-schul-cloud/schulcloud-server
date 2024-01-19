@@ -1,9 +1,13 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { IFindOptions, LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
+import { IFindOptions } from '@shared/domain/interface';
 import { v4 as uuidv4 } from 'uuid';
+import { Logger } from '@src/core/logger';
+import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
+import { DomainModel, StatusModel } from '@shared/domain/types';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 
@@ -11,8 +15,11 @@ import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 export class PseudonymService {
 	constructor(
 		private readonly pseudonymRepo: PseudonymsRepo,
-		private readonly externalToolPseudonymRepo: ExternalToolPseudonymRepo
-	) {}
+		private readonly externalToolPseudonymRepo: ExternalToolPseudonymRepo,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(PseudonymService.name);
+	}
 
 	public async findByUserAndToolOrThrow(user: UserDO, tool: ExternalTool | LtiToolDO): Promise<Pseudonym> {
 		if (!user.id || !tool.id) {
@@ -72,6 +79,14 @@ export class PseudonymService {
 	}
 
 	public async deleteByUserId(userId: string): Promise<number> {
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Deleting user data from Pseudonyms',
+				DomainModel.PSEUDONYMS,
+				userId,
+				StatusModel.PENDING
+			)
+		);
 		if (!userId) {
 			throw new InternalServerErrorException('User id is missing');
 		}
@@ -81,7 +96,20 @@ export class PseudonymService {
 			this.deleteExternalToolPseudonymsByUserId(userId),
 		]);
 
-		return deletedPseudonyms + deletedExternalToolPseudonyms;
+		const numberOfDeletedPseudonyms = deletedPseudonyms + deletedExternalToolPseudonyms;
+
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully deleted user data from Pseudonyms',
+				DomainModel.PSEUDONYMS,
+				userId,
+				StatusModel.FINISHED,
+				0,
+				numberOfDeletedPseudonyms
+			)
+		);
+
+		return numberOfDeletedPseudonyms;
 	}
 
 	private async findPseudonymsByUserId(userId: string): Promise<Pseudonym[]> {

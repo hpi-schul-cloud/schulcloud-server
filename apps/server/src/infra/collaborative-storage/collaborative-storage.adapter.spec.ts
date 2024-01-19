@@ -1,14 +1,14 @@
 import { createMock } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain';
-import { LegacyLogger } from '@src/core/logger';
 import { TeamDto } from '@modules/collaborative-storage/services/dto/team.dto'; // invalid import please fix
+import { Test, TestingModule } from '@nestjs/testing';
+import { RoleName } from '@shared/domain/interface';
+import { LegacyLogger } from '@src/core/logger';
 import { CollaborativeStorageAdapter } from './collaborative-storage.adapter';
 import { CollaborativeStorageAdapterMapper } from './mapper/collaborative-storage-adapter.mapper';
-import { ICollaborativeStorageStrategy } from './strategy/base.interface.strategy';
+import { CollaborativeStorageStrategy } from './strategy/base.interface.strategy';
 
-class TestStrategy implements ICollaborativeStorageStrategy {
+class TestStrategy implements CollaborativeStorageStrategy {
 	baseURL: string;
 
 	constructor() {
@@ -38,7 +38,7 @@ class TestStrategy implements ICollaborativeStorageStrategy {
 describe('CollaborativeStorage Adapter', () => {
 	let module: TestingModule;
 	let adapter: CollaborativeStorageAdapter;
-	let strategy: ICollaborativeStorageStrategy;
+	let strategy: CollaborativeStorageStrategy;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -50,8 +50,8 @@ describe('CollaborativeStorage Adapter', () => {
 					useValue: createMock<LegacyLogger>(),
 				},
 				{
-					provide: 'ICollaborativeStorageStrategy',
-					useValue: createMock<ICollaborativeStorageStrategy>(),
+					provide: 'CollaborativeStorageStrategy',
+					useValue: createMock<CollaborativeStorageStrategy>(),
 				},
 			],
 		}).compile();

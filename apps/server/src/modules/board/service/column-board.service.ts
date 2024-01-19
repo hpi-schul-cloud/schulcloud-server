@@ -4,14 +4,15 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import {
 	AnyBoardDo,
 	BoardExternalReference,
+	BoardExternalReferenceType,
 	Card,
 	Column,
 	ColumnBoard,
 	ContentElementFactory,
 	ContentElementType,
-	EntityId,
 	RichTextElement,
-} from '@shared/domain';
+} from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
@@ -46,7 +47,7 @@ export class ColumnBoardService {
 			return rootBoardDo;
 		}
 
-		throw new NotFoundLoggableException(ColumnBoard.name, 'id', rootId);
+		throw new NotFoundLoggableException(ColumnBoard.name, { id: rootId });
 	}
 
 	async getBoardObjectTitlesById(boardIds: EntityId[]): Promise<Record<EntityId, string>> {
@@ -71,6 +72,25 @@ export class ColumnBoardService {
 
 	async delete(board: ColumnBoard): Promise<void> {
 		await this.boardDoService.deleteWithDescendants(board);
+	}
+
+	async deleteByCourseId(courseId: EntityId): Promise<void> {
+		const columnBoardsId = await this.findIdsByExternalReference({
+			type: BoardExternalReferenceType.Course,
+			id: courseId,
+		});
+
+		const deletePromises = columnBoardsId.map((columnBoardId) => this.deleteColumnBoardById(columnBoardId));
+
+		await Promise.all(deletePromises);
+	}
+
+	private async deleteColumnBoardById(id: EntityId): Promise<void> {
+		const columnBoardToDeletion = await this.boardDoRepo.findByClassAndId(ColumnBoard, id);
+
+		if (columnBoardToDeletion) {
+			await this.boardDoService.deleteWithDescendants(columnBoardToDeletion);
+		}
 	}
 
 	async updateTitle(board: ColumnBoard, title: string): Promise<void> {

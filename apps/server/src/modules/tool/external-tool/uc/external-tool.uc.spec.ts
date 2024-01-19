@@ -1,17 +1,17 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { ICurrentUser } from '@modules/authentication';
+import { Action, AuthorizationService } from '@modules/authorization';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IFindOptions, Permission, SortOrder, User } from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
-import { setupEntities, userFactory } from '@shared/testing';
-import {
-	externalToolFactory,
-	oauth2ToolConfigFactory,
-} from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { ICurrentUser } from '@modules/authentication';
-import { AuthorizationService } from '@modules/authorization';
+import { Role, User } from '@shared/domain/entity';
+import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
+import { roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { externalToolFactory, oauth2ToolConfigFactory } from '@shared/testing/factory';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { ExternalTool, Oauth2ToolConfig } from '../domain';
+import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
+import { ExternalTool, ExternalToolMetadata, Oauth2ToolConfig } from '../domain';
 import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
 
 import { ExternalToolUpdate } from './dto';
@@ -25,6 +25,7 @@ describe('ExternalToolUc', () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let toolValidationService: DeepMocked<ExternalToolValidationService>;
 	let logoService: DeepMocked<ExternalToolLogoService>;
+	let commonToolMetadataService: DeepMocked<CommonToolMetadataService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -48,6 +49,10 @@ describe('ExternalToolUc', () => {
 					provide: ExternalToolLogoService,
 					useValue: createMock<ExternalToolLogoService>(),
 				},
+				{
+					provide: CommonToolMetadataService,
+					useValue: createMock<CommonToolMetadataService>(),
+				},
 			],
 		}).compile();
 
@@ -56,6 +61,7 @@ describe('ExternalToolUc', () => {
 		authorizationService = module.get(AuthorizationService);
 		toolValidationService = module.get(ExternalToolValidationService);
 		logoService = module.get(ExternalToolLogoService);
+		commonToolMetadataService = module.get(CommonToolMetadataService);
 	});
 
 	afterAll(async () => {
@@ -466,6 +472,111 @@ describe('ExternalToolUc', () => {
 			await uc.deleteExternalTool(currentUser.userId, toolId);
 
 			expect(externalToolService.deleteExternalTool).toHaveBeenCalledWith(toolId);
+		});
+	});
+
+	describe('getMetadataForExternalTool', () => {
+		describe('when authorize user', () => {
+			const setupMetadata = () => {
+				const toolId: string = new ObjectId().toHexString();
+				const tool: ExternalTool = externalToolFactory.buildWithId({ id: toolId }, toolId);
+
+				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
+				const context = { action: Action.read, requiredPermissions: [Permission.TOOL_ADMIN] };
+
+				externalToolService.findById.mockResolvedValue(tool);
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+
+				return {
+					user,
+					currentUser,
+					toolId,
+					tool,
+					context,
+				};
+			};
+
+			it('get user with permissions', async () => {
+				const { toolId, user } = setupMetadata();
+
+				await uc.getMetadataForExternalTool(user.id, toolId);
+
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
+			});
+
+			it('should check that the user has TOOL_ADMIN permission', async () => {
+				const { user, tool } = setupMetadata();
+
+				await uc.getMetadataForExternalTool(user.id, tool.id!);
+
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
+			});
+		});
+
+		describe('when user has insufficient permission to get an metadata for external tool ', () => {
+			const setupMetadata = () => {
+				const toolId: string = new ObjectId().toHexString();
+
+				const user: User = userFactory.buildWithId();
+
+				authorizationService.getUserWithPermissions.mockRejectedValue(new UnauthorizedException());
+
+				return {
+					user,
+					toolId,
+				};
+			};
+
+			it('should throw UnauthorizedException ', async () => {
+				const { toolId, user } = setupMetadata();
+
+				const result: Promise<ExternalToolMetadata> = uc.getMetadataForExternalTool(user.id, toolId);
+
+				await expect(result).rejects.toThrow(UnauthorizedException);
+			});
+		});
+
+		describe('when externalToolId is given', () => {
+			const setupMetadata = () => {
+				const toolId: string = new ObjectId().toHexString();
+
+				const externalToolMetadata: ExternalToolMetadata = new ExternalToolMetadata({
+					schoolExternalToolCount: 2,
+					contextExternalToolCountPerContext: { course: 3, boardElement: 3 },
+				});
+
+				commonToolMetadataService.getMetadataForExternalTool.mockResolvedValue(externalToolMetadata);
+
+				const user: User = userFactory.buildWithId();
+				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+
+				return {
+					user,
+					currentUser,
+					toolId,
+					externalToolMetadata,
+				};
+			};
+
+			it('get metadata for external tool', async () => {
+				const { toolId, currentUser } = setupMetadata();
+
+				await uc.getMetadataForExternalTool(currentUser.userId, toolId);
+
+				expect(commonToolMetadataService.getMetadataForExternalTool).toHaveBeenCalledWith(toolId);
+			});
+
+			it('return metadata of external tool', async () => {
+				const { toolId, currentUser, externalToolMetadata } = setupMetadata();
+
+				const result = await uc.getMetadataForExternalTool(currentUser.userId, toolId);
+
+				expect(result).toEqual(externalToolMetadata);
+			});
 		});
 	});
 });

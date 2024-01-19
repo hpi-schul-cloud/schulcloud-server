@@ -1,4 +1,5 @@
-export { ICurrentUser } from './interface';
-export { JWT, CurrentUser, Authenticate } from './decorator';
 export { AuthenticationModule } from './authentication.module';
+export { Authenticate, CurrentUser, JWT } from './decorator';
+export { ICurrentUser } from './interface';
 export { AuthenticationService } from './services';
+export { XApiKeyConfig } from './config';

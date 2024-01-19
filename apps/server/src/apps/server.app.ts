@@ -1,33 +1,35 @@
 /* istanbul ignore file */
+import { Mail, MailService } from '@infra/mail';
 // application imports
 /* eslint-disable no-console */
 import { MikroORM } from '@mikro-orm/core';
+import { AccountService } from '@modules/account';
+import { AccountValidationService } from '@modules/account/services/account.validation.service';
+import { AccountUc } from '@modules/account/uc/account.uc';
+import { SystemRule } from '@modules/authorization/domain/rules';
+import { CollaborativeStorageUc } from '@modules/collaborative-storage/uc/collaborative-storage.uc';
+import { GroupService } from '@modules/group';
+import { FeathersRosterService } from '@modules/pseudonym';
+import { RocketChatService } from '@modules/rocketchat';
+import { ServerModule } from '@modules/server';
+import { TeamService } from '@modules/teams/service/team.service';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
-import { Mail, MailService } from '@infra/mail';
 import { LegacyLogger, Logger } from '@src/core/logger';
-import { AccountService } from '@modules/account';
-import { TeamService } from '@modules/teams/service/team.service';
-import { AccountValidationService } from '@modules/account/services/account.validation.service';
-import { AccountUc } from '@modules/account/uc/account.uc';
-import { CollaborativeStorageUc } from '@modules/collaborative-storage/uc/collaborative-storage.uc';
-import { GroupService } from '@modules/group';
-import { RocketChatService } from '@modules/rocketchat';
-import { ServerModule } from '@modules/server';
 import express from 'express';
 import { join } from 'path';
 
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
-import { FeathersRosterService } from '@modules/pseudonym';
-import legacyAppPromise = require('../../../../src/app');
 
+import { ColumnBoardService } from '@modules/board';
 import { AppStartLoggable } from './helpers/app-start-loggable';
 import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	createAndStartPrometheusMetricsAppIfEnabled,
 } from './helpers/prometheus-metrics';
+import legacyAppPromise = require('../../../../src/app');
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -48,7 +50,7 @@ async function bootstrap() {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const feathersExpress = await legacyAppPromise(orm);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-	feathersExpress.setup();
+	await feathersExpress.setup();
 
 	// set reference to legacy app as an express setting so we can
 	// access it over the current request within FeathersServiceProvider
@@ -85,6 +87,10 @@ async function bootstrap() {
 	feathersExpress.services['nest-feathers-roster-service'] = nestApp.get(FeathersRosterService);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
 	feathersExpress.services['nest-group-service'] = nestApp.get(GroupService);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+	feathersExpress.services['nest-column-board-service'] = nestApp.get(ColumnBoardService);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+	feathersExpress.services['nest-system-rule'] = nestApp.get(SystemRule);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-orm'] = orm;
 

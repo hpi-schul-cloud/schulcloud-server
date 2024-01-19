@@ -1,16 +1,16 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { H5PEditor, H5PPlayer, IEditorModel } from '@lumieducation/h5p-server';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LanguageType } from '@shared/domain';
+import { LanguageType } from '@shared/domain/entity';
 import { UserRepo } from '@shared/repo';
 import { h5pContentFactory, setupEntities } from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { AuthorizationContextBuilder, AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { UserService } from '@src/modules/user';
+import { H5PAjaxEndpointProvider } from '../provider';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
-import { H5PAjaxEndpointProvider } from '../provider';
 import { H5PEditorUc } from './h5p.uc';
 
 const createParams = () => {

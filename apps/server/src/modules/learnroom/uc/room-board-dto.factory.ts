@@ -1,20 +1,20 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { Action, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import {
 	Board,
 	BoardElement,
 	BoardElementType,
-	ColumnboardBoardElement,
 	ColumnBoardTarget,
+	ColumnboardBoardElement,
 	Course,
-	ITaskStatus,
 	LessonEntity,
-	Permission,
 	Task,
 	TaskWithStatusVo,
 	User,
-} from '@shared/domain';
-import { AuthorizationService, Action } from '@modules/authorization';
+} from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
+import { TaskStatus } from '@shared/domain/types';
 import {
 	ColumnBoardMetaData,
 	LessonMetaData,
@@ -126,8 +126,8 @@ class DtoCreator {
 		return { type: RoomBoardElementTypes.TASK, content };
 	}
 
-	private createTaskStatus(task: Task): ITaskStatus {
-		let status: ITaskStatus;
+	private createTaskStatus(task: Task): TaskStatus {
+		let status: TaskStatus;
 		if (this.isTeacher()) {
 			status = task.createTeacherStatusForUser(this.user);
 		} else {

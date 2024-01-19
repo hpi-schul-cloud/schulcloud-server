@@ -37,6 +37,27 @@
       template: onepassword.yml.j2
     when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
 
+  - name: Admin API server ConfigMap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-configmap.yml.j2
+      apply: yes
+
+  - name: Admin API server Secret (from 1Password)
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-onepassword.yml.j2
+    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+
+  - name: Admin API client secret (from 1Password)
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: onepassword-admin-api-client.yml.j2
+    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+
   - name: remove old migration Job
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -58,7 +79,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: deployment.yml.j2
-      
+
   - name: Ingress
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -108,6 +129,13 @@
       namespace: "{{ NAMESPACE }}"
       template: api-delete-s3-files-cronjob.yml.j2
 
+  - name: Data deletion trigger CronJob
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: data-deletion-trigger-cronjob.yml.j2
+    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+
   - name: AMQPFileStorageDeployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -142,3 +170,47 @@
     when:
      - KEDA_ENABLED is defined and KEDA_ENABLED|bool
      - SCALED_PREVIEW_GENERATOR_ENABLED is defined and SCALED_PREVIEW_GENERATOR_ENABLED|bool
+
+
+  - name: admin api server deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-deployment.yml.j2
+    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+
+  - name: admin api server service
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-svc.yml.j2
+    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+
+  - name: TlDraw server deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: tldraw-deployment.yml.j2
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
+
+  - name: TlDraw server service
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: tldraw-server-svc.yml.j2
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
+
+  - name: Tldraw ingress
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: tldraw-ingress.yml.j2
+      apply: yes
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
+
+  - name: TldrawServiceMonitor
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: tldraw-svc-monitor.yml.j2
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool

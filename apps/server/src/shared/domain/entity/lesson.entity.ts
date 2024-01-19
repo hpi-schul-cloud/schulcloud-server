@@ -1,21 +1,21 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
-import { ILearnroomElement } from '@shared/domain/interface';
+import { LearnroomElement } from '@shared/domain/interface';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { Material } from './materials.entity';
+import type { TaskParent } from './task.entity';
 import { Task } from './task.entity';
-import type { ITaskParent } from './task.entity';
 
-export interface ILessonProperties {
+export interface LessonProperties {
 	name: string;
 	hidden: boolean;
 	course: Course;
 	courseGroup?: CourseGroup;
 	position?: number;
-	contents: IComponentProperties[] | [];
+	contents: ComponentProperties[] | [];
 	materials?: Material[];
 }
 
@@ -28,15 +28,15 @@ export enum ComponentType {
 	NEXBOARD = 'neXboard',
 }
 
-export interface IComponentTextProperties {
+export interface ComponentTextProperties {
 	text: string;
 }
 
-export interface IComponentGeogebraProperties {
+export interface ComponentGeogebraProperties {
 	materialId: string;
 }
 
-export interface IComponentLernstoreProperties {
+export interface ComponentLernstoreProperties {
 	resources: {
 		client: string;
 		description: string;
@@ -46,43 +46,43 @@ export interface IComponentLernstoreProperties {
 	}[];
 }
 
-export interface IComponentEtherpadProperties {
+export interface ComponentEtherpadProperties {
 	description: string;
 	title: string;
 	url: string;
 }
 
-export interface IComponentNexboardProperties {
+export interface ComponentNexboardProperties {
 	board: string;
 	description: string;
 	title: string;
 	url: string;
 }
 
-export interface IComponentInternalProperties {
+export interface ComponentInternalProperties {
 	url: string;
 }
 
-export type IComponentProperties = {
+export type ComponentProperties = {
 	_id?: string;
 	title: string;
 	hidden: boolean;
 	user?: EntityId;
 } & (
-	| { component: ComponentType.TEXT; content: IComponentTextProperties }
-	| { component: ComponentType.ETHERPAD; content: IComponentEtherpadProperties }
-	| { component: ComponentType.GEOGEBRA; content: IComponentGeogebraProperties }
-	| { component: ComponentType.INTERNAL; content: IComponentInternalProperties }
-	| { component: ComponentType.LERNSTORE; content?: IComponentLernstoreProperties }
-	| { component: ComponentType.NEXBOARD; content: IComponentNexboardProperties }
+	| { component: ComponentType.TEXT; content: ComponentTextProperties }
+	| { component: ComponentType.ETHERPAD; content: ComponentEtherpadProperties }
+	| { component: ComponentType.GEOGEBRA; content: ComponentGeogebraProperties }
+	| { component: ComponentType.INTERNAL; content: ComponentInternalProperties }
+	| { component: ComponentType.LERNSTORE; content?: ComponentLernstoreProperties }
+	| { component: ComponentType.NEXBOARD; content: ComponentNexboardProperties }
 );
 
-export interface ILessonParent {
+export interface LessonParent {
 	getStudentIds(): EntityId[];
 }
 
 @Entity({ tableName: 'lessons' })
-export class LessonEntity extends BaseEntityWithTimestamps implements ILearnroomElement, ITaskParent {
+export class LessonEntity extends BaseEntityWithTimestamps implements LearnroomElement, TaskParent {
 	@Property()
 	name: string;
 
@@ -101,7 +101,7 @@ export class LessonEntity extends BaseEntityWithTimestamps implements ILearnroom
 	position: number;
 
 	@Property()
-	contents: IComponentProperties[] | [];
+	contents: ComponentProperties[] | [];
 
 	@ManyToMany('Material', undefined, { fieldName: 'materialIds' })
 	materials = new Collection<Material>(this);
@@ -109,7 +109,7 @@ export class LessonEntity extends BaseEntityWithTimestamps implements ILearnroom
 	@OneToMany('Task', 'lesson', { orphanRemoval: true })
 	tasks = new Collection<Task>(this);
 
-	constructor(props: ILessonProperties) {
+	constructor(props: LessonProperties) {
 		super();
 		this.name = props.name;
 		if (props.hidden !== undefined) this.hidden = props.hidden;
@@ -120,7 +120,7 @@ export class LessonEntity extends BaseEntityWithTimestamps implements ILearnroom
 		if (props.materials) this.materials.set(props.materials);
 	}
 
-	private getParent(): ILessonParent {
+	private getParent(): LessonParent {
 		const parent = this.courseGroup || this.course;
 
 		return parent;
@@ -152,7 +152,7 @@ export class LessonEntity extends BaseEntityWithTimestamps implements ILearnroom
 		return filtered.length;
 	}
 
-	getLessonComponents(): IComponentProperties[] | [] {
+	getLessonComponents(): ComponentProperties[] | [] {
 		return this.contents;
 	}
 

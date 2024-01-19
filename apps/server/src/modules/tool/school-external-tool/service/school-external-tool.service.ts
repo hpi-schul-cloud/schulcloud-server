@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { SchoolExternalToolRepo } from '@shared/repo';
-import { ToolConfigurationStatus } from '../../common/enum';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
+import { IToolFeatures, ToolFeatures } from '../../tool-config';
+import { SchoolExternalToolConfigurationStatus } from '../controller/dto';
 import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
-import { IToolFeatures, ToolFeatures } from '../../tool-config';
 
 @Injectable()
 export class SchoolExternalToolService {
@@ -43,7 +43,7 @@ export class SchoolExternalToolService {
 
 	private async enrichDataFromExternalTool(tool: SchoolExternalTool): Promise<SchoolExternalTool> {
 		const externalTool: ExternalTool = await this.externalToolService.findById(tool.toolId);
-		const status: ToolConfigurationStatus = await this.determineStatus(tool, externalTool);
+		const status: SchoolExternalToolConfigurationStatus = await this.determineSchoolToolStatus(tool, externalTool);
 		const schoolExternalTool: SchoolExternalTool = new SchoolExternalTool({
 			...tool,
 			status,
@@ -53,24 +53,34 @@ export class SchoolExternalToolService {
 		return schoolExternalTool;
 	}
 
-	private async determineStatus(
+	private async determineSchoolToolStatus(
 		tool: SchoolExternalTool,
 		externalTool: ExternalTool
-	): Promise<ToolConfigurationStatus> {
+	): Promise<SchoolExternalToolConfigurationStatus> {
+		const status: SchoolExternalToolConfigurationStatus = new SchoolExternalToolConfigurationStatus({
+			isOutdatedOnScopeSchool: true,
+			isDeactivated: this.isToolDeactivated(externalTool, tool),
+		});
+
 		if (this.toolFeatures.toolStatusWithoutVersions) {
 			try {
 				await this.schoolExternalToolValidationService.validate(tool);
-				return ToolConfigurationStatus.LATEST;
+
+				status.isOutdatedOnScopeSchool = false;
+
+				return status;
 			} catch (err) {
-				return ToolConfigurationStatus.OUTDATED;
+				return status;
 			}
 		}
 
 		if (externalTool.version <= tool.toolVersion) {
-			return ToolConfigurationStatus.LATEST;
+			status.isOutdatedOnScopeSchool = false;
+
+			return status;
 		}
 
-		return ToolConfigurationStatus.OUTDATED;
+		return status;
 	}
 
 	async deleteSchoolExternalToolById(schoolExternalToolId: EntityId): Promise<void> {
@@ -81,5 +91,13 @@ export class SchoolExternalToolService {
 		let createdSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolRepo.save(schoolExternalTool);
 		createdSchoolExternalTool = await this.enrichDataFromExternalTool(createdSchoolExternalTool);
 		return createdSchoolExternalTool;
+	}
+
+	private isToolDeactivated(externalTool: ExternalTool, schoolExternalTool: SchoolExternalTool) {
+		if (externalTool.isDeactivated || schoolExternalTool.status?.isDeactivated) {
+			return true;
+		}
+
+		return false;
 	}
 }

@@ -4,13 +4,14 @@ import { classEntityFactory } from '@modules/class/entity/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role, RoleName, SchoolEntity, SchoolYearEntity, SortOrder, SystemEntity, User } from '@shared/domain';
+import { Role, SchoolEntity, SchoolYearEntity, SystemEntity, User } from '@shared/domain/entity';
+import { RoleName, SortOrder } from '@shared/domain/interface';
 import {
 	groupEntityFactory,
 	roleFactory,
 	schoolFactory,
 	schoolYearFactory,
-	systemFactory,
+	systemEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 	userFactory,
@@ -46,13 +47,13 @@ describe('Group (API)', () => {
 	describe('[GET] /groups/class', () => {
 		describe('when an admin requests a list of classes', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
+				const school: SchoolEntity = schoolFactory.buildWithId({ currentYear: schoolYear });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				const teacherRole: Role = roleFactory.buildWithId({ name: RoleName.TEACHER });
 				const teacherUser: User = userFactory.buildWithId({ school, roles: [teacherRole] });
-				const system: SystemEntity = systemFactory.buildWithId();
-				const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
+				const system: SystemEntity = systemEntityFactory.buildWithId();
 				const clazz: ClassEntity = classEntityFactory.buildWithId({
 					name: 'Group A',
 					schoolId: school._id,
@@ -103,7 +104,7 @@ describe('Group (API)', () => {
 			};
 
 			it('should return the classes of his school', async () => {
-				const { adminClient, group, clazz, system, adminUser, teacherUser, schoolYear } = await setup();
+				const { adminClient, group, clazz, system, schoolYear } = await setup();
 
 				const response = await adminClient.get(`/class`).query({
 					skip: 0,
@@ -120,14 +121,14 @@ describe('Group (API)', () => {
 							type: ClassRootType.GROUP,
 							name: group.name,
 							externalSourceName: system.displayName,
-							teachers: [adminUser.lastName],
+							teachers: [],
 							studentCount: 0,
 						},
 						{
 							id: clazz.id,
 							type: ClassRootType.CLASS,
 							name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
-							teachers: [teacherUser.lastName],
+							teachers: [],
 							schoolYear: schoolYear.name,
 							isUpgradable: false,
 							studentCount: 0,

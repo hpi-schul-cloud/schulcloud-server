@@ -1,17 +1,21 @@
 import { AccountService } from '@modules/account';
 import { AccountDto } from '@modules/account/services/dto';
 // invalid import
+import { OauthCurrentUser } from '@modules/authentication/interface';
 import { CurrentUserMapper } from '@modules/authentication/mapper';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { RoleService } from '@modules/role/service/role.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId, IFindOptions, LanguageType, User } from '@shared/domain';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { LanguageType, User } from '@shared/domain/entity';
+import { IFindOptions } from '@shared/domain/interface';
+import { DomainModel, EntityId, StatusModel } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { OauthCurrentUser } from '@modules/authentication/interface';
-import { IUserConfig } from '../interfaces';
+import { Logger } from '@src/core/logger';
+import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
+import { UserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
@@ -21,10 +25,13 @@ export class UserService {
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly userDORepo: UserDORepo,
-		private readonly configService: ConfigService<IUserConfig, true>,
+		private readonly configService: ConfigService<UserConfig, true>,
 		private readonly roleService: RoleService,
-		private readonly accountService: AccountService
-	) {}
+		private readonly accountService: AccountService,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(UserService.name);
+	}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
 		const user = await this.userRepo.findById(userId, true);
@@ -58,6 +65,12 @@ export class UserService {
 		return userDO;
 	}
 
+	public async findByIdOrNull(id: string): Promise<UserDO | null> {
+		const userDO: UserDO | null = await this.userDORepo.findByIdOrNull(id, true);
+
+		return userDO;
+	}
+
 	async save(user: UserDO): Promise<UserDO> {
 		const savedUser: Promise<UserDO> = this.userDORepo.save(user);
 
@@ -82,8 +95,8 @@ export class UserService {
 		return user;
 	}
 
-	async findByEmail(email: string): Promise<User[]> {
-		const user: Promise<User[]> = this.userRepo.findByEmail(email);
+	async findByEmail(email: string): Promise<UserDO[]> {
+		const user: Promise<UserDO[]> = this.userDORepo.findByEmail(email);
 
 		return user;
 	}
@@ -116,8 +129,27 @@ export class UserService {
 	}
 
 	async deleteUser(userId: EntityId): Promise<number> {
-		const deletedUserNumber: Promise<number> = this.userRepo.deleteUser(userId);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable('Deleting user', DomainModel.USER, userId, StatusModel.PENDING)
+		);
+		const deletedUserNumber = await this.userRepo.deleteUser(userId);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully deleted user',
+				DomainModel.USER,
+				userId,
+				StatusModel.FINISHED,
+				0,
+				deletedUserNumber
+			)
+		);
 
 		return deletedUserNumber;
+	}
+
+	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
+		const parentEmails = this.userRepo.getParentEmailsFromUser(userId);
+
+		return parentEmails;
 	}
 }

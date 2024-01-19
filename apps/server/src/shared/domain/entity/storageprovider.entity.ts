@@ -2,7 +2,7 @@ import { Entity, Property } from '@mikro-orm/core';
 import { StorageProviderEncryptedStringType } from '@shared/repo/types/StorageProviderEncryptedString.type';
 import { BaseEntityWithTimestamps } from './base.entity';
 
-export interface IStorageProviderProperties {
+export interface StorageProviderProperties {
 	endpointUrl: string;
 	accessKeyId: string;
 	secretAccessKey: string;
@@ -23,7 +23,7 @@ export class StorageProviderEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	region?: string;
 
-	constructor(props: IStorageProviderProperties) {
+	constructor(props: StorageProviderProperties) {
 		super();
 		this.endpointUrl = props.endpointUrl;
 		this.accessKeyId = props.accessKeyId;

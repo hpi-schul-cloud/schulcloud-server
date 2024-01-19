@@ -1,9 +1,11 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId, IFindOptions, IPagination, Page, Pseudonym } from '@shared/domain';
+import { Page, Pseudonym } from '@shared/domain/domainobject';
+import { IFindOptions, Pagination } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo';
 import { PseudonymSearchQuery } from '../domain';
-import { ExternalToolPseudonymEntity, IExternalToolPseudonymEntityProps } from '../entity';
+import { ExternalToolPseudonymEntity, ExternalToolPseudonymEntityProps } from '../entity';
 import { PseudonymScope } from '../entity/pseudonym.scope';
 
 @Injectable()
@@ -50,7 +52,7 @@ export class ExternalToolPseudonymRepo {
 			.getUnitOfWork()
 			.getById<ExternalToolPseudonymEntity>(ExternalToolPseudonymEntity.name, domainObject.id);
 
-		const entityProps: IExternalToolPseudonymEntityProps = this.mapDomainObjectToEntityProperties(domainObject);
+		const entityProps: ExternalToolPseudonymEntityProps = this.mapDomainObjectToEntityProperties(domainObject);
 		let entity: ExternalToolPseudonymEntity = new ExternalToolPseudonymEntity(entityProps);
 
 		if (existing) {
@@ -101,7 +103,7 @@ export class ExternalToolPseudonymRepo {
 		return pseudonym;
 	}
 
-	protected mapDomainObjectToEntityProperties(entityDO: Pseudonym): IExternalToolPseudonymEntityProps {
+	protected mapDomainObjectToEntityProperties(entityDO: Pseudonym): ExternalToolPseudonymEntityProps {
 		return {
 			pseudonym: entityDO.pseudonym,
 			toolId: new ObjectId(entityDO.toolId),
@@ -110,7 +112,7 @@ export class ExternalToolPseudonymRepo {
 	}
 
 	async findPseudonym(query: PseudonymSearchQuery, options?: IFindOptions<Pseudonym>): Promise<Page<Pseudonym>> {
-		const pagination: IPagination = options?.pagination ?? {};
+		const pagination: Pagination = options?.pagination ?? {};
 		const scope: Scope<ExternalToolPseudonymEntity> = new PseudonymScope()
 			.byPseudonym(query.pseudonym)
 			.byToolId(query.toolId)

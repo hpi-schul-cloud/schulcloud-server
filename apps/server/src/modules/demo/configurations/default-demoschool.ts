@@ -1,5 +1,6 @@
-import { ComponentType, RoleName } from '@shared/domain';
 import { FederalStateNames } from '@src/modules/legacy-school/types';
+import { RoleName } from '@shared/domain/interface';
+import { ComponentType } from '@shared/domain/entity';
 import { DemoConfiguration } from '../types';
 
 const configuration: DemoConfiguration = {

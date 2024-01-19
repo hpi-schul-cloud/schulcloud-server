@@ -1,8 +1,10 @@
 import { PseudonymService } from '@modules/pseudonym/service';
 import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { EntityId, LtiPrivacyPermission, Pseudonym, RoleName, UserDO } from '@shared/domain';
-import { RoleReference } from '@shared/domain/domainobject';
+import { Pseudonym, RoleReference, UserDO } from '@shared/domain/domainobject';
+import { LtiPrivacyPermission } from '@shared/domain/entity';
+import { RoleName } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { Authorization } from 'oauth-1.0a';
 import { LtiRole } from '../../../common/enum';
 import { ExternalTool } from '../../../external-tool/domain';
@@ -16,7 +18,7 @@ import {
 } from '../auto-parameter-strategy';
 import { Lti11EncryptionService } from '../lti11-encryption.service';
 import { AbstractLaunchStrategy } from './abstract-launch.strategy';
-import { IToolLaunchParams } from './tool-launch-params.interface';
+import { ToolLaunchParams } from './tool-launch-params.interface';
 
 @Injectable()
 export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
@@ -35,7 +37,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public override async buildToolLaunchDataFromConcreteConfig(
 		userId: EntityId,
-		data: IToolLaunchParams
+		data: ToolLaunchParams
 	): Promise<PropertyData[]> {
 		const { config } = data.externalTool;
 		const contextId: EntityId = data.contextExternalTool.contextRef.id;

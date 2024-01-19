@@ -1,3 +1,3 @@
-export interface IMailConfig {
-	ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS: string[];
+export interface MailConfig {
+	BLOCKLIST_OF_EMAIL_DOMAINS: string[];
 }

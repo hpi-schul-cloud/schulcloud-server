@@ -1,3 +1,5 @@
+import { AntivirusService } from '@infra/antivirus';
+import { S3ClientAdapter } from '@infra/s3-client';
 import {
 	BadRequestException,
 	ConflictException,
@@ -7,9 +9,7 @@ import {
 	NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Counted, EntityId } from '@shared/domain';
-import { AntivirusService } from '@infra/antivirus';
-import { S3ClientAdapter } from '@infra/s3-client';
+import { Counted, EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import FileType from 'file-type-cjs/file-type-cjs-index';
 import { PassThrough, Readable } from 'stream';
@@ -25,7 +25,7 @@ import {
 import { FileDto } from '../dto';
 import { FileRecord, ScanStatus } from '../entity';
 import { ErrorType } from '../error';
-import { FILES_STORAGE_S3_CONNECTION, IFileStorageConfig } from '../files-storage.config';
+import { FILES_STORAGE_S3_CONNECTION, FileStorageConfig } from '../files-storage.config';
 import {
 	createCopyFiles,
 	createFileRecord,
@@ -45,7 +45,7 @@ export class FilesStorageService {
 		private readonly fileRecordRepo: FileRecordRepo,
 		@Inject(FILES_STORAGE_S3_CONNECTION) private readonly storageClient: S3ClientAdapter,
 		private readonly antivirusService: AntivirusService,
-		private readonly configService: ConfigService<IFileStorageConfig, true>,
+		private readonly configService: ConfigService<FileStorageConfig, true>,
 		private logger: LegacyLogger
 	) {
 		this.logger.setContext(FilesStorageService.name);
@@ -76,11 +76,18 @@ export class FilesStorageService {
 		return countedFileRecords;
 	}
 
+	public async getFileRecordsByCreatorId(creatorId: EntityId): Promise<Counted<FileRecord[]>> {
+		const countedFileRecords = await this.fileRecordRepo.findByCreatorId(creatorId);
+
+		return countedFileRecords;
+	}
+
 	// upload
 	public async uploadFile(userId: EntityId, params: FileRecordParams, file: FileDto): Promise<FileRecord> {
 		const { fileRecord, stream } = await this.createFileRecord(file, params, userId);
 		// MimeType Detection consumes part of the stream, so the restored stream is passed on
 		file.data = stream;
+		file.mimeType = fileRecord.mimeType;
 		await this.fileRecordRepo.save(fileRecord);
 
 		await this.createFileInStorageAndRollbackOnError(fileRecord, params, file);
@@ -173,6 +180,9 @@ export class FilesStorageService {
 			// The actual file size is set here because it is known only after the whole file is streamed.
 			fileRecord.size = await fileSizePromise;
 			this.throwErrorIfFileIsTooBig(fileRecord.size);
+
+			fileRecord.markAsUploaded();
+
 			await this.fileRecordRepo.save(fileRecord);
 
 			if (!useStreamToAntivirus || !fileRecord.isPreviewPossible()) {
@@ -308,6 +318,13 @@ export class FilesStorageService {
 		if (fileRecords.length > 0) {
 			await this.delete(fileRecords);
 		}
+	}
+
+	public async removeCreatorIdFromFileRecords(fileRecords: FileRecord[]): Promise<FileRecord[]> {
+		fileRecords.forEach((entity: FileRecord) => entity.removeCreatorId());
+		await this.fileRecordRepo.save(fileRecords);
+
+		return fileRecords;
 	}
 
 	// restore

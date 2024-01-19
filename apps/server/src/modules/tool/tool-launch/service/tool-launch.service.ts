@@ -1,7 +1,9 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
-import { ToolConfigType, ToolConfigurationStatus } from '../../common/enum';
+import { EntityId } from '@shared/domain/types';
+import { ContextExternalToolConfigurationStatus } from '../../common/domain';
+import { ToolConfigType } from '../../common/enum';
 import { ContextExternalTool } from '../../context-external-tool/domain';
+import { ToolVersionService } from '../../context-external-tool/service/tool-version-service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
@@ -11,15 +13,14 @@ import { ToolLaunchMapper } from '../mapper';
 import { ToolLaunchData, ToolLaunchRequest } from '../types';
 import {
 	BasicToolLaunchStrategy,
-	IToolLaunchStrategy,
 	Lti11ToolLaunchStrategy,
 	OAuth2ToolLaunchStrategy,
+	ToolLaunchStrategy,
 } from './launch-strategy';
-import { ToolVersionService } from '../../context-external-tool/service/tool-version-service';
 
 @Injectable()
 export class ToolLaunchService {
-	private strategies: Map<ToolConfigType, IToolLaunchStrategy>;
+	private strategies: Map<ToolConfigType, ToolLaunchStrategy>;
 
 	constructor(
 		private readonly schoolExternalToolService: SchoolExternalToolService,
@@ -37,7 +38,7 @@ export class ToolLaunchService {
 
 	generateLaunchRequest(toolLaunchData: ToolLaunchData): ToolLaunchRequest {
 		const toolConfigType: ToolConfigType = ToolLaunchMapper.mapToToolConfigType(toolLaunchData.type);
-		const strategy: IToolLaunchStrategy | undefined = this.strategies.get(toolConfigType);
+		const strategy: ToolLaunchStrategy | undefined = this.strategies.get(toolConfigType);
 
 		if (!strategy) {
 			throw new InternalServerErrorException('Unknown tool launch data type');
@@ -53,9 +54,9 @@ export class ToolLaunchService {
 
 		const { externalTool, schoolExternalTool } = await this.loadToolHierarchy(schoolExternalToolId);
 
-		await this.isToolStatusLatestOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
+		this.isToolStatusLaunchableOrThrow(userId, externalTool, schoolExternalTool, contextExternalTool);
 
-		const strategy: IToolLaunchStrategy | undefined = this.strategies.get(externalTool.config.type);
+		const strategy: ToolLaunchStrategy | undefined = this.strategies.get(externalTool.config.type);
 
 		if (!strategy) {
 			throw new InternalServerErrorException('Unknown tool config type');
@@ -83,20 +84,26 @@ export class ToolLaunchService {
 		};
 	}
 
-	private async isToolStatusLatestOrThrow(
+	private isToolStatusLaunchableOrThrow(
 		userId: EntityId,
 		externalTool: ExternalTool,
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalTool
-	): Promise<void> {
-		const status = await this.toolVersionService.determineToolConfigurationStatus(
+	): void {
+		const status: ContextExternalToolConfigurationStatus = this.toolVersionService.determineToolConfigurationStatus(
 			externalTool,
 			schoolExternalTool,
 			contextExternalTool
 		);
 
-		if (status !== ToolConfigurationStatus.LATEST) {
-			throw new ToolStatusOutdatedLoggableException(userId, contextExternalTool.id ?? '');
+		if (status.isOutdatedOnScopeSchool || status.isOutdatedOnScopeContext || status.isDeactivated) {
+			throw new ToolStatusOutdatedLoggableException(
+				userId,
+				contextExternalTool.id ?? '',
+				status.isOutdatedOnScopeSchool,
+				status.isOutdatedOnScopeContext,
+				status.isDeactivated
+			);
 		}
 	}
 }

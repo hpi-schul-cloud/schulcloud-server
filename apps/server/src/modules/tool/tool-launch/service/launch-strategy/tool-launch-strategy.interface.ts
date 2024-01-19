@@ -1,9 +1,9 @@
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { ToolLaunchData, ToolLaunchRequest } from '../../types';
-import { IToolLaunchParams } from './tool-launch-params.interface';
+import { ToolLaunchParams } from './tool-launch-params.interface';
 
-export interface IToolLaunchStrategy {
-	createLaunchData(userId: EntityId, params: IToolLaunchParams): Promise<ToolLaunchData>;
+export interface ToolLaunchStrategy {
+	createLaunchData(userId: EntityId, params: ToolLaunchParams): Promise<ToolLaunchData>;
 
 	createLaunchRequest(toolLaunchDataDO: ToolLaunchData): ToolLaunchRequest;
 }

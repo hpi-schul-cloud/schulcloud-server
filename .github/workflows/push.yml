@@ -29,7 +29,7 @@ jobs:
     permissions:
       packages: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -42,7 +42,7 @@ jobs:
 
       - name: Docker meta Service Name
         id: docker_meta_img
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
@@ -55,22 +55,23 @@ jobs:
 
       - name: Set up Docker Buildx
         if: ${{ env.IMAGE_EXISTS == 0 }}
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Build and push ${{ github.repository }}
         if: ${{ env.IMAGE_EXISTS == 0 }}
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
           platforms: linux/amd64
           push: true
+          pull: true
           tags: ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }}
           labels: ${{ steps.docker_meta_img.outputs.labels }}
 
       - name: Docker meta Service Name (file preview)
         id: docker_meta_img_file_storage
-        uses: docker/metadata-action@v4
+        uses: docker/metadata-action@v5
         with:
           images: ghcr.io/${{ github.repository }}
           tags: |
@@ -85,11 +86,11 @@ jobs:
 
       - name: Set up Docker Buildx (file preview)
         if: ${{ env.IMAGE_EXISTS == 0 }}
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
       - name: Build and push ${{ github.repository }} (file preview)
         if: ${{ env.IMAGE_EXISTS == 0 }}
-        uses: docker/build-push-action@v4
+        uses: docker/build-push-action@v5
         with:
           build-args: |
             BASE_IMAGE=ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }}
@@ -97,6 +98,7 @@ jobs:
           file: ./Dockerfile.filepreview
           platforms: linux/amd64
           push: true
+          pull: true
           tags: ghcr.io/${{ github.repository }}:file-preview-${{ needs.branch_meta.outputs.sha }}
           labels: |
             ${{ steps.docker_meta_img_file_storage.outputs.labels }}
@@ -138,9 +140,14 @@ jobs:
       branch: ${{ needs.branch_meta.outputs.branch }}
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
-      DEV_VAULT: ${{ secrets.DEV_VAULT }}
-      DEV_KUBE_CONFIG: ${{ secrets.DEV_KUBE_CONFIG }}
-      BINGO_REPO_TOKEN: ${{ secrets.BINGO_REPO_TOKEN }}
+      DEV_VAULT_BRB: ${{ secrets.DEV_VAULT_BRB }}
+      DEV_VAULT_NBC: ${{ secrets.DEV_VAULT_NBC }}
+      DEV_VAULT_THR: ${{ secrets.DEV_VAULT_THR }}
+      DEV_VAULT_DBC: ${{ secrets.DEV_VAULT_DBC }}
+      DEV_KUBE_CONFIG_BRB: ${{ secrets.DEV_KUBE_CONFIG_BRB }}
+      DEV_KUBE_CONFIG_NBC: ${{ secrets.DEV_KUBE_CONFIG_NBC }}
+      DEV_KUBE_CONFIG_THR: ${{ secrets.DEV_KUBE_CONFIG_THR }}
+      DEV_KUBE_CONFIG_DBC: ${{ secrets.DEV_KUBE_CONFIG_DBC }}
 
   deploy-successful:
     needs:
@@ -172,7 +179,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v2
         with:
           sarif_file: 'trivy-results.sarif'
-  
+
   end-to-end-tests:
     needs:
       - build_and_push

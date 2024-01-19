@@ -1,13 +1,13 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, LessonEntity, Task } from '@shared/domain';
+import { Board, LessonEntity, Task } from '@shared/domain/entity';
 import {
-	courseFactory,
 	boardFactory,
+	cleanupCollections,
+	courseFactory,
 	lessonBoardElementFactory,
 	lessonFactory,
 	taskBoardElementFactory,
-	cleanupCollections,
 } from '@shared/testing';
 
 import { MongoMemoryDatabaseModule } from '@infra/database';

@@ -1,14 +1,20 @@
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { FileRecordParentType } from '@infra/rabbitmq';
+import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	Card,
 	Column,
 	ColumnBoard,
+	DrawingElement,
 	ExternalToolElement,
 	FileElement,
 	isCard,
 	isColumn,
 	isColumnBoard,
+	isDrawingElement,
 	isExternalToolElement,
 	isFileElement,
 	isLinkElement,
@@ -17,12 +23,13 @@ import {
 	LinkElement,
 	RichTextElement,
 	SubmissionContainerElement,
-} from '@shared/domain';
-import { FileRecordParentType } from '@infra/rabbitmq';
+} from '@shared/domain/domainobject';
 import {
 	cardFactory,
 	columnBoardFactory,
 	columnFactory,
+	contextExternalToolFactory,
+	drawingElementFactory,
 	externalToolElementFactory,
 	fileElementFactory,
 	linkElementFactory,
@@ -31,8 +38,8 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { ObjectId } from 'bson';
+import { ToolFeatures } from '@modules/tool/tool-config';
 import { BoardDoCopyService } from './board-do-copy.service';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 
@@ -40,14 +47,33 @@ describe('recursive board copy visitor', () => {
 	let module: TestingModule;
 	let service: BoardDoCopyService;
 
+	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
+
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [BoardDoCopyService],
+			providers: [
+				BoardDoCopyService,
+				{
+					provide: ContextExternalToolService,
+					useValue: createMock<ContextExternalToolService>(),
+				},
+				{
+					provide: ToolFeatures,
+					useValue: {
+						ctlToolsCopyEnabled: true,
+					},
+				},
+			],
 		}).compile();
 
 		service = module.get(BoardDoCopyService);
+		contextExternalToolService = module.get(ContextExternalToolService);
 
 		await setupEntities();
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
 	});
 
 	const setupfileCopyService = () => {
@@ -437,6 +463,62 @@ describe('recursive board copy visitor', () => {
 		});
 	});
 
+	describe('when copying a drawing element', () => {
+		const setup = () => {
+			const original = drawingElementFactory.build();
+
+			return { original, ...setupfileCopyService() };
+		};
+
+		const getDrawingElementFromStatus = (status: CopyStatus) => {
+			const copy = status.copyEntity;
+			expect(isDrawingElement(copy)).toEqual(true);
+			return copy as DrawingElement;
+		};
+
+		it('should return a drawing element as copy', async () => {
+			const { original, fileCopyService } = setup();
+
+			const result = await service.copy({ original, fileCopyService });
+
+			expect(isDrawingElement(result.copyEntity)).toEqual(true);
+		});
+
+		it('should copy description', async () => {
+			const { original, fileCopyService } = setup();
+
+			const result = await service.copy({ original, fileCopyService });
+			const copy = getDrawingElementFromStatus(result);
+
+			expect(copy.description).toEqual(original.description);
+		});
+
+		it('should create new id', async () => {
+			const { original, fileCopyService } = setup();
+
+			const result = await service.copy({ original, fileCopyService });
+			const copy = getDrawingElementFromStatus(result);
+
+			expect(copy.id).not.toEqual(original.id);
+		});
+
+		it('should show status successful', async () => {
+			const { original, fileCopyService } = setup();
+
+			const result = await service.copy({ original, fileCopyService });
+
+			expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
+		});
+
+		it('should show type RichTextElement', async () => {
+			const { original, fileCopyService } = setup();
+
+			const result = await service.copy({ original, fileCopyService });
+
+			expect(result.type).toEqual(CopyElementType.DRAWING_ELEMENT);
+		});
+	});
+
 	describe('when copying a file element', () => {
 		const setup = () => {
 			const original = fileElementFactory.build();
@@ -652,61 +734,192 @@ describe('recursive board copy visitor', () => {
 		});
 	});
 
-	describe('when copying a external tool element', () => {
-		const setup = () => {
-			const original = externalToolElementFactory.build();
+	describe('when copying an external tool element', () => {
+		describe('when the element has no linked tool', () => {
+			const setup = () => {
+				const original = externalToolElementFactory.build();
 
-			return { original, ...setupfileCopyService() };
-		};
+				return { original, ...setupfileCopyService() };
+			};
 
-		const getExternalToolElementFromStatus = (status: CopyStatus): ExternalToolElement => {
-			const copy = status.copyEntity;
+			const getExternalToolElementFromStatus = (status: CopyStatus): ExternalToolElement => {
+				const copy = status.copyEntity;
 
-			expect(isExternalToolElement(copy)).toEqual(true);
+				expect(isExternalToolElement(copy)).toEqual(true);
 
-			return copy as ExternalToolElement;
-		};
+				return copy as ExternalToolElement;
+			};
 
-		it('should return a external tool element as copy', async () => {
-			const { original, fileCopyService } = setup();
+			it('should return a external tool element as copy', async () => {
+				const { original, fileCopyService } = setup();
 
-			const result = await service.copy({ original, fileCopyService });
+				const result = await service.copy({ original, fileCopyService });
 
-			expect(isExternalToolElement(result.copyEntity)).toEqual(true);
+				expect(isExternalToolElement(result.copyEntity)).toEqual(true);
+			});
+
+			it('should not copy tool', async () => {
+				const { original, fileCopyService } = setup();
+
+				const result = await service.copy({ original, fileCopyService });
+				const copy = getExternalToolElementFromStatus(result);
+
+				expect(copy.contextExternalToolId).toBeUndefined();
+			});
+
+			it('should create new id', async () => {
+				const { original, fileCopyService } = setup();
+
+				const result = await service.copy({ original, fileCopyService });
+				const copy = getExternalToolElementFromStatus(result);
+
+				expect(copy.id).not.toEqual(original.id);
+			});
+
+			it('should show status successful', async () => {
+				const { original, fileCopyService } = setup();
+
+				const result = await service.copy({ original, fileCopyService });
+
+				expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
+			});
+
+			it('should show type ExternalToolElement', async () => {
+				const { original, fileCopyService } = setup();
+
+				const result = await service.copy({ original, fileCopyService });
+
+				expect(result.type).toEqual(CopyElementType.EXTERNAL_TOOL_ELEMENT);
+			});
 		});
 
-		it('should not copy tool', async () => {
-			const { original, fileCopyService } = setup();
+		describe('when the element has a linked tool and the feature is active', () => {
+			describe('when the linked tool exists', () => {
+				const setup = () => {
+					const originalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
+					const copiedTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
 
-			const result = await service.copy({ original, fileCopyService });
-			const copy = getExternalToolElementFromStatus(result);
+					const original: ExternalToolElement = externalToolElementFactory.build({
+						contextExternalToolId: originalTool.id,
+					});
 
-			expect(copy.contextExternalToolId).toBeUndefined();
-		});
+					contextExternalToolService.findById.mockResolvedValueOnce(originalTool);
+					contextExternalToolService.copyContextExternalTool.mockResolvedValueOnce(copiedTool);
 
-		it('should create new id', async () => {
-			const { original, fileCopyService } = setup();
+					return { original, ...setupfileCopyService(), copiedTool };
+				};
 
-			const result = await service.copy({ original, fileCopyService });
-			const copy = getExternalToolElementFromStatus(result);
+				const getExternalToolElementFromStatus = (status: CopyStatus): ExternalToolElement => {
+					const copy = status.copyEntity;
 
-			expect(copy.id).not.toEqual(original.id);
-		});
+					expect(isExternalToolElement(copy)).toEqual(true);
 
-		it('should show status successful', async () => {
-			const { original, fileCopyService } = setup();
+					return copy as ExternalToolElement;
+				};
 
-			const result = await service.copy({ original, fileCopyService });
+				it('should return a external tool element as copy', async () => {
+					const { original, fileCopyService } = setup();
 
-			expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
-		});
+					const result = await service.copy({ original, fileCopyService });
 
-		it('should show type RichTextElement', async () => {
-			const { original, fileCopyService } = setup();
+					expect(isExternalToolElement(result.copyEntity)).toEqual(true);
+				});
 
-			const result = await service.copy({ original, fileCopyService });
+				it('should copy tool', async () => {
+					const { original, fileCopyService, copiedTool } = setup();
 
-			expect(result.type).toEqual(CopyElementType.EXTERNAL_TOOL_ELEMENT);
+					const result = await service.copy({ original, fileCopyService });
+					const copy = getExternalToolElementFromStatus(result);
+
+					expect(copy.contextExternalToolId).toEqual(copiedTool.id);
+				});
+
+				it('should create new id', async () => {
+					const { original, fileCopyService } = setup();
+
+					const result = await service.copy({ original, fileCopyService });
+					const copy = getExternalToolElementFromStatus(result);
+
+					expect(copy.id).not.toEqual(original.id);
+				});
+
+				it('should show status successful', async () => {
+					const { original, fileCopyService } = setup();
+
+					const result = await service.copy({ original, fileCopyService });
+
+					expect(result.status).toEqual(CopyStatusEnum.SUCCESS);
+				});
+
+				it('should show type ExternalToolElement', async () => {
+					const { original, fileCopyService } = setup();
+
+					const result = await service.copy({ original, fileCopyService });
+
+					expect(result.type).toEqual(CopyElementType.EXTERNAL_TOOL_ELEMENT);
+				});
+			});
+
+			describe('when the linked tool does not exist anymore', () => {
+				const setup = () => {
+					const original: ExternalToolElement = externalToolElementFactory.build({
+						contextExternalToolId: new ObjectId().toHexString(),
+					});
+
+					contextExternalToolService.findById.mockResolvedValueOnce(null);
+
+					return { original, ...setupfileCopyService() };
+				};
+
+				const getExternalToolElementFromStatus = (status: CopyStatus): ExternalToolElement => {
+					const copy = status.copyEntity;
+
+					expect(isExternalToolElement(copy)).toEqual(true);
+
+					return copy as ExternalToolElement;
+				};
+
+				it('should return a external tool element as copy', async () => {
+					const { original, fileCopyService } = setup();
+
+					const result = await service.copy({ original, fileCopyService });
+
+					expect(isExternalToolElement(result.copyEntity)).toEqual(true);
+				});
+
+				it('should not try to copy the tool', async () => {
+					const { original, fileCopyService } = setup();
+
+					await service.copy({ original, fileCopyService });
+
+					expect(contextExternalToolService.copyContextExternalTool).not.toHaveBeenCalled();
+				});
+
+				it('should create new id', async () => {
+					const { original, fileCopyService } = setup();
+
+					const result = await service.copy({ original, fileCopyService });
+					const copy = getExternalToolElementFromStatus(result);
+
+					expect(copy.id).not.toEqual(original.id);
+				});
+
+				it('should show status fail', async () => {
+					const { original, fileCopyService } = setup();
+
+					const result = await service.copy({ original, fileCopyService });
+
+					expect(result.status).toEqual(CopyStatusEnum.FAIL);
+				});
+
+				it('should show type ExternalToolElement', async () => {
+					const { original, fileCopyService } = setup();
+
+					const result = await service.copy({ original, fileCopyService });
+
+					expect(result.type).toEqual(CopyElementType.EXTERNAL_TOOL_ELEMENT);
+				});
+			});
 		});
 	});
 

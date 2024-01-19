@@ -1,9 +1,9 @@
-import { EntityId } from '@shared/domain';
-import { IFileRequestInfo } from '../interfaces';
-import { ICopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
+import { EntityId } from '@shared/domain/types';
+import { FileRequestInfo } from '../interfaces';
+import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
 
 export class CopyFilesOfParentParamBuilder {
-	static build(userId: EntityId, source: IFileRequestInfo, target: IFileRequestInfo): ICopyFilesRequestInfo {
+	static build(userId: EntityId, source: FileRequestInfo, target: FileRequestInfo): CopyFilesRequestInfo {
 		const fileRequestInfo = {
 			userId,
 			source,

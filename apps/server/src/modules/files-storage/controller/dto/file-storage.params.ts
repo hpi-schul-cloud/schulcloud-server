@@ -1,7 +1,7 @@
+import { ScanResult } from '@infra/antivirus';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { StringToBoolean } from '@shared/controller';
-import { EntityId } from '@shared/domain';
-import { ScanResult } from '@infra/antivirus';
+import { EntityId } from '@shared/domain/types';
 import { Allow, IsBoolean, IsEnum, IsMongoId, IsNotEmpty, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { FileRecordParentType } from '../../entity';
 import { PreviewOutputMimeTypes, PreviewWidth } from '../../interface';

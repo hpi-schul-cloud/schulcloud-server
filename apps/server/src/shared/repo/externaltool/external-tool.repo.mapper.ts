@@ -7,10 +7,10 @@ import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,
 	ExternalToolEntity,
-	IExternalToolProperties,
 	Lti11ToolConfigEntity,
 	Oauth2ToolConfigEntity,
 } from '@modules/tool/external-tool/entity';
+import { EntityData } from '@mikro-orm/core';
 
 // TODO: maybe rename because of usage in external tool repo and school external tool repo
 export class ExternalToolRepoMapper {
@@ -40,8 +40,10 @@ export class ExternalToolRepoMapper {
 			config,
 			parameters: this.mapCustomParametersToDOs(entity.parameters || []),
 			isHidden: entity.isHidden,
+			isDeactivated: entity.isDeactivated,
 			openNewTab: entity.openNewTab,
 			version: entity.version,
+			restrictToContexts: entity.restrictToContexts,
 		});
 	}
 
@@ -74,7 +76,7 @@ export class ExternalToolRepoMapper {
 		});
 	}
 
-	static mapDOToEntityProperties(entityDO: ExternalTool): IExternalToolProperties {
+	static mapDOToEntityProperties(entityDO: ExternalTool): EntityData<ExternalToolEntity> {
 		let config: BasicToolConfigEntity | Oauth2ToolConfigEntity | Lti11ToolConfigEntity;
 		switch (entityDO.config.type) {
 			case ToolConfigType.BASIC:
@@ -99,8 +101,10 @@ export class ExternalToolRepoMapper {
 			config,
 			parameters: this.mapCustomParameterDOsToEntities(entityDO.parameters ?? []),
 			isHidden: entityDO.isHidden,
+			isDeactivated: entityDO.isDeactivated,
 			openNewTab: entityDO.openNewTab,
 			version: entityDO.version,
+			restrictToContexts: entityDO.restrictToContexts,
 		};
 	}
 
@@ -147,6 +151,7 @@ export class ExternalToolRepoMapper {
 					location: param.location,
 					type: param.type,
 					isOptional: param.isOptional,
+					isProtected: param.isProtected,
 				})
 		);
 	}
@@ -165,6 +170,7 @@ export class ExternalToolRepoMapper {
 					location: param.location,
 					type: param.type,
 					isOptional: param.isOptional,
+					isProtected: param.isProtected,
 				})
 		);
 	}
