@@ -5,12 +5,12 @@ import { AccessTokenRequest, OauthTokenResponse } from '@modules/oauth/service/d
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { AxiosRequestConfig, AxiosResponse, isAxiosError } from 'axios';
-import QueryString from 'qs';
-import { firstValueFrom, lastValueFrom, Observable } from 'rxjs';
+import { lastValueFrom, Observable } from 'rxjs';
 import { SchulconnexPersonenInfoParams } from './request';
 import { SanisResponse } from './response';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
 
+// TODO: test me
 @Injectable()
 export class SchulconnexRestClient {
 	private readonly API_BASE_URL: string;
@@ -86,8 +86,8 @@ export class SchulconnexRestClient {
 			responseToken = await lastValueFrom(observable);
 		} catch (error: unknown) {
 			if (isAxiosError(error)) {
-				// TODO throw loggable exception
-				throw new Error('Failed to use schulconnex api');
+				// TODO should we throw something else here?
+				throw error;
 			}
 			throw error;
 		}

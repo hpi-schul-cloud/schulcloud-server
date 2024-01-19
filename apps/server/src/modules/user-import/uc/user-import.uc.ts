@@ -24,7 +24,7 @@ import {
 	SchoolIdDoesNotMatchWithUserSchoolId,
 	SchoolInUserMigrationEndLoggable,
 	SchoolInUserMigrationStartLoggable,
-	UserMigrationIsNotEnabled,
+	UserMigrationIsNotEnabledLoggableException,
 } from '../loggable';
 import { UserImportService } from '../service';
 import {

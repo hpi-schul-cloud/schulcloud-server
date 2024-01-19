@@ -1,10 +1,14 @@
 import { SanisResponse } from '@infra/schulconnex-client';
 import { AuthorizationService } from '@modules/authorization';
 import { Inject, Injectable } from '@nestjs/common';
-import { ImportUser } from '@shared/domain/entity';
+import { ImportUser, SystemEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
+import {
+	UserMigrationIsNotEnabledLoggableException,
+	UserImportSchoolExternalIdMissingLoggableException,
+} from '../loggable';
 import { SchulconnexFetchImportUsersService, UserImportService } from '../service';
 
 @Injectable()
@@ -17,26 +21,25 @@ export class UserImportFetchUc {
 	) {}
 
 	public async fetchImportUsers(currentUserId: EntityId): Promise<void> {
-		const currentUser = await this.authorizationService.getUserWithPermissions(currentUserId);
-		this.authorizationService.checkAllPermissions(currentUser, [Permission.SCHOOL_IMPORT_USERS_VIEW]);
+		this.checkMigrationEnabled(currentUserId);
+
+		const currentUser: User = await this.getUserAndCheckPermissions(currentUserId);
 
 		const { externalId } = currentUser.school;
 		if (!externalId) {
-			// TODO: throw loggable exception
+			throw new UserImportSchoolExternalIdMissingLoggableException(currentUserId);
 		}
 
-		// TODO: remove non-null assertion
 		const fetchedData: SanisResponse[] = await this.schulconnexFetchImportUsersService.getData({
-			externalSchoolId: externalId!,
+			externalSchoolId: externalId,
 		});
 
-		// TODO: validate that userMigrationSystemId is set
 		const filteredFetchedData: SanisResponse[] = this.schulconnexFetchImportUsersService.filterAlreadyFetchedData(
 			fetchedData,
 			this.userImportFeatures.userMigrationSystemId
 		);
 
-		const system = await this.userImportService.getMigrationSystem();
+		const system: SystemEntity = await this.userImportService.getMigrationSystem();
 		const mappedImportUsers: ImportUser[] = this.schulconnexFetchImportUsersService.mapDataToUserImportEntities(
 			filteredFetchedData,
 			system,
@@ -46,5 +49,18 @@ export class UserImportFetchUc {
 		// TODO: do matching
 
 		await this.userImportService.saveImportUsers(mappedImportUsers);
+	}
+
+	private checkMigrationEnabled(userId: EntityId): void {
+		if (!this.userImportFeatures.userMigrationEnabled || !this.userImportFeatures.userMigrationSystemId) {
+			throw new UserMigrationIsNotEnabledLoggableException(userId);
+		}
+	}
+
+	private async getUserAndCheckPermissions(userId: EntityId): Promise<User> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.SCHOOL_IMPORT_USERS_VIEW]);
+
+		return user;
 	}
 }
