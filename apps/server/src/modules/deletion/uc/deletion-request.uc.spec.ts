@@ -407,7 +407,7 @@ describe(DeletionRequestUc.name, () => {
 				const { deletionRequestToExecute, rocketChatUser } = setup();
 
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
-				rocketChatUserService.findByUserId.mockResolvedValueOnce(rocketChatUser);
+				rocketChatUserService.findByUserId.mockResolvedValueOnce([rocketChatUser]);
 
 				await uc.executeDeletionRequests();
 
@@ -418,7 +418,7 @@ describe(DeletionRequestUc.name, () => {
 				const { deletionRequestToExecute, rocketChatUser } = setup();
 
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
-				rocketChatUserService.findByUserId.mockResolvedValueOnce(rocketChatUser);
+				rocketChatUserService.findByUserId.mockResolvedValueOnce([rocketChatUser]);
 
 				await uc.executeDeletionRequests();
 

@@ -110,7 +110,6 @@ export class DeletionRequestUc {
 				this.removeUserFromTeams(deletionRequest),
 				this.removeUser(deletionRequest),
 				this.removeUserFromRocketChat(deletionRequest),
-				this.removeUserRegistrationPin(deletionRequest),
 				this.removeUsersDashboard(deletionRequest),
 				this.removeUserFromTasks(deletionRequest),
 			]);
@@ -144,7 +143,7 @@ export class DeletionRequestUc {
 		await this.logDeletion(deletionRequest, DomainModel.ACCOUNT, DeletionOperationModel.DELETE, 0, 1);
 	}
 
-	private async removeUserRegistrationPin(deletionRequest: DeletionRequest) {
+	private async removeUserRegistrationPin(deletionRequest: DeletionRequest): Promise<number[]> {
 		const userToDeletion = await this.userService.findById(deletionRequest.targetRefId);
 		const parentEmails = await this.userService.getParentEmailsFromUser(deletionRequest.targetRefId);
 		const emailsToDeletion: string[] = [userToDeletion.email, ...parentEmails];
@@ -161,6 +160,8 @@ export class DeletionRequestUc {
 			0,
 			deletedRegistrationPin
 		);
+
+		return result;
 	}
 
 	private async removeUserFromClasses(deletionRequest: DeletionRequest) {
@@ -255,8 +256,12 @@ export class DeletionRequestUc {
 	private async removeUser(deletionRequest: DeletionRequest) {
 		this.logger.debug({ action: 'removeUser', deletionRequest });
 
-		const userDeleted: number = await this.userService.deleteUser(deletionRequest.targetRefId);
-		await this.logDeletion(deletionRequest, DomainModel.USER, DeletionOperationModel.DELETE, 0, userDeleted);
+		const registrationPinDeleted = await this.removeUserRegistrationPin(deletionRequest);
+
+		if (registrationPinDeleted) {
+			const userDeleted: number = await this.userService.deleteUser(deletionRequest.targetRefId);
+			await this.logDeletion(deletionRequest, DomainModel.USER, DeletionOperationModel.DELETE, 0, userDeleted);
+		}
 	}
 
 	private async removeUserFromRocketChat(deletionRequest: DeletionRequest) {
@@ -265,8 +270,8 @@ export class DeletionRequestUc {
 		const rocketChatUser = await this.rocketChatUserService.findByUserId(deletionRequest.targetRefId);
 
 		const [, rocketChatUserDeleted] = await Promise.all([
-			this.rocketChatService.deleteUser(rocketChatUser.username),
-			this.rocketChatUserService.deleteByUserId(rocketChatUser.userId),
+			this.rocketChatService.deleteUser(rocketChatUser[0].username),
+			this.rocketChatUserService.deleteByUserId(rocketChatUser[0].userId),
 		]);
 		await this.logDeletion(
 			deletionRequest,
