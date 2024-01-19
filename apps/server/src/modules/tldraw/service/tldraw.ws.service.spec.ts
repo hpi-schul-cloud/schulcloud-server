@@ -348,10 +348,10 @@ describe('TldrawWSService', () => {
 				const { messageHandlerSpy, sendSpy, getYDocSpy, closeConnSpy } = await setup();
 
 				await service.setupWSConnection(ws, 'TEST');
-				await delay(10);
+				await delay(20);
 				ws.emit('pong');
 
-				await delay(200);
+				await delay(20);
 
 				expect(sendSpy).toHaveBeenCalledTimes(2);
 				ws.close();
@@ -438,7 +438,7 @@ describe('TldrawWSService', () => {
 
 				await service.setupWSConnection(ws, 'TEST');
 
-				await delay(500);
+				await delay(20);
 
 				expect(closeConnSpy).toHaveBeenCalled();
 				ws.close();
@@ -473,7 +473,7 @@ describe('TldrawWSService', () => {
 
 				await service.setupWSConnection(ws, 'TEST');
 
-				await delay(500);
+				await delay(20);
 
 				expect(closeConnSpy).toHaveBeenCalled();
 				expect(clearIntervalSpy).toHaveBeenCalled();
@@ -559,7 +559,7 @@ describe('TldrawWSService', () => {
 
 			await expect(service.updateHandler(msg, socketMock, doc)).rejects.toThrow('error');
 
-			await delay(200);
+			await delay(20);
 
 			expect(errorLogSpy).toHaveBeenCalled();
 			ws.close();
@@ -598,7 +598,7 @@ describe('TldrawWSService', () => {
 				await service.setupWSConnection(ws, 'TEST');
 				ws.emit('message', msg);
 
-				await delay(50);
+				await delay(20);
 
 				expect(messageHandlerSpy).toHaveBeenCalledTimes(1);
 				ws.close();
@@ -621,7 +621,7 @@ describe('TldrawWSService', () => {
 					expect(e.message).toMatch('error');
 				}
 
-				await delay(200);
+				await delay(20);
 
 				expect(errorLogSpy).toHaveBeenCalled();
 				ws.close();
@@ -676,7 +676,7 @@ describe('TldrawWSService', () => {
 						expect(e.message).toMatch('error');
 					}
 
-					await delay(200);
+					await delay(20);
 
 					expect(doc).toBeDefined();
 					expect(redisSubscribeSpy).toHaveBeenCalled();
