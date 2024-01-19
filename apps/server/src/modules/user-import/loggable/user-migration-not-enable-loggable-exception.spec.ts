@@ -5,13 +5,14 @@ describe(UserMigrationIsNotEnabledLoggableException.name, () => {
 	describe('getLoggableMessage', () => {
 		const setup = () => {
 			const userId: string = new ObjectId().toHexString();
-			const exception = new UserMigrationIsNotEnabledLoggableException(userId);
+			const schoolId: string = new ObjectId().toHexString();
+			const exception = new UserMigrationIsNotEnabledLoggableException(userId, schoolId);
 
-			return { exception, userId };
+			return { exception, userId, schoolId };
 		};
 
 		it('should return the correct message', () => {
-			const { exception, userId } = setup();
+			const { exception, userId, schoolId } = setup();
 
 			const message = exception.getLogMessage();
 
@@ -21,6 +22,7 @@ describe(UserMigrationIsNotEnabledLoggableException.name, () => {
 				stack: exception.stack,
 				data: {
 					userId,
+					schoolId,
 				},
 			});
 		});

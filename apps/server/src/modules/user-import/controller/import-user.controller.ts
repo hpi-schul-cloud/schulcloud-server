@@ -118,11 +118,10 @@ export class ImportUserController {
 		await this.userImportUc.endSchoolInMaintenance(currentUser.userId);
 	}
 
-	@Post('fetch-import-user')
+	@Post('fetch-import-users')
 	@ApiOperation({
 		summary: 'Fetch import users',
-		description:
-			'Fetches import users from specific user migration fetching endpoint which will be set in ImportUserConfiguration. ',
+		description: 'Fetches import users from specific user migration fetching endpoint.',
 	})
 	@ApiCreatedResponse()
 	@ApiUnauthorizedResponse()

@@ -609,7 +609,6 @@ describe('[ImportUserModule]', () => {
 				await uc.startSchoolInUserMigration(currentUser.id);
 
 				expect(userImportService.checkFeatureEnabled).toBeDefined();
-				expect(systemRepoSpy).toHaveBeenCalledWith(system.id);
 			});
 			it('Should request authorization service', async () => {
 				await uc.startSchoolInUserMigration(currentUser.id);
@@ -617,12 +616,16 @@ describe('[ImportUserModule]', () => {
 				expect(userRepoByIdSpy).toHaveBeenCalledWith(currentUser.id, true);
 				expect(permissionServiceSpy).toHaveBeenCalledWith(currentUser, [Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
 			});
+
 			it('Should save school params', async () => {
 				schoolServiceSaveSpy.mockRestore();
 				schoolServiceSaveSpy = schoolService.save.mockImplementation((schoolDo: LegacySchoolDo) =>
 					Promise.resolve(schoolDo)
 				);
+				userImportService.getMigrationSystem.mockResolvedValueOnce(system);
+
 				await uc.startSchoolInUserMigration(currentUser.id);
+
 				const schoolParams: LegacySchoolDo = { ...createMockSchoolDo(school) };
 				schoolParams.inUserMigration = true;
 				schoolParams.externalId = 'foo';

@@ -1112,12 +1112,15 @@ describe('ImportUser Controller (API)', () => {
 			const setup = async () => {
 				const { account, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
 				const loggedInClient = await testApiClient.login(account);
+				userImportFeatures.userMigrationEnabled = true;
+				userImportFeatures.userMigrationSystemId = new ObjectId().toHexString();
+
 				return { loggedInClient, account, school };
 			};
 
 			describe('when user is not authenticated', () => {
 				it('should return unauthorized', async () => {
-					await testApiClient.post('fetchImportUsers').send().expect(HttpStatus.UNAUTHORIZED);
+					await testApiClient.post('fetch-import-users').send().expect(HttpStatus.UNAUTHORIZED);
 				});
 			});
 
@@ -1125,7 +1128,7 @@ describe('ImportUser Controller (API)', () => {
 				it('should return with status created', async () => {
 					const { loggedInClient } = await setup();
 
-					await loggedInClient.post('fetchImportUsers').send().expect(HttpStatus.CREATED);
+					await loggedInClient.post('fetch-import-users').send().expect(HttpStatus.CREATED);
 				});
 			});
 		});

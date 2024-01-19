@@ -2,7 +2,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class UserMigrationIsNotEnabledLoggableException extends InternalServerErrorException implements Loggable {
-	constructor(private readonly userId: string) {
+	constructor(private readonly userId?: string, private readonly schoolId?: string) {
 		super();
 	}
 
@@ -13,6 +13,7 @@ export class UserMigrationIsNotEnabledLoggableException extends InternalServerEr
 			stack: this.stack,
 			data: {
 				userId: this.userId,
+				schoolId: this.schoolId,
 			},
 		};
 	}

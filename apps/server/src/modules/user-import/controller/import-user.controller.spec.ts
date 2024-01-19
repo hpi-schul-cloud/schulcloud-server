@@ -6,6 +6,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { UserImportFeatures } from '../config';
+import { UserImportService } from '../service';
 import { UserImportFetchUc, UserImportUc } from '../uc';
 import { ImportUserController } from './import-user.controller';
 
@@ -47,7 +48,7 @@ describe('ImportUserController', () => {
 					useValue: {},
 				},
 				{
-					provide: UserImportFeatures,
+					provide: UserImportService,
 					useValue: {},
 				},
 				{

@@ -4,6 +4,7 @@ import { ImportUser, SystemEntity } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo } from '@shared/repo';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
+import { UserMigrationIsNotEnabledLoggableException } from '../loggable';
 
 @Injectable()
 export class UserImportService {
@@ -27,9 +28,7 @@ export class UserImportService {
 		const enabled = this.userImportFeatures.userMigrationEnabled;
 		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeature.LDAP_UNIVENTION_MIGRATION);
 		if (!enabled && !isLdapPilotSchool) {
-			// this.logger.warning(new UserMigrationIsNotEnabled());
-			// TODO: create loggable
-			throw new InternalServerErrorException('User Migration not enabled');
+			throw new UserMigrationIsNotEnabledLoggableException(school.id);
 		}
 	}
 }
