@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { DomainModel, EntityId, StatusModel } from '@shared/domain/types';
+import { DomainModel, EntityId, OperationModel, StatusModel } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
+import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainOperation } from '@shared/domain/interface';
 import { RocketChatUser } from '../domain';
 import { RocketChatUserRepo } from '../repo';
 
@@ -17,7 +19,7 @@ export class RocketChatUserService {
 		return user;
 	}
 
-	public async deleteByUserId(userId: EntityId): Promise<number> {
+	public async deleteByUserId(userId: EntityId): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user from rocket chat',
@@ -26,7 +28,13 @@ export class RocketChatUserService {
 				StatusModel.PENDING
 			)
 		);
+		const rocketChatUser = await this.rocketChatUserRepo.findByUserId(userId);
+
 		const deletedRocketChatUser = await this.rocketChatUserRepo.deleteByUserId(userId);
+
+		const result = DomainOperationBuilder.build(DomainModel.ROCKETCHATUSER, OperationModel.DELETE, 1, [
+			rocketChatUser.id,
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
@@ -39,6 +47,6 @@ export class RocketChatUserService {
 			)
 		);
 
-		return deletedRocketChatUser;
+		return result;
 	}
 }

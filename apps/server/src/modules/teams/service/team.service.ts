@@ -41,7 +41,7 @@ export class TeamService {
 				'Successfully deleted user data from Teams',
 				DomainModel.TEAMS,
 				userId,
-				StatusModel.PENDING,
+				StatusModel.FINISHED,
 				numberOfUpdatedTeams,
 				0
 			)

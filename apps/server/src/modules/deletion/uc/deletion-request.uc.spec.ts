@@ -209,6 +209,12 @@ describe(DeletionRequestUc.name, () => {
 					userId: deletionRequestToExecute.targetRefId,
 				});
 				const parentEmail = 'parent@parent.eu';
+				const rocketChatUserDeleted = DomainOperationBuilder.build(
+					DomainModel.ROCKETCHATUSER,
+					OperationModel.DELETE,
+					1,
+					[new ObjectId().toHexString()]
+				);
 				const tasksModifiedByRemoveCreatorId = DomainOperationBuilder.build(
 					DomainModel.TASK,
 					OperationModel.UPDATE,
@@ -235,7 +241,7 @@ describe(DeletionRequestUc.name, () => {
 				pseudonymService.deleteByUserId.mockResolvedValueOnce(2);
 				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(2);
 				userService.deleteUser.mockResolvedValueOnce(1);
-				rocketChatUserService.deleteByUserId.mockResolvedValueOnce(1);
+				rocketChatUserService.deleteByUserId.mockResolvedValueOnce(rocketChatUserDeleted);
 				filesStorageClientAdapterService.removeCreatorIdFromFileRecords.mockResolvedValueOnce(5);
 				dashboardService.deleteDashboardByUserId.mockResolvedValueOnce(1);
 				taskService.removeCreatorIdFromTasks.mockResolvedValueOnce(tasksModifiedByRemoveCreatorId);
@@ -484,7 +490,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(14);
+				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(15);
 			});
 		});
 

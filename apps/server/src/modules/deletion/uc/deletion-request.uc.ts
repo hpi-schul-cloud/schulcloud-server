@@ -239,17 +239,24 @@ export class DeletionRequestUc {
 
 		const rocketChatUser = await this.rocketChatUserService.findByUserId(deletionRequest.targetRefId);
 
-		const [, rocketChatUserDeleted] = await Promise.all([
+		const [rocketChatDeleted, rocketChatUserDeleted] = await Promise.all([
 			this.rocketChatService.deleteUser(rocketChatUser.username),
 			this.rocketChatUserService.deleteByUserId(rocketChatUser.userId),
 		]);
+
 		await this.logDeletion(
 			deletionRequest,
-			DomainModel.ROCKETCHATUSER,
-			OperationModel.DELETE,
-			rocketChatUserDeleted,
-			[]
+			rocketChatUserDeleted.domain,
+			rocketChatUserDeleted.operation,
+			rocketChatUserDeleted.count,
+			rocketChatUserDeleted.refs
 		);
+
+		if (rocketChatDeleted) {
+			await this.logDeletion(deletionRequest, DomainModel.ROCKETCHATSERVICE, OperationModel.DELETE, 1, [
+				rocketChatUser.username,
+			]);
+		}
 	}
 
 	private async removeUserFromTasks(deletionRequest: DeletionRequest) {

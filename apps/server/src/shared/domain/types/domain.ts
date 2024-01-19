@@ -10,6 +10,7 @@ export const enum DomainModel {
 	PSEUDONYMS = 'pseudonyms',
 	REGISTRATIONPIN = 'registrationPin',
 	ROCKETCHATUSER = 'rocketChatUser',
+	ROCKETCHATSERVICE = 'rocketChatService',
 	TASK = 'task',
 	TEAMS = 'teams',
 	USER = 'user',
