@@ -25,11 +25,11 @@ import { MetricsService } from '../metrics';
 
 @Injectable()
 export class TldrawWsService {
-	public pingTimeout: number;
-
-	private gcEnabled: boolean;
-
 	public docs = new Map();
+
+	private readonly pingTimeout: number;
+
+	private readonly gcEnabled: boolean;
 
 	public readonly sub: Redis;
 
@@ -119,16 +119,13 @@ export class TldrawWsService {
 	 * Gets a Y.Doc by name, whether in memory or on disk
 	 *
 	 * @param {string} docName - the name of the Y.Doc to find or create
-	 * @return {WsSharedDocDo}
 	 */
-	public async getYDoc(docName: string): Promise<WsSharedDocDo> {
-		const wsSharedDocDo = await map.setIfUndefined(this.docs, docName, async () => {
+	public getYDoc(docName: string) {
+		const wsSharedDocDo = map.setIfUndefined(this.docs, docName, () => {
 			const doc = new WsSharedDocDo(docName, this.gcEnabled);
 			this.registerAwarenessUpdateHandler(doc);
 			this.registerUpdateHandler(doc);
 			this.subscribeToRedisChannels(doc);
-
-			await this.updateDocument(docName, doc);
 
 			this.docs.set(docName, doc);
 			this.metricsService.incrementNumberOfBoardsOnServerCounter();
@@ -164,7 +161,6 @@ export class TldrawWsService {
 				case WSMessageType.AWARENESS: {
 					const update = decoding.readVarUint8Array(decoder);
 					this.publishUpdateToRedis(doc, update, 'awareness');
-					applyAwarenessUpdate(doc.awareness, update, conn);
 					break;
 				}
 				default:
@@ -197,12 +193,16 @@ export class TldrawWsService {
 	 * @param {WebSocket} ws
 	 * @param {string} docName
 	 */
-	public async setupWSConnection(ws: WebSocket, docName: string): Promise<void> {
+	public async setupWSConnection(ws: WebSocket, docName: string) {
 		ws.binaryType = 'arraybuffer';
-		// get doc, initialize if it does not exist yet
-		const doc = await this.getYDoc(docName);
 
+		// get doc, initialize if it does not exist yet
+		const isNew = !this.docs.has(docName);
+		const doc = this.getYDoc(docName);
 		doc.connections.set(ws, new Set());
+		if (isNew) {
+			await this.updateDocument(docName, doc);
+		}
 
 		console.log('DOCUMENT SHAPES ARRAY LENGTH: ', Array.from(doc.getMap('shapes').entries()).length);
 		console.log('DOC CONNS COUNT: ', doc.connections.size);
@@ -215,7 +215,7 @@ export class TldrawWsService {
 			this.messageHandler(ws, doc, new Uint8Array(message));
 		});
 
-		// Check if connection is still alive
+		// check if connection is still alive
 		let pongReceived = true;
 		const pingInterval = setInterval(() => {
 			if (pongReceived && doc.connections.has(ws)) {
@@ -241,6 +241,7 @@ export class TldrawWsService {
 			const syncEncoder = encoding.createEncoder();
 			encoding.writeVarUint(syncEncoder, WSMessageType.SYNC);
 			writeSyncStep1(syncEncoder, doc);
+			console.log('SETUP CONNECTION MESSAGE LENGTH', encoding.toUint8Array(syncEncoder).length);
 			this.send(doc, ws, encoding.toUint8Array(syncEncoder));
 			const awarenessStates = doc.awareness.getStates();
 			if (awarenessStates.size > 0) {
