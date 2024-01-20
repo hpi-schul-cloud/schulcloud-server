@@ -667,7 +667,7 @@ describe('TldrawWSService', () => {
 						return new Promise(() => 0);
 					});
 
-					service.getYDoc('test-redis-fail');
+					await service.getYDoc('test-redis-fail');
 
 					expect(redisSubscribeSpy).toHaveBeenCalled();
 					expect(errorLogSpy).toHaveBeenCalled();
