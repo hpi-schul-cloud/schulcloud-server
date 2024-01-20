@@ -26,6 +26,7 @@ import { TestConnection, tldrawTestConfig } from '../testing';
 import { WsSharedDocDo } from '../domain';
 import { TldrawWsService } from '.';
 import { MetricsService } from '../metrics';
+import { Callback } from 'ioredis/built/types';
 
 jest.mock('yjs', () => {
 	const moduleMock: unknown = {
@@ -232,6 +233,8 @@ describe('TldrawWSService', () => {
 			const setup = async (messageValues: number[]) => {
 				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 
+				const errorLogSpy = jest.spyOn(logger, 'warning');
+				const publishSpy = jest.spyOn(Ioredis.Redis.prototype, 'publish');
 				const sendSpy = jest.spyOn(service, 'send');
 				const applyAwarenessUpdateSpy = jest.spyOn(AwarenessProtocol, 'applyAwarenessUpdate');
 				const syncProtocolUpdateSpy = jest
@@ -245,6 +248,8 @@ describe('TldrawWSService', () => {
 
 				return {
 					sendSpy,
+					errorLogSpy,
+					publishSpy,
 					applyAwarenessUpdateSpy,
 					syncProtocolUpdateSpy,
 					doc,
@@ -271,6 +276,27 @@ describe('TldrawWSService', () => {
 
 				expect(sendSpy).toHaveBeenCalledTimes(0);
 				expect(applyAwarenessUpdateSpy).toHaveBeenCalledTimes(1);
+				ws.close();
+				sendSpy.mockRestore();
+				applyAwarenessUpdateSpy.mockRestore();
+				syncProtocolUpdateSpy.mockRestore();
+			});
+
+			it('should log error when publishing AWARENESS has errors', async () => {
+				const { publishSpy, errorLogSpy, sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } =
+					await setup([1, 1, 0]);
+				publishSpy.mockImplementationOnce((_channel, _message, cb) => {
+					if (cb) {
+						cb(new Error('error'));
+					}
+					return new Promise(() => 0);
+				});
+
+				service.messageHandler(ws, doc, msg);
+
+				expect(sendSpy).toHaveBeenCalledTimes(0);
+				expect(applyAwarenessUpdateSpy).toHaveBeenCalledTimes(1);
+				expect(errorLogSpy).toHaveBeenCalled();
 				ws.close();
 				sendSpy.mockRestore();
 				applyAwarenessUpdateSpy.mockRestore();
@@ -526,13 +552,16 @@ describe('TldrawWSService', () => {
 			ws.close();
 		});
 
-		it('should log error when publish to Redis throws', async () => {
+		it('should log error when publish to Redis has errors', async () => {
 			const { doc, socketMock, msg, errorLogSpy, publishSpy } = await setup();
-			publishSpy.mockRejectedValueOnce(new Error('error'));
+			publishSpy.mockImplementationOnce((_channel, _message, cb) => {
+				if (cb) {
+					cb(new Error('error'));
+				}
+				return new Promise(() => 0);
+			});
 
-			await expect(service.updateHandler(msg, socketMock, doc)).rejects.toThrow('error');
-
-			await delay(20);
+			service.updateHandler(msg, socketMock, doc);
 
 			expect(errorLogSpy).toHaveBeenCalled();
 			ws.close();
@@ -629,11 +658,16 @@ describe('TldrawWSService', () => {
 
 				it('should log error when failed', async () => {
 					const { errorLogSpy, redisSubscribeSpy, redisOnSpy } = setup();
-					redisSubscribeSpy.mockImplementationOnce(() => {
-						throw new Error('error');
+					redisSubscribeSpy.mockImplementationOnce((...args: unknown[]) => {
+						args.forEach((arg) => {
+							if (typeof arg === 'function') {
+								arg(new Error('error'));
+							}
+						});
+						return new Promise(() => 0);
 					});
 
-					await expect(service.getYDoc('test-redis-fail')).rejects.toThrow('error');
+					service.getYDoc('test-redis-fail');
 
 					expect(redisSubscribeSpy).toHaveBeenCalled();
 					expect(errorLogSpy).toHaveBeenCalled();
