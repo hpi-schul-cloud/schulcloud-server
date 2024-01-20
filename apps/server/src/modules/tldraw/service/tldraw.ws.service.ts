@@ -77,10 +77,8 @@ export class TldrawWsService {
 			void this.closeConn(doc, conn);
 		}
 
-		console.log('SEND MESSAGE LENGTH: ', message.length);
 		conn.send(message, (err) => {
 			if (err) {
-				console.log('SEND ERROR: ', err.message);
 				void this.closeConn(doc, conn);
 			}
 		});
@@ -152,9 +150,7 @@ export class TldrawWsService {
 					// If the `encoder` only contains the type of reply message and no
 					// message, there is no need to send the message. When `encoder` only
 					// contains the type of reply, its length is 1.
-					console.log('SYNC MESSAGE ENCODER LENGTH: ', encoding.length(encoder));
 					if (encoding.length(encoder) > 1) {
-						console.log('SYNC MESSAGE LENGTH: ', encoding.toUint8Array(encoder).length);
 						this.send(doc, conn, encoding.toUint8Array(encoder));
 					}
 					break;
@@ -204,9 +200,6 @@ export class TldrawWsService {
 			await this.updateDocument(docName, doc);
 		}
 
-		console.log('DOCUMENT SHAPES ARRAY LENGTH: ', Array.from(doc.getMap('shapes').entries()).length);
-		console.log('DOC CONNS COUNT: ', doc.connections.size);
-
 		ws.on('error', (err) => {
 			this.logger.warning(new WebsocketErrorLoggable(err));
 		});
@@ -241,8 +234,8 @@ export class TldrawWsService {
 			const syncEncoder = encoding.createEncoder();
 			encoding.writeVarUint(syncEncoder, WSMessageType.SYNC);
 			writeSyncStep1(syncEncoder, doc);
-			console.log('SETUP CONNECTION MESSAGE LENGTH', encoding.toUint8Array(syncEncoder).length);
 			this.send(doc, ws, encoding.toUint8Array(syncEncoder));
+
 			const awarenessStates = doc.awareness.getStates();
 			if (awarenessStates.size > 0) {
 				const awarenessEncoder = encoding.createEncoder();
@@ -279,8 +272,7 @@ export class TldrawWsService {
 		encoding.writeVarUint(encoder, WSMessageType.SYNC);
 		writeUpdate(encoder, update);
 		const message = encoding.toUint8Array(encoder);
-		console.log('PROPAGATE CONNS LENGTH: ', doc.connections.size);
-		console.log('PROPAGATE UPDATE MESSAGE LENGTH: ', message.length);
+
 		doc.connections.forEach((_, conn) => {
 			this.send(doc, conn, message);
 		});
