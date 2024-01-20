@@ -75,6 +75,7 @@ export class TldrawWsService {
 		console.log('SEND: ', message);
 		conn.send(message, (err) => {
 			if (err) {
+				console.log('SEND ERROR: ', err.message);
 				void this.closeConn(doc, conn);
 			}
 		});
