@@ -1,11 +1,11 @@
-import { RedisGeneralErrorLoggable } from './redis-general-error.loggable';
+import { RedisErrorLoggable } from './redis-error.loggable';
 
 describe('RedisGeneralErrorLoggable', () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const type = 'SUB';
 			const error = new Error('test');
-			const loggable = new RedisGeneralErrorLoggable(type, error);
+			const loggable = new RedisErrorLoggable(type, error);
 
 			return { loggable, error };
 		};
@@ -17,7 +17,7 @@ describe('RedisGeneralErrorLoggable', () => {
 
 			expect(message).toEqual({
 				message: 'Redis SUB error',
-				type: 'REDIS_SUB_GENERAL_ERROR',
+				type: 'REDIS_SUB_ERROR',
 				error,
 			});
 		});

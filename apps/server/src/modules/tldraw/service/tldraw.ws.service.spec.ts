@@ -388,6 +388,27 @@ describe('TldrawWSService', () => {
 		});
 	});
 
+	describe('on websocket error', () => {
+		const setup = async () => {
+			ws = await TestConnection.setupWs(wsUrl, 'TEST');
+			const errorLogSpy = jest.spyOn(logger, 'warning');
+
+			return {
+				errorLogSpy,
+			};
+		};
+
+		it('should log error', async () => {
+			const { errorLogSpy } = await setup();
+
+			await service.setupWSConnection(ws, 'TEST');
+			ws.emit('error', new Error('error'));
+
+			expect(errorLogSpy).toHaveBeenCalled();
+			ws.close();
+		});
+	});
+
 	describe('closeConn', () => {
 		describe('when there is no error', () => {
 			const setup = async () => {
@@ -455,39 +476,6 @@ describe('TldrawWSService', () => {
 				closeConnSpy.mockRestore();
 				flushDocumentSpy.mockRestore();
 				redisUnsubscribeSpy.mockRestore();
-			});
-		});
-
-		describe('when ping failed', () => {
-			const setup = async () => {
-				ws = await TestConnection.setupWs(wsUrl, 'TEST');
-
-				const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockReturnValueOnce();
-				const closeConnSpy = jest.spyOn(service, 'closeConn').mockResolvedValue();
-				const pingSpy = jest.spyOn(ws, 'ping').mockImplementationOnce(() => {
-					throw new Error('error');
-				});
-				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce({});
-
-				return {
-					messageHandlerSpy,
-					closeConnSpy,
-					pingSpy,
-				};
-			};
-
-			it('should close connection', async () => {
-				const { messageHandlerSpy, closeConnSpy, pingSpy } = await setup();
-
-				await service.setupWSConnection(ws, 'TEST');
-
-				await delay(20);
-
-				expect(closeConnSpy).toHaveBeenCalled();
-				ws.close();
-				messageHandlerSpy.mockRestore();
-				closeConnSpy.mockRestore();
-				pingSpy.mockRestore();
 			});
 		});
 

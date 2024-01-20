@@ -11,7 +11,12 @@ import { Redis } from 'ioredis';
 import { Logger } from '@src/core/logger';
 import { applyUpdate } from 'yjs';
 import { TldrawRedisFactory } from '../redis';
-import { RedisPublishErrorLoggable, WebsocketMessageErrorLoggable, WsSharedDocErrorLoggable } from '../loggable';
+import {
+	RedisPublishErrorLoggable,
+	WebsocketErrorLoggable,
+	WebsocketMessageErrorLoggable,
+	WsSharedDocErrorLoggable,
+} from '../loggable';
 import { TldrawConfig } from '../config';
 import { AwarenessConnectionsUpdate, WSConnectionState, WSMessageType } from '../types';
 import { WsSharedDocDo } from '../domain';
@@ -201,32 +206,25 @@ export class TldrawWsService {
 
 		console.log('DOCUMENT SHAPES ARRAY LENGTH: ', Array.from(doc.getMap('shapes').entries()).length);
 		console.log('DOC CONNS COUNT: ', doc.connections.size);
-		// listen and reply to events
-		ws.on('message', (message: ArrayBufferLike) => this.messageHandler(ws, doc, new Uint8Array(message)));
+
+		ws.on('error', (err) => {
+			this.logger.warning(new WebsocketErrorLoggable(err));
+		});
+
+		ws.on('message', (message: ArrayBufferLike) => {
+			this.messageHandler(ws, doc, new Uint8Array(message));
+		});
 
 		// Check if connection is still alive
 		let pongReceived = true;
 		const pingInterval = setInterval(() => {
-			const hasConn = doc.connections.has(ws);
-
-			if (pongReceived) {
+			if (pongReceived && doc.connections.has(ws)) {
 				pongReceived = false;
-
-				if (!hasConn) return;
-
-				try {
-					ws.ping();
-				} catch (e) {
-					void this.closeConn(doc, ws);
-					clearInterval(pingInterval);
-				}
+				ws.ping();
 				return;
 			}
 
-			if (hasConn) {
-				void this.closeConn(doc, ws);
-			}
-
+			void this.closeConn(doc, ws);
 			clearInterval(pingInterval);
 		}, this.pingTimeout);
 
@@ -238,6 +236,7 @@ export class TldrawWsService {
 		ws.on('pong', () => {
 			pongReceived = true;
 		});
+
 		{
 			const syncEncoder = encoding.createEncoder();
 			encoding.writeVarUint(syncEncoder, WSMessageType.SYNC);
@@ -279,6 +278,8 @@ export class TldrawWsService {
 		encoding.writeVarUint(encoder, WSMessageType.SYNC);
 		writeUpdate(encoder, update);
 		const message = encoding.toUint8Array(encoder);
+		console.log('PROPAGATE CONNS LENGTH: ', doc.connections.size);
+		console.log('PROPAGATE UPDATE MESSAGE LENGTH: ', message.length);
 		doc.connections.forEach((_, conn) => {
 			this.send(doc, conn, message);
 		});
