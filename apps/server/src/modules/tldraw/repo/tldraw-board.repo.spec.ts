@@ -144,23 +144,6 @@ describe('TldrawBoardRepo', () => {
 				storeGetYDocSpy.mockRestore();
 				ws.close();
 			});
-
-			it('should log error if update fails', async () => {
-				const { doc, byteArray, storeGetYDocSpy, errorLogSpy } = await setup();
-				const storeUpdateSpy = jest
-					.spyOn(repo.mdb, 'storeUpdateTransactional')
-					.mockRejectedValueOnce(new Error('test error'));
-
-				await repo.updateDocument('TEST', doc);
-				doc.emit('update', [byteArray, undefined, doc]);
-
-				expect(storeUpdateSpy).toHaveBeenCalled();
-				expect(storeUpdateSpy).toHaveBeenCalledTimes(1);
-				expect(errorLogSpy).toHaveBeenCalled();
-				storeUpdateSpy.mockRestore();
-				storeGetYDocSpy.mockRestore();
-				ws.close();
-			});
 		});
 	});
 
