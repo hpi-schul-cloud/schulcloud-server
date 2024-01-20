@@ -155,6 +155,7 @@ export class TldrawWsService {
 					// message, there is no need to send the message. When `encoder` only
 					// contains the type of reply, its length is 1.
 					if (encoding.length(encoder) > 1) {
+						console.log('SYNC MESSAGE LENGTH: ', encoding.toUint8Array(encoder).length);
 						this.send(doc, conn, encoding.toUint8Array(encoder));
 					}
 					break;
