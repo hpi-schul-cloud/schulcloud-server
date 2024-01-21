@@ -22,7 +22,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		private readonly logger: Logger
 	) {}
 
-	async handleConnection(client: WebSocket, request: Request): Promise<void> {
+	public async handleConnection(client: WebSocket, request: Request): Promise<void> {
 		const docName = this.getDocNameFromRequest(request);
 		if (docName.length > 0 && this.configService.get<string>('FEATURE_TLDRAW_ENABLED')) {
 			const cookies = this.parseCookiesFromHeader(request);
