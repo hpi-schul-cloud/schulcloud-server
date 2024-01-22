@@ -247,9 +247,16 @@ describe('dashboard repo', () => {
 
 	describe('getUsersDashboardIfExist', () => {
 		describe('when user has no dashboard', () => {
-			it('should return null', async () => {
+			const setup = async () => {
 				const user = userFactory.build();
 				await em.persistAndFlush(user);
+
+				return { user };
+			};
+
+			it('should return null', async () => {
+				const { user } = await setup();
+
 				const result = await repo.getUsersDashboardIfExist(user.id);
 
 				expect(result).toBeNull();
@@ -257,7 +264,7 @@ describe('dashboard repo', () => {
 		});
 
 		describe('when user has a dashboard already', () => {
-			it('should return the existing dashboard', async () => {
+			const setup = async () => {
 				const user = userFactory.build();
 				const course = courseFactory.build({ students: [user], name: 'Mathe' });
 				await em.persistAndFlush([user, course]);
@@ -271,6 +278,12 @@ describe('dashboard repo', () => {
 					userId: user.id,
 				});
 				await repo.persistAndFlush(dashboard);
+
+				return { user, dashboard };
+			};
+
+			it('should return the existing dashboard', async () => {
+				const { user, dashboard } = await setup();
 
 				const result = await repo.getUsersDashboardIfExist(user.id);
 				expect(result?.id).toEqual(dashboard.id);
