@@ -144,9 +144,12 @@ export class DeletionRequestUc {
 	}
 
 	private async removeUserRegistrationPin(deletionRequest: DeletionRequest): Promise<number[]> {
-		const userToDeletion = await this.userService.findById(deletionRequest.targetRefId);
+		const userToDeletion = await this.userService.findByIdOrNull(deletionRequest.targetRefId);
 		const parentEmails = await this.userService.getParentEmailsFromUser(deletionRequest.targetRefId);
-		const emailsToDeletion: string[] = [userToDeletion.email, ...parentEmails];
+		let emailsToDeletion: string[] = [];
+		if (userToDeletion !== null) {
+			emailsToDeletion = [userToDeletion.email, ...parentEmails];
+		}
 
 		const result = await Promise.all(
 			emailsToDeletion.map((email) => this.registrationPinService.deleteRegistrationPinByEmail(email))
