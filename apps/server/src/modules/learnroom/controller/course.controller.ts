@@ -87,7 +87,7 @@ export class CourseController {
 		@UploadedFile(
 			new ParseFilePipe({
 				validators: [
-					new MaxFileSizeValidator({ maxSize: 1000 * 1000 * 1000 * 2 }), // TODO: move to config
+					new MaxFileSizeValidator({ maxSize: 1000 * 1000 * 1000 * 2 }), // TODO: get max file size from config
 					new FileTypeValidator({ fileType: /application\/(zip|octet-stream)/ }),
 					new CommonCartridgeFileValidator(),
 				],
