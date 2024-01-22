@@ -85,8 +85,6 @@ describe('YMongoDb', () => {
 			it('should create new document with updates in the database', async () => {
 				const { drawing, update } = await setup();
 
-				await em.persistAndFlush(drawing);
-				em.clear();
 				await mdb.storeUpdateTransactional(drawing.docName, update);
 				const docs = await em.findAndCount(TldrawDrawing, { docName: drawing.docName });
 
@@ -95,20 +93,22 @@ describe('YMongoDb', () => {
 		});
 
 		describe('when clock is undefined', () => {
-			const setup = () => {
+			const setup = async () => {
 				const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValueOnce();
-
-				return {
-					applyUpdateSpy,
-				};
-			};
-
-			it('should call applyUpdate and create new document with updates in the database', async () => {
-				const { applyUpdateSpy } = setup();
 				const drawing = tldrawEntityFactory.build({ clock: undefined });
 
 				await em.persistAndFlush(drawing);
 				em.clear();
+
+				return {
+					applyUpdateSpy,
+					drawing,
+				};
+			};
+
+			it('should call applyUpdate and create new document with updates in the database', async () => {
+				const { applyUpdateSpy, drawing } = await setup();
+
 				await mdb.storeUpdateTransactional(drawing.docName, new Uint8Array([2, 2]));
 				const docs = await em.findAndCount(TldrawDrawing, { docName: drawing.docName });
 
@@ -119,7 +119,7 @@ describe('YMongoDb', () => {
 	});
 
 	describe('flushDocumentTransactional', () => {
-		const setup = () => {
+		const setup = async () => {
 			const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValue();
 
 			const drawing1 = tldrawEntityFactory.build({ clock: 1, part: undefined });
@@ -127,20 +127,18 @@ describe('YMongoDb', () => {
 			const drawing3 = tldrawEntityFactory.build({ clock: 3, part: undefined });
 			const drawing4 = tldrawEntityFactory.build({ clock: 4, part: undefined });
 
+			await em.persistAndFlush([drawing1, drawing2, drawing3, drawing4]);
+			em.clear();
+
 			return {
 				applyUpdateSpy,
 				drawing1,
-				drawing2,
-				drawing3,
-				drawing4,
 			};
 		};
 
 		it('should merge multiple documents with the same name in the database into two (one main document and one with update)', async () => {
-			const { applyUpdateSpy, drawing1, drawing2, drawing3, drawing4 } = setup();
+			const { applyUpdateSpy, drawing1 } = await setup();
 
-			await em.persistAndFlush([drawing1, drawing2, drawing3, drawing4]);
-			em.clear();
 			await mdb.flushDocumentTransactional(drawing1.docName);
 			const docs = await em.findAndCount(TldrawDrawing, { docName: drawing1.docName });
 
