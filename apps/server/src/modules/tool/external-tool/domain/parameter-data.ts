@@ -1,13 +1,13 @@
-import { CustomParameterScope, CustomParameterType, ExternalToolParameterProperty } from '../../common/enum';
+import { ExternalToolParameterProperty } from '../../common/enum';
 
 export class ParameterData {
 	name: string;
 
 	properties: ExternalToolParameterProperty[];
 
-	scope?: CustomParameterScope;
+	scope?: string;
 
-	type?: CustomParameterType;
+	type?: string;
 
 	constructor(parameterData: ParameterData) {
 		this.name = parameterData.name;

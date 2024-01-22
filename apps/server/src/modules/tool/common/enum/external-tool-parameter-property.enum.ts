@@ -1,7 +1,7 @@
 export enum ExternalToolParameterProperty {
-	HIDDEN = 'hidden',
-	DEACTIVATED = 'deactivated',
+	HIDDEN = 'versteckt',
+	DEACTIVATED = 'deaktiviert',
 	OPTIONAL = 'optional',
-	PROTECTED = 'protected',
-	SKIP_CONSENT = 'skipConsent',
+	PROTECTED = 'geschützt',
+	SKIP_CONSENT = 'Zustimmung überspringen',
 }
