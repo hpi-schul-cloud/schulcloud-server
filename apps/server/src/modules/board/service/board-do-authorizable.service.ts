@@ -6,6 +6,7 @@ import {
 	BoardExternalReferenceType,
 	BoardRoles,
 	ColumnBoard,
+	DrawingElement,
 	UserBoardRoles,
 	UserRoleEnum,
 } from '@shared/domain/domainobject';
@@ -34,10 +35,12 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 		const ids = [...ancestorIds, boardDo.id];
 		const rootId = ids[0];
 		const rootBoardDo = await this.boardDoRepo.findById(rootId, 1);
+		const isDrawingElement = boardDo instanceof DrawingElement;
+
 		if (rootBoardDo instanceof ColumnBoard) {
 			if (rootBoardDo.context?.type === BoardExternalReferenceType.Course) {
 				const course = await this.courseRepo.findById(rootBoardDo.context.id);
-				const users = this.mapCourseUsersToUsergroup(course);
+				const users = this.mapCourseUsersToUsergroup(course, isDrawingElement);
 				return new BoardDoAuthorizable({ users, id: boardDo.id });
 			}
 		} else {
@@ -47,7 +50,7 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 		return new BoardDoAuthorizable({ users: [], id: boardDo.id });
 	}
 
-	private mapCourseUsersToUsergroup(course: Course): UserBoardRoles[] {
+	private mapCourseUsersToUsergroup(course: Course, isDrawingElement: boolean): UserBoardRoles[] {
 		const users = [
 			...course.getTeachersList().map((user) => {
 				return {
@@ -72,7 +75,7 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 					userId: user.id,
 					firstName: user.firstName,
 					lastName: user.lastName,
-					roles: [BoardRoles.READER],
+					roles: isDrawingElement ? [BoardRoles.EDITOR] : [BoardRoles.READER],
 					userRoleEnum: UserRoleEnum.STUDENT,
 				};
 			}),

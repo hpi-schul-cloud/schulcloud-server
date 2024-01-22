@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardDoAuthorizableService, DrawingAssetDoAuthorizableService } from '@modules/board';
+import { BoardDoAuthorizableService } from '@modules/board';
 import { LessonService } from '@modules/lesson';
 import { ContextExternalToolAuthorizableService } from '@modules/tool';
 import { NotImplementedException } from '@nestjs/common';
@@ -32,7 +32,6 @@ describe('reference.loader', () => {
 	let submissionRepo: DeepMocked<SubmissionRepo>;
 	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
 	let boardNodeAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
-	let drawingAssetDoAuthorizableService: DeepMocked<DrawingAssetDoAuthorizableService>;
 	let contextExternalToolAuthorizableService: DeepMocked<ContextExternalToolAuthorizableService>;
 	const entityId: EntityId = new ObjectId().toHexString();
 
@@ -83,10 +82,6 @@ describe('reference.loader', () => {
 					useValue: createMock<BoardDoAuthorizableService>(),
 				},
 				{
-					provide: DrawingAssetDoAuthorizableService,
-					useValue: createMock<DrawingAssetDoAuthorizableService>(),
-				},
-				{
 					provide: ContextExternalToolAuthorizableService,
 					useValue: createMock<ContextExternalToolAuthorizableService>(),
 				},
@@ -104,7 +99,6 @@ describe('reference.loader', () => {
 		submissionRepo = await module.get(SubmissionRepo);
 		schoolExternalToolRepo = await module.get(SchoolExternalToolRepo);
 		boardNodeAuthorizableService = await module.get(BoardDoAuthorizableService);
-		drawingAssetDoAuthorizableService = await module.get(DrawingAssetDoAuthorizableService);
 		contextExternalToolAuthorizableService = await module.get(ContextExternalToolAuthorizableService);
 	});
 
@@ -181,12 +175,6 @@ describe('reference.loader', () => {
 			await service.loadAuthorizableObject(AuthorizableReferenceType.BoardNode, entityId);
 
 			expect(boardNodeAuthorizableService.findById).toBeCalledWith(entityId);
-		});
-
-		it('should call findNodeService.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.DrawingAsset, entityId);
-
-			expect(drawingAssetDoAuthorizableService.findById).toBeCalledWith(entityId);
 		});
 
 		it('should return authorizable object', async () => {

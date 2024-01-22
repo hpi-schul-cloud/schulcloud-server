@@ -5,4 +5,3 @@ export * from './column-board.service';
 export * from './column.service';
 export * from './content-element.service';
 export * from './submission-item.service';
-export * from './drawing-asset-do-authorizable.service';
