@@ -15,7 +15,7 @@ import { TldrawRepo } from './tldraw.repo';
 
 @Injectable()
 export class YMongodb {
-	private MAX_DOCUMENT_SIZE = 15000000;
+	private readonly maxDocumentSize: number;
 
 	private readonly flushSize: number;
 
@@ -33,6 +33,7 @@ export class YMongodb {
 		this.logger.setContext(YMongodb.name);
 
 		this.flushSize = this.configService.get<number>('TLDRAW_DB_FLUSH_SIZE');
+		this.maxDocumentSize = this.configService.get<number>('TLDRAW_MAX_DOCUMENT_SIZE');
 
 		// execute a transaction on a database
 		// this will ensure that other processes are currently not writing
@@ -202,17 +203,17 @@ export class YMongodb {
 
 		const value = Buffer.from(update);
 		//  if our buffer exceeds it, we store the update in multiple documents
-		if (value.length <= this.MAX_DOCUMENT_SIZE) {
+		if (value.length <= this.maxDocumentSize) {
 			await this.repo.put(this.createDocumentUpdateKey(docName, clock + 1), {
 				value,
 			});
 		} else {
-			const totalChunks = Math.ceil(value.length / this.MAX_DOCUMENT_SIZE);
+			const totalChunks = Math.ceil(value.length / this.maxDocumentSize);
 
 			const putPromises: Promise<TldrawDrawing | null>[] = [];
 			for (let i = 0; i < totalChunks; i += 1) {
-				const start = i * this.MAX_DOCUMENT_SIZE;
-				const end = Math.min(start + this.MAX_DOCUMENT_SIZE, value.length);
+				const start = i * this.maxDocumentSize;
+				const end = Math.min(start + this.maxDocumentSize, value.length);
 				const chunk = value.subarray(start, end);
 
 				putPromises.push(

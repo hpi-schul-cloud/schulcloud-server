@@ -1438,7 +1438,7 @@
 		"TLDRAW": {
 			"type": "object",
 			"description": "Tldraw managing variables.",
-			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_FLUSH_SIZE"],
+			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_FLUSH_SIZE", "MAX_DOCUMENT_SIZE"],
 			"properties": {
 				"SOCKET_PORT": {
 					"type": "number",
@@ -1455,13 +1455,18 @@
 				"DB_FLUSH_SIZE": {
 					"type": "integer",
 					"description": "DB collection flushing size"
+				},
+				"MAX_DOCUMENT_SIZE": {
+					"type": "number",
+					"description": "Maximum size of tldraw document size"
 				}
 			},
 			"default": {
 				"SOCKET_PORT": 3345,
 				"PING_TIMEOUT": 10000,
 				"GC_ENABLED": true,
-				"DB_FLUSH_SIZE": 400
+				"DB_FLUSH_SIZE": 400,
+				"MAX_DOCUMENT_SIZE": 15000000
 			}
 		},
 		"TLDRAW_DB_URL": {
