@@ -10,7 +10,6 @@ import { Buffer } from 'node:buffer';
 import { Redis } from 'ioredis';
 import { Logger } from '@src/core/logger';
 import { applyUpdate } from 'yjs';
-import { RedisConnectionTypeEnum } from '@modules/tldraw/types/redis-connection-type.enum';
 import { TldrawRedisFactory } from '../redis';
 import {
 	RedisPublishErrorLoggable,
@@ -19,7 +18,7 @@ import {
 	WsSharedDocErrorLoggable,
 } from '../loggable';
 import { TldrawConfig } from '../config';
-import { AwarenessConnectionsUpdate, WSConnectionState, WSMessageType } from '../types';
+import { AwarenessConnectionsUpdate, RedisConnectionTypeEnum, WSConnectionState, WSMessageType } from '../types';
 import { WsSharedDocDo } from '../domain';
 import { TldrawBoardRepo } from '../repo';
 import { MetricsService } from '../metrics';

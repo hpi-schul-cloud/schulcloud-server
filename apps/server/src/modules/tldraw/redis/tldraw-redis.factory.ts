@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Logger } from '@src/core/logger';
 import { TldrawConfig } from '../config';
 import { RedisErrorLoggable } from '../loggable';
-import {RedisConnectionTypeEnum} from "@modules/tldraw/types/redis-connection-type.enum";
+import { RedisConnectionTypeEnum } from '../types';
 
 @Injectable()
 export class TldrawRedisFactory {
