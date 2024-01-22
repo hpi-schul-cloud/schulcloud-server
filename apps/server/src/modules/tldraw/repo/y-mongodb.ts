@@ -32,7 +32,7 @@ export class YMongodb {
 	) {
 		this.logger.setContext(YMongodb.name);
 
-		this.flushSize = this.configService.get<number>('TLDRAW_DB_FLUSH_SIZE') ?? 400;
+		this.flushSize = this.configService.get<number>('TLDRAW_DB_FLUSH_SIZE');
 
 		// execute a transaction on a database
 		// this will ensure that other processes are currently not writing
@@ -254,13 +254,13 @@ export class YMongodb {
 		return doc1.clock === doc2.clock;
 	}
 
-	private checkIfCurrentPartId(part: TldrawDrawing, currentPartId: number | undefined) {
+	private checkIfCurrentPartId(part: TldrawDrawing, currentPartId: number | undefined): void {
 		if (part.part === undefined || currentPartId !== part.part - 1) {
 			throw new Error('Could not merge updates together because a part is missing');
 		}
 	}
 
-	private extractClock(updates: TldrawDrawing[]) {
+	private extractClock(updates: TldrawDrawing[]): number {
 		if (updates.length === 0 || updates[0].clock == null) {
 			return -1;
 		}

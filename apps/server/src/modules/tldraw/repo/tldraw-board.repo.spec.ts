@@ -170,19 +170,27 @@ describe('TldrawBoardRepo', () => {
 
 	describe('updateStoredDocWithDiff', () => {
 		describe('when the difference between update and current drawing is more than 0', () => {
-			const setup = () => {
+			const setup = (shouldStoreUpdateThrowError: boolean) => {
 				const calculateDiffSpy = jest.spyOn(YjsUtils, 'calculateDiff').mockReturnValueOnce(1);
 				const errorLogSpy = jest.spyOn(logger, 'warning');
+				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdateTransactional');
+
+				if (shouldStoreUpdateThrowError) {
+					storeUpdateSpy.mockRejectedValueOnce(new Error('test error'));
+				} else {
+					storeUpdateSpy.mockResolvedValueOnce(1);
+				}
 
 				return {
 					calculateDiffSpy,
 					errorLogSpy,
+					storeUpdateSpy,
 				};
 			};
 
 			it('should call store update method', async () => {
-				const { calculateDiffSpy } = setup();
-				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdateTransactional').mockResolvedValueOnce(1);
+				const { calculateDiffSpy, storeUpdateSpy } = setup(false);
+				// const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdateTransactional').mockResolvedValueOnce(1);
 				const diffArray = new Uint8Array();
 
 				await repo.updateStoredDocWithDiff('test', diffArray);
@@ -193,10 +201,10 @@ describe('TldrawBoardRepo', () => {
 			});
 
 			it('should log error if update fails', async () => {
-				const { calculateDiffSpy, errorLogSpy } = setup();
-				const storeUpdateSpy = jest
-					.spyOn(repo.mdb, 'storeUpdateTransactional')
-					.mockRejectedValueOnce(new Error('test error'));
+				const { calculateDiffSpy, errorLogSpy, storeUpdateSpy } = setup(true);
+				// const storeUpdateSpy = jest
+				// 	.spyOn(repo.mdb, 'storeUpdateTransactional')
+				// 	.mockRejectedValueOnce(new Error('test error'));
 				const diffArray = new Uint8Array();
 				await expect(repo.updateStoredDocWithDiff('test', diffArray)).rejects.toThrow('test error');
 

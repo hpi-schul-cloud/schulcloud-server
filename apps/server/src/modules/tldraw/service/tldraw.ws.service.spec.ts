@@ -12,7 +12,7 @@ import { TldrawWsFactory } from '@shared/testing/factory/tldraw.ws.factory';
 import { HttpService } from '@nestjs/axios';
 import { of, throwError } from 'rxjs';
 import { AxiosResponse } from 'axios';
-import { axiosResponseFactory } from '@shared/testing';
+import { axiosResponseFactory, WebSocketReadyStateEnum } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigModule } from '@nestjs/config';
@@ -167,7 +167,7 @@ describe('TldrawWSService', () => {
 				const closeConSpy = jest.spyOn(service, 'closeConn');
 				const sendSpy = jest.spyOn(service, 'send');
 				const doc = TldrawWsFactory.createWsSharedDocDo();
-				const socketMock = TldrawWsFactory.createWebsocket(3);
+				const socketMock = TldrawWsFactory.createWebsocket(WebSocketReadyStateEnum.CLOSED);
 				const byteArray = new TextEncoder().encode(clientMessageMock);
 
 				return {
@@ -200,7 +200,7 @@ describe('TldrawWSService', () => {
 				const sendSpy = jest.spyOn(service, 'send');
 				jest.spyOn(Ioredis.Redis.prototype, 'publish').mockResolvedValueOnce(1);
 				const doc = TldrawWsFactory.createWsSharedDocDo();
-				const socketMock = TldrawWsFactory.createWebsocket(0);
+				const socketMock = TldrawWsFactory.createWebsocket(WebSocketReadyStateEnum.OPEN);
 				doc.connections.set(socketMock, new Set());
 				const encoder = encoding.createEncoder();
 				encoding.writeVarUint(encoder, 2);
@@ -228,7 +228,7 @@ describe('TldrawWSService', () => {
 		});
 
 		describe('when received message of specific type', () => {
-			const setup = async (messageValues: number[]) => {
+			const setup = async (messageValues: number[], shouldPublishSpyThrowError: boolean) => {
 				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 
 				const errorLogSpy = jest.spyOn(logger, 'warning');
@@ -244,6 +244,15 @@ describe('TldrawWSService', () => {
 				const doc = new WsSharedDocDo('TEST');
 				const { msg } = createMessage(messageValues);
 
+				if (shouldPublishSpyThrowError) {
+					publishSpy.mockImplementationOnce((_channel, _message, cb) => {
+						if (cb) {
+							cb(new Error('error'));
+						}
+						return Promise.resolve(0);
+					});
+				}
+
 				return {
 					sendSpy,
 					errorLogSpy,
@@ -256,7 +265,7 @@ describe('TldrawWSService', () => {
 			};
 
 			it('should call send method when received message of type SYNC', async () => {
-				const { sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } = await setup([0, 1]);
+				const { sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } = await setup([0, 1], false);
 
 				service.messageHandler(ws, doc, msg);
 
@@ -268,7 +277,7 @@ describe('TldrawWSService', () => {
 			});
 
 			it('should not call send method when received message of type AWARENESS', async () => {
-				const { sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } = await setup([1, 1, 0]);
+				const { sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } = await setup([1, 1, 0], false);
 
 				service.messageHandler(ws, doc, msg);
 
@@ -281,13 +290,7 @@ describe('TldrawWSService', () => {
 
 			it('should log error when publishing AWARENESS has errors', async () => {
 				const { publishSpy, errorLogSpy, sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } =
-					await setup([1, 1, 0]);
-				publishSpy.mockImplementationOnce((_channel, _message, cb) => {
-					if (cb) {
-						cb(new Error('error'));
-					}
-					return Promise.resolve(0);
-				});
+					await setup([1, 1, 0], true);
 
 				service.messageHandler(ws, doc, msg);
 
@@ -297,10 +300,11 @@ describe('TldrawWSService', () => {
 				sendSpy.mockRestore();
 				applyAwarenessUpdateSpy.mockRestore();
 				syncProtocolUpdateSpy.mockRestore();
+				publishSpy.mockRestore();
 			});
 
 			it('should do nothing when received message unknown type', async () => {
-				const { sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } = await setup([2]);
+				const { sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } = await setup([2], false);
 
 				service.messageHandler(ws, doc, msg);
 
@@ -575,7 +579,7 @@ describe('TldrawWSService', () => {
 	});
 
 	describe('updateHandler', () => {
-		const setup = async () => {
+		const setup = async (shouldPublishSpyThrowError: boolean) => {
 			ws = await TestConnection.setupWs(wsUrl);
 
 			const sendSpy = jest.spyOn(service, 'send').mockReturnValueOnce();
@@ -583,9 +587,20 @@ describe('TldrawWSService', () => {
 			const publishSpy = jest.spyOn(Ioredis.Redis.prototype, 'publish');
 
 			const doc = TldrawWsFactory.createWsSharedDocDo();
-			const socketMock = TldrawWsFactory.createWebsocket(0);
+			const socketMock = TldrawWsFactory.createWebsocket(WebSocketReadyStateEnum.OPEN);
 			doc.connections.set(socketMock, new Set());
 			const msg = new Uint8Array([0]);
+
+			if (shouldPublishSpyThrowError) {
+				publishSpy.mockImplementationOnce((_channel, _message, cb) => {
+					if (cb) {
+						cb(new Error('error'));
+					}
+					return Promise.resolve(0);
+				});
+			} else {
+				publishSpy.mockResolvedValueOnce(1);
+			}
 
 			return {
 				doc,
@@ -598,8 +613,7 @@ describe('TldrawWSService', () => {
 		};
 
 		it('should call send method', async () => {
-			const { sendSpy, doc, socketMock, msg, publishSpy } = await setup();
-			publishSpy.mockResolvedValueOnce(1);
+			const { sendSpy, doc, socketMock, msg } = await setup(false);
 
 			service.updateHandler(msg, socketMock, doc);
 
@@ -608,13 +622,7 @@ describe('TldrawWSService', () => {
 		});
 
 		it('should log error when publish to Redis has errors', async () => {
-			const { doc, socketMock, msg, errorLogSpy, publishSpy } = await setup();
-			publishSpy.mockImplementationOnce((_channel, _message, cb) => {
-				if (cb) {
-					cb(new Error('error'));
-				}
-				return Promise.resolve(0);
-			});
+			const { doc, socketMock, msg, errorLogSpy, publishSpy } = await setup(true);
 
 			service.updateHandler(msg, socketMock, doc);
 

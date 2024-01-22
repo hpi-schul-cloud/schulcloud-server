@@ -72,12 +72,22 @@ describe('YMongoDb', () => {
 
 	describe('storeUpdateTransactional', () => {
 		describe('when clock is defined', () => {
-			it('should create new document with updates in the database', async () => {
+			const setup = async () => {
 				const drawing = tldrawEntityFactory.build({ clock: 1 });
+				await em.persistAndFlush(drawing);
+				em.clear();
+
+				const update = new Uint8Array([2, 2]);
+
+				return { drawing, update };
+			};
+
+			it('should create new document with updates in the database', async () => {
+				const { drawing, update } = await setup();
 
 				await em.persistAndFlush(drawing);
 				em.clear();
-				await mdb.storeUpdateTransactional(drawing.docName, new Uint8Array([2, 2]));
+				await mdb.storeUpdateTransactional(drawing.docName, update);
 				const docs = await em.findAndCount(TldrawDrawing, { docName: drawing.docName });
 
 				expect(docs.length).toEqual(2);

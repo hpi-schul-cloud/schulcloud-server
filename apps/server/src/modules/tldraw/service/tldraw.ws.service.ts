@@ -1,27 +1,28 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import {Injectable, UnauthorizedException} from '@nestjs/common';
+import {ConfigService} from '@nestjs/config';
 import WebSocket from 'ws';
-import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
-import { decoding, encoding, map } from 'lib0';
-import { readSyncMessage, writeSyncStep1, writeUpdate } from 'y-protocols/sync';
-import { firstValueFrom } from 'rxjs';
-import { HttpService } from '@nestjs/axios';
-import { Buffer } from 'node:buffer';
-import { Redis } from 'ioredis';
-import { Logger } from '@src/core/logger';
-import { applyUpdate } from 'yjs';
-import { TldrawRedisFactory } from '../redis';
+import {applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates} from 'y-protocols/awareness';
+import {decoding, encoding, map} from 'lib0';
+import {readSyncMessage, writeSyncStep1, writeUpdate} from 'y-protocols/sync';
+import {firstValueFrom} from 'rxjs';
+import {HttpService} from '@nestjs/axios';
+import {Buffer} from 'node:buffer';
+import {Redis} from 'ioredis';
+import {Logger} from '@src/core/logger';
+import {applyUpdate} from 'yjs';
+import {RedisConnectionTypeEnum} from "@modules/tldraw/types/redis-connection-type.enum";
+import {TldrawRedisFactory} from '../redis';
 import {
 	RedisPublishErrorLoggable,
 	WebsocketErrorLoggable,
 	WebsocketMessageErrorLoggable,
 	WsSharedDocErrorLoggable,
 } from '../loggable';
-import { TldrawConfig } from '../config';
-import { AwarenessConnectionsUpdate, WSConnectionState, WSMessageType } from '../types';
-import { WsSharedDocDo } from '../domain';
-import { TldrawBoardRepo } from '../repo';
-import { MetricsService } from '../metrics';
+import {TldrawConfig} from '../config';
+import {AwarenessConnectionsUpdate, WSConnectionState, WSMessageType} from '../types';
+import {WsSharedDocDo} from '../domain';
+import {TldrawBoardRepo} from '../repo';
+import {MetricsService} from '../metrics';
 
 @Injectable()
 export class TldrawWsService {
@@ -47,8 +48,8 @@ export class TldrawWsService {
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
 		this.gcEnabled = this.configService.get<boolean>('TLDRAW_GC_ENABLED');
 
-		this.sub = this.tldrawRedisFactory.build('SUB');
-		this.pub = this.tldrawRedisFactory.build('PUB');
+		this.sub = this.tldrawRedisFactory.build(RedisConnectionTypeEnum.SUBSCRIBE);
+		this.pub = this.tldrawRedisFactory.build(RedisConnectionTypeEnum.PUBLISH);
 	}
 
 	/**
