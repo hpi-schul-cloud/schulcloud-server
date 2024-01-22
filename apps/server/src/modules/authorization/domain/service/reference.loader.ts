@@ -17,6 +17,7 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { AuthorizableReferenceType } from '../type';
+import { DrawingAssetDoAuthorizableService } from "@modules/board/service/drawing-asset-do-authorizable.service";
 
 type RepoType =
 	| TaskRepo
@@ -29,7 +30,8 @@ type RepoType =
 	| SchoolExternalToolRepo
 	| BoardDoAuthorizableService
 	| ContextExternalToolAuthorizableService
-	| LessonService;
+	| LessonService
+	| DrawingAssetDoAuthorizableService;
 
 interface RepoLoader {
 	repo: RepoType;
@@ -51,6 +53,7 @@ export class ReferenceLoader {
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly boardNodeAuthorizableService: BoardDoAuthorizableService,
+		private readonly drawingAssetAuthorizableService: DrawingAssetDoAuthorizableService,
 		private readonly contextExternalToolAuthorizableService: ContextExternalToolAuthorizableService
 	) {
 		this.repos.set(AuthorizableReferenceType.Task, { repo: this.taskRepo });
@@ -63,6 +66,7 @@ export class ReferenceLoader {
 		this.repos.set(AuthorizableReferenceType.Submission, { repo: this.submissionRepo });
 		this.repos.set(AuthorizableReferenceType.SchoolExternalToolEntity, { repo: this.schoolExternalToolRepo });
 		this.repos.set(AuthorizableReferenceType.BoardNode, { repo: this.boardNodeAuthorizableService });
+		this.repos.set(AuthorizableReferenceType.DrawingAsset, { repo: this.drawingAssetAuthorizableService });
 		this.repos.set(AuthorizableReferenceType.ContextExternalToolEntity, {
 			repo: this.contextExternalToolAuthorizableService,
 		});

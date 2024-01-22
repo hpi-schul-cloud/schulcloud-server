@@ -9,6 +9,7 @@ import { LoggerModule } from '@src/core/logger';
 import { DrawingElementAdapterService } from '@modules/tldraw-client/service/drawing-element-adapter.service';
 import { HttpModule } from '@nestjs/axios';
 import { ToolConfigModule } from '@modules/tool/tool-config.module';
+import { DrawingAssetDoAuthorizableService } from './service/drawing-asset-do-authorizable.service';
 import { BoardDoRepo, BoardNodeRepo, RecursiveDeleteVisitor } from './repo';
 import {
 	BoardDoAuthorizableService,
@@ -49,6 +50,7 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		ColumnBoardCopyService,
 		SchoolSpecificFileCopyServiceFactory,
 		DrawingElementAdapterService,
+		DrawingAssetDoAuthorizableService,
 	],
 	exports: [
 		BoardDoAuthorizableService,
@@ -58,6 +60,7 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		ContentElementService,
 		SubmissionItemService,
 		ColumnBoardCopyService,
+		DrawingAssetDoAuthorizableService,
 	],
 })
 export class BoardModule {}
