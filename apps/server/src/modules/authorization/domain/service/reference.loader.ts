@@ -16,8 +16,8 @@ import {
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
+import { DrawingAssetDoAuthorizableService } from '@modules/board/service/drawing-asset-do-authorizable.service';
 import { AuthorizableReferenceType } from '../type';
-import { DrawingAssetDoAuthorizableService } from "@modules/board/service/drawing-asset-do-authorizable.service";
 
 type RepoType =
 	| TaskRepo
