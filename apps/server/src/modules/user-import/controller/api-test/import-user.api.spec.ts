@@ -28,7 +28,7 @@ import {
 	cleanupCollections,
 	importUserFactory,
 	roleFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	systemEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
@@ -49,7 +49,7 @@ describe('ImportUser Controller (API)', () => {
 
 	const authenticatedUser = async (permissions: Permission[] = [], features: SchoolFeature[] = []) => {
 		const system = systemEntityFactory.buildWithId(); // TODO no id?
-		const school = schoolFactory.build({ officialSchoolNumber: 'foo', features });
+		const school = schoolEntityFactory.build({ officialSchoolNumber: 'foo', features });
 		const roles = [roleFactory.build({ name: RoleName.ADMINISTRATOR, permissions })];
 		await em.persistAndFlush([school, system, ...roles]);
 		const user = userFactory.buildWithId({ roles, school });
@@ -410,7 +410,7 @@ describe('ImportUser Controller (API)', () => {
 				describe('When set a match on import user', () => {
 					it('should fail for different school of match- and import-user', async () => {
 						const importUser = importUserFactory.build({ school });
-						const otherSchool = schoolFactory.build();
+						const otherSchool = schoolEntityFactory.build();
 						const userMatch = userFactory.build({ school: otherSchool });
 						await em.persistAndFlush([userMatch, importUser]);
 						em.clear();
@@ -419,7 +419,7 @@ describe('ImportUser Controller (API)', () => {
 					});
 
 					it('should fail for different school of current-/authenticated- and import-user', async () => {
-						const otherSchool = schoolFactory.build();
+						const otherSchool = schoolEntityFactory.build();
 						const importUser = importUserFactory.build({ school: otherSchool });
 						const userMatch = userFactory.build({ school: otherSchool });
 						await em.persistAndFlush([userMatch, importUser]);
@@ -445,7 +445,7 @@ describe('ImportUser Controller (API)', () => {
 			describe('[removeMatch]', () => {
 				describe('When remove a match on import user', () => {
 					it('should fail for different school of current- and import-user', async () => {
-						const otherSchool = schoolFactory.build();
+						const otherSchool = schoolEntityFactory.build();
 						const importUser = importUserFactory.build({ school: otherSchool });
 						await em.persistAndFlush(importUser);
 						em.clear();
@@ -456,7 +456,7 @@ describe('ImportUser Controller (API)', () => {
 			describe('[updateFlag]', () => {
 				describe('When change flag on import user', () => {
 					it('should fail for different school of current- and import-user', async () => {
-						const otherSchool = schoolFactory.build();
+						const otherSchool = schoolEntityFactory.build();
 						const importUser = importUserFactory.build({ school: otherSchool });
 						await em.persistAndFlush(importUser);
 						em.clear();
@@ -1088,7 +1088,7 @@ describe('ImportUser Controller (API)', () => {
 			describe('[endSchoolMaintenance]', () => {
 				describe('POST user/import/startSync', () => {
 					it('should remove inMaintenanceSince from school', async () => {
-						const school = schoolFactory.buildWithId({
+						const school = schoolEntityFactory.buildWithId({
 							externalId: 'foo',
 							inMaintenanceSince: new Date(),
 							inUserMigration: false,

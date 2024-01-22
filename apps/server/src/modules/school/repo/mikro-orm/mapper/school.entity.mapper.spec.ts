@@ -1,4 +1,4 @@
-import { schoolFactory } from '@shared/testing';
+import { schoolEntityFactory } from '@shared/testing';
 import { School } from '../../../domain';
 import { CountyEmbeddableMapper } from './county.embeddable.mapper';
 import { FederalStateEntityMapper } from './federal-state.entity.mapper';
@@ -9,7 +9,7 @@ describe('SchoolEntityMapper', () => {
 	describe('mapToDo', () => {
 		describe('when school entity is passed', () => {
 			const setup = () => {
-				const entity = schoolFactory.build();
+				const entity = schoolEntityFactory.build();
 				const expected = new School({
 					id: entity.id,
 					createdAt: entity.createdAt,

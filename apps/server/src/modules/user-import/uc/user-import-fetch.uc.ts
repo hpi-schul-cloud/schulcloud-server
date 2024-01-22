@@ -6,8 +6,8 @@ import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import {
-	UserMigrationIsNotEnabledLoggableException,
 	UserImportSchoolExternalIdMissingLoggableException,
+	UserMigrationIsNotEnabledLoggableException,
 } from '../loggable';
 import { SchulconnexFetchImportUsersService, UserImportService } from '../service';
 
@@ -46,9 +46,9 @@ export class UserImportFetchUc {
 			currentUser.school
 		);
 
-		// TODO: do matching
+		const matchedImportUsers: ImportUser[] = await this.userImportService.matchUsers(mappedImportUsers);
 
-		await this.userImportService.saveImportUsers(mappedImportUsers);
+		await this.userImportService.saveImportUsers(matchedImportUsers);
 	}
 
 	private checkMigrationEnabled(userId: EntityId): void {

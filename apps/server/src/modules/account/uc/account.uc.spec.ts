@@ -11,7 +11,7 @@ import { Permission, RoleName } from '@shared/domain/interface';
 import { PermissionService } from '@shared/domain/service';
 import { Counted, EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
-import { accountFactory, schoolFactory, setupEntities, systemEntityFactory, userFactory } from '@shared/testing';
+import { accountFactory, schoolEntityFactory, setupEntities, systemEntityFactory, userFactory } from '@shared/testing';
 import { BruteForcePrevention } from '@src/imports-from-feathers';
 import { ObjectId } from 'bson';
 import {
@@ -246,9 +246,9 @@ describe('AccountUc', () => {
 	});
 
 	beforeEach(() => {
-		mockSchool = schoolFactory.buildWithId();
-		mockOtherSchool = schoolFactory.buildWithId();
-		mockSchoolWithStudentVisibility = schoolFactory.buildWithId();
+		mockSchool = schoolEntityFactory.buildWithId();
+		mockOtherSchool = schoolEntityFactory.buildWithId();
+		mockSchoolWithStudentVisibility = schoolEntityFactory.buildWithId();
 		mockSchoolWithStudentVisibility.permissions = new SchoolRoles();
 		mockSchoolWithStudentVisibility.permissions.teacher = new SchoolRolePermission();
 		mockSchoolWithStudentVisibility.permissions.teacher.STUDENT_LIST = true;

@@ -7,7 +7,7 @@ import {
 	SystemEntity,
 } from '@shared/domain/entity';
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
-import { federalStateFactory, schoolFactory } from '@shared/testing';
+import { federalStateFactory, schoolEntityFactory } from '@shared/testing';
 import { FileStorageType } from '@src/modules/school/domain/type/file-storage-type.enum';
 import { ObjectId } from 'bson';
 import { DeepPartial } from 'fishery';
@@ -303,7 +303,7 @@ export function generateSchools(entities: {
 			systems,
 			federalState,
 		};
-		const schoolEntity = schoolFactory.buildWithId(params, partial.id);
+		const schoolEntity = schoolEntityFactory.buildWithId(params, partial.id);
 
 		schoolEntity.permissions = partial.permissions;
 

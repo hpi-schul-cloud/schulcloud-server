@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity, SystemEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
-	schoolFactory,
+	schoolEntityFactory,
 	schoolSystemOptionsEntityFactory,
 	systemEntityFactory,
 	TestApiClient,
@@ -42,7 +42,7 @@ describe('School (API)', () => {
 				const system: SystemEntity = systemEntityFactory.buildWithId({
 					provisioningStrategy: SystemProvisioningStrategy.SANIS,
 				});
-				const school: SchoolEntity = schoolFactory.buildWithId({
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [system],
 				});
 				const schoolSystemOptions: SchoolSystemOptionsEntity = schoolSystemOptionsEntityFactory.buildWithId({
@@ -87,7 +87,7 @@ describe('School (API)', () => {
 				const system: SystemEntity = systemEntityFactory.buildWithId({
 					provisioningStrategy: SystemProvisioningStrategy.SANIS,
 				});
-				const school: SchoolEntity = schoolFactory.buildWithId({
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [system],
 				});
 				const schoolSystemOptions: SchoolSystemOptionsEntity = schoolSystemOptionsEntityFactory.buildWithId({
@@ -131,7 +131,7 @@ describe('School (API)', () => {
 				const system: SystemEntity = systemEntityFactory.buildWithId({
 					provisioningStrategy: SystemProvisioningStrategy.SANIS,
 				});
-				const school: SchoolEntity = schoolFactory.buildWithId({
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [system],
 				});
 				const schoolSystemOptions: SchoolSystemOptionsEntity = schoolSystemOptionsEntityFactory.buildWithId({
@@ -201,7 +201,7 @@ describe('School (API)', () => {
 				const system: SystemEntity = systemEntityFactory.buildWithId({
 					provisioningStrategy: SystemProvisioningStrategy.SANIS,
 				});
-				const school: SchoolEntity = schoolFactory.buildWithId({
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [system],
 				});
 

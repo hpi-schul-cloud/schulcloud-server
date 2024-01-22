@@ -329,7 +329,7 @@ describe('UserService', () => {
 					externalId: 'externalId',
 				});
 
-				userDORepo.findByExternalIds.mockResolvedValue(user);
+				userDORepo.findByExternalId.mockResolvedValue(user);
 
 				const result: UserDO | null = await service.findByExternalId('externalId', 'systemId');
 
@@ -339,7 +339,7 @@ describe('UserService', () => {
 
 		describe('when a user with this external id does not exist', () => {
 			it('should return null', async () => {
-				userDORepo.findByExternalIds.mockResolvedValue(null);
+				userDORepo.findByExternalId.mockResolvedValue(null);
 
 				const result: UserDO | null = await service.findByExternalId('externalId', 'systemId');
 
@@ -457,6 +457,32 @@ describe('UserService', () => {
 
 			const result = await service.getParentEmailsFromUser(user.id);
 			expect(result).toEqual(parentEmail);
+		});
+	});
+
+	describe('findUserBySchoolAndName', () => {
+		describe('when searching for users by school and name', () => {
+			const setup = () => {
+				const firstName = 'Frist';
+				const lastName = 'Last';
+				const users: User[] = userFactory.buildListWithId(2, { firstName, lastName });
+
+				userRepo.findUserBySchoolAndName.mockResolvedValue(users);
+
+				return {
+					firstName,
+					lastName,
+					users,
+				};
+			};
+
+			it('should return a list of users', async () => {
+				const { firstName, lastName, users } = setup();
+
+				const result: User[] = await service.findUserBySchoolAndName(new ObjectId().toHexString(), firstName, lastName);
+
+				expect(result).toEqual(users);
+			});
 		});
 	});
 });
