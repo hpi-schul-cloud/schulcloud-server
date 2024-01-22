@@ -7,11 +7,11 @@ import { BadRequestException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { AxiosError } from 'axios';
 import { WebsocketCloseErrorLoggable } from '../loggable/websocket-close-error.loggable';
-import { TldrawConfig, SOCKET_PORT } from '../config';
+import { TldrawConfig, TLDRAW_SOCKET_PORT } from '../config';
 import { WsCloseCodeEnum, WsCloseMessageEnum } from '../types';
 import { TldrawWsService } from '../service';
 
-@WebSocketGateway(SOCKET_PORT)
+@WebSocketGateway(TLDRAW_SOCKET_PORT)
 export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 	@WebSocketServer()
 	server!: Server;

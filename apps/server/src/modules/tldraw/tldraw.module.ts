@@ -1,6 +1,6 @@
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME, TLDRAW_DB_URL } from '@src/config';
+import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { Logger } from '@src/core/logger';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
@@ -9,7 +9,7 @@ import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { AuthorizationModule } from '@modules/authorization';
 import { TldrawDrawing } from './entities';
-import { config } from './config';
+import { config, TLDRAW_DB_URL } from './config';
 import { TldrawService } from './service/tldraw.service';
 import { TldrawBoardRepo } from './repo';
 import { TldrawController } from './controller/tldraw.controller';

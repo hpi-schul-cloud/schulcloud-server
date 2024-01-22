@@ -106,9 +106,6 @@ const globals = {
 
 	// calendar
 	CALENDAR_URI: process.env.CALENDAR_URI,
-
-	// tldraw
-	TLDRAW_DB_URL: process.env.TLDRAW_DB_URL || defaultTldrawDbUrl,
 };
 
 // validation /////////////////////////////////////////////////

@@ -19,7 +19,7 @@ export class TldrawBoardRepo {
 	public mdb: MongodbPersistence;
 
 	constructor(public readonly configService: ConfigService<TldrawConfig, true>) {
-		this.connectionString = this.configService.get<string>('CONNECTION_STRING');
+		this.connectionString = this.configService.get<string>('TLDRAW_DB_URL');
 		this.collectionName = this.configService.get<string>('TLDRAW_DB_COLLECTION_NAME') ?? 'drawings';
 		this.flushSize = this.configService.get<number>('TLDRAW_DB_FLUSH_SIZE') ?? 400;
 		this.multipleCollections = this.configService.get<boolean>('TLDRAW_DB_MULTIPLE_COLLECTIONS');
