@@ -271,11 +271,14 @@ export class DeletionRequestUc {
 		this.logger.debug({ action: 'removeUserFromRocketChat', deletionRequest });
 
 		const rocketChatUser = await this.rocketChatUserService.findByUserId(deletionRequest.targetRefId);
+		let rocketChatUserDeleted = 0;
 
-		const [, rocketChatUserDeleted] = await Promise.all([
-			this.rocketChatService.deleteUser(rocketChatUser[0].username),
-			this.rocketChatUserService.deleteByUserId(rocketChatUser[0].userId),
-		]);
+		if (rocketChatUser.length > 0) {
+			[, rocketChatUserDeleted] = await Promise.all([
+				this.rocketChatService.deleteUser(rocketChatUser[0].username),
+				this.rocketChatUserService.deleteByUserId(rocketChatUser[0].userId),
+			]);
+		}
 		await this.logDeletion(
 			deletionRequest,
 			DomainModel.ROCKETCHATUSER,
