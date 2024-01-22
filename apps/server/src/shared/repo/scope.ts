@@ -29,6 +29,8 @@ export class Scope<T> {
 	}
 
 	addQuery(query: FilterQuery<T> | EmptyResultQueryType): void {
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-ignore
 		this._queries.push(query);
 	}
 
