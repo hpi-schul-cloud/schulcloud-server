@@ -17,7 +17,9 @@ describe('XApiKeyStrategy', () => {
 				XApiKeyStrategy,
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService<XApiKeyConfig, true>>({ get: () => ['1ab2c3d4e5f61ab2c3d4e5f6'] }),
+					useValue: createMock<ConfigService<XApiKeyConfig, true>>({
+						get: () => ['7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4'],
+					}),
 				},
 			],
 		}).compile();
@@ -39,7 +41,7 @@ describe('XApiKeyStrategy', () => {
 		const done = jest.fn((error: Error | null, data: boolean | null) => {});
 		describe('when a valid api key is provided', () => {
 			const setup = () => {
-				const CORRECT_API_KEY = '1ab2c3d4e5f61ab2c3d4e5f6';
+				const CORRECT_API_KEY = '7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4';
 
 				return { CORRECT_API_KEY, done };
 			};
@@ -52,7 +54,7 @@ describe('XApiKeyStrategy', () => {
 
 		describe('when a invalid api key is provided', () => {
 			const setup = () => {
-				const INVALID_API_KEY = '1ab2c3d4e5f61ab2c3d4e5f6778173';
+				const INVALID_API_KEY = '7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4BAD';
 
 				return { INVALID_API_KEY, done };
 			};

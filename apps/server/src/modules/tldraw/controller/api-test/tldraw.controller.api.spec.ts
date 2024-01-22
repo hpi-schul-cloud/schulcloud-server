@@ -1,9 +1,11 @@
-import { INestApplication } from '@nestjs/common';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { cleanupCollections, courseFactory, TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ServerTestModule } from '@modules/server';
 import { Logger } from '@src/core/logger';
+import { AuthGuard } from '@nestjs/passport';
+import { Request } from 'express';
 import { TldrawService } from '../../service';
 import { TldrawController } from '..';
 import { TldrawRepo } from '../../repo';
@@ -14,13 +16,23 @@ describe('tldraw controller (api)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
+	const API_KEY = '7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4';
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 			controllers: [TldrawController],
 			providers: [Logger, TldrawService, TldrawRepo],
-		}).compile();
+		})
+			.overrideGuard(AuthGuard('api-key'))
+			.useValue({
+				canActivate(context: ExecutionContext) {
+					const req: Request = context.switchToHttp().getRequest();
+					req.headers['X-API-KEY'] = API_KEY;
+					return true;
+				},
+			})
+			.compile();
 
 		app = module.createNestApplication();
 		await app.init();
