@@ -260,7 +260,7 @@ describe('Account Controller (API)', () => {
 				const school = schoolFactory.buildWithId();
 
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
+				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [Permission.ACCOUNT_VIEW] });
 
 				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
 				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
@@ -366,7 +366,7 @@ describe('Account Controller (API)', () => {
 			it('should reject search for user', async () => {
 				const { query, loggedInClient } = await setup();
 
-				await loggedInClient.get().query(query).send().expect(403);
+				await loggedInClient.get().query(query).send().expect(401);
 			});
 		});
 	});
@@ -377,7 +377,7 @@ describe('Account Controller (API)', () => {
 				const school = schoolFactory.buildWithId();
 
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
+				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [Permission.ACCOUNT_VIEW] });
 
 				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
 				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
@@ -429,7 +429,7 @@ describe('Account Controller (API)', () => {
 			};
 			it('should reject request', async () => {
 				const { loggedInClient, studentAccount } = await setup();
-				await loggedInClient.get(`/${studentAccount.id}`).expect(403);
+				await loggedInClient.get(`/${studentAccount.id}`).expect(401);
 			});
 		});
 
@@ -437,7 +437,7 @@ describe('Account Controller (API)', () => {
 			const setup = async () => {
 				const school = schoolFactory.buildWithId();
 
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
+				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [Permission.ACCOUNT_VIEW] });
 				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
 				const superheroAccount = mapUserToAccount(superheroUser);
 
@@ -517,7 +517,7 @@ describe('Account Controller (API)', () => {
 			it('should reject update request', async () => {
 				const { body, loggedInClient, studentAccount } = await setup();
 
-				await loggedInClient.patch(`/${studentAccount.id}`, body).expect(403);
+				await loggedInClient.patch(`/${studentAccount.id}`, body).expect(401);
 			});
 		});
 
@@ -563,7 +563,10 @@ describe('Account Controller (API)', () => {
 				const school = schoolFactory.buildWithId();
 
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
+				const superheroRoles = roleFactory.build({
+					name: RoleName.SUPERHERO,
+					permissions: [Permission.ACCOUNT_DELETE],
+				});
 
 				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
 				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
@@ -616,14 +619,17 @@ describe('Account Controller (API)', () => {
 
 			it('should reject delete request', async () => {
 				const { loggedInClient, studentAccount } = await setup();
-				await loggedInClient.delete(`/${studentAccount.id}`).expect(403);
+				await loggedInClient.delete(`/${studentAccount.id}`).expect(401);
 			});
 		});
 
 		describe('When using a superhero user', () => {
 			const setup = async () => {
 				const school = schoolFactory.buildWithId();
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
+				const superheroRoles = roleFactory.build({
+					name: RoleName.SUPERHERO,
+					permissions: [Permission.ACCOUNT_DELETE],
+				});
 				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
 				const superheroAccount = mapUserToAccount(superheroUser);
 
