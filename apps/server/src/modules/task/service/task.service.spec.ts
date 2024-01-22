@@ -5,7 +5,7 @@ import { courseFactory, setupEntities, submissionFactory, taskFactory, userFacto
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { DomainModel } from '@shared/domain/types';
 import { DomainOperationBuilder } from '@shared/domain/builder';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
 
@@ -33,8 +33,8 @@ describe('TaskService', () => {
 					useValue: createMock<FilesStorageClientAdapterService>(),
 				},
 				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();

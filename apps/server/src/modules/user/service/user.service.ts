@@ -10,9 +10,11 @@ import { ConfigService } from '@nestjs/config';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { LanguageType, User } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { DomainModel, EntityId, StatusModel } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import { Logger } from '@src/core/logger';
+import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { UserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
@@ -25,8 +27,11 @@ export class UserService {
 		private readonly userDORepo: UserDORepo,
 		private readonly configService: ConfigService<UserConfig, true>,
 		private readonly roleService: RoleService,
-		private readonly accountService: AccountService
-	) {}
+		private readonly accountService: AccountService,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(UserService.name);
+	}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
 		const user = await this.userRepo.findById(userId, true);
@@ -124,7 +129,20 @@ export class UserService {
 	}
 
 	async deleteUser(userId: EntityId): Promise<number> {
-		const deletedUserNumber: Promise<number> = this.userRepo.deleteUser(userId);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable('Deleting user', DomainModel.USER, userId, StatusModel.PENDING)
+		);
+		const deletedUserNumber = await this.userRepo.deleteUser(userId);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully deleted user',
+				DomainModel.USER,
+				userId,
+				StatusModel.FINISHED,
+				0,
+				deletedUserNumber
+			)
+		);
 
 		return deletedUserNumber;
 	}

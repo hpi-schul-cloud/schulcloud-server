@@ -11,3 +11,4 @@ export * from './system.type';
 export * from './task.types';
 export * from './value-of';
 export * from './domain';
+export * from './status-model.enum';

@@ -10,13 +10,9 @@ import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { externalToolFactory, oauth2ToolConfigFactory } from '@shared/testing/factory';
 import { ExternalToolSearchQuery } from '../../common/interface';
+import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
 import { ExternalTool, ExternalToolMetadata, Oauth2ToolConfig } from '../domain';
-import {
-	ExternalToolLogoService,
-	ExternalToolMetadataService,
-	ExternalToolService,
-	ExternalToolValidationService,
-} from '../service';
+import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
 
 import { ExternalToolUpdate } from './dto';
 import { ExternalToolUc } from './external-tool.uc';
@@ -29,7 +25,7 @@ describe('ExternalToolUc', () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let toolValidationService: DeepMocked<ExternalToolValidationService>;
 	let logoService: DeepMocked<ExternalToolLogoService>;
-	let externalToolMetadataService: DeepMocked<ExternalToolMetadataService>;
+	let commonToolMetadataService: DeepMocked<CommonToolMetadataService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -54,8 +50,8 @@ describe('ExternalToolUc', () => {
 					useValue: createMock<ExternalToolLogoService>(),
 				},
 				{
-					provide: ExternalToolMetadataService,
-					useValue: createMock<ExternalToolMetadataService>(),
+					provide: CommonToolMetadataService,
+					useValue: createMock<CommonToolMetadataService>(),
 				},
 			],
 		}).compile();
@@ -65,7 +61,7 @@ describe('ExternalToolUc', () => {
 		authorizationService = module.get(AuthorizationService);
 		toolValidationService = module.get(ExternalToolValidationService);
 		logoService = module.get(ExternalToolLogoService);
-		externalToolMetadataService = module.get(ExternalToolMetadataService);
+		commonToolMetadataService = module.get(CommonToolMetadataService);
 	});
 
 	afterAll(async () => {
@@ -551,7 +547,7 @@ describe('ExternalToolUc', () => {
 					contextExternalToolCountPerContext: { course: 3, boardElement: 3 },
 				});
 
-				externalToolMetadataService.getMetadata.mockResolvedValue(externalToolMetadata);
+				commonToolMetadataService.getMetadataForExternalTool.mockResolvedValue(externalToolMetadata);
 
 				const user: User = userFactory.buildWithId();
 				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
@@ -571,7 +567,7 @@ describe('ExternalToolUc', () => {
 
 				await uc.getMetadataForExternalTool(currentUser.userId, toolId);
 
-				expect(externalToolMetadataService.getMetadata).toHaveBeenCalledWith(toolId);
+				expect(commonToolMetadataService.getMetadataForExternalTool).toHaveBeenCalledWith(toolId);
 			});
 
 			it('return metadata of external tool', async () => {

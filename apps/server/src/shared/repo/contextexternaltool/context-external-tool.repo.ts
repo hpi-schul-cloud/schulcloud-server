@@ -41,12 +41,15 @@ export class ContextExternalToolRepo extends BaseDORepo<ContextExternalTool, Con
 		return dos;
 	}
 
-	async countBySchoolToolIdsAndContextType(contextType: ContextExternalToolType, schoolExternalToolIds: string[]) {
-		const contextExternalToolCount = await this._em.count(this.entityName, {
-			$and: [{ schoolTool: { $in: schoolExternalToolIds }, contextType }],
-		});
+	async findBySchoolToolIdsAndContextType(
+		schoolExternalToolIds: string[],
+		contextType: ContextExternalToolType
+	): Promise<ContextExternalTool[]> {
+		const entities = await this._em.find(this.entityName, { schoolTool: { $in: schoolExternalToolIds }, contextType });
 
-		return contextExternalToolCount;
+		const dos: ContextExternalTool[] = entities.map((entity: ContextExternalToolEntity) => this.mapEntityToDO(entity));
+
+		return dos;
 	}
 
 	public override async findById(id: EntityId): Promise<ContextExternalTool> {
