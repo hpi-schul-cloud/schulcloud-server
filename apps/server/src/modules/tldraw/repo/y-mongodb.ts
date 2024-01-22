@@ -15,7 +15,7 @@ import { TldrawRepo } from './tldraw.repo';
 
 @Injectable()
 export class YMongodb {
-	private readonly maxDocumentSize: number;
+	private maxDocumentSize: number;
 
 	private readonly flushSize: number;
 
