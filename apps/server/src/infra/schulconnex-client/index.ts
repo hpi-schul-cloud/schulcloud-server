@@ -1,6 +1,6 @@
 export { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
 export { SchulconnexClientModule } from './schulconnex-client.module';
-export { SchulconnexRestClient } from './schulconnex-rest-client.service';
+export { SchulconnexRestClient } from './schulconnex-rest-client';
 export {
 	SanisResponse,
 	SanisRole,
@@ -16,5 +16,5 @@ export {
 	SanisOrganisationResponse,
 	SanisPersonenkontextResponse,
 	SanisSonstigeGruppenzugehoerigeResponse,
-} from './response/index';
-export { SchulconnexResponseFactory } from './schulconnex-response-factory';
+} from './response';
+export { schulconnexResponseFactory } from './testing/schulconnex-response-factory';

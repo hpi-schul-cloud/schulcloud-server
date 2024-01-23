@@ -1,4 +1,4 @@
-import { SanisResponse, SchulconnexResponseFactory, SchulconnexRestClient } from '@infra/schulconnex-client';
+import { SanisResponse, schulconnexResponseFactory, SchulconnexRestClient } from '@infra/schulconnex-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import {
@@ -1187,7 +1187,7 @@ describe('ImportUser Controller (API)', () => {
 					userImportFeatures.userMigrationEnabled = true;
 					userImportFeatures.userMigrationSystemId = new ObjectId().toHexString();
 
-					const schulconnexResponse: SanisResponse = SchulconnexResponseFactory.build();
+					const schulconnexResponse: SanisResponse = schulconnexResponseFactory.build();
 					axiosMock
 						.onGet(`${schulconnexRestClient.API_BASE_URL}/personen-info`)
 						.reply(HttpStatus.CREATED, schulconnexResponse);

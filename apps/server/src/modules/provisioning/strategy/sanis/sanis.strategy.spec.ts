@@ -4,7 +4,7 @@ import {
 	SanisResponse,
 	SanisResponseValidationGroups,
 	SanisRole,
-	SchulconnexResponseFactory,
+	schulconnexResponseFactory,
 } from '@infra/schulconnex-client';
 import { GroupTypes } from '@modules/group/domain';
 import { HttpService } from '@nestjs/axios';
@@ -92,7 +92,7 @@ describe('SanisStrategy', () => {
 		jest.resetAllMocks();
 	});
 
-	const setupSanisResponse = (): SanisResponse => SchulconnexResponseFactory.build();
+	const setupSanisResponse = (): SanisResponse => schulconnexResponseFactory.build();
 
 	describe('getType is called', () => {
 		describe('when it is called', () => {

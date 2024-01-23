@@ -153,7 +153,7 @@ describe('OAuthService', () => {
 		beforeEach(() => {
 			const { tokenResponse } = setupRequest();
 			oAuthEncryptionService.decrypt.mockReturnValue('decryptedSecret');
-			oauthAdapterService.sendAuthenticationCodeTokenRequest.mockResolvedValue(tokenResponse);
+			oauthAdapterService.sendTokenRequest.mockResolvedValue(tokenResponse);
 		});
 
 		describe('when it requests a token', () => {
@@ -242,7 +242,7 @@ describe('OAuthService', () => {
 				systemService.findById.mockResolvedValue(testSystem);
 				oAuthEncryptionService.decrypt.mockReturnValue('decryptedSecret');
 				oauthAdapterService.getPublicKey.mockResolvedValue('publicKey');
-				oauthAdapterService.sendAuthenticationCodeTokenRequest.mockResolvedValue(oauthTokenResponse);
+				oauthAdapterService.sendTokenRequest.mockResolvedValue(oauthTokenResponse);
 
 				const result: OAuthTokenDto = await service.authenticateUser(system.id!, 'redirectUri', authCode);
 

@@ -1,14 +1,10 @@
-import { SanisResponse } from '@infra/schulconnex-client';
 import { AuthorizationService } from '@modules/authorization';
 import { Inject, Injectable } from '@nestjs/common';
 import { ImportUser, SystemEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
-import {
-	UserImportSchoolExternalIdMissingLoggableException,
-	UserMigrationIsNotEnabledLoggableException,
-} from '../loggable';
+import { UserMigrationIsNotEnabledLoggableException } from '../loggable';
 import { SchulconnexFetchImportUsersService, UserImportService } from '../service';
 
 @Injectable()
@@ -25,28 +21,15 @@ export class UserImportFetchUc {
 
 		const currentUser: User = await this.getUserAndCheckPermissions(currentUserId);
 
-		const { externalId } = currentUser.school;
-		if (!externalId) {
-			throw new UserImportSchoolExternalIdMissingLoggableException(currentUserId);
-		}
+		const system: SystemEntity = await this.userImportService.getMigrationSystem();
+		const fetchedData: ImportUser[] = await this.schulconnexFetchImportUsersService.getData(currentUser.school, system);
 
-		const fetchedData: SanisResponse[] = await this.schulconnexFetchImportUsersService.getData({
-			externalSchoolId: externalId,
-		});
-
-		const filteredFetchedData: SanisResponse[] = this.schulconnexFetchImportUsersService.filterAlreadyMigratedUser(
+		const filteredFetchedData: ImportUser[] = this.schulconnexFetchImportUsersService.filterAlreadyMigratedUser(
 			fetchedData,
 			this.userImportFeatures.userMigrationSystemId
 		);
 
-		const system: SystemEntity = await this.userImportService.getMigrationSystem();
-		const mappedImportUsers: ImportUser[] = this.schulconnexFetchImportUsersService.mapDataToUserImportEntities(
-			filteredFetchedData,
-			system,
-			currentUser.school
-		);
-
-		const matchedImportUsers: ImportUser[] = await this.userImportService.matchUsers(mappedImportUsers);
+		const matchedImportUsers: ImportUser[] = await this.userImportService.matchUsers(filteredFetchedData);
 
 		await this.userImportService.saveImportUsers(matchedImportUsers);
 	}

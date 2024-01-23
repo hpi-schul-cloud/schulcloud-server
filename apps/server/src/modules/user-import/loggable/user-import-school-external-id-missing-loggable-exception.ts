@@ -2,7 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class UserImportSchoolExternalIdMissingLoggableException extends BadRequestException implements Loggable {
-	constructor(private readonly userId: string) {
+	constructor(private readonly schoolId: string) {
 		super();
 	}
 
@@ -12,7 +12,7 @@ export class UserImportSchoolExternalIdMissingLoggableException extends BadReque
 			message: 'The users school does not have an external id',
 			stack: this.stack,
 			data: {
-				userId: this.userId,
+				schoolId: this.schoolId,
 			},
 		};
 	}

@@ -4,58 +4,43 @@ import { Injectable } from '@nestjs/common';
 import { UserDO } from '@shared/domain/domainobject';
 import { ImportUser, SchoolEntity, SystemEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { AbstractOauthFetchImportUserStrategy } from './abstract-oauth-fetch-import-user.strategy';
-import { SanisOauthFetchParams } from './sanis-oauth-fetch-params';
+import { UserImportSchoolExternalIdMissingLoggableException } from '../../loggable';
+import { SchulconnexImportUserMapper } from '../../mapper';
 
 @Injectable()
-export class SchulconnexFetchImportUsersService extends AbstractOauthFetchImportUserStrategy<
-	SanisResponse[],
-	SanisOauthFetchParams
-> {
+export class SchulconnexFetchImportUsersService {
 	constructor(
 		private readonly schulconnexRestClient: SchulconnexRestClient,
 		private readonly userService: UserService
-	) {
-		super();
-	}
+	) {}
 
-	public async getData(params: SanisOauthFetchParams): Promise<SanisResponse[]> {
+	public async getData(school: SchoolEntity, system: SystemEntity): Promise<ImportUser[]> {
+		const externalSchoolId: string | undefined = school.externalId;
+		if (!externalSchoolId) {
+			throw new UserImportSchoolExternalIdMissingLoggableException(school.id);
+		}
+
 		const response: SanisResponse[] = await this.schulconnexRestClient.getPersonenInfo({
-			vollstaendig: 'personen,personenkontexte,organisationen',
-			'organisation.id': params.externalSchoolId,
+			vollstaendig: ['personen', 'personenkontexte', 'organisationen'],
+			'organisation.id': externalSchoolId,
 		});
 
-		return response;
-	}
-
-	public mapDataToUserImportEntities(
-		response: SanisResponse[],
-		system: SystemEntity,
-		school: SchoolEntity
-	): ImportUser[] {
-		const importUsers: ImportUser[] = response.map(
-			(sanisUser: SanisResponse): ImportUser =>
-				new ImportUser({
-					system,
-					school,
-					ldapDn: `uid=${sanisUser.person.name.vorname}.${sanisUser.person.name.familienname},`,
-					externalId: sanisUser.pid,
-					firstName: sanisUser.person.name.vorname,
-					lastName: sanisUser.person.name.familienname,
-					email: '',
-				})
+		const mappedImportUsers: ImportUser[] = SchulconnexImportUserMapper.mapDataToUserImportEntities(
+			response,
+			system,
+			school
 		);
 
-		return importUsers;
+		return mappedImportUsers;
 	}
 
-	public filterAlreadyMigratedUser(data: SanisResponse[], systemId: EntityId): SanisResponse[] {
-		const filteredData: SanisResponse[] = data.filter(async (user: SanisResponse): Promise<boolean> => {
-			const foundUser: UserDO | null = await this.userService.findByExternalId(user.pid, systemId);
+	public filterAlreadyMigratedUser(importUsers: ImportUser[], systemId: EntityId): ImportUser[] {
+		const filteredUsers: ImportUser[] = importUsers.filter(async (importUser: ImportUser): Promise<boolean> => {
+			const foundUser: UserDO | null = await this.userService.findByExternalId(importUser.externalId, systemId);
 
 			return !foundUser;
 		});
 
-		return filteredData;
+		return filteredUsers;
 	}
 }

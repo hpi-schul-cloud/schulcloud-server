@@ -1,6 +1,13 @@
-export interface SchulconnexPersonenInfoParams {
-	'organisation.id': string;
+export type SchulconnexPropertyContext = 'personen' | 'personenkontexte' | 'organisationen' | 'gruppen' | 'beziehungen';
 
-	// TODO: handle vollstaending better in constructor to have something like ?vollstaendig=personen,gruppen...&organisation.id=123
-	vollstaendig?: string;
+export interface SchulconnexPersonenInfoParams {
+	vollstaendig?: SchulconnexPropertyContext[];
+
+	pid?: string;
+
+	'personenkontext.id'?: string;
+
+	'organisation.id'?: string;
+
+	'gruppe.id'?: string;
 }

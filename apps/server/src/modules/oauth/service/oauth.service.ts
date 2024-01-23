@@ -20,7 +20,7 @@ import {
 	UserNotFoundAfterProvisioningLoggableException,
 } from '../loggable';
 import { TokenRequestMapper } from '../mapper/token-request.mapper';
-import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
+import { AuthenticationCodeGrantTokenRequest } from './dto';
 import { OauthAdapterService } from './oauth-adapter.service';
 
 @Injectable()
@@ -125,12 +125,8 @@ export class OAuthService {
 	async requestToken(code: string, oauthConfig: OauthConfigEntity, redirectUri: string): Promise<OAuthTokenDto> {
 		const payload: AuthenticationCodeGrantTokenRequest = this.buildTokenRequestPayload(code, oauthConfig, redirectUri);
 
-		const responseToken: OauthTokenResponse = await this.oauthAdapterService.sendAuthenticationCodeTokenRequest(
-			oauthConfig.tokenEndpoint,
-			payload
-		);
+		const tokenDto: OAuthTokenDto = await this.oauthAdapterService.sendTokenRequest(oauthConfig.tokenEndpoint, payload);
 
-		const tokenDto: OAuthTokenDto = TokenRequestMapper.mapTokenResponseToDto(responseToken);
 		return tokenDto;
 	}
 

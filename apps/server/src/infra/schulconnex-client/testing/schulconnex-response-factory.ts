@@ -1,8 +1,8 @@
 import { UUID } from 'bson';
 import { Factory } from 'fishery';
-import { SanisGroupRole, SanisGroupType, SanisResponse, SanisRole } from './response';
+import { SanisGroupRole, SanisGroupType, SanisResponse, SanisRole } from '../response';
 
-export const SchulconnexResponseFactory = Factory.define<SanisResponse>(() => {
+export const schulconnexResponseFactory = Factory.define<SanisResponse>(() => {
 	return {
 		pid: 'aef1f4fd-c323-466e-962b-a84354c0e713',
 		person: {

@@ -1,8 +1,8 @@
 import { OauthAdapterService, OauthModule } from '@modules/oauth';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { DynamicModule, Global, Module } from '@nestjs/common';
+import { SchulconnexRestClient } from './schulconnex-rest-client';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
-import { SchulconnexRestClient } from './schulconnex-rest-client.service';
 
 @Global()
 @Module({})
