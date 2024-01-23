@@ -1,20 +1,9 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { ProviderOauthClient } from '@infra/oauth-provider/dto';
 import { ExternalTool, ExternalToolData, ParameterData } from '../domain';
-import {
-	CustomParameterScope,
-	CustomParameterType,
-	ExternalToolParameterProperty,
-	LtiMessageType,
-	LtiPrivacyPermission,
-	ToolConfigType,
-} from '../../common/enum';
-import { ExternalToolServiceMapper } from '../service';
+import { CustomParameterScope, CustomParameterType, ExternalToolParameterProperty } from '../../common/enum';
 import { CustomParameter } from '../../common/domain';
 
 export class ExternalToolDataMapper {
-	constructor(private readonly externalToolServiceMapper: ExternalToolServiceMapper) {}
-
 	static mapToExternalToolData(externalTool: ExternalTool, firstName: string, lastname: string): ExternalToolData {
 		const externalToolData: ExternalToolData = new ExternalToolData({
 			createdAt: new Date(), // TODO N21-1626 human readable output
@@ -22,9 +11,20 @@ export class ExternalToolDataMapper {
 			instance: ExternalToolDataMapper.mapToInstanceName(),
 			toolName: externalTool.name,
 			toolUrl: externalTool.config.baseUrl,
+			isDeactivated: externalTool.isDeactivated ? 'tool is deactivated' : undefined,
+			limitedToContexts: externalTool.restrictToContexts ? externalTool.restrictToContexts : undefined,
 			toolType: externalTool.config.type,
 			parameters: ExternalToolDataMapper.mapToParameterDataList(externalTool),
 		});
+
+		if (ExternalTool.isOauth2Config(externalTool.config)) {
+			externalToolData.skipConsent = externalTool.config.skipConsent;
+		}
+
+		if (ExternalTool.isLti11Config(externalTool.config)) {
+			externalToolData.messageType = externalTool.config.lti_message_type;
+			externalToolData.privacy = externalTool.config.privacy_permission;
+		}
 
 		return externalToolData;
 	}
@@ -39,7 +39,7 @@ export class ExternalToolDataMapper {
 			return 'Schul-Cloud Brandenburg';
 		}
 
-		if (Configuration.get('SC_THEME') === 'n21') {
+		if (Configuration.get('SC_THEME') === 'dbc') {
 			return 'dBildungscloud';
 		}
 
@@ -49,63 +49,6 @@ export class ExternalToolDataMapper {
 	static mapToParameterDataList(externalTool: ExternalTool): ParameterData[] {
 		// TODO N21-1626 move to its own service?
 		const parameterData: ParameterData[] = [];
-		// TODO N21-1626 needs to get clarified with PO
-		/* if (externalTool.isDeactivated) {
-			const paramData: ParameterData = new ParameterData({name: 'allgemein', properties: [ExternalToolParameterProperty.DEACTIVATED]})
-
-			if (externalTool.isHidden) {
-				paramData.properties.push(ExternalToolParameterProperty.HIDDEN)
-			}
-
-			parameterData.push(paramData)
-		}
-		else if (externalTool.isHidden) {
-			const paramData: ParameterData = new ParameterData({name: 'allgemein', properties: [ExternalToolParameterProperty.HIDDEN]})
-			parameterData.push(paramData)
-		} */
-
-		if (externalTool.config.type === ToolConfigType.OAUTH2) {
-			const oauthClient: ProviderOauthClient = this.externalToolServiceMapper.mapDoToProviderOauthClient(
-				externalTool.name,
-				externalTool.config
-			);
-			const clientIdData: ParameterData = new ParameterData({ name: 'ClientId', type: 'Zeichenkette', properties: [] });
-			const clientSecretData: ParameterData = new ParameterData({
-				name: 'ClientSecret',
-				type: 'Zeichenkette',
-				properties: [],
-			});
-			const redirectUrlsData: ParameterData = new ParameterData({ name: 'Redirect-URLs', type: 'URL', properties: [] });
-			const tokenEndpointAuthMethodData: ParameterData = new ParameterData({
-				name: 'Token Endpoint Auth Method',
-				type: oauthClient.token_endpoint_auth_method,
-				properties: [],
-			});
-			const scopeData: ParameterData = new ParameterData({ name: 'Scope', type: oauthClient.scope, properties: [] });
-			parameterData.push(clientIdData, clientSecretData, redirectUrlsData, tokenEndpointAuthMethodData, scopeData);
-			if (oauthClient.frontchannel_logout_uri) {
-				parameterData.push(new ParameterData({ name: 'Frontchannel Logout Url', type: 'URL', properties: [] }));
-			}
-			// TODO N21-1626 skip consent - possibly
-		}
-
-		if (externalTool.config.type === ToolConfigType.LTI11) {
-			const keyData: ParameterData = new ParameterData({ name: 'Key', type: 'Zeichenkette', properties: [] });
-			const secretData: ParameterData = new ParameterData({ name: 'Secret', type: 'Zeichenkette', properties: [] });
-			const messageTypeData: ParameterData = new ParameterData({
-				name: 'Message Type',
-				type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
-				properties: [],
-			}); // TODO N21-1626 map config to get values
-			const languageData: ParameterData = new ParameterData({ name: 'Sprache', type: 'De-de', properties: [] }); // TODO N21-1626 map config to get values
-			const privacyData: ParameterData = new ParameterData({
-				name: 'Privatsphäre',
-				type: LtiPrivacyPermission.ANONYMOUS,
-				properties: [],
-			}); // TODO N21-1626 map config to get values
-			parameterData.push(keyData, secretData, messageTypeData, languageData, privacyData);
-			// TODO N21-1626 if (recourse link id) parameterData.push()
-		}
 
 		externalTool.parameters?.forEach((parameter: CustomParameter) => {
 			const paramData: ParameterData = ExternalToolDataMapper.mapToParameterData(parameter);
