@@ -223,8 +223,14 @@ export class DeletionRequestUc {
 	private async removeUserFromTeams(deletionRequest: DeletionRequest) {
 		this.logger.debug({ action: ' removeUserFromTeams', deletionRequest });
 
-		const teamsUpdated: number = await this.teamService.deleteUserDataFromTeams(deletionRequest.targetRefId);
-		await this.logDeletion(deletionRequest, DomainModel.TEAMS, OperationModel.UPDATE, teamsUpdated, []);
+		const teamsUpdated = await this.teamService.deleteUserDataFromTeams(deletionRequest.targetRefId);
+		await this.logDeletion(
+			deletionRequest,
+			teamsUpdated.domain,
+			teamsUpdated.operation,
+			teamsUpdated.count,
+			teamsUpdated.refs
+		);
 	}
 
 	private async removeUser(deletionRequest: DeletionRequest) {

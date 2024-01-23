@@ -230,6 +230,9 @@ describe(DeletionRequestUc.name, () => {
 				const tasksDeleted = DomainOperationBuilder.build(DomainModel.TASK, OperationModel.DELETE, 1, [
 					new ObjectId().toHexString(),
 				]);
+				const teamsUpdated = DomainOperationBuilder.build(DomainModel.TEAMS, OperationModel.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
 
 				registrationPinService.deleteRegistrationPinByEmail.mockResolvedValueOnce(2);
 				classService.deleteUserDataFromClasses.mockResolvedValueOnce(1);
@@ -239,7 +242,7 @@ describe(DeletionRequestUc.name, () => {
 				filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles.mockResolvedValueOnce(2);
 				lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(2);
 				pseudonymService.deleteByUserId.mockResolvedValueOnce(2);
-				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(2);
+				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(teamsUpdated);
 				userService.deleteUser.mockResolvedValueOnce(1);
 				rocketChatUserService.deleteByUserId.mockResolvedValueOnce(rocketChatUserDeleted);
 				filesStorageClientAdapterService.removeCreatorIdFromFileRecords.mockResolvedValueOnce(5);
@@ -498,6 +501,10 @@ describe(DeletionRequestUc.name, () => {
 			const setup = () => {
 				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
 
+				const teamsUpdated = DomainOperationBuilder.build(DomainModel.TEAMS, OperationModel.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
 				classService.deleteUserDataFromClasses.mockResolvedValueOnce(1);
 				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(2);
 				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(2);
@@ -505,7 +512,7 @@ describe(DeletionRequestUc.name, () => {
 				filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles.mockResolvedValueOnce(2);
 				lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(2);
 				pseudonymService.deleteByUserId.mockResolvedValueOnce(2);
-				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(2);
+				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(teamsUpdated);
 				userService.deleteUser.mockRejectedValueOnce(new Error());
 
 				return {

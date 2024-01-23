@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
+import { DomainOperationBuilder } from '@shared/domain/builder';
 import { TeamEntity } from '@shared/domain/entity';
-import { DomainModel, EntityId, StatusModel } from '@shared/domain/types';
+import { DomainOperation } from '@shared/domain/interface';
+import { DomainModel, EntityId, OperationModel, StatusModel } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 
@@ -17,7 +19,7 @@ export class TeamService {
 		return teams;
 	}
 
-	public async deleteUserDataFromTeams(userId: EntityId): Promise<number> {
+	public async deleteUserDataFromTeams(userId: EntityId): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Teams',
@@ -36,6 +38,13 @@ export class TeamService {
 
 		const numberOfUpdatedTeams = teams.length;
 
+		const result = DomainOperationBuilder.build(
+			DomainModel.TASK,
+			OperationModel.UPDATE,
+			numberOfUpdatedTeams,
+			this.getTasksId(teams)
+		);
+
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully deleted user data from Teams',
@@ -47,6 +56,10 @@ export class TeamService {
 			)
 		);
 
-		return numberOfUpdatedTeams;
+		return result;
+	}
+
+	private getTasksId(teams: TeamEntity[]): EntityId[] {
+		return teams.map((team) => team.id);
 	}
 }
