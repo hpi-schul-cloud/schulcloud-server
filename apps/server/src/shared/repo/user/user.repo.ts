@@ -163,8 +163,11 @@ export class UserRepo extends BaseRepo<User> {
 	}
 
 	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
-		const user = await this._em.findOneOrFail(User, { id: userId });
-		const parentsEmails = user.parents?.map((parent) => parent.email) ?? [];
+		const user: User | null = await this._em.findOne(User, { id: userId });
+		let parentsEmails: string[] = [];
+		if (user !== null) {
+			parentsEmails = user.parents?.map((parent) => parent.email) ?? [];
+		}
 
 		return parentsEmails;
 	}
