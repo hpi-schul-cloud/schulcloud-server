@@ -103,6 +103,6 @@ export class ExternalToolUc {
 			user.lastName
 		);
 		// TODO N21-1626 create pdf and pdfService
-		this.pdfService.createPdf(dataSheetData);
+		// this.pdfService.createPdf(dataSheetData);
 	}
 }
