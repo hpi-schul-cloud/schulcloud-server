@@ -8,7 +8,7 @@ import { Logger } from '@src/core/logger';
 import { AxiosError } from 'axios';
 import { WebsocketCloseErrorLoggable } from '../loggable/websocket-close-error.loggable';
 import { TldrawConfig, SOCKET_PORT } from '../config';
-import { WsCloseCodeEnum, WsCloseMessageEnum } from '../types';
+import { WsCloseCodeEnum } from '../types';
 import { TldrawWsService } from '../service';
 
 @WebSocketGateway(SOCKET_PORT)
@@ -23,44 +23,50 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 	) {}
 
 	async handleConnection(client: WebSocket, request: Request): Promise<void> {
+		let counter = '1';
 		const docName = this.getDocNameFromRequest(request);
+		counter = counter.concat('2');
 		if (docName.length > 0 && this.configService.get<string>('FEATURE_TLDRAW_ENABLED')) {
+			counter = counter.concat('3');
 			const cookies = this.parseCookiesFromHeader(request);
+			counter = counter.concat('4');
 			try {
 				await this.tldrawWsService.authorizeConnection(docName, cookies?.jwt);
+				counter = counter.concat('5');
 			} catch (err) {
+				counter = counter.concat('6');
 				if ((err as AxiosError).response?.status === 404 || (err as AxiosError).response?.status === 400) {
-					this.closeClientAndLogError(
-						client,
-						WsCloseCodeEnum.WS_CLIENT_NOT_FOUND_CODE,
-						WsCloseMessageEnum.WS_CLIENT_NOT_FOUND_MESSAGE,
-						err as Error
-					);
+					counter = counter.concat('7');
+					this.closeClientAndLogError(client, WsCloseCodeEnum.WS_CLIENT_NOT_FOUND_CODE, counter, err as Error);
 				} else {
+					counter = counter.concat('8');
 					this.closeClientAndLogError(
 						client,
 						WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
-						WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE,
+						counter,
 						err as Error
 					);
 				}
 				return;
 			}
 			try {
+				counter = counter.concat('9');
 				this.tldrawWsService.setupWSConnection(client, docName);
+				counter = counter.concat('10');
 			} catch (err) {
 				this.closeClientAndLogError(
 					client,
 					WsCloseCodeEnum.WS_CLIENT_ESTABLISHING_CONNECTION_CODE,
-					WsCloseMessageEnum.WS_CLIENT_ESTABLISHING_CONNECTION_MESSAGE,
+					counter,
 					err as Error
 				);
 			}
 		} else {
+			counter = counter.concat('11');
 			this.closeClientAndLogError(
 				client,
 				WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE,
-				WsCloseMessageEnum.WS_CLIENT_BAD_REQUEST_MESSAGE,
+				counter,
 				new BadRequestException()
 			);
 		}
