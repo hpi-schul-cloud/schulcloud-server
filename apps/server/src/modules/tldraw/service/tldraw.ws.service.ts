@@ -74,12 +74,16 @@ export class TldrawWsService {
 	 */
 	public send(doc: WsSharedDocDo, conn: WebSocket, message: Uint8Array): void {
 		if (conn.readyState !== WSConnectionState.CONNECTING && conn.readyState !== WSConnectionState.OPEN) {
-			void this.closeConn(doc, conn);
+			this.closeConn(doc, conn).catch((err) => {
+				throw err;
+			});
 		}
 
 		conn.send(message, (err) => {
 			if (err) {
-				void this.closeConn(doc, conn);
+				this.closeConn(doc, conn).catch((e) => {
+					throw e;
+				});
 			}
 		});
 	}
@@ -217,12 +221,16 @@ export class TldrawWsService {
 				return;
 			}
 
-			void this.closeConn(doc, ws);
+			this.closeConn(doc, ws).catch((err) => {
+				throw err;
+			});
 			clearInterval(pingInterval);
 		}, this.pingTimeout);
 
 		ws.on('close', () => {
-			void this.closeConn(doc, ws);
+			this.closeConn(doc, ws).catch((err) => {
+				throw err;
+			});
 			clearInterval(pingInterval);
 		});
 
@@ -352,22 +360,30 @@ export class TldrawWsService {
 	}
 
 	private subscribeToRedisChannels(doc: WsSharedDocDo) {
-		void this.sub.subscribe(doc.name, doc.awarenessChannel, (err) => {
-			if (err) {
-				this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while subscribing to Redis channels', err));
-			}
-		});
+		this.sub
+			.subscribe(doc.name, doc.awarenessChannel, (err) => {
+				if (err) {
+					this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while subscribing to Redis channels', err));
+				}
+			})
+			.catch((err) => {
+				throw err;
+			});
 		this.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message, doc));
 	}
 
 	private unsubscribeFromRedisChannels(doc: WsSharedDocDo) {
-		void this.sub.unsubscribe(doc.name, doc.awarenessChannel, (err) => {
-			if (err) {
-				this.logger.warning(
-					new WsSharedDocErrorLoggable(doc.name, 'Error while unsubscribing from Redis channels', err)
-				);
-			}
-		});
+		this.sub
+			.unsubscribe(doc.name, doc.awarenessChannel, (err) => {
+				if (err) {
+					this.logger.warning(
+						new WsSharedDocErrorLoggable(doc.name, 'Error while unsubscribing from Redis channels', err)
+					);
+				}
+			})
+			.catch((err) => {
+				throw err;
+			});
 	}
 
 	private async updateDocument(docName: string, doc: WsSharedDocDo) {
@@ -381,10 +397,14 @@ export class TldrawWsService {
 
 	private publishUpdateToRedis(doc: WsSharedDocDo, update: Uint8Array, type: 'awareness' | 'document') {
 		const channel = type === 'awareness' ? doc.awarenessChannel : doc.name;
-		void this.pub.publish(channel, Buffer.from(update), (err) => {
-			if (err) {
-				this.logger.warning(new RedisPublishErrorLoggable('awareness', err));
-			}
-		});
+		this.pub
+			.publish(channel, Buffer.from(update), (err) => {
+				if (err) {
+					this.logger.warning(new RedisPublishErrorLoggable('awareness', err));
+				}
+			})
+			.catch((err) => {
+				throw err;
+			});
 	}
 }

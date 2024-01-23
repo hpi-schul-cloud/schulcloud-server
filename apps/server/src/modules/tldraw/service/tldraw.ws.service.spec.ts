@@ -227,8 +227,8 @@ describe('TldrawWSService', () => {
 			});
 		});
 
-		describe('when received message of specific type', () => {
-			const setup = async (messageValues: number[], shouldPublishSpyThrowError: boolean) => {
+		describe('when received message of type specific type', () => {
+			const setup = async (messageValues: number[]) => {
 				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 
 				const errorLogSpy = jest.spyOn(logger, 'warning');
@@ -244,15 +244,6 @@ describe('TldrawWSService', () => {
 				const doc = new WsSharedDocDo('TEST');
 				const { msg } = createMessage(messageValues);
 
-				if (shouldPublishSpyThrowError) {
-					publishSpy.mockImplementationOnce((_channel, _message, cb) => {
-						if (cb) {
-							cb(new Error('error'));
-						}
-						return Promise.resolve(0);
-					});
-				}
-
 				return {
 					sendSpy,
 					errorLogSpy,
@@ -265,7 +256,7 @@ describe('TldrawWSService', () => {
 			};
 
 			it('should call send method when received message of type SYNC', async () => {
-				const { sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } = await setup([0, 1], false);
+				const { sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } = await setup([0, 1]);
 
 				service.messageHandler(ws, doc, msg);
 
@@ -277,7 +268,7 @@ describe('TldrawWSService', () => {
 			});
 
 			it('should not call send method when received message of type AWARENESS', async () => {
-				const { sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } = await setup([1, 1, 0], false);
+				const { sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } = await setup([1, 1, 0]);
 
 				service.messageHandler(ws, doc, msg);
 
@@ -288,9 +279,58 @@ describe('TldrawWSService', () => {
 				syncProtocolUpdateSpy.mockRestore();
 			});
 
+			it('should do nothing when received message unknown type', async () => {
+				const { sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } = await setup([2]);
+
+				service.messageHandler(ws, doc, msg);
+
+				expect(sendSpy).toHaveBeenCalledTimes(0);
+				expect(applyAwarenessUpdateSpy).toHaveBeenCalledTimes(0);
+				ws.close();
+				sendSpy.mockRestore();
+				applyAwarenessUpdateSpy.mockRestore();
+				syncProtocolUpdateSpy.mockRestore();
+			});
+		});
+
+		describe('when publishing AWARENESS has errors', () => {
+			const setup = async (messageValues: number[]) => {
+				ws = await TestConnection.setupWs(wsUrl, 'TEST');
+
+				const errorLogSpy = jest.spyOn(logger, 'warning');
+				const publishSpy = jest
+					.spyOn(Ioredis.Redis.prototype, 'publish')
+					.mockImplementationOnce((_channel, _message, cb) => {
+						if (cb) {
+							cb(new Error('error'));
+						}
+						return Promise.resolve(0);
+					});
+				const sendSpy = jest.spyOn(service, 'send');
+				const applyAwarenessUpdateSpy = jest.spyOn(AwarenessProtocol, 'applyAwarenessUpdate');
+				const syncProtocolUpdateSpy = jest
+					.spyOn(SyncProtocols, 'readSyncMessage')
+					.mockImplementationOnce((_dec, enc) => {
+						enc.bufs = [new Uint8Array(2), new Uint8Array(2)];
+						return 1;
+					});
+				const doc = new WsSharedDocDo('TEST');
+				const { msg } = createMessage(messageValues);
+
+				return {
+					sendSpy,
+					errorLogSpy,
+					publishSpy,
+					applyAwarenessUpdateSpy,
+					syncProtocolUpdateSpy,
+					doc,
+					msg,
+				};
+			};
+
 			it('should log error when publishing AWARENESS has errors', async () => {
 				const { publishSpy, errorLogSpy, sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } =
-					await setup([1, 1, 0], true);
+					await setup([1, 1, 0]);
 
 				service.messageHandler(ws, doc, msg);
 
@@ -301,19 +341,6 @@ describe('TldrawWSService', () => {
 				applyAwarenessUpdateSpy.mockRestore();
 				syncProtocolUpdateSpy.mockRestore();
 				publishSpy.mockRestore();
-			});
-
-			it('should do nothing when received message unknown type', async () => {
-				const { sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } = await setup([2], false);
-
-				service.messageHandler(ws, doc, msg);
-
-				expect(sendSpy).toHaveBeenCalledTimes(0);
-				expect(applyAwarenessUpdateSpy).toHaveBeenCalledTimes(0);
-				ws.close();
-				sendSpy.mockRestore();
-				applyAwarenessUpdateSpy.mockRestore();
-				syncProtocolUpdateSpy.mockRestore();
 			});
 		});
 
@@ -579,28 +606,17 @@ describe('TldrawWSService', () => {
 	});
 
 	describe('updateHandler', () => {
-		const setup = async (shouldPublishSpyThrowError: boolean) => {
+		const setup = async () => {
 			ws = await TestConnection.setupWs(wsUrl);
 
 			const sendSpy = jest.spyOn(service, 'send').mockReturnValueOnce();
 			const errorLogSpy = jest.spyOn(logger, 'warning');
-			const publishSpy = jest.spyOn(Ioredis.Redis.prototype, 'publish');
+			const publishSpy = jest.spyOn(Ioredis.Redis.prototype, 'publish').mockResolvedValueOnce(1);
 
 			const doc = TldrawWsFactory.createWsSharedDocDo();
 			const socketMock = TldrawWsFactory.createWebsocket(WebSocketReadyStateEnum.OPEN);
 			doc.connections.set(socketMock, new Set());
 			const msg = new Uint8Array([0]);
-
-			if (shouldPublishSpyThrowError) {
-				publishSpy.mockImplementationOnce((_channel, _message, cb) => {
-					if (cb) {
-						cb(new Error('error'));
-					}
-					return Promise.resolve(0);
-				});
-			} else {
-				publishSpy.mockResolvedValueOnce(1);
-			}
 
 			return {
 				doc,
@@ -613,16 +629,47 @@ describe('TldrawWSService', () => {
 		};
 
 		it('should call send method', async () => {
-			const { sendSpy, doc, socketMock, msg } = await setup(false);
+			const { sendSpy, doc, socketMock, msg } = await setup();
 
 			service.updateHandler(msg, socketMock, doc);
 
 			expect(sendSpy).toHaveBeenCalled();
 			ws.close();
 		});
+	});
 
-		it('should log error when publish to Redis has errors', async () => {
-			const { doc, socketMock, msg, errorLogSpy, publishSpy } = await setup(true);
+	describe('when publish to Redis has errors', () => {
+		const setup = async () => {
+			ws = await TestConnection.setupWs(wsUrl);
+
+			const sendSpy = jest.spyOn(service, 'send').mockReturnValueOnce();
+			const errorLogSpy = jest.spyOn(logger, 'warning');
+			const publishSpy = jest
+				.spyOn(Ioredis.Redis.prototype, 'publish')
+				.mockImplementationOnce((_channel, _message, cb) => {
+					if (cb) {
+						cb(new Error('error'));
+					}
+					return Promise.resolve(0);
+				});
+
+			const doc = TldrawWsFactory.createWsSharedDocDo();
+			const socketMock = TldrawWsFactory.createWebsocket(WebSocketReadyStateEnum.OPEN);
+			doc.connections.set(socketMock, new Set());
+			const msg = new Uint8Array([0]);
+
+			return {
+				doc,
+				sendSpy,
+				socketMock,
+				msg,
+				errorLogSpy,
+				publishSpy,
+			};
+		};
+
+		it('should log error', async () => {
+			const { doc, socketMock, msg, errorLogSpy, publishSpy } = await setup();
 
 			service.updateHandler(msg, socketMock, doc);
 

@@ -125,7 +125,7 @@ export class YMongodb {
 				break;
 			}
 
-			this.checkIfCurrentPartId(part, currentPartId);
+			this.checkIfPartIsNextPartAfterCurrent(part, currentPartId);
 
 			parts.push(Buffer.from(part.value.buffer));
 			currentPartId = part.part;
@@ -255,7 +255,7 @@ export class YMongodb {
 		return doc1.clock === doc2.clock;
 	}
 
-	private checkIfCurrentPartId(part: TldrawDrawing, currentPartId: number | undefined): void {
+	private checkIfPartIsNextPartAfterCurrent(part: TldrawDrawing, currentPartId: number | undefined): void {
 		if (part.part === undefined || currentPartId !== part.part - 1) {
 			throw new Error('Could not merge updates together because a part is missing');
 		}
