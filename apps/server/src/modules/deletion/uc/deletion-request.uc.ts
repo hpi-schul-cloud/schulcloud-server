@@ -266,7 +266,7 @@ export class DeletionRequestUc {
 
 		if (registrationPinDeleted) {
 			const userDeleted: number = await this.userService.deleteUser(deletionRequest.targetRefId);
-			await this.logDeletion(deletionRequest, DomainModel.USER, DeletionOperationModel.DELETE, 0, userDeleted);
+			await this.logDeletion(deletionRequest, DomainModel.USER, OperationModel.DELETE, userDeleted, []);
 		}
 	}
 

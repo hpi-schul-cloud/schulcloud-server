@@ -33,7 +33,7 @@ export class RocketChatUserService {
 		const deletedRocketChatUser = await this.rocketChatUserRepo.deleteByUserId(userId);
 
 		const result = DomainOperationBuilder.build(DomainModel.ROCKETCHATUSER, OperationModel.DELETE, 1, [
-			rocketChatUser.id,
+			rocketChatUser[0].id,
 		]);
 
 		this.logger.info(
