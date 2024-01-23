@@ -1,10 +1,12 @@
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { ComponentProperties, LessonEntity } from '@shared/domain/entity';
-import { Counted, DomainModel, EntityId, StatusModel } from '@shared/domain/types';
+import { Counted, DomainModel, EntityId, OperationModel, StatusModel } from '@shared/domain/types';
 import { AuthorizationLoaderService } from '@src/modules/authorization';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
+import { DomainOperation } from '@shared/domain/interface';
+import { DomainOperationBuilder } from '@shared/domain/builder';
 import { LessonRepo } from '../repository';
 
 @Injectable()
@@ -37,7 +39,7 @@ export class LessonService implements AuthorizationLoaderService {
 		return lessons;
 	}
 
-	async deleteUserDataFromLessons(userId: EntityId): Promise<number> {
+	async deleteUserDataFromLessons(userId: EntityId): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Lessons',
@@ -62,6 +64,13 @@ export class LessonService implements AuthorizationLoaderService {
 
 		const numberOfUpdatedLessons = updatedLessons.length;
 
+		const result = DomainOperationBuilder.build(
+			DomainModel.LESSONS,
+			OperationModel.UPDATE,
+			numberOfUpdatedLessons,
+			this.getLessonsId(updatedLessons)
+		);
+
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully removed user data from Classes',
@@ -73,6 +82,10 @@ export class LessonService implements AuthorizationLoaderService {
 			)
 		);
 
-		return numberOfUpdatedLessons;
+		return result;
+	}
+
+	private getLessonsId(lessons: LessonEntity[]): EntityId[] {
+		return lessons.map((lesson) => lesson.id);
 	}
 }
