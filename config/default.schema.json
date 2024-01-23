@@ -729,7 +729,7 @@
 		},
 		"FEATURE_SCHOOL_TERMS_OF_USE_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables uploading of school specific Terms of Use on new admin page."
 		},
 		"ROCKETCHAT_SERVICE_ENABLED": {
