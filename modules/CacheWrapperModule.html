@@ -238,18 +238,19 @@
 import { CacheModule, CacheModuleOptions } from &#x27;@nestjs/cache-manager&#x27;;
 import { Module } from &#x27;@nestjs/common&#x27;;
 import { LegacyLogger, LoggerModule } from &#x27;@src/core/logger&#x27;;
-import { redisStore } from &#x27;cache-manager-redis-yet&#x27;;
+import { create } from &#x27;cache-manager-redis-store&#x27;;
+import { RedisClient } from &#x27;redis&#x27;;
 import { CacheStoreType } from &#x27;./interface&#x27;;
 import { CacheService } from &#x27;./service/cache.service&#x27;;
 
 @Module({
 	imports: [
 		CacheModule.registerAsync({
-			useFactory: async (cacheService: CacheService, logger: LegacyLogger): Promise&lt;CacheModuleOptions&gt; &#x3D;&gt; {
+			useFactory: (cacheService: CacheService, logger: LegacyLogger): CacheModuleOptions &#x3D;&gt; {
 				if (cacheService.getStoreType() &#x3D;&#x3D;&#x3D; CacheStoreType.REDIS) {
 					const redisUrl: string &#x3D; Configuration.get(&#x27;REDIS_URI&#x27;) as string;
-					const store &#x3D; await redisStore({ url: redisUrl });
-					const { client } &#x3D; store;
+					const store &#x3D; create({ url: redisUrl });
+					const client: RedisClient &#x3D; store.getClient();
 
 					client.on(&#x27;error&#x27;, (error) &#x3D;&gt; logger.error(error));
 					client.on(&#x27;connect&#x27;, (msg) &#x3D;&gt; logger.log(msg));
