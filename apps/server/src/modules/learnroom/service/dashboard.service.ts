@@ -23,9 +23,13 @@ export class DashboardService {
 				StatusModel.PENDING
 			)
 		);
-		const usersDashboard = await this.dashboardRepo.getUsersDashboard(userId);
-		await this.dashboardElementRepo.deleteByDashboardId(usersDashboard.id);
-		const result = await this.dashboardRepo.deleteDashboardByUserId(userId);
+		let result = 0;
+		const usersDashboard = await this.dashboardRepo.getUsersDashboardIfExist(userId);
+		if (usersDashboard !== null) {
+			await this.dashboardElementRepo.deleteByDashboardId(usersDashboard.id);
+			result = await this.dashboardRepo.deleteDashboardByUserId(userId);
+		}
+
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully deleted user data from Dashboard',
