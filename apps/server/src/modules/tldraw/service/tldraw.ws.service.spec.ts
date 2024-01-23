@@ -915,6 +915,36 @@ describe('TldrawWSService', () => {
 				});
 			});
 		});
+
+		describe('when subscribing to redis channel throws error', () => {
+			const setup = () => {
+				const redisSubscribeSpy = jest
+					.spyOn(Ioredis.Redis.prototype, 'subscribe')
+					.mockRejectedValue(new Error('error'));
+				const redisOnSpy = jest.spyOn(Ioredis.Redis.prototype, 'on');
+				const errorLogSpy = jest.spyOn(logger, 'warning');
+
+				return {
+					redisOnSpy,
+					redisSubscribeSpy,
+					errorLogSpy,
+				};
+			};
+
+			it('should log error', async () => {
+				const { errorLogSpy, redisSubscribeSpy, redisOnSpy } = setup();
+
+				service.getYDoc('test-redis-fail');
+
+				jest.runAllTicks();
+
+				await delay(100);
+
+				expect(errorLogSpy).toHaveBeenCalled();
+				redisSubscribeSpy.mockRestore();
+				redisOnSpy.mockRestore();
+			});
+		});
 	});
 
 	describe('redisMessageHandler', () => {
