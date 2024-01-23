@@ -166,9 +166,7 @@ describe('TldrawWSService', () => {
 				const socketMock = TldrawWsFactory.createWebsocket(WebSocketReadyStateEnum.OPEN);
 				const clientMessageMock = 'test-message';
 
-				const closeConSpy = jest.spyOn(service, 'closeConn').mockImplementationOnce(() => {
-					throw new Error('error');
-				});
+				const closeConSpy = jest.spyOn(service, 'closeConn').mockRejectedValue(new Error('error'));
 				jest.spyOn(socketMock, 'send').mockImplementation((...args: unknown[]) => {
 					args.forEach((arg) => {
 						if (typeof arg === 'function') {
@@ -177,26 +175,66 @@ describe('TldrawWSService', () => {
 					});
 				});
 				const sendSpy = jest.spyOn(service, 'send');
+				const errorLogSpy = jest.spyOn(logger, 'warning');
 				const doc = TldrawWsFactory.createWsSharedDocDo();
 				const byteArray = new TextEncoder().encode(clientMessageMock);
 
 				return {
 					socketMock,
 					closeConSpy,
+					errorLogSpy,
 					sendSpy,
 					doc,
 					byteArray,
 				};
 			};
 
-			it('should throw error', () => {
-				const { socketMock, closeConSpy, sendSpy, doc, byteArray } = setup();
+			it('should log error', async () => {
+				const { socketMock, closeConSpy, errorLogSpy, sendSpy, doc, byteArray } = setup();
 
-				expect(() => service.send(doc, socketMock, byteArray)).toThrow('error');
+				service.send(doc, socketMock, byteArray);
 
-				expect(sendSpy).toThrow();
+				await delay(100);
+
 				expect(sendSpy).toHaveBeenCalledWith(doc, socketMock, byteArray);
 				expect(closeConSpy).toHaveBeenCalled();
+				expect(errorLogSpy).toHaveBeenCalled();
+				closeConSpy.mockRestore();
+				sendSpy.mockRestore();
+			});
+		});
+
+		describe('when web socket has ready state CLOSED and close connection throws error', () => {
+			const setup = () => {
+				const socketMock = TldrawWsFactory.createWebsocket(WebSocketReadyStateEnum.CLOSED);
+				const clientMessageMock = 'test-message';
+
+				const closeConSpy = jest.spyOn(service, 'closeConn').mockRejectedValue(new Error('error'));
+				const sendSpy = jest.spyOn(service, 'send');
+				const errorLogSpy = jest.spyOn(logger, 'warning');
+				const doc = TldrawWsFactory.createWsSharedDocDo();
+				const byteArray = new TextEncoder().encode(clientMessageMock);
+
+				return {
+					socketMock,
+					closeConSpy,
+					errorLogSpy,
+					sendSpy,
+					doc,
+					byteArray,
+				};
+			};
+
+			it('should log error', async () => {
+				const { socketMock, closeConSpy, errorLogSpy, sendSpy, doc, byteArray } = setup();
+
+				service.send(doc, socketMock, byteArray);
+
+				await delay(100);
+
+				expect(sendSpy).toHaveBeenCalledWith(doc, socketMock, byteArray);
+				expect(closeConSpy).toHaveBeenCalled();
+				expect(errorLogSpy).toHaveBeenCalled();
 				closeConSpy.mockRestore();
 				sendSpy.mockRestore();
 			});
@@ -936,9 +974,7 @@ describe('TldrawWSService', () => {
 
 				service.getYDoc('test-redis-fail');
 
-				jest.runAllTicks();
-
-				await delay(100);
+				await delay(200);
 
 				expect(errorLogSpy).toHaveBeenCalled();
 				redisSubscribeSpy.mockRestore();

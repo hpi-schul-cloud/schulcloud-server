@@ -12,6 +12,7 @@ import { Logger } from '@src/core/logger';
 import { applyUpdate } from 'yjs';
 import { TldrawRedisFactory } from '../redis';
 import {
+	CloseConnectionLoggable,
 	RedisPublishErrorLoggable,
 	WebsocketErrorLoggable,
 	WebsocketMessageErrorLoggable,
@@ -75,14 +76,14 @@ export class TldrawWsService {
 	public send(doc: WsSharedDocDo, conn: WebSocket, message: Uint8Array): void {
 		if (conn.readyState !== WSConnectionState.CONNECTING && conn.readyState !== WSConnectionState.OPEN) {
 			this.closeConn(doc, conn).catch((err) => {
-				throw err;
+				this.logger.warning(new CloseConnectionLoggable(err));
 			});
 		}
 
 		conn.send(message, (err) => {
 			if (err) {
 				this.closeConn(doc, conn).catch((e) => {
-					throw e;
+					this.logger.warning(new CloseConnectionLoggable(e));
 				});
 			}
 		});
@@ -222,14 +223,14 @@ export class TldrawWsService {
 			}
 
 			this.closeConn(doc, ws).catch((err) => {
-				throw err;
+				this.logger.warning(new CloseConnectionLoggable(err));
 			});
 			clearInterval(pingInterval);
 		}, this.pingTimeout);
 
 		ws.on('close', () => {
 			this.closeConn(doc, ws).catch((err) => {
-				throw err;
+				this.logger.warning(new CloseConnectionLoggable(err));
 			});
 			clearInterval(pingInterval);
 		});
