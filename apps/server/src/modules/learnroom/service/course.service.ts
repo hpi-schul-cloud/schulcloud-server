@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
+import { DomainOperationBuilder } from '@shared/domain/builder';
 import { Course } from '@shared/domain/entity';
-import { Counted, DomainModel, EntityId, StatusModel } from '@shared/domain/types';
+import { DomainOperation } from '@shared/domain/interface';
+import { Counted, DomainModel, EntityId, OperationModel, StatusModel } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 
@@ -21,7 +23,7 @@ export class CourseService {
 		return [courses, count];
 	}
 
-	public async deleteUserDataFromCourse(userId: EntityId): Promise<number> {
+	public async deleteUserDataFromCourse(userId: EntityId): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting data from Courses',
@@ -35,6 +37,14 @@ export class CourseService {
 		courses.forEach((course: Course) => course.removeUser(userId));
 
 		await this.repo.save(courses);
+
+		const result = DomainOperationBuilder.build(
+			DomainModel.COURSE,
+			OperationModel.UPDATE,
+			count,
+			this.getCoursesId(courses)
+		);
+
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully removed data from Courses',
@@ -46,12 +56,16 @@ export class CourseService {
 			)
 		);
 
-		return count;
+		return result;
 	}
 
 	async findAllByUserId(userId: EntityId): Promise<Course[]> {
 		const [courses] = await this.repo.findAllByUserId(userId);
 
 		return courses;
+	}
+
+	private getCoursesId(courses: Course[]): EntityId[] {
+		return courses.map((course) => course.id);
 	}
 }
