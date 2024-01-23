@@ -4,12 +4,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { DomainModel, OperationModel } from '@shared/domain/types';
+import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainOperation } from '@shared/domain/interface';
 import { RocketChatUserService } from './rocket-chat-user.service';
 import { RocketChatUserRepo } from '../repo';
 import { rocketChatUserFactory } from '../domain/testing/rocket-chat-user.factory';
 import { RocketChatUser } from '../domain';
-import { DomainOperationBuilder } from '@shared/domain/builder';
-import { DomainOperation } from '@shared/domain/interface';
 
 describe(RocketChatUserService.name, () => {
 	let module: TestingModule;
@@ -76,7 +76,7 @@ describe(RocketChatUserService.name, () => {
 				const userId = new ObjectId().toHexString();
 				const rocketChatUser: RocketChatUser = rocketChatUserFactory.build();
 
-				rocketChatUserRepo.findByUserId.mockResolvedValueOnce(rocketChatUser);
+				rocketChatUserRepo.findByUserId.mockResolvedValueOnce([rocketChatUser]);
 				rocketChatUserRepo.deleteByUserId.mockResolvedValueOnce(1);
 
 				const expectedResult = DomainOperationBuilder.build(DomainModel.ROCKETCHATUSER, OperationModel.DELETE, 1, [
