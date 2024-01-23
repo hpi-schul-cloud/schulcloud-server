@@ -29,7 +29,6 @@ export class ExternalToolDataMapper {
 		return externalToolData;
 	}
 
-	// TODO N21-1626 confirm instance names
 	static mapToInstanceName(): string {
 		if (Configuration.get('SC_THEME') === 'n21') {
 			return 'Niedersächsische Bildungscloud';
@@ -39,7 +38,11 @@ export class ExternalToolDataMapper {
 			return 'Schul-Cloud Brandenburg';
 		}
 
-		if (Configuration.get('SC_THEME') === 'dbc') {
+		if (Configuration.get('SC_THEME') === 'thr') {
+			return 'Thüringer Schulcloud';
+		}
+
+		if (Configuration.get('SC_THEME') === 'default') {
 			return 'dBildungscloud';
 		}
 
@@ -47,7 +50,6 @@ export class ExternalToolDataMapper {
 	}
 
 	static mapToParameterDataList(externalTool: ExternalTool): ParameterData[] {
-		// TODO N21-1626 move to its own service?
 		const parameterData: ParameterData[] = [];
 
 		externalTool.parameters?.forEach((parameter: CustomParameter) => {
@@ -59,6 +61,17 @@ export class ExternalToolDataMapper {
 	}
 
 	static mapToParameterData(parameter: CustomParameter): ParameterData {
+		const parameterData: ParameterData = new ParameterData({
+			name: parameter.name,
+			type: ExternalToolDataMapper.mapTotype(parameter),
+			properties: ExternalToolDataMapper.mapToProperties(parameter),
+			scope: ExternalToolDataMapper.mapToScope(parameter),
+		});
+
+		return parameterData;
+	}
+
+	static mapToProperties(parameter: CustomParameter): ExternalToolParameterProperty[] {
 		const properties: ExternalToolParameterProperty[] = [];
 		if (parameter.isOptional) {
 			properties.push(ExternalToolParameterProperty.OPTIONAL);
@@ -70,6 +83,10 @@ export class ExternalToolDataMapper {
 			properties.push(ExternalToolParameterProperty.PROTECTED);
 		}
 
+		return properties;
+	}
+
+	static mapTotype(parameter: CustomParameter): string {
 		let type = '';
 		switch (parameter.type) {
 			case CustomParameterType.STRING:
@@ -97,6 +114,10 @@ export class ExternalToolDataMapper {
 				break;
 		}
 
+		return type;
+	}
+
+	static mapToScope(parameter: CustomParameter): string {
 		let scope = '';
 		switch (parameter.scope) {
 			case CustomParameterScope.CONTEXT:
@@ -112,13 +133,6 @@ export class ExternalToolDataMapper {
 				break;
 		}
 
-		const parameterData: ParameterData = new ParameterData({
-			name: parameter.name,
-			type,
-			properties,
-			scope,
-		});
-
-		return parameterData;
+		return scope;
 	}
 }
