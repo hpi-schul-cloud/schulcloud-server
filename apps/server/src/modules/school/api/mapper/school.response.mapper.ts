@@ -1,5 +1,6 @@
 import { School } from '../../domain';
 import { SchoolForExternalInviteResponse, SchoolResponse, YearsResponse } from '../dto/response';
+import { SchoolForLoginResponse } from '../dto/response/school-for-login.response';
 import { CountyResponseMapper } from './county.response.mapper';
 import { FederalStateResponseMapper } from './federal-state.response.mapper';
 import { SchoolYearResponseMapper } from './school-year.response.mapper';
@@ -41,6 +42,24 @@ export class SchoolResponseMapper {
 		const dto = new SchoolForExternalInviteResponse({
 			id: school.id,
 			name: schoolProps.name,
+		});
+
+		return dto;
+	}
+
+	public static mapToListForLoginResponses(schools: School[]): SchoolForLoginResponse[] {
+		const dtos = schools.map((school) => SchoolResponseMapper.mapToLoginResponse(school));
+
+		return dtos;
+	}
+
+	private static mapToLoginResponse(school: School): SchoolForLoginResponse {
+		const schoolProps = school.getProps();
+
+		const dto = new SchoolForLoginResponse({
+			id: school.id,
+			name: schoolProps.name,
+			systemIds: schoolProps.systemIds ?? [],
 		});
 
 		return dto;

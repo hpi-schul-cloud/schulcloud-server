@@ -5,6 +5,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { SchoolQueryParams, SchoolUrlParams } from './dto/param';
 import { SchoolForExternalInviteResponse, SchoolResponse } from './dto/response';
 import { SchoolExistsResponse } from './dto/response/school-exists.response';
+import { SchoolForLoginResponse } from './dto/response/school-for-login.response';
 import { SchoolUc } from './school.uc';
 
 @ApiTags('School')
@@ -39,6 +40,13 @@ export class SchoolController {
 		const result = await this.schoolUc.doesSchoolExist(urlParams.schoolId);
 
 		const res = new SchoolExistsResponse({ exists: result });
+
+		return res;
+	}
+
+	@Get('/list-for-login')
+	public async getSchoolListForLadpLogin(): Promise<SchoolForLoginResponse[]> {
+		const res = await this.schoolUc.getSchoolListForLdapLogin();
 
 		return res;
 	}

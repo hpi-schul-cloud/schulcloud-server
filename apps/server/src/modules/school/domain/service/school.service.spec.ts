@@ -3,6 +3,8 @@ import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
+import { systemFactory } from '@shared/testing';
+import { SystemService } from '@src/modules/system';
 import { schoolFactory } from '../../testing';
 import { SchoolProps } from '../do';
 import { SchoolRepo } from '../interface';
@@ -25,6 +27,10 @@ describe('SchoolService', () => {
 				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
+				},
+				{
+					provide: SystemService,
+					useValue: createMock<SystemService>(),
 				},
 			],
 		}).compile();
@@ -373,6 +379,39 @@ describe('SchoolService', () => {
 				const { id } = setup();
 
 				await expect(service.doesSchoolExist(id)).rejects.toThrowError();
+			});
+		});
+	});
+
+	describe('getSchoolsForLdapLogin', () => {
+		describe('when some schools exist that have an active ldap system', () => {
+			const setup = () => {
+				const query = {};
+				const activeLdapSystem = systemFactory.build();
+				jest.spyOn(activeLdapSystem, 'isActiveLdapSystem').mockReturnValueOnce(true);
+				const schoolWithActiveLdapSystem = schoolFactory.build({ systemIds: [activeLdapSystem.id] });
+
+				const otherSystem = systemFactory.build();
+				jest.spyOn(activeLdapSystem, 'isActiveLdapSystem').mockReturnValueOnce(false);
+				const schoolWithOtherSystem = schoolFactory.build({ systemIds: [otherSystem.id] });
+
+				const schoolWithoutSystem = schoolFactory.build();
+
+				schoolRepo.getSchools.mockResolvedValueOnce([
+					schoolWithActiveLdapSystem,
+					schoolWithOtherSystem,
+					schoolWithoutSystem,
+				]);
+
+				return { query, schoolWithActiveLdapSystem };
+			};
+
+			it('should return these schools', async () => {
+				const { query, schoolWithActiveLdapSystem } = setup();
+
+				const result = await service.getSchoolsForLdapLogin(query);
+
+				expect(result).toEqual([schoolWithActiveLdapSystem]);
 			});
 		});
 	});

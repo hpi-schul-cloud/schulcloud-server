@@ -4,6 +4,7 @@ import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { SchoolQuery, SchoolService, SchoolYearService, SchoolYearHelper } from '../domain';
 import { SchoolForExternalInviteResponse, SchoolResponse } from './dto/response';
+import { SchoolForLoginResponse } from './dto/response/school-for-login.response';
 import { SchoolResponseMapper } from './mapper';
 import { YearsResponseMapper } from './mapper/years.response.mapper';
 
@@ -54,5 +55,13 @@ export class SchoolUc {
 		const result = await this.schoolService.doesSchoolExist(schoolId);
 
 		return result;
+	}
+
+	public async getSchoolListForLdapLogin(): Promise<SchoolForLoginResponse[]> {
+		const schools = await this.schoolService.getSchoolsForLdapLogin();
+
+		const dtos = SchoolResponseMapper.mapToListForLoginResponses(schools);
+
+		return dtos;
 	}
 }
