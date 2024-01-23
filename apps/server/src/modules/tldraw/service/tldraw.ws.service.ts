@@ -16,6 +16,8 @@ import { MetricsService } from '../metrics';
 export class TldrawWsService {
 	public pingTimeout: number;
 
+	public apiHostUrl: string;
+
 	public persistence: Persitence | null = null;
 
 	public docs = new Map();
@@ -27,6 +29,7 @@ export class TldrawWsService {
 		private readonly metricsService: MetricsService
 	) {
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
+		this.apiHostUrl = this.configService.get<string>('API_HOST');
 	}
 
 	public setPersistence(persistence_: Persitence): void {
@@ -226,7 +229,7 @@ export class TldrawWsService {
 		};
 
 		await firstValueFrom(
-			this.httpService.get(`${this.configService.get<string>('API_HOST')}/v3/elements/${drawingName}/permission`, {
+			this.httpService.get(`${this.apiHostUrl}/v3/elements/${drawingName}/permission`, {
 				headers,
 			})
 		);
