@@ -161,6 +161,47 @@ describe('TldrawWSService', () => {
 			});
 		});
 
+		describe('when client is not connected to WS and close connection throws error', () => {
+			const setup = () => {
+				const socketMock = TldrawWsFactory.createWebsocket(WebSocketReadyStateEnum.OPEN);
+				const clientMessageMock = 'test-message';
+
+				const closeConSpy = jest.spyOn(service, 'closeConn').mockImplementationOnce(() => {
+					throw new Error('error');
+				});
+				jest.spyOn(socketMock, 'send').mockImplementation((...args: unknown[]) => {
+					args.forEach((arg) => {
+						if (typeof arg === 'function') {
+							arg(new Error('error'));
+						}
+					});
+				});
+				const sendSpy = jest.spyOn(service, 'send');
+				const doc = TldrawWsFactory.createWsSharedDocDo();
+				const byteArray = new TextEncoder().encode(clientMessageMock);
+
+				return {
+					socketMock,
+					closeConSpy,
+					sendSpy,
+					doc,
+					byteArray,
+				};
+			};
+
+			it('should throw error', () => {
+				const { socketMock, closeConSpy, sendSpy, doc, byteArray } = setup();
+
+				expect(() => service.send(doc, socketMock, byteArray)).toThrow('error');
+
+				expect(sendSpy).toThrow();
+				expect(sendSpy).toHaveBeenCalledWith(doc, socketMock, byteArray);
+				expect(closeConSpy).toHaveBeenCalled();
+				closeConSpy.mockRestore();
+				sendSpy.mockRestore();
+			});
+		});
+
 		describe('when websocket has ready state different than Open (1) or Connecting (0)', () => {
 			const setup = () => {
 				const clientMessageMock = 'test-message';
@@ -328,7 +369,7 @@ describe('TldrawWSService', () => {
 				};
 			};
 
-			it('should log error when publishing AWARENESS has errors', async () => {
+			it('should log error', async () => {
 				const { publishSpy, errorLogSpy, sendSpy, applyAwarenessUpdateSpy, syncProtocolUpdateSpy, doc, msg } =
 					await setup([1, 1, 0]);
 
@@ -472,7 +513,16 @@ describe('TldrawWSService', () => {
 				ws = await TestConnection.setupWs(wsUrl);
 
 				const flushDocumentSpy = jest.spyOn(boardRepo, 'flushDocument').mockResolvedValueOnce();
-				const redisUnsubscribeSpy = jest.spyOn(Ioredis.Redis.prototype, 'unsubscribe');
+				const redisUnsubscribeSpy = jest
+					.spyOn(Ioredis.Redis.prototype, 'unsubscribe')
+					.mockImplementationOnce((...args: unknown[]) => {
+						args.forEach((arg) => {
+							if (typeof arg === 'function') {
+								arg(new Error('error'));
+							}
+						});
+						return Promise.resolve(0);
+					});
 				const closeConnSpy = jest.spyOn(service, 'closeConn');
 				const errorLogSpy = jest.spyOn(logger, 'warning');
 				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce({});
@@ -487,14 +537,6 @@ describe('TldrawWSService', () => {
 
 			it('should log error and close connection', async () => {
 				const { errorLogSpy, flushDocumentSpy, redisUnsubscribeSpy, closeConnSpy } = await setup();
-				redisUnsubscribeSpy.mockImplementationOnce((...args: unknown[]) => {
-					args.forEach((arg) => {
-						if (typeof arg === 'function') {
-							arg(new Error('error'));
-						}
-					});
-					return Promise.resolve(0);
-				});
 
 				await service.setupWSConnection(ws, 'TEST');
 				ws.close();
