@@ -2,7 +2,7 @@ import { LtiMessageType, LtiPrivacyPermission, ToolConfigType, ToolContextType }
 import { ParameterData } from './parameter-data';
 
 export class ExternalToolData {
-	createdAt: Date;
+	createdAt: string;
 
 	creatorName: string;
 

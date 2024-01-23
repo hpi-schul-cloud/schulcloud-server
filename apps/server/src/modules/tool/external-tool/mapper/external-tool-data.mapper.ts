@@ -6,7 +6,7 @@ import { CustomParameter } from '../../common/domain';
 export class ExternalToolDataMapper {
 	static mapToExternalToolData(externalTool: ExternalTool, firstName: string, lastname: string): ExternalToolData {
 		const externalToolData: ExternalToolData = new ExternalToolData({
-			createdAt: new Date(), // TODO N21-1626 human readable output
+			createdAt: new Date().toLocaleDateString('de-DE'),
 			creatorName: `${firstName} ${lastname}`,
 			instance: ExternalToolDataMapper.mapToInstanceName(),
 			toolName: externalTool.name,
