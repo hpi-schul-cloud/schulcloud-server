@@ -34,8 +34,8 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		if (docName.length > 0 && this.configService.get<string>('FEATURE_TLDRAW_ENABLED')) {
 			const cookies = this.parseCookiesFromHeader(request);
 			try {
-				await this.authorizeConnection(docName, cookies?.jwt);
-				// await this.tldrawWsService.authorizeConnection(docName, cookies?.jwt);
+				// await this.authorizeConnection(docName, cookies?.jwt);
+				await this.tldrawWsService.authorizeConnection(docName, cookies?.jwt);
 			} catch (err) {
 				if ((err as AxiosError).response?.status === 404 || (err as AxiosError).response?.status === 400) {
 					this.closeClientAndLogError(
