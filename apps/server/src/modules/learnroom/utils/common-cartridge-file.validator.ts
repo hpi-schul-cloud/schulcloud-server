@@ -1,22 +1,22 @@
-import { FileValidator } from '@nestjs/common';
+import { FileValidator, Injectable } from '@nestjs/common';
 import AdmZip from 'adm-zip';
 
+@Injectable()
 export class CommonCartridgeFileValidator extends FileValidator {
 	public constructor() {
 		super({});
 	}
 
-	public isValid(file?: unknown): boolean {
-		if (
-			file instanceof Object &&
-			'buffer' in file &&
-			file.buffer instanceof Buffer &&
-			this.hasManifestFile(file.buffer)
-		) {
-			return true;
+	public isValid(file?: Express.Multer.File): boolean {
+		if (!file) {
+			return false;
 		}
 
-		return false;
+		if (!this.hasManifestFile(file.buffer)) {
+			return false;
+		}
+
+		return true;
 	}
 
 	public buildErrorMessage(): string {

@@ -16,7 +16,7 @@ describe('CommonCartridgeFileValidator', () => {
 			it('should return true with imsmanifest.xml', () => {
 				const { sut, file } = setup('imsmanifest.xml');
 
-				const result = sut.isValid(file);
+				const result = sut.isValid(file as Express.Multer.File);
 
 				expect(result).toBe(true);
 			});
@@ -24,7 +24,7 @@ describe('CommonCartridgeFileValidator', () => {
 			it('should return true with manifest.xml', () => {
 				const { sut, file } = setup('manifest.xml');
 
-				const result = sut.isValid(file);
+				const result = sut.isValid(file as Express.Multer.File);
 
 				expect(result).toBe(true);
 			});
@@ -41,7 +41,7 @@ describe('CommonCartridgeFileValidator', () => {
 			it('should return false', () => {
 				const { sut, file } = setup();
 
-				const result = sut.isValid(file);
+				const result = sut.isValid(file as Express.Multer.File);
 
 				expect(result).toBe(false);
 			});
@@ -57,7 +57,7 @@ describe('CommonCartridgeFileValidator', () => {
 			it('should return false', () => {
 				const { sut, file } = setup();
 
-				const result = sut.isValid(file);
+				const result = sut.isValid(file as Express.Multer.File);
 
 				expect(result).toBe(false);
 			});

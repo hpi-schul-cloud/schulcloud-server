@@ -26,6 +26,7 @@ import {
 	ApiTags,
 } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
+import { config } from '@src/modules/files-storage/files-storage.config';
 import { Response } from 'express';
 import { CourseMapper } from '../mapper/course.mapper';
 import { CourseImportUc } from '../uc';
@@ -87,7 +88,7 @@ export class CourseController {
 		@UploadedFile(
 			new ParseFilePipe({
 				validators: [
-					new MaxFileSizeValidator({ maxSize: 1000 * 1000 * 1000 * 2 }), // TODO: get max file size from config
+					new MaxFileSizeValidator({ maxSize: config().MAX_FILE_SIZE }),
 					new FileTypeValidator({ fileType: /application\/(zip|octet-stream)/ }),
 					new CommonCartridgeFileValidator(),
 				],
