@@ -549,6 +549,42 @@ describe('TldrawWSService', () => {
 			});
 		});
 
+		describe('when unsubscribing from Redis throw error', () => {
+			const setup = async () => {
+				ws = await TestConnection.setupWs(wsUrl);
+
+				const flushDocumentSpy = jest.spyOn(boardRepo, 'flushDocument').mockResolvedValueOnce();
+				const redisUnsubscribeSpy = jest
+					.spyOn(Ioredis.Redis.prototype, 'unsubscribe')
+					.mockRejectedValueOnce(new Error('error'));
+				const closeConnSpy = jest.spyOn(service, 'closeConn');
+				const errorLogSpy = jest.spyOn(logger, 'warning');
+				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce({});
+
+				return {
+					flushDocumentSpy,
+					redisUnsubscribeSpy,
+					closeConnSpy,
+					errorLogSpy,
+				};
+			};
+
+			it('should log error and close connection', async () => {
+				const { errorLogSpy, flushDocumentSpy, redisUnsubscribeSpy, closeConnSpy } = await setup();
+
+				await service.setupWSConnection(ws, 'TEST');
+				ws.close();
+
+				await delay(20);
+
+				expect(closeConnSpy).toHaveBeenCalled();
+				expect(errorLogSpy).toHaveBeenCalled();
+				closeConnSpy.mockRestore();
+				flushDocumentSpy.mockRestore();
+				redisUnsubscribeSpy.mockRestore();
+			});
+		});
+
 		describe('when updating new document fails', () => {
 			const setup = async () => {
 				ws = await TestConnection.setupWs(wsUrl);
@@ -721,6 +757,42 @@ describe('TldrawWSService', () => {
 		});
 	});
 
+	describe('when publish to Redis throws errors', () => {
+		const setup = async () => {
+			ws = await TestConnection.setupWs(wsUrl);
+
+			const sendSpy = jest.spyOn(service, 'send').mockReturnValueOnce();
+			const errorLogSpy = jest.spyOn(logger, 'warning');
+			const publishSpy = jest.spyOn(Ioredis.Redis.prototype, 'publish').mockRejectedValueOnce(new Error('error'));
+
+			const doc = TldrawWsFactory.createWsSharedDocDo();
+			const socketMock = TldrawWsFactory.createWebsocket(WebSocketReadyStateEnum.OPEN);
+			doc.connections.set(socketMock, new Set());
+			const msg = new Uint8Array([0]);
+
+			return {
+				doc,
+				sendSpy,
+				socketMock,
+				msg,
+				errorLogSpy,
+				publishSpy,
+			};
+		};
+
+		it('should log error', async () => {
+			const { doc, socketMock, msg, errorLogSpy, publishSpy } = await setup();
+
+			service.updateHandler(msg, socketMock, doc);
+
+			await delay(20);
+
+			expect(errorLogSpy).toHaveBeenCalled();
+			ws.close();
+			publishSpy.mockRestore();
+		});
+	});
+
 	describe('messageHandler', () => {
 		describe('when message is received', () => {
 			const setup = async (messageValues: number[]) => {
@@ -786,7 +858,7 @@ describe('TldrawWSService', () => {
 
 			describe('when subscribing to redis channel', () => {
 				const setup = () => {
-					const redisSubscribeSpy = jest.spyOn(Ioredis.Redis.prototype, 'subscribe');
+					const redisSubscribeSpy = jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce(1);
 					const redisOnSpy = jest.spyOn(Ioredis.Redis.prototype, 'on');
 					const errorLogSpy = jest.spyOn(logger, 'warning');
 
@@ -799,30 +871,46 @@ describe('TldrawWSService', () => {
 
 				it('should register new listener', () => {
 					const { redisOnSpy, redisSubscribeSpy } = setup();
-					redisSubscribeSpy.mockResolvedValueOnce(1);
 
 					const doc = service.getYDoc('test-redis');
 
 					expect(doc).toBeDefined();
 					expect(redisOnSpy).toHaveBeenCalled();
 					redisSubscribeSpy.mockRestore();
+					redisSubscribeSpy.mockRestore();
 				});
+			});
 
-				it('should log error when failed', () => {
-					const { errorLogSpy, redisSubscribeSpy, redisOnSpy } = setup();
-					redisSubscribeSpy.mockImplementationOnce((...args: unknown[]) => {
-						args.forEach((arg) => {
-							if (typeof arg === 'function') {
-								arg(new Error('error'));
-							}
+			describe('when subscribing to redis channel fails', () => {
+				const setup = () => {
+					const redisSubscribeSpy = jest
+						.spyOn(Ioredis.Redis.prototype, 'subscribe')
+						.mockImplementationOnce((...args: unknown[]) => {
+							args.forEach((arg) => {
+								if (typeof arg === 'function') {
+									arg(new Error('error'));
+								}
+							});
+							return Promise.resolve(0);
 						});
-						return Promise.resolve(0);
-					});
+					const redisOnSpy = jest.spyOn(Ioredis.Redis.prototype, 'on');
+					const errorLogSpy = jest.spyOn(logger, 'warning');
+
+					return {
+						redisOnSpy,
+						redisSubscribeSpy,
+						errorLogSpy,
+					};
+				};
+
+				it('should log error', () => {
+					const { errorLogSpy, redisSubscribeSpy, redisOnSpy } = setup();
 
 					service.getYDoc('test-redis-fail');
 
 					expect(redisSubscribeSpy).toHaveBeenCalled();
 					expect(errorLogSpy).toHaveBeenCalled();
+					redisSubscribeSpy.mockRestore();
 					redisOnSpy.mockRestore();
 				});
 			});

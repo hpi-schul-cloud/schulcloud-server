@@ -367,7 +367,7 @@ export class TldrawWsService {
 				}
 			})
 			.catch((err) => {
-				throw err;
+				this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while subscribing to Redis channels', err));
 			});
 		this.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message, doc));
 	}
@@ -382,7 +382,9 @@ export class TldrawWsService {
 				}
 			})
 			.catch((err) => {
-				throw err;
+				this.logger.warning(
+					new WsSharedDocErrorLoggable(doc.name, 'Error while unsubscribing from Redis channels', err)
+				);
 			});
 	}
 
@@ -404,7 +406,7 @@ export class TldrawWsService {
 				}
 			})
 			.catch((err) => {
-				throw err;
+				this.logger.warning(new RedisPublishErrorLoggable('awareness', err));
 			});
 	}
 }
