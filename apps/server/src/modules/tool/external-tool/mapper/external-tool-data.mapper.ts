@@ -1,6 +1,11 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ExternalTool, ExternalToolData, ParameterData } from '../domain';
-import { CustomParameterScope, CustomParameterType, ExternalToolParameterProperty } from '../../common/enum';
+import {
+	CustomParameterScope,
+	CustomParameterType,
+	ExternalToolParameterProperty,
+	ToolContextType,
+} from '../../common/enum';
 import { CustomParameter } from '../../common/domain';
 
 export class ExternalToolDataMapper {
@@ -11,14 +16,20 @@ export class ExternalToolDataMapper {
 			instance: ExternalToolDataMapper.mapToInstanceName(),
 			toolName: externalTool.name,
 			toolUrl: externalTool.config.baseUrl,
-			isDeactivated: externalTool.isDeactivated ? 'tool is deactivated' : undefined,
-			limitedToContexts: externalTool.restrictToContexts ? externalTool.restrictToContexts : undefined,
+			isDeactivated: externalTool.isDeactivated ? 'Tool ist deaktiviert' : undefined,
+			restrictToContexts: externalTool.restrictToContexts
+				? ExternalToolDataMapper.mapToLimitedContexts(externalTool)
+				: undefined, // Tool ist beschränkt auf folgende Kontexte:
 			toolType: externalTool.config.type,
 			parameters: ExternalToolDataMapper.mapToParameterDataList(externalTool),
 		});
 
 		if (ExternalTool.isOauth2Config(externalTool.config)) {
-			externalToolData.skipConsent = externalTool.config.skipConsent;
+			if (externalTool.config.skipConsent) {
+				externalToolData.skipConsent = 'ja';
+			} else {
+				externalToolData.skipConsent = 'nein';
+			} // Erteilen der Zustimmung überspringen
 		}
 
 		if (ExternalTool.isLti11Config(externalTool.config)) {
@@ -29,7 +40,6 @@ export class ExternalToolDataMapper {
 		return externalToolData;
 	}
 
-	// TODO N21-1626 confirm instance names
 	static mapToInstanceName(): string {
 		if (Configuration.get('SC_THEME') === 'n21') {
 			return 'Niedersächsische Bildungscloud';
@@ -39,15 +49,30 @@ export class ExternalToolDataMapper {
 			return 'Schul-Cloud Brandenburg';
 		}
 
-		if (Configuration.get('SC_THEME') === 'dbc') {
+		if (Configuration.get('SC_THEME') === 'thr') {
+			return 'Thüringer Schulcloud';
+		}
+
+		if (Configuration.get('SC_THEME') === 'default') {
 			return 'dBildungscloud';
 		}
 
-		return 'dBildungscloud';
+		return 'unbekannt';
+	}
+
+	static mapToLimitedContexts(externalTool: ExternalTool): string[] {
+		const restrictToContexts: string[] = [];
+		if (externalTool.restrictToContexts?.includes(ToolContextType.COURSE)) {
+			restrictToContexts.push('Kurs');
+		}
+		if (externalTool.restrictToContexts?.includes(ToolContextType.BOARD_ELEMENT)) {
+			restrictToContexts.push('Kurs-Board');
+		}
+
+		return restrictToContexts;
 	}
 
 	static mapToParameterDataList(externalTool: ExternalTool): ParameterData[] {
-		// TODO N21-1626 move to its own service?
 		const parameterData: ParameterData[] = [];
 
 		externalTool.parameters?.forEach((parameter: CustomParameter) => {
@@ -59,17 +84,30 @@ export class ExternalToolDataMapper {
 	}
 
 	static mapToParameterData(parameter: CustomParameter): ParameterData {
+		const parameterData: ParameterData = new ParameterData({
+			name: parameter.name,
+			type: ExternalToolDataMapper.mapTotype(parameter),
+			properties: ExternalToolDataMapper.mapToProperties(parameter),
+			scope: ExternalToolDataMapper.mapToScope(parameter),
+		});
+
+		return parameterData;
+	}
+
+	static mapToProperties(parameter: CustomParameter): ExternalToolParameterProperty[] {
 		const properties: ExternalToolParameterProperty[] = [];
 		if (parameter.isOptional) {
 			properties.push(ExternalToolParameterProperty.OPTIONAL);
+		}
 
-			if (parameter.isProtected) {
-				properties.push(ExternalToolParameterProperty.PROTECTED);
-			}
-		} else if (parameter.isProtected) {
+		if (parameter.isProtected) {
 			properties.push(ExternalToolParameterProperty.PROTECTED);
 		}
 
+		return properties;
+	}
+
+	static mapTotype(parameter: CustomParameter): string {
 		let type = '';
 		switch (parameter.type) {
 			case CustomParameterType.STRING:
@@ -97,6 +135,10 @@ export class ExternalToolDataMapper {
 				break;
 		}
 
+		return type;
+	}
+
+	static mapToScope(parameter: CustomParameter): string {
 		let scope = '';
 		switch (parameter.scope) {
 			case CustomParameterScope.CONTEXT:
@@ -112,13 +154,6 @@ export class ExternalToolDataMapper {
 				break;
 		}
 
-		const parameterData: ParameterData = new ParameterData({
-			name: parameter.name,
-			type,
-			properties,
-			scope,
-		});
-
-		return parameterData;
+		return scope;
 	}
 }

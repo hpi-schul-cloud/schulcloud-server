@@ -102,5 +102,7 @@ export class ExternalToolUc {
 			user.firstName,
 			user.lastName
 		);
+		// TODO N21-1626 create pdf and pdfService
+		this.pdfService.createPdf(dataSheetData);
 	}
 }
