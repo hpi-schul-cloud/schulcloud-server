@@ -1,6 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DomainModel, EntityId, StatusModel } from '@shared/domain/types';
+import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainOperation } from '@shared/domain/interface';
+import { DomainModel, EntityId, OperationModel, StatusModel } from '@shared/domain/types';
 import { IDashboardRepo, DashboardElementRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 
@@ -14,7 +16,7 @@ export class DashboardService {
 		this.logger.setContext(DashboardService.name);
 	}
 
-	async deleteDashboardByUserId(userId: EntityId): Promise<number> {
+	async deleteDashboardByUserId(userId: EntityId): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Dashboard',
@@ -23,12 +25,16 @@ export class DashboardService {
 				StatusModel.PENDING
 			)
 		);
-		let result = 0;
+		let deletedDashboard = 0;
+		const refs: string[] = [];
 		const usersDashboard = await this.dashboardRepo.getUsersDashboardIfExist(userId);
 		if (usersDashboard !== null) {
 			await this.dashboardElementRepo.deleteByDashboardId(usersDashboard.id);
-			result = await this.dashboardRepo.deleteDashboardByUserId(userId);
+			deletedDashboard = await this.dashboardRepo.deleteDashboardByUserId(userId);
+			refs.push(usersDashboard.id);
 		}
+
+		const result = DomainOperationBuilder.build(DomainModel.DASHBOARD, OperationModel.DELETE, deletedDashboard, refs);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
@@ -37,7 +43,7 @@ export class DashboardService {
 				userId,
 				StatusModel.FINISHED,
 				0,
-				result
+				deletedDashboard
 			)
 		);
 

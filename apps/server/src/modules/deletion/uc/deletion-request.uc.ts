@@ -202,8 +202,14 @@ export class DeletionRequestUc {
 	private async removeUsersDashboard(deletionRequest: DeletionRequest) {
 		this.logger.debug({ action: 'removeUsersDashboard', deletionRequest });
 
-		const dashboardDeleted: number = await this.dashboardService.deleteDashboardByUserId(deletionRequest.targetRefId);
-		await this.logDeletion(deletionRequest, DomainModel.DASHBOARD, OperationModel.DELETE, dashboardDeleted, []);
+		const dashboardDeleted = await this.dashboardService.deleteDashboardByUserId(deletionRequest.targetRefId);
+		await this.logDeletion(
+			deletionRequest,
+			dashboardDeleted.domain,
+			dashboardDeleted.operation,
+			dashboardDeleted.count,
+			dashboardDeleted.refs
+		);
 	}
 
 	private async removeUsersFilesAndPermissions(deletionRequest: DeletionRequest) {

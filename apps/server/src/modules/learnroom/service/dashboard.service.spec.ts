@@ -2,9 +2,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DashboardElementRepo, IDashboardRepo, UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
-import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
+import { DomainModel, LearnroomMetadata, LearnroomTypes, OperationModel } from '@shared/domain/types';
 import { DashboardEntity, GridElement } from '@shared/domain/entity';
 import { Logger } from '@src/core/logger';
+import { DomainOperationBuilder } from '@shared/domain/builder';
+import { ObjectId } from 'bson';
 import { DashboardService } from '.';
 
 const learnroomMock = (id: string, name: string) => {
@@ -68,9 +70,14 @@ describe(DashboardService.name, () => {
 	describe('when deleting dashboard by userId', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
+			const dashboardId = new ObjectId().toHexString();
 			userRepo.findById.mockResolvedValue(user);
 
-			return { user };
+			const expectedResult = DomainOperationBuilder.build(DomainModel.DASHBOARD, OperationModel.DELETE, 1, [
+				dashboardId,
+			]);
+
+			return { dashboardId, expectedResult, user };
 		};
 
 		describe('when dashboard exist', () => {
@@ -113,12 +120,23 @@ describe(DashboardService.name, () => {
 			});
 
 			it('should delete users dashboard', async () => {
-				const { user } = setup();
+				const { dashboardId, expectedResult, user } = setup();
+				jest.spyOn(dashboardRepo, 'getUsersDashboardIfExist').mockResolvedValueOnce(
+					new DashboardEntity(dashboardId, {
+						grid: [
+							{
+								pos: { x: 1, y: 2 },
+								gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
+							},
+						],
+						userId: 'userId',
+					})
+				);
 				jest.spyOn(dashboardRepo, 'deleteDashboardByUserId').mockImplementation(() => Promise.resolve(1));
 
 				const result = await dashboardService.deleteDashboardByUserId(user.id);
 
-				expect(result).toEqual(1);
+				expect(result).toEqual(expectedResult);
 			});
 		});
 	});
