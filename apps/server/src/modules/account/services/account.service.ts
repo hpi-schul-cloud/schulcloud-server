@@ -25,6 +25,7 @@ type UserPreferences = {
 	// first login completed
 	firstLogin: boolean;
 };
+
 @Injectable()
 export class AccountService extends AbstractAccountService {
 	private readonly accountImpl: AbstractAccountService;
@@ -224,9 +225,9 @@ export class AccountService extends AbstractAccountService {
 			password: accountSave.password,
 		};
 		const idmAccount = await this.executeIdmMethod(async () => {
-			this.logger.debug(`Saving account with accountID ${ret.id ?? 'undefined'} ...`);
+			this.logger.debug(`Saving account with accountID ${ret.id} ...`);
 			const account = await this.accountIdm.save(newAccount);
-			this.logger.debug(`Saved account with accountID ${ret.id ?? 'undefined'}`);
+			this.logger.debug(`Saved account with accountID ${ret.id}`);
 			return account;
 		});
 		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });

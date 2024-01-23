@@ -1,13 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
+import { User } from '@shared/domain/entity';
+import { UserRepo } from '@shared/repo';
+import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
+import 'reflect-metadata';
 import { LegacyLogger } from '../../../core/logger';
+import { AccountConfig } from '../account-config';
+import { AccountByIdBodyParams } from '../controller/dto';
+import { Account, AccountSave } from '../domain';
+import { AccountEntity } from '../entity/account.entity';
+import { AccountEntityToDoMapper } from '../repo/mapper';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AccountValidationService } from './account.validation.service';
-import { Account, AccountSave } from '../domain';
-import { AccountConfig } from '../account-config';
 
 describe('AccountService', () => {
 	let module: TestingModule;
@@ -17,6 +25,14 @@ describe('AccountService', () => {
 	let accountValidationService: DeepMocked<AccountValidationService>;
 	let configService: DeepMocked<ConfigService>;
 	let logger: DeepMocked<LegacyLogger>;
+	let userRepo: DeepMocked<UserRepo>;
+
+	const newAccountService = () =>
+		new AccountService(accountServiceDb, accountServiceIdm, configService, accountValidationService, logger, userRepo);
+
+	const defaultPassword = 'DummyPasswd!1';
+	const otherPassword = 'DummyPasswd!2';
+	const defaultPasswordHash = '$2a$1$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
 
 	afterAll(async () => {
 		await module.close();
@@ -48,6 +64,10 @@ describe('AccountService', () => {
 						isUniqueEmail: jest.fn().mockResolvedValue(true),
 					},
 				},
+				{
+					provide: UserRepo,
+					useValue: createMock<UserRepo>(),
+				},
 			],
 		}).compile();
 		accountServiceDb = module.get(AccountServiceDb);
@@ -56,10 +76,16 @@ describe('AccountService', () => {
 		accountValidationService = module.get(AccountValidationService);
 		configService = module.get(ConfigService);
 		logger = module.get(LegacyLogger);
+		userRepo = module.get(UserRepo);
+
+		await setupEntities();
 	});
 
 	beforeEach(() => {
 		jest.clearAllMocks();
+		jest.restoreAllMocks();
+		jest.resetAllMocks();
+		jest.resetModules();
 	});
 
 	describe('findById', () => {
@@ -73,7 +99,7 @@ describe('AccountService', () => {
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
-				return new AccountService(accountServiceDb, accountServiceIdm, configService, accountValidationService, logger);
+				return newAccountService();
 			};
 
 			it('should call idm implementation', async () => {
@@ -94,7 +120,7 @@ describe('AccountService', () => {
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
-				return new AccountService(accountServiceDb, accountServiceIdm, configService, accountValidationService, logger);
+				return newAccountService();
 			};
 
 			it('should call idm implementation', async () => {
@@ -115,7 +141,7 @@ describe('AccountService', () => {
 		describe('when identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
-				return new AccountService(accountServiceDb, accountServiceIdm, configService, accountValidationService, logger);
+				return newAccountService();
 			};
 
 			it('should call idm implementation', async () => {
@@ -136,7 +162,7 @@ describe('AccountService', () => {
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
-				return new AccountService(accountServiceDb, accountServiceIdm, configService, accountValidationService, logger);
+				return newAccountService();
 			};
 
 			it('should call idm implementation', async () => {
@@ -157,7 +183,7 @@ describe('AccountService', () => {
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
-				return new AccountService(accountServiceDb, accountServiceIdm, configService, accountValidationService, logger);
+				return newAccountService();
 			};
 
 			it('should call idm implementation', async () => {
@@ -177,34 +203,56 @@ describe('AccountService', () => {
 		});
 		describe('When calling save in accountService if feature is enabled', () => {
 			const setup = () => {
-				configService.get.mockReturnValueOnce(true);
+				configService.get.mockReturnValue(true);
+
+				accountServiceDb.save.mockResolvedValueOnce({
+					getProps: () => {
+						return { id: '' };
+					},
+				} as Account);
+
+				return newAccountService();
 			};
 			it('should call save in accountServiceIdm', async () => {
-				setup();
+				const service = setup();
 
-				await expect(accountService.save({} as Account)).resolves.not.toThrow();
+				await expect(service.save({} as Account)).resolves.not.toThrow();
 				expect(accountServiceIdm.save).toHaveBeenCalledTimes(1);
 			});
 		});
 		describe('When calling save in accountService if feature is disabled', () => {
 			const setup = () => {
 				configService.get.mockReturnValueOnce(false);
+
+				accountServiceDb.save.mockResolvedValueOnce({
+					getProps: () => {
+						return { id: '' };
+					},
+				} as Account);
+
+				return newAccountService();
 			};
 			it('should not call save in accountServiceIdm', async () => {
-				setup();
+				const service = setup();
 
-				await expect(accountService.save({} as Account)).resolves.not.toThrow();
+				await expect(service.save({} as Account)).resolves.not.toThrow();
 				expect(accountServiceIdm.save).not.toHaveBeenCalled();
 			});
 		});
 		describe('when identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
-				return new AccountService(accountServiceDb, accountServiceIdm, configService, accountValidationService, logger);
+				accountServiceDb.save.mockResolvedValueOnce({
+					getProps: () => {
+						return { id: '' };
+					},
+				} as Account);
+
+				return newAccountService();
 			};
 			it('should call idm implementation', async () => {
-				setup();
-				await expect(accountService.save({ username: 'username' } as AccountSave)).resolves.not.toThrow();
+				const service = setup();
+				await expect(service.save({ username: 'username' } as AccountSave)).resolves.not.toThrow();
 				expect(accountServiceIdm.save).toHaveBeenCalledTimes(1);
 			});
 		});
@@ -214,6 +262,14 @@ describe('AccountService', () => {
 		describe('When calling saveWithValidation on accountService', () => {
 			const setup = () => {
 				const spy = jest.spyOn(accountService, 'save');
+
+				accountServiceDb.save.mockResolvedValueOnce({
+					getProps: () => {
+						return { id: '' };
+					},
+				} as Account);
+				accountValidationService.isUniqueEmail.mockResolvedValueOnce(true);
+
 				return spy;
 			};
 			it('should not sanitize username for external user', async () => {
@@ -244,7 +300,17 @@ describe('AccountService', () => {
 		});
 
 		describe('When username for an external user is not an email', () => {
+			const setup = () => {
+				accountServiceDb.save.mockResolvedValueOnce({
+					getProps: () => {
+						return { id: '' };
+					},
+				} as Account);
+				accountValidationService.isUniqueEmail.mockResolvedValueOnce(true);
+			};
+
 			it('should not throw an error', async () => {
+				setup();
 				const params: AccountSave = {
 					username: 'John Doe',
 					systemId: 'ABC123',
@@ -254,7 +320,17 @@ describe('AccountService', () => {
 		});
 
 		describe('When username for an external user is a ldap search string', () => {
+			const setup = () => {
+				accountServiceDb.save.mockResolvedValueOnce({
+					getProps: () => {
+						return { id: '' };
+					},
+				} as Account);
+				accountValidationService.isUniqueEmail.mockResolvedValueOnce(true);
+			};
+
 			it('should not throw an error', async () => {
+				setup();
 				const params: AccountSave = {
 					username: 'dc=schul-cloud,dc=org/fake.ldap',
 					systemId: 'ABC123',
@@ -300,13 +376,20 @@ describe('AccountService', () => {
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
-				return new AccountService(accountServiceDb, accountServiceIdm, configService, accountValidationService, logger);
+				accountServiceDb.save.mockResolvedValueOnce({
+					getProps: () => {
+						return { id: '' };
+					},
+				} as Account);
+				accountValidationService.isUniqueEmail.mockResolvedValueOnce(true);
+
+				return newAccountService();
 			};
 
 			it('should call idm implementation', async () => {
-				setup();
+				const service = setup();
 				await expect(
-					accountService.saveWithValidation({ username: 'username@mail.tld', password: 'password' } as AccountSave)
+					service.saveWithValidation({ username: 'username@mail.tld', password: 'password' } as AccountSave)
 				).resolves.not.toThrow();
 				expect(accountServiceIdm.save).toHaveBeenCalledTimes(1);
 			});
@@ -323,36 +406,59 @@ describe('AccountService', () => {
 
 		describe('When calling updateUsername in accountService if idm feature is enabled', () => {
 			const setup = () => {
-				configService.get.mockReturnValueOnce(true);
+				configService.get.mockReturnValue(true);
+
+				accountServiceDb.updateUsername.mockResolvedValueOnce({
+					getProps: () => {
+						return { id: '' };
+					},
+				} as Account);
+
+				return newAccountService();
 			};
 			it('should call updateUsername in accountServiceIdm', async () => {
-				setup();
+				const service = setup();
 
-				await expect(accountService.updateUsername('accountId', 'username')).resolves.not.toThrow();
+				await expect(service.updateUsername('accountId', 'username')).resolves.not.toThrow();
 				expect(accountServiceIdm.updateUsername).toHaveBeenCalledTimes(1);
 			});
 		});
 
 		describe('When calling updateUsername in accountService if idm feature is disabled', () => {
 			const setup = () => {
-				configService.get.mockReturnValueOnce(false);
+				configService.get.mockReturnValue(false);
+
+				accountServiceDb.updateUsername.mockResolvedValueOnce({
+					getProps: () => {
+						return { id: '' };
+					},
+				} as Account);
+
+				return newAccountService();
 			};
 			it('should not call updateUsername in accountServiceIdm', async () => {
-				setup();
+				const service = setup();
 
-				await expect(accountService.updateUsername('accountId', 'username')).resolves.not.toThrow();
+				await expect(service.updateUsername('accountId', 'username')).resolves.not.toThrow();
 				expect(accountServiceIdm.updateUsername).not.toHaveBeenCalled();
 			});
 		});
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
-				return new AccountService(accountServiceDb, accountServiceIdm, configService, accountValidationService, logger);
+
+				accountServiceDb.updateUsername.mockResolvedValueOnce({
+					getProps: () => {
+						return { id: '' };
+					},
+				} as Account);
+
+				return newAccountService();
 			};
 
 			it('should call idm implementation', async () => {
-				setup();
-				await expect(accountService.updateUsername('accountId', 'username')).resolves.not.toThrow();
+				const service = setup();
+				await expect(service.updateUsername('accountId', 'username')).resolves.not.toThrow();
 				expect(accountServiceIdm.updateUsername).toHaveBeenCalledTimes(1);
 			});
 		});
@@ -368,12 +474,19 @@ describe('AccountService', () => {
 		describe('when identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
-				return new AccountService(accountServiceDb, accountServiceIdm, configService, accountValidationService, logger);
+
+				accountServiceDb.updateLastTriedFailedLogin.mockResolvedValueOnce({
+					getProps: () => {
+						return { id: '' };
+					},
+				} as Account);
+
+				return newAccountService();
 			};
 
 			it('should call idm implementation', async () => {
-				setup();
-				await expect(accountService.updateLastTriedFailedLogin('accountId', new Date())).resolves.not.toThrow();
+				const service = setup();
+				await expect(service.updateLastTriedFailedLogin('accountId', new Date())).resolves.not.toThrow();
 				expect(accountServiceIdm.updateLastTriedFailedLogin).toHaveBeenCalledTimes(1);
 			});
 		});
@@ -389,36 +502,59 @@ describe('AccountService', () => {
 
 		describe('When calling updatePassword in accountService if feature is enabled', () => {
 			const setup = () => {
-				configService.get.mockReturnValueOnce(true);
+				configService.get.mockReturnValue(true);
+
+				accountServiceDb.updatePassword.mockResolvedValueOnce({
+					getProps: () => {
+						return { id: '' };
+					},
+				} as Account);
+
+				return newAccountService();
 			};
 			it('should call updatePassword in accountServiceIdm', async () => {
-				setup();
+				const service = setup();
 
-				await expect(accountService.updatePassword('accountId', 'password')).resolves.not.toThrow();
+				await expect(service.updatePassword('accountId', 'password')).resolves.not.toThrow();
 				expect(accountServiceIdm.updatePassword).toHaveBeenCalledTimes(1);
 			});
 		});
 
 		describe('When calling updatePassword in accountService if feature is disabled', () => {
 			const setup = () => {
-				configService.get.mockReturnValueOnce(false);
+				configService.get.mockReturnValue(false);
+
+				accountServiceDb.updatePassword.mockResolvedValueOnce({
+					getProps: () => {
+						return { id: '' };
+					},
+				} as Account);
+
+				return newAccountService();
 			};
 			it('should not call updatePassword in accountServiceIdm', async () => {
-				setup();
+				const service = setup();
 
-				await expect(accountService.updatePassword('accountId', 'password')).resolves.not.toThrow();
+				await expect(service.updatePassword('accountId', 'password')).resolves.not.toThrow();
 				expect(accountServiceIdm.updatePassword).not.toHaveBeenCalled();
 			});
 		});
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
-				return new AccountService(accountServiceDb, accountServiceIdm, configService, accountValidationService, logger);
+
+				accountServiceDb.updatePassword.mockResolvedValueOnce({
+					getProps: () => {
+						return { id: '' };
+					},
+				} as Account);
+
+				return newAccountService();
 			};
 
 			it('should call idm implementation', async () => {
-				setup();
-				await expect(accountService.updatePassword('accountId', 'password')).resolves.not.toThrow();
+				const service = setup();
+				await expect(service.updatePassword('accountId', 'password')).resolves.not.toThrow();
 				expect(accountServiceIdm.updatePassword).toHaveBeenCalledTimes(1);
 			});
 		});
@@ -436,7 +572,14 @@ describe('AccountService', () => {
 		describe('When calling validatePassword in accountService if feature is enabled', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
-				return new AccountService(accountServiceDb, accountServiceIdm, configService, accountValidationService, logger);
+				return new AccountService(
+					accountServiceDb,
+					accountServiceIdm,
+					configService,
+					accountValidationService,
+					logger,
+					userRepo
+				);
 			};
 			it('should call validatePassword in accountServiceIdm', async () => {
 				const service = setup();
@@ -481,7 +624,14 @@ describe('AccountService', () => {
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
-				return new AccountService(accountServiceDb, accountServiceIdm, configService, accountValidationService, logger);
+				return new AccountService(
+					accountServiceDb,
+					accountServiceIdm,
+					configService,
+					accountValidationService,
+					logger,
+					userRepo
+				);
 			};
 
 			it('should call idm implementation', async () => {
@@ -526,7 +676,14 @@ describe('AccountService', () => {
 		describe('When identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
-				return new AccountService(accountServiceDb, accountServiceIdm, configService, accountValidationService, logger);
+				return new AccountService(
+					accountServiceDb,
+					accountServiceIdm,
+					configService,
+					accountValidationService,
+					logger,
+					userRepo
+				);
 			};
 
 			it('should call idm implementation', async () => {
@@ -556,7 +713,14 @@ describe('AccountService', () => {
 		describe('when identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
-				return new AccountService(accountServiceDb, accountServiceIdm, configService, accountValidationService, logger);
+				return new AccountService(
+					accountServiceDb,
+					accountServiceIdm,
+					configService,
+					accountValidationService,
+					logger,
+					userRepo
+				);
 			};
 
 			it('should call idm implementation', async () => {
@@ -577,7 +741,14 @@ describe('AccountService', () => {
 		describe('when identity management is primary', () => {
 			const setup = () => {
 				configService.get.mockReturnValue(true);
-				return new AccountService(accountServiceDb, accountServiceIdm, configService, accountValidationService, logger);
+				return new AccountService(
+					accountServiceDb,
+					accountServiceIdm,
+					configService,
+					accountValidationService,
+					logger,
+					userRepo
+				);
 			};
 
 			it('should call idm implementation', async () => {
@@ -625,6 +796,939 @@ describe('AccountService', () => {
 
 				await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
 				expect(spyLogger).toHaveBeenCalledWith('a non error object');
+			});
+		});
+	});
+
+	describe('updateMyAccount', () => {
+		describe('When account is external', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockExternalUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+				const externalSystem = systemFactory.build();
+				const mockExternalUserAccount = accountFactory.build({
+					userId: mockExternalUser.id,
+					password: defaultPasswordHash,
+					systemId: externalSystem.id,
+				});
+
+				const mockExternalAccount: Account = AccountEntityToDoMapper.mapToDto(mockExternalUserAccount);
+
+				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockExternalAccount);
+
+				return { mockExternalUser, mockExternalAccount };
+			};
+			it('should throw ForbiddenOperationError', async () => {
+				const { mockExternalUser, mockExternalAccount } = setup();
+
+				await expect(
+					accountService.updateMyAccount(mockExternalUser, mockExternalAccount, {
+						passwordOld: defaultPassword,
+					})
+				).rejects.toThrow(ForbiddenOperationError);
+			});
+		});
+
+		describe('When password does not match', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+				const mockStudentAccountEntity = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+				const mockStudentAccount: Account = AccountEntityToDoMapper.mapToDto(mockStudentAccountEntity);
+
+				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccount);
+				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
+
+				return { mockStudentUser, mockStudentAccount };
+			};
+			it('should throw AuthorizationError', async () => {
+				const { mockStudentUser, mockStudentAccount } = setup();
+				await expect(
+					accountService.updateMyAccount(mockStudentUser, mockStudentAccount, {
+						passwordOld: 'DoesNotMatch',
+					})
+				).rejects.toThrow(AuthorizationError);
+			});
+		});
+
+		describe('When new password is given', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDto(mockStudentAccount);
+
+				accountServiceDb.validatePassword.mockResolvedValue(true);
+				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
+
+				return { mockStudentUser, mockStudentAccountDo };
+			};
+			it('should allow to update with strong password', async () => {
+				const { mockStudentUser, mockStudentAccountDo } = setup();
+				await expect(
+					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
+						passwordOld: defaultPassword,
+						passwordNew: otherPassword,
+					})
+				).resolves.not.toThrow();
+			});
+		});
+
+		describe('When no new password is given', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+
+				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDto(mockStudentAccount);
+
+				accountServiceDb.validatePassword.mockResolvedValue(true);
+				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
+				const spyAccountServiceSave = jest.spyOn(accountServiceDb, 'save');
+
+				accountValidationService.isUniqueEmail.mockResolvedValue(true);
+
+				return { mockStudentUser, mockStudentAccountDo, spyAccountServiceSave };
+			};
+			it('should not update password', async () => {
+				const { mockStudentUser, mockStudentAccountDo, spyAccountServiceSave } = setup();
+				await accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
+					passwordOld: defaultPassword,
+					passwordNew: undefined,
+					email: 'newemail@to.update',
+				});
+				expect(spyAccountServiceSave).toHaveBeenCalledWith(
+					expect.objectContaining({
+						password: undefined,
+					})
+				);
+			});
+		});
+
+		describe('When a new email is given', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+
+				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDto(mockStudentAccount);
+
+				accountServiceDb.validatePassword.mockResolvedValue(true);
+				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
+				accountValidationService.isUniqueEmail.mockResolvedValue(true);
+
+				return { mockStudentUser, mockStudentAccountDo };
+			};
+			it('should allow to update email', async () => {
+				const { mockStudentUser, mockStudentAccountDo } = setup();
+				await expect(
+					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
+						passwordOld: defaultPassword,
+						email: 'an@available.mail',
+					})
+				).resolves.not.toThrow();
+			});
+		});
+
+		describe('When email is not lowercase', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+
+				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDto(mockStudentAccount);
+
+				accountServiceDb.validatePassword.mockResolvedValue(true);
+
+				accountValidationService.isUniqueEmail.mockResolvedValueOnce(true);
+				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
+				const accountSaveSpy = jest.spyOn(accountServiceDb, 'save');
+
+				return { mockStudentUser, mockStudentAccountDo, accountSaveSpy };
+			};
+			it('should use email as account user name in lower case', async () => {
+				const { mockStudentUser, mockStudentAccountDo, accountSaveSpy } = setup();
+
+				const testMail = 'AN@AVAILABLE.MAIL';
+				await expect(
+					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
+						passwordOld: defaultPassword,
+						email: testMail,
+					})
+				).resolves.not.toThrow();
+				expect(accountSaveSpy).toBeCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
+			});
+		});
+
+		describe('When email is not lowercase', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+
+				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDto(mockStudentAccount);
+
+				accountServiceDb.validatePassword.mockResolvedValue(true);
+				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
+				accountValidationService.isUniqueEmail.mockResolvedValueOnce(true);
+
+				const userUpdateSpy = jest.spyOn(userRepo, 'save');
+
+				return { mockStudentUser, mockStudentAccountDo, userUpdateSpy };
+			};
+			it('should use email as user email in lower case', async () => {
+				const { mockStudentUser, mockStudentAccountDo, userUpdateSpy } = setup();
+				const testMail = 'AN@AVAILABLE.MAIL';
+				await expect(
+					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
+						passwordOld: defaultPassword,
+						email: testMail,
+					})
+				).resolves.not.toThrow();
+				expect(userUpdateSpy).toBeCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
+			});
+		});
+		describe('When email is given', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDto(mockStudentAccount);
+
+				accountServiceDb.validatePassword.mockResolvedValue(true);
+				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
+				accountValidationService.isUniqueEmail.mockResolvedValueOnce(true);
+
+				const accountSaveSpy = jest.spyOn(accountServiceDb, 'save');
+				const userUpdateSpy = jest.spyOn(userRepo, 'save');
+
+				return { mockStudentUser, mockStudentAccountDo, accountSaveSpy, userUpdateSpy };
+			};
+			it('should always update account user name AND user email together.', async () => {
+				const { mockStudentUser, mockStudentAccountDo, accountSaveSpy, userUpdateSpy } = setup();
+				const testMail = 'an@available.mail';
+				await expect(
+					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
+						passwordOld: defaultPassword,
+						email: testMail,
+					})
+				).resolves.not.toThrow();
+				expect(userUpdateSpy).toBeCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
+				expect(accountSaveSpy).toBeCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
+			});
+		});
+
+		describe('When email is already in use', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDto(mockStudentAccount);
+
+				accountServiceDb.validatePassword.mockResolvedValue(true);
+				accountValidationService.isUniqueEmail.mockResolvedValueOnce(false);
+
+				return { mockStudentUser, mockStudentAccountDo };
+			};
+			it('should throw ValidationError', async () => {
+				const { mockStudentUser, mockStudentAccountDo } = setup();
+				await expect(
+					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
+						passwordOld: defaultPassword,
+						email: 'already@in.use',
+					})
+				).rejects.toThrow(ValidationError);
+			});
+		});
+
+		describe('When using teacher user', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockTeacherUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+
+				const mockTeacherAccount = accountFactory.buildWithId({
+					userId: mockTeacherUser.id,
+					password: defaultPasswordHash,
+				});
+				const mockTeacherAccountDo: Account = AccountEntityToDoMapper.mapToDto(mockTeacherAccount);
+
+				accountServiceDb.validatePassword.mockResolvedValue(true);
+
+				return { mockTeacherUser, mockTeacherAccountDo };
+			};
+			it('should allow to update first and last name', async () => {
+				const { mockTeacherUser, mockTeacherAccountDo } = setup();
+				await expect(
+					accountService.updateMyAccount(mockTeacherUser, mockTeacherAccountDo, {
+						passwordOld: defaultPassword,
+						firstName: 'newFirstName',
+					})
+				).resolves.not.toThrow();
+				await expect(
+					accountService.updateMyAccount(mockTeacherUser, mockTeacherAccountDo, {
+						passwordOld: defaultPassword,
+						lastName: 'newLastName',
+					})
+				).resolves.not.toThrow();
+			});
+		});
+
+		describe('When user can not be updated', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockTeacherUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+				const mockTeacherAccount = accountFactory.buildWithId({
+					userId: mockTeacherUser.id,
+					password: defaultPasswordHash,
+				});
+
+				const mockTeacherAccountDo: Account = AccountEntityToDoMapper.mapToDto(mockTeacherAccount);
+
+				userRepo.save.mockRejectedValueOnce(undefined);
+				accountServiceDb.validatePassword.mockResolvedValue(true);
+
+				return { mockTeacherUser, mockTeacherAccountDo };
+			};
+			it('should throw EntityNotFoundError', async () => {
+				const { mockTeacherUser, mockTeacherAccountDo } = setup();
+				await expect(
+					accountService.updateMyAccount(mockTeacherUser, mockTeacherAccountDo, {
+						passwordOld: defaultPassword,
+						firstName: 'failToUpdate',
+					})
+				).rejects.toThrow(EntityNotFoundError);
+			});
+		});
+
+		describe('When account can not be updated', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDto(mockStudentAccount);
+
+				userRepo.save.mockResolvedValueOnce(undefined);
+				accountServiceDb.validatePassword.mockResolvedValue(true);
+				accountServiceDb.save.mockRejectedValueOnce(undefined);
+
+				accountValidationService.isUniqueEmail.mockResolvedValue(true);
+
+				return { mockStudentUser, mockStudentAccountDo };
+			};
+			it('should throw EntityNotFoundError', async () => {
+				const { mockStudentUser, mockStudentAccountDo } = setup();
+				await expect(
+					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
+						passwordOld: defaultPassword,
+						email: 'fail@to.update',
+					})
+				).rejects.toThrow(EntityNotFoundError);
+			});
+		});
+	});
+
+	describe('updateAccountById', () => {
+		describe('When new password is given', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDto(mockStudentAccount);
+
+				userRepo.save.mockResolvedValue();
+				accountServiceDb.save.mockImplementation((account: AccountSave): Promise<Account> => {
+					Object.assign(mockStudentAccount, account.getProps());
+					return Promise.resolve(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
+				});
+
+				return { mockStudentAccount, mockStudentAccountDo, mockStudentUser };
+			};
+			it('should update target account password', async () => {
+				const { mockStudentAccount, mockStudentAccountDo, mockStudentUser } = setup();
+				const previousPasswordHash = mockStudentAccount.password;
+				const body = { password: defaultPassword } as AccountByIdBodyParams;
+
+				expect(mockStudentUser.forcePasswordChange).toBeFalsy();
+				await accountService.updateAccountById(mockStudentUser, mockStudentAccountDo, body);
+				expect(mockStudentAccount.password).not.toBe(previousPasswordHash);
+				expect(mockStudentUser.forcePasswordChange).toBeTruthy();
+			});
+		});
+
+		describe('When username is given', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDto(mockStudentAccount);
+
+				userRepo.save.mockResolvedValue();
+				accountServiceDb.save.mockImplementation((account: AccountSave): Promise<Account> => {
+					Object.assign(mockStudentAccount, account.getProps());
+					return Promise.resolve(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
+				});
+				accountValidationService.isUniqueEmail.mockResolvedValue(true);
+
+				return { mockStudentUser, mockStudentAccountDo };
+			};
+			it('should update target account username', async () => {
+				const { mockStudentUser, mockStudentAccountDo } = setup();
+				const newUsername = 'newUsername';
+				const body = { username: newUsername } as AccountByIdBodyParams;
+
+				expect(mockStudentAccountDo.username).not.toBe(newUsername);
+				await accountService.updateAccountById(mockStudentUser, mockStudentAccountDo, body);
+				expect(mockStudentAccountDo.username).toBe(newUsername.toLowerCase());
+			});
+		});
+
+		describe('When activated flag is given', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDto(mockStudentAccount);
+
+				userRepo.save.mockResolvedValue();
+				accountServiceDb.save.mockImplementation((account: AccountSave): Promise<Account> => {
+					Object.assign(mockStudentAccount, account);
+					return Promise.resolve(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
+				});
+
+				return { mockStudentUser, mockStudentAccountDo };
+			};
+			it('should update target account activation state', async () => {
+				const { mockStudentUser, mockStudentAccountDo } = setup();
+				const body = { activated: false } as AccountByIdBodyParams;
+
+				await accountService.updateAccountById(mockStudentUser, mockStudentAccountDo, body);
+				expect(mockStudentAccountDo.activated).toBeFalsy();
+			});
+		});
+
+		describe('When account can not be updated', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDto(mockStudentAccount);
+
+				userRepo.save.mockResolvedValue();
+				accountServiceDb.save.mockRejectedValueOnce(undefined);
+
+				accountValidationService.isUniqueEmail.mockResolvedValue(true);
+
+				return { mockStudentUser, mockStudentAccountDo };
+			};
+			it('should throw EntityNotFoundError', async () => {
+				const { mockStudentUser, mockStudentAccountDo } = setup();
+				const body = { username: 'fail@to.update' } as AccountByIdBodyParams;
+
+				await expect(accountService.updateAccountById(mockStudentUser, mockStudentAccountDo, body)).rejects.toThrow(
+					EntityNotFoundError
+				);
+			});
+		});
+
+		describe('When user can not be updated', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDto(mockStudentAccount);
+
+				userRepo.save.mockRejectedValueOnce(undefined);
+
+				accountValidationService.isUniqueEmail.mockResolvedValue(true);
+
+				return { mockStudentUser, mockStudentAccountDo };
+			};
+			it('should throw EntityNotFoundError', async () => {
+				const { mockStudentUser, mockStudentAccountDo } = setup();
+				const body = { username: 'user-fail@to.update' } as AccountByIdBodyParams;
+
+				await expect(accountService.updateAccountById(mockStudentUser, mockStudentAccountDo, body)).rejects.toThrow(
+					EntityNotFoundError
+				);
+			});
+		});
+
+		describe('When new username already in use', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockOtherTeacherUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+
+				const mockOtherTeacherAccount = accountFactory.buildWithId({
+					userId: mockOtherTeacherUser.id,
+					password: defaultPasswordHash,
+				});
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+				const mockStudentAccountDo: Account = AccountEntityToDoMapper.mapToDto(mockStudentAccount);
+
+				userRepo.save.mockRejectedValueOnce(undefined);
+				accountValidationService.isUniqueEmail.mockResolvedValueOnce(false);
+
+				return { mockStudentUser, mockStudentAccountDo, mockOtherTeacherAccount };
+			};
+			it('should throw ValidationError', async () => {
+				const { mockStudentUser, mockStudentAccountDo, mockOtherTeacherAccount } = setup();
+				const body = { username: mockOtherTeacherAccount.username } as AccountByIdBodyParams;
+
+				await expect(accountService.updateAccountById(mockStudentUser, mockStudentAccountDo, body)).rejects.toThrow(
+					ValidationError
+				);
+			});
+		});
+	});
+
+	describe('replaceMyTemporaryPassword', () => {
+		describe('When passwords do not match', () => {
+			it('should throw ForbiddenOperationError', async () => {
+				await expect(
+					accountService.replaceMyTemporaryPassword('userId', defaultPassword, otherPassword)
+				).rejects.toThrow(ForbiddenOperationError);
+			});
+		});
+
+		describe('When account does not exists', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+				const mockUserWithoutAccount = userFactory.buildWithId({
+					school: mockSchool,
+				});
+
+				userRepo.findById.mockResolvedValueOnce(mockUserWithoutAccount);
+				accountServiceDb.findByUserIdOrFail.mockImplementation(() => {
+					throw new EntityNotFoundError(AccountEntity.name);
+				});
+
+				return { mockUserWithoutAccount };
+			};
+			it('should throw EntityNotFoundError', async () => {
+				const { mockUserWithoutAccount } = setup();
+				await expect(
+					accountService.replaceMyTemporaryPassword(mockUserWithoutAccount.id, defaultPassword, defaultPassword)
+				).rejects.toThrow(EntityNotFoundError);
+			});
+		});
+
+		describe('When user does not exist', () => {
+			const setup = () => {
+				userRepo.findById.mockRejectedValueOnce(undefined);
+			};
+			it('should throw EntityNotFoundError', async () => {
+				setup();
+				await expect(
+					accountService.replaceMyTemporaryPassword('accountWithoutUser', defaultPassword, defaultPassword)
+				).rejects.toThrow(EntityNotFoundError);
+			});
+		});
+
+		describe('When account is external', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockExternalUser = userFactory.buildWithId({
+					school: mockSchool,
+				});
+				const externalSystem = systemFactory.build();
+				const mockExternalUserAccount = accountFactory.build({
+					userId: mockExternalUser.id,
+					password: defaultPasswordHash,
+					systemId: externalSystem.id,
+				});
+
+				userRepo.findById.mockResolvedValueOnce(mockExternalUser);
+				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(
+					AccountEntityToDoMapper.mapToDto(mockExternalUserAccount)
+				);
+
+				return { mockExternalUserAccount };
+			};
+			it('should throw ForbiddenOperationError', async () => {
+				const { mockExternalUserAccount } = setup();
+				await expect(
+					accountService.replaceMyTemporaryPassword(
+						mockExternalUserAccount.userId?.toString() ?? '',
+						defaultPassword,
+						defaultPassword
+					)
+				).rejects.toThrow(ForbiddenOperationError);
+			});
+		});
+
+		describe('When not the users password is temporary', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+					forcePasswordChange: false,
+					preferences: { firstLogin: true },
+				});
+
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+
+				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
+				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
+
+				return { mockStudentAccount };
+			};
+			it('should throw ForbiddenOperationError', async () => {
+				const { mockStudentAccount } = setup();
+				await expect(
+					accountService.replaceMyTemporaryPassword(
+						mockStudentAccount.userId?.toString() ?? '',
+						defaultPassword,
+						defaultPassword
+					)
+				).rejects.toThrow(ForbiddenOperationError);
+			});
+		});
+
+		describe('When old password is the same as new password', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+					forcePasswordChange: false,
+					preferences: { firstLogin: false },
+				});
+
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+
+				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
+				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
+				accountServiceDb.validatePassword.mockResolvedValueOnce(true);
+
+				return { mockStudentAccount };
+			};
+			it('should throw ForbiddenOperationError', async () => {
+				const { mockStudentAccount } = setup();
+				await expect(
+					accountService.replaceMyTemporaryPassword(
+						mockStudentAccount.userId?.toString() ?? '',
+						defaultPassword,
+						defaultPassword
+					)
+				).rejects.toThrow(ForbiddenOperationError);
+			});
+		});
+
+		describe('When old password is undefined', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+					forcePasswordChange: false,
+					preferences: { firstLogin: false },
+				});
+
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: undefined,
+				});
+
+				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
+				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
+				accountServiceDb.validatePassword.mockResolvedValueOnce(true);
+
+				return { mockStudentAccount };
+			};
+			it('should throw Error', async () => {
+				const { mockStudentAccount } = setup();
+				await expect(
+					accountService.replaceMyTemporaryPassword(
+						mockStudentAccount.userId?.toString() ?? '',
+						defaultPassword,
+						defaultPassword
+					)
+				).rejects.toThrow(Error);
+			});
+		});
+		describe('When the admin manipulate the users password', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+					forcePasswordChange: true,
+					preferences: { firstLogin: true },
+				});
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+
+				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
+				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
+				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
+				accountServiceDb.save.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
+
+				return { mockStudentAccount };
+			};
+			it('should allow to set strong password', async () => {
+				const { mockStudentAccount } = setup();
+
+				await expect(
+					accountService.replaceMyTemporaryPassword(
+						mockStudentAccount.userId?.toString() ?? '',
+						otherPassword,
+						otherPassword
+					)
+				).resolves.not.toThrow();
+			});
+		});
+
+		describe('when a user logs in for the first time', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+					forcePasswordChange: false,
+					preferences: { firstLogin: false },
+				});
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+
+				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
+				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
+				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
+				accountServiceDb.save.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
+
+				return { mockStudentAccount };
+			};
+			it('should allow to set strong password', async () => {
+				const { mockStudentAccount } = setup();
+
+				await expect(
+					accountService.replaceMyTemporaryPassword(
+						mockStudentAccount.userId?.toString() ?? '',
+						otherPassword,
+						otherPassword
+					)
+				).resolves.not.toThrow();
+			});
+		});
+
+		describe('when a user logs in for the first time (if undefined)', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+					forcePasswordChange: false,
+				});
+				mockStudentUser.preferences = undefined;
+
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+
+				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
+				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
+				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
+				accountServiceDb.save.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
+
+				return { mockStudentAccount };
+			};
+			it('should allow to set strong password', async () => {
+				const { mockStudentAccount } = setup();
+				await expect(
+					accountService.replaceMyTemporaryPassword(
+						mockStudentAccount.userId?.toString() ?? '',
+						otherPassword,
+						otherPassword
+					)
+				).resolves.not.toThrow();
+			});
+		});
+
+		describe('When user can not be updated', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+					firstName: 'failToUpdate',
+					preferences: { firstLogin: false },
+					forcePasswordChange: false,
+				});
+
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+				});
+
+				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
+				userRepo.save.mockRejectedValueOnce(undefined);
+				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
+				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
+				accountServiceDb.save.mockResolvedValueOnce({
+					getProps: () => {
+						return { id: '' };
+					},
+				} as Account);
+
+				return { mockStudentAccount };
+			};
+			it('should throw EntityNotFoundError', async () => {
+				const { mockStudentAccount } = setup();
+				await expect(
+					accountService.replaceMyTemporaryPassword(
+						mockStudentAccount.userId?.toString() ?? '',
+						otherPassword,
+						otherPassword
+					)
+				).rejects.toThrow(new EntityNotFoundError(User.name));
+			});
+		});
+
+		describe('When account can not be updated', () => {
+			const setup = () => {
+				const mockSchool = schoolFactory.buildWithId();
+
+				const mockStudentUser = userFactory.buildWithId({
+					school: mockSchool,
+					forcePasswordChange: false,
+					preferences: { firstLogin: false },
+				});
+
+				const mockStudentAccount = accountFactory.buildWithId({
+					userId: mockStudentUser.id,
+					password: defaultPasswordHash,
+					username: 'fail@to.update',
+				});
+
+				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
+				userRepo.save.mockResolvedValueOnce();
+				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
+				accountServiceDb.save.mockRejectedValueOnce(undefined);
+				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
+
+				return { mockStudentAccount };
+			};
+			it('should throw EntityNotFoundError', async () => {
+				const { mockStudentAccount } = setup();
+				await expect(
+					accountService.replaceMyTemporaryPassword(
+						mockStudentAccount.userId?.toString() ?? '',
+						otherPassword,
+						otherPassword
+					)
+				).rejects.toThrow(EntityNotFoundError);
 			});
 		});
 	});
