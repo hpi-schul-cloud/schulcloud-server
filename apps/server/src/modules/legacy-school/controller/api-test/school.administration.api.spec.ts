@@ -1,7 +1,10 @@
+import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestApiClient, TestXApiKeyClient } from '@shared/testing';
+import { SchoolEntity } from '@shared/domain/entity';
+import { TestApiClient, TestXApiKeyClient, federalStateFactory } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
+import { AdminApiSchoolCreateResponseDto } from '../dto/response/admin-api-school-create.response.dto';
 
 const baseRouteName = '/admin/schools';
 
@@ -9,25 +12,16 @@ describe('Admin API - Schools (API)', () => {
 	let app: INestApplication;
 	let testXApiKeyClient: TestXApiKeyClient;
 	let testApiClient: TestApiClient;
+	let em: EntityManager;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			/* .overrideGuard(AuthGuard('api-key'))
-			.useValue(
-				new XApiKeyStrategy(
-					new ConfigService(() => {
-						return {
-							ADMIN_API__ALLOWED_API_KEYS: ['dsfsdfl5sdhflkjsdfsdfs'],
-						};
-					})
-				)
-			) */
-			.compile();
+		}).compile();
 
 		app = module.createNestApplication();
 		await app.init();
+		em = module.get(EntityManager);
 		testXApiKeyClient = new TestXApiKeyClient(app, baseRouteName);
 		testApiClient = new TestApiClient(app, baseRouteName);
 	});
@@ -50,13 +44,29 @@ describe('Admin API - Schools (API)', () => {
 		});
 
 		describe('with api token', () => {
+			const setup = async () => {
+				const federalState = federalStateFactory.build({ name: 'niedersachsen' });
+				await em.persistAndFlush(federalState);
+				return { federalState };
+			};
+
 			it('should return school', async () => {
-				const response = await testXApiKeyClient.post('');
-				expect(response.status).toEqual(204);
-				// expect(response.body).toBeInstanceOf(School)
+				const { federalState } = await setup();
+				const response = await testXApiKeyClient.post('', { name: 'schoolname', federalStateName: federalState.name });
+				expect(response.status).toEqual(201);
+				const result = response.body as AdminApiSchoolCreateResponseDto;
+				expect(result.id).toBeDefined();
 			});
 
-			it.todo('should have persisted the school');
+			it('should have persisted the school', async () => {
+				const { federalState } = await setup();
+
+				const response = await testXApiKeyClient.post('', { name: 'schoolname', federalStateName: federalState.name });
+
+				const { id } = response.body as AdminApiSchoolCreateResponseDto;
+				const loaded = await em.findOneOrFail(SchoolEntity, id);
+				expect(loaded).toBeDefined();
+			});
 		});
 	});
 });

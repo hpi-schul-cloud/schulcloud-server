@@ -58,7 +58,7 @@ export class LegacySchoolService {
 	}
 
 	async createSchool(props: { name: string; federalStateName: string }): Promise<LegacySchoolDo> {
-		const federalState = await this.federalStateService.findFederalStateByName('nope');
+		const federalState = await this.federalStateService.findFederalStateByName(props.federalStateName);
 		const school = new LegacySchoolDo({ name: props.name, federalState });
 		await this.schoolRepo.save(school);
 		return school;
