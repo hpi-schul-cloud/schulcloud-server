@@ -72,5 +72,6 @@
 		"DB_COLLECTION_NAME": "drawings",
 		"DB_FLUSH_SIZE": 400,
 		"DB_MULTIPLE_COLLECTIONS": false
-	}
+	},
+	"ADMIN_API": { "ALLOWED_API_KEYS": "thisistheadminapitokeninthetestconfig" }
 }

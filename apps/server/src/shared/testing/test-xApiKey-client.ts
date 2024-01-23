@@ -6,12 +6,12 @@ export class TestXApiKeyClient {
 
 	private readonly baseRoute: string;
 
-	private readonly apikey: string;
+	private readonly API_KEY: string;
 
-	constructor(app: INestApplication, baseRoute: string, apikey: string) {
+	constructor(app: INestApplication, baseRoute: string, apikey?: string) {
 		this.app = app;
 		this.baseRoute = this.checkAndAddPrefix(baseRoute);
-		this.apikey = apikey;
+		this.API_KEY = apikey || 'thisistheadminapitokeninthetestconfig';
 	}
 
 	public get(subPath?: string): supertest.Test {
@@ -32,7 +32,7 @@ export class TestXApiKeyClient {
 		const path = this.getPath(subPath);
 		const testRequestInstance = supertest(this.app.getHttpServer())
 			.post(path)
-			.set('X-API-KEY', this.apikey)
+			.set('X-API-KEY', this.API_KEY)
 			.set('Accept', 'application/json')
 			.send(data);
 

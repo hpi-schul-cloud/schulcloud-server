@@ -1,23 +1,20 @@
-import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { AuthGuard } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestXApiKeyClient } from '@shared/testing';
-import { XApiKeyStrategy } from '@src/modules/authentication/strategy/x-api-key.strategy';
+import { TestApiClient, TestXApiKeyClient } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
 
 const baseRouteName = '/admin/schools';
 
 describe('Admin API - Schools (API)', () => {
 	let app: INestApplication;
-	let em: EntityManager;
 	let testXApiKeyClient: TestXApiKeyClient;
+	let testApiClient: TestApiClient;
+
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
-			.overrideGuard(AuthGuard('api-key'))
+			/* .overrideGuard(AuthGuard('api-key'))
 			.useValue(
 				new XApiKeyStrategy(
 					new ConfigService(() => {
@@ -26,13 +23,13 @@ describe('Admin API - Schools (API)', () => {
 						};
 					})
 				)
-			)
+			) */
 			.compile();
 
 		app = module.createNestApplication();
 		await app.init();
-		em = module.get(EntityManager);
-		testXApiKeyClient = new TestXApiKeyClient(app, baseRouteName, 'dsfsdfl5sdhflkjsdfsdfs');
+		testXApiKeyClient = new TestXApiKeyClient(app, baseRouteName);
+		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
@@ -41,16 +38,22 @@ describe('Admin API - Schools (API)', () => {
 
 	describe('create a school', () => {
 		describe('without token', () => {
-			it.todo('should refuse');
+			it('should refuse with wrong token', async () => {
+				const client = new TestXApiKeyClient(app, baseRouteName, 'thisisaninvalidapikey');
+				const response = await client.post('');
+				expect(response.status).toEqual(401);
+			});
+			it('should refuse without token', async () => {
+				const response = await testApiClient.post('');
+				expect(response.status).toEqual(401);
+			});
 		});
 
 		describe('with api token', () => {
 			it('should return school', async () => {
-				const response = await testXApiKeyClient
-					.post('')
-					// .set('authorization', this.formattedJwt)
-					.send({});
+				const response = await testXApiKeyClient.post('');
 				expect(response.status).toEqual(204);
+				// expect(response.body).toBeInstanceOf(School)
 			});
 
 			it.todo('should have persisted the school');
