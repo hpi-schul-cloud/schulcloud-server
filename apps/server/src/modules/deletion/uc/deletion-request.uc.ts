@@ -159,8 +159,14 @@ export class DeletionRequestUc {
 	private async removeUserFromClasses(deletionRequest: DeletionRequest) {
 		this.logger.debug({ action: 'removeUserFromClasses', deletionRequest });
 
-		const classesUpdated: number = await this.classService.deleteUserDataFromClasses(deletionRequest.targetRefId);
-		await this.logDeletion(deletionRequest, DomainModel.CLASS, OperationModel.UPDATE, classesUpdated, []);
+		const classesUpdated = await this.classService.deleteUserDataFromClasses(deletionRequest.targetRefId);
+		await this.logDeletion(
+			deletionRequest,
+			classesUpdated.domain,
+			classesUpdated.operation,
+			classesUpdated.count,
+			classesUpdated.refs
+		);
 	}
 
 	private async removeUserFromCourseGroup(deletionRequest: DeletionRequest) {

@@ -42,7 +42,7 @@ export class TeamService {
 			DomainModel.TASK,
 			OperationModel.UPDATE,
 			numberOfUpdatedTeams,
-			this.getTasksId(teams)
+			this.getTeamsId(teams)
 		);
 
 		this.logger.info(
@@ -59,7 +59,7 @@ export class TeamService {
 		return result;
 	}
 
-	private getTasksId(teams: TeamEntity[]): EntityId[] {
+	private getTeamsId(teams: TeamEntity[]): EntityId[] {
 		return teams.map((team) => team.id);
 	}
 }
