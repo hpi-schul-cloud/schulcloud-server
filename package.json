@@ -129,7 +129,7 @@
 		"@nestjs/microservices": "^10.2.4",
 		"@nestjs/passport": "^10.0.1",
 		"@nestjs/platform-express": "^10.2.4",
-		"@nestjs/platform-ws": "^10.2.4",
+		"@nestjs/platform-ws": "^10.3.0",
 		"@nestjs/swagger": "^7.1.10",
 		"@nestjs/websockets": "^10.3.0",
 		"@types/cache-manager-redis-store": "^2.0.1",
