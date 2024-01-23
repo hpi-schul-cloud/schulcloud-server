@@ -1,4 +1,3 @@
-export * from './card.types';
 export * from './counted';
 export * from './entity-id';
 export * from './importuser.types';
@@ -6,6 +5,10 @@ export * from './input-format.types';
 export * from './learnroom.types';
 export * from './news.types';
 export * from './rich-text.types';
+export * from './school-feature.enum';
+export * from './school-purpose.enum';
 export * from './system.type';
 export * from './task.types';
 export * from './value-of';
+export * from './domain';
+export * from './status-model.enum';

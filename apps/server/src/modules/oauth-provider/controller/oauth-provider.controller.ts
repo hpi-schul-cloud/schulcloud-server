@@ -1,22 +1,20 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { Configuration } from '@hpi-schul-cloud/commons';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Put, Query } from '@nestjs/common';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { OauthProviderLogoutFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.logout-flow.uc';
-import { OauthProviderLoginFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.login-flow.uc';
-import { OauthProviderResponseMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-response.mapper';
-import { OauthProviderConsentFlowUc } from '@src/modules/oauth-provider/uc/oauth-provider.consent-flow.uc';
+// import should be @infra/oauth-provider
 import {
 	ProviderConsentResponse,
+	ProviderConsentSessionResponse,
 	ProviderLoginResponse,
 	ProviderOauthClient,
 	ProviderRedirectResponse,
-} from '@shared/infra/oauth-provider/dto';
-import { ConsentResponse } from '@src/modules/oauth-provider/controller/dto/response/consent.response';
-import { ICurrentUser } from '@src/modules/authentication';
-import { OauthProviderClientCrudUc } from '@src/modules/oauth-provider/uc/oauth-provider.client-crud.uc';
-import { RedirectResponse } from '@src/modules/oauth-provider/controller/dto/response/redirect.response';
-import { ProviderConsentSessionResponse } from '@shared/infra/oauth-provider/dto/response/consent-session.response';
+} from '@infra/oauth-provider/dto';
 import { ApiTags } from '@nestjs/swagger';
+import { OauthProviderResponseMapper } from '../mapper/oauth-provider-response.mapper';
+import { OauthProviderClientCrudUc } from '../uc/oauth-provider.client-crud.uc';
+import { OauthProviderConsentFlowUc } from '../uc/oauth-provider.consent-flow.uc';
+import { OauthProviderLoginFlowUc } from '../uc/oauth-provider.login-flow.uc';
+import { OauthProviderLogoutFlowUc } from '../uc/oauth-provider.logout-flow.uc';
 import { OauthProviderUc } from '../uc/oauth-provider.uc';
 import {
 	AcceptQuery,
@@ -31,6 +29,8 @@ import {
 	OauthClientResponse,
 	RevokeConsentParams,
 } from './dto';
+import { ConsentResponse } from './dto/response/consent.response';
+import { RedirectResponse } from './dto/response/redirect.response';
 
 @Controller('oauth2')
 @ApiTags('Oauth2')

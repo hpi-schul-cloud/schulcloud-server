@@ -1,35 +1,46 @@
+import { AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
-import { EntityId, IFindOptions, Page, Permission, User } from '@shared/domain';
-import { AuthorizationService } from '@src/modules/authorization';
+import { Page } from '@shared/domain/domainobject';
+import { User } from '@shared/domain/entity';
+import { IFindOptions, Permission } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { ExternalToolSearchQuery } from '../../common/interface';
-import { ExternalToolService, ExternalToolValidationService } from '../service';
+import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
+import { ExternalTool, ExternalToolConfig, ExternalToolMetadata } from '../domain';
+import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
-import { ExternalToolConfig, ExternalTool } from '../domain';
 
 @Injectable()
 export class ExternalToolUc {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly toolValidationService: ExternalToolValidationService
+		private readonly toolValidationService: ExternalToolValidationService,
+		private readonly externalToolLogoService: ExternalToolLogoService,
+		private readonly commonToolMetadataService: CommonToolMetadataService
 	) {}
 
 	async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
-		const externalTool = new ExternalTool({ ...externalToolCreate });
-
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+
+		const externalTool = new ExternalTool({ ...externalToolCreate });
+		externalTool.logo = await this.externalToolLogoService.fetchLogo(externalTool);
+
 		await this.toolValidationService.validateCreate(externalTool);
 
-		const tool: Promise<ExternalTool> = this.externalToolService.createExternalTool(externalTool);
+		const tool: ExternalTool = await this.externalToolService.createExternalTool(externalTool);
 
 		return tool;
 	}
 
 	async updateExternalTool(userId: EntityId, toolId: string, externalTool: ExternalToolUpdate): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+
+		externalTool.logo = await this.externalToolLogoService.fetchLogo(externalTool);
+
 		await this.toolValidationService.validateUpdate(toolId, externalTool);
 
-		const loaded: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
+		const loaded: ExternalTool = await this.externalToolService.findById(toolId);
 		const configToUpdate: ExternalToolConfig = { ...loaded.config, ...externalTool.config };
 		const toUpdate: ExternalTool = new ExternalTool({
 			...loaded,
@@ -38,7 +49,8 @@ export class ExternalToolUc {
 			version: loaded.version,
 		});
 
-		const saved = await this.externalToolService.updateExternalTool(toUpdate, loaded);
+		const saved: ExternalTool = await this.externalToolService.updateExternalTool(toUpdate, loaded);
+
 		return saved;
 	}
 
@@ -56,7 +68,7 @@ export class ExternalToolUc {
 	async getExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalTool> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
-		const tool: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
+		const tool: ExternalTool = await this.externalToolService.findById(toolId);
 		return tool;
 	}
 
@@ -65,6 +77,15 @@ export class ExternalToolUc {
 
 		const promise: Promise<void> = this.externalToolService.deleteExternalTool(toolId);
 		return promise;
+	}
+
+	async getMetadataForExternalTool(userId: EntityId, toolId: EntityId): Promise<ExternalToolMetadata> {
+		// TODO N21-1496: Change External Tools to use authorizationService.checkPermission
+		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
+
+		const metadata: ExternalToolMetadata = await this.commonToolMetadataService.getMetadataForExternalTool(toolId);
+
+		return metadata;
 	}
 
 	private async ensurePermission(userId: EntityId, permission: Permission) {

@@ -1,72 +1,100 @@
-import { forwardRef, HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
-import { AnyBoardDo, EntityId, SubmissionContainerElement, SubmissionItem } from '@shared/domain';
+import { Action, AuthorizationService } from '@modules/authorization';
+import { ForbiddenException, forwardRef, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
+import {
+	AnyBoardDo,
+	AnyContentElementDo,
+	isSubmissionContainerElement,
+	isSubmissionItem,
+	SubmissionItem,
+	UserRoleEnum,
+} from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
-import { Action } from '@src/modules/authorization/types/action.enum';
-import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
+import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoAuthorizableService, ContentElementService } from '../service';
 import { SubmissionItemService } from '../service/submission-item.service';
+import { BaseUc } from './base.uc';
 
 @Injectable()
-export class ElementUc {
+export class ElementUc extends BaseUc {
 	constructor(
 		@Inject(forwardRef(() => AuthorizationService))
-		private readonly authorizationService: AuthorizationService,
-		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		protected readonly authorizationService: AuthorizationService,
+		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly elementService: ContentElementService,
 		private readonly submissionItemService: SubmissionItemService,
 		private readonly logger: Logger
 	) {
+		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(ElementUc.name);
 	}
 
 	async updateElementContent(
 		userId: EntityId,
 		elementId: EntityId,
-		content: FileContentBody | RichTextContentBody | SubmissionContainerContentBody
-	) {
-		const element = await this.elementService.findById(elementId);
-
-		await this.checkPermission(userId, element, Action.write);
+		content: AnyElementContentBody
+	): Promise<AnyContentElementDo> {
+		const element = await this.getElementWithWritePermission(userId, elementId);
 
 		await this.elementService.update(element, content);
+		return element;
 	}
 
-	async createSubmissionItem(userId: EntityId, contentElementId: EntityId): Promise<SubmissionItem> {
-		const submissionContainer = (await this.elementService.findById(contentElementId)) as SubmissionContainerElement;
+	async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {
+		const element = await this.getElementWithWritePermission(userId, elementId);
 
-		if (!(submissionContainer instanceof SubmissionContainerElement))
-			throw new HttpException(
-				'Cannot create submission-item for non submission-container-element',
-				HttpStatus.UNPROCESSABLE_ENTITY
-			);
+		await this.elementService.delete(element);
+	}
 
-		if (!submissionContainer.children.every((child) => child instanceof SubmissionItem))
-			throw new HttpException(
-				'Children of submission-container-element must be of type submission-item',
-				HttpStatus.UNPROCESSABLE_ENTITY
-			);
+	private async getElementWithWritePermission(userId: EntityId, elementId: EntityId): Promise<AnyContentElementDo> {
+		const element = await this.elementService.findById(elementId);
 
-		const userExists = submissionContainer.children.find((item) => (item as SubmissionItem).userId === userId);
-		if (userExists) {
-			throw new HttpException(
-				'User is not allowed to have multiple submission-items per submission-container-element',
-				HttpStatus.NOT_ACCEPTABLE
+		const parent: AnyBoardDo = await this.elementService.findParentOfId(elementId);
+
+		if (isSubmissionItem(parent)) {
+			await this.checkSubmissionItemWritePermission(userId, parent);
+		} else {
+			await this.checkPermission(userId, element, Action.write);
+		}
+
+		return element;
+	}
+
+	async checkElementReadPermission(userId: EntityId, elementId: EntityId): Promise<void> {
+		const element = await this.elementService.findById(elementId);
+		await this.checkPermission(userId, element, Action.read);
+	}
+
+	async createSubmissionItem(
+		userId: EntityId,
+		contentElementId: EntityId,
+		completed: boolean
+	): Promise<SubmissionItem> {
+		const submissionContainerElement = await this.elementService.findById(contentElementId);
+
+		if (!isSubmissionContainerElement(submissionContainerElement)) {
+			throw new UnprocessableEntityException('Cannot create submission-item for non submission-container-element');
+		}
+
+		if (!submissionContainerElement.children.every((child) => isSubmissionItem(child))) {
+			throw new UnprocessableEntityException(
+				'Children of submission-container-element must be of type submission-item'
 			);
 		}
 
-		await this.checkPermission(userId, submissionContainer, Action.write);
+		const userSubmissionExists = submissionContainerElement.children
+			.filter(isSubmissionItem)
+			.find((item) => item.userId === userId);
+		if (userSubmissionExists) {
+			throw new ForbiddenException(
+				'User is not allowed to have multiple submission-items per submission-container-element'
+			);
+		}
 
-		const subElement = await this.submissionItemService.create(userId, submissionContainer, { completed: false });
+		await this.checkPermission(userId, submissionContainerElement, Action.read, UserRoleEnum.STUDENT);
 
-		return subElement;
-	}
+		const submissionItem = await this.submissionItemService.create(userId, submissionContainerElement, { completed });
 
-	private async checkPermission(userId: EntityId, boardDo: AnyBoardDo, action: Action): Promise<void> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(boardDo);
-		const context = { action, requiredPermissions: [] };
-
-		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
+		return submissionItem;
 	}
 }

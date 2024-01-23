@@ -1,12 +1,15 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiExtraModels, ApiProperty, getSchemaPath } from '@nestjs/swagger';
 import { TimestampsResponse } from '../timestamps.response';
+import { FileElementResponse, RichTextElementResponse } from '../element';
 
+@ApiExtraModels(FileElementResponse, RichTextElementResponse)
 export class SubmissionItemResponse {
-	constructor({ id, timestamps, completed, userId }: SubmissionItemResponse) {
+	constructor({ id, timestamps, completed, userId, elements }: SubmissionItemResponse) {
 		this.id = id;
 		this.timestamps = timestamps;
 		this.completed = completed;
 		this.userId = userId;
+		this.elements = elements;
 	}
 
 	@ApiProperty({ pattern: '[a-f0-9]{24}' })
@@ -18,6 +21,14 @@ export class SubmissionItemResponse {
 	@ApiProperty()
 	completed: boolean;
 
-	@ApiProperty()
+	@ApiProperty({ pattern: '[a-f0-9]{24}' })
 	userId: string;
+
+	@ApiProperty({
+		type: 'array',
+		items: {
+			oneOf: [{ $ref: getSchemaPath(FileElementResponse) }, { $ref: getSchemaPath(RichTextElementResponse) }],
+		},
+	})
+	elements: (RichTextElementResponse | FileElementResponse)[];
 }

@@ -1,10 +1,10 @@
-import { BaseFactory } from '@shared/testing/factory/base.factory';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ExternalToolPseudonymEntity, IExternalToolPseudonymEntityProps } from '@src/modules/pseudonym/entity';
+import { ExternalToolPseudonymEntity, ExternalToolPseudonymEntityProps } from '@modules/pseudonym/entity';
+import { BaseFactory } from '@shared/testing/factory/base.factory';
 
 export const externalToolPseudonymEntityFactory = BaseFactory.define<
 	ExternalToolPseudonymEntity,
-	IExternalToolPseudonymEntityProps
+	ExternalToolPseudonymEntityProps
 >(ExternalToolPseudonymEntity, ({ sequence }) => {
 	return {
 		pseudonym: `pseudonym-${sequence}`,

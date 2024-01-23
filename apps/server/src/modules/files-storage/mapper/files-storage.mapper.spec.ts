@@ -1,6 +1,6 @@
 import { NotImplementedException } from '@nestjs/common';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
-import { AuthorizableReferenceType } from '@src/modules/authorization';
+import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import {
 	DownloadFileParams,
 	FileRecordListResponse,
@@ -8,7 +8,7 @@ import {
 	FileRecordResponse,
 	SingleFileParams,
 } from '../controller/dto';
-import { FileRecord, FileRecordParentType } from '../entity';
+import { FileRecord, FileRecordParentType, PreviewStatus } from '../entity';
 import { FilesStorageMapper } from './files-storage.mapper';
 
 describe('FilesStorageMapper', () => {
@@ -115,6 +115,7 @@ describe('FilesStorageMapper', () => {
 				mimeType: fileRecord.mimeType,
 				parentType: fileRecord.parentType,
 				deletedSince: fileRecord.deletedSince,
+				previewStatus: PreviewStatus.PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE,
 			};
 
 			expect(result).toEqual(expectedFileRecordResponse);

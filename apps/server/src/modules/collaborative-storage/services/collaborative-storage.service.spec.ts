@@ -1,18 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { CollaborativeStorageAdapter } from '@infra/collaborative-storage';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AuthorizationService } from '@modules/authorization';
+import { TeamMapper } from '@modules/collaborative-storage/mapper/team.mapper';
+import { CollaborativeStorageService } from '@modules/collaborative-storage/services/collaborative-storage.service';
+import { RoleDto } from '@modules/role/service/dto/role.dto';
+import { RoleService } from '@modules/role/service/role.service';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName, Team } from '@shared/domain';
-import { CollaborativeStorageAdapter } from '@shared/infra/collaborative-storage';
+import { TeamEntity } from '@shared/domain/entity';
+import { RoleName } from '@shared/domain/interface';
 import { TeamsRepo } from '@shared/repo';
 import { setupEntities } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
-import { TeamMapper } from '@src/modules/collaborative-storage/mapper/team.mapper';
-import { CollaborativeStorageService } from '@src/modules/collaborative-storage/services/collaborative-storage.service';
-import { RoleDto } from '@src/modules/role/service/dto/role.dto';
-import { RoleService } from '@src/modules/role/service/role.service';
 import { TeamDto } from './dto/team.dto';
 
 describe('Collaborative Storage Service', () => {
@@ -26,7 +27,7 @@ describe('Collaborative Storage Service', () => {
 
 	let mockId: string;
 	let roleDto: RoleDto;
-	let team: Team;
+	let team: TeamEntity;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({

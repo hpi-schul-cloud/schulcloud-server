@@ -1,5 +1,4 @@
-import { Permission, VideoConferenceScope } from '@shared/domain';
-import { AuthorizableReferenceType } from '@src/modules/authorization';
+import { Permission } from '@shared/domain/interface';
 import { BBBRole } from '../bbb';
 import {
 	VideoConferenceCreateParams,
@@ -8,17 +7,12 @@ import {
 	VideoConferenceStateResponse,
 } from '../controller/dto';
 import { VideoConferenceOptionsResponse } from '../controller/dto/response/video-conference-options.response';
-import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { VideoConferenceOptions, defaultVideoConferenceOptions } from '../interface';
 import { VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
 
 export const PermissionMapping = {
 	[BBBRole.MODERATOR]: Permission.START_MEETING,
 	[BBBRole.VIEWER]: Permission.JOIN_MEETING,
-};
-
-export const PermissionScopeMapping = {
-	[VideoConferenceScope.COURSE]: AuthorizableReferenceType.Course,
-	[VideoConferenceScope.EVENT]: AuthorizableReferenceType.Team,
 };
 
 const stateMapping = {

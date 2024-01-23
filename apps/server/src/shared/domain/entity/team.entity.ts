@@ -1,23 +1,23 @@
 import { Embeddable, Embedded, Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { Role } from './role.entity';
-import { School } from './school.entity';
+import { SchoolEntity } from './school.entity';
 import { User } from './user.entity';
 
-export interface ITeamProperties {
+export interface TeamProperties {
 	name: string;
-	teamUsers?: TeamUser[];
+	teamUsers?: TeamUserEntity[];
 }
 
-export interface ITeamUserProperties {
+export interface TeamUserProperties {
 	user: User;
 	role: Role;
-	school: School;
+	school: SchoolEntity;
 }
 
 @Embeddable()
-export class TeamUser {
-	constructor(props: ITeamUserProperties) {
+export class TeamUserEntity {
+	constructor(props: TeamUserProperties) {
 		this.userId = props.user;
 		this.role = props.role;
 		this.schoolId = props.school;
@@ -29,8 +29,8 @@ export class TeamUser {
 	@ManyToOne(() => Role)
 	role: Role;
 
-	@ManyToOne(() => School)
-	private schoolId: School;
+	@ManyToOne(() => SchoolEntity)
+	private schoolId: SchoolEntity;
 
 	// fieldName cannot be used in ManyToOne on Embeddable due to a mikro-orm bug (https://github.com/mikro-orm/mikro-orm/issues/2165)
 	get user(): User {
@@ -41,34 +41,34 @@ export class TeamUser {
 		this.userId = value;
 	}
 
-	get school(): School {
+	get school(): SchoolEntity {
 		return this.schoolId;
 	}
 
-	set school(value: School) {
+	set school(value: SchoolEntity) {
 		this.schoolId = value;
 	}
 }
 
 @Entity({ tableName: 'teams' })
-export class Team extends BaseEntityWithTimestamps {
+export class TeamEntity extends BaseEntityWithTimestamps {
 	@Property()
 	name: string;
 
-	@Embedded(() => TeamUser, { array: true })
-	userIds: TeamUser[];
+	@Embedded(() => TeamUserEntity, { array: true })
+	userIds: TeamUserEntity[];
 
-	get teamUsers(): TeamUser[] {
+	get teamUsers(): TeamUserEntity[] {
 		return this.userIds;
 	}
 
-	set teamUsers(value: TeamUser[]) {
+	set teamUsers(value: TeamUserEntity[]) {
 		this.userIds = value;
 	}
 
-	constructor(props: ITeamProperties) {
+	constructor(props: TeamProperties) {
 		super();
 		this.name = props.name;
-		this.userIds = props.teamUsers ? props.teamUsers.map((teamUser) => new TeamUser(teamUser)) : [];
+		this.userIds = props.teamUsers ? props.teamUsers.map((teamUser) => new TeamUserEntity(teamUser)) : [];
 	}
 }

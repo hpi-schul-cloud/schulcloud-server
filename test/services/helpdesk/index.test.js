@@ -2,8 +2,8 @@
 const assert = require('assert');
 const { expect } = require('chai');
 const sinon = require('sinon');
-const appPromise = require('../../../src/app');
 const { Configuration } = require('@hpi-schul-cloud/commons');
+const appPromise = require('../../../src/app');
 
 describe('helpdesk service', function test() {
 	this.timeout(10000);
@@ -36,6 +36,7 @@ describe('helpdesk service', function test() {
 	});
 
 	after((done) => {
+		app.unuse('/mails');
 		app.use('/mails', originalMailService);
 		helpdeskService
 			.remove(testProblem)
@@ -115,6 +116,7 @@ describe('helpdesk service', function test() {
 			problemDescription: 'Dies ist die Problembeschreibung 1',
 			replyEmail: 'test@mail.de',
 		};
+		app.unuse('/mails');
 		const mailService = new MockMailService();
 		app.use('/mails', mailService);
 		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
@@ -129,6 +131,7 @@ describe('helpdesk service', function test() {
 			problemDescription: 'Dies ist die Problembeschreibung 1',
 			replyEmail: 'test@mail.de',
 		};
+		app.unuse('/mails');
 		const mailService = new MockMailService();
 		app.use('/mails', mailService);
 		const tempScTheme = Configuration.get('SUPPORT_PROBLEM_EMAIL_ADDRESS');
@@ -146,6 +149,7 @@ describe('helpdesk service', function test() {
 			problemDescription: 'Dies ist die Problembeschreibung 1',
 			replyEmail: 'test@mail.de',
 		};
+		app.unuse('/mails');
 		const mailService = new MockMailService();
 		app.use('/mails', mailService);
 		await helpdeskService.create(postBody, { account: { userId: '0000d213816abba584714c0a' } });
@@ -161,6 +165,7 @@ describe('helpdesk service', function test() {
 			problemDescription: 'Dies ist die Problembeschreibung 2',
 			replyEmail: 'test@mail.de',
 		};
+		app.unuse('/mails');
 		const mailService = new MockMailService();
 		app.use('/mails', mailService);
 		const tempScTheme = Configuration.get('SUPPORT_WISH_EMAIL_ADDRESS');

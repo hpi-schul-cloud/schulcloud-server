@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { System } from '@shared/domain';
-import { systemFactory } from '@shared/testing';
-import { SystemMapper } from '@src/modules/system/mapper/system.mapper';
+import { SystemEntity } from '@shared/domain/entity';
+import { systemEntityFactory } from '@shared/testing';
+import { SystemMapper } from './system.mapper';
 
 describe('SystemMapper', () => {
 	let module: TestingModule;
@@ -18,7 +18,7 @@ describe('SystemMapper', () => {
 
 	describe('mapFromEntityToDto', () => {
 		it('should map all fields', () => {
-			const systemEntity = systemFactory.withOauthConfig().withOidcConfig().build();
+			const systemEntity = systemEntityFactory.withOauthConfig().withOidcConfig().build();
 
 			const result = SystemMapper.mapFromEntityToDto(systemEntity);
 
@@ -32,7 +32,7 @@ describe('SystemMapper', () => {
 		});
 		it('should map take alias as default instead of displayName', () => {
 			// Arrange
-			const systemEntity = systemFactory.withOauthConfig().build();
+			const systemEntity = systemEntityFactory.withOauthConfig().build();
 			systemEntity.displayName = undefined;
 
 			// Act
@@ -46,9 +46,9 @@ describe('SystemMapper', () => {
 
 	describe('mapFromEntitiesToDtos', () => {
 		it('should map all given entities', () => {
-			const systemEntities: System[] = [
-				systemFactory.withOauthConfig().build(),
-				systemFactory.build({ oauthConfig: undefined }),
+			const systemEntities: SystemEntity[] = [
+				systemEntityFactory.withOauthConfig().build(),
+				systemEntityFactory.build({ oauthConfig: undefined }),
 			];
 
 			const result = SystemMapper.mapFromEntitiesToDtos(systemEntities);
@@ -57,9 +57,9 @@ describe('SystemMapper', () => {
 		});
 
 		it('should map oauth config if exists', () => {
-			const systemEntities: System[] = [
-				systemFactory.withOauthConfig().build(),
-				systemFactory.build({ oauthConfig: undefined }),
+			const systemEntities: SystemEntity[] = [
+				systemEntityFactory.withOauthConfig().build(),
+				systemEntityFactory.build({ oauthConfig: undefined }),
 			];
 
 			const result = SystemMapper.mapFromEntitiesToDtos(systemEntities);

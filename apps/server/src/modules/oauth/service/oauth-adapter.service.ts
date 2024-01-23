@@ -1,18 +1,15 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common/decorators';
-import { LegacyLogger } from '@src/core/logger';
-import { AxiosResponse } from 'axios';
+import { AxiosResponse, isAxiosError } from 'axios';
 import JwksRsa from 'jwks-rsa';
 import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
-import { OAuthSSOError } from '../error/oauth-sso.error';
+import { TokenRequestLoggableException } from '../loggable';
 import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
 
 @Injectable()
 export class OauthAdapterService {
-	constructor(private readonly httpService: HttpService, private readonly logger: LegacyLogger) {
-		this.logger.setContext(OauthAdapterService.name);
-	}
+	constructor(private readonly httpService: HttpService) {}
 
 	async getPublicKey(jwksUri: string): Promise<string> {
 		const client: JwksRsa.JwksClient = JwksRsa({
@@ -43,8 +40,11 @@ export class OauthAdapterService {
 		let responseToken: AxiosResponse<OauthTokenResponse>;
 		try {
 			responseToken = await lastValueFrom(observable);
-		} catch (error) {
-			throw new OAuthSSOError('Requesting token failed.', 'sso_auth_code_step');
+		} catch (error: unknown) {
+			if (isAxiosError(error)) {
+				throw new TokenRequestLoggableException(error);
+			}
+			throw error;
 		}
 
 		return responseToken.data;

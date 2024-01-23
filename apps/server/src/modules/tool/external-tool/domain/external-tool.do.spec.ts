@@ -1,4 +1,4 @@
-import { externalToolFactory } from '@shared/testing';
+import { basicToolConfigFactory, externalToolFactory } from '@shared/testing';
 import { ExternalTool } from './external-tool.do';
 
 describe('ExternalTool', () => {
@@ -42,6 +42,28 @@ describe('ExternalTool', () => {
 				const func = () => ExternalTool.isOauth2Config(externalTool.config);
 
 				expect(func()).toBeFalsy();
+			});
+		});
+
+		describe('when creating an instance', () => {
+			describe('with invalid config type', () => {
+				it('should throw an error', () => {
+					jest.spyOn(ExternalTool, 'isBasicConfig').mockReturnValueOnce(false);
+					jest.spyOn(ExternalTool, 'isOauth2Config').mockReturnValueOnce(false);
+					jest.spyOn(ExternalTool, 'isLti11Config').mockReturnValueOnce(false);
+
+					expect(() => {
+						// eslint-disable-next-line no-new
+						new ExternalTool({
+							name: 'tool',
+							version: 1,
+							isHidden: false,
+							openNewTab: false,
+							config: basicToolConfigFactory.build(),
+							isDeactivated: false,
+						});
+					}).toThrowError();
+				});
 			});
 		});
 	});

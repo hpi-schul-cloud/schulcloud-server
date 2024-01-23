@@ -1,18 +1,34 @@
+import { AccountModule } from '@modules/account/account.module';
+import { GroupModule } from '@modules/group';
+import { LegacySchoolModule } from '@modules/legacy-school';
+import { RoleModule } from '@modules/role';
+import { SystemModule } from '@modules/system/system.module';
+import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { AccountModule } from '@src/modules/account/account.module';
-import { RoleModule } from '@src/modules/role';
-import { SchoolModule } from '@src/modules/school/school.module';
-import { SystemModule } from '@src/modules/system/system.module';
-import { UserModule } from '@src/modules/user';
+import { ProvisioningConfigModule } from './provisioning-config.module';
 import { ProvisioningService } from './service/provisioning.service';
-import { IservProvisioningStrategy, OidcMockProvisioningStrategy, SanisProvisioningStrategy } from './strategy';
+import {
+	IservProvisioningStrategy,
+	OidcMockProvisioningStrategy,
+	SanisProvisioningStrategy,
+	SanisResponseMapper,
+} from './strategy';
 import { OidcProvisioningService } from './strategy/oidc/service/oidc-provisioning.service';
-import { SanisResponseMapper } from './strategy/sanis/sanis-response.mapper';
 
 @Module({
-	imports: [AccountModule, SchoolModule, UserModule, RoleModule, SystemModule, HttpModule, LoggerModule],
+	imports: [
+		ProvisioningConfigModule,
+		AccountModule,
+		LegacySchoolModule,
+		UserModule,
+		RoleModule,
+		SystemModule,
+		HttpModule,
+		LoggerModule,
+		GroupModule,
+	],
 	providers: [
 		ProvisioningService,
 		SanisResponseMapper,

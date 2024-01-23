@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId, Pseudonym } from '@shared/domain';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { IPseudonymEntityProps, PseudonymEntity } from '../entity';
+import { Injectable } from '@nestjs/common';
+import { Pseudonym } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
+import { PseudonymEntity, PseudonymEntityProps } from '../entity';
 
 @Injectable()
 export class PseudonymsRepo {
@@ -33,12 +34,20 @@ export class PseudonymsRepo {
 		return domainObject;
 	}
 
+	async findByUserId(userId: EntityId): Promise<Pseudonym[]> {
+		const entities: PseudonymEntity[] = await this.em.find(PseudonymEntity, { userId: new ObjectId(userId) });
+
+		const pseudonyms: Pseudonym[] = entities.map((entity) => this.mapEntityToDomainObject(entity));
+
+		return pseudonyms;
+	}
+
 	async createOrUpdate(domainObject: Pseudonym): Promise<Pseudonym> {
 		const existing: PseudonymEntity | undefined = this.em
 			.getUnitOfWork()
 			.getById<PseudonymEntity>(PseudonymEntity.name, domainObject.id);
 
-		const entityProps: IPseudonymEntityProps = this.mapDomainObjectToEntityProperties(domainObject);
+		const entityProps: PseudonymEntityProps = this.mapDomainObjectToEntityProperties(domainObject);
 		let entity: PseudonymEntity = new PseudonymEntity(entityProps);
 
 		if (existing) {
@@ -54,6 +63,12 @@ export class PseudonymsRepo {
 		return savedDomainObject;
 	}
 
+	async deletePseudonymsByUserId(userId: EntityId): Promise<number> {
+		const promise: Promise<number> = this.em.nativeDelete(PseudonymEntity, { userId: new ObjectId(userId) });
+
+		return promise;
+	}
+
 	protected mapEntityToDomainObject(entity: PseudonymEntity): Pseudonym {
 		return new Pseudonym({
 			id: entity.id,
@@ -65,8 +80,9 @@ export class PseudonymsRepo {
 		});
 	}
 
-	protected mapDomainObjectToEntityProperties(entityDO: Pseudonym): IPseudonymEntityProps {
+	protected mapDomainObjectToEntityProperties(entityDO: Pseudonym): PseudonymEntityProps {
 		return {
+			id: entityDO.id,
 			pseudonym: entityDO.pseudonym,
 			toolId: new ObjectId(entityDO.toolId),
 			userId: new ObjectId(entityDO.userId),

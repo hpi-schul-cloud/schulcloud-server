@@ -1,9 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ICurrentUser } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { CopyApiResponse } from '@modules/copy-helper';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { SingleColumnBoardResponse } from '@modules/learnroom/controller/dto';
+import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, Course, Permission, Task } from '@shared/domain';
+import { Board, Course, Task } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
 import {
 	boardFactory,
 	cleanupCollections,
@@ -14,12 +21,6 @@ import {
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { CopyApiResponse } from '@src/modules/copy-helper';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { SingleColumnBoardResponse } from '@src/modules/learnroom/controller/dto';
-import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 

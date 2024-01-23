@@ -2,7 +2,9 @@ import { QueryOrderMap, QueryOrderNumeric } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
-import { Counted, EntityId, IFindOptions, ImportUser, INameMatch, Role, School, SortOrder, User } from '@shared/domain';
+import { ImportUser, Role, SchoolEntity, User } from '@shared/domain/entity';
+import { IFindOptions, SortOrder } from '@shared/domain/interface';
+import { Counted, EntityId, NameMatch } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { MongoPatterns } from '../mongo.patterns';
 
@@ -16,7 +18,7 @@ export class UserRepo extends BaseRepo<User> {
 		const user = await super.findById(id);
 
 		if (populate) {
-			await this._em.populate(user, ['roles', 'school.systems', 'school.schoolYear']);
+			await this._em.populate(user, ['roles', 'school.systems', 'school.currentYear']);
 			await this.populateRoles(user.roles.getItems());
 		}
 
@@ -36,8 +38,8 @@ export class UserRepo extends BaseRepo<User> {
 	 * used for importusers module to request users not referenced in importusers
 	 */
 	async findWithoutImportUser(
-		school: School,
-		filters?: INameMatch,
+		school: SchoolEntity,
+		filters?: NameMatch,
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
 		const { _id: schoolId } = school;
@@ -151,6 +153,20 @@ export class UserRepo extends BaseRepo<User> {
 			email: new RegExp(`^${email.replace(/\W/g, '\\$&')}$`, 'i'),
 		});
 		return promise;
+	}
+
+	async deleteUser(userId: EntityId): Promise<number> {
+		const deletedUserNumber: Promise<number> = this._em.nativeDelete(User, {
+			id: userId,
+		});
+		return deletedUserNumber;
+	}
+
+	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
+		const user = await this._em.findOneOrFail(User, { id: userId });
+		const parentsEmails = user.parents?.map((parent) => parent.email) ?? [];
+
+		return parentsEmails;
 	}
 
 	private async populateRoles(roles: Role[]): Promise<void> {

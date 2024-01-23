@@ -24,12 +24,14 @@ switch (NODE_ENV) {
 }
 
 let defaultDbUrl = null;
+let defaultTldrawDbUrl = null;
 switch (NODE_ENV) {
 	case ENVIRONMENTS.TEST:
 		defaultDbUrl = 'mongodb://127.0.0.1:27017/schulcloud-test';
 		break;
 	default:
 		defaultDbUrl = 'mongodb://127.0.0.1:27017/schulcloud';
+		defaultTldrawDbUrl = 'mongodb://127.0.0.1:27017/tldraw';
 }
 
 const globals = {
@@ -43,7 +45,6 @@ const globals = {
 	SC_DOMAIN: process.env.SC_DOMAIN || 'localhost',
 	SC_THEME: process.env.SC_THEME || 'default',
 	SC_TITLE: process.env.SC_TITLE || 'HPI Schul-Cloud',
-	SC_SHORT_TITLE: process.env.SC_SHORT_TITLE || 'HPI Schul-Cloud',
 	SMTP_SENDER: process.env.SMTP_SENDER || 'noreply@dbildungscloud.de',
 
 	LEAD_TIME: process.env.LEAD_TIME ? parseInt(process.env.LEAD_TIME, 10) : undefined,
@@ -105,6 +106,9 @@ const globals = {
 
 	// calendar
 	CALENDAR_URI: process.env.CALENDAR_URI,
+
+	// tldraw
+	TLDRAW_DB_URL: process.env.TLDRAW_DB_URL || defaultTldrawDbUrl,
 };
 
 // validation /////////////////////////////////////////////////

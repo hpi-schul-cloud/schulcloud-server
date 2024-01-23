@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { IAccount } from '@shared/domain';
+import { IdmAccount } from '@shared/domain/interface';
 import { AccountDto } from '../services/dto';
 import { AccountIdmToDtoMapper } from './account-idm-to-dto.mapper.abstract';
 import { AccountIdmToDtoMapperDb } from './account-idm-to-dto.mapper.db';
@@ -27,25 +27,25 @@ describe('AccountIdmToDtoMapperDb', () => {
 	describe('when mapping from entity to dto', () => {
 		describe('mapToDto', () => {
 			it('should map all fields', () => {
-				const testIdmEntity: IAccount = {
+				const testIdmEntity: IdmAccount = {
 					id: 'id',
 					username: 'username',
 					email: 'email',
 					firstName: 'firstName',
 					lastName: 'lastName',
 					createdDate: new Date(),
-					attRefTechnicalId: 'attRefTechnicalId',
-					attRefFunctionalIntId: 'attRefFunctionalIntId',
-					attRefFunctionalExtId: 'attRefFunctionalExtId',
+					attDbcAccountId: 'attDbcAccountId',
+					attDbcUserId: 'attDbcUserId',
+					attDbcSystemId: 'attDbcSystemId',
 				};
 				const ret = mapper.mapToDto(testIdmEntity);
 
 				expect(ret).toEqual(
 					expect.objectContaining<Partial<AccountDto>>({
-						id: testIdmEntity.attRefTechnicalId,
+						id: testIdmEntity.attDbcAccountId,
 						idmReferenceId: testIdmEntity.id,
-						userId: testIdmEntity.attRefFunctionalIntId,
-						systemId: testIdmEntity.attRefFunctionalExtId,
+						userId: testIdmEntity.attDbcUserId,
+						systemId: testIdmEntity.attDbcSystemId,
 						createdAt: testIdmEntity.createdDate,
 						updatedAt: testIdmEntity.createdDate,
 						username: testIdmEntity.username,
@@ -54,21 +54,33 @@ describe('AccountIdmToDtoMapperDb', () => {
 			});
 
 			describe('when date is undefined', () => {
-				it('should use actual date', () => {
-					const testIdmEntity: IAccount = {
+				const setup = () => {
+					const testIdmEntity: IdmAccount = {
 						id: 'id',
 					};
+
+					const dateMock = new Date();
+					jest.useFakeTimers();
+					jest.setSystemTime(dateMock);
+
+					return { testIdmEntity, dateMock };
+				};
+
+				it('should use actual date', () => {
+					const { testIdmEntity, dateMock } = setup();
+
 					const ret = mapper.mapToDto(testIdmEntity);
 
-					const now = new Date();
-					expect(ret.createdAt).toEqual(now);
-					expect(ret.updatedAt).toEqual(now);
+					expect(ret.createdAt).toEqual(dateMock);
+					expect(ret.updatedAt).toEqual(dateMock);
+
+					jest.useRealTimers();
 				});
 			});
 
 			describe('when a fields value is missing', () => {
 				it('should fill with empty string', () => {
-					const testIdmEntity: IAccount = {
+					const testIdmEntity: IdmAccount = {
 						id: 'id',
 					};
 					const ret = mapper.mapToDto(testIdmEntity);

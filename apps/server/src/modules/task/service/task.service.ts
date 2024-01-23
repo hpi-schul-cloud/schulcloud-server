@@ -1,33 +1,24 @@
-import { ForbiddenException, forwardRef, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { ValidationError } from '@shared/common';
-import {
-	Counted,
-	EntityId,
-	IFindOptions,
-	ITaskCreate,
-	ITaskProperties,
-	ITaskUpdate,
-	Permission,
-	Task,
-	TaskWithStatusVo,
-} from '@shared/domain';
-import { CourseRepo, LessonRepo, TaskRepo, UserRepo } from '@shared/repo';
-import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { Injectable } from '@nestjs/common';
+import { Task } from '@shared/domain/entity';
+import { DomainOperation, IFindOptions } from '@shared/domain/interface';
+import { Counted, DomainModel, EntityId, StatusModel } from '@shared/domain/types';
+import { TaskRepo } from '@shared/repo';
+import { DomainOperationBuilder } from '@shared/domain/builder';
+import { Logger } from '@src/core/logger';
+import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { SubmissionService } from './submission.service';
 
 @Injectable()
 export class TaskService {
 	constructor(
 		private readonly taskRepo: TaskRepo,
-		private readonly userRepo: UserRepo,
-		@Inject(forwardRef(() => AuthorizationService))
-		private readonly authorizationService: AuthorizationService,
-		private readonly courseRepo: CourseRepo,
-		private readonly lessonRepo: LessonRepo,
 		private readonly submissionService: SubmissionService,
-		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
-	) {}
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(TaskService.name);
+	}
 
 	async findBySingleParent(
 		creatorId: EntityId,
@@ -35,13 +26,7 @@ export class TaskService {
 		filters?: { draft?: boolean; noFutureAvailableDate?: boolean },
 		options?: IFindOptions<Task>
 	): Promise<Counted<Task[]>> {
-		const repoFilters: { draft?: boolean; noFutureAvailableDate?: boolean; userId?: EntityId } = { ...filters };
-		const user = await this.authorizationService.getUserWithPermissions(creatorId);
-		if (!this.authorizationService.hasAllPermissions(user, [Permission.TASK_DASHBOARD_TEACHER_VIEW_V3])) {
-			repoFilters.userId = user.id;
-		}
-
-		return this.taskRepo.findBySingleParent(creatorId, courseId, repoFilters, options);
+		return this.taskRepo.findBySingleParent(creatorId, courseId, filters, options);
 	}
 
 	async delete(task: Task): Promise<void> {
@@ -59,139 +44,104 @@ export class TaskService {
 		await Promise.all(promises);
 	}
 
-	async create(userId: EntityId, params: ITaskCreate): Promise<TaskWithStatusVo> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const taskParams: ITaskProperties = {
-			...params,
-			school: user.school,
-			creator: user,
-		};
-
-		this.taskDateValidation(taskParams.availableDate, taskParams.dueDate);
-
-		if (!this.authorizationService.hasAllPermissions(user, [Permission.HOMEWORK_CREATE])) {
-			// TODO: Should be ForbiddenException
-			throw new UnauthorizedException();
-		}
-
-		if (params.courseId) {
-			const course = await this.courseRepo.findById(params.courseId);
-			this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([]));
-			taskParams.course = course;
-
-			if (params.usersIds) {
-				const courseUsers = course.getStudentIds();
-				const isAllUsersInCourse = params.usersIds.every((id) => courseUsers.includes(id));
-				if (!isAllUsersInCourse) {
-					throw new ForbiddenException('Users do not belong to course');
-				}
-				const users = await Promise.all(params.usersIds.map(async (id) => this.userRepo.findById(id)));
-				taskParams.users = users;
-			}
-		}
-
-		if (params.lessonId) {
-			const lesson = await this.lessonRepo.findById(params.lessonId);
-			if (!taskParams.course || lesson.course.id !== taskParams.course.id) {
-				throw new ForbiddenException('Lesson does not belong to Course');
-			}
-			this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.write([]));
-			taskParams.lesson = lesson;
-		}
-
-		const task = new Task(taskParams);
-
-		await this.taskRepo.save(task);
-
-		const status = task.createTeacherStatusForUser(user);
-		const taskWithStatusVo = new TaskWithStatusVo(task, status);
-
-		return taskWithStatusVo;
-	}
-
-	async find(userId: EntityId, taskId: EntityId) {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const task = await this.taskRepo.findById(taskId);
-
-		this.authorizationService.checkPermission(user, task, AuthorizationContextBuilder.read([Permission.HOMEWORK_VIEW]));
-
-		const status = this.authorizationService.hasOneOfPermissions(user, [Permission.HOMEWORK_EDIT])
-			? task.createTeacherStatusForUser(user)
-			: task.createStudentStatusForUser(user);
-
-		const result = new TaskWithStatusVo(task, status);
-
-		return result;
-	}
-
 	async findById(taskId: EntityId): Promise<Task> {
 		return this.taskRepo.findById(taskId);
 	}
 
-	async update(userId: EntityId, taskId: EntityId, params: ITaskUpdate, remove = false): Promise<TaskWithStatusVo> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const task = await this.taskRepo.findById(taskId);
-
-		this.authorizationService.checkPermission(
-			user,
-			task,
-			AuthorizationContextBuilder.write([Permission.HOMEWORK_EDIT])
+	async deleteTasksByOnlyCreator(creatorId: EntityId): Promise<DomainOperation> {
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Deleting data from Task',
+				DomainModel.TASK,
+				creatorId,
+				StatusModel.PENDING
+			)
 		);
 
-		// eslint-disable-next-line no-restricted-syntax
-		for (const [key, value] of Object.entries(params)) {
-			if (value) {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				task[key] = value;
-			}
+		const [tasksByOnlyCreatorId, counterOfTasksOnlyWithCreatorId] = await this.taskRepo.findByOnlyCreatorId(creatorId);
+
+		if (counterOfTasksOnlyWithCreatorId > 0) {
+			const promiseDeletedTasks = tasksByOnlyCreatorId.map((task: Task) => this.delete(task));
+			await Promise.all(promiseDeletedTasks);
 		}
 
-		if (params.courseId) {
-			const course = await this.courseRepo.findById(params.courseId);
-			this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([]));
-			task.course = course;
+		const result = DomainOperationBuilder.build(DomainModel.TASK, 0, counterOfTasksOnlyWithCreatorId);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully deleted data from Task',
+				DomainModel.TASK,
+				creatorId,
+				StatusModel.FINISHED,
+				counterOfTasksOnlyWithCreatorId,
+				0
+			)
+		);
 
-			if (params.usersIds) {
-				const courseUsers = course.getStudentIds();
-				const isAllUsersInCourse = params.usersIds.every((id) => courseUsers.includes(id));
-				if (!isAllUsersInCourse) {
-					throw new ForbiddenException('Users do not belong to course');
-				}
-				const users = await Promise.all(params.usersIds.map(async (id) => this.userRepo.findById(id)));
-				task.users.set(users);
-			} else if (remove) {
-				task.users.removeAll();
-			}
-		} else if (remove) {
-			task.course = undefined;
-			task.lesson = undefined;
-			task.users.removeAll();
-		}
-
-		if (params.lessonId) {
-			const lesson = await this.lessonRepo.findById(params.lessonId);
-			if (!task.course || lesson.course.id !== task.course.id) {
-				throw new ForbiddenException('Lesson does not belong to Course');
-			}
-			this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.write([]));
-			task.lesson = lesson;
-		} else if (remove) {
-			task.lesson = undefined;
-		}
-
-		this.taskDateValidation(params.availableDate, params.dueDate);
-
-		await this.taskRepo.save(task);
-
-		const status = task.createTeacherStatusForUser(user);
-		const taskWithStatusVo = new TaskWithStatusVo(task, status);
-
-		return taskWithStatusVo;
+		return result;
 	}
 
-	private taskDateValidation(availableDate?: Date, dueDate?: Date) {
-		if (availableDate && dueDate && !(availableDate < dueDate)) {
-			throw new ValidationError('availableDate must be before dueDate');
+	async removeCreatorIdFromTasks(creatorId: EntityId): Promise<DomainOperation> {
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Deleting user data from Task',
+				DomainModel.TASK,
+				creatorId,
+				StatusModel.PENDING
+			)
+		);
+		const [tasksByCreatorIdWithCoursesAndLessons, counterOfTasksWithCoursesorLessons] =
+			await this.taskRepo.findByCreatorIdWithCourseAndLesson(creatorId);
+
+		if (counterOfTasksWithCoursesorLessons > 0) {
+			tasksByCreatorIdWithCoursesAndLessons.forEach((task: Task) => task.removeCreatorId());
+			await this.taskRepo.save(tasksByCreatorIdWithCoursesAndLessons);
 		}
+
+		const result = DomainOperationBuilder.build(DomainModel.TASK, counterOfTasksWithCoursesorLessons, 0);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully deleted user data from Task',
+				DomainModel.TASK,
+				creatorId,
+				StatusModel.FINISHED,
+				counterOfTasksWithCoursesorLessons,
+				0
+			)
+		);
+		return result;
+	}
+
+	async removeUserFromFinished(userId: EntityId): Promise<DomainOperation> {
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Deleting user data from Task archive collection',
+				DomainModel.TASK,
+				userId,
+				StatusModel.PENDING
+			)
+		);
+		const [tasksWithUserInFinished, counterOfTasksWithUserInFinished] = await this.taskRepo.findByUserIdInFinished(
+			userId
+		);
+
+		if (counterOfTasksWithUserInFinished > 0) {
+			tasksWithUserInFinished.forEach((task: Task) => task.removeUserFromFinished(userId));
+
+			await this.taskRepo.save(tasksWithUserInFinished);
+		}
+
+		const result = DomainOperationBuilder.build(DomainModel.TASK, counterOfTasksWithUserInFinished, 0);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully deleted user data from Task archive collection',
+				DomainModel.TASK,
+				userId,
+				StatusModel.FINISHED,
+				counterOfTasksWithUserInFinished,
+				0
+			)
+		);
+
+		return result;
 	}
 }

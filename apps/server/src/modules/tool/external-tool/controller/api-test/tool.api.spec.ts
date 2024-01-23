@@ -1,44 +1,47 @@
+import { Loaded } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Course, Permission, School } from '@shared/domain';
+import { ColumnBoardNode, ExternalToolElementNodeEntity, SchoolEntity } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
 import {
 	cleanupCollections,
+	columnBoardNodeFactory,
 	contextExternalToolEntityFactory,
-	courseFactory,
+	externalToolElementNodeFactory,
 	externalToolEntityFactory,
+	externalToolFactory,
 	schoolExternalToolEntityFactory,
 	schoolFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';
-import { Loaded } from '@mikro-orm/core';
-import { ServerTestModule } from '@src/modules/server';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,
 	CustomParameterTypeParams,
 	ToolConfigType,
-	ToolContextType,
 } from '../../../common/enum';
-import {
-	ExternalToolCreateParams,
-	ExternalToolResponse,
-	ExternalToolSearchListResponse,
-	ToolConfigurationStatusResponse,
-	ToolReferenceListResponse,
-} from '../dto';
-import { ContextExternalToolContextParams } from '../../../context-external-tool/controller/dto';
-import { ExternalToolEntity } from '../../entity';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
+import { ExternalToolEntity } from '../../entity';
+import {
+	ExternalToolCreateParams,
+	ExternalToolMetadataResponse,
+	ExternalToolResponse,
+	ExternalToolSearchListResponse,
+} from '../dto';
 
 describe('ToolController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 
 	let testApiClient: TestApiClient;
+	let axiosMock: MockAdapter;
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
@@ -46,11 +49,12 @@ describe('ToolController (API)', () => {
 		}).compile();
 
 		app = moduleRef.createNestApplication();
+		axiosMock = new MockAdapter(axios);
 
 		await app.init();
 
 		em = app.get(EntityManager);
-		testApiClient = new TestApiClient(app, 'tools');
+		testApiClient = new TestApiClient(app, 'tools/external-tools');
 	});
 
 	afterAll(async () => {
@@ -61,7 +65,7 @@ describe('ToolController (API)', () => {
 		await cleanupCollections(em);
 	});
 
-	describe('[POST] tools', () => {
+	describe('[POST] tools/external-tools', () => {
 		const postParams: ExternalToolCreateParams = {
 			name: 'Tool 1',
 			parameters: [
@@ -71,6 +75,7 @@ describe('ToolController (API)', () => {
 					displayName: 'User Friendly Name',
 					defaultValue: 'abc',
 					isOptional: false,
+					isProtected: false,
 					type: CustomParameterTypeParams.STRING,
 					regex: 'abc',
 					regexComment: 'Regex accepts "abc" as value.',
@@ -83,6 +88,7 @@ describe('ToolController (API)', () => {
 				baseUrl: 'https://link.to-my-tool.com/:key',
 			},
 			isHidden: false,
+			isDeactivated: false,
 			logoUrl: 'https://link.to-my-logo.com',
 			url: 'https://link.to-my-tool.com',
 			openNewTab: true,
@@ -95,6 +101,10 @@ describe('ToolController (API)', () => {
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
 				await em.persistAndFlush([adminAccount, adminUser]);
 				em.clear();
+
+				const base64Logo: string = externalToolFactory.withBase64Logo().build().logo as string;
+				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
+				axiosMock.onGet(params.logoUrl).reply(HttpStatus.OK, logoBuffer);
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
@@ -130,6 +140,7 @@ describe('ToolController (API)', () => {
 							displayName: 'User Friendly Name',
 							defaultValue: 'abc',
 							isOptional: false,
+							isProtected: false,
 							type: CustomParameterTypeParams.STRING,
 							regex: 'abc',
 							regexComment: 'Regex accepts "abc" as value.',
@@ -142,6 +153,7 @@ describe('ToolController (API)', () => {
 						baseUrl: 'https://link.to-my-tool.com/:key',
 					},
 					isHidden: false,
+					isDeactivated: false,
 					logoUrl: 'https://link.to-my-logo.com',
 					url: 'https://link.to-my-tool.com',
 					openNewTab: true,
@@ -211,7 +223,7 @@ describe('ToolController (API)', () => {
 		});
 	});
 
-	describe('[GET] tools', () => {
+	describe('[GET] tools/external-tools', () => {
 		describe('when requesting tools', () => {
 			const setup = async () => {
 				const toolId: string = new ObjectId().toHexString();
@@ -272,8 +284,8 @@ describe('ToolController (API)', () => {
 		});
 	});
 
-	describe('[GET] tools/:toolId', () => {
-		describe('when toolId is given', () => {
+	describe('[GET] tools/external-tools/:externalToolId', () => {
+		describe('when externalToolId is given', () => {
 			const setup = async () => {
 				const toolId: string = new ObjectId().toHexString();
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
@@ -350,7 +362,7 @@ describe('ToolController (API)', () => {
 		});
 	});
 
-	describe('[POST] tools/:toolId', () => {
+	describe('[POST] tools/external-tools/:externalToolId', () => {
 		const postParams: ExternalToolCreateParams = {
 			name: 'Tool 1',
 			parameters: [
@@ -360,6 +372,7 @@ describe('ToolController (API)', () => {
 					displayName: 'User Friendly Name',
 					defaultValue: 'abc',
 					isOptional: false,
+					isProtected: false,
 					type: CustomParameterTypeParams.STRING,
 					regex: 'abc',
 					regexComment: 'Regex accepts "abc" as value.',
@@ -372,6 +385,7 @@ describe('ToolController (API)', () => {
 				baseUrl: 'https://link.to-my-tool.com/:key',
 			},
 			isHidden: false,
+			isDeactivated: false,
 			logoUrl: 'https://link.to-my-logo.com',
 			url: 'https://link.to-my-tool.com',
 			openNewTab: true,
@@ -381,7 +395,13 @@ describe('ToolController (API)', () => {
 			const setup = async () => {
 				const toolId: string = new ObjectId().toHexString();
 				const params = { ...postParams, id: toolId };
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({ version: 1 }, toolId);
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory
+					.withBase64Logo()
+					.buildWithId({ version: 1 }, toolId);
+
+				const base64Logo: string = externalToolEntity.logoBase64 as string;
+				const logoBuffer: Buffer = Buffer.from(base64Logo, 'base64');
+				axiosMock.onGet(params.logoUrl).reply(HttpStatus.OK, logoBuffer);
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
 				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
@@ -420,6 +440,7 @@ describe('ToolController (API)', () => {
 							displayName: 'User Friendly Name',
 							defaultValue: 'abc',
 							isOptional: false,
+							isProtected: false,
 							type: CustomParameterTypeParams.STRING,
 							regex: 'abc',
 							regexComment: 'Regex accepts "abc" as value.',
@@ -432,6 +453,7 @@ describe('ToolController (API)', () => {
 						baseUrl: 'https://link.to-my-tool.com/:key',
 					},
 					isHidden: false,
+					isDeactivated: false,
 					logoUrl: 'https://link.to-my-logo.com',
 					url: 'https://link.to-my-tool.com',
 					openNewTab: true,
@@ -505,7 +527,7 @@ describe('ToolController (API)', () => {
 		});
 	});
 
-	describe('[DELETE] tools/:toolId', () => {
+	describe('[DELETE] tools/external-tools/:externalToolId', () => {
 		describe('when valid data is given', () => {
 			const setup = async () => {
 				const toolId: string = new ObjectId().toHexString();
@@ -523,7 +545,7 @@ describe('ToolController (API)', () => {
 			it('should delete a tool', async () => {
 				const { loggedInClient, toolId } = await setup();
 
-				await loggedInClient.delete(`${toolId}`).expect(HttpStatus.OK);
+				await loggedInClient.delete(`${toolId}`).expect(HttpStatus.NO_CONTENT);
 
 				expect(await em.findOne(ExternalToolEntity, { id: toolId })).toBeNull();
 			});
@@ -582,121 +604,121 @@ describe('ToolController (API)', () => {
 		});
 	});
 
-	describe('[GET] tools/references/:contextType/:contextId', () => {
+	describe('[GET] tools/external-tools/:externalToolId/logo', () => {
+		const setup = async () => {
+			const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.withBase64Logo().buildWithId();
+
+			const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
+			await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
+			em.clear();
+
+			const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
+
+			return { loggedInClient, externalToolEntity };
+		};
+
 		describe('when user is not authenticated', () => {
 			it('should return unauthorized', async () => {
-				const response: Response = await testApiClient.get(`references/contextType/${new ObjectId().toHexString()}`);
+				const { externalToolEntity } = await setup();
+
+				const response: Response = await testApiClient.get(`${externalToolEntity.id}/logo`);
 
 				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});
 
-		describe('when user has no access to a tool', () => {
-			const setup = async () => {
-				const schoolWithoutTool: School = schoolFactory.buildWithId();
-				const school: School = schoolFactory.buildWithId();
-				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school: schoolWithoutTool });
-				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
-					school,
-					tool: externalToolEntity,
-				});
-				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
-					schoolTool: schoolExternalToolEntity,
-					contextId: course.id,
-					contextType: ContextExternalToolType.COURSE,
-				});
+		describe('when user is authenticated', () => {
+			it('should return the logo', async () => {
+				const { loggedInClient, externalToolEntity } = await setup();
 
-				await em.persistAndFlush([
-					school,
-					adminAccount,
-					adminUser,
-					course,
-					externalToolEntity,
-					schoolExternalToolEntity,
-					contextExternalToolEntity,
-				]);
-				em.clear();
-
-				const params: ContextExternalToolContextParams = {
-					contextId: course.id,
-					contextType: ToolContextType.COURSE,
-				};
-
-				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
-
-				return { loggedInClient, params };
-			};
-
-			it('should filter out the tool', async () => {
-				const { loggedInClient, params } = await setup();
-
-				const response: Response = await loggedInClient.get(`references/${params.contextType}/${params.contextId}`);
+				const response: Response = await loggedInClient.get(`${externalToolEntity.id}/logo`);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
-				expect(response.body).toEqual<ToolReferenceListResponse>({ data: [] });
+				expect(response.body).toBeInstanceOf(Buffer);
+			});
+		});
+	});
+
+	describe('[GET] tools/external-tools/:externalToolId/metadata', () => {
+		describe('when user is not authenticated', () => {
+			const setup = () => {
+				const toolId: string = new ObjectId().toHexString();
+
+				return { toolId };
+			};
+
+			it('should return unauthorized', async () => {
+				const { toolId } = setup();
+
+				const response: Response = await testApiClient.get(`${toolId}/metadata`);
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});
 
-		describe('when user has access for a tool', () => {
+		describe('when externalToolId is given ', () => {
 			const setup = async () => {
-				const school: School = schoolFactory.buildWithId();
-				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
-					Permission.CONTEXT_TOOL_USER,
-				]);
-				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
-				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
-				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
-					school,
+				const toolId: string = new ObjectId().toHexString();
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
+
+				const school: SchoolEntity = schoolFactory.buildWithId();
+				const schoolExternalToolEntitys: SchoolExternalToolEntity[] = schoolExternalToolEntityFactory.buildList(2, {
 					tool: externalToolEntity,
-					toolVersion: externalToolEntity.version,
-				});
-				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
-					schoolTool: schoolExternalToolEntity,
-					contextId: course.id,
-					contextType: ContextExternalToolType.COURSE,
-					displayName: 'This is a test tool',
-					toolVersion: schoolExternalToolEntity.toolVersion,
+					school,
 				});
 
+				const courseTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildList(3, {
+					schoolTool: schoolExternalToolEntitys[0],
+					contextType: ContextExternalToolType.COURSE,
+					contextId: new ObjectId().toHexString(),
+				});
+
+				const boardTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildList(2, {
+					schoolTool: schoolExternalToolEntitys[1],
+					contextType: ContextExternalToolType.BOARD_ELEMENT,
+					contextId: new ObjectId().toHexString(),
+				});
+
+				const board: ColumnBoardNode = columnBoardNodeFactory.buildWithId();
+				const externalToolElements: ExternalToolElementNodeEntity[] = externalToolElementNodeFactory.buildListWithId(
+					2,
+					{
+						contextExternalTool: boardTools[0],
+						parent: board,
+					}
+				);
+
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
 				await em.persistAndFlush([
-					school,
 					adminAccount,
 					adminUser,
-					course,
+					school,
 					externalToolEntity,
-					schoolExternalToolEntity,
-					contextExternalToolEntity,
+					...schoolExternalToolEntitys,
+					...courseTools,
+					...boardTools,
+					board,
+					...externalToolElements,
 				]);
 				em.clear();
 
-				const params: ContextExternalToolContextParams = {
-					contextId: course.id,
-					contextType: ToolContextType.COURSE,
-				};
-
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
-				return { loggedInClient, params, contextExternalToolEntity, externalToolEntity };
+				return { loggedInClient, toolId, externalToolEntity };
 			};
 
-			it('should return an ToolReferenceListResponse with data', async () => {
-				const { loggedInClient, params, contextExternalToolEntity, externalToolEntity } = await setup();
+			it('should return the metadata of externalTool', async () => {
+				const { loggedInClient, externalToolEntity } = await setup();
 
-				const response: Response = await loggedInClient.get(`references/${params.contextType}/${params.contextId}`);
+				const response: Response = await loggedInClient.get(`${externalToolEntity.id}/metadata`);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
-				expect(response.body).toEqual<ToolReferenceListResponse>({
-					data: [
-						{
-							contextToolId: contextExternalToolEntity.id,
-							displayName: contextExternalToolEntity.displayName as string,
-							status: ToolConfigurationStatusResponse.LATEST,
-							logoUrl: externalToolEntity.logoUrl,
-							openInNewTab: externalToolEntity.openNewTab,
-						},
-					],
+				expect(response.body).toEqual<ExternalToolMetadataResponse>({
+					schoolExternalToolCount: 2,
+					contextExternalToolCountPerContext: {
+						course: 1,
+						boardElement: 1,
+					},
 				});
 			});
 		});

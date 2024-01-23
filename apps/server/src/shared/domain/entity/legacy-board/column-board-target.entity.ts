@@ -1,5 +1,5 @@
 import { Entity, Property } from '@mikro-orm/core';
-import { ILearnroomElement } from '@shared/domain/interface';
+import { LearnroomElement } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { BaseEntityWithTimestamps } from '../base.entity';
@@ -10,7 +10,7 @@ type ColumnBoardTargetProps = {
 };
 
 @Entity()
-export class ColumnBoardTarget extends BaseEntityWithTimestamps implements ILearnroomElement {
+export class ColumnBoardTarget extends BaseEntityWithTimestamps implements LearnroomElement {
 	constructor(props: ColumnBoardTargetProps) {
 		super();
 		this._columnBoardId = new ObjectId(props.columnBoardId);
@@ -37,4 +37,8 @@ export class ColumnBoardTarget extends BaseEntityWithTimestamps implements ILear
 	get columnBoardId(): EntityId {
 		return this._columnBoardId.toHexString();
 	}
+}
+
+export function isColumnBoardTarget(reference: unknown): reference is ColumnBoardTarget {
+	return reference instanceof ColumnBoardTarget;
 }

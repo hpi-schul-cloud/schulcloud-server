@@ -1,29 +1,49 @@
+import { BoardModule } from '@modules/board';
+import { CopyHelperModule } from '@modules/copy-helper';
+import { LessonModule } from '@modules/lesson';
+import { TaskModule } from '@modules/task';
 import { Module } from '@nestjs/common';
-import { BoardRepo, CourseRepo, DashboardModelMapper, DashboardRepo, LessonRepo, UserRepo } from '@shared/repo';
+import {
+	BoardRepo,
+	CourseGroupRepo,
+	CourseRepo,
+	DashboardElementRepo,
+	DashboardModelMapper,
+	DashboardRepo,
+	UserRepo,
+} from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { BoardModule } from '@src/modules/board';
-import { CopyHelperModule } from '@src/modules/copy-helper';
-import { LessonModule } from '@src/modules/lesson';
-import { TaskModule } from '@src/modules/task';
+import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import {
 	BoardCopyService,
 	ColumnBoardTargetService,
 	CommonCartridgeExportService,
 	CourseCopyService,
+	CourseGroupService,
 	CourseService,
+	DashboardService,
 	RoomsService,
 } from './service';
+import { ToolConfigModule } from '../tool/tool-config.module';
 
 @Module({
-	imports: [LessonModule, TaskModule, CopyHelperModule, BoardModule, LoggerModule],
+	imports: [
+		LessonModule,
+		TaskModule,
+		CopyHelperModule,
+		BoardModule,
+		LoggerModule,
+		ContextExternalToolModule,
+		ToolConfigModule,
+	],
 	providers: [
 		{
 			provide: 'DASHBOARD_REPO',
 			useClass: DashboardRepo,
 		},
+		DashboardElementRepo,
 		DashboardModelMapper,
 		CourseRepo,
-		LessonRepo,
 		BoardRepo,
 		UserRepo,
 		BoardCopyService,
@@ -32,7 +52,17 @@ import {
 		CourseService,
 		CommonCartridgeExportService,
 		ColumnBoardTargetService,
+		CourseGroupService,
+		CourseGroupRepo,
+		DashboardService,
 	],
-	exports: [CourseCopyService, CourseService, RoomsService, CommonCartridgeExportService],
+	exports: [
+		CourseCopyService,
+		CourseService,
+		RoomsService,
+		CommonCartridgeExportService,
+		CourseGroupService,
+		DashboardService,
+	],
 })
 export class LearnroomModule {}

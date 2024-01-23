@@ -1,22 +1,23 @@
-import { Embeddable, Embedded, Entity, Enum, Property } from '@mikro-orm/core';
+import { Cascade, Collection, Embeddable, Embedded, Entity, Enum, OneToMany, Property } from '@mikro-orm/core';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 
-export interface ISystemProperties {
+export interface SystemEntityProps {
 	type: string;
 	url?: string;
 	alias?: string;
 	displayName?: string;
-	oauthConfig?: OauthConfig;
-	oidcConfig?: OidcConfig;
-	ldapConfig?: LdapConfig;
+	oauthConfig?: OauthConfigEntity;
+	oidcConfig?: OidcConfigEntity;
+	ldapConfig?: LdapConfigEntity;
 	provisioningStrategy?: SystemProvisioningStrategy;
 	provisioningUrl?: string;
 }
 
-export class OauthConfig {
-	constructor(oauthConfig: OauthConfig) {
+export class OauthConfigEntity {
+	constructor(oauthConfig: OauthConfigEntity) {
 		this.clientId = oauthConfig.clientId;
 		this.clientSecret = oauthConfig.clientSecret;
 		this.idpHint = oauthConfig.idpHint;
@@ -62,8 +63,8 @@ export class OauthConfig {
 	@Property()
 	provider: string;
 
-	@Property()
-	logoutEndpoint: string;
+	@Property({ nullable: true })
+	logoutEndpoint?: string;
 
 	@Property()
 	issuer: string;
@@ -73,8 +74,8 @@ export class OauthConfig {
 }
 
 @Embeddable()
-export class LdapConfig {
-	constructor(ldapConfig: Readonly<LdapConfig>) {
+export class LdapConfigEntity {
+	constructor(ldapConfig: Readonly<LdapConfigEntity>) {
 		this.active = ldapConfig.active;
 		this.federalState = ldapConfig.federalState;
 		this.lastSyncAttempt = ldapConfig.lastSyncAttempt;
@@ -150,8 +151,8 @@ export class LdapConfig {
 		};
 	};
 }
-export class OidcConfig {
-	constructor(oidcConfig: OidcConfig) {
+export class OidcConfigEntity {
+	constructor(oidcConfig: OidcConfigEntity) {
 		this.clientId = oidcConfig.clientId;
 		this.clientSecret = oidcConfig.clientSecret;
 		this.idpHint = oidcConfig.idpHint;
@@ -188,20 +189,7 @@ export class OidcConfig {
 }
 
 @Entity({ tableName: 'systems' })
-export class System extends BaseEntityWithTimestamps {
-	constructor(props: ISystemProperties) {
-		super();
-		this.type = props.type;
-		this.url = props.url;
-		this.alias = props.alias;
-		this.displayName = props.displayName;
-		this.oauthConfig = props.oauthConfig;
-		this.oidcConfig = props.oidcConfig;
-		this.ldapConfig = props.ldapConfig;
-		this.provisioningStrategy = props.provisioningStrategy;
-		this.provisioningUrl = props.provisioningUrl;
-	}
-
+export class SystemEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: false })
 	type: string; // see legacy enum for valid values
 
@@ -215,18 +203,34 @@ export class System extends BaseEntityWithTimestamps {
 	displayName?: string;
 
 	@Property({ nullable: true })
-	oauthConfig?: OauthConfig;
+	oauthConfig?: OauthConfigEntity;
 
 	@Property({ nullable: true })
 	@Enum()
 	provisioningStrategy?: SystemProvisioningStrategy;
 
 	@Property({ nullable: true })
-	oidcConfig?: OidcConfig;
+	oidcConfig?: OidcConfigEntity;
 
-	@Embedded({ entity: () => LdapConfig, object: true, nullable: true })
-	ldapConfig?: LdapConfig;
+	@Embedded({ entity: () => LdapConfigEntity, object: true, nullable: true })
+	ldapConfig?: LdapConfigEntity;
 
 	@Property({ nullable: true })
 	provisioningUrl?: string;
+
+	@OneToMany(() => SchoolSystemOptionsEntity, (options) => options.system, { cascade: [Cascade.REMOVE] })
+	schoolSystemOptions = new Collection<SchoolSystemOptionsEntity>(this);
+
+	constructor(props: SystemEntityProps) {
+		super();
+		this.type = props.type;
+		this.url = props.url;
+		this.alias = props.alias;
+		this.displayName = props.displayName;
+		this.oauthConfig = props.oauthConfig;
+		this.oidcConfig = props.oidcConfig;
+		this.ldapConfig = props.ldapConfig;
+		this.provisioningStrategy = props.provisioningStrategy;
+		this.provisioningUrl = props.provisioningUrl;
+	}
 }

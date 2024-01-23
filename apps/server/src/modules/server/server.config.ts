@@ -1,8 +1,13 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
-import type { IIdentityManagementConfig } from '@shared/infra/identity-management';
-import type { ICoreModuleConfig } from '@src/core';
-import type { IAccountConfig, IFilesStorageClientConfig, IUserConfig } from '@src/modules/';
-import type { ICommonCartridgeConfig } from '@src/modules/learnroom/common-cartridge';
+import type { IdentityManagementConfig } from '@infra/identity-management';
+import type { AccountConfig } from '@modules/account';
+import type { XApiKeyConfig } from '@modules/authentication';
+import type { FilesStorageClientConfig } from '@modules/files-storage-client';
+import type { CommonCartridgeConfig } from '@modules/learnroom/common-cartridge';
+import type { SchoolConfig } from '@modules/school';
+import type { UserConfig } from '@modules/user';
+import type { CoreModuleConfig } from '@src/core';
+import { MailConfig } from '@src/infra/mail/interfaces/mail-config';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -11,18 +16,21 @@ export enum NodeEnvType {
 	MIGRATION = 'migration',
 }
 
-export interface IServerConfig
-	extends ICoreModuleConfig,
-		IUserConfig,
-		IFilesStorageClientConfig,
-		IAccountConfig,
-		IIdentityManagementConfig,
-		ICommonCartridgeConfig {
+export interface ServerConfig
+	extends CoreModuleConfig,
+		UserConfig,
+		FilesStorageClientConfig,
+		AccountConfig,
+		IdentityManagementConfig,
+		CommonCartridgeConfig,
+		SchoolConfig,
+		MailConfig,
+		XApiKeyConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 }
 
-const config: IServerConfig = {
+const config: ServerConfig = {
 	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
@@ -37,6 +45,13 @@ const config: IServerConfig = {
 	FEATURE_IDENTITY_MANAGEMENT_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
+	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,
+	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string)
+		.split(',')
+		.map((apiKey) => apiKey.trim()),
+	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)
+		.split(',')
+		.map((domain) => domain.trim()),
 };
 
 export const serverConfig = () => config;

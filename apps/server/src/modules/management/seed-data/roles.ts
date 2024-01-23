@@ -1,10 +1,11 @@
 // All user accounts are organized by school in a single array
 
-import { IRoleProperties, Permission, Role, RoleName } from '@shared/domain';
+import { Role, RoleProperties } from '@shared/domain/entity';
+import { Permission, RoleName } from '@shared/domain/interface';
 import { roleFactory } from '@shared/testing';
 import { DeepPartial } from 'fishery';
 
-type SeedRoleProperties = Omit<IRoleProperties, 'roles'> & {
+type SeedRoleProperties = Omit<RoleProperties, 'roles'> & {
 	id: string;
 	createdAt: string;
 	updatedAt: string;
@@ -210,8 +211,6 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 			Permission.USERGROUP_EDIT,
 			Permission.USER_CREATE,
 			Permission.TASK_DASHBOARD_TEACHER_VIEW_V3,
-			Permission.TASK_CARD_VIEW,
-			Permission.TASK_CARD_EDIT,
 			Permission.TEAM_CREATE,
 			Permission.TEAM_EDIT,
 			Permission.START_MEETING,
@@ -229,7 +228,6 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 		permissions: [
 			Permission.TASK_DASHBOARD_VIEW_V3,
 			Permission.JOIN_MEETING,
-			Permission.TASK_CARD_VIEW,
 			Permission.TEAM_CREATE,
 			Permission.TEAM_EDIT,
 			Permission.TOOL_CREATE_ETHERPAD,
@@ -446,7 +444,7 @@ export function generateRole(localRoleSeedData?: { [key: string | RoleName]: See
 		if (subRoles.some((r) => !r)) {
 			throw new Error(`Role ${roleName} depends on non existing role`);
 		}
-		const params: DeepPartial<IRoleProperties> = {
+		const params: DeepPartial<RoleProperties> = {
 			name: partial.name,
 			permissions: partial.permissions,
 			roles: subRoles,

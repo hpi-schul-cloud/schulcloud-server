@@ -1,14 +1,21 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ContentElementType } from '@shared/domain';
+import { DecodeHtmlEntities } from '@shared/controller';
+import { ContentElementType } from '@shared/domain/domainobject';
 import { TimestampsResponse } from '../timestamps.response';
 
 export class FileElementContent {
-	constructor({ caption }: FileElementContent) {
+	constructor({ caption, alternativeText }: FileElementContent) {
 		this.caption = caption;
+		this.alternativeText = alternativeText;
 	}
 
 	@ApiProperty()
+	@DecodeHtmlEntities()
 	caption: string;
+
+	@ApiProperty()
+	@DecodeHtmlEntities()
+	alternativeText: string;
 }
 
 export class FileElementResponse {

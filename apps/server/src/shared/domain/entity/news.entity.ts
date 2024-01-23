@@ -1,17 +1,17 @@
 import { Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
+import { EntityId } from '../types';
+import { NewsTarget, NewsTargetModel } from '../types/news.types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { Course } from './course.entity';
-import type { School } from './school.entity';
-import type { Team } from './team.entity';
+import { SchoolEntity } from './school.entity';
+import type { TeamEntity } from './team.entity';
 import type { User } from './user.entity';
-import { NewsTarget, NewsTargetModel } from '../types/news.types';
-import { EntityId } from '../types';
 
-export interface INewsProperties {
+export interface NewsProperties {
 	title: string;
 	content: string;
 	displayAt: Date;
-	school: EntityId | School;
+	school: EntityId | SchoolEntity;
 	creator: EntityId | User;
 	target: EntityId | NewsTarget;
 
@@ -58,8 +58,8 @@ export abstract class News extends BaseEntityWithTimestamps {
 	@Enum()
 	targetModel!: NewsTargetModel;
 
-	@ManyToOne('School', { fieldName: 'schoolId' })
-	school!: School;
+	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
+	school!: SchoolEntity;
 
 	@ManyToOne('User', { fieldName: 'creatorId' })
 	creator!: User;
@@ -69,7 +69,7 @@ export abstract class News extends BaseEntityWithTimestamps {
 
 	permissions: string[] = [];
 
-	constructor(props: INewsProperties) {
+	constructor(props: NewsProperties) {
 		super();
 		this.title = props.title;
 		this.content = props.content;
@@ -80,7 +80,7 @@ export abstract class News extends BaseEntityWithTimestamps {
 		this.sourceDescription = props.sourceDescription;
 	}
 
-	static createInstance(targetModel: NewsTargetModel, props: INewsProperties): News {
+	static createInstance(targetModel: NewsTargetModel, props: NewsProperties): News {
 		let news: News;
 		if (targetModel === NewsTargetModel.Course) {
 			// eslint-disable-next-line @typescript-eslint/no-use-before-define
@@ -98,10 +98,10 @@ export abstract class News extends BaseEntityWithTimestamps {
 
 @Entity({ discriminatorValue: NewsTargetModel.School })
 export class SchoolNews extends News {
-	@ManyToOne('School')
-	target!: School;
+	@ManyToOne(() => SchoolEntity)
+	target!: SchoolEntity;
 
-	constructor(props: INewsProperties) {
+	constructor(props: NewsProperties) {
 		super(props);
 		this.targetModel = NewsTargetModel.School;
 	}
@@ -115,7 +115,7 @@ export class CourseNews extends News {
 	@ManyToOne('Course', { nullable: true })
 	target!: Course;
 
-	constructor(props: INewsProperties) {
+	constructor(props: NewsProperties) {
 		super(props);
 		this.targetModel = NewsTargetModel.Course;
 	}
@@ -123,10 +123,10 @@ export class CourseNews extends News {
 
 @Entity({ discriminatorValue: NewsTargetModel.Team })
 export class TeamNews extends News {
-	@ManyToOne('Team')
-	target!: Team;
+	@ManyToOne('TeamEntity')
+	target!: TeamEntity;
 
-	constructor(props: INewsProperties) {
+	constructor(props: NewsProperties) {
 		super(props);
 		this.targetModel = NewsTargetModel.Team;
 	}

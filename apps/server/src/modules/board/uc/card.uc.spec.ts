@@ -1,13 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AuthorizationService } from '@modules/authorization';
+import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, BoardRoles, ContentElementType } from '@shared/domain';
-import { setupEntities, userFactory } from '@shared/testing';
+import { BoardDoAuthorizable, BoardRoles, ContentElementType, UserRoleEnum } from '@shared/domain/domainobject';
+import { columnBoardFactory, columnFactory, setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization';
 import { ObjectId } from 'bson';
-import { BoardDoAuthorizableService, ContentElementService } from '../service';
-import { CardService } from '../service/card.service';
+import { BoardDoAuthorizableService, CardService, ContentElementService } from '../service';
 import { CardUc } from './card.uc';
 
 describe(CardUc.name, () => {
@@ -41,6 +41,10 @@ describe(CardUc.name, () => {
 				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
+				},
+				{
+					provide: HttpService,
+					useValue: createMock<HttpService>(),
 				},
 			],
 		}).compile();
@@ -91,6 +95,144 @@ describe(CardUc.name, () => {
 				const result = await uc.findCards(user.id, cardIds);
 
 				expect(result).toEqual(cards);
+			});
+		});
+	});
+
+	describe('deleteCard', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const board = columnBoardFactory.build();
+			const boardId = board.id;
+			const column = columnFactory.build();
+			const card = cardFactory.build();
+			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
+				users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
+				id: board.id,
+			});
+			const createCardBodyParams = {
+				requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
+			};
+
+			boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
+
+			return { user, board, boardId, column, card, createCardBodyParams };
+		};
+
+		describe('when deleting a card', () => {
+			it('should call the service to find the card', async () => {
+				const { user, card } = setup();
+
+				await uc.deleteCard(user.id, card.id);
+
+				expect(cardService.findById).toHaveBeenCalledWith(card.id);
+			});
+
+			it('should call the service to delete the card', async () => {
+				const { user, card } = setup();
+				cardService.findById.mockResolvedValueOnce(card);
+
+				await uc.deleteCard(user.id, card.id);
+
+				expect(cardService.delete).toHaveBeenCalledWith(card);
+			});
+		});
+	});
+
+	describe('updateCardHeight', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const board = columnBoardFactory.build();
+			const boardId = board.id;
+			const column = columnFactory.build();
+			const card = cardFactory.build();
+			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
+				users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
+				id: board.id,
+			});
+			const createCardBodyParams = {
+				requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
+			};
+
+			boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
+
+			return { user, board, boardId, column, card, createCardBodyParams };
+		};
+
+		describe('when updating a card height', () => {
+			it('should call the service to find the card', async () => {
+				const { user, card } = setup();
+				const cardHeight = 200;
+
+				await uc.updateCardHeight(user.id, card.id, cardHeight);
+
+				expect(cardService.findById).toHaveBeenCalledWith(card.id);
+			});
+
+			it('should check the permission', async () => {
+				const { user, card } = setup();
+				const cardHeight = 200;
+
+				await uc.updateCardHeight(user.id, card.id, cardHeight);
+
+				expect(authorizationService.checkPermission).toHaveBeenCalled();
+			});
+
+			it('should call the service to update the card height', async () => {
+				const { user, card } = setup();
+				cardService.findById.mockResolvedValueOnce(card);
+				const newHeight = 250;
+
+				await uc.updateCardHeight(user.id, card.id, newHeight);
+
+				expect(cardService.updateHeight).toHaveBeenCalledWith(card, newHeight);
+			});
+		});
+	});
+
+	describe('updateCardTitle', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const board = columnBoardFactory.build();
+			const boardId = board.id;
+			const column = columnFactory.build();
+			const card = cardFactory.build();
+			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
+				users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
+				id: board.id,
+			});
+			const createCardBodyParams = {
+				requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
+			};
+
+			boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
+
+			return { user, board, boardId, column, card, createCardBodyParams };
+		};
+
+		describe('when updating a card title', () => {
+			it('should call the service to find the card', async () => {
+				const { user, card } = setup();
+
+				await uc.updateCardTitle(user.id, card.id, 'new title');
+
+				expect(cardService.findById).toHaveBeenCalledWith(card.id);
+			});
+
+			it('should call the service to update the card title', async () => {
+				const { user, card } = setup();
+				cardService.findById.mockResolvedValueOnce(card);
+				const newTitle = 'new title';
+
+				await uc.updateCardTitle(user.id, card.id, newTitle);
+
+				expect(cardService.updateTitle).toHaveBeenCalledWith(card, newTitle);
 			});
 		});
 	});
@@ -152,39 +294,6 @@ describe(CardUc.name, () => {
 		});
 	});
 
-	describe('deleteElement', () => {
-		describe('when deleting a content element', () => {
-			const setup = () => {
-				const user = userFactory.build();
-				const element = richTextElementFactory.build();
-				const card = cardFactory.build();
-
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
-				);
-
-				return { user, card, element };
-			};
-
-			it('should call the service to find the element', async () => {
-				const { user, element } = setup();
-
-				await uc.deleteElement(user.id, element.id);
-
-				expect(elementService.findById).toHaveBeenCalledWith(element.id);
-			});
-
-			it('should call the service to delete the element', async () => {
-				const { user, element } = setup();
-				elementService.findById.mockResolvedValueOnce(element);
-
-				await uc.deleteElement(user.id, element.id);
-
-				expect(elementService.delete).toHaveBeenCalledWith(element);
-			});
-		});
-	});
-
 	describe('moveElement', () => {
 		describe('when moving an element', () => {
 			const setup = () => {
@@ -195,7 +304,7 @@ describe(CardUc.name, () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 				const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
-					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+					users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
 					id: element.id,
 				});
 

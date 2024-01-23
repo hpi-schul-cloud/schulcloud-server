@@ -1,17 +1,17 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { DatabaseManagementService } from '@infra/database';
+import { DefaultEncryptionService, EncryptionService, LdapEncryptionService } from '@infra/encryption';
+import { FileSystemAdapter } from '@infra/file-system';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { StorageProvider, System } from '@shared/domain';
-import { DatabaseManagementService } from '@shared/infra/database';
-import { DefaultEncryptionService, IEncryptionService, LdapEncryptionService } from '@shared/infra/encryption';
-import { FileSystemAdapter } from '@shared/infra/file-system';
+import { StorageProviderEntity, SystemEntity } from '@shared/domain/entity';
 import { LegacyLogger } from '@src/core/logger';
 import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generateSeedData';
 
-export interface ICollectionFilePath {
+export interface CollectionFilePath {
 	filePath: string;
 	collectionName: string;
 }
@@ -35,8 +35,8 @@ export class DatabaseManagementUc {
 		private readonly configService: ConfigService,
 		private readonly logger: LegacyLogger,
 		private em: EntityManager,
-		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: IEncryptionService,
-		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: IEncryptionService
+		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: EncryptionService,
+		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: EncryptionService
 	) {
 		this.logger.setContext(DatabaseManagementUc.name);
 	}
@@ -75,9 +75,9 @@ export class DatabaseManagementUc {
 
 	/**
 	 * Loads all collection names from database and adds related file paths.
-	 * @returns {ICollectionFilePath}
+	 * @returns {CollectionFilePath}
 	 */
-	private async loadAllCollectionsFromDatabase(targetFolder: string): Promise<ICollectionFilePath[]> {
+	private async loadAllCollectionsFromDatabase(targetFolder: string): Promise<CollectionFilePath[]> {
 		const collections = await this.databaseManagementService.getCollectionNames();
 		const collectionsWithFilePaths = collections.map((collectionName) => {
 			return {
@@ -90,9 +90,9 @@ export class DatabaseManagementUc {
 
 	/**
 	 * Loads all collection names and file paths from backup files.
-	 * @returns {ICollectionFilePath}
+	 * @returns {CollectionFilePath}
 	 */
-	private async loadAllCollectionsFromFilesystem(baseDir: string): Promise<ICollectionFilePath[]> {
+	private async loadAllCollectionsFromFilesystem(baseDir: string): Promise<CollectionFilePath[]> {
 		const filenames = await this.fileSystemAdapter.readDir(baseDir);
 		const collectionsWithFilePaths = filenames.map((fileName) => {
 			return {
@@ -107,14 +107,14 @@ export class DatabaseManagementUc {
 	 * Scans <source> for existing collections and optionally filters them based on <collectionNameFilter>
 	 * @param source
 	 * @param collectionNameFilter
-	 * @returns {ICollectionFilePath} the filtered collection names and related file paths
+	 * @returns {CollectionFilePath} the filtered collection names and related file paths
 	 */
 	private async loadCollectionsAvailableFromSourceAndFilterByCollectionNames(
 		source: 'files' | 'database',
 		folder: string,
 		collectionNameFilter?: string[]
 	) {
-		let allCollectionsWithFilePaths: ICollectionFilePath[] = [];
+		let allCollectionsWithFilePaths: CollectionFilePath[] = [];
 
 		// load all available collections from source
 		if (source === 'files') {
@@ -167,7 +167,7 @@ export class DatabaseManagementUc {
 			})
 			.map(async ({ collectionName, data }) => {
 				if (collectionName === systemsCollectionName) {
-					this.encryptSecretsInSystems(data as System[]);
+					this.encryptSecretsInSystems(data as SystemEntity[]);
 				}
 				await this.dropCollectionIfExists(collectionName);
 
@@ -348,11 +348,11 @@ export class DatabaseManagementUc {
 
 	private encryptSecrets(collectionName: string, jsonDocuments: unknown[]) {
 		if (collectionName === systemsCollectionName) {
-			this.encryptSecretsInSystems(jsonDocuments as System[]);
+			this.encryptSecretsInSystems(jsonDocuments as SystemEntity[]);
 		}
 	}
 
-	private encryptSecretsInSystems(systems: System[]) {
+	private encryptSecretsInSystems(systems: SystemEntity[]) {
 		systems.forEach((system) => {
 			if (system.oauthConfig) {
 				system.oauthConfig.clientSecret = this.defaultEncryptionService.encrypt(system.oauthConfig.clientSecret);
@@ -376,21 +376,21 @@ export class DatabaseManagementUc {
 	 */
 	private removeSecrets(collectionName: string, jsonDocuments: unknown[]) {
 		if (collectionName === systemsCollectionName) {
-			this.removeSecretsFromSystems(jsonDocuments as System[]);
+			this.removeSecretsFromSystems(jsonDocuments as SystemEntity[]);
 		}
 		if (collectionName === storageprovidersCollectionName) {
-			this.removeSecretsFromStorageproviders(jsonDocuments as StorageProvider[]);
+			this.removeSecretsFromStorageproviders(jsonDocuments as StorageProviderEntity[]);
 		}
 	}
 
-	private removeSecretsFromStorageproviders(storageProviders: StorageProvider[]) {
+	private removeSecretsFromStorageproviders(storageProviders: StorageProviderEntity[]) {
 		storageProviders.forEach((storageProvider) => {
 			storageProvider.accessKeyId = defaultSecretReplacementHintText;
 			storageProvider.secretAccessKey = defaultSecretReplacementHintText;
 		});
 	}
 
-	private removeSecretsFromSystems(systems: System[]) {
+	private removeSecretsFromSystems(systems: SystemEntity[]) {
 		systems.forEach((system) => {
 			if (system.oauthConfig) {
 				system.oauthConfig.clientSecret = defaultSecretReplacementHintText;

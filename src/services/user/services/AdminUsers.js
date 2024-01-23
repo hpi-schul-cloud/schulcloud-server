@@ -21,13 +21,13 @@ const { userModel } = require('../model');
 
 const getCurrentUserInfo = (id) => userModel.findById(id).select('schoolId').lean().exec();
 
-const getCurrentYear = (ref, schoolId) =>
+const getCurrentYearId = (ref, schoolId) =>
 	ref.app
 		.service('schools')
 		.get(schoolId, {
 			query: { $select: ['currentYear'] },
 		})
-		.then(({ currentYear }) => currentYear.toString());
+		.then(({ currentYear }) => currentYear._id.toString());
 
 const setSearchParametesIfExist = (clientQuery, query) => {
 	if (clientQuery.searchQuery && clientQuery.searchQuery.trim().length !== 0) {
@@ -78,7 +78,7 @@ class AdminUsers {
 
 			// fetch base data
 			const { schoolId } = await getCurrentUserInfo(currentUserId);
-			const schoolYearId = await getCurrentYear(this, schoolId);
+			const schoolYearId = await getCurrentYearId(this, schoolId);
 
 			const query = {
 				schoolId,
@@ -192,6 +192,7 @@ class AdminUsers {
 			await this.updateAccount(email, _id);
 		}
 
+		params.adapter = { multi: ['patch'] };
 		// _id is part of params and will be combined with the schoolId
 		const createdUsers = await this.prepareRoleback(email, _id, () =>
 			this.app.service('usersModel').patch(null, _data, params)

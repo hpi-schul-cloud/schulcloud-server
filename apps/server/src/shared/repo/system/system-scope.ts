@@ -1,7 +1,7 @@
-import { System } from '@shared/domain';
+import { SystemEntity } from '@shared/domain/entity';
 import { Scope } from '../scope';
 
-export class SystemScope extends Scope<System> {
+export class SystemScope extends Scope<SystemEntity> {
 	withLdapConfig(): SystemScope {
 		this.addQuery({ ldapConfig: { $ne: null } });
 		return this;

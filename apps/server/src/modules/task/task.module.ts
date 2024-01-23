@@ -1,22 +1,13 @@
-import { forwardRef, Module } from '@nestjs/common';
-import { CourseRepo, LessonRepo, SubmissionRepo, TaskRepo, UserRepo } from '@shared/repo';
-import { AuthorizationModule } from '@src/modules/authorization';
-import { CopyHelperModule } from '@src/modules/copy-helper';
-import { FilesStorageClientModule } from '@src/modules/files-storage-client';
+import { CopyHelperModule } from '@modules/copy-helper';
+import { FilesStorageClientModule } from '@modules/files-storage-client';
+import { Module } from '@nestjs/common';
+import { CourseRepo, SubmissionRepo, TaskRepo } from '@shared/repo';
+import { LoggerModule } from '@src/core/logger';
 import { SubmissionService, TaskCopyService, TaskService } from './service';
 
 @Module({
-	imports: [forwardRef(() => AuthorizationModule), FilesStorageClientModule, CopyHelperModule],
-	providers: [
-		TaskService,
-		TaskCopyService,
-		SubmissionService,
-		TaskRepo,
-		LessonRepo,
-		CourseRepo,
-		SubmissionRepo,
-		UserRepo,
-	],
+	imports: [FilesStorageClientModule, CopyHelperModule, LoggerModule],
+	providers: [TaskService, TaskCopyService, SubmissionService, TaskRepo, CourseRepo, SubmissionRepo],
 	exports: [TaskService, TaskCopyService, SubmissionService],
 })
 export class TaskModule {}

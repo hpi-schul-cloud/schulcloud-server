@@ -1,7 +1,8 @@
-import { Permission, Role } from '@shared/domain';
+import { RoleMapper } from '@modules/role/mapper/role.mapper';
+import { RoleDto } from '@modules/role/service/dto/role.dto';
+import { Role } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
 import { roleFactory, setupEntities } from '@shared/testing';
-import { RoleMapper } from '@src/modules/role/mapper/role.mapper';
-import { RoleDto } from '@src/modules/role/service/dto/role.dto';
 
 describe('RoleMapper', () => {
 	beforeAll(async () => {

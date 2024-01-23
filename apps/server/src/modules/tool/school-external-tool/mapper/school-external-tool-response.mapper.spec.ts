@@ -1,5 +1,9 @@
-import { schoolExternalToolFactory } from '@shared/testing/factory';
-import { ToolConfigurationStatusResponse } from '../../external-tool/controller/dto';
+import {
+	schoolExternalToolFactory,
+	schoolToolConfigurationStatusFactory,
+	schoolToolConfigurationStatusResponseFactory,
+} from '@shared/testing/factory';
+
 import { SchoolExternalToolResponse, SchoolExternalToolSearchListResponse } from '../controller/dto';
 import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolResponseMapper } from './school-external-tool-response.mapper';
@@ -11,20 +15,7 @@ describe('SchoolExternalToolResponseMapper', () => {
 		mapper = new SchoolExternalToolResponseMapper();
 	});
 
-	describe('mapToSearchListResponse is called', () => {
-		const setup = () => {
-			const do1: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-			const do2: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-
-			const dos: SchoolExternalTool[] = [do1, do2];
-
-			return {
-				dos,
-				do1,
-				do2,
-			};
-		};
-
+	describe('mapToSearchListResponse', () => {
 		it('should return a schoolExternalToolResponse', () => {
 			const response: SchoolExternalToolSearchListResponse = mapper.mapToSearchListResponse([]);
 
@@ -32,9 +23,22 @@ describe('SchoolExternalToolResponseMapper', () => {
 		});
 
 		describe('when parameter are given', () => {
+			const setup = () => {
+				const do1: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const do2: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				do2.status = undefined;
+
+				const dos: SchoolExternalTool[] = [do1, do2];
+
+				return {
+					dos,
+					do1,
+					do2,
+				};
+			};
+
 			it('should map domain objects correctly', () => {
 				const { dos, do1, do2 } = setup();
-				do2.status = undefined;
 
 				const response: SchoolExternalToolSearchListResponse = mapper.mapToSearchListResponse(dos);
 
@@ -52,7 +56,10 @@ describe('SchoolExternalToolResponseMapper', () => {
 									value: do1.parameters[0].value,
 								},
 							],
-							status: ToolConfigurationStatusResponse.LATEST,
+							status: schoolToolConfigurationStatusResponseFactory.build({
+								isOutdatedOnScopeSchool: false,
+								isDeactivated: false,
+							}),
 						},
 						{
 							id: do2.id as string,
@@ -66,7 +73,10 @@ describe('SchoolExternalToolResponseMapper', () => {
 									value: do2.parameters[0].value,
 								},
 							],
-							status: ToolConfigurationStatusResponse.UNKNOWN,
+							status: schoolToolConfigurationStatusFactory.build({
+								isOutdatedOnScopeSchool: false,
+								isDeactivated: false,
+							}),
 						},
 					])
 				);
@@ -74,11 +84,23 @@ describe('SchoolExternalToolResponseMapper', () => {
 		});
 
 		describe('when optional parameter are missing', () => {
-			it('should set defaults', () => {
-				const { dos, do1 } = setup();
+			const setup = () => {
+				const do1: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
 				do1.id = undefined;
 				do1.name = undefined;
 				do1.status = undefined;
+
+				const do2: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+
+				const dos: SchoolExternalTool[] = [do1, do2];
+
+				return {
+					dos,
+				};
+			};
+
+			it('should set defaults', () => {
+				const { dos } = setup();
 
 				const response: SchoolExternalToolSearchListResponse = mapper.mapToSearchListResponse(dos);
 
@@ -86,7 +108,10 @@ describe('SchoolExternalToolResponseMapper', () => {
 					expect.objectContaining({
 						id: '',
 						name: '',
-						status: ToolConfigurationStatusResponse.UNKNOWN,
+						status: schoolToolConfigurationStatusResponseFactory.build({
+							isOutdatedOnScopeSchool: false,
+							isDeactivated: false,
+						}),
 					})
 				);
 			});

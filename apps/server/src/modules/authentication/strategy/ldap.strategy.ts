@@ -1,11 +1,11 @@
+import { AccountDto } from '@modules/account/services/dto';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { System, User } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { SchoolRepo, SystemRepo, UserRepo } from '@shared/repo';
+import { LegacySchoolDo } from '@shared/domain/domainobject';
+import { SystemEntity, User } from '@shared/domain/entity';
+import { LegacySchoolRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { ErrorLoggable } from '@src/core/error/loggable/error.loggable';
 import { Logger } from '@src/core/logger';
-import { AccountDto } from '@src/modules/account/services/dto';
 import { Strategy } from 'passport-custom';
 import { LdapAuthorizationBodyParams } from '../controllers/dto';
 import { ICurrentUser } from '../interface';
@@ -16,8 +16,8 @@ import { LdapService } from '../services/ldap.service';
 @Injectable()
 export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 	constructor(
-		private readonly systemRepo: SystemRepo,
-		private readonly schoolRepo: SchoolRepo,
+		private readonly systemRepo: LegacySystemRepo,
+		private readonly schoolRepo: LegacySchoolRepo,
 		private readonly ldapService: LdapService,
 		private readonly authenticationService: AuthenticationService,
 		private readonly userRepo: UserRepo,
@@ -29,9 +29,9 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 	async validate(request: { body: LdapAuthorizationBodyParams }): Promise<ICurrentUser> {
 		const { username, password, systemId, schoolId } = this.extractParamsFromRequest(request);
 
-		const system: System = await this.systemRepo.findById(systemId);
+		const system: SystemEntity = await this.systemRepo.findById(systemId);
 
-		const school: SchoolDO = await this.schoolRepo.findById(schoolId);
+		const school: LegacySchoolDo = await this.schoolRepo.findById(schoolId);
 
 		if (!school.systems || !school.systems.includes(systemId)) {
 			throw new UnauthorizedException(`School ${schoolId} does not have the selected system ${systemId}`);
@@ -49,7 +49,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 
 		await this.checkCredentials(account, system, ldapDn, password);
 
-		const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(account.id, user, systemId);
+		const currentUser: ICurrentUser = CurrentUserMapper.userToICurrentUser(account.id, user, true, systemId);
 
 		return currentUser;
 	}
@@ -73,7 +73,12 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 		return value;
 	}
 
-	private async checkCredentials(account: AccountDto, system: System, ldapDn: string, password: string): Promise<void> {
+	private async checkCredentials(
+		account: AccountDto,
+		system: SystemEntity,
+		ldapDn: string,
+		password: string
+	): Promise<void> {
 		try {
 			await this.ldapService.checkLdapCredentials(system, ldapDn, password);
 		} catch (error) {
@@ -84,7 +89,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 		}
 	}
 
-	private async loadAccount(username: string, systemId: string, school: SchoolDO): Promise<AccountDto> {
+	private async loadAccount(username: string, systemId: string, school: LegacySchoolDo): Promise<AccountDto> {
 		const externalSchoolId = this.checkValue(school.externalId);
 
 		let account: AccountDto;
@@ -98,7 +103,7 @@ export class LdapStrategy extends PassportStrategy(Strategy, 'ldap') {
 			account = await this.authenticationService.loadAccount(`${externalSchoolId}/${username}`.toLowerCase(), systemId);
 		} catch (err: unknown) {
 			if (school.previousExternalId) {
-				this.logger.log(
+				this.logger.info(
 					new ErrorLoggable(
 						new Error(
 							`Could not find LDAP account with externalSchoolId ${externalSchoolId} for user ${username}. Trying to use the previousExternalId ${school.previousExternalId} next...`

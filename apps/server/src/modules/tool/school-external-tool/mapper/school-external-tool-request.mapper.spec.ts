@@ -1,3 +1,4 @@
+import { schoolToolConfigurationStatusFactory } from '@shared/testing';
 import { SchoolExternalToolRequestMapper } from './school-external-tool-request.mapper';
 import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
 import { CustomParameterEntryParam, SchoolExternalToolPostParams } from '../controller/dto';
@@ -5,9 +6,9 @@ import { CustomParameterEntryParam, SchoolExternalToolPostParams } from '../cont
 describe('SchoolExternalToolRequestMapper', () => {
 	const mapper: SchoolExternalToolRequestMapper = new SchoolExternalToolRequestMapper();
 
-	describe('mapSchoolExternalToolRequest is called', () => {
+	describe('mapSchoolExternalToolRequest', () => {
 		describe('when SchoolExternalToolPostParams is given', () => {
-			it('should return an schoolExternalTool', () => {
+			const setup = () => {
 				const param: CustomParameterEntryParam = {
 					name: 'name',
 					value: 'value',
@@ -17,7 +18,17 @@ describe('SchoolExternalToolRequestMapper', () => {
 					version: 1,
 					schoolId: 'schoolId',
 					parameters: [param],
+					isDeactivated: true,
 				};
+
+				return {
+					param,
+					params,
+				};
+			};
+
+			it('should return an schoolExternalTool', () => {
+				const { param, params } = setup();
 
 				const schoolExternalToolDto: SchoolExternalToolDto = mapper.mapSchoolExternalToolRequest(params);
 
@@ -26,18 +37,28 @@ describe('SchoolExternalToolRequestMapper', () => {
 					parameters: [{ name: param.name, value: param.value }],
 					schoolId: params.schoolId,
 					toolVersion: params.version,
+					status: schoolToolConfigurationStatusFactory.build({ isDeactivated: true }),
 				});
 			});
 		});
 
 		describe('when parameters are not given', () => {
-			it('should return an schoolExternalTool without parameter', () => {
+			const setup = () => {
 				const params: SchoolExternalToolPostParams = {
 					toolId: 'toolId',
 					version: 1,
 					schoolId: 'schoolId',
 					parameters: undefined,
+					isDeactivated: false,
 				};
+
+				return {
+					params,
+				};
+			};
+
+			it('should return an schoolExternalTool without parameter', () => {
+				const { params } = setup();
 
 				const schoolExternalToolDto: SchoolExternalToolDto = mapper.mapSchoolExternalToolRequest(params);
 
@@ -46,6 +67,7 @@ describe('SchoolExternalToolRequestMapper', () => {
 					parameters: [],
 					schoolId: params.schoolId,
 					toolVersion: params.version,
+					status: schoolToolConfigurationStatusFactory.build(),
 				});
 			});
 		});

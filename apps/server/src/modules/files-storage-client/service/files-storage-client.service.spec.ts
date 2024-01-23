@@ -155,4 +155,38 @@ describe('FilesStorageClientAdapterService', () => {
 			});
 		});
 	});
+
+	describe('removeCreatorIdFromFileRecords', () => {
+		describe('when creatorId is deleted successfully', () => {
+			const setup = () => {
+				const creatorId = new ObjectId().toHexString();
+
+				return { creatorId };
+			};
+
+			it('Should call client.removeCreatorIdFromFileRecords', async () => {
+				const { creatorId } = setup();
+
+				await service.removeCreatorIdFromFileRecords(creatorId);
+
+				expect(client.removeCreatorIdFromFileRecords).toHaveBeenCalledWith(creatorId);
+			});
+		});
+
+		describe('when error is thrown', () => {
+			const setup = () => {
+				const creatorId = new ObjectId().toHexString();
+
+				client.removeCreatorIdFromFileRecords.mockRejectedValue(new Error());
+
+				return { creatorId };
+			};
+
+			it('Should call error mapper if throw an error.', async () => {
+				const { creatorId } = setup();
+
+				await expect(service.removeCreatorIdFromFileRecords(creatorId)).rejects.toThrowError();
+			});
+		});
+	});
 });

@@ -1,6 +1,7 @@
+import { UserService } from '@modules/user';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { EntityId, UserDO } from '@shared/domain';
-import { UserService } from '@src/modules/user';
+import { UserDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import {
 	BBBBaseMeetingConfig,
 	BBBCreateConfigBuilder,
@@ -13,7 +14,7 @@ import {
 import { ErrorStatus } from '../error/error-status.enum';
 import { VideoConferenceOptions } from '../interface';
 import { VideoConferenceService } from '../service';
-import { IScopeInfo, ScopeRef } from './dto';
+import { ScopeInfo, ScopeRef } from './dto';
 
 @Injectable()
 export class VideoConferenceCreateUc {
@@ -38,11 +39,17 @@ export class VideoConferenceCreateUc {
 	}
 
 	private async create(currentUserId: EntityId, scope: ScopeRef, options: VideoConferenceOptions): Promise<void> {
+		/* need to be replace with
+		const [authorizableUser, scopeRessource]: [User, TeamEntity | Course] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.videoConferenceService.loadScopeRessources(scopeId, scope),
+		]);
+		*/
 		const user: UserDO = await this.userService.findById(currentUserId);
 
 		await this.verifyFeaturesEnabled(user.schoolId);
 
-		const scopeInfo: IScopeInfo = await this.videoConferenceService.getScopeInfo(currentUserId, scope.id, scope.scope);
+		const scopeInfo: ScopeInfo = await this.videoConferenceService.getScopeInfo(currentUserId, scope.id, scope.scope);
 
 		const bbbRole: BBBRole = await this.videoConferenceService.determineBbbRole(
 			currentUserId,
@@ -61,7 +68,7 @@ export class VideoConferenceCreateUc {
 	private prepareBBBCreateConfigBuilder(
 		scope: ScopeRef,
 		options: VideoConferenceOptions,
-		scopeInfo: IScopeInfo
+		scopeInfo: ScopeInfo
 	): BBBCreateConfigBuilder {
 		const configBuilder: BBBCreateConfigBuilder = new BBBCreateConfigBuilder({
 			name: this.videoConferenceService.sanitizeString(scopeInfo.title),

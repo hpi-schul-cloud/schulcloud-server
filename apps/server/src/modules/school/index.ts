@@ -1,2 +1,2 @@
-export * from './school.module';
-export * from './service';
+export { SchoolConfig } from './school.config';
+export { SchoolModule } from './school.module';

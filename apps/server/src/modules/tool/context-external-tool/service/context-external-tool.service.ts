@@ -1,54 +1,50 @@
-import { forwardRef, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolRepo } from '@shared/repo';
-import { AuthorizableReferenceType, AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
-import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
-import { ContextTypeMapper } from '../../common/mapper';
 import { ContextExternalTool, ContextRef } from '../domain';
+import { ContextExternalToolQuery } from '../uc/dto/context-external-tool.types';
+import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { ExternalTool } from '../../external-tool/domain';
+import { ExternalToolService } from '../../external-tool/service';
+import { SchoolExternalToolService } from '../../school-external-tool/service';
+import { RestrictedContextMismatchLoggable } from './restricted-context-mismatch-loggabble';
+import { CommonToolService } from '../../common/service';
+import { CustomParameter, CustomParameterEntry } from '../../common/domain';
 
 @Injectable()
 export class ContextExternalToolService {
 	constructor(
 		private readonly contextExternalToolRepo: ContextExternalToolRepo,
-		@Inject(forwardRef(() => AuthorizationService))
-		private readonly authorizationService: AuthorizationService
+		private readonly externalToolService: ExternalToolService,
+		private readonly schoolExternalToolService: SchoolExternalToolService,
+		private readonly commonToolService: CommonToolService
 	) {}
 
-	async findContextExternalTools(query: ContextExternalToolQuery): Promise<ContextExternalTool[]> {
+	public async findContextExternalTools(query: ContextExternalToolQuery): Promise<ContextExternalTool[]> {
 		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolRepo.find(query);
 
 		return contextExternalTools;
 	}
 
-	async getContextExternalToolById(contextExternalToolId: EntityId): Promise<ContextExternalTool> {
-		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolRepo.find({
-			id: contextExternalToolId,
-		});
+	public async findByIdOrFail(contextExternalToolId: EntityId): Promise<ContextExternalTool> {
+		const tool: ContextExternalTool = await this.contextExternalToolRepo.findById(contextExternalToolId);
 
-		if (contextExternalTools.length === 0) {
-			throw new NotFoundException(`ContextExternalTool with id ${contextExternalToolId} not found`);
-		}
-
-		return contextExternalTools[0];
+		return tool;
 	}
 
-	async createContextExternalTool(contextExternalTool: ContextExternalTool): Promise<ContextExternalTool> {
-		const newContextExternalTool: ContextExternalTool = new ContextExternalTool({
-			displayName: contextExternalTool.displayName,
-			contextRef: contextExternalTool.contextRef,
-			toolVersion: contextExternalTool.toolVersion,
-			parameters: contextExternalTool.parameters,
-			schoolToolRef: contextExternalTool.schoolToolRef,
-		});
+	public async findById(contextExternalToolId: EntityId): Promise<ContextExternalTool | null> {
+		const tool: ContextExternalTool | null = await this.contextExternalToolRepo.findByIdOrNull(contextExternalToolId);
 
-		const createdContextExternalTool: ContextExternalTool = await this.contextExternalToolRepo.save(
-			newContextExternalTool
-		);
-
-		return createdContextExternalTool;
+		return tool;
 	}
 
-	async deleteBySchoolExternalToolId(schoolExternalToolId: EntityId) {
+	public async saveContextExternalTool(contextExternalTool: ContextExternalTool): Promise<ContextExternalTool> {
+		const savedContextExternalTool: ContextExternalTool = await this.contextExternalToolRepo.save(contextExternalTool);
+
+		return savedContextExternalTool;
+	}
+
+	public async deleteBySchoolExternalToolId(schoolExternalToolId: EntityId) {
 		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolRepo.find({
 			schoolToolRef: {
 				schoolToolId: schoolExternalToolId,
@@ -58,37 +54,83 @@ export class ContextExternalToolService {
 		await this.contextExternalToolRepo.delete(contextExternalTools);
 	}
 
-	async deleteContextExternalTool(contextExternalTool: ContextExternalTool): Promise<void> {
+	public async deleteContextExternalTool(contextExternalTool: ContextExternalTool): Promise<void> {
 		await this.contextExternalToolRepo.delete(contextExternalTool);
 	}
 
-	public async ensureContextPermissions(
-		userId: EntityId,
-		contextExternalTool: ContextExternalTool,
-		context: AuthorizationContext
-	): Promise<void> {
-		if (contextExternalTool.id) {
-			await this.authorizationService.checkPermissionByReferences(
-				userId,
-				AuthorizableReferenceType.ContextExternalToolEntity,
-				contextExternalTool.id,
-				context
-			);
-		}
-
-		await this.authorizationService.checkPermissionByReferences(
-			userId,
-			ContextTypeMapper.mapContextTypeToAllowedAuthorizationEntityType(contextExternalTool.contextRef.type),
-			contextExternalTool.contextRef.id,
-			context
-		);
-	}
-
-	async findAllByContext(contextRef: ContextRef): Promise<ContextExternalTool[]> {
+	public async findAllByContext(contextRef: ContextRef): Promise<ContextExternalTool[]> {
 		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolRepo.find({
 			context: contextRef,
 		});
 
 		return contextExternalTools;
+	}
+
+	public async checkContextRestrictions(contextExternalTool: ContextExternalTool): Promise<void> {
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
+			contextExternalTool.schoolToolRef.schoolToolId
+		);
+
+		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
+
+		if (this.commonToolService.isContextRestricted(externalTool, contextExternalTool.contextRef.type)) {
+			throw new RestrictedContextMismatchLoggable(externalTool.name, contextExternalTool.contextRef.type);
+		}
+	}
+
+	public async copyContextExternalTool(
+		contextExternalTool: ContextExternalTool,
+		contextCopyId: EntityId
+	): Promise<ContextExternalTool> {
+		contextExternalTool.id = undefined;
+		contextExternalTool.contextRef.id = contextCopyId;
+
+		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(
+			contextExternalTool.schoolToolRef.schoolToolId
+		);
+		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
+
+		contextExternalTool.parameters.forEach((parameter: CustomParameterEntry): void => {
+			const isUnusedParameter = !externalTool.parameters?.find(
+				(param: CustomParameter): boolean => param.name === parameter.name
+			);
+			if (isUnusedParameter) {
+				this.deleteUnusedParameter(contextExternalTool, parameter.name);
+			}
+		});
+
+		externalTool.parameters?.forEach((parameter: CustomParameter): void => {
+			if (parameter.isProtected) {
+				this.deleteProtectedValues(contextExternalTool, parameter.name);
+			}
+		});
+
+		const copiedTool = await this.contextExternalToolRepo.save(contextExternalTool);
+
+		return copiedTool;
+	}
+
+	private deleteUnusedParameter(contextExternalTool: ContextExternalTool, unusedParameterName: string): void {
+		const unusedParameter: CustomParameterEntry | undefined = contextExternalTool.parameters.find(
+			(param: CustomParameterEntry): boolean => param.name === unusedParameterName
+		);
+
+		if (unusedParameter) {
+			const unusedParameterIndex: number = contextExternalTool.parameters.indexOf({
+				name: unusedParameter.name,
+				value: unusedParameter.value,
+			});
+			contextExternalTool.parameters.splice(unusedParameterIndex, 1);
+		}
+	}
+
+	private deleteProtectedValues(contextExternalTool: ContextExternalTool, protectedParameterName: string): void {
+		const protectedParameter: CustomParameterEntry | undefined = contextExternalTool.parameters.find(
+			(param: CustomParameterEntry): boolean => param.name === protectedParameterName
+		);
+
+		if (protectedParameter) {
+			protectedParameter.value = undefined;
+		}
 	}
 }

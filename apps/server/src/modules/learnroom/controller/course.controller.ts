@@ -1,14 +1,13 @@
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Controller, Get, NotFoundException, Param, Query, Res, StreamableFile } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { PaginationParams } from '@shared/controller/';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Response } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { CourseUc } from '../uc/course.uc';
-import { CourseExportUc } from '../uc/course-export.uc';
-import { CourseMetadataListResponse, CourseUrlParams, CourseQueryParams } from './dto';
+import { ApiTags } from '@nestjs/swagger';
+import { PaginationParams } from '@shared/controller/';
+import { Response } from 'express';
 import { CourseMapper } from '../mapper/course.mapper';
+import { CourseExportUc } from '../uc/course-export.uc';
+import { CourseUc } from '../uc/course.uc';
+import { CourseMetadataListResponse, CourseQueryParams, CourseUrlParams } from './dto';
 
 @ApiTags('Courses')
 @Authenticate('jwt')
@@ -47,13 +46,5 @@ export class CourseController {
 			'Content-Disposition': 'attachment;',
 		});
 		return new StreamableFile(result);
-	}
-
-	@Get(':courseId')
-	async getCourse(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: CourseUrlParams) {
-		const course = await this.courseUc.getCourse(currentUser.userId, urlParams.courseId);
-		const response = CourseMapper.mapToCourseResponse(course);
-
-		return response;
 	}
 }

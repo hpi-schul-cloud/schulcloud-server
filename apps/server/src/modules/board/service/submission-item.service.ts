@@ -1,6 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { EntityId, SubmissionContainerElement, SubmissionItem } from '@shared/domain';
+import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { ObjectId } from 'bson';
+
+import { ValidationError } from '@shared/common';
+import { isSubmissionContainerElement, SubmissionContainerElement, SubmissionItem } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
+
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 
@@ -36,5 +40,20 @@ export class SubmissionItemService {
 		await this.boardDoRepo.save(submissionContainer.children, submissionContainer);
 
 		return submissionItem;
+	}
+
+	async update(submissionItem: SubmissionItem, completed: boolean): Promise<void> {
+		const submissionContainterElement = await this.boardDoRepo.findParentOfId(submissionItem.id);
+		if (!isSubmissionContainerElement(submissionContainterElement)) {
+			throw new UnprocessableEntityException();
+		}
+
+		const now = new Date();
+		if (submissionContainterElement.dueDate && submissionContainterElement.dueDate < now) {
+			throw new ValidationError('not allowed to save anymore');
+		}
+		submissionItem.completed = completed;
+
+		await this.boardDoRepo.save(submissionItem, submissionContainterElement);
 	}
 }

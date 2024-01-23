@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
 import jwt from 'jsonwebtoken';
+import { IdTokenExtractionFailureLoggableException } from '@src/modules/oauth/loggable';
 import {
 	ExternalUserDto,
 	OauthDataDto,
@@ -83,7 +83,7 @@ describe('OidcMockProvisioningStrategy', () => {
 
 				const result: Promise<OauthDataDto> = strategy.getData(input);
 
-				await expect(result).rejects.toThrow(OAuthSSOError);
+				await expect(result).rejects.toThrow(new IdTokenExtractionFailureLoggableException('external_sub'));
 			});
 
 			it('should throw error when there is no idToken', async () => {
@@ -92,7 +92,7 @@ describe('OidcMockProvisioningStrategy', () => {
 
 				const result: Promise<OauthDataDto> = strategy.getData(input);
 
-				await expect(result).rejects.toThrow(OAuthSSOError);
+				await expect(result).rejects.toThrow(new IdTokenExtractionFailureLoggableException('external_sub'));
 			});
 		});
 	});

@@ -1,12 +1,11 @@
-import { ContextExternalToolPostParams } from '../controller/dto';
-import { CustomParameterEntryParam } from '../../school-external-tool/controller/dto';
-import { ContextExternalToolDto } from '../uc/dto/context-external-tool.types';
 import { CustomParameterEntry } from '../../common/domain';
+import { CustomParameterEntryParam } from '../../school-external-tool/controller/dto';
+import { ContextExternalToolPostParams } from '../controller/dto';
+import { ContextExternalToolDto } from '../uc/dto/context-external-tool.types';
 
 export class ContextExternalToolRequestMapper {
 	static mapContextExternalToolRequest(request: ContextExternalToolPostParams): ContextExternalToolDto {
 		return {
-			id: '',
 			schoolToolRef: {
 				schoolToolId: request.schoolToolId,
 			},
@@ -26,7 +25,7 @@ export class ContextExternalToolRequestMapper {
 		return customParameterParams.map((customParameterParam: CustomParameterEntryParam) => {
 			return {
 				name: customParameterParam.name,
-				value: customParameterParam.value,
+				value: customParameterParam.value || undefined,
 			};
 		});
 	}

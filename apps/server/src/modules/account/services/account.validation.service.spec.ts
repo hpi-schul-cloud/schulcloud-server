@@ -1,8 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import { Account, EntityId, Permission, Role, RoleName, User } from '@shared/domain';
+import { Account, Role, User } from '@shared/domain/entity';
+import { Permission, RoleName } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
-import { accountFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
+import { accountFactory, setupEntities, systemEntityFactory, userFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountValidationService } from './account.validation.service';
@@ -133,8 +135,8 @@ describe('AccountValidationService', () => {
 		mockOtherTeacherAccount = accountFactory.buildWithId({
 			userId: mockOtherTeacherUser.id,
 		});
-		const externalSystemA = systemFactory.buildWithId();
-		const externalSystemB = systemFactory.buildWithId();
+		const externalSystemA = systemEntityFactory.buildWithId();
+		const externalSystemB = systemEntityFactory.buildWithId();
 		mockExternalUserAccount = accountFactory.buildWithId({
 			userId: mockExternalUser.id,
 			username: 'unique.within@system',

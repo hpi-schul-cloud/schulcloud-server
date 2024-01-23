@@ -1,14 +1,17 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { IdentityManagementService } from '@infra/identity-management/identity-management.service';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AccountEntityToDtoMapper } from '@modules/account/mapper';
+import { AccountDto } from '@modules/account/services/dto';
+import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import { Account, EntityId, Permission, Role, RoleName, School, User } from '@shared/domain';
-import { IdentityManagementService } from '@shared/infra/identity-management/identity-management.service';
+import { Account, Role, SchoolEntity, User } from '@shared/domain/entity';
+
+import { Permission, RoleName } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
-import { AccountEntityToDtoMapper } from '@src/modules/account/mapper';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { IServerConfig } from '@src/modules/server';
 import bcrypt from 'bcryptjs';
 import { LegacyLogger } from '../../../core/logger';
 import { AccountRepo } from '../repo/account.repo';
@@ -25,7 +28,7 @@ describe('AccountDbService', () => {
 
 	const defaultPassword = 'DummyPasswd!1';
 
-	let mockSchool: School;
+	let mockSchool: SchoolEntity;
 
 	let mockTeacherUser: User;
 	let mockStudentUser: User;
@@ -117,7 +120,7 @@ describe('AccountDbService', () => {
 				},
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService<IServerConfig, true>>(),
+					useValue: createMock<ConfigService<ServerConfig, true>>(),
 				},
 				{
 					provide: IdentityManagementService,

@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Card, ContentElementType } from '@shared/domain';
+import { Card, ContentElementType } from '@shared/domain/domainobject';
 import { setupEntities } from '@shared/testing';
 import {
 	cardFactory,
@@ -88,7 +88,8 @@ describe(CardService.name, () => {
 			};
 
 			it('should call the card repository', async () => {
-				const { cardIds } = setup();
+				const { cards, cardIds } = setup();
+				boardDoRepo.findByIds.mockResolvedValueOnce(cards);
 
 				await service.findByIds(cardIds);
 

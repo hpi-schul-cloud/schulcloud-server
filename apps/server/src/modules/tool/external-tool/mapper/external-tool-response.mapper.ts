@@ -8,16 +8,14 @@ import {
 	CustomParameterType,
 	CustomParameterTypeParams,
 } from '../../common/enum';
-import { statusMapping } from '../../school-external-tool/mapper';
 import {
 	BasicToolConfigResponse,
 	CustomParameterResponse,
 	ExternalToolResponse,
 	Lti11ToolConfigResponse,
 	Oauth2ToolConfigResponse,
-	ToolReferenceResponse,
 } from '../controller/dto';
-import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig, ToolReference } from '../domain';
+import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
 
 const scopeMapping: Record<CustomParameterScope, CustomParameterScopeTypeParams> = {
 	[CustomParameterScope.GLOBAL]: CustomParameterScopeTypeParams.GLOBAL,
@@ -65,8 +63,10 @@ export class ExternalToolResponseMapper {
 			config: mappedConfig,
 			parameters: mappedCustomParameter,
 			isHidden: externalTool.isHidden,
+			isDeactivated: externalTool.isDeactivated,
 			openNewTab: externalTool.openNewTab,
 			version: externalTool.version,
+			restrictToContexts: externalTool.restrictToContexts,
 		});
 	}
 
@@ -95,27 +95,8 @@ export class ExternalToolResponseMapper {
 				location: locationMapping[customParameterDO.location],
 				type: typeMapping[customParameterDO.type],
 				isOptional: customParameterDO.isOptional,
+				isProtected: customParameterDO.isProtected,
 			};
 		});
-	}
-
-	static mapToToolReferenceResponses(toolReferences: ToolReference[]): ToolReferenceResponse[] {
-		const toolReferenceResponses: ToolReferenceResponse[] = toolReferences.map((toolReference: ToolReference) =>
-			this.mapToToolReferenceResponse(toolReference)
-		);
-
-		return toolReferenceResponses;
-	}
-
-	private static mapToToolReferenceResponse(toolReference: ToolReference): ToolReferenceResponse {
-		const response = new ToolReferenceResponse({
-			contextToolId: toolReference.contextToolId,
-			displayName: toolReference.displayName,
-			logoUrl: toolReference.logoUrl,
-			openInNewTab: toolReference.openInNewTab,
-			status: statusMapping[toolReference.status],
-		});
-
-		return response;
 	}
 }

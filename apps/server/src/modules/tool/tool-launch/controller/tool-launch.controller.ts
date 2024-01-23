@@ -1,3 +1,4 @@
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Controller, Get, Param } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
@@ -7,12 +8,10 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { ToolLaunchUc } from '../uc';
-import { ToolLaunchParams, ToolLaunchRequestResponse } from './dto';
 import { ToolLaunchMapper } from '../mapper';
 import { ToolLaunchRequest } from '../types';
+import { ToolLaunchUc } from '../uc';
+import { ToolLaunchParams, ToolLaunchRequestResponse } from './dto';
 
 @ApiTags('Tool')
 @Authenticate('jwt')

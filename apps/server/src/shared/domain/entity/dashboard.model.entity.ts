@@ -56,7 +56,7 @@ export class DashboardGridElementModel extends BaseEntityWithTimestamps {
 	dashboard: IdentifiedReference<DashboardModelEntity>;
 }
 
-export interface IDashboardModelProperties {
+export interface DashboardModelProperties {
 	id: string;
 	user: User;
 	gridElements?: DashboardGridElementModel[];
@@ -64,7 +64,7 @@ export interface IDashboardModelProperties {
 
 @Entity({ tableName: 'dashboard' })
 export class DashboardModelEntity extends BaseEntityWithTimestamps {
-	constructor(props: IDashboardModelProperties) {
+	constructor(props: DashboardModelProperties) {
 		super();
 		this._id = ObjectId.createFromHexString(props.id);
 		this.id = props.id;

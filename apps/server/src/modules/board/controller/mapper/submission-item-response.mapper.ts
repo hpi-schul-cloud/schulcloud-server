@@ -1,5 +1,12 @@
-import { SubmissionItem } from '@shared/domain';
-import { SubmissionItemResponse, TimestampsResponse } from '../dto';
+import {
+	FileElement,
+	isSubmissionItemContent,
+	RichTextElement,
+	SubmissionItem,
+	UserBoardRoles,
+} from '@shared/domain/domainobject';
+import { SubmissionItemResponse, SubmissionsResponse, TimestampsResponse, UserDataResponse } from '../dto';
+import { ContentElementResponseFactory } from './content-element-response.factory';
 
 export class SubmissionItemResponseMapper {
 	private static instance: SubmissionItemResponseMapper;
@@ -12,14 +19,39 @@ export class SubmissionItemResponseMapper {
 		return SubmissionItemResponseMapper.instance;
 	}
 
-	public mapToResponse(submission: SubmissionItem): SubmissionItemResponse {
+	public mapToResponse(submissionItems: SubmissionItem[], users: UserBoardRoles[]): SubmissionsResponse {
+		const submissionItemsResponse: SubmissionItemResponse[] = submissionItems.map((item) =>
+			this.mapSubmissionItemToResponse(item)
+		);
+		const usersResponse: UserDataResponse[] = users.map((user) => this.mapUsersToResponse(user));
+
+		const response = new SubmissionsResponse(submissionItemsResponse, usersResponse);
+
+		return response;
+	}
+
+	public mapSubmissionItemToResponse(submissionItem: SubmissionItem): SubmissionItemResponse {
+		const children: (FileElement | RichTextElement)[] = submissionItem.children.filter(isSubmissionItemContent);
 		const result = new SubmissionItemResponse({
-			id: submission.id,
-			timestamps: new TimestampsResponse({ lastUpdatedAt: submission.updatedAt, createdAt: submission.createdAt }),
-			completed: submission.completed,
-			userId: submission.userId,
+			completed: submissionItem.completed,
+			id: submissionItem.id,
+			timestamps: new TimestampsResponse({
+				lastUpdatedAt: submissionItem.updatedAt,
+				createdAt: submissionItem.createdAt,
+			}),
+			userId: submissionItem.userId,
+			elements: children.map((element) => ContentElementResponseFactory.mapSubmissionContentToResponse(element)),
 		});
 
+		return result;
+	}
+
+	private mapUsersToResponse(user: UserBoardRoles) {
+		const result = new UserDataResponse({
+			userId: user.userId,
+			firstName: user.firstName || '',
+			lastName: user.lastName || '',
+		});
 		return result;
 	}
 }

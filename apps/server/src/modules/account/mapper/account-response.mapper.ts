@@ -1,5 +1,5 @@
-import { Account } from '@shared/domain';
-import { AccountDto } from '@src/modules/account/services/dto/account.dto';
+import { AccountDto } from '@modules/account/services/dto/account.dto';
+import { Account } from '@shared/domain/entity';
 import { AccountResponse } from '../controller/dto';
 
 export class AccountResponseMapper {
@@ -9,6 +9,7 @@ export class AccountResponseMapper {
 			userId: account.userId?.toString(),
 			activated: account.activated,
 			username: account.username,
+			updatedAt: account.updatedAt,
 		});
 	}
 
@@ -18,6 +19,7 @@ export class AccountResponseMapper {
 			userId: account.userId,
 			activated: account.activated,
 			username: account.username,
+			updatedAt: account.updatedAt,
 		});
 	}
 }

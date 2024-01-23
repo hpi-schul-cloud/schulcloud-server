@@ -1,27 +1,24 @@
-import { EntityName, QueryOrderMap } from '@mikro-orm/core';
+import { EntityData, EntityName, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ToolConfigType } from '@modules/tool/common/enum';
+import { ExternalToolSearchQuery } from '@modules/tool/common/interface';
+import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { IFindOptions, IPagination, Page, SortOrder } from '@shared/domain';
+import { Page } from '@shared/domain/domainobject';
+import { IFindOptions, Pagination, SortOrder } from '@shared/domain/interface';
 import { BaseDORepo, ExternalToolRepoMapper, ExternalToolSortingMapper, Scope } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { ToolConfigType } from '@src/modules/tool/common/enum';
-import { ExternalToolSearchQuery } from '@src/modules/tool/common/interface';
-import { ExternalTool } from '@src/modules/tool/external-tool/domain';
-import { ExternalToolEntity, IExternalToolProperties } from '@src/modules/tool/external-tool/entity';
 import { ExternalToolScope } from './external-tool.scope';
 
 @Injectable()
-export class ExternalToolRepo extends BaseDORepo<ExternalTool, ExternalToolEntity, IExternalToolProperties> {
+export class ExternalToolRepo extends BaseDORepo<ExternalTool, ExternalToolEntity> {
 	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
 
 	get entityName(): EntityName<ExternalToolEntity> {
 		return ExternalToolEntity;
-	}
-
-	entityFactory(props: IExternalToolProperties): ExternalToolEntity {
-		return new ExternalToolEntity(props);
 	}
 
 	async findByName(name: string): Promise<ExternalTool | null> {
@@ -52,7 +49,7 @@ export class ExternalToolRepo extends BaseDORepo<ExternalTool, ExternalToolEntit
 	}
 
 	async find(query: ExternalToolSearchQuery, options?: IFindOptions<ExternalTool>): Promise<Page<ExternalTool>> {
-		const pagination: IPagination = options?.pagination || {};
+		const pagination: Pagination = options?.pagination || {};
 		const order: QueryOrderMap<ExternalToolEntity> = ExternalToolSortingMapper.mapDOSortOrderToQueryOrder(
 			options?.order || {}
 		);
@@ -82,10 +79,14 @@ export class ExternalToolRepo extends BaseDORepo<ExternalTool, ExternalToolEntit
 	}
 
 	mapEntityToDO(entity: ExternalToolEntity): ExternalTool {
-		return ExternalToolRepoMapper.mapEntityToDO(entity);
+		const domainObject = ExternalToolRepoMapper.mapEntityToDO(entity);
+
+		return domainObject;
 	}
 
-	mapDOToEntityProperties(entityDO: ExternalTool): IExternalToolProperties {
-		return ExternalToolRepoMapper.mapDOToEntityProperties(entityDO);
+	mapDOToEntityProperties(entityDO: ExternalTool): EntityData<ExternalToolEntity> {
+		const entity = ExternalToolRepoMapper.mapDOToEntityProperties(entityDO);
+
+		return entity;
 	}
 }

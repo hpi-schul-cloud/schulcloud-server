@@ -1,3 +1,3 @@
 export * from './external-tool.do';
 export * from './config';
-export * from './tool-reference';
+export * from './external-tool-metadata';

@@ -1,15 +1,15 @@
-import { OidcConfig, System } from '@shared/domain';
-import { OidcConfigDto } from '@src/modules/system/service/dto/oidc-config.dto';
+import { OidcConfigDto } from '@modules/system/service/dto/oidc-config.dto';
+import { OidcConfigEntity, SystemEntity } from '@shared/domain/entity';
 
 export class SystemOidcMapper {
-	static mapFromEntityToDto(entity: System): OidcConfigDto | undefined {
+	static mapFromEntityToDto(entity: SystemEntity): OidcConfigDto | undefined {
 		if (entity.oidcConfig) {
 			return SystemOidcMapper.mapFromOidcConfigEntityToDto(entity.id, entity.oidcConfig);
 		}
 		return undefined;
 	}
 
-	static mapFromOidcConfigEntityToDto(systemId: string, oidcConfig: OidcConfig): OidcConfigDto {
+	static mapFromOidcConfigEntityToDto(systemId: string, oidcConfig: OidcConfigEntity): OidcConfigDto {
 		return new OidcConfigDto({
 			parentSystemId: systemId,
 			clientId: oidcConfig.clientId,
@@ -23,7 +23,7 @@ export class SystemOidcMapper {
 		});
 	}
 
-	static mapFromEntitiesToDtos(entities: System[]): OidcConfigDto[] {
+	static mapFromEntitiesToDtos(entities: SystemEntity[]): OidcConfigDto[] {
 		return entities
 			.map((entity) => this.mapFromEntityToDto(entity))
 			.filter((entity): entity is OidcConfigDto => entity !== undefined);

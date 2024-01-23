@@ -1,6 +1,6 @@
-import { Account } from '@shared/domain';
-import { AccountDto } from '@src/modules/account/services/dto/account.dto';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AccountDto } from '@modules/account/services/dto/account.dto';
+import { Account } from '@shared/domain/entity';
 import { AccountResponseMapper } from '.';
 
 describe('AccountResponseMapper', () => {
@@ -21,6 +21,7 @@ describe('AccountResponseMapper', () => {
 			expect(ret.userId).toBe(testEntity.userId?.toString());
 			expect(ret.activated).toBe(testEntity.activated);
 			expect(ret.username).toBe(testEntity.username);
+			expect(ret.updatedAt).toBe(testEntity.updatedAt);
 		});
 
 		it('should ignore missing userId', () => {
@@ -55,6 +56,7 @@ describe('AccountResponseMapper', () => {
 			expect(ret.userId).toBe(testDto.userId?.toString());
 			expect(ret.activated).toBe(testDto.activated);
 			expect(ret.username).toBe(testDto.username);
+			expect(ret.updatedAt).toBe(testDto.updatedAt);
 		});
 	});
 });

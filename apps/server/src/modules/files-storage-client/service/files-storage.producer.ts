@@ -1,83 +1,64 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { EntityId } from '@shared/domain';
-import { RpcMessage } from '@shared/infra/rabbitmq/rpc-message';
-import { LegacyLogger } from '@src/core/logger';
 import {
+	CopyFileDO,
+	CopyFilesOfParentParams,
+	FileDO,
+	FileRecordParams,
 	FilesStorageEvents,
 	FilesStorageExchange,
-	ICopyFileDO,
-	ICopyFilesOfParentParams,
-	IFileDO,
-	IFileRecordParams,
-} from '@src/shared/infra/rabbitmq';
-import { IFilesStorageClientConfig } from '../interfaces';
-import { ErrorMapper } from '../mapper/error.mapper';
+	RpcMessageProducer,
+} from '@infra/rabbitmq';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { EntityId } from '@shared/domain/types';
+import { LegacyLogger } from '@src/core/logger';
+import { FilesStorageClientConfig } from '../interfaces';
 
 @Injectable()
-export class FilesStorageProducer {
-	private readonly timeout = 0;
-
+export class FilesStorageProducer extends RpcMessageProducer {
 	constructor(
+		protected readonly amqpConnection: AmqpConnection,
 		private readonly logger: LegacyLogger,
-		private readonly amqpConnection: AmqpConnection,
-		private readonly configService: ConfigService<IFilesStorageClientConfig, true>
+		protected readonly configService: ConfigService<FilesStorageClientConfig, true>
 	) {
+		super(amqpConnection, FilesStorageExchange, configService.get('INCOMING_REQUEST_TIMEOUT_COPY_API'));
 		this.logger.setContext(FilesStorageProducer.name);
-		this.timeout = this.configService.get('INCOMING_REQUEST_TIMEOUT_COPY_API');
 	}
 
-	async copyFilesOfParent(payload: ICopyFilesOfParentParams): Promise<ICopyFileDO[]> {
+	async copyFilesOfParent(payload: CopyFilesOfParentParams): Promise<CopyFileDO[]> {
 		this.logger.debug({ action: 'copyFilesOfParent:started', payload });
-		const response = await this.amqpConnection.request<RpcMessage<ICopyFileDO[]>>(
-			this.createRequest(FilesStorageEvents.COPY_FILES_OF_PARENT, payload)
-		);
+		const response = await this.request<CopyFileDO[]>(FilesStorageEvents.COPY_FILES_OF_PARENT, payload);
 
 		this.logger.debug({ action: 'copyFilesOfParent:finished', payload });
 
-		this.checkError(response);
-		return response.message || [];
+		return response;
 	}
 
-	async listFilesOfParent(payload: IFileRecordParams): Promise<IFileDO[]> {
+	async listFilesOfParent(payload: FileRecordParams): Promise<FileDO[]> {
 		this.logger.debug({ action: 'listFilesOfParent:started', payload });
-		const response = await this.amqpConnection.request<RpcMessage<IFileDO[]>>(
-			this.createRequest(FilesStorageEvents.LIST_FILES_OF_PARENT, payload)
-		);
+		const response = await this.request<FileDO[]>(FilesStorageEvents.LIST_FILES_OF_PARENT, payload);
 
 		this.logger.debug({ action: 'listFilesOfParent:finished', payload });
 
-		this.checkError(response);
-		return response.message || [];
+		return response;
 	}
 
-	async deleteFilesOfParent(payload: EntityId): Promise<IFileDO[]> {
+	async deleteFilesOfParent(payload: EntityId): Promise<FileDO[]> {
 		this.logger.debug({ action: 'deleteFilesOfParent:started', payload });
-		const response = await this.amqpConnection.request<RpcMessage<IFileDO[]>>(
-			this.createRequest(FilesStorageEvents.DELETE_FILES_OF_PARENT, payload)
-		);
+		const response = await this.request<FileDO[]>(FilesStorageEvents.DELETE_FILES_OF_PARENT, payload);
 
 		this.logger.debug({ action: 'deleteFilesOfParent:finished', payload });
 
-		this.checkError(response);
-		return response.message || [];
+		return response;
 	}
 
-	private checkError(response: RpcMessage<unknown>) {
-		const { error } = response;
-		if (error) {
-			const domainError = ErrorMapper.mapErrorToDomainError(error);
-			throw domainError;
-		}
-	}
+	async removeCreatorIdFromFileRecords(payload: EntityId): Promise<FileDO[]> {
+		this.logger.debug({ action: 'removeCreatorIdFromFileRecords:started', payload });
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+		const response = await this.request<FileDO[]>(FilesStorageEvents.REMOVE_CREATORID_OF_FILES, payload);
 
-	private createRequest(event: FilesStorageEvents, payload: IFileRecordParams | ICopyFilesOfParentParams | EntityId) {
-		return {
-			exchange: FilesStorageExchange,
-			routingKey: event,
-			payload,
-			timeout: this.timeout,
-		};
+		this.logger.debug({ action: 'removeCreatorIdFromFileRecords:finished', payload });
+
+		return response;
 	}
 }

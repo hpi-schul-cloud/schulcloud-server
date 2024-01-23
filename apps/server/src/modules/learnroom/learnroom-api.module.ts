@@ -1,8 +1,9 @@
+import { AuthorizationModule } from '@modules/authorization';
+import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
+import { CopyHelperModule } from '@modules/copy-helper';
+import { LessonModule } from '@modules/lesson';
 import { Module } from '@nestjs/common';
-import { BoardRepo, CourseRepo, DashboardModelMapper, DashboardRepo, LessonRepo, UserRepo } from '@shared/repo';
-import { AuthorizationModule } from '@src/modules/authorization';
-import { CopyHelperModule } from '@src/modules/copy-helper';
-import { LessonModule } from '@src/modules/lesson';
+import { BoardRepo, CourseRepo, DashboardModelMapper, DashboardRepo, UserRepo } from '@shared/repo';
 import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
 import { RoomsController } from './controller/rooms.controller';
@@ -20,7 +21,7 @@ import {
 } from './uc';
 
 @Module({
-	imports: [AuthorizationModule, LessonModule, CopyHelperModule, LearnroomModule],
+	imports: [AuthorizationModule, LessonModule, CopyHelperModule, LearnroomModule, AuthorizationReferenceModule],
 	controllers: [DashboardController, CourseController, RoomsController],
 	providers: [
 		DashboardUc,
@@ -41,7 +42,6 @@ import {
 		CourseRepo,
 		UserRepo,
 		BoardRepo,
-		LessonRepo,
 	],
 })
 export class LearnroomApiModule {}

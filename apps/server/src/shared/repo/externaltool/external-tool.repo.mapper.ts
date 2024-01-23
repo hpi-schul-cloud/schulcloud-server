@@ -1,21 +1,16 @@
 import { UnprocessableEntityException } from '@nestjs/common';
-import { CustomParameterEntryEntity } from '@src/modules/tool/common/entity';
+import { CustomParameter, CustomParameterEntry } from '@modules/tool/common/domain';
+import { CustomParameterEntryEntity } from '@modules/tool/common/entity';
+import { ToolConfigType } from '@modules/tool/common/enum';
+import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '@modules/tool/external-tool/domain';
 import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,
 	ExternalToolEntity,
-	IExternalToolProperties,
 	Lti11ToolConfigEntity,
 	Oauth2ToolConfigEntity,
-} from '@src/modules/tool/external-tool/entity';
-import {
-	BasicToolConfig,
-	ExternalTool,
-	Lti11ToolConfig,
-	Oauth2ToolConfig,
-} from '@src/modules/tool/external-tool/domain';
-import { ToolConfigType } from '@src/modules/tool/common/enum';
-import { CustomParameter, CustomParameterEntry } from '@src/modules/tool/common/domain';
+} from '@modules/tool/external-tool/entity';
+import { EntityData } from '@mikro-orm/core';
 
 // TODO: maybe rename because of usage in external tool repo and school external tool repo
 export class ExternalToolRepoMapper {
@@ -41,11 +36,14 @@ export class ExternalToolRepoMapper {
 			name: entity.name,
 			url: entity.url,
 			logoUrl: entity.logoUrl,
+			logo: entity.logoBase64,
 			config,
 			parameters: this.mapCustomParametersToDOs(entity.parameters || []),
 			isHidden: entity.isHidden,
+			isDeactivated: entity.isDeactivated,
 			openNewTab: entity.openNewTab,
 			version: entity.version,
+			restrictToContexts: entity.restrictToContexts,
 		});
 	}
 
@@ -74,10 +72,11 @@ export class ExternalToolRepoMapper {
 			lti_message_type: lti11Config.lti_message_type,
 			resource_link_id: lti11Config.resource_link_id,
 			privacy_permission: lti11Config.privacy_permission,
+			launch_presentation_locale: lti11Config.launch_presentation_locale,
 		});
 	}
 
-	static mapDOToEntityProperties(entityDO: ExternalTool): IExternalToolProperties {
+	static mapDOToEntityProperties(entityDO: ExternalTool): EntityData<ExternalToolEntity> {
 		let config: BasicToolConfigEntity | Oauth2ToolConfigEntity | Lti11ToolConfigEntity;
 		switch (entityDO.config.type) {
 			case ToolConfigType.BASIC:
@@ -98,11 +97,14 @@ export class ExternalToolRepoMapper {
 			name: entityDO.name,
 			url: entityDO.url,
 			logoUrl: entityDO.logoUrl,
+			logoBase64: entityDO.logo,
 			config,
 			parameters: this.mapCustomParameterDOsToEntities(entityDO.parameters ?? []),
 			isHidden: entityDO.isHidden,
+			isDeactivated: entityDO.isDeactivated,
 			openNewTab: entityDO.openNewTab,
 			version: entityDO.version,
+			restrictToContexts: entityDO.restrictToContexts,
 		};
 	}
 
@@ -131,6 +133,7 @@ export class ExternalToolRepoMapper {
 			lti_message_type: lti11Config.lti_message_type,
 			resource_link_id: lti11Config.resource_link_id,
 			privacy_permission: lti11Config.privacy_permission,
+			launch_presentation_locale: lti11Config.launch_presentation_locale,
 		});
 	}
 
@@ -148,6 +151,7 @@ export class ExternalToolRepoMapper {
 					location: param.location,
 					type: param.type,
 					isOptional: param.isOptional,
+					isProtected: param.isProtected,
 				})
 		);
 	}
@@ -166,6 +170,7 @@ export class ExternalToolRepoMapper {
 					location: param.location,
 					type: param.type,
 					isOptional: param.isOptional,
+					isProtected: param.isProtected,
 				})
 		);
 	}

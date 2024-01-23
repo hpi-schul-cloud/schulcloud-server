@@ -1,7 +1,8 @@
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { EntityId, CourseGroup, Course } from '@shared/domain';
+import { Course, CourseGroup } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { courseFactory, courseGroupFactory } from '@shared/testing';
 import { CourseGroupRepo } from './coursegroup.repo';
 
@@ -118,6 +119,65 @@ describe('course group repo', () => {
 			const [result, count] = await repo.findByCourseIds([course2.id]);
 			expect(checkEqualIds(result, courseGroups)).toEqual(true);
 			expect(count).toEqual(3);
+		});
+	});
+
+	describe('findByUserId', () => {
+		describe('when user is existing', () => {
+			const setup = async () => {
+				// Arrange
+				const course = courseFactory.build();
+				const courseGroup1 = courseGroupFactory.studentsWithId(3).build({ course });
+				const courseGroup2 = courseGroupFactory.build({ course });
+				const userId = courseGroup1.students[0].id;
+				await em.persistAndFlush([courseGroup1, courseGroup2]);
+
+				return {
+					userId,
+				};
+			};
+
+			it('should return courseGroup with userId', async () => {
+				const { userId } = await setup();
+
+				// Act
+				const [result, count] = await repo.findByUserId(userId);
+
+				expect(count).toEqual(1);
+				expect(result[0].students[0].id).toEqual(userId);
+			});
+		});
+	});
+
+	describe('update courseGroup', () => {
+		describe('when user is existing', () => {
+			const setup = async () => {
+				// Arrange
+				const course = courseFactory.build();
+				const courseGroup1 = courseGroupFactory.studentsWithId(3).build({ course });
+				const courseGroup2 = courseGroupFactory.build({ course });
+				const userId = courseGroup1.students[0].id;
+				await em.persistAndFlush([courseGroup1, courseGroup2]);
+
+				return {
+					userId,
+					courseGroup1,
+				};
+			};
+
+			it('should update courseGroup without userId', async () => {
+				const { userId, courseGroup1 } = await setup();
+
+				// Arrange expected Array after User deletion
+				courseGroup1.students.remove((s) => s.id === userId);
+
+				// Act
+				await repo.save(courseGroup1);
+
+				const [, count] = await repo.findByUserId(userId);
+
+				expect(count).toEqual(0);
+			});
 		});
 	});
 });

@@ -40,6 +40,9 @@
 			"$oid": "5f2987e020834114b8efd6f7"
 		},
 		"name": "Schiller-Oberschule",
+		"federalState": {
+			"$oid": "0000b186816abba584714c53"
+		},
 		"fileStorageType": "awsS3",
 		"systems": [],
 		"updatedAt": {
@@ -190,7 +193,9 @@
 			"$oid": "5fa318f2b229544f2c697a56"
 		},
 		"documentBaseDirType": "",
-		"systems": [],
+		"systems": [{
+			"$oid": "62c7f233f35a554ba3ed0000"
+		}],
 		"experimental": false,
 		"pilot": false,
 		"features": [
@@ -230,6 +235,7 @@
 		},
 		"language": "de",
 		"logo_dataUrl": "",
+		"logo_name": "",
 		"officialSchoolNumber": ""
 	},
 	{
@@ -271,6 +277,7 @@
 		},
 		"language": "en",
 		"logo_dataUrl": "",
+		"logo_name": "",
 		"officialSchoolNumber": ""
 	},
 	{
@@ -318,6 +325,9 @@
 		"pilot": false,
 		"features": ["oauthProvisioningEnabled"],
 		"name": "graveyard school (tombstone users only)",
+		"federalState": {
+			"$oid": "0000b186816abba584714c53"
+		},
 		"createdAt": {
 			"$date": "2020-12-16T12:47:27.338Z"
 		},

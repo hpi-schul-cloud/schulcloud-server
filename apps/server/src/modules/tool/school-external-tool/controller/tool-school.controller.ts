@@ -1,35 +1,40 @@
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put, Query } from '@nestjs/common';
 import {
+	ApiBadRequestResponse,
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiFoundResponse,
-	ApiResponse,
 	ApiOkResponse,
-	ApiBadRequestResponse,
+	ApiOperation,
+	ApiResponse,
 	ApiTags,
 	ApiUnauthorizedResponse,
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
-import { Body, Controller, Delete, Get, Param, Post, Query, Put } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication';
 import { LegacyLogger } from '@src/core/logger';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { SchoolExternalToolRequestMapper, SchoolExternalToolResponseMapper } from '../mapper';
 import { ExternalToolSearchListResponse } from '../../external-tool/controller/dto';
+import { SchoolExternalTool, SchoolExternalToolMetadata } from '../domain';
+import {
+	SchoolExternalToolMetadataMapper,
+	SchoolExternalToolRequestMapper,
+	SchoolExternalToolResponseMapper,
+} from '../mapper';
+import { SchoolExternalToolUc } from '../uc';
+import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
 import {
 	SchoolExternalToolIdParams,
+	SchoolExternalToolMetadataResponse,
 	SchoolExternalToolPostParams,
 	SchoolExternalToolResponse,
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolSearchParams,
 } from './dto';
-import { SchoolExternalToolDto } from '../uc/dto/school-external-tool.types';
-import { SchoolExternalToolUc } from '../uc';
-import { SchoolExternalTool } from '../domain';
 
 @ApiTags('Tool')
 @Authenticate('jwt')
-@Controller('tools/school')
+@Controller('tools/school-external-tools')
 export class ToolSchoolController {
 	constructor(
 		private readonly schoolExternalToolUc: SchoolExternalToolUc,
@@ -42,6 +47,7 @@ export class ToolSchoolController {
 	@ApiFoundResponse({ description: 'SchoolExternalTools has been found.', type: ExternalToolSearchListResponse })
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
+	@ApiOperation({ summary: 'Returns a list of SchoolExternalTools for a given school' })
 	async getSchoolExternalTools(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() schoolExternalToolParams: SchoolExternalToolSearchParams
@@ -56,6 +62,7 @@ export class ToolSchoolController {
 	@Get(':schoolExternalToolId')
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
+	@ApiOperation({ summary: 'Returns a SchoolExternalTool for the given id' })
 	async getSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams
@@ -73,6 +80,7 @@ export class ToolSchoolController {
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
 	@ApiBadRequestResponse({ type: ValidationError, description: 'Request data has invalid format.' })
+	@ApiOperation({ summary: 'Updates a SchoolExternalTool' })
 	async updateSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams,
@@ -93,6 +101,8 @@ export class ToolSchoolController {
 	@Delete(':schoolExternalToolId')
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
+	@ApiOperation({ summary: 'Deletes a SchoolExternalTool' })
+	@HttpCode(HttpStatus.NO_CONTENT)
 	async deleteSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolIdParams
@@ -112,6 +122,7 @@ export class ToolSchoolController {
 	@ApiUnprocessableEntityResponse()
 	@ApiUnauthorizedResponse()
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
+	@ApiOperation({ summary: 'Creates a SchoolExternalTool' })
 	async createSchoolExternalTool(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() body: SchoolExternalToolPostParams
@@ -129,5 +140,25 @@ export class ToolSchoolController {
 		this.logger.debug(`SchoolExternalTool with id ${response.id} was created by user with id ${currentUser.userId}`);
 
 		return response;
+	}
+
+	@Get('/:schoolExternalToolId/metadata')
+	@ApiOperation({ summary: 'Gets the metadata of an school external tool.' })
+	@ApiOkResponse({
+		description: 'Metadata of school external tool fetched successfully.',
+		type: SchoolExternalToolMetadataResponse,
+	})
+	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
+	async getMetaDataForExternalTool(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: SchoolExternalToolIdParams
+	): Promise<SchoolExternalToolMetadataResponse> {
+		const schoolExternalToolMetadata: SchoolExternalToolMetadata =
+			await this.schoolExternalToolUc.getMetadataForSchoolExternalTool(currentUser.userId, params.schoolExternalToolId);
+
+		const mapped: SchoolExternalToolMetadataResponse =
+			SchoolExternalToolMetadataMapper.mapToSchoolExternalToolMetadataResponse(schoolExternalToolMetadata);
+
+		return mapped;
 	}
 }

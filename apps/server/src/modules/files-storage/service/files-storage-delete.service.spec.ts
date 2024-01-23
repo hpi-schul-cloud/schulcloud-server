@@ -3,12 +3,13 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { AntivirusService } from '@infra/antivirus';
+import { S3ClientAdapter } from '@infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
+import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { getPaths } from '../helper';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
@@ -45,7 +46,7 @@ describe('FilesStorageService delete methods', () => {
 			providers: [
 				FilesStorageService,
 				{
-					provide: S3ClientAdapter,
+					provide: FILES_STORAGE_S3_CONNECTION,
 					useValue: createMock<S3ClientAdapter>(),
 				},
 				{
@@ -68,7 +69,7 @@ describe('FilesStorageService delete methods', () => {
 		}).compile();
 
 		service = module.get(FilesStorageService);
-		storageClient = module.get(S3ClientAdapter);
+		storageClient = module.get(FILES_STORAGE_S3_CONNECTION);
 		fileRecordRepo = module.get(FileRecordRepo);
 	});
 
@@ -170,34 +171,12 @@ describe('FilesStorageService delete methods', () => {
 				return { parentId, fileRecords };
 			};
 
-			it('should call findBySchoolIdAndParentId once with correct params', async () => {
-				const { parentId } = setup();
-
-				await service.deleteFilesOfParent(parentId);
-
-				expect(fileRecordRepo.findByParentId).toHaveBeenNthCalledWith(1, parentId);
-			});
-
 			it('should call delete with correct params', async () => {
-				const { parentId, fileRecords } = setup();
+				const { fileRecords } = setup();
 
-				await service.deleteFilesOfParent(parentId);
+				await service.deleteFilesOfParent(fileRecords);
 
 				expect(service.delete).toHaveBeenCalledWith(fileRecords);
-			});
-
-			it('should return file records and count', async () => {
-				const { parentId, fileRecords } = setup();
-
-				const responseData = await service.deleteFilesOfParent(parentId);
-				expect(responseData[0]).toEqual(
-					expect.arrayContaining([
-						expect.objectContaining({ ...fileRecords[0] }),
-						expect.objectContaining({ ...fileRecords[1] }),
-						expect.objectContaining({ ...fileRecords[2] }),
-					])
-				);
-				expect(responseData[1]).toEqual(fileRecords.length);
 			});
 		});
 
@@ -214,42 +193,16 @@ describe('FilesStorageService delete methods', () => {
 				const { parentId } = params;
 
 				spy = jest.spyOn(service, 'delete');
-				fileRecordRepo.findByParentId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
 
-				return { parentId };
+				return { parentId, fileRecords };
 			};
 
 			it('should not call delete', async () => {
-				const { parentId } = setup();
+				const { fileRecords } = setup();
 
-				await service.deleteFilesOfParent(parentId);
+				await service.deleteFilesOfParent(fileRecords);
 
 				expect(service.delete).toHaveBeenCalledTimes(0);
-			});
-
-			it('should return empty counted type', async () => {
-				const { parentId } = setup();
-
-				const result = await service.deleteFilesOfParent(parentId);
-
-				expect(result).toEqual([[], 0]);
-			});
-		});
-
-		describe('WHEN repository throw an error', () => {
-			const setup = () => {
-				const { params } = buildFileRecordsWithParams();
-				const { parentId } = params;
-
-				fileRecordRepo.findByParentId.mockRejectedValueOnce(new Error('bla'));
-
-				return { parentId };
-			};
-
-			it('should pass the error', async () => {
-				const { parentId } = setup();
-
-				await expect(service.deleteFilesOfParent(parentId)).rejects.toThrow(new Error('bla'));
 			});
 		});
 
@@ -271,9 +224,9 @@ describe('FilesStorageService delete methods', () => {
 			};
 
 			it('should pass the error', async () => {
-				const { parentId } = setup();
+				const { fileRecords } = setup();
 
-				await expect(service.deleteFilesOfParent(parentId)).rejects.toThrow(new Error('bla'));
+				await expect(service.deleteFilesOfParent(fileRecords)).rejects.toThrow(new Error('bla'));
 			});
 		});
 	});

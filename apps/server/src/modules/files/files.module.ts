@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
-import { FilesRepo } from '@shared/repo';
-import { StorageProviderRepo } from '@shared/repo/storageprovider/storageprovider.repo';
+import { StorageProviderRepo } from '@shared/repo/storageprovider';
 import { LoggerModule } from '@src/core/logger';
-import { DeleteFilesConsole } from './job/delete-files.console';
+import { DeleteFilesConsole } from './job';
 import { DeleteFilesUc } from './uc';
+import { FilesRepo } from './repo';
+import { FilesService } from './service';
 
 @Module({
 	imports: [LoggerModule],
-	providers: [DeleteFilesConsole, DeleteFilesUc, FilesRepo, StorageProviderRepo],
+	providers: [DeleteFilesConsole, DeleteFilesUc, FilesRepo, StorageProviderRepo, FilesService],
+	exports: [FilesService],
 })
 export class FilesModule {}

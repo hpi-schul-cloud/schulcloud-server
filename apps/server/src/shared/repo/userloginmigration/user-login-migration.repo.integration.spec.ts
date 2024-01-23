@@ -1,10 +1,12 @@
 import { createMock } from '@golevelup/ts-jest';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { School, System, UserLoginMigrationDO } from '@shared/domain';
-import { UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, schoolFactory, systemFactory } from '@shared/testing';
+import { SchoolEntity, SystemEntity } from '@shared/domain/entity';
+
+import { UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
+import { cleanupCollections, schoolFactory, systemEntityFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { userLoginMigrationFactory } from '../../testing/factory/user-login-migration.factory';
 import { UserLoginMigrationRepo } from './user-login-migration.repo';
@@ -41,9 +43,9 @@ describe('UserLoginMigrationRepo', () => {
 	describe('save', () => {
 		describe('when saving a UserLoginMigrationDO', () => {
 			const setup = async () => {
-				const school: School = schoolFactory.buildWithId();
-				const sourceSystem: System = systemFactory.buildWithId();
-				const targetSystem: System = systemFactory.buildWithId();
+				const school: SchoolEntity = schoolFactory.buildWithId();
+				const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
+				const targetSystem: SystemEntity = systemEntityFactory.buildWithId();
 
 				const domainObject: UserLoginMigrationDO = new UserLoginMigrationDO({
 					schoolId: school.id,
@@ -72,13 +74,26 @@ describe('UserLoginMigrationRepo', () => {
 				expect(result).toMatchObject(expected);
 				expect(result.id).toBeDefined();
 			});
+
+			it('should be able to update a UserLoginMigration to the database', async () => {
+				const { domainObject } = await setup();
+
+				await repo.save(domainObject);
+				em.clear();
+
+				domainObject.mandatorySince = new Date();
+				await repo.save(domainObject);
+
+				const result = em.find(UserLoginMigrationEntity, { id: domainObject.id });
+				expect(result).toBeDefined();
+			});
 		});
 	});
 
 	describe('delete', () => {
 		describe('when saving a UserLoginMigrationDO', () => {
 			const setup = async () => {
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId();
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId();
 
 				await em.persistAndFlush(userLoginMigration);
 				em.clear();
@@ -97,7 +112,7 @@ describe('UserLoginMigrationRepo', () => {
 
 				await repo.delete(domainObject);
 
-				await em.findOneOrFail(School, { id: school.id });
+				await em.findOneOrFail(SchoolEntity, { id: school.id });
 			});
 		});
 	});
@@ -105,7 +120,7 @@ describe('UserLoginMigrationRepo', () => {
 	describe('findBySchoolId', () => {
 		describe('when searching for a UserLoginMigration by its school id', () => {
 			const setup = async () => {
-				const userLoginMigration: UserLoginMigration = userLoginMigrationFactory.buildWithId();
+				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId();
 
 				await em.persistAndFlush(userLoginMigration);
 				em.clear();
@@ -129,7 +144,7 @@ describe('UserLoginMigrationRepo', () => {
 
 		describe('when searching for a UserLoginMigration by an unknown school id', () => {
 			const setup = async () => {
-				const school: School = schoolFactory.buildWithId({ userLoginMigration: undefined });
+				const school: SchoolEntity = schoolFactory.buildWithId({ userLoginMigration: undefined });
 
 				await em.persistAndFlush(school);
 				em.clear();

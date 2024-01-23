@@ -1,21 +1,16 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	CourseNews,
-	INewsProperties,
 	News,
-	School,
+	NewsProperties,
+	SchoolEntity,
 	SchoolNews,
-	Team,
+	TeamEntity,
 	TeamNews,
 	User,
-	NewsTargetModel,
-	INewsScope,
-	ICreateNews,
-	IUpdateNews,
-	NewsTarget,
-} from '@shared/domain';
-import { courseFactory, schoolFactory, userFactory, setupEntities } from '@shared/testing';
-import { NewsMapper } from './news.mapper';
+} from '@shared/domain/entity';
+import { CreateNews, INewsScope, IUpdateNews, NewsTarget, NewsTargetModel } from '@shared/domain/types';
+import { courseFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import {
 	CreateNewsParams,
 	FilterNewsParams,
@@ -25,6 +20,7 @@ import {
 	UserInfoResponse,
 } from '../controller/dto';
 import { TargetInfoResponse } from '../controller/dto/target-info.response';
+import { NewsMapper } from './news.mapper';
 
 const getTargetModel = (news: News): NewsTargetModel => {
 	if (news instanceof SchoolNews) {
@@ -42,14 +38,14 @@ const date = new Date(2021, 1, 1, 0, 0, 0);
 
 const createNews = <T extends News>(
 	newsProps,
-	NewsType: { new (props: INewsProperties): T },
-	school: School,
+	NewsType: { new (props: NewsProperties): T },
+	school: SchoolEntity,
 	creator: User,
 	target: NewsTarget
 ): T => {
 	const newsId = new ObjectId().toHexString();
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	const props: INewsProperties = {
+	const props: NewsProperties = {
 		id: newsId,
 		displayAt: date,
 		updatedAt: date,
@@ -70,7 +66,7 @@ const createNews = <T extends News>(
 };
 
 const getExpectedNewsResponse = (
-	school: School,
+	school: SchoolEntity,
 	creator: User,
 	news: News,
 	newsProps: { title: string; content: string },
@@ -144,7 +140,7 @@ describe('NewsMapper', () => {
 		});
 		it('should correctly map team news to dto', () => {
 			const school = schoolFactory.build();
-			const team = new Team({ name: 'team #1' });
+			const team = new TeamEntity({ name: 'team #1' });
 			const creator = userFactory.build();
 			const newsProps = { title: 'test title', content: 'test content' };
 			const teamNews = createNews(newsProps, TeamNews, school, creator, team);
@@ -204,8 +200,8 @@ describe('NewsMapper', () => {
 				targetModel,
 				targetId,
 			};
-			const result: ICreateNews = NewsMapper.mapCreateNewsToDomain(params);
-			const expected: ICreateNews = {
+			const result: CreateNews = NewsMapper.mapCreateNewsToDomain(params);
+			const expected: CreateNews = {
 				title: params.title,
 				content: params.content,
 				displayAt: date,

@@ -42,6 +42,8 @@ export class UserDO extends BaseDO {
 
 	previousExternalId?: string;
 
+	birthday?: Date;
+
 	constructor(domainObject: UserDO) {
 		super(domainObject.id);
 
@@ -64,5 +66,6 @@ export class UserDO extends BaseDO {
 		this.lastLoginSystemChange = domainObject.lastLoginSystemChange;
 		this.outdatedSince = domainObject.outdatedSince;
 		this.previousExternalId = domainObject.previousExternalId;
+		this.birthday = domainObject.birthday;
 	}
 }

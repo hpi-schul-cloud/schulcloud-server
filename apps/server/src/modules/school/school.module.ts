@@ -1,20 +1,15 @@
 import { Module } from '@nestjs/common';
-import { FederalStateRepo, SchoolRepo } from '@shared/repo';
-import { LoggerModule } from '@src/core/logger';
-import { SchoolYearRepo } from './repo';
-import { FederalStateService, SchoolService, SchoolValidationService, SchoolYearService } from './service';
+import { SchoolService, SchoolYearService, SCHOOL_REPO, SCHOOL_YEAR_REPO } from './domain';
+import { SchoolYearMikroOrmRepo } from './repo/mikro-orm/school-year.repo';
+import { SchoolMikroOrmRepo } from './repo/mikro-orm/school.repo';
 
 @Module({
-	imports: [LoggerModule],
 	providers: [
-		SchoolRepo,
 		SchoolService,
 		SchoolYearService,
-		SchoolYearRepo,
-		FederalStateService,
-		FederalStateRepo,
-		SchoolValidationService,
+		{ provide: SCHOOL_REPO, useClass: SchoolMikroOrmRepo },
+		{ provide: SCHOOL_YEAR_REPO, useClass: SchoolYearMikroOrmRepo },
 	],
-	exports: [SchoolService, SchoolYearService, FederalStateService],
+	exports: [SchoolService, SchoolYearService],
 })
 export class SchoolModule {}

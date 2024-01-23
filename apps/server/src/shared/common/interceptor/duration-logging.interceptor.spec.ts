@@ -24,7 +24,7 @@ describe('DurationLoggingInterceptor', () => {
 			await app.init();
 			await request(app.getHttpServer()).get('/').expect(200).expect('Schulcloud Server API');
 
-			expect(logger.verbose).toBeCalledTimes(2);
+			expect(logger.log).toBeCalledTimes(2);
 
 			await app.close();
 		});

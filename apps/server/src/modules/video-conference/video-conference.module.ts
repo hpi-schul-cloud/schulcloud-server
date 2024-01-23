@@ -1,13 +1,14 @@
 import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
-import { CalendarModule } from '@shared/infra/calendar';
+import { CalendarModule } from '@infra/calendar';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
-import { AuthorizationModule } from '@src/modules/authorization';
+import { AuthorizationModule } from '@modules/authorization';
+import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
 import { TeamsRepo } from '@shared/repo';
-import { SchoolModule } from '@src/modules/school/school.module';
+import { LegacySchoolModule } from '@modules/legacy-school';
 import { LoggerModule } from '@src/core/logger';
 import { ConverterUtil } from '@shared/common';
-import { UserModule } from '@src/modules/user';
+import { UserModule } from '@modules/user';
 import { BBBService, BbbSettings } from './bbb';
 import { VideoConferenceService } from './service';
 import { VideoConferenceDeprecatedUc } from './uc';
@@ -19,9 +20,10 @@ import { LearnroomModule } from '../learnroom';
 @Module({
 	imports: [
 		AuthorizationModule,
+		AuthorizationReferenceModule, // can be removed wenn video-conference-deprecated is removed
 		CalendarModule,
 		HttpModule,
-		SchoolModule,
+		LegacySchoolModule,
 		LoggerModule,
 		UserModule,
 		LearnroomModule,

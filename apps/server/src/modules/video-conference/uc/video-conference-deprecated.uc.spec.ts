@@ -1,29 +1,21 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { CalendarService } from '@infra/calendar';
+import { CalendarEventDto } from '@infra/calendar/dto/calendar-event.dto';
+import { ICurrentUser } from '@modules/authentication';
+import { AuthorizationReferenceService } from '@modules/authorization/domain';
+import { CourseService } from '@modules/learnroom/service';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-	Course,
-	EntityId,
-	Permission,
-	Role,
-	RoleName,
-	RoleReference,
-	Team,
-	UserDO,
-	VideoConferenceDO,
-} from '@shared/domain';
-import { VideoConferenceScope } from '@shared/domain/interface';
-import { CalendarService } from '@shared/infra/calendar';
-import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
+import { RoleReference, UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
+import { Course, Role, TeamEntity } from '@shared/domain/entity';
+import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
 import { roleFactory, setupEntities, userDoFactory } from '@shared/testing';
 import { teamFactory } from '@shared/testing/factory/team.factory';
-import { AuthorizationService, SchoolService, UserService } from '@src/modules';
-import { ICurrentUser } from '@src/modules/authentication';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
-import { IScopeInfo, VideoConference, VideoConferenceJoin, VideoConferenceState } from './dto';
-import { VideoConferenceDeprecatedUc } from './video-conference-deprecated.uc';
 import {
 	BBBBaseMeetingConfig,
 	BBBBaseResponse,
@@ -37,11 +29,13 @@ import {
 	BBBStatus,
 	GuestPolicy,
 } from '../bbb';
-import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
 import { ErrorStatus } from '../error/error-status.enum';
+import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { ScopeInfo, VideoConference, VideoConferenceJoin, VideoConferenceState } from './dto';
+import { VideoConferenceDeprecatedUc } from './video-conference-deprecated.uc';
 
 class VideoConferenceDeprecatedUcSpec extends VideoConferenceDeprecatedUc {
-	async getScopeInfoSpec(userId: EntityId, conferenceScope: VideoConferenceScope, refId: string): Promise<IScopeInfo> {
+	async getScopeInfoSpec(userId: EntityId, conferenceScope: VideoConferenceScope, refId: string): Promise<ScopeInfo> {
 		return this.getScopeInfo(userId, conferenceScope, refId);
 	}
 
@@ -63,13 +57,13 @@ describe('VideoConferenceUc', () => {
 	let useCase: VideoConferenceDeprecatedUcSpec;
 
 	let bbbService: DeepMocked<BBBService>;
-	let authorizationService: DeepMocked<AuthorizationService>;
+	let authorizationService: DeepMocked<AuthorizationReferenceService>;
 	let videoConferenceRepo: DeepMocked<VideoConferenceRepo>;
 	let teamsRepo: DeepMocked<TeamsRepo>;
 	let courseService: DeepMocked<CourseService>;
 	let userService: DeepMocked<UserService>;
 	let calendarService: DeepMocked<CalendarService>;
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 
 	const hostUrl = 'https://localhost:4000';
 	const course: Course = { id: 'courseId', name: 'courseName' } as Course;
@@ -83,7 +77,7 @@ describe('VideoConferenceUc', () => {
 	let defaultOptions: VideoConferenceOptions;
 	const userPermissions: Map<Permission, Promise<boolean>> = new Map<Permission, Promise<boolean>>();
 
-	let team: Team;
+	let team: TeamEntity;
 	let user: UserDO;
 
 	let defaultRole: Role;
@@ -118,8 +112,8 @@ describe('VideoConferenceUc', () => {
 					useValue: createMock<BBBService>(),
 				},
 				{
-					provide: AuthorizationService,
-					useValue: createMock<AuthorizationService>(),
+					provide: AuthorizationReferenceService,
+					useValue: createMock<AuthorizationReferenceService>(),
 				},
 				{
 					provide: VideoConferenceRepo,
@@ -142,14 +136,14 @@ describe('VideoConferenceUc', () => {
 					useValue: createMock<CalendarService>(),
 				},
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 			],
 		}).compile();
 		useCase = module.get(VideoConferenceDeprecatedUcSpec);
-		schoolService = module.get(SchoolService);
-		authorizationService = module.get(AuthorizationService);
+		schoolService = module.get(LegacySchoolService);
+		authorizationService = module.get(AuthorizationReferenceService);
 		courseService = module.get(CourseService);
 		calendarService = module.get(CalendarService);
 		videoConferenceRepo = module.get(VideoConferenceRepo);
@@ -170,6 +164,7 @@ describe('VideoConferenceUc', () => {
 			roles: [],
 			schoolId: 'schoolId',
 			accountId: 'accountId',
+			isExternalUser: false,
 		};
 		defaultOptions = {
 			everybodyJoinsAsModerator: false,
@@ -195,7 +190,7 @@ describe('VideoConferenceUc', () => {
 	describe('getScopeInfo', () => {
 		it('should return scope info for courses', async () => {
 			// Act
-			const scopeInfo: IScopeInfo = await useCase.getScopeInfoSpec('userId', VideoConferenceScope.COURSE, course.id);
+			const scopeInfo: ScopeInfo = await useCase.getScopeInfoSpec('userId', VideoConferenceScope.COURSE, course.id);
 
 			// Assert
 			expect(scopeInfo.scopeId).toEqual(course.id);
@@ -206,7 +201,7 @@ describe('VideoConferenceUc', () => {
 
 		it('should return scope info for teams', async () => {
 			// Act
-			const scopeInfo: IScopeInfo = await useCase.getScopeInfoSpec('userId', VideoConferenceScope.EVENT, eventId);
+			const scopeInfo: ScopeInfo = await useCase.getScopeInfoSpec('userId', VideoConferenceScope.EVENT, eventId);
 
 			// Assert
 			expect(scopeInfo.scopeId).toEqual(event.teamId);

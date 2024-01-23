@@ -1,11 +1,11 @@
-import { Lesson, Submission, Task } from '@shared/domain';
-import { FileRecordParentType } from '@shared/infra/rabbitmq';
+import { FileRecordParentType } from '@infra/rabbitmq';
+import { LessonEntity, Submission, Task } from '@shared/domain/entity';
 import { CopyFileDto, FileDto } from '../dto';
-import { EntitiesWithFiles, ICopyFileDomainObjectProps, IFileDomainObjectProps } from '../interfaces';
+import { CopyFileDomainObjectProps, EntitiesWithFiles, FileDomainObjectProps } from '../interfaces';
 
 export class FilesStorageClientMapper {
-	static mapfileRecordListResponseToDomainFilesDto(fileRecordListResponse: IFileDomainObjectProps[]): FileDto[] {
-		const filesDto = fileRecordListResponse.map((record: IFileDomainObjectProps) => {
+	static mapfileRecordListResponseToDomainFilesDto(fileRecordListResponse: FileDomainObjectProps[]): FileDto[] {
+		const filesDto = fileRecordListResponse.map((record: FileDomainObjectProps) => {
 			const fileDto = FilesStorageClientMapper.mapFileRecordResponseToFileDto(record);
 
 			return fileDto;
@@ -14,7 +14,7 @@ export class FilesStorageClientMapper {
 		return filesDto;
 	}
 
-	static mapCopyFileListResponseToCopyFilesDto(copyFileListResponse: ICopyFileDomainObjectProps[]): CopyFileDto[] {
+	static mapCopyFileListResponseToCopyFilesDto(copyFileListResponse: CopyFileDomainObjectProps[]): CopyFileDto[] {
 		const filesDto = copyFileListResponse.map((response) => {
 			const fileDto = FilesStorageClientMapper.mapCopyFileResponseToCopyFileDto(response);
 
@@ -24,7 +24,7 @@ export class FilesStorageClientMapper {
 		return filesDto;
 	}
 
-	static mapFileRecordResponseToFileDto(fileRecordResponse: IFileDomainObjectProps) {
+	static mapFileRecordResponseToFileDto(fileRecordResponse: FileDomainObjectProps) {
 		const parentType = FilesStorageClientMapper.mapStringToParentType(fileRecordResponse.parentType);
 		const fileDto = new FileDto({
 			id: fileRecordResponse.id,
@@ -36,7 +36,7 @@ export class FilesStorageClientMapper {
 		return fileDto;
 	}
 
-	static mapCopyFileResponseToCopyFileDto(response: ICopyFileDomainObjectProps) {
+	static mapCopyFileResponseToCopyFileDto(response: CopyFileDomainObjectProps) {
 		const dto = new CopyFileDto({
 			id: response.id,
 			sourceId: response.sourceId,
@@ -60,7 +60,7 @@ export class FilesStorageClientMapper {
 	}
 
 	static mapEntityToParentType(entity: EntitiesWithFiles): FileRecordParentType {
-		if (entity instanceof Lesson) return FileRecordParentType.Lesson;
+		if (entity instanceof LessonEntity) return FileRecordParentType.Lesson;
 
 		if (entity instanceof Task) return FileRecordParentType.Task;
 

@@ -20,6 +20,7 @@ const SCHOOL_FEATURES = {
 	LDAP_UNIVENTION_MIGRATION: 'ldapUniventionMigrationSchool',
 	OAUTH_PROVISIONING_ENABLED: 'oauthProvisioningEnabled',
 	SHOW_OUTDATED_USERS: 'showOutdatedUsers',
+	ENABLE_LDAP_SYNC_DURING_MIGRATION: 'enableLdapSyncDuringMigration',
 };
 
 const SCHOOL_OF_DELETED_USERS = { name: 'graveyard school (tombstone users only)', purpose: 'tombstone' };
@@ -76,6 +77,7 @@ const schoolSchema = new Schema(
 		currentYear: { type: Schema.Types.ObjectId, ref: 'year' },
 		customYears: [{ type: customYearSchema }],
 		logo_dataUrl: { type: String },
+		logo_name: { type: String },
 		purpose: { type: String },
 		rssFeeds: [{ type: rssFeedSchema }],
 		language: { type: String },
@@ -175,7 +177,7 @@ const gradeLevelSchema = new Schema({
 });
 
 const schoolModel = mongoose.model('school', schoolSchema);
-const userLoginMigrationModel = mongoose.model('userLoginMigration', userLoginMigrationSchema, 'user_login_migrations');
+const userLoginMigrationModel = mongoose.model('userLoginMigration', userLoginMigrationSchema, 'user-login-migrations');
 const schoolGroupModel = mongoose.model('schoolGroup', schoolGroupSchema);
 const yearModel = mongoose.model('year', yearSchema);
 const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);

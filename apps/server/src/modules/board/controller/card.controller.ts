@@ -1,3 +1,4 @@
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import {
 	Body,
 	Controller,
@@ -14,29 +15,30 @@ import {
 } from '@nestjs/common';
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
-import { ICurrentUser } from '@src/modules/authentication';
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
-import { BoardUc, CardUc } from '../uc';
+import { CardUc, ColumnUc } from '../uc';
 import {
 	AnyContentElementResponse,
 	CardIdsParams,
 	CardListResponse,
 	CardUrlParams,
 	CreateContentElementBodyParams,
+	DrawingElementResponse,
+	ExternalToolElementResponse,
 	FileElementResponse,
+	LinkElementResponse,
 	MoveCardBodyParams,
 	RenameBodyParams,
+	RichTextElementResponse,
 	SubmissionContainerElementResponse,
 } from './dto';
 import { SetHeightBodyParams } from './dto/board/set-height.body.params';
-import { RichTextElementResponse } from './dto/element/rich-text-element.response';
 import { CardResponseMapper, ContentElementResponseFactory } from './mapper';
 
 @ApiTags('Board Card')
 @Authenticate('jwt')
 @Controller('cards')
 export class CardController {
-	constructor(private readonly boardUc: BoardUc, private readonly cardUc: CardUc) {}
+	constructor(private readonly columnUc: ColumnUc, private readonly cardUc: CardUc) {}
 
 	@ApiOperation({ summary: 'Get a list of cards by their ids.' })
 	@ApiResponse({ status: 200, type: CardListResponse })
@@ -69,7 +71,7 @@ export class CardController {
 		@Body() bodyParams: MoveCardBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		await this.boardUc.moveCard(currentUser.userId, urlParams.cardId, bodyParams.toColumnId, bodyParams.toPosition);
+		await this.columnUc.moveCard(currentUser.userId, urlParams.cardId, bodyParams.toColumnId, bodyParams.toPosition);
 	}
 
 	@ApiOperation({ summary: 'Update the height of a single card.' })
@@ -84,7 +86,7 @@ export class CardController {
 		@Body() bodyParams: SetHeightBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		await this.boardUc.updateCardHeight(currentUser.userId, urlParams.cardId, bodyParams.height);
+		await this.cardUc.updateCardHeight(currentUser.userId, urlParams.cardId, bodyParams.height);
 	}
 
 	@ApiOperation({ summary: 'Update the title of a single card.' })
@@ -99,7 +101,7 @@ export class CardController {
 		@Body() bodyParams: RenameBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		await this.boardUc.updateCardTitle(currentUser.userId, urlParams.cardId, bodyParams.title);
+		await this.cardUc.updateCardTitle(currentUser.userId, urlParams.cardId, bodyParams.title);
 	}
 
 	@ApiOperation({ summary: 'Delete a single card.' })
@@ -110,18 +112,27 @@ export class CardController {
 	@HttpCode(204)
 	@Delete(':cardId')
 	async deleteCard(@Param() urlParams: CardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<void> {
-		await this.boardUc.deleteCard(currentUser.userId, urlParams.cardId);
+		await this.cardUc.deleteCard(currentUser.userId, urlParams.cardId);
 	}
 
 	@ApiOperation({ summary: 'Create a new element on a card.' })
-	@ApiExtraModels(RichTextElementResponse, FileElementResponse, SubmissionContainerElementResponse)
+	@ApiExtraModels(
+		ExternalToolElementResponse,
+		FileElementResponse,
+		LinkElementResponse,
+		RichTextElementResponse,
+		SubmissionContainerElementResponse
+	)
 	@ApiResponse({
 		status: 201,
 		schema: {
 			oneOf: [
-				{ $ref: getSchemaPath(RichTextElementResponse) },
+				{ $ref: getSchemaPath(ExternalToolElementResponse) },
 				{ $ref: getSchemaPath(FileElementResponse) },
+				{ $ref: getSchemaPath(LinkElementResponse) },
+				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
+				{ $ref: getSchemaPath(DrawingElementResponse) },
 			],
 		},
 	})
@@ -130,7 +141,7 @@ export class CardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':cardId/elements')
 	async createElement(
-		@Param() urlParams: CardUrlParams, // TODO add type-property ?
+		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: CreateContentElementBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<AnyContentElementResponse> {

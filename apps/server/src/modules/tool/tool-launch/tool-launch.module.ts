@@ -1,14 +1,21 @@
-import { Module } from '@nestjs/common';
-import { SchoolModule } from '@src/modules/school';
-import { UserModule } from '@src/modules/user';
-import { PseudonymModule } from '@src/modules/pseudonym';
-import { CourseRepo } from '@shared/repo';
-import { Lti11EncryptionService, ToolLaunchService } from './service';
-import { SchoolExternalToolModule } from '../school-external-tool';
-import { ExternalToolModule } from '../external-tool';
-import { ContextExternalToolModule } from '../context-external-tool';
-import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrategy } from './service/strategy';
+import { BoardModule } from '@modules/board';
+import { LearnroomModule } from '@modules/learnroom';
+import { LegacySchoolModule } from '@modules/legacy-school';
+import { PseudonymModule } from '@modules/pseudonym';
+import { UserModule } from '@modules/user';
+import { forwardRef, Module } from '@nestjs/common';
 import { CommonToolModule } from '../common';
+import { ContextExternalToolModule } from '../context-external-tool';
+import { ExternalToolModule } from '../external-tool';
+import { SchoolExternalToolModule } from '../school-external-tool';
+import { Lti11EncryptionService, ToolLaunchService } from './service';
+import {
+	AutoContextIdStrategy,
+	AutoContextNameStrategy,
+	AutoSchoolIdStrategy,
+	AutoSchoolNumberStrategy,
+} from './service/auto-parameter-strategy';
+import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrategy } from './service/launch-strategy';
 
 @Module({
 	imports: [
@@ -16,18 +23,22 @@ import { CommonToolModule } from '../common';
 		ExternalToolModule,
 		SchoolExternalToolModule,
 		ContextExternalToolModule,
-		SchoolModule,
+		LegacySchoolModule,
 		UserModule,
-		PseudonymModule,
+		forwardRef(() => PseudonymModule), // i do not like this solution, the root problem is on other place but not detectable for me
+		LearnroomModule,
+		BoardModule,
 	],
 	providers: [
 		ToolLaunchService,
+		Lti11EncryptionService,
 		BasicToolLaunchStrategy,
 		Lti11ToolLaunchStrategy,
 		OAuth2ToolLaunchStrategy,
-		Lti11EncryptionService,
-		// Importing the LearnroomModule instead of CourseRepo creates some kind of dependency cycle that lets unrelated tests fail
-		CourseRepo,
+		AutoContextIdStrategy,
+		AutoContextNameStrategy,
+		AutoSchoolIdStrategy,
+		AutoSchoolNumberStrategy,
 	],
 	exports: [ToolLaunchService],
 })

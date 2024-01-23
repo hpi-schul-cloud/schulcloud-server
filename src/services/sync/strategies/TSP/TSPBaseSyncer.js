@@ -1,6 +1,5 @@
 const Syncer = require('../Syncer');
 const { TspApi, config: TSP_CONFIG, ENTITY_SOURCE, findSchool } = require('./TSP');
-const SchoolYearFacade = require('../../../school/logic/year');
 
 const SCHOOL_SYNCER_TARGET = require('./TSPSchoolSyncer').SYNCER_TARGET;
 
@@ -160,7 +159,6 @@ class TSPBaseSyncer extends Syncer {
 		return this.app.service('schools').create({
 			name,
 			systems: [this.tspSystemId],
-			currentYear: await this.getCurrentYear(),
 			federalState: await this.getFederalState(),
 			source: ENTITY_SOURCE,
 			sourceOptions: {
@@ -180,18 +178,6 @@ class TSPBaseSyncer extends Syncer {
 		return this.app.service('schools').patch(school._id, {
 			name,
 		});
-	}
-
-	// async getters do not exist, so this will have to do
-	async getCurrentYear() {
-		if (!this.currentYear) {
-			const years = await this.app.service('years').find();
-			if (years.total === 0) {
-				throw new Error('At least one year has to exist in the database.');
-			}
-			this.currentYear = new SchoolYearFacade(years.data).defaultYear;
-		}
-		return this.currentYear;
 	}
 
 	// async getters do not exist, so this will have to do

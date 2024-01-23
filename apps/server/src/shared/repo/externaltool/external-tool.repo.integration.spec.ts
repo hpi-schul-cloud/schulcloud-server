@@ -1,28 +1,25 @@
 import { createMock } from '@golevelup/ts-jest';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
-import { IFindOptions, Page, SortOrder } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
-import { cleanupCollections, externalToolEntityFactory } from '@shared/testing';
-import { LegacyLogger } from '@src/core/logger';
-import { ExternalToolSearchQuery } from '@src/modules/tool';
-import { CustomParameter } from '@src/modules/tool/common/domain';
+import { ExternalToolSearchQuery } from '@modules/tool';
+import { CustomParameter } from '@modules/tool/common/domain';
 import {
-	ToolConfigType,
-	LtiPrivacyPermission,
 	CustomParameterLocation,
 	CustomParameterScope,
 	CustomParameterType,
 	LtiMessageType,
-} from '@src/modules/tool/common/enum';
-import {
-	BasicToolConfig,
-	ExternalTool,
-	Lti11ToolConfig,
-	Oauth2ToolConfig,
-} from '@src/modules/tool/external-tool/domain';
-import { ExternalToolEntity } from '@src/modules/tool/external-tool/entity';
+	LtiPrivacyPermission,
+	ToolConfigType,
+} from '@modules/tool/common/enum';
+import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '@modules/tool/external-tool/domain';
+import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Page } from '@shared/domain/domainobject';
+import { IFindOptions, SortOrder } from '@shared/domain/interface';
+
+import { ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
+import { cleanupCollections, externalToolEntityFactory } from '@shared/testing';
+import { LegacyLogger } from '@src/core/logger';
 
 describe('ExternalToolRepo', () => {
 	let module: TestingModule;
@@ -155,11 +152,13 @@ describe('ExternalToolRepo', () => {
 						location: CustomParameterLocation.BODY,
 						regexComment: 'mockComment',
 						isOptional: false,
+						isProtected: false,
 					}),
 				],
 				isHidden: true,
 				openNewTab: true,
 				version: 2,
+				isDeactivated: false,
 			});
 
 			return {
@@ -206,6 +205,7 @@ describe('ExternalToolRepo', () => {
 				lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 				privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
 				resource_link_id: 'resource_link_id',
+				launch_presentation_locale: 'de-DE',
 			});
 			const { domainObject } = setupDO(config);
 			const { id, ...expected } = domainObject;
@@ -235,7 +235,7 @@ describe('ExternalToolRepo', () => {
 		};
 
 		describe('pagination', () => {
-			it('should return all ltiTools when options with pagination is set to undefined', async () => {
+			it('should return all external tools when options with pagination is set to undefined', async () => {
 				const { queryExternalToolDO, ltiTools } = await setupFind();
 
 				const page: Page<ExternalTool> = await repo.find(queryExternalToolDO, undefined);
@@ -243,7 +243,7 @@ describe('ExternalToolRepo', () => {
 				expect(page.data.length).toBe(ltiTools.length);
 			});
 
-			it('should return one ltiTool when pagination has a limit of 1', async () => {
+			it('should return one external tools when pagination has a limit of 1', async () => {
 				const { queryExternalToolDO, options } = await setupFind();
 				options.pagination = { limit: 1 };
 
@@ -252,7 +252,7 @@ describe('ExternalToolRepo', () => {
 				expect(page.data.length).toBe(1);
 			});
 
-			it('should return no ltiTool when pagination has a limit of 1 and skip is set to 2', async () => {
+			it('should return no external tools when pagination has a limit of 1 and skip is set to 2', async () => {
 				const { queryExternalToolDO, options } = await setupFind();
 				options.pagination = { limit: 1, skip: 3 };
 
@@ -263,7 +263,7 @@ describe('ExternalToolRepo', () => {
 		});
 
 		describe('order', () => {
-			it('should return ltiTools ordered by default _id when no order is specified', async () => {
+			it('should return external tools ordered by default _id when no order is specified', async () => {
 				const { queryExternalToolDO, options, ltiTools } = await setupFind();
 
 				const page: Page<ExternalTool> = await repo.find(queryExternalToolDO, options);
@@ -273,7 +273,7 @@ describe('ExternalToolRepo', () => {
 				expect(page.data[2].name).toEqual(ltiTools[2].name);
 			});
 
-			it('should return ltiTools ordered by name ascending', async () => {
+			it('should return external tools ordered by name ascending', async () => {
 				const { queryExternalToolDO, options, ltiTools } = await setupFind();
 
 				options.order = {

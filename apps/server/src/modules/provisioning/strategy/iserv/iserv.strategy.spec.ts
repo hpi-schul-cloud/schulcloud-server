@@ -1,15 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName, User } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { UserDO } from '@shared/domain/domainobject/user.do';
+import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
+import { RoleName } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { schoolFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
-import { OAuthSSOError } from '@src/modules/oauth/error/oauth-sso.error';
-import { SchoolService } from '@src/modules/school';
-import { UserService } from '@src/modules/user';
+import { legacySchoolDoFactory, userDoFactory } from '@shared/testing';
+import {
+	IdTokenExtractionFailureLoggableException,
+	IdTokenUserNotFoundLoggableException,
+} from '@src/modules/oauth/loggable';
 import jwt from 'jsonwebtoken';
 import { RoleDto } from '../../../role/service/dto/role.dto';
 import {
@@ -28,11 +29,10 @@ describe('IservProvisioningStrategy', () => {
 	let module: TestingModule;
 	let strategy: IservProvisioningStrategy;
 
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
-		await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				IservProvisioningStrategy,
@@ -41,14 +41,14 @@ describe('IservProvisioningStrategy', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 			],
 		}).compile();
 
 		strategy = module.get(IservProvisioningStrategy);
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 		userService = module.get(UserService);
 	});
 
@@ -92,7 +92,7 @@ describe('IservProvisioningStrategy', () => {
 				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.STUDENT }]).buildWithId({
 					externalId: userUUID,
 				});
-				const school: SchoolDO = schoolDOFactory.buildWithId({ externalId: 'schoolExternalId' });
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId({ externalId: 'schoolExternalId' });
 				const roleDto: RoleDto = new RoleDto({
 					name: RoleName.STUDENT,
 				});
@@ -131,7 +131,7 @@ describe('IservProvisioningStrategy', () => {
 
 				const func = () => strategy.getData(input);
 
-				await expect(func).rejects.toThrow(new OAuthSSOError('Failed to extract uuid', 'sso_jwt_problem'));
+				await expect(func).rejects.toThrow(new IdTokenExtractionFailureLoggableException('uuid'));
 			});
 		});
 
@@ -139,9 +139,9 @@ describe('IservProvisioningStrategy', () => {
 			it('should throw an error with code sso_user_notfound and additional information', async () => {
 				const { input, userUUID, email } = setup();
 				const schoolId: string = new ObjectId().toHexString();
-				const user: User = userFactory.buildWithId({
+				const user: UserDO = userDoFactory.buildWithId({
 					externalId: userUUID,
-					school: schoolFactory.buildWithId(undefined, schoolId),
+					schoolId,
 				});
 
 				jest.spyOn(jwt, 'decode').mockImplementation(() => {
@@ -153,10 +153,7 @@ describe('IservProvisioningStrategy', () => {
 				const func = () => strategy.getData(input);
 
 				await expect(func).rejects.toThrow(
-					new OAuthSSOError(
-						`Failed to find user with Id ${userUUID} [schoolId: ${schoolId}, currentLdapId: ${userUUID}]`,
-						'sso_user_notfound'
-					)
+					new IdTokenUserNotFoundLoggableException(userUUID, `email: ${email}, schoolId: ${schoolId}`)
 				);
 			});
 
@@ -171,9 +168,7 @@ describe('IservProvisioningStrategy', () => {
 
 				const func = () => strategy.getData(input);
 
-				await expect(func).rejects.toThrow(
-					new OAuthSSOError(`Failed to find user with Id ${userUUID}`, 'sso_user_notfound')
-				);
+				await expect(func).rejects.toThrow(new IdTokenUserNotFoundLoggableException(userUUID));
 			});
 		});
 	});

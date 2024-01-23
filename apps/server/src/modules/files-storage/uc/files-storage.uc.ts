@@ -1,8 +1,10 @@
+import { EntityManager, RequestContext } from '@mikro-orm/core';
+import { AuthorizationContext } from '@modules/authorization';
+import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Counted, EntityId } from '@shared/domain';
+import { Counted, EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationContext, AuthorizationService } from '@src/modules/authorization';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import busboy from 'busboy';
 import { Request } from 'express';
@@ -15,6 +17,7 @@ import {
 	DownloadFileParams,
 	FileRecordParams,
 	FileUrlParams,
+	PreviewParams,
 	RenameFileParams,
 	ScanResultParams,
 	SingleFileParams,
@@ -22,17 +25,20 @@ import {
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
-import { IGetFileResponse } from '../interface';
+import { GetFileResponse } from '../interface';
 import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
+import { PreviewService } from '../service/preview.service';
 
 @Injectable()
 export class FilesStorageUC {
 	constructor(
 		private logger: LegacyLogger,
-		private readonly authorizationService: AuthorizationService,
+		private readonly authorizationReferenceService: AuthorizationReferenceService,
 		private readonly httpService: HttpService,
-		private readonly filesStorageService: FilesStorageService
+		private readonly filesStorageService: FilesStorageService,
+		private readonly previewService: PreviewService,
+		private readonly em: EntityManager
 	) {
 		this.logger.setContext(FilesStorageUC.name);
 	}
@@ -44,7 +50,7 @@ export class FilesStorageUC {
 		context: AuthorizationContext
 	) {
 		const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
-		await this.authorizationService.checkPermissionByReferences(userId, allowedType, parentId, context);
+		await this.authorizationReferenceService.checkPermissionByReferences(userId, allowedType, parentId, context);
 	}
 
 	// upload
@@ -59,18 +65,25 @@ export class FilesStorageUC {
 	private async uploadFileWithBusboy(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecord> {
 		const promise = new Promise<FileRecord>((resolve, reject) => {
 			const bb = busboy({ headers: req.headers, defParamCharset: 'utf8' });
+			let fileRecordPromise: Promise<FileRecord>;
 
-			// eslint-disable-next-line @typescript-eslint/no-misused-promises
-			bb.on('file', async (_name, file, info) => {
+			bb.on('file', (_name, file, info) => {
 				const fileDto = FileDtoBuilder.buildFromRequest(info, file);
 
-				try {
-					const record = await this.filesStorageService.uploadFile(userId, params, fileDto);
-					resolve(record);
-				} catch (error) {
-					req.unpipe(bb);
-					reject(error);
-				}
+				fileRecordPromise = RequestContext.createAsync(this.em, () => {
+					const record = this.filesStorageService.uploadFile(userId, params, fileDto);
+
+					return record;
+				});
+			});
+
+			bb.on('finish', () => {
+				fileRecordPromise
+					.then((result) => resolve(result))
+					.catch((error) => {
+						req.unpipe(bb);
+						reject(error);
+					});
 			});
 
 			req.pipe(bb);
@@ -121,7 +134,7 @@ export class FilesStorageUC {
 	}
 
 	// download
-	public async download(userId: EntityId, params: DownloadFileParams, bytesRange?: string): Promise<IGetFileResponse> {
+	public async download(userId: EntityId, params: DownloadFileParams, bytesRange?: string): Promise<GetFileResponse> {
 		const singleFileParams = FilesStorageMapper.mapToSingleFileParams(params);
 		const fileRecord = await this.filesStorageService.getFileRecord(singleFileParams);
 		const { parentType, parentId } = fileRecord.getParentInfo();
@@ -131,17 +144,38 @@ export class FilesStorageUC {
 		return this.filesStorageService.download(fileRecord, params, bytesRange);
 	}
 
-	public async downloadBySecurityToken(token: string): Promise<IGetFileResponse> {
+	public async downloadBySecurityToken(token: string): Promise<GetFileResponse> {
 		const fileRecord = await this.filesStorageService.getFileRecordBySecurityCheckRequestToken(token);
-		const res = await this.filesStorageService.downloadFile(fileRecord.getSchoolId(), fileRecord.id);
+		const res = await this.filesStorageService.downloadFile(fileRecord);
 
 		return res;
+	}
+
+	public async downloadPreview(
+		userId: EntityId,
+		params: DownloadFileParams,
+		previewParams: PreviewParams,
+		bytesRange?: string
+	): Promise<GetFileResponse> {
+		const singleFileParams = FilesStorageMapper.mapToSingleFileParams(params);
+		const fileRecord = await this.filesStorageService.getFileRecord(singleFileParams);
+		const { parentType, parentId } = fileRecord.getParentInfo();
+
+		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.read);
+
+		this.filesStorageService.checkFileName(fileRecord, params);
+
+		const result = this.previewService.download(fileRecord, previewParams, bytesRange);
+
+		return result;
 	}
 
 	// delete
 	public async deleteFilesOfParent(userId: EntityId, params: FileRecordParams): Promise<Counted<FileRecord[]>> {
 		await this.checkPermission(userId, params.parentType, params.parentId, FileStorageAuthorizationContext.delete);
-		const [fileRecords, count] = await this.filesStorageService.deleteFilesOfParent(params.parentId);
+		const [fileRecords, count] = await this.filesStorageService.getFileRecordsOfParent(params.parentId);
+		await this.previewService.deletePreviews(fileRecords);
+		await this.filesStorageService.deleteFilesOfParent(fileRecords);
 
 		return [fileRecords, count];
 	}
@@ -151,6 +185,7 @@ export class FilesStorageUC {
 		const { parentType, parentId } = fileRecord.getParentInfo();
 
 		await this.checkPermission(userId, parentType, parentId, FileStorageAuthorizationContext.delete);
+		await this.previewService.deletePreviews([fileRecord]);
 		await this.filesStorageService.delete([fileRecord]);
 
 		return fileRecord;

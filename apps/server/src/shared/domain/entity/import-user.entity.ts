@@ -1,16 +1,16 @@
 import { Entity, Enum, IdentifiedReference, ManyToOne, Property, Unique, wrap } from '@mikro-orm/core';
-import { IEntityWithSchool, RoleName } from '../interface';
+import { EntityWithSchool, RoleName } from '../interface';
 import { BaseEntityReference, BaseEntityWithTimestamps } from './base.entity';
-import type { School } from './school.entity';
-import { System } from './system.entity';
+import { SchoolEntity } from './school.entity';
+import { SystemEntity } from './system.entity';
 import type { User } from './user.entity';
 
 export type IImportUserRoleName = RoleName.ADMINISTRATOR | RoleName.TEACHER | RoleName.STUDENT;
 
-export interface IImportUserProperties {
+export interface ImportUserProperties {
 	// references
-	school: School;
-	system: System;
+	school: SchoolEntity;
+	system: SystemEntity;
 	// external identifiers
 	ldapDn: string;
 	externalId: string;
@@ -34,8 +34,8 @@ export enum MatchCreator {
 @Unique({ properties: ['school', 'externalId'] })
 @Unique({ properties: ['school', 'ldapDn'] })
 @Unique({ properties: ['school', 'email'] })
-export class ImportUser extends BaseEntityWithTimestamps implements IEntityWithSchool {
-	constructor(props: IImportUserProperties) {
+export class ImportUser extends BaseEntityWithTimestamps implements EntityWithSchool {
+	constructor(props: ImportUserProperties) {
 		super();
 		this.school = wrap(props.school).toReference();
 		this.system = wrap(props.system).toReference();
@@ -50,11 +50,11 @@ export class ImportUser extends BaseEntityWithTimestamps implements IEntityWithS
 		if (props.flagged && props.flagged === true) this.flagged = true;
 	}
 
-	@ManyToOne(() => 'School', { fieldName: 'schoolId', wrappedReference: true, eager: true })
-	school: IdentifiedReference<School>;
+	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId', wrappedReference: true, eager: true })
+	school: IdentifiedReference<SchoolEntity>;
 
-	@ManyToOne(() => 'System', { wrappedReference: true })
-	system: IdentifiedReference<System, BaseEntityReference>;
+	@ManyToOne(() => SystemEntity, { wrappedReference: true })
+	system: IdentifiedReference<SystemEntity, BaseEntityReference>;
 
 	@Property()
 	ldapDn: string;

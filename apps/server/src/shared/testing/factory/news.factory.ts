@@ -1,11 +1,11 @@
-import { SchoolNews, CourseNews, TeamNews, INewsProperties } from '@shared/domain';
+import { CourseNews, NewsProperties, SchoolNews, TeamNews } from '@shared/domain/entity';
 import { BaseFactory } from './base.factory';
 import { courseFactory } from './course.factory';
 import { schoolFactory } from './school.factory';
 import { teamFactory } from './team.factory';
 import { userFactory } from './user.factory';
 
-export const schoolNewsFactory = BaseFactory.define<SchoolNews, INewsProperties>(SchoolNews, ({ sequence }) => {
+export const schoolNewsFactory = BaseFactory.define<SchoolNews, NewsProperties>(SchoolNews, ({ sequence }) => {
 	return {
 		title: `news ${sequence}`,
 		content: `content of news ${sequence}`,
@@ -16,7 +16,7 @@ export const schoolNewsFactory = BaseFactory.define<SchoolNews, INewsProperties>
 	};
 });
 
-export const courseNewsFactory = BaseFactory.define<CourseNews, INewsProperties>(CourseNews, ({ sequence }) => {
+export const courseNewsFactory = BaseFactory.define<CourseNews, NewsProperties>(CourseNews, ({ sequence }) => {
 	return {
 		title: `news ${sequence}`,
 		content: `content of news ${sequence}`,
@@ -27,7 +27,7 @@ export const courseNewsFactory = BaseFactory.define<CourseNews, INewsProperties>
 	};
 });
 
-export const teamNewsFactory = BaseFactory.define<TeamNews, INewsProperties>(TeamNews, ({ sequence }) => {
+export const teamNewsFactory = BaseFactory.define<TeamNews, NewsProperties>(TeamNews, ({ sequence }) => {
 	return {
 		title: `news ${sequence}`,
 		content: `content of news ${sequence}`,
@@ -38,7 +38,7 @@ export const teamNewsFactory = BaseFactory.define<TeamNews, INewsProperties>(Tea
 	};
 });
 
-export const schoolUnpublishedNewsFactory = BaseFactory.define<SchoolNews, INewsProperties>(
+export const schoolUnpublishedNewsFactory = BaseFactory.define<SchoolNews, NewsProperties>(
 	SchoolNews,
 	({ sequence }) => {
 		return {
@@ -52,7 +52,7 @@ export const schoolUnpublishedNewsFactory = BaseFactory.define<SchoolNews, INews
 	}
 );
 
-export const courseUnpublishedNewsFactory = BaseFactory.define<CourseNews, INewsProperties>(
+export const courseUnpublishedNewsFactory = BaseFactory.define<CourseNews, NewsProperties>(
 	CourseNews,
 	({ sequence }) => {
 		return {
@@ -66,7 +66,7 @@ export const courseUnpublishedNewsFactory = BaseFactory.define<CourseNews, INews
 	}
 );
 
-export const teamUnpublishedNewsFactory = BaseFactory.define<TeamNews, INewsProperties>(TeamNews, ({ sequence }) => {
+export const teamUnpublishedNewsFactory = BaseFactory.define<TeamNews, NewsProperties>(TeamNews, ({ sequence }) => {
 	return {
 		title: `news ${sequence}`,
 		content: `content of news ${sequence}`,

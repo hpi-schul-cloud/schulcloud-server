@@ -1,14 +1,13 @@
 const express = require('@feathersjs/express');
-const feathers = require('@feathersjs/feathers');
+const { feathers } = require('@feathersjs/feathers');
 const configuration = require('@feathersjs/configuration');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const path = require('path');
 const favicon = require('serve-favicon');
 const compress = require('compression');
 const cors = require('cors');
-const rest = require('@feathersjs/express/rest');
+const { rest } = require('@feathersjs/express');
 const bodyParser = require('body-parser');
-const socketio = require('@feathersjs/socketio');
 const { ObjectId } = require('mongoose').Types;
 
 const { RequestContext } = require('@mikro-orm/core');
@@ -16,7 +15,6 @@ const { BODYPARSER_JSON_LIMIT, LEAD_TIME } = require('../config/globals');
 
 const middleware = require('./middleware');
 const setupConfiguration = require('./configuration');
-const sockets = require('./sockets');
 const services = require('./services');
 const components = require('./components');
 
@@ -50,9 +48,8 @@ const setupApp = async (orm) => {
 
 	setupFacadeLocator(app);
 	setupSwagger(app);
-	initializeRedisClient();
+	await initializeRedisClient();
 	rabbitMq.setup(app);
-
 	app
 		.use(compress())
 		.options('*', cors())
@@ -77,7 +74,6 @@ const setupApp = async (orm) => {
 			res.send({ message: 'pong', timestamp: new Date().getTime() });
 		})
 		.configure(rest(handleResponseType))
-		.configure(socketio())
 		.use((req, res, next) => {
 			// pass header into hooks.params
 			// todo: To create a fake requestId on this place is a temporary solution
@@ -96,13 +92,7 @@ const setupApp = async (orm) => {
 			next();
 		});
 	}
-	app
-		.configure(services)
-		.configure(components)
-		.configure(sockets)
-		.configure(middleware)
-		.configure(setupAppHooks)
-		.configure(errorHandler);
+	app.configure(services).configure(components).configure(middleware).configure(setupAppHooks).configure(errorHandler);
 
 	return app;
 };

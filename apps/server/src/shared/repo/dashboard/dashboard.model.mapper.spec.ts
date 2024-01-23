@@ -1,16 +1,15 @@
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
 import { InternalServerErrorException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import {
+	Course,
 	DashboardEntity,
-	GridElement,
 	DashboardGridElementModel,
 	DashboardModelEntity,
-	Course,
-	LearnroomMetadata,
-	LearnroomTypes,
-} from '@shared/domain';
+	GridElement,
+} from '@shared/domain/entity';
+import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
 import { courseFactory, userFactory } from '@shared/testing';
 import { DashboardModelMapper } from './dashboard.model.mapper';
 

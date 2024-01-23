@@ -2,23 +2,25 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { AntivirusService } from '@infra/antivirus';
+import { S3ClientAdapter } from '@infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams, SingleFileParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
+import { FILES_STORAGE_S3_CONNECTION } from '../files-storage.config';
 import { FileRecordRepo } from '../repo';
 import { FilesStorageService } from './files-storage.service';
 
 const buildFileRecordsWithParams = () => {
+	const creatorId = new ObjectId().toHexString();
 	const parentId = new ObjectId().toHexString();
 	const parentSchoolId = new ObjectId().toHexString();
 
 	const fileRecords = [
-		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text.txt' }),
-		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-two.txt' }),
-		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-tree.txt' }),
+		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text.txt', creatorId }),
+		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-two.txt', creatorId }),
+		fileRecordFactory.buildWithId({ parentId, schoolId: parentSchoolId, name: 'text-tree.txt', creatorId }),
 	];
 
 	const params: FileRecordParams = {
@@ -27,7 +29,7 @@ const buildFileRecordsWithParams = () => {
 		parentType: FileRecordParentType.User,
 	};
 
-	return { params, fileRecords, parentId };
+	return { params, fileRecords, parentId, creatorId };
 };
 
 const buildFileRecordWithParams = () => {
@@ -54,7 +56,7 @@ describe('FilesStorageService get methods', () => {
 			providers: [
 				FilesStorageService,
 				{
-					provide: S3ClientAdapter,
+					provide: FILES_STORAGE_S3_CONNECTION,
 					useValue: createMock<S3ClientAdapter>(),
 				},
 				{
@@ -263,6 +265,49 @@ describe('FilesStorageService get methods', () => {
 				const { parentId } = setup();
 
 				await expect(service.getFileRecordsOfParent(parentId)).rejects.toThrow(new Error('bla'));
+			});
+		});
+	});
+
+	describe('getFileRecordsByCreatorId is called', () => {
+		describe('WHEN valid files exist', () => {
+			const setup = () => {
+				const { fileRecords, creatorId } = buildFileRecordsWithParams();
+				fileRecordRepo.findByCreatorId.mockResolvedValueOnce([fileRecords, fileRecords.length]);
+
+				return { fileRecords, creatorId };
+			};
+
+			it('should call fileRecordRepo.findByCreatorId with right parameters', async () => {
+				const { creatorId } = setup();
+
+				await service.getFileRecordsByCreatorId(creatorId);
+
+				expect(fileRecordRepo.findByCreatorId).toHaveBeenNthCalledWith(1, creatorId);
+			});
+
+			it('should return the matched fileRecord', async () => {
+				const { creatorId, fileRecords } = setup();
+
+				const result = await service.getFileRecordsByCreatorId(creatorId);
+
+				expect(result).toEqual([fileRecords, 3]);
+			});
+		});
+
+		describe('WHEN repository throws an error', () => {
+			const setup = () => {
+				const { creatorId } = buildFileRecordsWithParams();
+
+				fileRecordRepo.findByCreatorId.mockRejectedValueOnce(new Error('bla'));
+
+				return { creatorId };
+			};
+
+			it('should pass the error', async () => {
+				const { creatorId } = setup();
+
+				await expect(service.getFileRecordsByCreatorId(creatorId)).rejects.toThrow(new Error('bla'));
 			});
 		});
 	});

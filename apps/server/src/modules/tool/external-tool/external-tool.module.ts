@@ -1,27 +1,43 @@
+import { EncryptionModule } from '@infra/encryption';
+import { OauthProviderServiceModule } from '@infra/oauth-provider';
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { LoggerModule } from '@src/core/logger';
-import { OauthProviderServiceModule } from '@shared/infra/oauth-provider';
-import { EncryptionModule } from '@shared/infra/encryption';
 import { ExternalToolRepo } from '@shared/repo';
+import { LoggerModule } from '@src/core/logger';
+import { CommonToolModule } from '../common';
+import { ToolContextMapper } from '../common/mapper/tool-context.mapper';
+import { ToolConfigModule } from '../tool-config.module';
+import { ExternalToolMetadataMapper } from './mapper';
 import {
+	ExternalToolConfigurationService,
+	ExternalToolLogoService,
 	ExternalToolParameterValidationService,
 	ExternalToolService,
 	ExternalToolServiceMapper,
 	ExternalToolValidationService,
-	ExternalToolVersionService,
+	ExternalToolVersionIncrementService,
 } from './service';
-import { CommonToolModule } from '../common';
 
 @Module({
-	imports: [CommonToolModule, LoggerModule, OauthProviderServiceModule, EncryptionModule],
+	imports: [CommonToolModule, ToolConfigModule, LoggerModule, OauthProviderServiceModule, EncryptionModule, HttpModule],
 	providers: [
 		ExternalToolService,
 		ExternalToolServiceMapper,
 		ExternalToolParameterValidationService,
 		ExternalToolValidationService,
-		ExternalToolVersionService,
+		ExternalToolVersionIncrementService,
+		ExternalToolConfigurationService,
+		ExternalToolLogoService,
 		ExternalToolRepo,
+		ExternalToolMetadataMapper,
+		ToolContextMapper,
 	],
-	exports: [ExternalToolService, ExternalToolValidationService, ExternalToolVersionService],
+	exports: [
+		ExternalToolService,
+		ExternalToolValidationService,
+		ExternalToolVersionIncrementService,
+		ExternalToolConfigurationService,
+		ExternalToolLogoService,
+	],
 })
 export class ExternalToolModule {}

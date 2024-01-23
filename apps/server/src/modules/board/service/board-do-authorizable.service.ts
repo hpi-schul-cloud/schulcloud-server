@@ -1,3 +1,4 @@
+import { AuthorizationLoaderService } from '@modules/authorization';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import {
 	AnyBoardDo,
@@ -5,12 +6,12 @@ import {
 	BoardExternalReferenceType,
 	BoardRoles,
 	ColumnBoard,
-	Course,
-	EntityId,
 	UserBoardRoles,
-} from '@shared/domain';
+	UserRoleEnum,
+} from '@shared/domain/domainobject';
+import { Course } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
-import { AuthorizationLoaderService } from '@src/modules/authorization';
 import { BoardDoRepo } from '../repo';
 
 @Injectable()
@@ -48,14 +49,32 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 
 	private mapCourseUsersToUsergroup(course: Course): UserBoardRoles[] {
 		const users = [
-			...course.getTeacherIds().map((userId) => {
-				return { userId, roles: [BoardRoles.EDITOR] };
+			...course.getTeachersList().map((user) => {
+				return {
+					userId: user.id,
+					firstName: user.firstName,
+					lastName: user.lastName,
+					roles: [BoardRoles.EDITOR],
+					userRoleEnum: UserRoleEnum.TEACHER,
+				};
 			}),
-			...course.getSubstitutionTeacherIds().map((userId) => {
-				return { userId, roles: [BoardRoles.EDITOR] };
+			...course.getSubstitutionTeachersList().map((user) => {
+				return {
+					userId: user.id,
+					firstName: user.firstName,
+					lastName: user.lastName,
+					roles: [BoardRoles.EDITOR],
+					userRoleEnum: UserRoleEnum.SUBSTITUTION_TEACHER,
+				};
 			}),
-			...course.getStudentIds().map((userId) => {
-				return { userId, roles: [BoardRoles.READER] };
+			...course.getStudentsList().map((user) => {
+				return {
+					userId: user.id,
+					firstName: user.firstName,
+					lastName: user.lastName,
+					roles: [BoardRoles.READER],
+					userRoleEnum: UserRoleEnum.STUDENT,
+				};
 			}),
 		];
 		return users;

@@ -1,48 +1,55 @@
-import { forwardRef, Module } from '@nestjs/common';
-import { ALL_RULES } from '@shared/domain/rules';
-import { FeathersModule } from '@shared/infra/feathers';
-import {
-	CourseGroupRepo,
-	CourseRepo,
-	LessonRepo,
-	SchoolExternalToolRepo,
-	SchoolRepo,
-	SubmissionRepo,
-	TaskRepo,
-	TeamsRepo,
-	UserRepo,
-} from '@shared/repo';
+import { FeathersModule } from '@infra/feathers';
+import { Module } from '@nestjs/common';
+import { UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { SchoolModule } from '@src/modules/school';
-import { ToolModule } from '@src/modules/tool';
-import { BoardModule } from '../board';
-import { AuthorizationHelper } from './authorization.helper';
-import { AuthorizationService } from './authorization.service';
+import { AuthorizationHelper, AuthorizationService, RuleManager } from './domain';
+import {
+	BoardDoRule,
+	ContextExternalToolRule,
+	CourseGroupRule,
+	CourseRule,
+	GroupRule,
+	LegacySchoolRule,
+	LessonRule,
+	SchoolExternalToolRule,
+	SchoolRule,
+	SchoolSystemOptionsRule,
+	SubmissionRule,
+	SystemRule,
+	TaskRule,
+	TeamRule,
+	UserLoginMigrationRule,
+	UserRule,
+} from './domain/rules';
 import { FeathersAuthorizationService, FeathersAuthProvider } from './feathers';
-import { ReferenceLoader } from './reference.loader';
-import { RuleManager } from './rule-manager';
 
 @Module({
-	// TODO: remove forwardRef to TooModule N21-1055
-	imports: [FeathersModule, LoggerModule, SchoolModule, forwardRef(() => ToolModule), forwardRef(() => BoardModule)],
+	imports: [FeathersModule, LoggerModule],
 	providers: [
 		FeathersAuthorizationService,
 		FeathersAuthProvider,
 		AuthorizationService,
-		...ALL_RULES,
-		ReferenceLoader,
 		UserRepo,
-		CourseRepo,
-		CourseGroupRepo,
-		TaskRepo,
-		SchoolRepo,
-		LessonRepo,
-		TeamsRepo,
-		SubmissionRepo,
-		SchoolExternalToolRepo,
 		RuleManager,
 		AuthorizationHelper,
+		// rules
+		BoardDoRule,
+		ContextExternalToolRule,
+		CourseGroupRule,
+		CourseRule,
+		GroupRule,
+		LessonRule,
+		SchoolRule,
+		SchoolExternalToolRule,
+		SubmissionRule,
+		TaskRule,
+		TeamRule,
+		UserRule,
+		UserLoginMigrationRule,
+		LegacySchoolRule,
+		SystemRule,
+		SchoolSystemOptionsRule,
 	],
-	exports: [FeathersAuthorizationService, AuthorizationService],
+	exports: [FeathersAuthorizationService, AuthorizationService, SystemRule],
 })
 export class AuthorizationModule {}

@@ -1,28 +1,25 @@
+import { Configuration } from '@hpi-schul-cloud/commons';
+import { AccountService } from '@modules/account/services/account.service';
+import { AccountDto } from '@modules/account/services/dto/account.dto';
+import { AuthorizationService } from '@modules/authorization';
+import { LegacySchoolService } from '@modules/legacy-school';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
+import { LegacySchoolDo } from '@shared/domain/domainobject';
+import { Account, ImportUser, MatchCreator, SystemEntity, User } from '@shared/domain/entity';
+import { IFindOptions, Permission } from '@shared/domain/interface';
+import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch, SchoolFeature } from '@shared/domain/types';
+import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
+import { Logger } from '@src/core/logger';
+import { AccountSaveDto } from '../../account/services/dto';
 import {
-	Account,
-	Counted,
-	EntityId,
-	IFindOptions,
-	IImportUserScope,
-	ImportUser,
-	INameMatch,
-	MatchCreator,
-	MatchCreatorScope,
-	Permission,
-	SchoolFeatures,
-	System,
-	User,
-} from '@shared/domain';
-
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { ImportUserRepo, SystemRepo, UserRepo } from '@shared/repo';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto/account.dto';
-import { AuthorizationService } from '@src/modules/authorization';
-import { SchoolService } from '../../school';
+	MigrationMayBeCompleted,
+	MigrationMayNotBeCompleted,
+	SchoolIdDoesNotMatchWithUserSchoolId,
+	SchoolInUserMigrationEndLoggable,
+	SchoolInUserMigrationStartLoggable,
+	UserMigrationIsNotEnabled,
+} from '../loggable';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,
@@ -40,15 +37,19 @@ export class UserImportUc {
 		private readonly accountService: AccountService,
 		private readonly importUserRepo: ImportUserRepo,
 		private readonly authorizationService: AuthorizationService,
-		private readonly schoolService: SchoolService,
-		private readonly systemRepo: SystemRepo,
-		private readonly userRepo: UserRepo
-	) {}
+		private readonly schoolService: LegacySchoolService,
+		private readonly systemRepo: LegacySystemRepo,
+		private readonly userRepo: UserRepo,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(UserImportUc.name);
+	}
 
-	private checkFeatureEnabled(school: SchoolDO): void | never {
+	private checkFeatureEnabled(school: LegacySchoolDo): void | never {
 		const enabled = Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean;
-		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeatures.LDAP_UNIVENTION_MIGRATION);
+		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeature.LDAP_UNIVENTION_MIGRATION);
 		if (!enabled && !isLdapPilotSchool) {
+			this.logger.warning(new UserMigrationIsNotEnabled());
 			throw new InternalServerErrorException('User Migration not enabled');
 		}
 	}
@@ -66,7 +67,7 @@ export class UserImportUc {
 		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
-		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
 		// TODO Change ImportUserRepo to DO to fix this workaround
 		const countedImportUsers = await this.importUserRepo.findImportUsers(currentUser.school, query, options);
@@ -82,13 +83,16 @@ export class UserImportUc {
 	 */
 	async setMatch(currentUserId: EntityId, importUserId: EntityId, userMatchId: EntityId): Promise<ImportUser> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
-		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
 		const importUser = await this.importUserRepo.findById(importUserId);
 		const userMatch = await this.userRepo.findById(userMatchId, true);
 
 		// check same school
 		if (!school.id || school.id !== userMatch.school.id || school.id !== importUser.school.id) {
+			this.logger.warning(
+				new SchoolIdDoesNotMatchWithUserSchoolId(userMatch.school.id, importUser.school.id, school.id)
+			);
 			throw new ForbiddenException('not same school');
 		}
 
@@ -104,11 +108,12 @@ export class UserImportUc {
 
 	async removeMatch(currentUserId: EntityId, importUserId: EntityId): Promise<ImportUser> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
-		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
 		const importUser = await this.importUserRepo.findById(importUserId);
 		// check same school
 		if (school.id !== importUser.school.id) {
+			this.logger.warning(new SchoolIdDoesNotMatchWithUserSchoolId('', importUser.school.id, school.id));
 			throw new ForbiddenException('not same school');
 		}
 
@@ -120,12 +125,13 @@ export class UserImportUc {
 
 	async updateFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean): Promise<ImportUser> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
-		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
 		const importUser = await this.importUserRepo.findById(importUserId);
 
 		// check same school
 		if (school.id !== importUser.school.id) {
+			this.logger.warning(new SchoolIdDoesNotMatchWithUserSchoolId('', importUser.school.id, school.id));
 			throw new ForbiddenException('not same school');
 		}
 
@@ -146,11 +152,11 @@ export class UserImportUc {
 	 */
 	async findAllUnmatchedUsers(
 		currentUserId: EntityId,
-		query: INameMatch,
+		query: NameMatch,
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
-		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
 		// TODO Change to UserService to fix this workaround
 		const unmatchedCountedUsers = await this.userRepo.findWithoutImportUser(currentUser.school, query, options);
@@ -159,22 +165,40 @@ export class UserImportUc {
 
 	async saveAllUsersMatches(currentUserId: EntityId): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
-		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
 		const filters: IImportUserScope = { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
 		// TODO batch/paginated import?
 		const options: IFindOptions<ImportUser> = {};
 		// TODO Change ImportUserRepo to DO to fix this workaround
 		const [importUsers, total] = await this.importUserRepo.findImportUsers(currentUser.school, filters, options);
+		let migratedUser = 0;
 		if (total > 0) {
+			this.logger.notice({
+				getLogMessage: () => {
+					return {
+						message: 'start saving all matched users',
+						numberOfMatchedUser: total,
+					};
+				},
+			});
 			for (const importUser of importUsers) {
 				// TODO: Find a better solution for this loop
 				// this needs to be synchronous, because otherwise it was leading to
 				// server crush when working with larger number of users (e.g. 1000)
 				// eslint-disable-next-line no-await-in-loop
 				await this.updateUserAndAccount(importUser, school);
+				migratedUser += 1;
 			}
 		}
+		this.logger.notice({
+			getLogMessage: () => {
+				return {
+					message: 'number of already migrated users from the total number',
+					numberOfMigratedUser: `${migratedUser}/${total}`,
+				};
+			},
+		});
 		// TODO Change ImportUserRepo to DO to fix this workaround
 		// Delete all remaining importUser-objects that dont need to be ported
 		await this.importUserRepo.deleteImportUsersBySchool(currentUser.school);
@@ -183,9 +207,10 @@ export class UserImportUc {
 
 	private async endSchoolInUserMigration(currentUserId: EntityId): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
-		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
 		if (!school.externalId || school.inUserMigration !== true || !school.inMaintenanceSince) {
+			this.logger.warning(new MigrationMayBeCompleted(school.inUserMigration));
 			throw new BadRequestException('School cannot exit from user migration mode');
 		}
 		school.inUserMigration = false;
@@ -194,8 +219,8 @@ export class UserImportUc {
 
 	async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
-		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
-
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
+		this.logger.notice(new SchoolInUserMigrationStartLoggable(currentUserId, school.name, useCentralLdap));
 		this.checkFeatureEnabled(school);
 		this.checkSchoolNumber(school, useCentralLdap);
 		this.checkSchoolNotInMigration(school);
@@ -216,13 +241,15 @@ export class UserImportUc {
 
 	async endSchoolInMaintenance(currentUserId: EntityId): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
-		const school: SchoolDO = await this.schoolService.getSchoolById(currentUser.school.id);
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.checkFeatureEnabled(school);
 		if (school.inUserMigration !== false || !school.inMaintenanceSince || !school.externalId) {
+			this.logger.warning(new MigrationMayNotBeCompleted(school.inUserMigration));
 			throw new BadRequestException('Sync cannot be activated for school');
 		}
 		school.inMaintenanceSince = undefined;
 		await this.schoolService.save(school);
+		this.logger.notice(new SchoolInUserMigrationEndLoggable(school.name));
 	}
 
 	private async getCurrentUser(currentUserId: EntityId, permission: UserImportPermissions): Promise<User> {
@@ -232,7 +259,10 @@ export class UserImportUc {
 		return currentUser;
 	}
 
-	private async updateUserAndAccount(importUser: ImportUser, school: SchoolDO): Promise<[User, Account] | undefined> {
+	private async updateUserAndAccount(
+		importUser: ImportUser,
+		school: LegacySchoolDo
+	): Promise<[User, Account] | undefined> {
 		if (!importUser.user || !importUser.loginName || !school.externalId) {
 			return;
 		}
@@ -240,29 +270,44 @@ export class UserImportUc {
 		user.ldapDn = importUser.ldapDn;
 		user.externalId = importUser.externalId;
 
-		const account: AccountDto = await this.accountService.findByUserIdOrFail(user.id);
+		const account: AccountDto = await this.getAccount(user);
 
 		account.systemId = importUser.system.id;
 		account.password = undefined;
-		account.username = `${school.externalId}/${importUser.loginName}`;
+		account.username = `${school.externalId}/${importUser.loginName}`.toLowerCase();
 
 		await this.userRepo.save(user);
 		await this.accountService.save(account);
 		await this.importUserRepo.delete(importUser);
 	}
 
-	private async getMigrationSystem(): Promise<System> {
+	private async getAccount(user: User): Promise<AccountDto> {
+		let account: AccountDto | null = await this.accountService.findByUserId(user.id);
+
+		if (!account) {
+			const newAccount: AccountSaveDto = new AccountSaveDto({
+				userId: user.id,
+				username: user.email,
+			});
+
+			await this.accountService.saveWithValidation(newAccount);
+			account = await this.accountService.findByUserIdOrFail(user.id);
+		}
+		return account;
+	}
+
+	private async getMigrationSystem(): Promise<SystemEntity> {
 		const systemId = Configuration.get('FEATURE_USER_MIGRATION_SYSTEM_ID') as string;
 		const system = await this.systemRepo.findById(systemId);
 		return system;
 	}
 
-	private async checkNoExistingLdapBeforeStart(school: SchoolDO): Promise<void> {
+	private async checkNoExistingLdapBeforeStart(school: LegacySchoolDo): Promise<void> {
 		if (school.systems && school.systems?.length > 0) {
 			for (const systemId of school.systems) {
 				// very unusual to have more than 1 system
 				// eslint-disable-next-line no-await-in-loop
-				const system: System = await this.systemRepo.findById(systemId);
+				const system: SystemEntity = await this.systemRepo.findById(systemId);
 				if (system.ldapConfig) {
 					throw new LdapAlreadyPersistedException();
 				}
@@ -270,13 +315,13 @@ export class UserImportUc {
 		}
 	}
 
-	private checkSchoolNumber(school: SchoolDO, useCentralLdap: boolean): void | never {
+	private checkSchoolNumber(school: LegacySchoolDo, useCentralLdap: boolean): void | never {
 		if (useCentralLdap && !school.officialSchoolNumber) {
 			throw new MissingSchoolNumberException();
 		}
 	}
 
-	private checkSchoolNotInMigration(school: SchoolDO): void | never {
+	private checkSchoolNotInMigration(school: LegacySchoolDo): void | never {
 		if (school.inUserMigration !== undefined && school.inUserMigration !== null) {
 			throw new MigrationAlreadyActivatedException();
 		}

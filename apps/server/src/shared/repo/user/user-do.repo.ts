@@ -1,37 +1,23 @@
-import { EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import { EntityData, EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import { UserQuery } from '@modules/user/service/user-query.type';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
-import {
-	EntityId,
-	IFindOptions,
-	IPagination,
-	IUserProperties,
-	Role,
-	School,
-	SortOrder,
-	SortOrderMap,
-	System,
-	User,
-} from '@shared/domain';
-import { RoleReference } from '@shared/domain/domainobject';
-import { Page } from '@shared/domain/domainobject/page';
+import { Page, RoleReference } from '@shared/domain/domainobject';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { Role, SchoolEntity, User } from '@shared/domain/entity';
+import { IFindOptions, Pagination, SortOrder, SortOrderMap } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { BaseDORepo, Scope } from '@shared/repo';
-import { UserQuery } from '@src/modules/user/service/user-query.type';
 import { UserScope } from './user.scope';
 
 @Injectable()
-export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
+export class UserDORepo extends BaseDORepo<UserDO, User> {
 	get entityName(): EntityName<User> {
 		return User;
 	}
 
-	entityFactory(props: IUserProperties): User {
-		return new User(props);
-	}
-
 	async find(query: UserQuery, options?: IFindOptions<UserDO>) {
-		const pagination: IPagination = options?.pagination || {};
+		const pagination: Pagination = options?.pagination || {};
 		const order: QueryOrderMap<User> = this.createQueryOrderMap(options?.order || {});
 		const scope: Scope<User> = new UserScope()
 			.bySchoolId(query.schoolId)
@@ -61,11 +47,28 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 		const userEntity: User = await this._em.findOneOrFail(this.entityName, id as FilterQuery<User>);
 
 		if (populate) {
-			await this._em.populate(userEntity, ['roles', 'school.systems', 'school.schoolYear']);
+			await this._em.populate(userEntity, ['roles', 'school.systems', 'school.currentYear']);
 			await this.populateRoles(userEntity.roles.getItems());
 		}
 
 		return this.mapEntityToDO(userEntity);
+	}
+
+	async findByIdOrNull(id: EntityId, populate = false): Promise<UserDO | null> {
+		const user: User | null = await this._em.findOne(this.entityName, id as FilterQuery<User>);
+
+		if (!user) {
+			return null;
+		}
+
+		if (populate) {
+			await this._em.populate(user, ['roles', 'school.systems', 'school.currentYear']);
+			await this.populateRoles(user.roles.getItems());
+		}
+
+		const domainObject: UserDO = this.mapEntityToDO(user);
+
+		return domainObject;
 	}
 
 	async findByExternalIdOrFail(externalId: string, systemId: string): Promise<UserDO> {
@@ -80,11 +83,22 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 		const userEntitys: User[] = await this._em.find(User, { externalId }, { populate: ['school.systems'] });
 		const userEntity: User | undefined = userEntitys.find((user: User): boolean => {
 			const { systems } = user.school;
-			return systems && !!systems.getItems().find((system: System): boolean => system.id === systemId);
+			return systems && !!systems.getItems().find((system): boolean => system.id === systemId);
 		});
 
 		const userDo: UserDO | null = userEntity ? this.mapEntityToDO(userEntity) : null;
 		return userDo;
+	}
+
+	async findByEmail(email: string): Promise<UserDO[]> {
+		// find mail case-insensitive by regex
+		const userEntitys: User[] = await this._em.find(User, {
+			email: new RegExp(`^${email.replace(/\W/g, '\\$&')}$`, 'i'),
+		});
+
+		const userDos: UserDO[] = userEntitys.map((userEntity: User): UserDO => this.mapEntityToDO(userEntity));
+
+		return userDos;
 	}
 
 	mapEntityToDO(entity: User): UserDO {
@@ -109,6 +123,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 			lastLoginSystemChange: entity.lastLoginSystemChange,
 			outdatedSince: entity.outdatedSince,
 			previousExternalId: entity.previousExternalId,
+			birthday: entity.birthday,
 		});
 
 		if (entity.roles.isInitialized()) {
@@ -120,12 +135,12 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 		return user;
 	}
 
-	mapDOToEntityProperties(entityDO: UserDO): IUserProperties {
+	mapDOToEntityProperties(entityDO: UserDO): EntityData<User> {
 		return {
 			email: entityDO.email,
 			firstName: entityDO.firstName,
 			lastName: entityDO.lastName,
-			school: this._em.getReference(School, entityDO.schoolId),
+			school: this._em.getReference(SchoolEntity, entityDO.schoolId),
 			roles: entityDO.roles.map((roleRef: RoleReference) => this._em.getReference(Role, roleRef.id)),
 			ldapDn: entityDO.ldapDn,
 			externalId: entityDO.externalId,
@@ -135,6 +150,7 @@ export class UserDORepo extends BaseDORepo<UserDO, User, IUserProperties> {
 			lastLoginSystemChange: entityDO.lastLoginSystemChange,
 			outdatedSince: entityDO.outdatedSince,
 			previousExternalId: entityDO.previousExternalId,
+			birthday: entityDO.birthday,
 		};
 	}
 

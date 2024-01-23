@@ -5,14 +5,14 @@ import {
 	ProviderLoginResponse,
 	ProviderOauthClient,
 	ProviderRedirectResponse,
-} from '@shared/infra/oauth-provider/dto';
+} from '@infra/oauth-provider/dto';
 import {
 	ConsentResponse,
 	ConsentSessionResponse,
 	LoginResponse,
 	OauthClientResponse,
 	RedirectResponse,
-} from '@src/modules/oauth-provider/controller/dto';
+} from '@modules/oauth-provider/controller/dto';
 
 @Injectable()
 export class OauthProviderResponseMapper {

@@ -113,6 +113,7 @@ describe("'/teams/manage/admin' service", () => {
 									_id: userId,
 									firstName: 'Hans',
 									lastName: 'Peter',
+									outdatedSince: undefined,
 									roles: ['lehrer'],
 								},
 							},

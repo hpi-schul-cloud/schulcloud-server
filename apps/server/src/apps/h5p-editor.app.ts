@@ -9,7 +9,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { LegacyLogger } from '@src/core/logger';
-import { H5PEditorModule } from '@src/modules/h5p-editor';
+import { H5PEditorModule } from '@modules/h5p-editor';
 import { enableOpenApiDocs } from '@src/shared/controller/swagger';
 
 async function bootstrap() {
@@ -19,6 +19,7 @@ async function bootstrap() {
 	const nestExpress = express();
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
+
 	const nestApp = await NestFactory.create(H5PEditorModule, nestExpressAdapter);
 	// WinstonLogger
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));

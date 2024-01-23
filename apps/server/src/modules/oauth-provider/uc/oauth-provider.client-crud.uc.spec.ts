@@ -1,12 +1,13 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { OauthProviderService } from '@infra/oauth-provider';
+import { ProviderOauthClient } from '@infra/oauth-provider/dto';
+import { ICurrentUser } from '@modules/authentication';
+import { AuthorizationService } from '@modules/authorization';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, User } from '@shared/domain';
-import { OauthProviderService } from '@shared/infra/oauth-provider';
-import { ProviderOauthClient } from '@shared/infra/oauth-provider/dto';
+import { User } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
 import { setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationService } from '@src/modules';
-import { ICurrentUser } from '@src/modules/authentication';
 import { OauthProviderClientCrudUc } from './oauth-provider.client-crud.uc';
 import resetAllMocks = jest.resetAllMocks;
 

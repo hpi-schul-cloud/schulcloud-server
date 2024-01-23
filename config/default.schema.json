@@ -177,6 +177,12 @@
 		},
 		"ADDITIONAL_BLACKLISTED_EMAIL_DOMAINS": {
 			"type": "string",
+			"default": "",
+			"description": "Add custom domain to the list of blocked domains (comma separated list)."
+		},
+		"BLOCKLIST_OF_EMAIL_DOMAINS":{
+			"type": "string",
+			"default": "",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
 		},
 		"FEATURE_TSP_AUTO_CONSENT_ENABLED": {
@@ -259,6 +265,11 @@
 					"type": "string",
 					"default": "files-storage",
 					"description": "rabbitmq exchange name for antivirus"
+				},
+				"USE_STREAM_TO_ANTIVIRUS": {
+					"type": "boolean",
+					"default": false,
+					"description": "send file to antivirus by uploading"
 				}
 			}
 		},
@@ -298,6 +309,104 @@
 					"minimum": 0,
 					"default": 600000,
 					"description": "Timeout for incoming requests to the fwu-learning-contents in milliseconds."
+				}
+			}
+		},
+		"H5P_EDITOR": {
+			"type": "object",
+			"description": "Properties of the H5P server microservice and library management job",
+			"required": [
+				"S3_ENDPOINT",
+				"S3_REGION",
+				"S3_BUCKET_CONTENT",
+				"S3_BUCKET_LIBRARIES",
+				"S3_ACCESS_KEY_ID_RW",
+				"S3_SECRET_ACCESS_KEY_RW",
+				"S3_ACCESS_KEY_ID_R",
+				"S3_SECRET_ACCESS_KEY_R"
+			],
+			"default": {},
+			"properties": {
+				"S3_ENDPOINT": {
+					"type": "string",
+					"format": "uri",
+					"default": "http://localhost:4568",
+					"description": "The URI of the S3 provider"
+				},
+				"S3_REGION": {
+					"type": "string",
+					"default": "eu-central-2",
+					"description": "Region name of bucket"
+				},
+				"S3_ACCESS_KEY_ID_RW": {
+					"type": "string",
+					"default": "",
+					"description": "Access Key to S3_BUCKET_CONTENT with R/W permissions"
+				},
+				"S3_SECRET_ACCESS_KEY_RW": {
+					"type": "string",
+					"default": "",
+					"description": "Secret key to S3_BUCKET_CONTENT with R/W permissions"
+				},
+				"S3_ACCESS_KEY_ID_R": {
+					"type": "string",
+					"default": "",
+					"description": "Access Key to S3_BUCKET_LIBRARIES with R permissions"
+				},
+				"S3_SECRET_ACCESS_KEY_R": {
+					"type": "string",
+					"default": "",
+					"description": "Secret key to S3_BUCKET_LIBRARIES with R permissions"
+				},
+				"S3_BUCKET_CONTENT": {
+					"type": "string",
+					"default": "",
+					"description": "Content Bucket name"
+				},
+				"S3_BUCKET_LIBRARIES": {
+					"type": "string",
+					"default": "",
+					"description": "Library Bucket name"
+				},
+				"INCOMING_REQUEST_TIMEOUT": {
+					"type": "integer",
+					"minimum": 0,
+					"default": 10000,
+					"description": "Timeout for incoming requests to the h5p editor in milliseconds."
+				},
+				"LIBRARY_LIST_PATH": {
+					"type": "string",
+					"default": "config/h5p-libraries.yaml",
+					"description": "Path to yaml file with list of h5p content type libraries which should be installed"
+				}
+			}
+		},
+		"H5P_Library": {
+			"type": "object",
+			"description": "Properties of the H5P server microservice",
+			"required": ["S3_ENDPOINT", "S3_BUCKET_LIBRARIES", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"],
+			"default": {},
+			"properties": {
+				"S3_ENDPOINT": {
+					"type": "string",
+					"format": "uri",
+					"default": "http://localhost:4568",
+					"description": "The URI of the S3 provider"
+				},
+				"S3_ACCESS_KEY_ID": {
+					"type": "string",
+					"default": "",
+					"description": "Access Key to S3_BUCKET_CONTENT with R/W permissions"
+				},
+				"S3_SECRET_ACCESS_KEY": {
+					"type": "string",
+					"default": "",
+					"description": "Secret key to S3_BUCKET_CONTENT with R/W permissions"
+				},
+				"S3_BUCKET_LIBRARIES": {
+					"type": "string",
+					"default": "",
+					"description": "Library Bucket name"
 				}
 			}
 		},
@@ -390,6 +499,25 @@
 				}
 			}
 		},
+		"CLAMAV": {
+			"type": "object",
+			"description": "Properties of the ClamAV server",
+			"required": [],
+			"properties": {
+				"SERVICE_HOSTNAME": {
+					"type": "string",
+					"description": "IP of host to connect to TCP interface"
+				},
+				"SERVICE_PORT": {
+					"type": "number",
+					"description": "Port of host to use when connecting via TCP interface"
+				}
+			},
+			"default": {
+				"SERVICE_HOSTNAME": "localhost",
+				"SERVICE_PORT": 3310
+			}
+		},
 		"RABBITMQ_URI": {
 			"type": "string",
 			"format": "uri",
@@ -406,6 +534,7 @@
 		"API_HOST": {
 			"type": "string",
 			"format": "uri",
+			"default": "http://localhost:3030/api",
 			"pattern": ".*(?<!/)$",
 			"description": "The server endpoint, for external calls like Antivirus service. When called from docker container, can be http://host.docker.internal:3030"
 		},
@@ -451,6 +580,11 @@
 			"default": false,
 			"description": "Enable nexboard"
 		},
+		"FEATURE_NEXBOARD_COPY_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable nexboard copying when copying course or lesson"
+		},
 		"FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED": {
 			"type": "boolean",
 			"default": true,
@@ -480,6 +614,11 @@
 			"type": "boolean",
 			"description": "enables antivirus check for files",
 			"default": false
+		},
+		"FILE_SECURITY_CHECK_MAX_FILE_SIZE": {
+			"type": "integer",
+			"description": "Maximum file size for antivirus check in Byte.",
+			"default": 25000000
 		},
 		"FILE_SECURITY_CHECK_SERVICE_URI": {
 			"type": "string",
@@ -536,15 +675,15 @@
 			"default": "604800000",
 			"description": "Grace period before school admin cannot restart oauth migration anymore. Value is given in ms and default is 7 days"
 		},
+		"FEATURE_SANIS_GROUP_PROVISIONING_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Groups of type class also gets provisioned, when provisioning a user via oauth login."
+		},
 		"SC_TITLE": {
 			"type": "string",
-			"default": "HPI Schul-Cloud",
+			"default": "dBildungscloud",
 			"description": "The used title."
-		},
-		"SC_SHORT_TITLE": {
-			"type": "string",
-			"default": "HPI Schul-Cloud",
-			"description": "Look to SC_TITLE, it is a possible short form of it."
 		},
 		"SC_DOMAIN": {
 			"type": "string",
@@ -566,17 +705,32 @@
 				"IS_ENABLED_BY_DEFAULT": {
 					"type": "boolean",
 					"description": "Grants teachers STUDENT_LIST permission by default."
+				},
+				"IS_VISIBLE": {
+					"type": "boolean",
+					"description": "Defines whether feature toggle for visibility of students to teachers is visible."
 				}
 			},
 			"default": {
 				"IS_CONFIGURABLE": false,
-				"IS_ENABLED_BY_DEFAULT": true
+				"IS_ENABLED_BY_DEFAULT": true,
+				"IS_VISIBLE": true
 			}
 		},
 		"FEATURE_SCHOOL_POLICY_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "Custom School Policy can be uploaded by the school admin "
+			"description": "Enables uploading of school specific Privacy Policy on old admin page "
+		},
+		"FEATURE_SCHOOL_POLICY_ENABLED_NEW": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables uploading of school specific Privacy Policy on new admin page."
+		},
+		"FEATURE_SCHOOL_TERMS_OF_USE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables uploading of school specific Terms of Use on new admin page."
 		},
 		"ROCKETCHAT_SERVICE_ENABLED": {
 			"type": "boolean",
@@ -961,6 +1115,16 @@
 			"default": false,
 			"description": "Toggle for activating the column board."
 		},
+		"FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable submissions in column board."
+		},
+		"FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enable link elements in column board."
+		},
 		"COLUMN_BOARD_HELP_LINK": {
 			"type": "string",
 			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
@@ -1143,11 +1307,6 @@
 				}
 			}
 		},
-		"FEATURE_TASK_CARD_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enable task card feature"
-		},
 		"FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1157,6 +1316,29 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Changes the schulcloud client to use new login endpoints"
+		},
+		"ADMIN_API": {
+			"type": "object",
+			"description": "Configuration of the schulcloud-server's admin API.",
+			"properties": {
+				"ENABLED": {
+					"type": "boolean",
+					"description": "Flag to turn on/off the Admin API."
+				},
+				"PORT": {
+					"type": "number",
+					"description": "Port of the exposed Admin API server."
+				},
+				"ALLOWED_API_KEYS": {
+					"type": "string",
+					"description": "Allowed Admin API keys (for accessing the Admin API)."
+				}
+			},
+			"default": {
+				"ENABLED": true,
+				"PORT": 4030,
+				"ALLOWED_API_KEYS": ""
+			}
 		},
 		"FEATURE_CTL_TOOLS_TAB_ENABLED": {
 			"type": "boolean",
@@ -1168,15 +1350,56 @@
 			"default": true,
 			"description": "Enables old LTI-tool tab in a course"
 		},
-		"FEATURE_SHOW_OUTDATED_USERS":{
+		"FEATURE_SHOW_OUTDATED_USERS": {
 			"type": "boolean",
 			"default": false,
 			"description": "This feature flag controls whether the outdated user accounts are displayed or not. After a migration, all user accounts which were not migrated will be marked as outdated."
+		},
+		"FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION": {
+			"type": "boolean",
+			"default": false,
+			"description": "Displays the school-feature switch ENABLE_LDAP_SYNC_DURING_MIGRATION on the school-settings page."
 		},
 		"FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the configuration of custom parameters for context external tools"
+		},
+		"FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables external tools on the column board"
+		},
+		"CTL_TOOLS": {
+			"type": "object",
+			"description": "CTL Tools properties",
+			"properties": {
+				"EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES": {
+					"type": "integer",
+					"default": 300000,
+					"description": "Maximum size of the logo of an external tool in bytes"
+				}
+			}
+		},
+		"FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the new class list view"
+		},
+		"FEATURE_GROUPS_IN_COURSE_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables groups of type class in courses"
+		},
+		"FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the calculation of the outdated status of an external tool without the usage of the db attribute version"
+		},
+		"FEATURE_CTL_TOOLS_COPY_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the copying of ctl tools when copying a course."
 		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",
@@ -1193,16 +1416,81 @@
 					"description": "Number of simultaneously synchronized students, teachers and classes"
 				}
 			}
+		},
+		"ADMIN_API_CLIENT": {
+			"type": "object",
+			"description": "Configuration of the schulcloud-server's admin API client.",
+			"properties": {
+				"BASE_URL": {
+					"type": "string",
+					"description": "Base URL of the Admin API."
+				},
+				"API_KEY": {
+					"type": "string",
+					"description": "API key for accessing the Admin API."
+				}
+			},
+			"default": {
+				"BASE_URL": "http://localhost:4030",
+				"API_KEY": ""
+			}
+		},
+		"TLDRAW": {
+			"type": "object",
+			"description": "Tldraw managing variables.",
+			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_COLLECTION_NAME", "DB_FLUSH_SIZE", "DB_MULTIPLE_COLLECTIONS"],
+			"properties": {
+				"SOCKET_PORT": {
+					"type": "number",
+					"description": "Web socket port for tldraw"
+				},
+				"PING_TIMEOUT": {
+					"type": "number",
+					"description": "Max time for waiting between calls for tldraw"
+				},
+				"GC_ENABLED": {
+					"type": "boolean",
+					"description": "If tldraw garbage collector should be enabled"
+				},
+				"DB_COLLECTION_NAME": {
+					"type": "string",
+					"description": "Collection name in which tldraw drawing are stored"
+				},
+				"DB_FLUSH_SIZE": {
+					"type": "integer",
+					"description": "DB collection flushing size"
+				},
+				"DB_MULTIPLE_COLLECTIONS": {
+					"type": "boolean",
+					"description": "DB collection allowing multiple collections for drawing"
+				}
+			},
+			"default": {
+				"SOCKET_PORT": 3345,
+				"PING_TIMEOUT": 10000,
+				"GC_ENABLED": true,
+				"DB_COLLECTION_NAME": "drawings",
+				"DB_FLUSH_SIZE": 400,
+				"DB_MULTIPLE_COLLECTIONS": false
+			}
+		},
+		"TLDRAW_DB_URL": {
+			"type": "string",
+			"default": "mongodb://127.0.0.1:27017/tldraw",
+			"description": "DB connection url"
+		},
+		"FEATURE_TLDRAW_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Tldraw feature enabled"
+		},
+		"TLDRAW_URI": {
+			"type": "string",
+			"default": "http://localhost:3349",
+			"description": "Address for tldraw management app"
 		}
 	},
-	"required": [
-		"TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION",
-		"STUDENT_TEAM_CREATION",
-		"BLOCK_DISPOSABLE_EMAIL_DOMAINS",
-		"HOST",
-		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS",
-		"AES_KEY"
-	],
+	"required": [],
 	"allOf": [
 		{
 			"$ref": "#/definitions/FEATURE_ES_MERLIN_ENABLED",

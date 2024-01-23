@@ -1,5 +1,5 @@
 const Ajv = require('ajv');
-const service = require('feathers-mongoose');
+const service = require('../../../utils/feathers-mongoose');
 const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider, validateSchema, disallow } = require('feathers-hooks-common');
 const { datasourceModel } = require('../model');

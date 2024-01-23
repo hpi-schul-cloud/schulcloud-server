@@ -1,5 +1,5 @@
 import { INestApplication } from '@nestjs/common';
-import { Account } from '@shared/domain';
+import { Account } from '@shared/domain/entity';
 import supertest, { Response } from 'supertest';
 import { defaultTestPassword } from './factory/account.factory';
 
@@ -140,6 +140,10 @@ export class TestApiClient {
 	}
 
 	private getJwtFromResponse(response: Response): string {
+		if (response.error) {
+			const error = JSON.stringify(response.error);
+			throw new Error(error);
+		}
 		if (!this.isAuthenticationResponse(response.body)) {
 			const body = JSON.stringify(response.body);
 			throw new Error(`${testReqestConst.errorMessage} ${body}`);

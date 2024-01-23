@@ -1,16 +1,17 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ConsoleWriterModule } from '@infra/console/console-writer/console-writer.module';
+import { KeycloakModule } from '@infra/identity-management/keycloak/keycloak.module';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { FilesModule } from '@modules/files';
+import { FileRecord } from '@modules/files-storage/entity';
+import { FileEntity } from '@modules/files/entity';
+import { ManagementModule } from '@modules/management/management.module';
+import { serverConfig } from '@modules/server';
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { ALL_ENTITIES } from '@shared/domain';
-import { ConsoleWriterModule } from '@shared/infra/console/console-writer/console-writer.module';
-import { KeycloakModule } from '@shared/infra/identity-management/keycloak/keycloak.module';
+import { ALL_ENTITIES } from '@shared/domain/entity';
 import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
-import { FilesModule } from '@src/modules/files';
-import { FileRecord } from '@src/modules/files-storage/entity';
-import { ManagementModule } from '@src/modules/management/management.module';
-import { serverConfig } from '@src/modules/server';
 import { ConsoleModule } from 'nestjs-console';
 import { ServerConsole } from './server.console';
 
@@ -28,7 +29,7 @@ import { ServerConsole } from './server.console';
 			clientUrl: DB_URL,
 			password: DB_PASSWORD,
 			user: DB_USERNAME,
-			entities: [...ALL_ENTITIES, FileRecord],
+			entities: [...ALL_ENTITIES, FileEntity, FileRecord],
 			allowGlobalContext: true,
 			findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
 				new NotFoundException(`The requested ${entityName}: ${JSON.stringify(where)} has not been found.`),

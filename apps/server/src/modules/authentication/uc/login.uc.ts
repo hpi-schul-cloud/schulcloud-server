@@ -1,14 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { AuthenticationService } from '../services/authentication.service';
+import { ICurrentUser } from '../interface';
 import { CreateJwtPayload } from '../interface/jwt-payload';
+import { CurrentUserMapper } from '../mapper';
+import { AuthenticationService } from '../services/authentication.service';
 import { LoginDto } from './dto';
 
 @Injectable()
 export class LoginUc {
 	constructor(private readonly authService: AuthenticationService) {}
 
-	async getLoginData(userInfo: CreateJwtPayload): Promise<LoginDto> {
-		const accessTokenDto: LoginDto = await this.authService.generateJwt(userInfo);
+	async getLoginData(userInfo: ICurrentUser): Promise<LoginDto> {
+		const createJwtPayload: CreateJwtPayload = CurrentUserMapper.mapCurrentUserToCreateJwtPayload(userInfo);
+
+		const accessTokenDto: LoginDto = await this.authService.generateJwt(createJwtPayload);
 
 		const loginDto: LoginDto = new LoginDto({
 			accessToken: accessTokenDto.accessToken,

@@ -1,13 +1,16 @@
+import type { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import {
+	AnyBoardDo,
 	AnyContentElementDo,
 	Card,
 	ContentElementFactory,
 	ContentElementType,
-	EntityId,
 	isAnyContentElement,
-} from '@shared/domain';
-import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
+	SubmissionItem,
+} from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
+import { AnyElementContentBody } from '../controller/dto';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ContentElementUpdateVisitor } from './content-element-update.visitor';
@@ -30,10 +33,26 @@ export class ContentElementService {
 		return element;
 	}
 
-	async create(parent: Card, type: ContentElementType): Promise<AnyContentElementDo> {
+	async findParentOfId(elementId: EntityId): Promise<AnyBoardDo> {
+		const parent = await this.boardDoRepo.findParentOfId(elementId);
+		if (!parent) {
+			throw new NotFoundException('There is no node with this id');
+		}
+		return parent;
+	}
+
+	async countBoardUsageForExternalTools(contextExternalTools: ContextExternalTool[]): Promise<number> {
+		const count: number = await this.boardDoRepo.countBoardUsageForExternalTools(contextExternalTools);
+
+		return count;
+	}
+
+	async create(parent: Card | SubmissionItem, type: ContentElementType): Promise<AnyContentElementDo> {
 		const element = this.contentElementFactory.build(type);
 		parent.addChild(element);
+
 		await this.boardDoRepo.save(parent.children, parent);
+
 		return element;
 	}
 
@@ -45,13 +64,14 @@ export class ContentElementService {
 		await this.boardDoService.move(element, targetCard, targetPosition);
 	}
 
-	async update(
-		element: AnyContentElementDo,
-		content: FileContentBody | RichTextContentBody | SubmissionContainerContentBody
-	): Promise<void> {
+	async update(element: AnyContentElementDo, content: AnyElementContentBody): Promise<AnyContentElementDo> {
 		const updater = new ContentElementUpdateVisitor(content);
-		element.accept(updater);
+		await element.acceptAsync(updater);
+
 		const parent = await this.boardDoRepo.findParentOfId(element.id);
+
 		await this.boardDoRepo.save(element, parent);
+
+		return element;
 	}
 }

@@ -1,31 +1,8 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { PaginationParams } from '@shared/controller';
-import {
-	ImportUser,
-	MatchCreator,
-	Permission,
-	RoleName,
-	School,
-	SchoolFeatures,
-	SortOrder,
-	System,
-	User,
-} from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
-import {
-	cleanupCollections,
-	importUserFactory,
-	mapUserToCurrentUser,
-	roleFactory,
-	schoolFactory,
-	systemFactory,
-	userFactory,
-} from '@shared/testing';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { ServerTestModule } from '@src/modules/server/server.module';
+import { ICurrentUser } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { ServerTestModule } from '@modules/server/server.module';
 import {
 	FilterImportUserParams,
 	FilterMatchType,
@@ -41,7 +18,22 @@ import {
 	UserMatchListResponse,
 	UserMatchResponse,
 	UserRole,
-} from '@src/modules/user-import/controller/dto';
+} from '@modules/user-import/controller/dto';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { PaginationParams } from '@shared/controller';
+import { ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
+import { SchoolFeature } from '@shared/domain/types';
+import {
+	cleanupCollections,
+	importUserFactory,
+	mapUserToCurrentUser,
+	roleFactory,
+	schoolFactory,
+	systemEntityFactory,
+	userFactory,
+} from '@shared/testing';
 import { Request } from 'express';
 import request from 'supertest';
 
@@ -50,8 +42,8 @@ describe('ImportUser Controller (API)', () => {
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
 
-	const authenticatedUser = async (permissions: Permission[] = [], features: SchoolFeatures[] = []) => {
-		const system = systemFactory.buildWithId(); // TODO no id?
+	const authenticatedUser = async (permissions: Permission[] = [], features: SchoolFeature[] = []) => {
+		const system = systemEntityFactory.buildWithId(); // TODO no id?
 		const school = schoolFactory.build({ officialSchoolNumber: 'foo', features });
 		const roles = [roleFactory.build({ name: RoleName.ADMINISTRATOR, permissions })];
 		await em.persistAndFlush([school, system, ...roles]);
@@ -161,7 +153,7 @@ describe('ImportUser Controller (API)', () => {
 			});
 			describe('When authorization is missing', () => {
 				let user: User;
-				let system: System;
+				let system: SystemEntity;
 				beforeEach(async () => {
 					({ user, system } = await authenticatedUser());
 					currentUser = mapUserToCurrentUser(user);
@@ -200,12 +192,12 @@ describe('ImportUser Controller (API)', () => {
 
 			describe('When school is LDAP Migration Pilot School', () => {
 				let user: User;
-				let school: School;
-				let system: System;
+				let school: SchoolEntity;
+				let system: SystemEntity;
 				beforeEach(async () => {
 					({ school, system, user } = await authenticatedUser(
 						[Permission.SCHOOL_IMPORT_USERS_VIEW],
-						[SchoolFeatures.LDAP_UNIVENTION_MIGRATION]
+						[SchoolFeature.LDAP_UNIVENTION_MIGRATION]
 					));
 					currentUser = mapUserToCurrentUser(user);
 					Configuration.set('FEATURE_USER_MIGRATION_SYSTEM_ID', system._id.toString());
@@ -221,8 +213,8 @@ describe('ImportUser Controller (API)', () => {
 
 			describe('When current user has permission Permission.SCHOOL_IMPORT_USERS_VIEW', () => {
 				let user: User;
-				let school: School;
-				let system: System;
+				let school: SchoolEntity;
+				let system: SystemEntity;
 				beforeEach(async () => {
 					({ school, system, user } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_VIEW]));
 					currentUser = mapUserToCurrentUser(user);
@@ -264,8 +256,8 @@ describe('ImportUser Controller (API)', () => {
 			});
 			describe('When current user has permission Permission.SCHOOL_IMPORT_USERS_UPDATE', () => {
 				let user: User;
-				let school: School;
-				let system: System;
+				let school: SchoolEntity;
+				let system: SystemEntity;
 				beforeEach(async () => {
 					({ user, school, system } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_UPDATE]));
 					currentUser = mapUserToCurrentUser(user);
@@ -315,7 +307,7 @@ describe('ImportUser Controller (API)', () => {
 			});
 			describe('When current user has permissions Permission.SCHOOL_IMPORT_USERS_MIGRATE', () => {
 				let user: User;
-				let system: System;
+				let system: SystemEntity;
 				beforeEach(async () => {
 					({ user, system } = await authenticatedUser());
 					currentUser = mapUserToCurrentUser(user);
@@ -355,7 +347,7 @@ describe('ImportUser Controller (API)', () => {
 
 		describe('Business Errors', () => {
 			let user: User;
-			let school: School;
+			let school: SchoolEntity;
 			beforeEach(async () => {
 				({ user, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_UPDATE]));
 				currentUser = mapUserToCurrentUser(user);
@@ -457,7 +449,7 @@ describe('ImportUser Controller (API)', () => {
 			};
 			describe('find', () => {
 				let user: User;
-				let school: School;
+				let school: SchoolEntity;
 				beforeEach(async () => {
 					await cleanupCollections(em);
 
@@ -805,7 +797,7 @@ describe('ImportUser Controller (API)', () => {
 
 			describe('updates', () => {
 				let user: User;
-				let school: School;
+				let school: SchoolEntity;
 				beforeEach(async () => {
 					({ user, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_UPDATE]));
 					currentUser = mapUserToCurrentUser(user);
@@ -926,7 +918,7 @@ describe('ImportUser Controller (API)', () => {
 
 			describe('[migrate]', () => {
 				let user: User;
-				let school: School;
+				let school: SchoolEntity;
 				beforeEach(async () => {
 					({ user, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]));
 					school.officialSchoolNumber = 'foo';
@@ -952,7 +944,7 @@ describe('ImportUser Controller (API)', () => {
 
 			describe('[startUserMigration]', () => {
 				let user: User;
-				let system: System;
+				let system: SystemEntity;
 				describe('POST user/import/startUserMigration', () => {
 					it('should set in user migration mode', async () => {
 						({ user, system } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]));

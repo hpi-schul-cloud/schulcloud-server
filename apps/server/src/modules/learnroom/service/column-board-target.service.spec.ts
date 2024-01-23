@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { ColumnBoardService } from '@modules/board';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ColumnBoardTarget } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { ColumnBoardTarget } from '@shared/domain/entity';
 import { cleanupCollections, columnBoardTargetFactory } from '@shared/testing';
-import { ColumnBoardService } from '@src/modules/board';
 import { ColumnBoardTargetService } from './column-board-target.service';
 
 describe(ColumnBoardTargetService.name, () => {
@@ -60,6 +60,16 @@ describe(ColumnBoardTargetService.name, () => {
 				const result = await service.findOrCreateTargets([target.columnBoardId]);
 
 				expect(result[0].title).toEqual('board #42');
+			});
+		});
+
+		describe('when no target exists for columnBoardId', () => {
+			it('should create a target', async () => {
+				const id = new ObjectId().toHexString();
+				columnBoardService.getBoardObjectTitlesById.mockResolvedValueOnce({ [id]: 'board #42' });
+				const result = await service.findOrCreateTargets([id]);
+
+				expect(result[0].columnBoardId).toEqual(id);
 			});
 		});
 	});

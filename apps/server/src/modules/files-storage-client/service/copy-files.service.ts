@@ -1,6 +1,6 @@
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
-import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
+import { EntityId } from '@shared/domain/types';
 import { CopyFileDto } from '../dto';
 import { EntityWithEmbeddedFiles } from '../interfaces';
 import { CopyFilesOfParentParamBuilder, FileParamBuilder } from '../mapper';

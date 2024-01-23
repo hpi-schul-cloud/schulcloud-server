@@ -4,15 +4,15 @@ import { Task } from '@shared/domain/entity';
 import { TaskRepo } from '@shared/repo';
 import {
 	courseFactory,
-	fileFactory,
 	lessonFactory,
 	schoolFactory,
 	setupEntities,
 	taskFactory,
 	userFactory,
+	legacyFileEntityMockFactory,
 } from '@shared/testing';
-import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@src/modules/copy-helper';
-import { CopyFilesService } from '@src/modules/files-storage-client';
+import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyFilesService } from '@modules/files-storage-client';
 import { TaskCopyService } from './task-copy.service';
 
 describe('task copy service', () => {
@@ -410,8 +410,8 @@ describe('task copy service', () => {
 
 			const setupWithFiles = () => {
 				const school = schoolFactory.build();
-				const file1 = fileFactory.buildWithId({ name: 'file1.jpg' });
-				const file2 = fileFactory.buildWithId({ name: 'file2.jpg' });
+				const file1 = legacyFileEntityMockFactory.build();
+				const file2 = legacyFileEntityMockFactory.build();
 				const imageHTML1 = getImageHTML(file1.id, file1.name);
 				const imageHTML2 = getImageHTML(file2.id, file2.name);
 

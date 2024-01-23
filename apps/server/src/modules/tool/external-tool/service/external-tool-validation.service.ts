@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common';
 import { ExternalTool } from '../domain';
+import { ExternalToolLogoService } from './external-tool-logo.service';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
 import { ExternalToolService } from './external-tool.service';
 
@@ -8,7 +9,8 @@ import { ExternalToolService } from './external-tool.service';
 export class ExternalToolValidationService {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
-		private readonly externalToolParameterValidationService: ExternalToolParameterValidationService
+		private readonly externalToolParameterValidationService: ExternalToolParameterValidationService,
+		private readonly externalToolLogoService: ExternalToolLogoService
 	) {}
 
 	async validateCreate(externalTool: ExternalTool): Promise<void> {
@@ -17,6 +19,40 @@ export class ExternalToolValidationService {
 		await this.validateOauth2Config(externalTool);
 
 		this.validateLti11Config(externalTool);
+
+		this.externalToolLogoService.validateLogoSize(externalTool);
+	}
+
+	async validateUpdate(toolId: string, externalTool: Partial<ExternalTool>): Promise<void> {
+		if (toolId !== externalTool.id) {
+			throw new ValidationError(`tool_id_mismatch: The tool has no id or it does not match the path parameter.`);
+		}
+
+		await this.externalToolParameterValidationService.validateCommon(externalTool);
+
+		const loadedTool: ExternalTool = await this.externalToolService.findById(toolId);
+		if (
+			ExternalTool.isOauth2Config(loadedTool.config) &&
+			externalTool.config &&
+			externalTool.config.type !== loadedTool.config.type
+		) {
+			throw new ValidationError(
+				`tool_type_immutable: The Config Type of the tool ${externalTool.name || ''} is immutable.`
+			);
+		}
+
+		if (
+			externalTool.config &&
+			ExternalTool.isOauth2Config(externalTool.config) &&
+			ExternalTool.isOauth2Config(loadedTool.config) &&
+			externalTool.config.clientId !== loadedTool.config.clientId
+		) {
+			throw new ValidationError(
+				`tool_clientId_immutable: The Client Id of the tool ${externalTool.name || ''} is immutable.`
+			);
+		}
+
+		this.externalToolLogoService.validateLogoSize(externalTool);
 	}
 
 	private async validateOauth2Config(externalTool: ExternalTool): Promise<void> {
@@ -51,35 +87,5 @@ export class ExternalToolValidationService {
 			duplicate = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(externalTool.config.clientId);
 		}
 		return duplicate == null || duplicate.id === externalTool.id;
-	}
-
-	async validateUpdate(toolId: string, externalTool: Partial<ExternalTool>): Promise<void> {
-		if (toolId !== externalTool.id) {
-			throw new ValidationError(`tool_id_mismatch: The tool has no id or it does not match the path parameter.`);
-		}
-
-		await this.externalToolParameterValidationService.validateCommon(externalTool);
-
-		const loadedTool: ExternalTool = await this.externalToolService.findExternalToolById(toolId);
-		if (
-			ExternalTool.isOauth2Config(loadedTool.config) &&
-			externalTool.config &&
-			externalTool.config.type !== loadedTool.config.type
-		) {
-			throw new ValidationError(
-				`tool_type_immutable: The Config Type of the tool ${externalTool.name || ''} is immutable.`
-			);
-		}
-
-		if (
-			externalTool.config &&
-			ExternalTool.isOauth2Config(externalTool.config) &&
-			ExternalTool.isOauth2Config(loadedTool.config) &&
-			externalTool.config.clientId !== loadedTool.config.clientId
-		) {
-			throw new ValidationError(
-				`tool_clientId_immutable: The Client Id of the tool ${externalTool.name || ''} is immutable.`
-			);
-		}
 	}
 }

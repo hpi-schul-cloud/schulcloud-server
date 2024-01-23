@@ -1,7 +1,10 @@
 import { Utils } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import type { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { AnyBoardDo, BoardExternalReference, BoardNode, ColumnBoardNode, EntityId } from '@shared/domain';
+import { AnyBoardDo, BoardExternalReference } from '@shared/domain/domainobject';
+import { BoardNode, ColumnBoardNode, ExternalToolElementNodeEntity } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { BoardDoBuilderImpl } from './board-do.builder-impl';
 import { BoardNodeRepo } from './board-node.repo';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
@@ -50,7 +53,7 @@ export class BoardDoRepo {
 		return domainObjects;
 	}
 
-	async getTitleById(id: EntityId[] | EntityId): Promise<Record<EntityId, string>> {
+	async getTitlesByIds(id: EntityId[] | EntityId): Promise<Record<EntityId, string>> {
 		const ids = Utils.asArray(id);
 		const boardNodes = await this.em.find(BoardNode, { id: { $in: ids } });
 
@@ -77,6 +80,21 @@ export class BoardDoRepo {
 		const domainObject = boardNode.parentId ? this.findById(boardNode.parentId) : undefined;
 
 		return domainObject;
+	}
+
+	async countBoardUsageForExternalTools(contextExternalTools: ContextExternalTool[]) {
+		const toolIds: EntityId[] = contextExternalTools
+			.map((tool: ContextExternalTool): EntityId | undefined => tool.id)
+			.filter((id: EntityId | undefined): id is EntityId => !!id);
+
+		const boardNodes: ExternalToolElementNodeEntity[] = await this.em.find(ExternalToolElementNodeEntity, {
+			contextExternalTool: { $in: toolIds },
+		});
+
+		const boardIds: EntityId[] = boardNodes.map((node: ExternalToolElementNodeEntity): EntityId => node.ancestorIds[0]);
+		const boardCount: number = new Set(boardIds).size;
+
+		return boardCount;
 	}
 
 	async getAncestorIds(boardDo: AnyBoardDo): Promise<EntityId[]> {

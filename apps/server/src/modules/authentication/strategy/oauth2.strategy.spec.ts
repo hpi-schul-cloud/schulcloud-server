@@ -1,15 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AccountService } from '@modules/account/services/account.service';
+import { AccountDto } from '@modules/account/services/dto';
+import { OAuthService, OAuthTokenDto } from '@modules/oauth';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId, RoleName } from '@shared/domain';
 import { UserDO } from '@shared/domain/domainobject/user.do';
+import { RoleName } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { userDoFactory } from '@shared/testing';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { OAuthTokenDto } from '@src/modules/oauth';
-import { OAuthService } from '@src/modules/oauth/service/oauth.service';
-import { SchoolInMigrationError } from '../errors/school-in-migration.error';
-import { ICurrentUser } from '../interface';
+
+import { ICurrentUser, OauthCurrentUser } from '../interface';
+
+import { SchoolInMigrationLoggableException } from '../loggable';
+
 import { Oauth2Strategy } from './oauth2.strategy';
 
 describe('Oauth2Strategy', () => {
@@ -60,32 +63,35 @@ describe('Oauth2Strategy', () => {
 					username: 'username',
 				});
 
+				const idToken = 'idToken';
 				oauthService.authenticateUser.mockResolvedValue(
 					new OAuthTokenDto({
-						idToken: 'idToken',
+						idToken,
 						accessToken: 'accessToken',
 						refreshToken: 'refreshToken',
 					})
 				);
-				oauthService.provisionUser.mockResolvedValue({ user, redirect: '' });
+				oauthService.provisionUser.mockResolvedValue(user);
 				accountService.findByUserId.mockResolvedValue(account);
 
-				return { systemId, user, account };
+				return { systemId, user, account, idToken };
 			};
 
 			it('should return the ICurrentUser', async () => {
-				const { systemId, user, account } = setup();
+				const { systemId, user, account, idToken } = setup();
 
 				const result: ICurrentUser = await strategy.validate({
 					body: { code: 'code', redirectUri: 'redirectUri', systemId },
 				});
 
-				expect(result).toEqual<ICurrentUser>({
+				expect(result).toEqual<OauthCurrentUser>({
 					systemId,
 					userId: user.id as EntityId,
 					roles: [user.roles[0].id],
 					schoolId: user.schoolId,
 					accountId: account.id,
+					externalIdToken: idToken,
+					isExternalUser: true,
 				});
 			});
 		});
@@ -99,7 +105,7 @@ describe('Oauth2Strategy', () => {
 						refreshToken: 'refreshToken',
 					})
 				);
-				oauthService.provisionUser.mockResolvedValue({ user: undefined, redirect: '' });
+				oauthService.provisionUser.mockResolvedValue(null);
 			};
 
 			it('should throw a SchoolInMigrationError', async () => {
@@ -108,7 +114,7 @@ describe('Oauth2Strategy', () => {
 				const func = async () =>
 					strategy.validate({ body: { code: 'code', redirectUri: 'redirectUri', systemId: 'systemId' } });
 
-				await expect(func).rejects.toThrow(new SchoolInMigrationError());
+				await expect(func).rejects.toThrow(new SchoolInMigrationLoggableException());
 			});
 		});
 
@@ -123,7 +129,7 @@ describe('Oauth2Strategy', () => {
 						refreshToken: 'refreshToken',
 					})
 				);
-				oauthService.provisionUser.mockResolvedValue({ user, redirect: '' });
+				oauthService.provisionUser.mockResolvedValue(user);
 				accountService.findByUserId.mockResolvedValue(null);
 			};
 

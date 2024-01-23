@@ -1,33 +1,19 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { CalendarService } from '@infra/calendar';
+import { CalendarEventDto } from '@infra/calendar/dto/calendar-event.dto';
+import { ICurrentUser } from '@modules/authentication';
+import { Action, AuthorizationContextBuilder } from '@modules/authorization';
+import { AuthorizableReferenceType, AuthorizationReferenceService } from '@modules/authorization/domain';
+import { CourseService } from '@modules/learnroom';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
-import {
-	Course,
-	EntityId,
-	Permission,
-	RoleName,
-	SchoolFeatures,
-	Team,
-	TeamUser,
-	UserDO,
-	VideoConferenceDO,
-	VideoConferenceOptionsDO,
-} from '@shared/domain';
-import { VideoConferenceScope } from '@shared/domain/interface';
-import { CalendarService } from '@shared/infra/calendar';
-import { CalendarEventDto } from '@shared/infra/calendar/dto/calendar-event.dto';
+import { UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
+import { Course, TeamEntity, TeamUserEntity } from '@shared/domain/entity';
+import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo';
 import { VideoConferenceRepo } from '@shared/repo/videoconference/video-conference.repo';
-import { ICurrentUser } from '@src/modules/authentication';
-import {
-	Action,
-	AuthorizableReferenceType,
-	AuthorizationContextBuilder,
-	AuthorizationService,
-} from '@src/modules/authorization';
-import { SchoolService } from '@src/modules/school/service/school.service';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
-import { UserService } from '@src/modules/user';
-import { IScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from './dto';
 import {
 	BBBBaseMeetingConfig,
 	BBBBaseResponse,
@@ -40,8 +26,9 @@ import {
 	BBBService,
 	GuestPolicy,
 } from '../bbb';
-import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
 import { ErrorStatus } from '../error/error-status.enum';
+import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { ScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from './dto';
 
 const PermissionMapping = {
 	[BBBRole.MODERATOR]: Permission.START_MEETING,
@@ -62,13 +49,13 @@ export class VideoConferenceDeprecatedUc {
 
 	constructor(
 		private readonly bbbService: BBBService,
-		private readonly authorizationService: AuthorizationService,
+		private readonly authorizationReferenceService: AuthorizationReferenceService,
 		private readonly videoConferenceRepo: VideoConferenceRepo,
 		private readonly teamsRepo: TeamsRepo,
 		private readonly courseService: CourseService,
 		private readonly userService: UserService,
 		private readonly calendarService: CalendarService,
-		private readonly schoolService: SchoolService
+		private readonly schoolService: LegacySchoolService
 	) {
 		this.hostURL = Configuration.get('HOST') as string;
 	}
@@ -90,7 +77,7 @@ export class VideoConferenceDeprecatedUc {
 		const { userId, schoolId } = currentUser;
 
 		await this.throwOnFeaturesDisabled(schoolId);
-		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
+		const scopeInfo: ScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
 
 		const bbbRole: BBBRole = await this.checkPermission(userId, conferenceScope, scopeInfo.scopeId);
 
@@ -154,7 +141,7 @@ export class VideoConferenceDeprecatedUc {
 
 		await this.throwOnFeaturesDisabled(schoolId);
 
-		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
+		const scopeInfo: ScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
 
 		const bbbRole: BBBRole = await this.checkPermission(userId, conferenceScope, scopeInfo.scopeId);
 
@@ -209,7 +196,7 @@ export class VideoConferenceDeprecatedUc {
 
 		await this.throwOnFeaturesDisabled(schoolId);
 
-		const scopeInfo: IScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
+		const scopeInfo: ScopeInfo = await this.getScopeInfo(userId, conferenceScope, refId);
 
 		const bbbRole: BBBRole = await this.checkPermission(userId, conferenceScope, scopeInfo.scopeId);
 
@@ -319,9 +306,9 @@ export class VideoConferenceDeprecatedUc {
 				return roles.includes(RoleName.EXPERT);
 			}
 			case VideoConferenceScope.EVENT: {
-				const team: Team = await this.teamsRepo.findById(scopeId);
-				const teamUser: TeamUser | undefined = team.teamUsers.find(
-					(userInTeam: TeamUser) => userInTeam.user.id === currentUser.userId
+				const team: TeamEntity = await this.teamsRepo.findById(scopeId);
+				const teamUser: TeamUserEntity | undefined = team.teamUsers.find(
+					(userInTeam: TeamUserEntity) => userInTeam.user.id === currentUser.userId
 				);
 
 				if (teamUser === undefined) {
@@ -341,13 +328,13 @@ export class VideoConferenceDeprecatedUc {
 	 * @param {EntityId} userId
 	 * @param {VideoConferenceScope} conferenceScope
 	 * @param {EntityId} refId eventId or courseId, depending on scope.
-	 * @returns {Promise<IScopeInfo>}
+	 * @returns {Promise<ScopeInfo>}
 	 */
 	protected async getScopeInfo(
 		userId: EntityId,
 		conferenceScope: VideoConferenceScope,
 		refId: string
-	): Promise<IScopeInfo> {
+	): Promise<ScopeInfo> {
 		switch (conferenceScope) {
 			case VideoConferenceScope.COURSE: {
 				const course: Course = await this.courseService.findById(refId);
@@ -413,7 +400,7 @@ export class VideoConferenceDeprecatedUc {
 		permissions.forEach((perm) => {
 			const context =
 				action === Action.read ? AuthorizationContextBuilder.read([perm]) : AuthorizationContextBuilder.write([perm]);
-			const ret = this.authorizationService.hasPermissionByReferences(userId, entityName, entityId, context);
+			const ret = this.authorizationReferenceService.hasPermissionByReferences(userId, entityName, entityId, context);
 			returnMap.set(perm, ret);
 		});
 		return returnMap;
@@ -433,7 +420,7 @@ export class VideoConferenceDeprecatedUc {
 			);
 		}
 		// throw, if the current users school does not have the feature enabled
-		const schoolFeatureEnabled: boolean = await this.schoolService.hasFeature(schoolId, SchoolFeatures.VIDEOCONFERENCE);
+		const schoolFeatureEnabled: boolean = await this.schoolService.hasFeature(schoolId, SchoolFeature.VIDEOCONFERENCE);
 		if (!schoolFeatureEnabled) {
 			throw new ForbiddenException(ErrorStatus.SCHOOL_FEATURE_DISABLED, 'school feature VIDEOCONFERENCE is disabled');
 		}
