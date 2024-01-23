@@ -207,6 +207,10 @@ describe(DeletionRequestUc.name, () => {
 					new ObjectId().toHexString(),
 				]);
 
+				const courseGroupUpdated = DomainOperationBuilder.build(DomainModel.COURSEGROUP, OperationModel.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
 				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
 
 				const parentEmail = 'parent@parent.eu';
@@ -248,7 +252,7 @@ describe(DeletionRequestUc.name, () => {
 
 				registrationPinService.deleteRegistrationPinByEmail.mockResolvedValueOnce(2);
 				classService.deleteUserDataFromClasses.mockResolvedValueOnce(classesUpdated);
-				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(2);
+				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(courseGroupUpdated);
 				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(2);
 				filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(2);
 				filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles.mockResolvedValueOnce(2);
@@ -517,12 +521,16 @@ describe(DeletionRequestUc.name, () => {
 					new ObjectId().toHexString(),
 				]);
 
+				const courseGroupUpdated = DomainOperationBuilder.build(DomainModel.COURSEGROUP, OperationModel.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
 				const teamsUpdated = DomainOperationBuilder.build(DomainModel.TEAMS, OperationModel.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
 				classService.deleteUserDataFromClasses.mockResolvedValueOnce(classesUpdated);
-				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(2);
+				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(courseGroupUpdated);
 				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(2);
 				filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(2);
 				filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles.mockResolvedValueOnce(2);
