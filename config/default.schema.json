@@ -1312,11 +1312,6 @@
 			"default": false,
 			"description": "Enables feature that allows the insecure LDAP URL (with ldap:// protocol)."
 		},
-		"FEATURE_CLIENT_USER_LOGIN_MIGRATION_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Changes the schulcloud client to use new login endpoints"
-		},
 		"ADMIN_API": {
 			"type": "object",
 			"description": "Configuration of the schulcloud-server's admin API.",
