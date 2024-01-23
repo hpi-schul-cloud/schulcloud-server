@@ -336,9 +336,13 @@ export class DashboardService {
 				StatusModel.PENDING
 			)
 		);
-		const usersDashboard &#x3D; await this.dashboardRepo.getUsersDashboard(userId);
-		await this.dashboardElementRepo.deleteByDashboardId(usersDashboard.id);
-		const result &#x3D; await this.dashboardRepo.deleteDashboardByUserId(userId);
+		let result &#x3D; 0;
+		const usersDashboard &#x3D; await this.dashboardRepo.getUsersDashboardIfExist(userId);
+		if (usersDashboard !&#x3D;&#x3D; null) {
+			await this.dashboardElementRepo.deleteByDashboardId(usersDashboard.id);
+			result &#x3D; await this.dashboardRepo.deleteDashboardByUserId(userId);
+		}
+
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				&#x27;Successfully deleted user data from Dashboard&#x27;,

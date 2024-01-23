@@ -156,6 +156,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#getUsersDashboardIfExist" >getUsersDashboardIfExist</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#persist" >persist</a>
                             </li>
                             <li>
@@ -185,7 +189,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/shared/repo/dashboard/dashboard.repo.ts:22</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/shared/repo/dashboard/dashboard.repo.ts:23</a></div>
                             </td>
                         </tr>
 
@@ -262,8 +266,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">apps/server/src/shared/repo/dashboard/dashboard.repo.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="66"
+                                    class="link-to-prism">apps/server/src/shared/repo/dashboard/dashboard.repo.ts:66</a></div>
                         </td>
                     </tr>
 
@@ -331,8 +335,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="38"
-                                    class="link-to-prism">apps/server/src/shared/repo/dashboard/dashboard.repo.ts:38</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="39"
+                                    class="link-to-prism">apps/server/src/shared/repo/dashboard/dashboard.repo.ts:39</a></div>
                         </td>
                     </tr>
 
@@ -400,8 +404,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">apps/server/src/shared/repo/dashboard/dashboard.repo.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/shared/repo/dashboard/dashboard.repo.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -451,6 +455,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getUsersDashboardIfExist"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getUsersDashboardIfExist</b></span>
+                        <a href="#getUsersDashboardIfExist"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getUsersDashboardIfExist(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="57"
+                                    class="link-to-prism">apps/server/src/shared/repo/dashboard/dashboard.repo.ts:57</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/DashboardEntity.html" target="_self" >Promise&lt;DashboardEntity | null&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="persist"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -469,8 +542,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">apps/server/src/shared/repo/dashboard/dashboard.repo.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/shared/repo/dashboard/dashboard.repo.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -538,8 +611,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/shared/repo/dashboard/dashboard.repo.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">apps/server/src/shared/repo/dashboard/dashboard.repo.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -606,6 +679,7 @@ const generateEmptyDashboard &#x3D; (userId: EntityId) &#x3D;&gt; {
 
 export interface IDashboardRepo {
 	getUsersDashboard(userId: EntityId): Promise&lt;DashboardEntity&gt;;
+	getUsersDashboardIfExist(userId: EntityId): Promise&lt;DashboardEntity | null&gt;;
 	getDashboardById(id: EntityId): Promise&lt;DashboardEntity&gt;;
 	persistAndFlush(entity: DashboardEntity): Promise&lt;DashboardEntity&gt;;
 	deleteDashboardByUserId(userId: EntityId): Promise&lt;number&gt;;
@@ -644,6 +718,15 @@ export class DashboardRepo implements IDashboardRepo {
 		await this.persistAndFlush(dashboard);
 
 		return dashboard;
+	}
+
+	async getUsersDashboardIfExist(userId: EntityId): Promise&lt;DashboardEntity | null&gt; {
+		const dashboardModel &#x3D; await this.em.findOne(DashboardModelEntity, { user: userId });
+		if (dashboardModel) {
+			return this.mapper.mapDashboardToEntity(dashboardModel);
+		}
+
+		return dashboardModel;
 	}
 
 	async deleteDashboardByUserId(userId: EntityId): Promise&lt;number&gt; {

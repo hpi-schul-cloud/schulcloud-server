@@ -153,6 +153,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Static</span>
+                                <a href="#mapToDOs" >mapToDOs</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
                                 <a href="#mapToEntity" >mapToEntity</a>
                             </li>
                         </ul>
@@ -234,6 +238,75 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="../classes/RocketChatUser.html" target="_self" >RocketChatUser</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapToDOs"></a>
+                    <span class="name">
+                            <span class="modifier">Static</span>
+                        <span ><b>mapToDOs</b></span>
+                        <a href="#mapToDOs"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapToDOs(entities: <a href="../interfaces/User.html" target="_self">RocketChatUserEntity[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="30"
+                                    class="link-to-prism">apps/server/src/modules/rocketchat-user/repo/mapper/rocket-chat-user.mapper.ts:30</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>entities</td>
+                                            <td>
+                                                            <code><a href="../interfaces/User.html" target="_self" >RocketChatUserEntity[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >RocketChatUser[]</a></code>
 
                         </div>
                             <div class="io-description">
@@ -349,6 +422,10 @@ export class RocketChatUserMapper {
 			createdAt: domainObject.createdAt,
 			updatedAt: domainObject.updatedAt,
 		});
+	}
+
+	static mapToDOs(entities: RocketChatUserEntity[]): RocketChatUser[] {
+		return entities.map((entity) &#x3D;&gt; this.mapToDO(entity));
 	}
 }
 </code></pre>

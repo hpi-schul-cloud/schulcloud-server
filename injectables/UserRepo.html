@@ -655,8 +655,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="188"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:188</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="191"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:191</a></div>
                         </td>
                     </tr>
 
@@ -764,8 +764,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="172"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:172</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="175"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:175</a></div>
                         </td>
                     </tr>
 
@@ -831,8 +831,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="184"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:184</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="187"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:187</a></div>
                         </td>
                     </tr>
 
@@ -1299,8 +1299,11 @@ export class UserRepo extends BaseRepo&lt;User&gt; {
 	}
 
 	async getParentEmailsFromUser(userId: EntityId): Promise&lt;string[]&gt; {
-		const user &#x3D; await this._em.findOneOrFail(User, { id: userId });
-		const parentsEmails &#x3D; user.parents?.map((parent) &#x3D;&gt; parent.email) ?? [];
+		const user: User | null &#x3D; await this._em.findOne(User, { id: userId });
+		let parentsEmails: string[] &#x3D; [];
+		if (user !&#x3D;&#x3D; null) {
+			parentsEmails &#x3D; user.parents?.map((parent) &#x3D;&gt; parent.email) ?? [];
+		}
 
 		return parentsEmails;
 	}

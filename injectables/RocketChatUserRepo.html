@@ -358,7 +358,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;RocketChatUser&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;RocketChatUser[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -416,12 +416,12 @@ export class RocketChatUserRepo {
 		return RocketChatUserEntity;
 	}
 
-	async findByUserId(userId: EntityId): Promise&lt;RocketChatUser&gt; {
-		const entity: RocketChatUserEntity &#x3D; await this.em.findOneOrFail(RocketChatUserEntity, {
+	async findByUserId(userId: EntityId): Promise&lt;RocketChatUser[]&gt; {
+		const entities: RocketChatUserEntity[] &#x3D; await this.em.find(RocketChatUserEntity, {
 			userId: new ObjectId(userId),
 		});
 
-		const mapped: RocketChatUser &#x3D; RocketChatUserMapper.mapToDO(entity);
+		const mapped: RocketChatUser[] &#x3D; RocketChatUserMapper.mapToDOs(entities);
 
 		return mapped;
 	}

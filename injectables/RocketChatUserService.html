@@ -360,7 +360,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;RocketChatUser&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;RocketChatUser[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -389,8 +389,8 @@ export class RocketChatUserService {
 		this.logger.setContext(RocketChatUserService.name);
 	}
 
-	public async findByUserId(userId: EntityId): Promise&lt;RocketChatUser&gt; {
-		const user: RocketChatUser &#x3D; await this.rocketChatUserRepo.findByUserId(userId);
+	public async findByUserId(userId: EntityId): Promise&lt;RocketChatUser[]&gt; {
+		const user: RocketChatUser[] &#x3D; await this.rocketChatUserRepo.findByUserId(userId);
 
 		return user;
 	}
