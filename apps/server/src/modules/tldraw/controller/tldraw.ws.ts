@@ -6,7 +6,7 @@ import cookie from 'cookie';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { AxiosError } from 'axios';
-import { firstValueFrom, lastValueFrom } from "rxjs";
+import { firstValueFrom, lastValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { WebsocketCloseErrorLoggable } from '../loggable/websocket-close-error.loggable';
 import { TldrawConfig, SOCKET_PORT } from '../config';
@@ -120,10 +120,12 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		console.log(this.apiHostUrl);
 
 		// const result = await this.resolveAfter2Seconds();
-
-			await this.httpService.axiosRef.get(`${this.apiHostUrl}/v3/elements/${drawingName}/permission`, {
-				headers,
-			})
+		await this.resolveAfter2Seconds();
+		const toJestResposeZwykly = await fetch(`${this.apiHostUrl}/v3/elements/${drawingName}/permission`, { headers });
+		// await this.httpService.axiosRef.get(`${this.apiHostUrl}/v3/elements/${drawingName}/permission`, {
+		// 	headers,
+		// });
+		console.log(await toJestResposeZwykly.json());
 		console.log('authorizeConnection3');
 	}
 
