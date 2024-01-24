@@ -12,7 +12,7 @@ import { TldrawDrawing } from '../entities';
 import { TldrawConfig } from '../config';
 import { YTransaction } from '../types';
 import { TldrawRepo } from './tldraw.repo';
-import { DatabaseKeyFactory } from './database-key.factory';
+import { KeyFactory } from './key.factory';
 
 @Injectable()
 export class YMongodb {
@@ -162,7 +162,7 @@ export class YMongodb {
 	 * Get all document updates for a specific document.
 	 */
 	private async getMongoUpdates(docName: string, opts = {}): Promise<Buffer[]> {
-		const uniqueKey = DatabaseKeyFactory.createForUpdate(docName);
+		const uniqueKey = KeyFactory.createForUpdate(docName);
 		const docs = await this.getMongoBulkData(uniqueKey, opts);
 
 		return this.convertMongoUpdates(docs);
@@ -171,7 +171,7 @@ export class YMongodb {
 	private async getCurrentUpdateClock(docName: string): Promise<number> {
 		const updates = await this.getMongoBulkData(
 			{
-				...DatabaseKeyFactory.createForUpdate(docName, 0),
+				...KeyFactory.createForUpdate(docName, 0),
 				clock: {
 					$gte: 0,
 					$lt: binary.BITS32,
@@ -189,7 +189,7 @@ export class YMongodb {
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, clock);
 		encoding.writeVarUint8Array(encoder, sv);
-		const uniqueKey = DatabaseKeyFactory.createForStateVector(docName);
+		const uniqueKey = KeyFactory.createForStateVector(docName);
 		
 		await this.repo.put(uniqueKey, {
 			value: Buffer.from(encoding.toUint8Array(encoder)),
@@ -211,7 +211,7 @@ export class YMongodb {
 		const value = Buffer.from(update);
 		//  if our buffer exceeds it, we store the update in multiple documents
 		if (value.length <= this.maxDocumentSize) {
-			const uniqueKey = DatabaseKeyFactory.createForUpdate(docName, clock + 1);
+			const uniqueKey = KeyFactory.createForUpdate(docName, clock + 1);
 			
 			await this.repo.put(uniqueKey, {
 				value,
@@ -226,7 +226,7 @@ export class YMongodb {
 				const chunk = value.subarray(start, end);
 
 				putPromises.push(
-					this.repo.put({ ...DatabaseKeyFactory.createForUpdate(docName, clock + 1), part: i + 1 }, { value: chunk })
+					this.repo.put({ ...KeyFactory.createForUpdate(docName, clock + 1), part: i + 1 }, { value: chunk })
 				);
 			}
 

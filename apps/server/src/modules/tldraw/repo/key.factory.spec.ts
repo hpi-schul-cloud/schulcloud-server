@@ -1,7 +1,7 @@
 import { ObjectId } from "bson";
-import { DatabaseKeyFactory } from "./database-key.factory";
+import { KeyFactory } from "./key.factory";
 
-describe('DatabaseKeyFactory', () => {
+describe('KeyFactory', () => {
 	describe('createForUpdate', () => {
 		describe('when clock is not passed', () => {
 			const setup = () => {
@@ -13,7 +13,7 @@ describe('DatabaseKeyFactory', () => {
 			it('should return a object that support the interface UniqueDatabaseKey and clock is not defined', ()=> {
 				const { params } = setup();
 
-				const result = DatabaseKeyFactory.createForUpdate(params.docName);
+				const result = KeyFactory.createForUpdate(params.docName);
 
 				expect(result).toEqual({
 					docName: params.docName,
@@ -34,7 +34,7 @@ describe('DatabaseKeyFactory', () => {
 			it('should return a object that support the interface UniqueDatabaseKey and pass the clock number', ()=> {
 				const { params } = setup();
 
-				const result = DatabaseKeyFactory.createForUpdate(params.docName, params.clock);
+				const result = KeyFactory.createForUpdate(params.docName, params.clock);
 
 				expect(result).toEqual({
 					docName: params.docName,
@@ -55,7 +55,7 @@ describe('DatabaseKeyFactory', () => {
 			it('should return a object that support the interface UniqueDatabaseKey and pass the clock number', ()=> {
 				const { params } = setup();
 
-				const result = DatabaseKeyFactory.createForUpdate(params.docName, params.clock);
+				const result = KeyFactory.createForUpdate(params.docName, params.clock);
 
 				expect(result).toEqual({
 					docName: params.docName,
@@ -76,7 +76,7 @@ describe('DatabaseKeyFactory', () => {
 			it('should throw an invalid clock number error', ()=> {
 				const { params } = setup();
 
-				expect(() => DatabaseKeyFactory.createForUpdate(params.docName, params.clock)).toThrowError();
+				expect(() => KeyFactory.createForUpdate(params.docName, params.clock)).toThrowError();
 			});
 		});
 	});
@@ -92,7 +92,7 @@ describe('DatabaseKeyFactory', () => {
 			it('should return a object that support the interface UniqueDatabaseKey', ()=> {
 				const { params } = setup();
 
-				const result = DatabaseKeyFactory.createForStateVector(params.docName);
+				const result = KeyFactory.createForStateVector(params.docName);
 
 				expect(result).toEqual({
 					docName: params.docName,

@@ -185,7 +185,7 @@ describe('YMongoDb', () => {
 				};
 			};
 
-			it('should return ydoc from the database', async () => {
+			it('should return ydoc', async () => {
 				const { applyUpdateSpy  } = await setup();
 
 
@@ -212,7 +212,7 @@ describe('YMongoDb', () => {
 				};
 			};
 
-			it('should not return ydoc if part is missing', async () => {
+			it('should not return ydoc', async () => {
 				const { applyUpdateSpy } = await setup();
 
 				const doc = await mdb.getYDoc('test-name');

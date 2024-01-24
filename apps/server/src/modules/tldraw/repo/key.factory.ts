@@ -14,7 +14,7 @@ interface UniqueDatabaseKey {
 	clock?: number;
 }
 
-export class DatabaseKeyFactory {
+export class KeyFactory {
 	static checkValidClock(clock?: number): void {
 		if (clock && clock < -1) {
 			throw new Error('invalid clock value is passed to DatabaseKeyFactory')
@@ -22,7 +22,7 @@ export class DatabaseKeyFactory {
 	}
 
 	static createForUpdate(docName: string, clock?: number): UniqueDatabaseKey {
-		DatabaseKeyFactory.checkValidClock(clock);
+		KeyFactory.checkValidClock(clock);
 
 		const uniqueKey = {
 			docName,
