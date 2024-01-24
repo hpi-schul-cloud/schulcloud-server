@@ -1,46 +1,62 @@
-<p>Erstellt am {{createdAt}} von {{creatorName}}</p>
-<p>{{instance}}</p>
+<head>
+    <style>
+        .right-aligned { text-align: right; }
+        .center-aligned { text-align: center; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid black; padding: 8px; text-align: left; }
+        body {
+            margin-top: 96px;
+            margin-bottom: 96px;
+            margin-left: 72px;
+            margin-right: 72px;
+            font-size: 16px;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <p class="right-aligned">Erstellt am {{createdAt}} von {{creatorName}}</p>
+    <p class="right-aligned">{{instance}}</p>
 
-<h1>Datenblatt</h1>
-<h1>{{toolName}}</h1>
-<h3>{{toolUrl}}</h3>
+    <h1 class="center-aligned">Datenblatt</h1>
+    <h1 class="center-aligned">{{toolName}}</h1>
+    <h4 class="center-aligned"><a href="{{toolUrl}}" target="_blank">{{toolUrl}}</a></h4>
 
-<br>
-<br>
+    <br>
 
-{{#isDeactivated}}
-    <h3>{{isDeactivated}}</h3>
-{{/isDeactivated}}
-{{#restrictToContexts}}
-    <p>Tool ist beschränkt auf folgende Kontexte:</p>
-    <p>{{restrictToContexts}}</p>
-{{/restrictToContexts}}
+    {{#isDeactivated}}
+        <p>{{isDeactivated}}</p>
+    {{/isDeactivated}}
+    {{#restrictToContexts.length}}
+        <p>Tool ist beschränkt auf folgende Kontexte: {{restrictToContexts}}</p>
+    {{/restrictToContexts.length}}
 
-<p>Tool-Typ: {{toolType}}</p>
-{{#skipConsent}}
-    <p>Erteilen der Zustimmung überspringen: {{skipConsent}}</p>
-{{/skipConsent}}
+    <p>Tool-Typ: {{toolType}}</p>
+    {{#skipConsent}}
+        <p>Erteilen der Zustimmung überspringen: {{skipConsent}}</p>
+    {{/skipConsent}}
 
-{{#messageType}}
-    <p>MessageType: {{messageType}}</p>
-{{/messageType}}
-{{#privacy}}
-    <p>Privacy: {{privacy}}</p>
-{{/privacy}}
+    {{#messageType}}
+        <p>MessageType: {{messageType}}</p>
+    {{/messageType}}
+    {{#privacy}}
+        <p>Privacy: {{privacy}}</p>
+    {{/privacy}}
 
-{{#parameters.length}}
-    <h3>An den Dienst übermittelte Parameter</h3>
-    <table>
-        <thead>
+    <br>
+
+    {{#parameters.length}}
+        <h4>An den Dienst übermittelte Parameter</h4>
+        <table>
+            <thead>
             <tr>
                 <th>Name</th>
                 <th>Typ</th>
                 <th>Eigenschaft</th>
                 <th>Geltungsbereich</th>
-                <th>Ort??</th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
             {{#parameters}}
                 <tr>
                     <td>{{name}}</td>
@@ -49,7 +65,7 @@
                     <td>{{scope}}</td>
                 </tr>
             {{/parameters}}
-        </tbody>
-    </table>
-{{/parameters.length}}
-
+            </tbody>
+        </table>
+    {{/parameters.length}}
+</body>
