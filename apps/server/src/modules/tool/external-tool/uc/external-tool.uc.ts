@@ -10,6 +10,7 @@ import { ExternalTool, ExternalToolConfig, ExternalToolMetadata } from '../domai
 import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
 import { ExternalToolMustacheTemplateData } from '../mustache-template';
+import {PDFOptions, PDFService} from "@pyxlab/nestjs-pdf";
 
 @Injectable()
 export class ExternalToolUc {
@@ -18,7 +19,8 @@ export class ExternalToolUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly toolValidationService: ExternalToolValidationService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly commonToolMetadataService: CommonToolMetadataService
+		private readonly commonToolMetadataService: CommonToolMetadataService,
+		private readonly pdfService: PDFService
 	) {}
 
 	async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
@@ -103,7 +105,10 @@ export class ExternalToolUc {
 			user.firstName,
 			user.lastName
 		);
+		const options: PDFOptions = {
+			locals: dataSheetData,
+		};
 		// TODO N21-1626 create pdf and pdfService
-		// this.pdfService.createPdf(dataSheetData);
+		this.pdfService.toBuffer('ExternalToolTemplate', options);
 	}
 }
