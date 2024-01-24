@@ -189,27 +189,31 @@ export class YMongodb {
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, clock);
 		encoding.writeVarUint8Array(encoder, sv);
-		const UniqueKey = DatabaseKeyFactory.createForStateVector(docName);
+		const uniqueKey = DatabaseKeyFactory.createForStateVector(docName);
 		
-		await this.repo.put(UniqueKey, {
+		await this.repo.put(uniqueKey, {
 			value: Buffer.from(encoding.toUint8Array(encoder)),
 		});
 	}
 
 	private async storeUpdate(docName: string, update: Uint8Array): Promise<number> {
 		const clock: number = await this.getCurrentUpdateClock(docName);
+		
 		if (clock === -1) {
 			// make sure that a state vector is always written, so we can search for available documents
 			const ydoc = new Doc();
 			applyUpdate(ydoc, update);
 			const sv = encodeStateVector(ydoc);
+			
 			await this.writeStateVector(docName, sv, 0);
 		}
 
 		const value = Buffer.from(update);
 		//  if our buffer exceeds it, we store the update in multiple documents
 		if (value.length <= this.maxDocumentSize) {
-			await this.repo.put(DatabaseKeyFactory.createForUpdate(docName, clock + 1), {
+			const uniqueKey = DatabaseKeyFactory.createForUpdate(docName, clock + 1);
+			
+			await this.repo.put(uniqueKey, {
 				value,
 			});
 		} else {
