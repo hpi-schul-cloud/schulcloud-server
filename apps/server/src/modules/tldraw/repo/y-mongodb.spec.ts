@@ -166,48 +166,62 @@ describe('YMongoDb', () => {
 	});
 
 	describe('getYDoc', () => {
-		describe('when getting document with part defined', () => {
-			const setup = () => {
+		describe('when getting document with well defined parts', () => {
+			const setup = async () => {
 				const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValue();
 
 				const drawing1 = tldrawEntityFactory.build({ clock: 1, part: 1 });
 				const drawing2 = tldrawEntityFactory.build({ clock: 1, part: 2 });
 				const drawing3 = tldrawEntityFactory.build({ clock: 2, part: 1 });
-				const drawing4 = tldrawEntityFactory.build({ clock: 1, part: 3 });
-				const drawing5 = tldrawEntityFactory.build({ clock: 1, part: 4 });
+
+				await em.persistAndFlush([drawing1, drawing2, drawing3]);
+				em.clear();
 
 				return {
 					applyUpdateSpy,
 					drawing1,
 					drawing2,
 					drawing3,
-					drawing4,
-					drawing5,
 				};
 			};
 
 			it('should return ydoc from the database', async () => {
-				const { applyUpdateSpy, drawing1, drawing2, drawing3 } = setup();
+				const { applyUpdateSpy  } = await setup();
 
-				await em.persistAndFlush([drawing1, drawing2, drawing3]);
-				em.clear();
+
 				const doc = await mdb.getYDoc('test-name');
 
 				expect(doc).toBeDefined();
 				applyUpdateSpy.mockRestore();
 			});
+		});
 
-			it('should not return ydoc if part is missing', async () => {
-				const { applyUpdateSpy, drawing1, drawing4, drawing5 } = setup();
+		describe('when getting document with missing parts', () => {
+			const setup = async () => {
+				const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValue();
+
+				const drawing1 = tldrawEntityFactory.build({ clock: 1, part: 1 });
+				const drawing4 = tldrawEntityFactory.build({ clock: 1, part: 3 });
+				const drawing5 = tldrawEntityFactory.build({ clock: 1, part: 4 });
 
 				await em.persistAndFlush([drawing1, drawing4, drawing5]);
 				em.clear();
+
+				return {
+					applyUpdateSpy,
+				};
+			};
+
+			it('should not return ydoc if part is missing', async () => {
+				const { applyUpdateSpy } = await setup();
+
 				const doc = await mdb.getYDoc('test-name');
 
 				expect(doc).toBeUndefined();
 				applyUpdateSpy.mockRestore();
 			});
 		});
+
 
 		describe('when getting document with part undefined', () => {
 			const setup = async () => {
