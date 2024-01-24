@@ -588,6 +588,8 @@ describe('TldrawWSService', () => {
 		describe('when unsubscribing from Redis fails', () => {
 			const setup = async () => {
 				ws = await TestConnection.setupWs(wsUrl);
+				const doc = TldrawWsFactory.createWsSharedDocDo();
+				doc.connections.set(ws, new Set<number>());
 
 				const flushDocumentSpy = jest.spyOn(boardRepo, 'flushDocument').mockResolvedValueOnce();
 				const redisUnsubscribeSpy = jest
@@ -600,27 +602,26 @@ describe('TldrawWSService', () => {
 						});
 						return Promise.resolve(0);
 					});
-				const closeConnSpy = jest.spyOn(service, 'closeConn');
 				const errorLogSpy = jest.spyOn(logger, 'warning');
 				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce({});
 
 				return {
+					doc,
 					flushDocumentSpy,
 					redisUnsubscribeSpy,
-					closeConnSpy,
 					errorLogSpy,
 				};
 			};
 
-			it('should log error and close connection', async () => {
-				const { errorLogSpy, flushDocumentSpy, redisUnsubscribeSpy, closeConnSpy } = await setup();
+			it('should log error', async () => {
+				const { doc, errorLogSpy, flushDocumentSpy, redisUnsubscribeSpy } = await setup();
 
-				await service.setupWSConnection(ws, 'TEST');
+				await service.closeConn(doc, ws);
+
+				await delay(100);
 
 				expect(redisUnsubscribeSpy).toHaveBeenCalled();
-				expect(closeConnSpy).toHaveBeenCalled();
 				expect(errorLogSpy).toHaveBeenCalled();
-				closeConnSpy.mockRestore();
 				flushDocumentSpy.mockRestore();
 				redisUnsubscribeSpy.mockRestore();
 			});
