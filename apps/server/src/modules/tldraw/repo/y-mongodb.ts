@@ -12,6 +12,7 @@ import { TldrawDrawing } from '../entities';
 import { TldrawConfig } from '../config';
 import { YTransaction } from '../types';
 import { TldrawRepo } from './tldraw.repo';
+import { DatabaseKeyFactory } from './database-key.factory';
 
 @Injectable()
 export class YMongodb {
@@ -161,14 +162,16 @@ export class YMongodb {
 	 * Get all document updates for a specific document.
 	 */
 	private async getMongoUpdates(docName: string, opts = {}): Promise<Buffer[]> {
-		const docs = await this.getMongoBulkData(this.createDocumentUpdateKey(docName), opts);
+		const uniqueKey = DatabaseKeyFactory.createForUpdate(docName);
+		const docs = await this.getMongoBulkData(uniqueKey, opts);
+
 		return this.convertMongoUpdates(docs);
 	}
 
 	private async getCurrentUpdateClock(docName: string): Promise<number> {
 		const updates = await this.getMongoBulkData(
 			{
-				...this.createDocumentUpdateKey(docName, 0),
+				...DatabaseKeyFactory.createForUpdate(docName, 0),
 				clock: {
 					$gte: 0,
 					$lt: binary.BITS32,
@@ -186,7 +189,9 @@ export class YMongodb {
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, clock);
 		encoding.writeVarUint8Array(encoder, sv);
-		await this.repo.put(this.createDocumentStateVectorKey(docName), {
+		const UniqueKey = DatabaseKeyFactory.createForStateVector(docName);
+		
+		await this.repo.put(UniqueKey, {
 			value: Buffer.from(encoding.toUint8Array(encoder)),
 		});
 	}
@@ -204,7 +209,7 @@ export class YMongodb {
 		const value = Buffer.from(update);
 		//  if our buffer exceeds it, we store the update in multiple documents
 		if (value.length <= this.maxDocumentSize) {
-			await this.repo.put(this.createDocumentUpdateKey(docName, clock + 1), {
+			await this.repo.put(DatabaseKeyFactory.createForUpdate(docName, clock + 1), {
 				value,
 			});
 		} else {
@@ -217,7 +222,7 @@ export class YMongodb {
 				const chunk = value.subarray(start, end);
 
 				putPromises.push(
-					this.repo.put({ ...this.createDocumentUpdateKey(docName, clock + 1), part: i + 1 }, { value: chunk })
+					this.repo.put({ ...DatabaseKeyFactory.createForUpdate(docName, clock + 1), part: i + 1 }, { value: chunk })
 				);
 			}
 
@@ -266,34 +271,5 @@ export class YMongodb {
 			return -1;
 		}
 		return updates[0].clock;
-	}
-
-	/**
-	 * Create a unique key for a update message.
-	 */
-	private createDocumentUpdateKey(
-		docName: string,
-		clock?: number
-	): { version: string; action: string; docName: string; clock?: number } {
-		if (clock !== undefined) {
-			return {
-				version: 'v1',
-				action: 'update',
-				docName,
-				clock,
-			};
-		}
-		return {
-			version: 'v1',
-			action: 'update',
-			docName,
-		};
-	}
-
-	private createDocumentStateVectorKey(docName: string): { docName: string; version: string } {
-		return {
-			docName,
-			version: 'v1_sv',
-		};
 	}
 }
