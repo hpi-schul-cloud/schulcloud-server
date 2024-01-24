@@ -7,6 +7,8 @@ export interface SchoolRepo {
 	getSchools(query: SchoolQuery, options?: IFindOptions<SchoolProps>): Promise<School[]>;
 
 	getSchoolById(schoolId: EntityId): Promise<School>;
+
+	getAllSchoolsWithActiveLdapSystems(): Promise<School[]>;
 }
 
 export const SCHOOL_REPO = 'SCHOOL_REPO';

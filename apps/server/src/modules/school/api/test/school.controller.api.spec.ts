@@ -246,6 +246,16 @@ describe('School Controller (API)', () => {
 			});
 		});
 
+		describe('when id in params is a mongo id', () => {
+			it('should work unauthenticated', async () => {
+				const someId = new ObjectId().toHexString();
+
+				const response = await testApiClient.get(`exists/id/${someId}`);
+
+				expect(response.status).toEqual(HttpStatus.OK);
+			});
+		});
+
 		describe('when requested school is not found', () => {
 			it('should return false', async () => {
 				const someId = new ObjectId().toHexString();
@@ -272,6 +282,57 @@ describe('School Controller (API)', () => {
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual({ exists: true });
+			});
+		});
+	});
+
+	describe('getSchoolListForLadpLogin', () => {
+		it('should work unauthenticated', async () => {
+			const response = await testApiClient.get('list-for-login');
+
+			expect(response.status).toEqual(HttpStatus.OK);
+		});
+
+		describe('when no school has an active LDAP system', () => {
+			const setup = async () => {
+				const schools = schoolFactory.buildList(3);
+				await em.persistAndFlush(schools);
+			};
+
+			it('should return empty list', async () => {
+				await setup();
+
+				const response = await testApiClient.get('list-for-login');
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual([]);
+			});
+		});
+
+		describe('when some schools have active LDAP systems', () => {
+			const setup = async () => {
+				const activeLdapSystem = systemEntityFactory.build({ type: 'ldap', ldapConfig: { active: true } });
+				const schools = schoolFactory.buildList(3, { systems: [activeLdapSystem] });
+				await em.persistAndFlush(schools);
+
+				const expectedResponse = schools.map((school) => {
+					return {
+						id: school.id,
+						name: school.name,
+						systemIds: school.systems.getItems().map((system) => system.id),
+					};
+				});
+
+				return { expectedResponse };
+			};
+
+			it('should return school list for LDAP login', async () => {
+				const { expectedResponse } = await setup();
+
+				const response = await testApiClient.get('list-for-login');
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual(expectedResponse);
 			});
 		});
 	});

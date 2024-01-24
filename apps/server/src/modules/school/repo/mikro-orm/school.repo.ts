@@ -39,6 +39,25 @@ export class SchoolMikroOrmRepo implements SchoolRepo {
 		return school;
 	}
 
+	public async getAllSchoolsWithActiveLdapSystems(): Promise<School[]> {
+		const entities = await this.em.find(
+			SchoolEntity,
+			{ systems: { $ne: undefined } },
+			{ populate: ['systems', 'federalState', 'currentYear'] }
+		);
+		const entitiesWithActiveLdapSystems = entities.filter((entity) => this.hasActiveLdapSystem(entity));
+
+		const schools = SchoolEntityMapper.mapToDos(entitiesWithActiveLdapSystems);
+
+		return schools;
+	}
+
+	private hasActiveLdapSystem(school: SchoolEntity): boolean {
+		const result = school.systems.getItems().some((system) => system.type === 'ldap' && system.ldapConfig?.active);
+
+		return result;
+	}
+
 	private mapToMikroOrmOptions<P extends string = never>(
 		options?: IFindOptions<SchoolProps>,
 		populate?: AutoPath<SchoolEntity, P>[]

@@ -164,4 +164,40 @@ describe('SchoolMikroOrmRepo', () => {
 			});
 		});
 	});
+
+	describe('getAllSchoolsWithActiveLdapSystems', () => {
+		describe('when some schools have active LDAP systems', () => {
+			const setup = async () => {
+				const activeLdapSystem = systemEntityFactory.build({ type: 'ldap', ldapConfig: { active: true } });
+				const inactiveLdapSystem = systemEntityFactory.build({ type: 'ldap', ldapConfig: { active: false } });
+				const otherSystem = systemEntityFactory.build({ type: 'test' });
+				const entity1 = schoolFactory.build({ systems: [activeLdapSystem] });
+				const entity2 = schoolFactory.build({ systems: [otherSystem, activeLdapSystem] });
+				const entity3 = schoolFactory.build({ systems: [inactiveLdapSystem] });
+				const entity4 = schoolFactory.build({ systems: [otherSystem] });
+				const entity5 = schoolFactory.build();
+				await em.persistAndFlush([entity1, entity2, entity3, entity4, entity5]);
+				em.clear();
+				const schoolDo1 = SchoolEntityMapper.mapToDo(entity1);
+				const schoolDo2 = SchoolEntityMapper.mapToDo(entity2);
+				const schoolDo3 = SchoolEntityMapper.mapToDo(entity3);
+				const schoolDo4 = SchoolEntityMapper.mapToDo(entity4);
+				const schoolDo5 = SchoolEntityMapper.mapToDo(entity5);
+
+				return { schoolDo1, schoolDo2, schoolDo3, schoolDo4, schoolDo5 };
+			};
+
+			it('should return only these schools', async () => {
+				const { schoolDo1, schoolDo2, schoolDo3, schoolDo4, schoolDo5 } = await setup();
+
+				const result = await repo.getAllSchoolsWithActiveLdapSystems();
+
+				expect(result).toContainEqual(schoolDo1);
+				expect(result).toContainEqual(schoolDo2);
+				expect(result).not.toContainEqual(schoolDo3);
+				expect(result).not.toContainEqual(schoolDo4);
+				expect(result).not.toContainEqual(schoolDo5);
+			});
+		});
+	});
 });
