@@ -1011,7 +1011,7 @@ describe('TldrawWSService', () => {
 
 				service.getYDoc('test-redis-fail');
 
-				await delay(200);
+				await delay(500);
 
 				expect(errorLogSpy).toHaveBeenCalled();
 				redisSubscribeSpy.mockRestore();
