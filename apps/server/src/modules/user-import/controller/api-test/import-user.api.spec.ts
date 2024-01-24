@@ -1,4 +1,4 @@
-import { SanisResponse, schulconnexResponseFactory, SchulconnexRestClient } from '@infra/schulconnex-client';
+import { SanisResponse, schulconnexResponseFactory } from '@infra/schulconnex-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import {
@@ -36,6 +36,7 @@ import {
 } from '@shared/testing';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { IUserImportFeatures, UserImportFeatures } from '../../config';
 
 describe('ImportUser Controller (API)', () => {
@@ -45,13 +46,21 @@ describe('ImportUser Controller (API)', () => {
 	let testApiClient: TestApiClient;
 	let userImportFeatures: IUserImportFeatures;
 	let axiosMock: MockAdapter;
-	let schulconnexRestClient: SchulconnexRestClient;
 
-	const authenticatedUser = async (permissions: Permission[] = [], features: SchoolFeature[] = []) => {
-		const system = systemEntityFactory.buildWithId(); // TODO no id?
-		const school = schoolEntityFactory.build({ officialSchoolNumber: 'foo', features });
+	const authenticatedUser = async (
+		permissions: Permission[] = [],
+		features: SchoolFeature[] = [],
+		schoolHasExternalId = true
+	) => {
+		const system = systemEntityFactory.buildWithId();
+		const school = schoolEntityFactory.build({
+			officialSchoolNumber: 'foo',
+			features,
+			systems: [system],
+			externalId: schoolHasExternalId ? system.id : undefined,
+		});
 		const roles = [roleFactory.build({ name: RoleName.ADMINISTRATOR, permissions })];
-		await em.persistAndFlush([school, system, ...roles]);
+		await em.persistAndFlush([system, school, ...roles]);
 		const user = userFactory.buildWithId({ roles, school });
 		const account = accountFactory.withUser(user).buildWithId();
 		await em.persistAndFlush([user, account]);
@@ -77,7 +86,6 @@ describe('ImportUser Controller (API)', () => {
 		testApiClient = new TestApiClient(app, 'user/import');
 		userImportFeatures = app.get(UserImportFeatures);
 		axiosMock = new MockAdapter(axios);
-		schulconnexRestClient = app.get(SchulconnexRestClient);
 	});
 
 	afterAll(async () => {
@@ -115,6 +123,7 @@ describe('ImportUser Controller (API)', () => {
 					]));
 					testApiClient = await testApiClient.login(account);
 					userImportFeatures.userMigrationEnabled = false;
+					userImportFeatures.userMigrationSystemId = '';
 				});
 
 				afterEach(() => {
@@ -122,45 +131,44 @@ describe('ImportUser Controller (API)', () => {
 				});
 
 				it('System is not set', async () => {
-					userImportFeatures.userMigrationSystemId = '';
-					await testApiClient.get().expect(HttpStatus.INTERNAL_SERVER_ERROR);
+					await testApiClient.get().expect(HttpStatus.FORBIDDEN);
 				});
 
-				it('GET /user/import is UNAUTHORIZED', async () => {
-					await testApiClient.get().expect(HttpStatus.INTERNAL_SERVER_ERROR);
+				it('GET /user/import is forbidden', async () => {
+					await testApiClient.get().expect(HttpStatus.FORBIDDEN);
 				});
 
-				it('GET /user/import/unassigned is UNAUTHORIZED', async () => {
-					await testApiClient.get('unassigned').expect(HttpStatus.INTERNAL_SERVER_ERROR);
+				it('GET /user/import/unassigned is forbidden', async () => {
+					await testApiClient.get('unassigned').expect(HttpStatus.FORBIDDEN);
 				});
 
-				it('PATCH /user/import/:id/match is UNAUTHORIZED', async () => {
+				it('PATCH /user/import/:id/match is forbidden', async () => {
 					const id = new ObjectId().toString();
 					const params: UpdateMatchParams = { userId: new ObjectId().toString() };
-					await testApiClient.patch(`${id}/match`).send(params).expect(HttpStatus.INTERNAL_SERVER_ERROR);
+					await testApiClient.patch(`${id}/match`).send(params).expect(HttpStatus.FORBIDDEN);
 				});
 
-				it('DELETE /user/import/:id/match is UNAUTHORIZED', async () => {
+				it('DELETE /user/import/:id/match is forbidden', async () => {
 					const id = new ObjectId().toString();
-					await testApiClient.delete(`${id}/match`).send().expect(HttpStatus.INTERNAL_SERVER_ERROR);
+					await testApiClient.delete(`${id}/match`).send().expect(HttpStatus.FORBIDDEN);
 				});
 
-				it('PATCH /user/import/:id/flag is UNAUTHORIZED', async () => {
+				it('PATCH /user/import/:id/flag is forbidden', async () => {
 					const id = new ObjectId().toString();
 					const params: UpdateFlagParams = { flagged: true };
-					await testApiClient.patch(`${id}/flag`).send(params).expect(HttpStatus.INTERNAL_SERVER_ERROR);
+					await testApiClient.patch(`${id}/flag`).send(params).expect(HttpStatus.FORBIDDEN);
 				});
 
-				it('POST /user/import/migrate is UNAUTHORIZED', async () => {
-					await testApiClient.post('migrate').send().expect(HttpStatus.INTERNAL_SERVER_ERROR);
+				it('POST /user/import/migrate is forbidden', async () => {
+					await testApiClient.post('migrate').send().expect(HttpStatus.FORBIDDEN);
 				});
 
-				it('POST /user/import/startSync is UNAUTHORIZED', async () => {
-					await testApiClient.post('startSync').send().expect(HttpStatus.INTERNAL_SERVER_ERROR);
+				it('POST /user/import/startSync is forbidden', async () => {
+					await testApiClient.post('startSync').send().expect(HttpStatus.FORBIDDEN);
 				});
 
-				it('POST /user/import/startUserMigration is UNAUTHORIZED', async () => {
-					await testApiClient.post('startUserMigration').send().expect(HttpStatus.INTERNAL_SERVER_ERROR);
+				it('POST /user/import/startUserMigration is forbidden', async () => {
+					await testApiClient.post('startUserMigration').send().expect(HttpStatus.FORBIDDEN);
 				});
 			});
 
@@ -1157,8 +1165,13 @@ describe('ImportUser Controller (API)', () => {
 
 			describe('when users school has no external id', () => {
 				const setup = async () => {
-					const { account, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
+					const { account, school, system } = await authenticatedUser(
+						[Permission.SCHOOL_IMPORT_USERS_MIGRATE],
+						[],
+						false
+					);
 					const loggedInClient = await testApiClient.login(account);
+					userImportFeatures.userMigrationSystemId = system.id;
 
 					school.externalId = undefined;
 
@@ -1181,16 +1194,20 @@ describe('ImportUser Controller (API)', () => {
 
 			describe('when users fetched successful', () => {
 				const setup = async () => {
-					const { account, school } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
+					const { account, school, system } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
 					const loggedInClient = await testApiClient.login(account);
 
 					userImportFeatures.userMigrationEnabled = true;
-					userImportFeatures.userMigrationSystemId = new ObjectId().toHexString();
+					userImportFeatures.userMigrationSystemId = system.id;
+
+					axiosMock.onPost(/(.*)\/token/).reply<OauthTokenResponse>(HttpStatus.OK, {
+						id_token: 'idToken',
+						refresh_token: 'refreshToken',
+						access_token: 'accessToken',
+					});
 
 					const schulconnexResponse: SanisResponse = schulconnexResponseFactory.build();
-					axiosMock
-						.onGet(`${schulconnexRestClient.API_BASE_URL}/personen-info`)
-						.reply(HttpStatus.CREATED, schulconnexResponse);
+					axiosMock.onGet(/(.*)\/personen-info/).reply(HttpStatus.OK, [schulconnexResponse]);
 
 					return { loggedInClient, account, school };
 				};

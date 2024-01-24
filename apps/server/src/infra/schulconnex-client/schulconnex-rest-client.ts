@@ -11,7 +11,7 @@ import { SchulconnexApiInterface } from './schulconnex-api.interface';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
 
 export class SchulconnexRestClient implements SchulconnexApiInterface {
-	readonly API_BASE_URL: string;
+	private readonly API_BASE_URL: string;
 
 	constructor(
 		private readonly options: SchulconnexRestClientOptions,
