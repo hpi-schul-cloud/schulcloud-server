@@ -6,9 +6,10 @@ import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
-import { ExternalTool, ExternalToolConfig, ExternalToolMetadata, ExternalToolData } from '../domain';
+import { ExternalTool, ExternalToolConfig, ExternalToolMetadata } from '../domain';
 import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
+import { ExternalToolMustacheTemplateData } from '../mustache-template';
 
 @Injectable()
 export class ExternalToolUc {
@@ -97,7 +98,7 @@ export class ExternalToolUc {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const dataSheetData: ExternalToolData = await this.externalToolService.getExternalToolData(
+		const dataSheetData: ExternalToolMustacheTemplateData = await this.externalToolService.getExternalToolData(
 			externalToolId,
 			user.firstName,
 			user.lastName

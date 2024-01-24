@@ -1,4 +1,4 @@
-export class ParameterData {
+export class ExternalToolParameterMustacheTemplateData {
 	name: string;
 
 	properties: string;
@@ -7,7 +7,7 @@ export class ParameterData {
 
 	type?: string;
 
-	constructor(parameterData: ParameterData) {
+	constructor(parameterData: ExternalToolParameterMustacheTemplateData) {
 		this.name = parameterData.name;
 		this.properties = parameterData.properties;
 		this.scope = parameterData.scope;

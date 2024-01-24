@@ -1,27 +1,29 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { ExternalTool, ExternalToolData, ParameterData } from '../domain';
-import {
-	CustomParameterScope,
-	CustomParameterType,
-	ExternalToolParameterProperty,
-	ToolContextType,
-} from '../../common/enum';
+import { ExternalTool } from '../domain';
+import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../common/enum';
 import { CustomParameter } from '../../common/domain';
+import { ExternalToolParameterMustacheTemplateProperty } from './external-tool-parameter-mustache-template-property.enum';
+import { ExternalToolMustacheTemplateData } from './external-tool-mustache-template-data';
+import { ExternalToolParameterMustacheTemplateData } from './external-tool-parameter-mustache-template-data';
 
-export class ExternalToolDataMapper {
-	static mapToExternalToolData(externalTool: ExternalTool, firstName: string, lastname: string): ExternalToolData {
-		const externalToolData: ExternalToolData = new ExternalToolData({
+export class ExternalToolMustacheTemplateDataMapper {
+	static mapToExternalToolData(
+		externalTool: ExternalTool,
+		firstName: string,
+		lastname: string
+	): ExternalToolMustacheTemplateData {
+		const externalToolData: ExternalToolMustacheTemplateData = new ExternalToolMustacheTemplateData({
 			createdAt: new Date().toLocaleDateString('de-DE'),
 			creatorName: `${firstName} ${lastname}`,
-			instance: ExternalToolDataMapper.mapToInstanceName(),
+			instance: ExternalToolMustacheTemplateDataMapper.mapToInstanceName(),
 			toolName: externalTool.name,
 			toolUrl: externalTool.config.baseUrl,
 			isDeactivated: externalTool.isDeactivated ? 'Tool ist deaktiviert' : undefined,
 			restrictToContexts: externalTool.restrictToContexts
-				? ExternalToolDataMapper.mapToLimitedContexts(externalTool)
+				? ExternalToolMustacheTemplateDataMapper.mapToLimitedContexts(externalTool)
 				: undefined,
 			toolType: externalTool.config.type,
-			parameters: ExternalToolDataMapper.mapToParameterDataList(externalTool),
+			parameters: ExternalToolMustacheTemplateDataMapper.mapToParameterDataList(externalTool),
 		});
 
 		if (ExternalTool.isOauth2Config(externalTool.config)) {
@@ -72,40 +74,41 @@ export class ExternalToolDataMapper {
 		return restrictToContexts;
 	}
 
-	static mapToParameterDataList(externalTool: ExternalTool): ParameterData[] {
-		const parameterData: ParameterData[] = [];
+	static mapToParameterDataList(externalTool: ExternalTool): ExternalToolParameterMustacheTemplateData[] {
+		const parameterData: ExternalToolParameterMustacheTemplateData[] = [];
 
 		externalTool.parameters?.forEach((parameter: CustomParameter) => {
-			const paramData: ParameterData = ExternalToolDataMapper.mapToParameterData(parameter);
+			const paramData: ExternalToolParameterMustacheTemplateData =
+				ExternalToolMustacheTemplateDataMapper.mapToParameterData(parameter);
 			parameterData.push(paramData);
 		});
 
 		return parameterData;
 	}
 
-	static mapToParameterData(parameter: CustomParameter): ParameterData {
-		const parameterData: ParameterData = new ParameterData({
+	static mapToParameterData(parameter: CustomParameter): ExternalToolParameterMustacheTemplateData {
+		const parameterData: ExternalToolParameterMustacheTemplateData = new ExternalToolParameterMustacheTemplateData({
 			name: parameter.name,
-			type: ExternalToolDataMapper.mapToType(parameter),
-			properties: ExternalToolDataMapper.mapToProperties(parameter),
-			scope: ExternalToolDataMapper.mapToScope(parameter),
+			type: ExternalToolMustacheTemplateDataMapper.mapToType(parameter),
+			properties: ExternalToolMustacheTemplateDataMapper.mapToProperties(parameter),
+			scope: ExternalToolMustacheTemplateDataMapper.mapToScope(parameter),
 		});
 
 		return parameterData;
 	}
 
 	static mapToProperties(parameter: CustomParameter): string {
-		const properties: ExternalToolParameterProperty[] = [];
+		const properties: ExternalToolParameterMustacheTemplateProperty[] = [];
 		let propertiesString = '';
 		if (parameter.isOptional) {
-			properties.push(ExternalToolParameterProperty.OPTIONAL);
+			properties.push(ExternalToolParameterMustacheTemplateProperty.OPTIONAL);
 		}
 
 		if (parameter.isProtected) {
-			properties.push(ExternalToolParameterProperty.PROTECTED);
+			properties.push(ExternalToolParameterMustacheTemplateProperty.PROTECTED);
 		}
 
-		properties.forEach((property: ExternalToolParameterProperty) => {
+		properties.forEach((property: ExternalToolParameterMustacheTemplateProperty) => {
 			propertiesString += `${property}, `;
 		});
 

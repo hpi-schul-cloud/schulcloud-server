@@ -10,10 +10,10 @@ import { LegacyLogger } from '@src/core/logger';
 import { TokenEndpointAuthMethod } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ExternalTool, ExternalToolData, Oauth2ToolConfig } from '../domain';
+import { ExternalTool, Oauth2ToolConfig } from '../domain';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalToolVersionIncrementService } from './external-tool-version-increment.service';
-import { ExternalToolDataMapper } from '../mapper/external-tool-data.mapper';
+import { ExternalToolMustacheTemplateDataMapper, ExternalToolMustacheTemplateData } from '../mustache-template';
 
 @Injectable()
 export class ExternalToolService {
@@ -156,14 +156,11 @@ export class ExternalToolService {
 		externalToolId: EntityId,
 		firstName: string,
 		lastName: string
-	): Promise<ExternalToolData> {
+	): Promise<ExternalToolMustacheTemplateData> {
 		const externalTool: ExternalTool = await this.findById(externalToolId);
 
-		const externalToolData: ExternalToolData = ExternalToolDataMapper.mapToExternalToolData(
-			externalTool,
-			firstName,
-			lastName
-		);
+		const externalToolData: ExternalToolMustacheTemplateData =
+			ExternalToolMustacheTemplateDataMapper.mapToExternalToolData(externalTool, firstName, lastName);
 
 		return externalToolData;
 	}
