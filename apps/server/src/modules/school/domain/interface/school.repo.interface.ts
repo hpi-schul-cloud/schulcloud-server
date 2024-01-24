@@ -8,7 +8,7 @@ export interface SchoolRepo {
 
 	getSchoolById(schoolId: EntityId): Promise<School>;
 
-	getAllSchoolsWithActiveLdapSystems(): Promise<School[]>;
+	getSchoolsForLdapLogin(): Promise<School[]>;
 }
 
 export const SCHOOL_REPO = 'SCHOOL_REPO';

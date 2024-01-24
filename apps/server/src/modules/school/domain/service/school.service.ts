@@ -58,7 +58,7 @@ export class SchoolService {
 	}
 
 	public async getSchoolsForLdapLogin(): Promise<School[]> {
-		const schools = await this.schoolRepo.getAllSchoolsWithActiveLdapSystems();
+		const schools = await this.schoolRepo.getSchoolsForLdapLogin();
 
 		return schools;
 	}

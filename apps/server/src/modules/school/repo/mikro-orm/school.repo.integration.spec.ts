@@ -165,38 +165,46 @@ describe('SchoolMikroOrmRepo', () => {
 		});
 	});
 
-	describe('getAllSchoolsWithActiveLdapSystems', () => {
+	describe('getSchoolsForLdapLogin', () => {
 		describe('when some schools have active LDAP systems', () => {
 			const setup = async () => {
 				const activeLdapSystem = systemEntityFactory.build({ type: 'ldap', ldapConfig: { active: true } });
 				const inactiveLdapSystem = systemEntityFactory.build({ type: 'ldap', ldapConfig: { active: false } });
+				const activeLdapSystemWithOauthConfig = systemEntityFactory.build({
+					type: 'ldap',
+					ldapConfig: { active: true },
+					oauthConfig: {},
+				});
 				const otherSystem = systemEntityFactory.build({ type: 'test' });
 				const entity1 = schoolFactory.build({ systems: [activeLdapSystem] });
 				const entity2 = schoolFactory.build({ systems: [otherSystem, activeLdapSystem] });
 				const entity3 = schoolFactory.build({ systems: [inactiveLdapSystem] });
 				const entity4 = schoolFactory.build({ systems: [otherSystem] });
 				const entity5 = schoolFactory.build();
-				await em.persistAndFlush([entity1, entity2, entity3, entity4, entity5]);
+				const entity6 = schoolFactory.build({ systems: [activeLdapSystemWithOauthConfig] });
+				await em.persistAndFlush([entity1, entity2, entity3, entity4, entity5, entity6]);
 				em.clear();
 				const schoolDo1 = SchoolEntityMapper.mapToDo(entity1);
 				const schoolDo2 = SchoolEntityMapper.mapToDo(entity2);
 				const schoolDo3 = SchoolEntityMapper.mapToDo(entity3);
 				const schoolDo4 = SchoolEntityMapper.mapToDo(entity4);
 				const schoolDo5 = SchoolEntityMapper.mapToDo(entity5);
+				const schoolDo6 = SchoolEntityMapper.mapToDo(entity6);
 
-				return { schoolDo1, schoolDo2, schoolDo3, schoolDo4, schoolDo5 };
+				return { schoolDo1, schoolDo2, schoolDo3, schoolDo4, schoolDo5, schoolDo6 };
 			};
 
 			it('should return only these schools', async () => {
-				const { schoolDo1, schoolDo2, schoolDo3, schoolDo4, schoolDo5 } = await setup();
+				const { schoolDo1, schoolDo2, schoolDo3, schoolDo4, schoolDo5, schoolDo6 } = await setup();
 
-				const result = await repo.getAllSchoolsWithActiveLdapSystems();
+				const result = await repo.getSchoolsForLdapLogin();
 
 				expect(result).toContainEqual(schoolDo1);
 				expect(result).toContainEqual(schoolDo2);
 				expect(result).not.toContainEqual(schoolDo3);
 				expect(result).not.toContainEqual(schoolDo4);
 				expect(result).not.toContainEqual(schoolDo5);
+				expect(result).not.toContainEqual(schoolDo6);
 			});
 		});
 	});
