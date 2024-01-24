@@ -39,20 +39,23 @@ export class UserImportService {
 	}
 
 	public async matchUsers(importUsers: ImportUser[]): Promise<ImportUser[]> {
-		const matchedImportUsers: Promise<ImportUser>[] = importUsers.map(
-			async (importUser: ImportUser): Promise<ImportUser> => {
+		const importUserMap: Map<string, ImportUser> = new Map();
+
+		importUsers.forEach((importUser) => {
+			const key = `${importUser.school.id}_${importUser.firstName}_${importUser.lastName}`;
+			importUserMap.set(key, importUser);
+		});
+
+		const matchedImportUsers: ImportUser[] = await Promise.all(
+			importUsers.map(async (importUser: ImportUser): Promise<ImportUser> => {
 				const user: User[] = await this.userService.findUserBySchoolAndName(
 					importUser.school.id,
 					importUser.firstName,
 					importUser.lastName
 				);
 
-				let nameCount = 0;
-				importUsers.forEach((importUser2: ImportUser): void => {
-					if (importUser2.firstName === importUser.firstName && importUser2.lastName === importUser.lastName) {
-						nameCount += 1;
-					}
-				});
+				const key = `${importUser.school.id}_${importUser.firstName}_${importUser.lastName}`;
+				const nameCount = importUserMap.has(key) ? 1 : 0;
 
 				if (user.length === 1 && nameCount === 1) {
 					importUser.user = user[0];
@@ -60,9 +63,9 @@ export class UserImportService {
 				}
 
 				return importUser;
-			}
+			})
 		);
 
-		return Promise.all(matchedImportUsers);
+		return matchedImportUsers;
 	}
 }

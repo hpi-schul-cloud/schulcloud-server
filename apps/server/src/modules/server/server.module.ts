@@ -26,7 +26,7 @@ import { SystemApiModule } from '@modules/system/system-api.module';
 import { TaskApiModule } from '@modules/task/task-api.module';
 import { TeamsApiModule } from '@modules/teams/teams-api.module';
 import { ToolApiModule } from '@modules/tool/tool-api.module';
-import { ImportUserModule } from '@modules/user-import';
+import { ImportUserModule, UserImportConfigModule } from '@modules/user-import';
 import { UserLoginMigrationApiModule } from '@modules/user-login-migration/user-login-migration-api.module';
 import { UserApiModule } from '@modules/user/user-api.module';
 import { VideoConferenceApiModule } from '@modules/video-conference/video-conference-api.module';
@@ -36,8 +36,7 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { UserImportConfigModule } from '../user-import/user-import-config.module';
-import { ServerController } from './controller/server.controller';
+import { ServerController } from './controller';
 import { serverConfig } from './server.config';
 
 const serverModules = [

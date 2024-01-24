@@ -5,13 +5,13 @@ import { HttpService } from '@nestjs/axios';
 import { AxiosResponse } from 'axios';
 import QueryString from 'qs';
 import { lastValueFrom, Observable } from 'rxjs';
-import { SchulconnexPersonenInfoParams } from './request/schulconnex-personen-info-params';
+import { SchulconnexPersonenInfoParams } from './request';
 import { SanisResponse } from './response';
 import { SchulconnexApiInterface } from './schulconnex-api.interface';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
 
 export class SchulconnexRestClient implements SchulconnexApiInterface {
-	private readonly API_BASE_URL: string;
+	readonly API_BASE_URL: string;
 
 	constructor(
 		private readonly options: SchulconnexRestClientOptions,
