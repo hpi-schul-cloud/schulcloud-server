@@ -1043,24 +1043,6 @@ describe('lesson copy service', () => {
 			return { user, originalCourse, destinationCourse, originalLesson };
 		};
 
-		it('should not call neXboard service, if feature flag is false', async () => {
-			const { user, destinationCourse, originalLesson } = setup();
-			configurationSpy = jest.spyOn(Configuration, 'get').mockReturnValue(false);
-
-			const status = await copyService.copyLesson({
-				originalLessonId: originalLesson.id,
-				destinationCourse,
-				user,
-			});
-
-			const lessonContents = (status.copyEntity as LessonEntity).contents as ComponentProperties[];
-			expect(configurationSpy).toHaveBeenCalledWith('FEATURE_NEXBOARD_ENABLED');
-			expect(nexboardService.createNexboard).not.toHaveBeenCalled();
-			expect(lessonContents).toEqual([]);
-
-			configurationSpy = jest.spyOn(Configuration, 'get').mockReturnValue(true);
-		});
-
 		it('should not call neXboard service, if copy feature flag is false', async () => {
 			const { user, destinationCourse, originalLesson } = setup();
 			configurationSpy = jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
