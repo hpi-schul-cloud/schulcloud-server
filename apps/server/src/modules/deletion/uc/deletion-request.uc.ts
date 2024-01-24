@@ -248,8 +248,14 @@ export class DeletionRequestUc {
 	private async removeUsersPseudonyms(deletionRequest: DeletionRequest) {
 		this.logger.debug({ action: 'removeUsersPseudonyms', deletionRequest });
 
-		const pseudonymDeleted: number = await this.pseudonymService.deleteByUserId(deletionRequest.targetRefId);
-		await this.logDeletion(deletionRequest, DomainModel.PSEUDONYMS, OperationModel.DELETE, pseudonymDeleted, []);
+		const pseudonymsDeleted = await this.pseudonymService.deleteByUserId(deletionRequest.targetRefId);
+		await this.logDeletion(
+			deletionRequest,
+			pseudonymsDeleted.domain,
+			pseudonymsDeleted.operation,
+			pseudonymsDeleted.count,
+			pseudonymsDeleted.refs
+		);
 	}
 
 	private async removeUserFromTeams(deletionRequest: DeletionRequest) {

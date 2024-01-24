@@ -227,6 +227,10 @@ describe(DeletionRequestUc.name, () => {
 
 				const parentEmail = 'parent@parent.eu';
 
+				const pseudonymsDeleted = DomainOperationBuilder.build(DomainModel.PSEUDONYMS, OperationModel.DELETE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
 				const rocketChatUser: RocketChatUser = rocketChatUserFactory.build({
 					userId: deletionRequestToExecute.targetRefId,
 				});
@@ -269,7 +273,7 @@ describe(DeletionRequestUc.name, () => {
 				filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(2);
 				filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles.mockResolvedValueOnce(2);
 				lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(lessonsUpdated);
-				pseudonymService.deleteByUserId.mockResolvedValueOnce(2);
+				pseudonymService.deleteByUserId.mockResolvedValueOnce(pseudonymsDeleted);
 				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(teamsUpdated);
 				userService.deleteUser.mockResolvedValueOnce(1);
 				rocketChatUserService.deleteByUserId.mockResolvedValueOnce(rocketChatUserDeleted);
@@ -535,6 +539,10 @@ describe(DeletionRequestUc.name, () => {
 					new ObjectId().toHexString(),
 				]);
 
+				const pseudonymsDeleted = DomainOperationBuilder.build(DomainModel.PSEUDONYMS, OperationModel.DELETE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
 				const teamsUpdated = DomainOperationBuilder.build(DomainModel.TEAMS, OperationModel.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
@@ -545,7 +553,7 @@ describe(DeletionRequestUc.name, () => {
 				filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(2);
 				filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles.mockResolvedValueOnce(2);
 				lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(lessonsUpdated);
-				pseudonymService.deleteByUserId.mockResolvedValueOnce(2);
+				pseudonymService.deleteByUserId.mockResolvedValueOnce(pseudonymsDeleted);
 				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(teamsUpdated);
 				userService.deleteUser.mockRejectedValueOnce(new Error());
 

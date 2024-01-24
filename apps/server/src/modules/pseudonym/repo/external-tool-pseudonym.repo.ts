@@ -68,12 +68,15 @@ export class ExternalToolPseudonymRepo {
 		return savedDomainObject;
 	}
 
-	async deletePseudonymsByUserId(userId: EntityId): Promise<number> {
-		const promise: Promise<number> = this.em.nativeDelete(ExternalToolPseudonymEntity, {
-			userId: new ObjectId(userId),
-		});
+	async deletePseudonymsByUserId(userId: EntityId): Promise<EntityId[]> {
+		const externalPseudonyms = await this.em.find(ExternalToolPseudonymEntity, { userId: new ObjectId(userId) });
+		if (externalPseudonyms.length === 0) {
+			return [];
+		}
 
-		return promise;
+		await Promise.all(externalPseudonyms.map((externalPseudonym) => this.em.removeAndFlush(externalPseudonym)));
+
+		return this.getExternalPseudonymId(externalPseudonyms);
 	}
 
 	async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
@@ -88,6 +91,10 @@ export class ExternalToolPseudonymRepo {
 		const domainObject: Pseudonym = this.mapEntityToDomainObject(entities);
 
 		return domainObject;
+	}
+
+	private getExternalPseudonymId(externalPseudonyms: ExternalToolPseudonymEntity[]): EntityId[] {
+		return externalPseudonyms.map((externalPseudonym) => externalPseudonym.id);
 	}
 
 	protected mapEntityToDomainObject(entity: ExternalToolPseudonymEntity): Pseudonym {

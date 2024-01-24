@@ -3,11 +3,12 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
-import { IFindOptions } from '@shared/domain/interface';
+import { DomainOperation, IFindOptions } from '@shared/domain/interface';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DomainModel, StatusModel } from '@shared/domain/types';
+import { DomainModel, EntityId, OperationModel, StatusModel } from '@shared/domain/types';
+import { DomainOperationBuilder } from '@shared/domain/builder';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 
@@ -78,7 +79,7 @@ export class PseudonymService {
 		return pseudonym;
 	}
 
-	public async deleteByUserId(userId: string): Promise<number> {
+	public async deleteByUserId(userId: string): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Pseudonyms',
@@ -96,7 +97,14 @@ export class PseudonymService {
 			this.deleteExternalToolPseudonymsByUserId(userId),
 		]);
 
-		const numberOfDeletedPseudonyms = deletedPseudonyms + deletedExternalToolPseudonyms;
+		const numberOfDeletedPseudonyms = deletedPseudonyms.length + deletedExternalToolPseudonyms.length;
+
+		const result = DomainOperationBuilder.build(
+			DomainModel.PSEUDONYMS,
+			OperationModel.DELETE,
+			numberOfDeletedPseudonyms,
+			[...deletedPseudonyms, ...deletedExternalToolPseudonyms]
+		);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
@@ -109,7 +117,7 @@ export class PseudonymService {
 			)
 		);
 
-		return numberOfDeletedPseudonyms;
+		return result;
 	}
 
 	private async findPseudonymsByUserId(userId: string): Promise<Pseudonym[]> {
@@ -124,14 +132,14 @@ export class PseudonymService {
 		return externalToolPseudonymPromise;
 	}
 
-	private async deletePseudonymsByUserId(userId: string): Promise<number> {
-		const pseudonymPromise: Promise<number> = this.pseudonymRepo.deletePseudonymsByUserId(userId);
+	private async deletePseudonymsByUserId(userId: string): Promise<EntityId[]> {
+		const pseudonymPromise: Promise<EntityId[]> = this.pseudonymRepo.deletePseudonymsByUserId(userId);
 
 		return pseudonymPromise;
 	}
 
-	private async deleteExternalToolPseudonymsByUserId(userId: string): Promise<number> {
-		const externalToolPseudonymPromise: Promise<number> =
+	private async deleteExternalToolPseudonymsByUserId(userId: string): Promise<EntityId[]> {
+		const externalToolPseudonymPromise: Promise<EntityId[]> =
 			this.externalToolPseudonymRepo.deletePseudonymsByUserId(userId);
 
 		return externalToolPseudonymPromise;
