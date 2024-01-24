@@ -1191,7 +1191,7 @@ describe('AccountService', () => {
 		});
 	});
 
-	describe('updateAccountById', () => {
+	describe('updateAccount', () => {
 		describe('When new password is given', () => {
 			const setup = () => {
 				const mockSchool = schoolFactory.buildWithId();
@@ -1218,7 +1218,7 @@ describe('AccountService', () => {
 				const body = { password: defaultPassword } as AccountByIdBodyParams;
 
 				expect(mockStudentUser.forcePasswordChange).toBeFalsy();
-				await accountService.updateAccountById(mockStudentUser, mockStudentAccountDo, body);
+				await accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body);
 				expect(mockStudentAccount.password).not.toBe(previousPasswordHash);
 				expect(mockStudentUser.forcePasswordChange).toBeTruthy();
 			});
@@ -1252,7 +1252,7 @@ describe('AccountService', () => {
 				const body = { username: newUsername } as AccountByIdBodyParams;
 
 				expect(mockStudentAccountDo.username).not.toBe(newUsername);
-				await accountService.updateAccountById(mockStudentUser, mockStudentAccountDo, body);
+				await accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body);
 				expect(mockStudentAccountDo.username).toBe(newUsername.toLowerCase());
 			});
 		});
@@ -1282,7 +1282,7 @@ describe('AccountService', () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				const body = { activated: false } as AccountByIdBodyParams;
 
-				await accountService.updateAccountById(mockStudentUser, mockStudentAccountDo, body);
+				await accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body);
 				expect(mockStudentAccountDo.activated).toBeFalsy();
 			});
 		});
@@ -1310,7 +1310,7 @@ describe('AccountService', () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				const body = { username: 'fail@to.update' } as AccountByIdBodyParams;
 
-				await expect(accountService.updateAccountById(mockStudentUser, mockStudentAccountDo, body)).rejects.toThrow(
+				await expect(accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body)).rejects.toThrow(
 					EntityNotFoundError
 				);
 			});
@@ -1338,7 +1338,7 @@ describe('AccountService', () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				const body = { username: 'user-fail@to.update' } as AccountByIdBodyParams;
 
-				await expect(accountService.updateAccountById(mockStudentUser, mockStudentAccountDo, body)).rejects.toThrow(
+				await expect(accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body)).rejects.toThrow(
 					EntityNotFoundError
 				);
 			});
@@ -1374,7 +1374,7 @@ describe('AccountService', () => {
 				const { mockStudentUser, mockStudentAccountDo, mockOtherTeacherAccount } = setup();
 				const body = { username: mockOtherTeacherAccount.username } as AccountByIdBodyParams;
 
-				await expect(accountService.updateAccountById(mockStudentUser, mockStudentAccountDo, body)).rejects.toThrow(
+				await expect(accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body)).rejects.toThrow(
 					ValidationError
 				);
 			});

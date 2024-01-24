@@ -144,7 +144,7 @@ export class AccountUc {
 			throw new UnauthorizedException('Current user is not authorized to update target account.');
 		}
 
-		const updated: Account = await this.accountService.updateAccountById(targetUser, targetAccount, body);
+		const updated: Account = await this.accountService.updateAccount(targetUser, targetAccount, body);
 
 		return AccountUcMapper.mapToResolvedAccountDto(updated);
 	}

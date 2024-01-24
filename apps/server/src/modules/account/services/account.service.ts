@@ -100,11 +100,7 @@ export class AccountService extends AbstractAccountService {
 		}
 	}
 
-	public async updateAccountById(
-		targetUser: User,
-		targetAccount: Account,
-		body: AccountByIdBodyParams
-	): Promise<Account> {
+	public async updateAccount(targetUser: User, targetAccount: Account, body: AccountByIdBodyParams): Promise<Account> {
 		let updateUser = false;
 		let updateAccount = false;
 

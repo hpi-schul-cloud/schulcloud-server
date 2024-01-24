@@ -1603,7 +1603,7 @@ describe('AccountUc', () => {
 						.mockResolvedValueOnce(mockTeacherUser)
 						.mockResolvedValueOnce(mockStudentUser);
 					accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-					accountService.updateAccountById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
+					accountService.updateAccount.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 					authorizationService.hasAllPermissions.mockReturnValue(true);
 
 					return { mockStudentAccount, mockTeacherUser };
@@ -1651,7 +1651,7 @@ describe('AccountUc', () => {
 						.mockResolvedValueOnce(mockAdminUser)
 						.mockResolvedValueOnce(mockStudentUser);
 					accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-					accountService.updateAccountById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
+					accountService.updateAccount.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 					authorizationService.hasAllPermissions.mockReturnValue(true);
 
 					return { mockStudentAccount, mockAdminUser };
@@ -1806,7 +1806,7 @@ describe('AccountUc', () => {
 						.mockResolvedValueOnce(mockSuperheroUser)
 						.mockResolvedValueOnce(mockAdminUser);
 					accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockAdminAccount));
-					accountService.updateAccountById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockAdminAccount));
+					accountService.updateAccount.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockAdminAccount));
 					authorizationService.hasAllPermissions.mockReturnValue(true);
 
 					return { mockAdminAccount, mockSuperheroUser };
