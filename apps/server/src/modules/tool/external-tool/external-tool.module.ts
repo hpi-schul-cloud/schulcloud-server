@@ -30,7 +30,6 @@ import {
 		EncryptionModule,
 		HttpModule,
 		PDFModule.register({
-			isGlobal: true,
 			view: {
 				// TODO: can we do this better e.g. make it relative to the module file
 				root: 'apps/server/src/modules/tool/external-tool/mustache-template',
@@ -54,6 +53,7 @@ import {
 		ToolContextMapper,
 	],
 	exports: [
+		PDFModule,
 		ExternalToolService,
 		ExternalToolValidationService,
 		ExternalToolVersionIncrementService,
