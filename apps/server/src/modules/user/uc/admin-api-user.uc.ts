@@ -1,0 +1,50 @@
+import { Injectable } from '@nestjs/common';
+import { RoleReference, UserDO } from '@shared/domain/domainobject';
+import { RoleName } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
+import { RoleService } from '@src/modules/role';
+import { AccountService } from '@src/modules/account';
+import { UserService } from '../service/user.service';
+
+@Injectable()
+export class AdminApiUserUc {
+	constructor(
+		private readonly accountService: AccountService,
+		private readonly roleService: RoleService,
+		private readonly userService: UserService
+	) {}
+
+	public async createUserAndAccount(props: {
+		email: string;
+		firstName: string;
+		lastName: string;
+		roleNames: RoleName[];
+		schoolId: EntityId;
+	}): Promise<CreateddUserAndAccount> {
+		const roleDtos = await this.roleService.findByNames(props.roleNames);
+		const roles = roleDtos.map((r) => {
+			if (!r.id) throw new Error();
+			return new RoleReference({ ...r, id: r.id });
+		});
+		const user = await this.userService.save({ ...props, roles });
+		if (!user.id) throw new Error();
+		const account = await this.accountService.save({
+			username: props.email,
+			userId: user.id,
+			password: 'fixme',
+		});
+		return {
+			userId: user.id,
+			accountId: account.id,
+			username: account.username,
+			initialPassword: 'fixme',
+		};
+	}
+}
+
+export type CreateddUserAndAccount = {
+	userId: EntityId;
+	accountId: EntityId;
+	username: string;
+	initialPassword: string;
+};
