@@ -5,10 +5,10 @@ describe('KeyFactory', () => {
 	describe('createForUpdate', () => {
 		describe('when clock is not passed', () => {
 			const setup = () => {
-				const params = { docName: new ObjectId().toHexString()};
+				const params = { docName: new ObjectId().toHexString() };
 
 				return { params };
-			}
+			};
 
 			it('should return a object that support the interface UniqueKey and clock is not defined', ()=> {
 				const { params } = setup();
@@ -26,10 +26,10 @@ describe('KeyFactory', () => {
 
 		describe('when positive clock number is passed', () => {
 			const setup = () => {
-				const params = { docName: new ObjectId().toHexString(), clock: 2};
+				const params = { docName: new ObjectId().toHexString(), clock: 2 };
 
 				return { params };
-			}
+			};
 
 			it('should return a object that support the interface UniqueKey and pass the clock number', ()=> {
 				const { params } = setup();
@@ -47,10 +47,10 @@ describe('KeyFactory', () => {
 
 		describe('when clock number -1 is passed', () => {
 			const setup = () => {
-				const params = { docName: new ObjectId().toHexString(), clock: -1};
+				const params = { docName: new ObjectId().toHexString(), clock: -1 };
 
 				return { params };
-			}
+			};
 
 			it('should return a object that support the interface UniqueKey and pass the clock number', ()=> {
 				const { params } = setup();
@@ -68,10 +68,10 @@ describe('KeyFactory', () => {
 
 		describe('when clock lower then -1 is passed', () => {
 			const setup = () => {
-				const params = { docName: new ObjectId().toHexString(), clock: -2};
+				const params = { docName: new ObjectId().toHexString(), clock: -2 };
 
 				return { params };
-			}
+			};
 
 			it('should throw an invalid clock number error', () => {
 				const { params } = setup();
@@ -84,10 +84,10 @@ describe('KeyFactory', () => {
 	describe('createForStateVector', () => {
 		describe('when docName passed', () => {
 			const setup = () => {
-				const params = { docName: new ObjectId().toHexString()};
+				const params = { docName: new ObjectId().toHexString() };
 
 				return { params };
-			}
+			};
 
 			it('should return a object that support the interface UniqueKey', () => {
 				const { params } = setup();

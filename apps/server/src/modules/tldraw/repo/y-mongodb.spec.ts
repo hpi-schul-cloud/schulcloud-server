@@ -188,7 +188,6 @@ describe('YMongoDb', () => {
 			it('should return ydoc', async () => {
 				const { applyUpdateSpy  } = await setup();
 
-
 				const doc = await mdb.getYDoc('test-name');
 
 				expect(doc).toBeDefined();

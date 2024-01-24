@@ -1,10 +1,10 @@
 enum DatabaseAction {
-	UPDATE = 'update'
+	UPDATE = 'update',
 }
 
 enum Version {
 	V1_SV = 'v1_sv',
-	V1 = 'v1'
+	V1 = 'v1',
 }
 
 interface UniqueKey {
@@ -17,7 +17,7 @@ interface UniqueKey {
 export class KeyFactory {
 	static checkValidClock(clock?: number): void {
 		if (clock && clock < -1) {
-			throw new Error('Invalid clock value is passed to KeyFactory')
+			throw new Error('Invalid clock value is passed to KeyFactory');
 		}
 	}
 
@@ -29,8 +29,8 @@ export class KeyFactory {
 			version: Version.V1,
 			action: DatabaseAction.UPDATE,
 			// TODO: Do it work when key is exists, but value is undefined? Same for action in createForStateVector 
-			clock
-		}
+			clock,
+		};
 
 		return uniqueKey;
 	}
