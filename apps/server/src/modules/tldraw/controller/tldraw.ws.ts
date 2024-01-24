@@ -6,7 +6,7 @@ import cookie from 'cookie';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { AxiosError } from 'axios';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, lastValueFrom } from "rxjs";
 import { HttpService } from '@nestjs/axios';
 import { WebsocketCloseErrorLoggable } from '../loggable/websocket-close-error.loggable';
 import { TldrawConfig, SOCKET_PORT } from '../config';
@@ -112,23 +112,19 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		if (!token) {
 			throw new UnauthorizedException('Token was not given');
 		}
-		// const headers = {
-		// 	Accept: 'Application/json',
-		// 	Authorization: `Bearer ${token}`,
-		// };
-
-		setTimeout(() => {
-
-		});
+		const headers = {
+			Accept: 'Application/json',
+			Authorization: `Bearer ${token}`,
+		};
 		console.log('authorizeConnection2');
 
-		const result = await this.resolveAfter2Seconds();
-		// await firstValueFrom(
-		// 	this.httpService.get(`${this.apiHostUrl}/v3/elements/${drawingName}/permission`, {
-		// 		headers,
-		// 	})
-		// );
-		console.log(result);
+		// const result = await this.resolveAfter2Seconds();
+
+		await lastValueFrom(
+			this.httpService.get(`${this.apiHostUrl}/v3/elements/${drawingName}/permission`, {
+				headers,
+			})
+		);
 		console.log('authorizeConnection3');
 	}
 
