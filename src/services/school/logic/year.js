@@ -7,6 +7,7 @@ class SchoolYearFacade {
 		/** retrieves custom year for given year id
 		 * @param yearId ObjectId
 		 */
+		// This code regarding custom years does not work. See the ticket for removal: https://ticketsystem.dbildungscloud.de/browse/BC-6029.
 		const customYearsOf = (yearId) => (school.customYears || []).filter((year) => String(year._id) === String(yearId));
 		/** overrides year values with custom year values if they have been defined */
 		const generateSchoolYears = () =>
