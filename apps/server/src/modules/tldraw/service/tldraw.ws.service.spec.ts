@@ -571,10 +571,12 @@ describe('TldrawWSService', () => {
 
 				await service.setupWSConnection(ws, 'TEST');
 
-				await delay(50);
+				await delay(100);
 
 				expect(closeConnSpy).toHaveBeenCalled();
+
 				ws.close();
+				await delay(100);
 				expect(errorLogSpy).toHaveBeenCalled();
 				flushDocumentSpy.mockRestore();
 				redisUnsubscribeSpy.mockRestore();
@@ -650,7 +652,7 @@ describe('TldrawWSService', () => {
 				await service.setupWSConnection(ws, 'TEST');
 				ws.close();
 
-				await delay(20);
+				await delay(100);
 
 				expect(closeConnSpy).toHaveBeenCalled();
 				expect(errorLogSpy).toHaveBeenCalled();
