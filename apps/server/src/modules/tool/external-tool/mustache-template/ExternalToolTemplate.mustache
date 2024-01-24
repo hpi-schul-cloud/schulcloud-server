@@ -1,0 +1,55 @@
+<p>Erstellt am {{createdAt}} von {{creatorName}}</p>
+<p>{{instance}}</p>
+
+<h1>Datenblatt</h1>
+<h1>{{toolName}}</h1>
+<h3>{{toolUrl}}</h3>
+
+<br>
+<br>
+
+{{#isDeactivated}}
+    <h3>{{isDeactivated}}</h3>
+{{/isDeactivated}}
+{{#restrictToContexts}}
+    <p>Tool ist beschränkt auf folgende Kontexte:</p>
+    <p>{{restrictToContexts}}</p>
+{{/restrictToContexts}}
+
+<p>Tool-Type: {{toolType}}</p>
+{{#skipConsent}}
+    <p>Erteilen der Zustimmung überspring: {{skipConsent}}</p>
+{{/skipConsent}}
+
+{{#messageType}}
+    <p>MessageType: {{messageType}}</p>
+{{/messageType}}
+{{#privacy}}
+    <p>Privacy: {{privacy}}</p>
+{{/privacy}}
+
+{{#parameters.length}}
+    <h3>An den Dienst übermittelte Parameter</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Typ</th>
+                <th>Eigenschaft</th>
+                <th>Geltungsbereich</th>
+                <th>Ort??</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#parameters}}
+                <tr>
+                    <td>{{name}}</td>
+                    <td>{{type}}</td>
+                    <td>{{properties}}</td>
+                    <td>{{scope}}</td>
+                </tr>
+            {{/parameters}}
+        </tbody>
+    </table>
+{{/parameters.length}}
+
