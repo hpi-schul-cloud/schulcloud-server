@@ -7,7 +7,7 @@ enum Version {
 	V1 = 'v1'
 }
 
-interface UniqueDatabaseKey {
+interface UniqueKey {
 	version: Version;
 	action?: DatabaseAction;
 	docName: string;
@@ -17,11 +17,11 @@ interface UniqueDatabaseKey {
 export class KeyFactory {
 	static checkValidClock(clock?: number): void {
 		if (clock && clock < -1) {
-			throw new Error('invalid clock value is passed to DatabaseKeyFactory')
+			throw new Error('Invalid clock value is passed to KeyFactory')
 		}
 	}
 
-	static createForUpdate(docName: string, clock?: number): UniqueDatabaseKey {
+	static createForUpdate(docName: string, clock?: number): UniqueKey {
 		KeyFactory.checkValidClock(clock);
 
 		const uniqueKey = {
@@ -36,7 +36,7 @@ export class KeyFactory {
 	}
 
 	// TODO: Copy paste from source code, but i think naming must be changed.
-	static createForStateVector(docName: string): UniqueDatabaseKey {
+	static createForStateVector(docName: string): UniqueKey {
 		const uniqueKey = {
 			docName,
 			version: Version.V1_SV,
