@@ -7,9 +7,17 @@ import { ImportUserRepo, LegacySchoolRepo, LegacySystemRepo, UserRepo } from '@s
 import { LoggerModule } from '@src/core/logger';
 import { ImportUserController } from './controller/import-user.controller';
 import { UserImportUc } from './uc/user-import.uc';
+import { UserImportConfigModule } from './user-import-config.module';
 
 @Module({
-	imports: [LoggerModule, AccountModule, LegacySchoolModule, AuthorizationModule, UserLoginMigrationModule],
+	imports: [
+		LoggerModule,
+		AccountModule,
+		LegacySchoolModule,
+		AuthorizationModule,
+		UserImportConfigModule,
+		UserLoginMigrationModule,
+	],
 	controllers: [ImportUserController],
 	providers: [UserImportUc, ImportUserRepo, LegacySchoolRepo, LegacySystemRepo, UserRepo],
 	exports: [],

@@ -5,7 +5,6 @@ import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
@@ -25,8 +24,8 @@ import {
 } from '@shared/testing';
 import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory';
 import { Logger } from '@src/core/logger';
+import { IUserImportFeatures, UserImportFeatures } from '../config';
 import { SchoolNotMigratedLoggableException } from '../loggable';
-import { UserImportConfig } from '../user-import-config';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,
@@ -44,9 +43,10 @@ describe('[ImportUserModule]', () => {
 		let systemRepo: DeepMocked<LegacySystemRepo>;
 		let userRepo: DeepMocked<UserRepo>;
 		let authorizationService: DeepMocked<AuthorizationService>;
-		let configService: DeepMocked<ConfigService>;
 		let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
 		let userMigrationService: DeepMocked<UserMigrationService>;
+
+		let userImportFeatures: IUserImportFeatures;
 
 		beforeAll(async () => {
 			await setupEntities();
@@ -83,8 +83,8 @@ describe('[ImportUserModule]', () => {
 						useValue: createMock<UserLoginMigrationService>(),
 					},
 					{
-						provide: ConfigService,
-						useValue: createMock<ConfigService<UserImportConfig, true>>(),
+						provide: UserImportFeatures,
+						useValue: {},
 					},
 					{
 						provide: UserMigrationService,
@@ -104,17 +104,21 @@ describe('[ImportUserModule]', () => {
 			systemRepo = module.get(LegacySystemRepo);
 			userRepo = module.get(UserRepo);
 			authorizationService = module.get(AuthorizationService);
-			configService = module.get(ConfigService);
+			userImportFeatures = module.get(UserImportFeatures);
 			userLoginMigrationService = module.get(UserLoginMigrationService);
 			userMigrationService = module.get(UserMigrationService);
 		});
 
-		afterAll(async () => {
-			await module.close();
+		beforeEach(() => {
+			Object.assign<IUserImportFeatures, IUserImportFeatures>(userImportFeatures, {
+				userMigrationEnabled: true,
+				userMigrationSystemId: new ObjectId().toHexString(),
+				instance: 'dbc',
+			});
 		});
 
-		afterEach(() => {
-			configService.get.mockReset();
+		afterAll(async () => {
+			await module.close();
 		});
 
 		const createMockSchoolDo = (school?: SchoolEntity): LegacySchoolDo => {
@@ -145,10 +149,6 @@ describe('[ImportUserModule]', () => {
 		};
 
 		describe('[findAllImportUsers]', () => {
-			beforeEach(() => {
-				configService.get.mockReturnValueOnce(true);
-			});
-
 			it('Should request authorization service', async () => {
 				const user = userFactory.buildWithId();
 				const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
@@ -172,10 +172,6 @@ describe('[ImportUserModule]', () => {
 		});
 
 		describe('[findAllUnmatchedUsers]', () => {
-			beforeEach(() => {
-				configService.get.mockReturnValueOnce(true);
-			});
-
 			it('Should request authorization service', async () => {
 				const user = userFactory.buildWithId();
 				const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
@@ -312,10 +308,6 @@ describe('[ImportUserModule]', () => {
 		});
 
 		describe('[setFlag]', () => {
-			beforeEach(() => {
-				configService.get.mockReturnValueOnce(true);
-			});
-
 			describe('When having permission Permission.SCHOOL_IMPORT_USERS_UPDATE', () => {
 				describe('When not having same school for user and importuser', () => {
 					it('should not change flag', async () => {
@@ -398,10 +390,6 @@ describe('[ImportUserModule]', () => {
 		});
 
 		describe('[removeMatch]', () => {
-			beforeEach(() => {
-				configService.get.mockReturnValueOnce(true);
-			});
-
 			describe('When having permission Permission.SCHOOL_IMPORT_USERS_UPDATE', () => {
 				describe('When having same school for user and importuser', () => {
 					it('should revoke match', async () => {
@@ -533,8 +521,6 @@ describe('[ImportUserModule]', () => {
 				importUserRepoDeleteImportUsersBySchoolSpy = importUserRepo.deleteImportUsersBySchool.mockResolvedValue();
 				importUserRepoDeleteImportUserSpy = importUserRepo.delete.mockResolvedValue();
 				schoolServiceSaveSpy = schoolService.save.mockReturnValueOnce(Promise.resolve(createMockSchoolDo(school)));
-				configService.get.mockReturnValueOnce(true);
-				configService.get.mockReturnValueOnce(true);
 			});
 			afterEach(() => {
 				userRepoByIdSpy.mockRestore();
@@ -642,10 +628,8 @@ describe('[ImportUserModule]', () => {
 
 						userRepo.findById.mockResolvedValueOnce(user);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
-						configService.get.mockReturnValueOnce(true);
 						importUserRepo.findImportUsers.mockResolvedValueOnce([[importUser, importUserWithoutUser], 2]);
-						configService.get.mockReturnValueOnce('n21');
-						configService.get.mockReturnValueOnce('n21');
+						userImportFeatures.instance = 'n21';
 
 						return {
 							user,
@@ -703,9 +687,7 @@ describe('[ImportUserModule]', () => {
 				schoolServiceSaveSpy = schoolService.save.mockReturnValueOnce(Promise.resolve(createMockSchoolDo(school)));
 				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValue(createMockSchoolDo(school));
 				systemRepoSpy = systemRepo.findById.mockReturnValueOnce(Promise.resolve(system));
-				configService.get.mockReturnValueOnce('brb');
-				configService.get.mockReturnValueOnce(true);
-				configService.get.mockReturnValueOnce(system.id);
+				userImportFeatures.userMigrationSystemId = system.id;
 				dateSpy = jest.spyOn(global, 'Date').mockReturnValue(currentDate as unknown as string);
 			});
 
@@ -721,7 +703,6 @@ describe('[ImportUserModule]', () => {
 			it('Should fetch system id from configuration', async () => {
 				await uc.startSchoolInUserMigration(currentUser.id);
 
-				expect(configService.get).toHaveBeenCalledWith('FEATURE_USER_MIGRATION_SYSTEM_ID');
 				expect(systemRepoSpy).toHaveBeenCalledWith(system.id);
 			});
 
@@ -815,10 +796,9 @@ describe('[ImportUserModule]', () => {
 							targetSystemId,
 						});
 
-						configService.get.mockReturnValueOnce('n21');
+						userImportFeatures.instance = 'n21';
 						userRepo.findById.mockResolvedValueOnce(user);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
-						configService.get.mockReturnValueOnce(true);
 						userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
 
 						return {
@@ -861,10 +841,9 @@ describe('[ImportUserModule]', () => {
 							systems: [targetSystemId],
 						});
 
-						configService.get.mockReturnValueOnce('n21');
+						userImportFeatures.instance = 'n21';
 						userRepo.findById.mockResolvedValueOnce(user);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
-						configService.get.mockReturnValueOnce(true);
 						userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(null);
 
 						return {
@@ -895,10 +874,9 @@ describe('[ImportUserModule]', () => {
 							targetSystemId,
 						});
 
-						configService.get.mockReturnValueOnce('n21');
+						userImportFeatures.instance = 'n21';
 						userRepo.findById.mockResolvedValueOnce(user);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
-						configService.get.mockReturnValueOnce(true);
 						userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(userLoginMigration);
 
 						return {
@@ -935,7 +913,6 @@ describe('[ImportUserModule]', () => {
 				permissionServiceSpy = authorizationService.checkAllPermissions.mockReturnValue();
 				schoolServiceSaveSpy = schoolService.save.mockReturnValue(Promise.resolve(createMockSchoolDo(school)));
 				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValue(createMockSchoolDo(school));
-				configService.get.mockReturnValueOnce(true);
 			});
 			afterEach(() => {
 				userRepoByIdSpy.mockRestore();
@@ -994,8 +971,7 @@ describe('[ImportUserModule]', () => {
 
 						userRepo.findById.mockResolvedValueOnce(user);
 						schoolService.getSchoolById.mockResolvedValueOnce(school);
-						configService.get.mockReturnValueOnce(true);
-						configService.get.mockReturnValueOnce('n21');
+						userImportFeatures.instance = 'n21';
 
 						return {
 							user,

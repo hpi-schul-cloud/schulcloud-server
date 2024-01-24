@@ -2,8 +2,13 @@ import { AccountDto, AccountSaveDto, AccountService } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
-import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import {
+	BadRequestException,
+	ForbiddenException,
+	Inject,
+	Injectable,
+	InternalServerErrorException,
+} from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
@@ -12,6 +17,7 @@ import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch, SchoolFeature } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import { IUserImportFeatures, UserImportFeatures } from '../config';
 import {
 	MigrationMayBeCompleted,
 	MigrationMayNotBeCompleted,
@@ -21,7 +27,6 @@ import {
 	SchoolNotMigratedLoggableException,
 	UserMigrationIsNotEnabled,
 } from '../loggable';
-import { UserImportConfig } from '../user-import-config';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,
@@ -43,7 +48,7 @@ export class UserImportUc {
 		private readonly systemRepo: LegacySystemRepo,
 		private readonly userRepo: UserRepo,
 		private readonly logger: Logger,
-		private readonly configService: ConfigService<UserImportConfig, true>,
+		@Inject(UserImportFeatures) private readonly userImportFeatures: IUserImportFeatures,
 		private readonly userLoginMigrationService: UserLoginMigrationService,
 		private readonly userMigrationService: UserMigrationService
 	) {
@@ -51,7 +56,7 @@ export class UserImportUc {
 	}
 
 	private checkFeatureEnabled(school: LegacySchoolDo): void {
-		const enabled = this.configService.get<boolean>('FEATURE_USER_MIGRATION_ENABLED');
+		const enabled = this.userImportFeatures.userMigrationEnabled;
 		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeature.LDAP_UNIVENTION_MIGRATION);
 
 		if (!enabled && !isLdapPilotSchool) {
@@ -241,7 +246,7 @@ export class UserImportUc {
 	}
 
 	async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
-		const useWithUserLoginMigration: boolean = this.configService.get<string>('SC_THEME') === 'n21';
+		const useWithUserLoginMigration: boolean = this.userImportFeatures.instance === 'n21';
 
 		if (useWithUserLoginMigration) {
 			useCentralLdap = false;
@@ -309,7 +314,7 @@ export class UserImportUc {
 		school.inMaintenanceSince = undefined;
 
 		// Make the migration wizard restartable, when using the user login migration
-		const useWithUserLoginMigration: boolean = this.configService.get<string>('SC_THEME') === 'n21';
+		const useWithUserLoginMigration: boolean = this.userImportFeatures.instance === 'n21';
 		if (useWithUserLoginMigration) {
 			school.inUserMigration = undefined;
 		}
@@ -327,7 +332,7 @@ export class UserImportUc {
 	}
 
 	private async updateUserAndAccount(importUser: ImportUser, school: LegacySchoolDo): Promise<void> {
-		const useWithUserLoginMigration: boolean = this.configService.get<string>('SC_THEME') === 'n21';
+		const useWithUserLoginMigration: boolean = this.userImportFeatures.instance === 'n21';
 
 		if (useWithUserLoginMigration) {
 			await this.updateUserAndAccountWithUserLoginMigration(importUser);
@@ -382,7 +387,7 @@ export class UserImportUc {
 	}
 
 	private async getMigrationSystem(): Promise<SystemEntity> {
-		const systemId = this.configService.get<string>('FEATURE_USER_MIGRATION_SYSTEM_ID');
+		const systemId = this.userImportFeatures.userMigrationSystemId;
 
 		const system = await this.systemRepo.findById(systemId);
 
