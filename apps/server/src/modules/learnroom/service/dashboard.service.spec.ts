@@ -65,7 +65,7 @@ describe(DashboardService.name, () => {
 		jest.clearAllMocks();
 	});
 
-	describe('when deleting by userId', () => {
+	describe('when deleting dashboard by userId', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
 			userRepo.findById.mockResolvedValue(user);
@@ -73,51 +73,53 @@ describe(DashboardService.name, () => {
 			return { user };
 		};
 
-		it('should call dashboardRepo.getUsersDashboard', async () => {
-			const { user } = setup();
-			const spy = jest.spyOn(dashboardRepo, 'getUsersDashboard');
+		describe('when dashboard exist', () => {
+			it('should call dashboardRepo.getUsersDashboardIfExist', async () => {
+				const { user } = setup();
+				const spy = jest.spyOn(dashboardRepo, 'getUsersDashboardIfExist');
 
-			await dashboardService.deleteDashboardByUserId(user.id);
+				await dashboardService.deleteDashboardByUserId(user.id);
 
-			expect(spy).toHaveBeenCalledWith(user.id);
-		});
+				expect(spy).toHaveBeenCalledWith(user.id);
+			});
 
-		it('should call dashboardElementRepo.deleteByDashboardId', async () => {
-			const { user } = setup();
-			jest.spyOn(dashboardRepo, 'getUsersDashboard').mockResolvedValueOnce(
-				new DashboardEntity('dashboardId', {
-					grid: [
-						{
-							pos: { x: 1, y: 2 },
-							gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
-						},
-					],
-					userId: 'userId',
-				})
-			);
-			const spy = jest.spyOn(dashboardElementRepo, 'deleteByDashboardId');
+			it('should call dashboardElementRepo.deleteByDashboardId', async () => {
+				const { user } = setup();
+				jest.spyOn(dashboardRepo, 'getUsersDashboardIfExist').mockResolvedValueOnce(
+					new DashboardEntity('dashboardId', {
+						grid: [
+							{
+								pos: { x: 1, y: 2 },
+								gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
+							},
+						],
+						userId: 'userId',
+					})
+				);
+				const spy = jest.spyOn(dashboardElementRepo, 'deleteByDashboardId');
 
-			await dashboardService.deleteDashboardByUserId(user.id);
+				await dashboardService.deleteDashboardByUserId(user.id);
 
-			expect(spy).toHaveBeenCalledWith('dashboardId');
-		});
+				expect(spy).toHaveBeenCalledWith('dashboardId');
+			});
 
-		it('should call dashboardRepo.deleteDashboardByUserId', async () => {
-			const { user } = setup();
-			const spy = jest.spyOn(dashboardRepo, 'deleteDashboardByUserId');
+			it('should call dashboardRepo.deleteDashboardByUserId', async () => {
+				const { user } = setup();
+				const spy = jest.spyOn(dashboardRepo, 'deleteDashboardByUserId');
 
-			await dashboardService.deleteDashboardByUserId(user.id);
+				await dashboardService.deleteDashboardByUserId(user.id);
 
-			expect(spy).toHaveBeenCalledWith(user.id);
-		});
+				expect(spy).toHaveBeenCalledWith(user.id);
+			});
 
-		it('should delete users dashboard', async () => {
-			const { user } = setup();
-			jest.spyOn(dashboardRepo, 'deleteDashboardByUserId').mockImplementation(() => Promise.resolve(1));
+			it('should delete users dashboard', async () => {
+				const { user } = setup();
+				jest.spyOn(dashboardRepo, 'deleteDashboardByUserId').mockImplementation(() => Promise.resolve(1));
 
-			const result = await dashboardService.deleteDashboardByUserId(user.id);
+				const result = await dashboardService.deleteDashboardByUserId(user.id);
 
-			expect(result).toEqual(1);
+				expect(result).toEqual(1);
+			});
 		});
 	});
 });

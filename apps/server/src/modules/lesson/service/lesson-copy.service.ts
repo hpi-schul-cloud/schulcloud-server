@@ -166,7 +166,6 @@ export class LessonCopyService {
 		contentStatus: CopyStatus[];
 	}> {
 		const etherpadEnabled = Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean;
-		const nexboardEnabled = Configuration.get('FEATURE_NEXBOARD_ENABLED') as boolean;
 		const nexboardCopyEnabled = Configuration.get('FEATURE_NEXBOARD_COPY_ENABLED') as boolean;
 		const copiedContent: ComponentProperties[] = [];
 		const copiedContentStatus: CopyStatus[] = [];
@@ -224,7 +223,7 @@ export class LessonCopyService {
 				copiedContent.push(linkContent);
 				copiedContentStatus.push(embeddedTaskStatus);
 			}
-			if (element.component === ComponentType.NEXBOARD && nexboardEnabled) {
+			if (element.component === ComponentType.NEXBOARD) {
 				const nexboardStatus = {
 					title: element.title,
 					type: CopyElementType.LESSON_CONTENT_NEXBOARD,
