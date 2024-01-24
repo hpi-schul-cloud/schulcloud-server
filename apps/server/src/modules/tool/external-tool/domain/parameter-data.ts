@@ -1,9 +1,7 @@
-import { ExternalToolParameterProperty } from '../../common/enum';
-
 export class ParameterData {
 	name: string;
 
-	properties: ExternalToolParameterProperty[];
+	properties: string;
 
 	scope?: string;
 

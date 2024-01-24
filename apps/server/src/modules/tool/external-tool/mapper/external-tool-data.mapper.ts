@@ -19,7 +19,7 @@ export class ExternalToolDataMapper {
 			isDeactivated: externalTool.isDeactivated ? 'Tool ist deaktiviert' : undefined,
 			restrictToContexts: externalTool.restrictToContexts
 				? ExternalToolDataMapper.mapToLimitedContexts(externalTool)
-				: undefined, // Tool ist beschränkt auf folgende Kontexte:
+				: undefined,
 			toolType: externalTool.config.type,
 			parameters: ExternalToolDataMapper.mapToParameterDataList(externalTool),
 		});
@@ -29,7 +29,7 @@ export class ExternalToolDataMapper {
 				externalToolData.skipConsent = 'ja';
 			} else {
 				externalToolData.skipConsent = 'nein';
-			} // Erteilen der Zustimmung überspringen
+			}
 		}
 
 		if (ExternalTool.isLti11Config(externalTool.config)) {
@@ -86,7 +86,7 @@ export class ExternalToolDataMapper {
 	static mapToParameterData(parameter: CustomParameter): ParameterData {
 		const parameterData: ParameterData = new ParameterData({
 			name: parameter.name,
-			type: ExternalToolDataMapper.mapTotype(parameter),
+			type: ExternalToolDataMapper.mapToType(parameter),
 			properties: ExternalToolDataMapper.mapToProperties(parameter),
 			scope: ExternalToolDataMapper.mapToScope(parameter),
 		});
@@ -94,8 +94,9 @@ export class ExternalToolDataMapper {
 		return parameterData;
 	}
 
-	static mapToProperties(parameter: CustomParameter): ExternalToolParameterProperty[] {
+	static mapToProperties(parameter: CustomParameter): string {
 		const properties: ExternalToolParameterProperty[] = [];
+		let propertiesString = '';
 		if (parameter.isOptional) {
 			properties.push(ExternalToolParameterProperty.OPTIONAL);
 		}
@@ -104,10 +105,15 @@ export class ExternalToolDataMapper {
 			properties.push(ExternalToolParameterProperty.PROTECTED);
 		}
 
-		return properties;
+		properties.forEach((property: ExternalToolParameterProperty) => {
+			propertiesString += `${property}, `;
+		});
+
+		propertiesString = propertiesString.substring(0, propertiesString.length - 2);
+		return propertiesString;
 	}
 
-	static mapTotype(parameter: CustomParameter): string {
+	static mapToType(parameter: CustomParameter): string {
 		let type = '';
 		switch (parameter.type) {
 			case CustomParameterType.STRING:
