@@ -456,6 +456,7 @@ describe('user repo', () => {
 
 	describe('getParentEmailsFromUser', () => {
 		const setup = async () => {
+			const id = new ObjectId().toHexString();
 			const parentOfUser: UserParentsEntityProps = {
 				firstName: 'firstName',
 				lastName: 'lastName',
@@ -471,17 +472,28 @@ describe('user repo', () => {
 			em.clear();
 
 			return {
+				id,
 				user,
 				expectedParentEmail,
 			};
 		};
 
-		describe('when searching user parent email', () => {
+		describe('when searching parent email for existing user', () => {
 			it('should return array witn parent email', async () => {
 				const { user, expectedParentEmail } = await setup();
 				const result = await repo.getParentEmailsFromUser(user.id);
 
 				expect(result).toEqual(expectedParentEmail);
+			});
+		});
+
+		describe('when searching parent email for not existing user', () => {
+			it('should return null', async () => {
+				const { id } = await setup();
+
+				const result = await repo.getParentEmailsFromUser(id);
+
+				expect(result).toHaveLength(0);
 			});
 		});
 	});
