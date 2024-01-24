@@ -1,11 +1,11 @@
-import { ObjectId } from "bson";
-import { KeyFactory } from "./key.factory";
+import { ObjectId } from 'bson';
+import { KeyFactory } from './key.factory';
 
 describe('KeyFactory', () => {
 	describe('createForUpdate', () => {
 		describe('when clock is not passed', () => {
 			const setup = () => {
-				const params = { docName: new ObjectId().toHexString()}
+				const params = { docName: new ObjectId().toHexString()};
 
 				return { params };
 			}
@@ -19,14 +19,14 @@ describe('KeyFactory', () => {
 					docName: params.docName,
 					version: 'v1',
 					action: 'update',
-					clock: undefined
-				})
+					clock: undefined,
+				});
 			});
 		});
 
 		describe('when positive clock number is passed', () => {
 			const setup = () => {
-				const params = { docName: new ObjectId().toHexString(), clock: 2}
+				const params = { docName: new ObjectId().toHexString(), clock: 2};
 
 				return { params };
 			}
@@ -40,14 +40,14 @@ describe('KeyFactory', () => {
 					docName: params.docName,
 					version: 'v1',
 					action: 'update',
-					clock: params.clock
-				})
+					clock: params.clock,
+				});
 			});
 		});
 
 		describe('when clock number -1 is passed', () => {
 			const setup = () => {
-				const params = { docName: new ObjectId().toHexString(), clock: -1}
+				const params = { docName: new ObjectId().toHexString(), clock: -1};
 
 				return { params };
 			}
@@ -61,19 +61,19 @@ describe('KeyFactory', () => {
 					docName: params.docName,
 					version: 'v1',
 					action: 'update',
-					clock: params.clock
-				})
+					clock: params.clock,
+				});
 			});
 		});
 
 		describe('when clock lower then -1 is passed', () => {
 			const setup = () => {
-				const params = { docName: new ObjectId().toHexString(), clock: -2}
+				const params = { docName: new ObjectId().toHexString(), clock: -2};
 
 				return { params };
 			}
 
-			it('should throw an invalid clock number error', ()=> {
+			it('should throw an invalid clock number error', () => {
 				const { params } = setup();
 
 				expect(() => KeyFactory.createForUpdate(params.docName, params.clock)).toThrowError();
@@ -84,12 +84,12 @@ describe('KeyFactory', () => {
 	describe('createForStateVector', () => {
 		describe('when docName passed', () => {
 			const setup = () => {
-				const params = { docName: new ObjectId().toHexString()}
+				const params = { docName: new ObjectId().toHexString()};
 
 				return { params };
 			}
 
-			it('should return a object that support the interface UniqueKey', ()=> {
+			it('should return a object that support the interface UniqueKey', () => {
 				const { params } = setup();
 
 				const result = KeyFactory.createForStateVector(params.docName);
@@ -98,8 +98,8 @@ describe('KeyFactory', () => {
 					docName: params.docName,
 					version: 'v1_sv',
 					action: undefined,
-					clock: undefined
-				})
+					clock: undefined,
+				});
 			});
 		});
 	});
