@@ -5,6 +5,10 @@ import { SchulconnexRestClient } from './schulconnex-rest-client';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
 
 @Global()
+/**
+ * @Global is used here to make sure that the module is only instantiated once, with the configuration and can be used in every module.
+ * Otherwise, you need to import the module with configuration in every module where you want to use it.
+ */
 @Module({})
 export class SchulconnexClientModule {
 	static forRoot(options: SchulconnexRestClientOptions): DynamicModule {
