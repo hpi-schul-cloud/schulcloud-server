@@ -29,14 +29,14 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		this.apiHostUrl = this.configService.get<string>('API_HOST');
 	}
 
-	handleConnection(client: WebSocket, request: Request): void {
+	public async handleConnection(client: WebSocket, request: Request): Promise<void> {
 		const docName = this.getDocNameFromRequest(request);
 		if (docName.length > 0 && this.configService.get<string>('FEATURE_TLDRAW_ENABLED')) {
 			console.log(1);
 			const cookies = this.parseCookiesFromHeader(request);
 			try {
 				console.log(2);
-				this.authorizeConnection(docName, cookies?.jwt);
+				await this.authorizeConnection(docName, cookies?.jwt);
 			} catch (err) {
 				console.log(3);
 				if ((err as AxiosError).response?.status === 404 || (err as AxiosError).response?.status === 400) {
@@ -107,7 +107,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		this.logger.warning(new WebsocketCloseErrorLoggable(err, `(${code}) ${data}`));
 	}
 
-	private authorizeConnection(drawingName: string, token: string) {
+	private async authorizeConnection(drawingName: string, token: string) {
 		console.log('authorizeConnection1');
 		if (!token) {
 			throw new UnauthorizedException('Token was not given');
@@ -117,12 +117,26 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		// 	Authorization: `Bearer ${token}`,
 		// };
 
+		setTimeout(() => {
+
+		});
 		console.log('authorizeConnection2');
+
+		const result = await this.resolveAfter2Seconds();
 		// await firstValueFrom(
 		// 	this.httpService.get(`${this.apiHostUrl}/v3/elements/${drawingName}/permission`, {
 		// 		headers,
 		// 	})
 		// );
+		console.log(result);
 		console.log('authorizeConnection3');
+	}
+
+	private resolveAfter2Seconds() {
+		return new Promise((resolve) => {
+			setTimeout(() => {
+				resolve('resolved');
+			}, 2000);
+		});
 	}
 }
