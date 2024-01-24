@@ -95,10 +95,10 @@ export class ExternalToolUc {
 	}
 
 	public async getDatasheet(userId: EntityId, externalToolId: EntityId) {
-		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
-
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const dataSheetData: ExternalToolMustacheTemplateData = await this.externalToolService.getExternalToolData(
+		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
+
+		const dataSheetData: ExternalToolMustacheTemplateData = await this.externalToolService.getDatasheetData(
 			externalToolId,
 			user.firstName,
 			user.lastName

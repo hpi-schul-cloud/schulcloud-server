@@ -14,12 +14,15 @@ import {
 	oauth2ToolConfigFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { LegacyLogger } from '@src/core/logger';
+import { User } from '@shared/domain/entity';
+import { userFactory } from '@shared/testing';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalToolVersionIncrementService } from './external-tool-version-increment.service';
 import { ExternalToolService } from './external-tool.service';
+import { ExternalToolMustacheTemplateDataMapper } from '../mustache-template';
 
 describe('ExternalToolService', () => {
 	let module: TestingModule;
@@ -680,6 +683,38 @@ describe('ExternalToolService', () => {
 
 					expect(externalToolRepo.save).toHaveBeenCalledWith({ ...externalTool, version: 2 });
 				});
+			});
+		});
+	});
+
+	describe('getDatasheetData', () => {
+		describe('when toolId is given', () => {
+			const setup = () => {
+				const { externalTool } = createTools();
+				const user: User = userFactory.build();
+
+				externalToolRepo.findById.mockResolvedValue(externalTool);
+
+				return {
+					externalTool,
+					user,
+				};
+			};
+
+			it('should find external tool', async () => {
+				const { externalTool, user } = setup();
+
+				await service.getDatasheetData('toolId', user.firstName, user.lastName);
+
+				expect(externalToolRepo.findById).toHaveBeenCalledWith(externalTool.id);
+			});
+
+			it('should return external tool mustache mustache template data', async () => {
+				const { externalTool, user } = setup();
+
+				const data = await service.getDatasheetData('toolId', user.firstName, user.lastName);
+
+				expect(data).toEqual<ExternalToolMustacheTemplateDataMapper>({});
 			});
 		});
 	});

@@ -579,4 +579,86 @@ describe('ExternalToolUc', () => {
 			});
 		});
 	});
+
+	describe('getDatasheet', () => {
+		describe('when authorize user', () => {
+			const setupDatasheetData = () => {
+				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+
+				const toolId: string = new ObjectId().toHexString();
+				const userId: string = user.id;
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+
+				return {
+					user,
+					toolId,
+				};
+			};
+
+			it('get user with permissions', async () => {
+				const { user, toolId } = setupDatasheetData();
+
+				await uc.getDatasheet(user.id, toolId);
+
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
+			});
+
+			it('should check that the user has TOOL_ADMIN permission', async () => {
+				const { user, toolId } = setupDatasheetData();
+
+				await uc.getDatasheet(user.id, toolId);
+
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
+			});
+		});
+
+		describe('when user has insufficient permission to get an metadata for external tool ', () => {
+			const setupDatasheetData = () => {
+				const toolId: string = new ObjectId().toHexString();
+
+				const user: User = userFactory.buildWithId();
+
+				authorizationService.getUserWithPermissions.mockRejectedValue(new UnauthorizedException());
+
+				return {
+					user,
+					toolId,
+				};
+			};
+
+			it('should throw UnauthorizedException ', async () => {
+				const { toolId, user } = setupDatasheetData();
+
+				const result = uc.getDatasheet(user.id, toolId);
+
+				await expect(result).rejects.toThrow(UnauthorizedException);
+			});
+		});
+
+		describe('when externalToolId is given', () => {
+			const setupDatasheetdata = () => {
+				const toolId: string = new ObjectId().toHexString();
+
+				const user: User = userFactory.buildWithId();
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+
+				return {
+					user,
+					toolId,
+				};
+			};
+
+			it('get datasheetData', async () => {
+				const { toolId, user } = setupDatasheetdata();
+
+				await uc.getDatasheet(user.id, toolId);
+
+				expect(externalToolService.getDatasheetData).toHaveBeenCalledWith(toolId, user.firstName, user.lastName);
+			});
+			// TODO N21-1626 implement tests here for pdf creation call
+		});
+	});
 });

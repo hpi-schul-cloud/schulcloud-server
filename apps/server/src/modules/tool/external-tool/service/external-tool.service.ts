@@ -152,7 +152,7 @@ export class ExternalToolService {
 		config.frontchannelLogoutUri = oauthClient.frontchannel_logout_uri;
 	}
 
-	public async getExternalToolData(
+	public async getDatasheetData(
 		externalToolId: EntityId,
 		firstName: string,
 		lastName: string
