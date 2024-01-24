@@ -32,10 +32,13 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 	async handleConnection(client: WebSocket, request: Request): Promise<void> {
 		const docName = this.getDocNameFromRequest(request);
 		if (docName.length > 0 && this.configService.get<string>('FEATURE_TLDRAW_ENABLED')) {
+			console.log(1);
 			const cookies = this.parseCookiesFromHeader(request);
 			try {
+				console.log(2);
 				await this.authorizeConnection(docName, cookies?.jwt);
 			} catch (err) {
+				console.log(3);
 				if ((err as AxiosError).response?.status === 404 || (err as AxiosError).response?.status === 400) {
 					this.closeClientAndLogError(
 						client,
@@ -54,7 +57,9 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 				return;
 			}
 			try {
+				console.log(4);
 				this.tldrawWsService.setupWSConnection(client, docName);
+				console.log(5);
 			} catch (err) {
 				this.closeClientAndLogError(
 					client,
@@ -64,6 +69,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 				);
 			}
 		} else {
+			console.log(6);
 			this.closeClientAndLogError(
 				client,
 				WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE,
