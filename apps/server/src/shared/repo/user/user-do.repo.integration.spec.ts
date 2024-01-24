@@ -116,7 +116,7 @@ describe('UserRepo', () => {
 		});
 
 		it('should find a user by its external id', async () => {
-			const result: UserDO | null = await repo.findByExternalIds(user.externalId as string, system.id);
+			const result: UserDO | null = await repo.findByExternalId(user.externalId as string, system.id);
 
 			expect(result).toEqual(
 				expect.objectContaining({
@@ -130,7 +130,7 @@ describe('UserRepo', () => {
 		it('should return null if no user with external id was found', async () => {
 			await em.nativeDelete(User, {});
 
-			const result: UserDO | null = await repo.findByExternalIds(user.externalId as string, system.id);
+			const result: UserDO | null = await repo.findByExternalId(user.externalId as string, system.id);
 
 			expect(result).toBeNull();
 		});
@@ -138,7 +138,7 @@ describe('UserRepo', () => {
 		it('should return null if school has no corresponding system', async () => {
 			school.systems.removeAll();
 
-			const result: UserDO | null = await repo.findByExternalIds(user.externalId as string, system.id);
+			const result: UserDO | null = await repo.findByExternalId(user.externalId as string, system.id);
 
 			expect(result).toBeNull();
 		});
