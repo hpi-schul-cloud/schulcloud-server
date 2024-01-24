@@ -18,7 +18,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 	@WebSocketServer()
 	server!: Server;
 
-	public apiHostUrl: string;
+	private apiHostUrl: string;
 
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
