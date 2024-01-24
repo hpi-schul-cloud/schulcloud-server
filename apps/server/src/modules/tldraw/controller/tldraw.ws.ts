@@ -117,14 +117,13 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 			Authorization: `Bearer ${token}`,
 		};
 		console.log('authorizeConnection2');
+		console.log(this.apiHostUrl);
 
 		// const result = await this.resolveAfter2Seconds();
 
-		await lastValueFrom(
-			this.httpService.get(`${this.apiHostUrl}/v3/elements/${drawingName}/permission`, {
+			await this.httpService.axiosRef.get(`${this.apiHostUrl}/v3/elements/${drawingName}/permission`, {
 				headers,
 			})
-		);
 		console.log('authorizeConnection3');
 	}
 
