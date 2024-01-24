@@ -10,10 +10,10 @@ import { LegacyLogger } from '@src/core/logger';
 import { TokenEndpointAuthMethod } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ExternalTool, Oauth2ToolConfig } from '../domain';
+import { ExternalTool, ExternalToolDatasheetTemplateData, Oauth2ToolConfig } from '../domain';
+import { ExternalToolDatasheetMapper } from '../mapper/external-tool-datasheet.mapper';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalToolVersionIncrementService } from './external-tool-version-increment.service';
-import { ExternalToolMustacheTemplateDataMapper, ExternalToolMustacheTemplateData } from '../mustache-template';
 
 @Injectable()
 export class ExternalToolService {
@@ -152,16 +152,16 @@ export class ExternalToolService {
 		config.frontchannelLogoutUri = oauthClient.frontchannel_logout_uri;
 	}
 
-	public async getExternalToolData(
+	public async getExternalToolDatasheetTemplateData(
 		externalToolId: EntityId,
 		firstName: string,
 		lastName: string
-	): Promise<ExternalToolMustacheTemplateData> {
+	): Promise<ExternalToolDatasheetTemplateData> {
 		const externalTool: ExternalTool = await this.findById(externalToolId);
 
-		const externalToolData: ExternalToolMustacheTemplateData =
-			ExternalToolMustacheTemplateDataMapper.mapToExternalToolData(externalTool, firstName, lastName);
+		const datasheetTemplateData: ExternalToolDatasheetTemplateData =
+			ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(externalTool, firstName, lastName);
 
-		return externalToolData;
+		return datasheetTemplateData;
 	}
 }

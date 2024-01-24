@@ -197,6 +197,7 @@
 		"mongoose-lean-virtuals": "^0.8.1",
 		"mongoose-shortid-nodeps": "git://github.com/leeroybrun/mongoose-shortid-nodeps.git",
 		"moodle-client": "^0.5.2",
+		"mustache": "^4.2.0",
 		"nanoid": "^3.3.4",
 		"nest-winston": "^1.9.4",
 		"nestjs-console": "^9.0.0",

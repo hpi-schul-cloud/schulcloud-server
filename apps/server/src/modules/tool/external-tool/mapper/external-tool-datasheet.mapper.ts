@@ -1,29 +1,31 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { ExternalTool } from '../domain';
+import {
+	ExternalTool,
+	ExternalToolDatasheetTemplateData,
+	ExternalToolParameterDatasheetTemplateData,
+	ExternalToolParameterDatasheetTemplateProperty,
+} from '../domain';
 import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../common/enum';
 import { CustomParameter } from '../../common/domain';
-import { ExternalToolParameterMustacheTemplateProperty } from './external-tool-parameter-mustache-template-property.enum';
-import { ExternalToolMustacheTemplateData } from './external-tool-mustache-template-data';
-import { ExternalToolParameterMustacheTemplateData } from './external-tool-parameter-mustache-template-data';
 
-export class ExternalToolMustacheTemplateDataMapper {
-	static mapToExternalToolData(
+export class ExternalToolDatasheetMapper {
+	public static mapToExternalToolDatasheetTemplateData(
 		externalTool: ExternalTool,
 		firstName: string,
 		lastname: string
-	): ExternalToolMustacheTemplateData {
-		const externalToolData: ExternalToolMustacheTemplateData = new ExternalToolMustacheTemplateData({
+	): ExternalToolDatasheetTemplateData {
+		const externalToolData: ExternalToolDatasheetTemplateData = new ExternalToolDatasheetTemplateData({
 			createdAt: new Date().toLocaleDateString('de-DE'),
 			creatorName: `${firstName} ${lastname}`,
-			instance: ExternalToolMustacheTemplateDataMapper.mapToInstanceName(),
+			instance: ExternalToolDatasheetMapper.mapToInstanceName(),
 			toolName: externalTool.name,
 			toolUrl: externalTool.config.baseUrl,
 			isDeactivated: externalTool.isDeactivated ? 'Tool ist deaktiviert' : undefined,
 			restrictToContexts: externalTool.restrictToContexts
-				? ExternalToolMustacheTemplateDataMapper.mapToLimitedContexts(externalTool)
+				? ExternalToolDatasheetMapper.mapToLimitedContexts(externalTool)
 				: undefined,
 			toolType: externalTool.config.type,
-			parameters: ExternalToolMustacheTemplateDataMapper.mapToParameterDataList(externalTool),
+			parameters: ExternalToolDatasheetMapper.mapToParameterDataList(externalTool),
 		});
 
 		if (ExternalTool.isOauth2Config(externalTool.config)) {
@@ -42,7 +44,7 @@ export class ExternalToolMustacheTemplateDataMapper {
 		return externalToolData;
 	}
 
-	static mapToInstanceName(): string {
+	private static mapToInstanceName(): string {
 		if (Configuration.get('SC_THEME') === 'n21') {
 			return 'Niedersächsische Bildungscloud';
 		}
@@ -62,7 +64,7 @@ export class ExternalToolMustacheTemplateDataMapper {
 		return 'unbekannt';
 	}
 
-	static mapToLimitedContexts(externalTool: ExternalTool): string[] {
+	private static mapToLimitedContexts(externalTool: ExternalTool): string[] {
 		const restrictToContexts: string[] = [];
 		if (externalTool.restrictToContexts?.includes(ToolContextType.COURSE)) {
 			restrictToContexts.push('Kurs');
@@ -74,41 +76,41 @@ export class ExternalToolMustacheTemplateDataMapper {
 		return restrictToContexts;
 	}
 
-	static mapToParameterDataList(externalTool: ExternalTool): ExternalToolParameterMustacheTemplateData[] {
-		const parameterData: ExternalToolParameterMustacheTemplateData[] = [];
+	private static mapToParameterDataList(externalTool: ExternalTool): ExternalToolParameterDatasheetTemplateData[] {
+		const parameterData: ExternalToolParameterDatasheetTemplateData[] = [];
 
 		externalTool.parameters?.forEach((parameter: CustomParameter) => {
-			const paramData: ExternalToolParameterMustacheTemplateData =
-				ExternalToolMustacheTemplateDataMapper.mapToParameterData(parameter);
+			const paramData: ExternalToolParameterDatasheetTemplateData =
+				ExternalToolDatasheetMapper.mapToParameterData(parameter);
 			parameterData.push(paramData);
 		});
 
 		return parameterData;
 	}
 
-	static mapToParameterData(parameter: CustomParameter): ExternalToolParameterMustacheTemplateData {
-		const parameterData: ExternalToolParameterMustacheTemplateData = new ExternalToolParameterMustacheTemplateData({
+	private static mapToParameterData(parameter: CustomParameter): ExternalToolParameterDatasheetTemplateData {
+		const parameterData: ExternalToolParameterDatasheetTemplateData = new ExternalToolParameterDatasheetTemplateData({
 			name: parameter.name,
-			type: ExternalToolMustacheTemplateDataMapper.mapToType(parameter),
-			properties: ExternalToolMustacheTemplateDataMapper.mapToProperties(parameter),
-			scope: ExternalToolMustacheTemplateDataMapper.mapToScope(parameter),
+			type: ExternalToolDatasheetMapper.mapToType(parameter),
+			properties: ExternalToolDatasheetMapper.mapToProperties(parameter),
+			scope: ExternalToolDatasheetMapper.mapToScope(parameter),
 		});
 
 		return parameterData;
 	}
 
-	static mapToProperties(parameter: CustomParameter): string {
-		const properties: ExternalToolParameterMustacheTemplateProperty[] = [];
+	private static mapToProperties(parameter: CustomParameter): string {
+		const properties: ExternalToolParameterDatasheetTemplateProperty[] = [];
 		let propertiesString = '';
 		if (parameter.isOptional) {
-			properties.push(ExternalToolParameterMustacheTemplateProperty.OPTIONAL);
+			properties.push(ExternalToolParameterDatasheetTemplateProperty.OPTIONAL);
 		}
 
 		if (parameter.isProtected) {
-			properties.push(ExternalToolParameterMustacheTemplateProperty.PROTECTED);
+			properties.push(ExternalToolParameterDatasheetTemplateProperty.PROTECTED);
 		}
 
-		properties.forEach((property: ExternalToolParameterMustacheTemplateProperty) => {
+		properties.forEach((property: ExternalToolParameterDatasheetTemplateProperty) => {
 			propertiesString += `${property}, `;
 		});
 
@@ -116,7 +118,7 @@ export class ExternalToolMustacheTemplateDataMapper {
 		return propertiesString;
 	}
 
-	static mapToType(parameter: CustomParameter): string {
+	private static mapToType(parameter: CustomParameter): string {
 		let type = '';
 		switch (parameter.type) {
 			case CustomParameterType.STRING:
@@ -147,7 +149,7 @@ export class ExternalToolMustacheTemplateDataMapper {
 		return type;
 	}
 
-	static mapToScope(parameter: CustomParameter): string {
+	private static mapToScope(parameter: CustomParameter): string {
 		let scope = '';
 		switch (parameter.scope) {
 			case CustomParameterScope.CONTEXT:

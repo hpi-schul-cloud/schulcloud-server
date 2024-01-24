@@ -1,16 +1,16 @@
 import { AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
+import { PDFService } from '@pyxlab/nestjs-pdf';
 import { Page } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { firstValueFrom } from 'rxjs';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
-import { ExternalTool, ExternalToolConfig, ExternalToolMetadata } from '../domain';
+import { ExternalTool, ExternalToolConfig, ExternalToolDatasheetTemplateData, ExternalToolMetadata } from '../domain';
 import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
-import { ExternalToolMustacheTemplateData } from '../mustache-template';
-import {PDFOptions, PDFService} from "@pyxlab/nestjs-pdf";
 
 @Injectable()
 export class ExternalToolUc {
@@ -91,24 +91,26 @@ export class ExternalToolUc {
 		return metadata;
 	}
 
-	private async ensurePermission(userId: EntityId, permission: Permission) {
+	private async ensurePermission(userId: EntityId, permission: Permission): Promise<void> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [permission]);
 	}
 
-	public async getDatasheet(userId: EntityId, externalToolId: EntityId) {
+	public async getDatasheet(userId: EntityId, externalToolId: EntityId): Promise<Buffer> {
 		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const dataSheetData: ExternalToolMustacheTemplateData = await this.externalToolService.getExternalToolData(
-			externalToolId,
-			user.firstName,
-			user.lastName
+		const dataSheetData: ExternalToolDatasheetTemplateData =
+			await this.externalToolService.getExternalToolDatasheetTemplateData(
+				externalToolId,
+				user.firstName,
+				user.lastName
+			);
+
+		const buffer: Promise<Buffer> = firstValueFrom(
+			this.pdfService.toBuffer('ExternalToolDatasheet', { locals: dataSheetData })
 		);
-		const options: PDFOptions = {
-			locals: dataSheetData,
-		};
-		// TODO N21-1626 create pdf and pdfService
-		this.pdfService.toBuffer('ExternalToolTemplate', options);
+
+		return buffer;
 	}
 }

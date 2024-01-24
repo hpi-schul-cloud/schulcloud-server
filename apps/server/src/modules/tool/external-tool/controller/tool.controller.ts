@@ -1,5 +1,17 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query, Res } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpCode,
+	HttpStatus,
+	Param,
+	Post,
+	Query,
+	Res,
+	StreamableFile,
+} from '@nestjs/common';
 import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
@@ -193,8 +205,20 @@ export class ToolController {
 
 	@Get(':externalToolId/datasheet')
 	@ApiOperation({ summary: 'Returns a pdf of the external tool information' })
-	async getDatasheet(@CurrentUser() currentUser: ICurrentUser, @Param() params: ExternalToolIdParams) {
-		await this.externalToolUc.getDatasheet(currentUser.userId, params.externalToolId);
-		// TODO N21-1626 probably return pdf / pdf pointer here
+	async getDatasheet(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ExternalToolIdParams,
+		@Res({ passthrough: true }) res: Response
+	): Promise<StreamableFile> {
+		const datasheetBuffer: Buffer = await this.externalToolUc.getDatasheet(currentUser.userId, params.externalToolId);
+
+		// TODO: get external tool name here ? ask ba
+		const meinDateiname = 'datasheet1337.pdf';
+
+		res.setHeader('Content-Type', 'application/pdf');
+		res.setHeader('Content-Disposition', `attachment; filename=${meinDateiname}`);
+
+		const streamableFile: StreamableFile = new StreamableFile(datasheetBuffer);
+		return streamableFile;
 	}
 }
