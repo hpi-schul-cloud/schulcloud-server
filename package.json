@@ -234,8 +234,8 @@
 		"winston": "^3.8.2",
 		"ws": "^7.5.7",
 		"y-mongodb-provider": "^0.1.7",
-		"y-protocols": "^1.0.5",
-		"yjs": "^13.6.7"
+		"y-protocols": "^1.0.6",
+		"yjs": "^13.6.11"
 	},
 	"devDependencies": {
 		"@aws-sdk/client-s3": "^3.352.0",
