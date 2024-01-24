@@ -15,12 +15,20 @@ interface UniqueDatabaseKey {
 }
 
 export class DatabaseKeyFactory {
+	static checkValidClock(clock?: number): void {
+		if (clock && clock < -1) {
+			throw new Error('invalid clock value is passed to DatabaseKeyFactory')
+		}
+	}
+
 	static createForUpdate(docName: string, clock?: number): UniqueDatabaseKey {
+		DatabaseKeyFactory.checkValidClock(clock);
+
 		const uniqueKey = {
 			docName,
 			version: Version.V1,
 			action: DatabaseAction.UPDATE,
-			// TODO: Do it work when key is exists, but value is undefined?
+			// TODO: Do it work when key is exists, but value is undefined? Same for action in createForStateVector 
 			clock
 		}
 
