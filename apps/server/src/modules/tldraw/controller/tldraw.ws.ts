@@ -121,13 +121,13 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 
 		// const result = await this.resolveAfter2Seconds();
 		await this.resolveAfter2Seconds();
-		const toJestResposeZwykly = await fetch(`${this.apiHostUrl}/v3/elements/${drawingName}/permission`, {
-			headers,
-		});
-		console.log(toJestResposeZwykly);
-
-		console.log('toJestResposeZwykly.ok');
-		console.log(toJestResposeZwykly.ok);
+		// const toJestResposeZwykly = await fetch(`${this.apiHostUrl}/v3/elements/${drawingName}/permission`, {
+		// 	headers,
+		// });
+		// console.log(toJestResposeZwykly);
+		//
+		// console.log('toJestResposeZwykly.ok');
+		// console.log(toJestResposeZwykly.ok);
 
 		// await this.httpService.axiosRef.get(`${this.apiHostUrl}/v3/elements/${drawingName}/permission`, {
 		// 	headers,
@@ -140,7 +140,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		return new Promise((resolve) => {
 			setTimeout(() => {
 				resolve('resolved');
-			}, 2000);
+			}, 5000);
 		});
 	}
 }
