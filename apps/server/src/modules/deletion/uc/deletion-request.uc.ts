@@ -229,7 +229,13 @@ export class DeletionRequestUc {
 			deletionRequest.targetRefId
 		);
 
-		await this.logDeletion(deletionRequest, DomainModel.FILERECORDS, OperationModel.UPDATE, fileRecordsUpdated, []);
+		await this.logDeletion(
+			deletionRequest,
+			fileRecordsUpdated.domain,
+			fileRecordsUpdated.operation,
+			fileRecordsUpdated.count,
+			fileRecordsUpdated.refs
+		);
 	}
 
 	private async removeUserFromLessons(deletionRequest: DeletionRequest) {

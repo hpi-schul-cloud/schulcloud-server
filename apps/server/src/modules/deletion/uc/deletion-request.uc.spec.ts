@@ -219,6 +219,10 @@ describe(DeletionRequestUc.name, () => {
 					new ObjectId().toHexString(),
 				]);
 
+				const fileRecordsUpdated = DomainOperationBuilder.build(DomainModel.FILERECORDS, OperationModel.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
 				const lessonsUpdated = DomainOperationBuilder.build(DomainModel.LESSONS, OperationModel.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
@@ -277,7 +281,7 @@ describe(DeletionRequestUc.name, () => {
 				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(teamsUpdated);
 				userService.deleteUser.mockResolvedValueOnce(1);
 				rocketChatUserService.deleteByUserId.mockResolvedValueOnce(rocketChatUserDeleted);
-				filesStorageClientAdapterService.removeCreatorIdFromFileRecords.mockResolvedValueOnce(5);
+				filesStorageClientAdapterService.removeCreatorIdFromFileRecords.mockResolvedValueOnce(fileRecordsUpdated);
 				dashboardService.deleteDashboardByUserId.mockResolvedValueOnce(dashboardDeleted);
 				taskService.removeCreatorIdFromTasks.mockResolvedValueOnce(tasksModifiedByRemoveCreatorId);
 				taskService.removeCreatorIdFromTasks.mockResolvedValueOnce(tasksModifiedByRemoveUserFromFinished);
