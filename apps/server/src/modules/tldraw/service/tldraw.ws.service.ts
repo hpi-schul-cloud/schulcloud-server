@@ -149,6 +149,7 @@ export class TldrawWsService {
 	 * @param {string} docName
 	 */
 	public setupWSConnection(ws: WebSocket, docName = 'GLOBAL'): void {
+		console.log('setupWSConnection1');
 		ws.binaryType = 'arraybuffer';
 		// get doc, initialize if it does not exist yet
 		const doc = this.getYDoc(docName, true);
@@ -203,6 +204,7 @@ export class TldrawWsService {
 			}
 		}
 		this.metricsService.incrementNumberOfUsersOnServerCounter();
+		console.log('setupWSConnection2');
 	}
 
 	public async updateDocument(docName: string, ydoc: WsSharedDocDo): Promise<void> {

@@ -108,6 +108,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 	}
 
 	private async authorizeConnection(drawingName: string, token: string) {
+		console.log('authorizeConnection1');
 		if (!token) {
 			throw new UnauthorizedException('Token was not given');
 		}
@@ -116,10 +117,12 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 			Authorization: `Bearer ${token}`,
 		};
 
+		console.log('authorizeConnection2');
 		await firstValueFrom(
 			this.httpService.get(`${this.apiHostUrl}/v3/elements/${drawingName}/permission`, {
 				headers,
 			})
 		);
+		console.log('authorizeConnection3');
 	}
 }
