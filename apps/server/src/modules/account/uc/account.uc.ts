@@ -1,6 +1,6 @@
 import { ICurrentUser } from '@modules/authentication';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common/error';
+import { EntityNotFoundError, ValidationError } from '@shared/common/error';
 import { Role, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -36,16 +36,13 @@ export class AccountUc {
 		currentUser: ICurrentUser,
 		query: AccountSearchQueryParams
 	): Promise<ResolvedSearchListAccountDto> {
-		const skip = query.skip ?? 0;
-		const limit = query.limit ?? 10;
-
 		const executingUser: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
 
 		switch (query.type) {
 			case AccountSearchType.USERNAME:
-				return this.searchByUsername(executingUser, query.value, skip, limit);
+				return this.searchByUsername(executingUser, query.value, query.skip, query.limit);
 			case AccountSearchType.USER_ID:
-				return this.searchByUserId(executingUser, query.value, skip, limit);
+				return this.searchByUserId(executingUser, query.value, query.skip, query.limit);
 			default:
 				throw new ValidationError('Invalid search type.');
 		}
@@ -54,35 +51,44 @@ export class AccountUc {
 	private async searchByUsername(
 		executingUser: User,
 		usernameQuery: string,
-		skip: number,
-		limit: number
+		skip?: number,
+		limit?: number
 	): Promise<ResolvedSearchListAccountDto> {
 		this.authorizationService.checkAllPermissions(executingUser, [Permission.ACCOUNT_VIEW]);
 
-		const searchDoCounted = await this.accountService.searchByUsernamePartialMatch(usernameQuery, skip, limit);
+		const searchDoCounted = await this.accountService.searchByUsernamePartialMatch(
+			usernameQuery,
+			skip ?? 0,
+			limit ?? 10
+		);
 		const [searchResult, total] = AccountUcMapper.mapSearchResult(searchDoCounted);
 
-		return new ResolvedSearchListAccountDto(searchResult, total, skip, limit);
+		return new ResolvedSearchListAccountDto(searchResult, total, skip ?? 0, limit ?? 10);
 	}
 
 	private async searchByUserId(
 		executingUser: User,
 		targetUserId: string,
-		skip: number,
-		limit: number
+		skip?: number,
+		limit?: number
 	): Promise<ResolvedSearchListAccountDto> {
 		const targetUser = await this.authorizationService.getUserWithPermissions(targetUserId);
 		const permission = this.hasPermissionsToAccessAccount(executingUser, targetUser, 'READ');
 		if (!permission) {
-			throw new ForbiddenOperationError('Current user is not authorized to search for accounts by user id.');
+			throw new UnauthorizedException('Current user is not authorized to search for accounts by user id.');
 		}
 
 		const account = await this.accountService.findByUserId(targetUserId);
 
 		if (account) {
-			return new ResolvedSearchListAccountDto([AccountUcMapper.mapToResolvedAccountDto(account)], 1, skip, limit);
+			return new ResolvedSearchListAccountDto(
+				[AccountUcMapper.mapToResolvedAccountDto(account)],
+				1,
+				skip ?? 0,
+				limit ?? 1
+			);
 		}
-		return new ResolvedSearchListAccountDto([], 0, skip, limit);
+		return new ResolvedSearchListAccountDto([], 0, skip ?? 0, limit ?? 0);
 	}
 
 	/**

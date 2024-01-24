@@ -2,15 +2,15 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@modules/authentication';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
+import { EntityNotFoundError } from '@shared/common';
 
 import { faker } from '@faker-js/faker';
+import { UnauthorizedException } from '@nestjs/common/exceptions/unauthorized.exception';
 import { Role, SchoolRolePermission, SchoolRoles, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
-import { PermissionService } from '@shared/domain/service';
 import { EntityId } from '@shared/domain/types';
-import { UserRepo } from '@shared/repo';
-import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
+import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { AuthorizationService } from '@src/modules/authorization';
 import { AccountService } from '..';
 import {
 	AccountByIdBodyParams,
@@ -19,22 +19,21 @@ import {
 	AccountSearchType,
 } from '../controller/dto';
 import { Account, AccountSave } from '../domain';
+import { AccountEntity } from '../entity/account.entity';
 import { AccountEntityToDoMapper } from '../repo/mapper';
 import { AccountValidationService } from '../services/account.validation.service';
 import { AccountUc } from './account.uc';
 import { ResolvedAccountDto, ResolvedSearchListAccountDto } from './dto/resolved-account.dto';
-import { AccountEntity } from '../entity/account.entity';
 
 describe('AccountUc', () => {
 	let module: TestingModule;
 	let accountUc: AccountUc;
-	let userRepo: DeepMocked<UserRepo>;
+
 	let accountService: DeepMocked<AccountService>;
-	let accountValidationService: DeepMocked<AccountValidationService>;
+	let authorizationService: DeepMocked<AuthorizationService>;
 	let configService: DeepMocked<ConfigService>;
 
 	const defaultPassword = 'DummyPasswd!1';
-	const otherPassword = 'DummyPasswd!2';
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
 
 	afterAll(async () => {
@@ -56,21 +55,19 @@ describe('AccountUc', () => {
 					useValue: createMock<ConfigService>(),
 				},
 				{
-					provide: UserRepo,
-					useValue: createMock<UserRepo>(),
-				},
-				PermissionService,
-				{
 					provide: AccountValidationService,
 					useValue: createMock<AccountValidationService>(),
+				},
+				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
 				},
 			],
 		}).compile();
 
 		accountUc = module.get(AccountUc);
-		userRepo = module.get(UserRepo);
 		accountService = module.get(AccountService);
-		accountValidationService = module.get(AccountValidationService);
+		authorizationService = module.get(AuthorizationService);
 		configService = module.get(ConfigService);
 		await setupEntities();
 	});
@@ -83,7 +80,7 @@ describe('AccountUc', () => {
 	describe('updateMyAccount', () => {
 		describe('When user does not exist', () => {
 			const setup = () => {
-				userRepo.findById.mockImplementation(() => {
+				authorizationService.getUserWithPermissions.mockImplementation(() => {
 					throw new EntityNotFoundError(User.name);
 				});
 			};
@@ -126,66 +123,6 @@ describe('AccountUc', () => {
 				).rejects.toThrow(EntityNotFoundError);
 			});
 		});
-		describe('When account is external', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockExternalUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-				});
-				const externalSystem = systemFactory.build();
-				const mockExternalUserAccount = accountFactory.build({
-					userId: mockExternalUser.id,
-					password: defaultPasswordHash,
-					systemId: externalSystem.id,
-				});
-
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(
-					AccountEntityToDoMapper.mapToDto(mockExternalUserAccount)
-				);
-
-				return { mockExternalUserAccount };
-			};
-			it('should throw ForbiddenOperationError', async () => {
-				const { mockExternalUserAccount } = setup();
-
-				await expect(
-					accountUc.updateMyAccount(mockExternalUserAccount.userId?.toString() ?? '', {
-						passwordOld: defaultPassword,
-					})
-				).rejects.toThrow(ForbiddenOperationError);
-			});
-		});
-
-		describe('When password does not match', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-				});
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-				accountService.validatePassword.mockResolvedValueOnce(false);
-
-				return { mockStudentUser };
-			};
-			it('should throw AuthorizationError', async () => {
-				const { mockStudentUser } = setup();
-				await expect(
-					accountUc.updateMyAccount(mockStudentUser.id, {
-						passwordOld: 'DoesNotMatch',
-					})
-				).rejects.toThrow(AuthorizationError);
-			});
-		});
 
 		describe('When changing own name is not allowed', () => {
 			const setup = () => {
@@ -200,264 +137,29 @@ describe('AccountUc', () => {
 					password: defaultPasswordHash,
 				});
 
-				userRepo.findById.mockResolvedValue(mockStudentUser);
+				authorizationService.getUserWithPermissions.mockResolvedValue(mockStudentUser);
+				authorizationService.checkAllPermissions.mockImplementation(() => {
+					throw new UnauthorizedException();
+				});
 				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 				accountService.validatePassword.mockResolvedValue(true);
 
 				return { mockStudentUser };
 			};
-			it('should throw ForbiddenOperationError', async () => {
+			it('should throw UnauthorizedException', async () => {
 				const { mockStudentUser } = setup();
 				await expect(
 					accountUc.updateMyAccount(mockStudentUser.id, {
 						passwordOld: defaultPassword,
 						firstName: 'newFirstName',
 					})
-				).rejects.toThrow(ForbiddenOperationError);
+				).rejects.toThrow(UnauthorizedException);
 				await expect(
 					accountUc.updateMyAccount(mockStudentUser.id, {
 						passwordOld: defaultPassword,
 						lastName: 'newLastName',
 					})
-				).rejects.toThrow(ForbiddenOperationError);
-			});
-		});
-
-		describe('When using student user', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-				});
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValue(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-				accountService.validatePassword.mockResolvedValue(true);
-
-				return { mockStudentUser };
-			};
-			it('should allow to update email', async () => {
-				const { mockStudentUser } = setup();
-				await expect(
-					accountUc.updateMyAccount(mockStudentUser.id, {
-						passwordOld: defaultPassword,
-						email: 'an@available.mail',
-					})
-				).resolves.not.toThrow();
-			});
-		});
-		describe('When using student user', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-				});
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValue(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-				accountService.validatePassword.mockResolvedValue(true);
-				accountValidationService.isUniqueEmail.mockResolvedValueOnce(true);
-				const accountSaveSpy = jest.spyOn(accountService, 'save');
-
-				return { mockStudentUser, accountSaveSpy };
-			};
-			it('should use email as account user name in lower case', async () => {
-				const { mockStudentUser, accountSaveSpy } = setup();
-
-				const testMail = 'AN@AVAILABLE.MAIL';
-				await expect(
-					accountUc.updateMyAccount(mockStudentUser.id, {
-						passwordOld: defaultPassword,
-						email: testMail,
-					})
-				).resolves.not.toThrow();
-				expect(accountSaveSpy).toBeCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
-			});
-		});
-
-		describe('When using student user', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-				});
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValue(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-				accountService.validatePassword.mockResolvedValue(true);
-				accountValidationService.isUniqueEmail.mockResolvedValueOnce(true);
-
-				const userUpdateSpy = jest.spyOn(userRepo, 'save');
-
-				return { mockStudentUser, userUpdateSpy };
-			};
-			it('should use email as user email in lower case', async () => {
-				const { mockStudentUser, userUpdateSpy } = setup();
-				const testMail = 'AN@AVAILABLE.MAIL';
-				await expect(
-					accountUc.updateMyAccount(mockStudentUser.id, {
-						passwordOld: defaultPassword,
-						email: testMail,
-					})
-				).resolves.not.toThrow();
-				expect(userUpdateSpy).toBeCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
-			});
-		});
-		describe('When using student user', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-				});
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValue(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-				accountService.validatePassword.mockResolvedValue(true);
-				accountValidationService.isUniqueEmail.mockResolvedValueOnce(true);
-
-				const accountSaveSpy = jest.spyOn(accountService, 'save');
-				const userUpdateSpy = jest.spyOn(userRepo, 'save');
-
-				return { mockStudentUser, accountSaveSpy, userUpdateSpy };
-			};
-			it('should always update account user name AND user email together.', async () => {
-				const { mockStudentUser, accountSaveSpy, userUpdateSpy } = setup();
-				const testMail = 'an@available.mail';
-				await expect(
-					accountUc.updateMyAccount(mockStudentUser.id, {
-						passwordOld: defaultPassword,
-						email: testMail,
-					})
-				).resolves.not.toThrow();
-				expect(userUpdateSpy).toBeCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
-				expect(accountSaveSpy).toBeCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
-			});
-		});
-
-		describe('When using student user', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-				});
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValue(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-				accountService.validatePassword.mockResolvedValue(true);
-				accountValidationService.isUniqueEmail.mockResolvedValueOnce(false);
-
-				return { mockStudentUser };
-			};
-			it('should throw if new email already in use', async () => {
-				const { mockStudentUser } = setup();
-				await expect(
-					accountUc.updateMyAccount(mockStudentUser.id, {
-						passwordOld: defaultPassword,
-						email: 'already@in.use',
-					})
-				).rejects.toThrow(ValidationError);
-			});
-		});
-
-		describe('When using student user', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-				});
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValue(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-				accountService.validatePassword.mockResolvedValue(true);
-
-				return { mockStudentUser };
-			};
-			it('should allow to update with strong password', async () => {
-				const { mockStudentUser } = setup();
-				await expect(
-					accountUc.updateMyAccount(mockStudentUser.id, {
-						passwordOld: defaultPassword,
-						passwordNew: otherPassword,
-					})
-				).resolves.not.toThrow();
-			});
-		});
-
-		describe('When using teacher user', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockTeacherUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [
-						new Role({
-							name: RoleName.TEACHER,
-							permissions: [Permission.STUDENT_EDIT, Permission.STUDENT_LIST, Permission.TEACHER_LIST],
-						}),
-					],
-				});
-
-				const mockTeacherAccount = accountFactory.buildWithId({
-					userId: mockTeacherUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValue(mockTeacherUser);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockTeacherAccount));
-				accountService.validatePassword.mockResolvedValue(true);
-
-				return { mockTeacherUser };
-			};
-			it('should allow to update first and last name', async () => {
-				const { mockTeacherUser } = setup();
-				await expect(
-					accountUc.updateMyAccount(mockTeacherUser.id, {
-						passwordOld: defaultPassword,
-						firstName: 'newFirstName',
-					})
-				).resolves.not.toThrow();
-				await expect(
-					accountUc.updateMyAccount(mockTeacherUser.id, {
-						passwordOld: defaultPassword,
-						lastName: 'newLastName',
-					})
-				).resolves.not.toThrow();
+				).rejects.toThrow(UnauthorizedException);
 			});
 		});
 
@@ -489,7 +191,7 @@ describe('AccountUc', () => {
 					password: defaultPasswordHash,
 				});
 
-				userRepo.findById.mockResolvedValue(mockAdminUser);
+				authorizationService.getUserWithPermissions.mockResolvedValue(mockAdminUser);
 				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockAdminAccount));
 				accountService.validatePassword.mockResolvedValue(true);
 
@@ -530,7 +232,7 @@ describe('AccountUc', () => {
 					password: defaultPasswordHash,
 				});
 
-				userRepo.findById.mockResolvedValue(mockSuperheroUser);
+				authorizationService.getUserWithPermissions.mockResolvedValue(mockSuperheroUser);
 				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockSuperheroAccount));
 				accountService.validatePassword.mockResolvedValue(true);
 
@@ -552,470 +254,14 @@ describe('AccountUc', () => {
 				).resolves.not.toThrow();
 			});
 		});
-
-		describe('When user can not be updated', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockTeacherUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [
-						new Role({
-							name: RoleName.TEACHER,
-							permissions: [Permission.STUDENT_EDIT, Permission.STUDENT_LIST, Permission.TEACHER_LIST],
-						}),
-					],
-				});
-				const mockTeacherAccount = accountFactory.buildWithId({
-					userId: mockTeacherUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValue(mockTeacherUser);
-				userRepo.save.mockRejectedValueOnce(undefined);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockTeacherAccount));
-				accountService.validatePassword.mockResolvedValue(true);
-
-				return { mockTeacherUser, mockTeacherAccount };
-			};
-			it('should throw EntityNotFoundError', async () => {
-				const { mockTeacherUser } = setup();
-				await expect(
-					accountUc.updateMyAccount(mockTeacherUser.id, {
-						passwordOld: defaultPassword,
-						firstName: 'failToUpdate',
-					})
-				).rejects.toThrow(EntityNotFoundError);
-			});
-		});
-
-		describe('When account can not be updated', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-				});
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValue(mockStudentUser);
-				userRepo.save.mockResolvedValueOnce(undefined);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-				accountService.validatePassword.mockResolvedValue(true);
-				accountService.save.mockRejectedValueOnce(undefined);
-
-				accountValidationService.isUniqueEmail.mockResolvedValue(true);
-
-				return { mockStudentUser };
-			};
-			it('should throw EntityNotFoundError', async () => {
-				const { mockStudentUser } = setup();
-				await expect(
-					accountUc.updateMyAccount(mockStudentUser.id, {
-						passwordOld: defaultPassword,
-						email: 'fail@to.update',
-					})
-				).rejects.toThrow(EntityNotFoundError);
-			});
-		});
-
-		describe('When no new password is given', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-				});
-
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValue(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-				accountService.validatePassword.mockResolvedValue(true);
-				const spyAccountServiceSave = jest.spyOn(accountService, 'save');
-
-				accountValidationService.isUniqueEmail.mockResolvedValue(true);
-
-				return { mockStudentUser, spyAccountServiceSave };
-			};
-			it('should not update password', async () => {
-				const { mockStudentUser, spyAccountServiceSave } = setup();
-				await accountUc.updateMyAccount(mockStudentUser.id, {
-					passwordOld: defaultPassword,
-					passwordNew: undefined,
-					email: 'newemail@to.update',
-				});
-				expect(spyAccountServiceSave).toHaveBeenCalledWith(
-					expect.objectContaining({
-						password: undefined,
-					})
-				);
-			});
-		});
 	});
 
 	describe('replaceMyTemporaryPassword', () => {
-		describe('When passwords do not match', () => {
-			it('should throw ForbiddenOperationError', async () => {
-				await expect(accountUc.replaceMyTemporaryPassword('userId', defaultPassword, 'FooPasswd!1')).rejects.toThrow(
-					ForbiddenOperationError
-				);
-			});
-		});
+		describe('When replaceMyTemporaryPassword is called', () => {
+			it('should call accountService.replaceMyTemporaryPassword', async () => {
+				await accountUc.replaceMyTemporaryPassword('id', '', '');
 
-		describe('When account does not exists', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-				const mockUserWithoutAccount = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [
-						new Role({
-							name: RoleName.ADMINISTRATOR,
-							permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT],
-						}),
-					],
-				});
-
-				userRepo.findById.mockResolvedValueOnce(mockUserWithoutAccount);
-				accountService.findByUserIdOrFail.mockImplementation(() => {
-					throw new EntityNotFoundError(AccountEntity.name);
-				});
-
-				return { mockUserWithoutAccount };
-			};
-			it('should throw EntityNotFoundError', async () => {
-				const { mockUserWithoutAccount } = setup();
-				await expect(
-					accountUc.replaceMyTemporaryPassword(mockUserWithoutAccount.id, defaultPassword, defaultPassword)
-				).rejects.toThrow(EntityNotFoundError);
-			});
-		});
-
-		describe('When user does not exist', () => {
-			const setup = () => {
-				userRepo.findById.mockRejectedValueOnce(undefined);
-			};
-			it('should throw EntityNotFoundError', async () => {
-				setup();
-				await expect(
-					accountUc.replaceMyTemporaryPassword('accountWithoutUser', defaultPassword, defaultPassword)
-				).rejects.toThrow(EntityNotFoundError);
-			});
-		});
-
-		describe('When account is external', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockExternalUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-				});
-				const externalSystem = systemFactory.build();
-				const mockExternalUserAccount = accountFactory.build({
-					userId: mockExternalUser.id,
-					password: defaultPasswordHash,
-					systemId: externalSystem.id,
-				});
-
-				userRepo.findById.mockResolvedValueOnce(mockExternalUser);
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(
-					AccountEntityToDoMapper.mapToDto(mockExternalUserAccount)
-				);
-
-				return { mockExternalUserAccount };
-			};
-			it('should throw ForbiddenOperationError', async () => {
-				const { mockExternalUserAccount } = setup();
-				await expect(
-					accountUc.replaceMyTemporaryPassword(
-						mockExternalUserAccount.userId?.toString() ?? '',
-						defaultPassword,
-						defaultPassword
-					)
-				).rejects.toThrow(ForbiddenOperationError);
-			});
-		});
-		describe('When not the users password is temporary', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-					forcePasswordChange: false,
-					preferences: { firstLogin: true },
-				});
-
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-
-				return { mockStudentAccount };
-			};
-			it('should throw ForbiddenOperationError', async () => {
-				const { mockStudentAccount } = setup();
-				await expect(
-					accountUc.replaceMyTemporaryPassword(
-						mockStudentAccount.userId?.toString() ?? '',
-						defaultPassword,
-						defaultPassword
-					)
-				).rejects.toThrow(ForbiddenOperationError);
-			});
-		});
-
-		describe('When old password is the same as new password', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-					forcePasswordChange: false,
-					preferences: { firstLogin: false },
-				});
-
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-				accountService.validatePassword.mockResolvedValueOnce(true);
-
-				return { mockStudentAccount };
-			};
-			it('should throw ForbiddenOperationError', async () => {
-				const { mockStudentAccount } = setup();
-				await expect(
-					accountUc.replaceMyTemporaryPassword(
-						mockStudentAccount.userId?.toString() ?? '',
-						defaultPassword,
-						defaultPassword
-					)
-				).rejects.toThrow(ForbiddenOperationError);
-			});
-		});
-
-		describe('When old password is undefined', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-					forcePasswordChange: false,
-					preferences: { firstLogin: false },
-				});
-
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: undefined,
-				});
-
-				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-				accountService.validatePassword.mockResolvedValueOnce(true);
-
-				return { mockStudentAccount };
-			};
-			it('should throw Error', async () => {
-				const { mockStudentAccount } = setup();
-				await expect(
-					accountUc.replaceMyTemporaryPassword(
-						mockStudentAccount.userId?.toString() ?? '',
-						defaultPassword,
-						defaultPassword
-					)
-				).rejects.toThrow(Error);
-			});
-		});
-
-		describe('When the admin manipulate the users password', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-					forcePasswordChange: true,
-					preferences: { firstLogin: true },
-				});
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-				accountService.validatePassword.mockResolvedValueOnce(false);
-				return { mockStudentAccount };
-			};
-			it('should allow to set strong password', async () => {
-				const { mockStudentAccount } = setup();
-
-				await expect(
-					accountUc.replaceMyTemporaryPassword(
-						mockStudentAccount.userId?.toString() ?? '',
-						otherPassword,
-						otherPassword
-					)
-				).resolves.not.toThrow();
-			});
-		});
-
-		describe('when a user logs in for the first time', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-					forcePasswordChange: false,
-					preferences: { firstLogin: false },
-				});
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-				accountService.validatePassword.mockResolvedValueOnce(false);
-
-				return { mockStudentAccount };
-			};
-			it('should allow to set strong password', async () => {
-				const { mockStudentAccount } = setup();
-
-				await expect(
-					accountUc.replaceMyTemporaryPassword(
-						mockStudentAccount.userId?.toString() ?? '',
-						otherPassword,
-						otherPassword
-					)
-				).resolves.not.toThrow();
-			});
-		});
-
-		describe('when a user logs in for the first time (if undefined)', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-					forcePasswordChange: false,
-				});
-				mockStudentUser.preferences = undefined;
-
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-				accountService.validatePassword.mockResolvedValueOnce(false);
-
-				return { mockStudentAccount };
-			};
-			it('should allow to set strong password', async () => {
-				const { mockStudentAccount } = setup();
-				await expect(
-					accountUc.replaceMyTemporaryPassword(
-						mockStudentAccount.userId?.toString() ?? '',
-						otherPassword,
-						otherPassword
-					)
-				).resolves.not.toThrow();
-			});
-		});
-
-		describe('When user can not be updated', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					firstName: 'failToUpdate',
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-					preferences: { firstLogin: false },
-					forcePasswordChange: false,
-				});
-
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
-				userRepo.save.mockRejectedValueOnce(undefined);
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-				accountService.validatePassword.mockResolvedValueOnce(false);
-
-				return { mockStudentAccount };
-			};
-			it('should throw EntityNotFoundError', async () => {
-				const { mockStudentAccount } = setup();
-				await expect(
-					accountUc.replaceMyTemporaryPassword(
-						mockStudentAccount.userId?.toString() ?? '',
-						otherPassword,
-						otherPassword
-					)
-				).rejects.toThrow(EntityNotFoundError);
-			});
-		});
-
-		describe('When account can not be updated', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-					forcePasswordChange: false,
-					preferences: { firstLogin: false },
-				});
-
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-					username: 'fail@to.update',
-				});
-
-				userRepo.findById.mockResolvedValueOnce(mockStudentUser);
-				userRepo.save.mockResolvedValueOnce();
-				accountService.findByUserIdOrFail.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-				accountService.save.mockRejectedValueOnce(undefined);
-				accountService.validatePassword.mockResolvedValueOnce(false);
-
-				return { mockStudentAccount };
-			};
-			it('should throw EntityNotFoundError', async () => {
-				const { mockStudentAccount } = setup();
-				await expect(
-					accountUc.replaceMyTemporaryPassword(
-						mockStudentAccount.userId?.toString() ?? '',
-						otherPassword,
-						otherPassword
-					)
-				).rejects.toThrow(EntityNotFoundError);
+				expect(accountService.replaceMyTemporaryPassword).toBeCalledTimes(1);
 			});
 		});
 	});
@@ -1048,7 +294,9 @@ describe('AccountUc', () => {
 					password: defaultPasswordHash,
 				});
 
-				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser).mockResolvedValueOnce(mockStudentUser);
+				authorizationService.getUserWithPermissions
+					.mockResolvedValueOnce(mockSuperheroUser)
+					.mockResolvedValueOnce(mockStudentUser);
 				accountService.findByUserId.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 
 				return { mockSuperheroUser, mockStudentUser, mockStudentAccount };
@@ -1103,7 +351,11 @@ describe('AccountUc', () => {
 					],
 				});
 
-				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser).mockResolvedValueOnce(mockUserWithoutAccount);
+				authorizationService.getUserWithPermissions
+					.mockResolvedValueOnce(mockSuperheroUser)
+					.mockResolvedValueOnce(mockUserWithoutAccount);
+				authorizationService.hasAllPermissions.mockReturnValue(true);
+				accountService.findByUserId.mockResolvedValueOnce(null);
 
 				return { mockSuperheroUser, mockUserWithoutAccount };
 			};
@@ -1140,7 +392,9 @@ describe('AccountUc', () => {
 					password: defaultPasswordHash,
 				});
 
-				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser).mockResolvedValueOnce(mockSuperheroUser);
+				authorizationService.getUserWithPermissions
+					.mockResolvedValueOnce(mockSuperheroUser)
+					.mockResolvedValueOnce(mockSuperheroUser);
 				accountService.searchByUsernamePartialMatch.mockResolvedValueOnce([
 					[AccountEntityToDoMapper.mapToDto(mockStudentAccount), AccountEntityToDoMapper.mapToDto(mockStudentAccount)],
 					2,
@@ -1201,34 +455,41 @@ describe('AccountUc', () => {
 					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 				});
 
-				userRepo.findById.mockResolvedValueOnce(mockTeacherUser).mockResolvedValueOnce(mockAdminUser);
-				userRepo.findById.mockResolvedValueOnce(mockStudentUser).mockResolvedValueOnce(mockOtherStudentUser);
-				userRepo.findById.mockResolvedValueOnce(mockStudentUser).mockResolvedValueOnce(mockTeacherUser);
+				authorizationService.getUserWithPermissions
+					.mockResolvedValueOnce(mockTeacherUser)
+					.mockResolvedValueOnce(mockAdminUser);
+				authorizationService.getUserWithPermissions
+					.mockResolvedValueOnce(mockStudentUser)
+					.mockResolvedValueOnce(mockOtherStudentUser);
+				authorizationService.getUserWithPermissions
+					.mockResolvedValueOnce(mockStudentUser)
+					.mockResolvedValueOnce(mockTeacherUser);
+				authorizationService.hasAllPermissions.mockReturnValue(false);
 
 				return { mockTeacherUser, mockAdminUser, mockStudentUser, mockOtherStudentUser };
 			};
-			it('should throw ForbiddenOperationError', async () => {
+			it('should throw UnauthorizedException', async () => {
 				const { mockTeacherUser, mockAdminUser, mockStudentUser, mockOtherStudentUser } = setup();
 				await expect(
 					accountUc.searchAccounts(
 						{ userId: mockTeacherUser.id } as ICurrentUser,
 						{ type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchQueryParams
 					)
-				).rejects.toThrow(ForbiddenOperationError);
+				).rejects.toThrow(UnauthorizedException);
 
 				await expect(
 					accountUc.searchAccounts(
 						{ userId: mockStudentUser.id } as ICurrentUser,
 						{ type: AccountSearchType.USER_ID, value: mockOtherStudentUser.id } as AccountSearchQueryParams
 					)
-				).rejects.toThrow(ForbiddenOperationError);
+				).rejects.toThrow(UnauthorizedException);
 
 				await expect(
 					accountUc.searchAccounts(
 						{ userId: mockStudentUser.id } as ICurrentUser,
 						{ type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchQueryParams
 					)
-				).rejects.toThrow(ForbiddenOperationError);
+				).rejects.toThrow(UnauthorizedException);
 			});
 		});
 
@@ -1246,7 +507,7 @@ describe('AccountUc', () => {
 					],
 				});
 
-				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(mockSuperheroUser);
 
 				return { mockSuperheroUser };
 			};
@@ -1261,7 +522,7 @@ describe('AccountUc', () => {
 			});
 		});
 
-		describe('When user is not superhero', () => {
+		describe('When user does not have view permission', () => {
 			const setup = () => {
 				const mockSchool = schoolFactory.buildWithId();
 
@@ -1279,18 +540,23 @@ describe('AccountUc', () => {
 					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 				});
 
-				userRepo.findById.mockResolvedValueOnce(mockTeacherUser).mockResolvedValueOnce(mockStudentUser);
+				authorizationService.getUserWithPermissions
+					.mockResolvedValueOnce(mockTeacherUser)
+					.mockResolvedValueOnce(mockStudentUser);
+				authorizationService.checkAllPermissions.mockImplementation(() => {
+					throw new UnauthorizedException();
+				});
 
 				return { mockStudentUser, mockTeacherUser };
 			};
-			it('should throw ForbiddenOperationError', async () => {
+			it('should throw UnauthorizedException', async () => {
 				const { mockTeacherUser, mockStudentUser } = setup();
 				await expect(
 					accountUc.searchAccounts(
 						{ userId: mockTeacherUser.id } as ICurrentUser,
 						{ type: AccountSearchType.USERNAME, value: mockStudentUser.id } as AccountSearchQueryParams
 					)
-				).rejects.toThrow(ForbiddenOperationError);
+				).rejects.toThrow(UnauthorizedException);
 			});
 		});
 		describe('hasPermissionsToAccessAccount', () => {
@@ -1327,7 +593,10 @@ describe('AccountUc', () => {
 					});
 
 					configService.get.mockReturnValue(false);
-					userRepo.findById.mockResolvedValueOnce(mockAdminUser).mockResolvedValueOnce(mockTeacherUser);
+					authorizationService.getUserWithPermissions
+						.mockResolvedValueOnce(mockAdminUser)
+						.mockResolvedValueOnce(mockTeacherUser);
+					authorizationService.hasAllPermissions.mockReturnValue(true);
 
 					return { mockAdminUser, mockTeacherUser };
 				};
@@ -1367,7 +636,10 @@ describe('AccountUc', () => {
 					});
 
 					configService.get.mockReturnValue(false);
-					userRepo.findById.mockResolvedValueOnce(mockAdminUser).mockResolvedValueOnce(mockStudentUser);
+					authorizationService.getUserWithPermissions
+						.mockResolvedValueOnce(mockAdminUser)
+						.mockResolvedValueOnce(mockStudentUser);
+					authorizationService.hasAllPermissions.mockReturnValue(true);
 
 					return { mockAdminUser, mockStudentUser };
 				};
@@ -1403,7 +675,9 @@ describe('AccountUc', () => {
 					});
 
 					configService.get.mockReturnValue(false);
-					userRepo.findById.mockResolvedValueOnce(mockAdminUser).mockResolvedValueOnce(mockAdminUser);
+					authorizationService.getUserWithPermissions
+						.mockResolvedValueOnce(mockAdminUser)
+						.mockResolvedValueOnce(mockAdminUser);
 
 					return { mockAdminUser };
 				};
@@ -1458,8 +732,12 @@ describe('AccountUc', () => {
 					});
 
 					configService.get.mockReturnValue(false);
-					userRepo.findById.mockResolvedValueOnce(mockDifferentSchoolAdminUser).mockResolvedValueOnce(mockTeacherUser);
-					userRepo.findById.mockResolvedValueOnce(mockDifferentSchoolAdminUser).mockResolvedValueOnce(mockStudentUser);
+					authorizationService.getUserWithPermissions
+						.mockResolvedValueOnce(mockDifferentSchoolAdminUser)
+						.mockResolvedValueOnce(mockTeacherUser);
+					authorizationService.getUserWithPermissions
+						.mockResolvedValueOnce(mockDifferentSchoolAdminUser)
+						.mockResolvedValueOnce(mockStudentUser);
 
 					return { mockDifferentSchoolAdminUser, mockTeacherUser, mockStudentUser };
 				};
@@ -1499,7 +777,10 @@ describe('AccountUc', () => {
 					});
 
 					configService.get.mockReturnValue(false);
-					userRepo.findById.mockResolvedValueOnce(mockTeacherUser).mockResolvedValueOnce(mockOtherTeacherUser);
+					authorizationService.getUserWithPermissions
+						.mockResolvedValueOnce(mockTeacherUser)
+						.mockResolvedValueOnce(mockOtherTeacherUser);
+					authorizationService.hasAllPermissions.mockReturnValue(true);
 
 					return { mockTeacherUser, mockOtherTeacherUser };
 				};
@@ -1533,7 +814,10 @@ describe('AccountUc', () => {
 					});
 
 					configService.get.mockReturnValue(false);
-					userRepo.findById.mockResolvedValueOnce(mockTeacherUser).mockResolvedValueOnce(mockStudentUser);
+					authorizationService.getUserWithPermissions
+						.mockResolvedValueOnce(mockTeacherUser)
+						.mockResolvedValueOnce(mockStudentUser);
+					authorizationService.hasAllPermissions.mockReturnValue(true);
 
 					return { mockTeacherUser, mockStudentUser };
 				};
@@ -1578,7 +862,9 @@ describe('AccountUc', () => {
 					});
 
 					configService.get.mockReturnValue(false);
-					userRepo.findById.mockResolvedValueOnce(mockTeacherUser).mockResolvedValueOnce(mockAdminUser);
+					authorizationService.getUserWithPermissions
+						.mockResolvedValueOnce(mockTeacherUser)
+						.mockResolvedValueOnce(mockAdminUser);
 
 					return { mockTeacherUser, mockAdminUser };
 				};
@@ -1614,10 +900,10 @@ describe('AccountUc', () => {
 					});
 
 					configService.get.mockReturnValue(false);
-					userRepo.findById
+					authorizationService.getUserWithPermissions
 						.mockResolvedValueOnce(mockDifferentSchoolTeacherUser)
 						.mockResolvedValueOnce(mockTeacherUser);
-					userRepo.findById
+					authorizationService.getUserWithPermissions
 						.mockResolvedValueOnce(mockDifferentSchoolTeacherUser)
 						.mockResolvedValueOnce(mockStudentUser);
 
@@ -1656,7 +942,7 @@ describe('AccountUc', () => {
 					});
 
 					configService.get.mockReturnValue(true);
-					userRepo.findById
+					authorizationService.getUserWithPermissions
 						.mockResolvedValueOnce(mockTeacherNoUserPermissionUser)
 						.mockResolvedValueOnce(mockStudentSchoolPermissionUser);
 
@@ -1693,7 +979,7 @@ describe('AccountUc', () => {
 					});
 
 					configService.get.mockReturnValue(false);
-					userRepo.findById
+					authorizationService.getUserWithPermissions
 						.mockResolvedValueOnce(mockTeacherNoUserNoSchoolPermissionUser)
 						.mockResolvedValueOnce(mockStudentUser);
 
@@ -1704,7 +990,7 @@ describe('AccountUc', () => {
 					configService.get.mockReturnValue(true);
 					const currentUser = { userId: mockTeacherNoUserNoSchoolPermissionUser.id } as ICurrentUser;
 					const params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams;
-					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow(ForbiddenOperationError);
+					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow(UnauthorizedException);
 				});
 			});
 
@@ -1725,7 +1011,7 @@ describe('AccountUc', () => {
 					});
 
 					configService.get.mockReturnValue(false);
-					userRepo.findById
+					authorizationService.getUserWithPermissions
 						.mockResolvedValueOnce(mockStudentSchoolPermissionUser)
 						.mockResolvedValueOnce(mockOtherStudentSchoolPermissionUser);
 
@@ -1739,7 +1025,7 @@ describe('AccountUc', () => {
 						type: AccountSearchType.USER_ID,
 						value: mockOtherStudentSchoolPermissionUser.id,
 					} as AccountSearchQueryParams;
-					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow(ForbiddenOperationError);
+					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow(UnauthorizedException);
 				});
 			});
 
@@ -1780,9 +1066,15 @@ describe('AccountUc', () => {
 					});
 
 					configService.get.mockReturnValue(false);
-					userRepo.findById.mockResolvedValueOnce(mockStudentUser).mockResolvedValueOnce(mockAdminUser);
-					userRepo.findById.mockResolvedValueOnce(mockStudentUser).mockResolvedValueOnce(mockTeacherUser);
-					userRepo.findById.mockResolvedValueOnce(mockStudentUser).mockResolvedValueOnce(mockStudentUser);
+					authorizationService.getUserWithPermissions
+						.mockResolvedValueOnce(mockStudentUser)
+						.mockResolvedValueOnce(mockAdminUser);
+					authorizationService.getUserWithPermissions
+						.mockResolvedValueOnce(mockStudentUser)
+						.mockResolvedValueOnce(mockTeacherUser);
+					authorizationService.getUserWithPermissions
+						.mockResolvedValueOnce(mockStudentUser)
+						.mockResolvedValueOnce(mockStudentUser);
 
 					return { mockStudentUser, mockAdminUser, mockTeacherUser };
 				};
@@ -1886,7 +1178,7 @@ describe('AccountUc', () => {
 					});
 
 					configService.get.mockReturnValue(false);
-					userRepo.findById.mockResolvedValue(mockSuperheroUser);
+					authorizationService.getUserWithPermissions.mockResolvedValue(mockSuperheroUser);
 					accountService.searchByUsernamePartialMatch.mockResolvedValue([[], 0]);
 
 					return {
@@ -1969,7 +1261,7 @@ describe('AccountUc', () => {
 					password: defaultPasswordHash,
 				});
 
-				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(mockSuperheroUser);
 				accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 
 				return { mockSuperheroUser, mockStudentUser, mockStudentAccount };
@@ -2013,18 +1305,21 @@ describe('AccountUc', () => {
 					password: defaultPasswordHash,
 				});
 
-				userRepo.findById.mockResolvedValueOnce(mockTeacherUser);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(mockTeacherUser);
+				authorizationService.checkAllPermissions.mockImplementation(() => {
+					throw new UnauthorizedException();
+				});
 
 				return { mockTeacherUser, mockStudentAccount };
 			};
-			it('should throw ForbiddenOperationError', async () => {
+			it('should throw UnauthorizedException', async () => {
 				const { mockTeacherUser, mockStudentAccount } = setup();
 				await expect(
 					accountUc.findAccountById(
 						{ userId: mockTeacherUser.id } as ICurrentUser,
 						{ id: mockStudentAccount.id } as AccountByIdParams
 					)
-				).rejects.toThrow(ForbiddenOperationError);
+				).rejects.toThrow(UnauthorizedException);
 			});
 		});
 
@@ -2042,7 +1337,7 @@ describe('AccountUc', () => {
 					],
 				});
 
-				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(mockSuperheroUser);
 				accountService.findById.mockImplementation((): Promise<Account> => {
 					throw new EntityNotFoundError(AccountEntity.name);
 				});
@@ -2074,7 +1369,7 @@ describe('AccountUc', () => {
 					],
 				});
 
-				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(mockSuperheroUser);
 				accountService.findById.mockImplementation((): Promise<Account> => {
 					throw new EntityNotFoundError(AccountEntity.name);
 				});
@@ -2132,7 +1427,7 @@ describe('AccountUc', () => {
 					password: defaultPasswordHash,
 				});
 
-				userRepo.findById.mockImplementation((): Promise<User> => {
+				authorizationService.getUserWithPermissions.mockImplementation((): Promise<User> => {
 					throw new EntityNotFoundError(User.name);
 				});
 
@@ -2176,7 +1471,7 @@ describe('AccountUc', () => {
 					systemId: faker.database.mongodbObjectId(),
 				});
 
-				userRepo.findById.mockResolvedValue(mockAdminUser);
+				authorizationService.getUserWithPermissions.mockResolvedValue(mockAdminUser);
 				accountService.findById.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockAccountWithoutUser));
 
 				return { mockAdminUser };
@@ -2186,240 +1481,6 @@ describe('AccountUc', () => {
 				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
 				const params = { id: '000000000000000' } as AccountByIdParams;
 				const body = {} as AccountByIdBodyParams;
-				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(EntityNotFoundError);
-			});
-		});
-
-		describe('When using superhero user', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockSuperheroUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [
-						new Role({
-							name: RoleName.SUPERHERO,
-							permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT],
-						}),
-					],
-				});
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-				});
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser).mockResolvedValueOnce(mockStudentUser);
-				accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-
-				userRepo.save.mockResolvedValue();
-				accountService.save.mockImplementation((account: AccountSave): Promise<Account> => {
-					Object.assign(mockStudentAccount, account.getProps());
-					return Promise.resolve(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-				});
-
-				return { mockStudentAccount, mockStudentUser, mockSuperheroUser };
-			};
-			it('should update target account password', async () => {
-				const { mockStudentAccount, mockSuperheroUser, mockStudentUser } = setup();
-				const previousPasswordHash = mockStudentAccount.password;
-				const currentUser = { userId: mockSuperheroUser.id } as ICurrentUser;
-				const params = { id: mockStudentAccount.id } as AccountByIdParams;
-				const body = { password: defaultPassword } as AccountByIdBodyParams;
-				expect(mockStudentUser.forcePasswordChange).toBeFalsy();
-				await accountUc.updateAccountById(currentUser, params, body);
-				expect(mockStudentAccount.password).not.toBe(previousPasswordHash);
-				expect(mockStudentUser.forcePasswordChange).toBeTruthy();
-			});
-		});
-
-		describe('When using superhero user', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockSuperheroUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [
-						new Role({
-							name: RoleName.SUPERHERO,
-							permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT],
-						}),
-					],
-				});
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-				});
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser).mockResolvedValueOnce(mockStudentUser);
-				accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-
-				userRepo.save.mockResolvedValue();
-				accountService.save.mockImplementation((account: AccountSave): Promise<Account> => {
-					Object.assign(mockStudentAccount, account.getProps());
-					return Promise.resolve(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-				});
-				accountValidationService.isUniqueEmail.mockResolvedValue(true);
-
-				return { mockStudentAccount, mockSuperheroUser };
-			};
-			it('should update target account username', async () => {
-				const { mockStudentAccount, mockSuperheroUser } = setup();
-				const newUsername = 'newUsername';
-				const currentUser = { userId: mockSuperheroUser.id } as ICurrentUser;
-				const params = { id: mockStudentAccount.id } as AccountByIdParams;
-				const body = { username: newUsername } as AccountByIdBodyParams;
-				expect(mockStudentAccount.username).not.toBe(newUsername);
-				await accountUc.updateAccountById(currentUser, params, body);
-				expect(mockStudentAccount.username).toBe(newUsername.toLowerCase());
-			});
-		});
-
-		describe('When using superhero user', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockSuperheroUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [
-						new Role({
-							name: RoleName.SUPERHERO,
-							permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT],
-						}),
-					],
-				});
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-				});
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser).mockResolvedValueOnce(mockStudentUser);
-				accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-
-				userRepo.save.mockResolvedValue();
-				accountService.save.mockImplementation((account: AccountSave): Promise<Account> => {
-					Object.assign(mockStudentAccount, account);
-					return Promise.resolve(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-				});
-
-				return { mockStudentAccount, mockSuperheroUser };
-			};
-			it('should update target account activation state', async () => {
-				const { mockStudentAccount, mockSuperheroUser } = setup();
-				const currentUser = { userId: mockSuperheroUser.id } as ICurrentUser;
-				const params = { id: mockStudentAccount.id } as AccountByIdParams;
-				const body = { activated: false } as AccountByIdBodyParams;
-				await accountUc.updateAccountById(currentUser, params, body);
-				expect(mockStudentAccount.activated).toBeFalsy();
-			});
-		});
-
-		describe('When using an admin user', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockAdminUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [
-						new Role({
-							name: RoleName.ADMINISTRATOR,
-							permissions: [
-								Permission.TEACHER_EDIT,
-								Permission.STUDENT_EDIT,
-								Permission.STUDENT_LIST,
-								Permission.TEACHER_LIST,
-								Permission.TEACHER_CREATE,
-								Permission.STUDENT_CREATE,
-								Permission.TEACHER_DELETE,
-								Permission.STUDENT_DELETE,
-							],
-						}),
-					],
-				});
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-				});
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValueOnce(mockAdminUser).mockResolvedValueOnce(mockStudentUser);
-				accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-
-				userRepo.save.mockResolvedValue();
-				accountService.save.mockRejectedValueOnce(undefined);
-
-				accountValidationService.isUniqueEmail.mockResolvedValue(true);
-
-				return { mockStudentAccount, mockAdminUser };
-			};
-			it('should throw if account can not be updated', async () => {
-				const { mockStudentAccount, mockAdminUser } = setup();
-				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
-				const params = { id: mockStudentAccount.id } as AccountByIdParams;
-				const body = { username: 'fail@to.update' } as AccountByIdBodyParams;
-				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(EntityNotFoundError);
-			});
-		});
-
-		describe('When user can not be updated', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockAdminUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [
-						new Role({
-							name: RoleName.ADMINISTRATOR,
-							permissions: [
-								Permission.TEACHER_EDIT,
-								Permission.STUDENT_EDIT,
-								Permission.STUDENT_LIST,
-								Permission.TEACHER_LIST,
-								Permission.TEACHER_CREATE,
-								Permission.STUDENT_CREATE,
-								Permission.TEACHER_DELETE,
-								Permission.STUDENT_DELETE,
-							],
-						}),
-					],
-				});
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-				});
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValueOnce(mockAdminUser).mockResolvedValueOnce(mockStudentUser);
-				accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-
-				userRepo.save.mockRejectedValueOnce(undefined);
-
-				accountValidationService.isUniqueEmail.mockResolvedValue(true);
-
-				return { mockStudentAccount, mockAdminUser };
-			};
-			it('should throw EntityNotFoundError', async () => {
-				const { mockStudentAccount, mockAdminUser } = setup();
-				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
-				const params = { id: mockStudentAccount.id } as AccountByIdParams;
-				const body = { username: 'user-fail@to.update' } as AccountByIdBodyParams;
 				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(EntityNotFoundError);
 			});
 		});
@@ -2443,7 +1504,7 @@ describe('AccountUc', () => {
 					systemId: faker.database.mongodbObjectId(),
 				});
 
-				userRepo.findById.mockResolvedValueOnce(mockSuperheroUser);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(mockSuperheroUser);
 				accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockAccountWithoutUser));
 
 				return { mockSuperheroUser, mockAccountWithoutUser };
@@ -2458,69 +1519,6 @@ describe('AccountUc', () => {
 						{ username: 'user-fail@to.update' } as AccountByIdBodyParams
 					)
 				).rejects.toThrow(EntityNotFoundError);
-			});
-		});
-
-		describe('When new username already in use', () => {
-			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-
-				const mockAdminUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [
-						new Role({
-							name: RoleName.ADMINISTRATOR,
-							permissions: [
-								Permission.TEACHER_EDIT,
-								Permission.STUDENT_EDIT,
-								Permission.STUDENT_LIST,
-								Permission.TEACHER_LIST,
-								Permission.TEACHER_CREATE,
-								Permission.STUDENT_CREATE,
-								Permission.TEACHER_DELETE,
-								Permission.STUDENT_DELETE,
-							],
-						}),
-					],
-				});
-				const mockOtherTeacherUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [
-						new Role({
-							name: RoleName.TEACHER,
-							permissions: [Permission.STUDENT_EDIT, Permission.STUDENT_LIST, Permission.TEACHER_LIST],
-						}),
-					],
-				});
-				const mockStudentUser = userFactory.buildWithId({
-					school: mockSchool,
-					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
-				});
-
-				const mockOtherTeacherAccount = accountFactory.buildWithId({
-					userId: mockOtherTeacherUser.id,
-					password: defaultPasswordHash,
-				});
-				const mockStudentAccount = accountFactory.buildWithId({
-					userId: mockStudentUser.id,
-					password: defaultPasswordHash,
-				});
-
-				userRepo.findById.mockResolvedValueOnce(mockAdminUser).mockResolvedValueOnce(mockStudentUser);
-				accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
-
-				userRepo.save.mockRejectedValueOnce(undefined);
-
-				accountValidationService.isUniqueEmail.mockResolvedValueOnce(false);
-
-				return { mockStudentAccount, mockAdminUser, mockOtherTeacherAccount };
-			};
-			it('should throw ValidationError', async () => {
-				const { mockStudentAccount, mockAdminUser, mockOtherTeacherAccount } = setup();
-				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
-				const params = { id: mockStudentAccount.id } as AccountByIdParams;
-				const body = { username: mockOtherTeacherAccount.username } as AccountByIdBodyParams;
-				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ValidationError);
 			});
 		});
 
@@ -2562,8 +1560,11 @@ describe('AccountUc', () => {
 						password: defaultPasswordHash,
 					});
 
-					userRepo.findById.mockResolvedValueOnce(mockAdminUser).mockResolvedValueOnce(mockTeacherUser);
+					authorizationService.getUserWithPermissions
+						.mockResolvedValueOnce(mockAdminUser)
+						.mockResolvedValueOnce(mockTeacherUser);
 					accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockTeacherAccount));
+					authorizationService.hasAllPermissions.mockReturnValue(true);
 
 					return { mockAdminUser, mockTeacherAccount };
 				};
@@ -2598,8 +1599,12 @@ describe('AccountUc', () => {
 						password: defaultPasswordHash,
 					});
 
-					userRepo.findById.mockResolvedValueOnce(mockTeacherUser).mockResolvedValueOnce(mockStudentUser);
+					authorizationService.getUserWithPermissions
+						.mockResolvedValueOnce(mockTeacherUser)
+						.mockResolvedValueOnce(mockStudentUser);
 					accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
+					accountService.updateAccountById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
+					authorizationService.hasAllPermissions.mockReturnValue(true);
 
 					return { mockStudentAccount, mockTeacherUser };
 				};
@@ -2642,8 +1647,12 @@ describe('AccountUc', () => {
 						password: defaultPasswordHash,
 					});
 
-					userRepo.findById.mockResolvedValueOnce(mockAdminUser).mockResolvedValueOnce(mockStudentUser);
+					authorizationService.getUserWithPermissions
+						.mockResolvedValueOnce(mockAdminUser)
+						.mockResolvedValueOnce(mockStudentUser);
 					accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
+					accountService.updateAccountById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
+					authorizationService.hasAllPermissions.mockReturnValue(true);
 
 					return { mockStudentAccount, mockAdminUser };
 				};
@@ -2683,17 +1692,19 @@ describe('AccountUc', () => {
 						password: defaultPasswordHash,
 					});
 
-					userRepo.findById.mockResolvedValueOnce(mockTeacherUser).mockResolvedValueOnce(mockOtherTeacherUser);
+					authorizationService.getUserWithPermissions
+						.mockResolvedValueOnce(mockTeacherUser)
+						.mockResolvedValueOnce(mockOtherTeacherUser);
 					accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockOtherTeacherAccount));
 
 					return { mockOtherTeacherAccount, mockTeacherUser };
 				};
-				it('should throw ForbiddenOperationError', async () => {
+				it('should throw UnauthorizedException', async () => {
 					const { mockTeacherUser, mockOtherTeacherAccount } = setup();
 					const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
 					const params = { id: mockOtherTeacherAccount.id } as AccountByIdParams;
 					const body = {} as AccountByIdBodyParams;
-					await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ForbiddenOperationError);
+					await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(UnauthorizedException);
 				});
 			});
 
@@ -2739,17 +1750,19 @@ describe('AccountUc', () => {
 						password: defaultPasswordHash,
 					});
 
-					userRepo.findById.mockResolvedValueOnce(mockDifferentSchoolAdminUser).mockResolvedValueOnce(mockTeacherUser);
+					authorizationService.getUserWithPermissions
+						.mockResolvedValueOnce(mockDifferentSchoolAdminUser)
+						.mockResolvedValueOnce(mockTeacherUser);
 					accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockTeacherAccount));
 
 					return { mockDifferentSchoolAdminUser, mockTeacherAccount };
 				};
-				it('should throw ForbiddenOperationError', async () => {
+				it('should throw UnauthorizedException', async () => {
 					const { mockDifferentSchoolAdminUser, mockTeacherAccount } = setup();
 					const currentUser = { userId: mockDifferentSchoolAdminUser.id } as ICurrentUser;
 					const params = { id: mockTeacherAccount.id } as AccountByIdParams;
 					const body = {} as AccountByIdBodyParams;
-					await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ForbiddenOperationError);
+					await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(UnauthorizedException);
 				});
 			});
 
@@ -2789,8 +1802,12 @@ describe('AccountUc', () => {
 						password: defaultPasswordHash,
 					});
 
-					userRepo.findById.mockResolvedValueOnce(mockSuperheroUser).mockResolvedValueOnce(mockAdminUser);
+					authorizationService.getUserWithPermissions
+						.mockResolvedValueOnce(mockSuperheroUser)
+						.mockResolvedValueOnce(mockAdminUser);
 					accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockAdminAccount));
+					accountService.updateAccountById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockAdminAccount));
+					authorizationService.hasAllPermissions.mockReturnValue(true);
 
 					return { mockAdminAccount, mockSuperheroUser };
 				};
@@ -2820,7 +1837,9 @@ describe('AccountUc', () => {
 						password: defaultPasswordHash,
 					});
 
-					userRepo.findById.mockResolvedValueOnce(mockUnknownRoleUser).mockResolvedValueOnce(mockUserWithoutRole);
+					authorizationService.getUserWithPermissions
+						.mockResolvedValueOnce(mockUnknownRoleUser)
+						.mockResolvedValueOnce(mockUserWithoutRole);
 					accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockAccountWithoutRole));
 
 					return { mockAccountWithoutRole, mockUnknownRoleUser };
@@ -2830,7 +1849,7 @@ describe('AccountUc', () => {
 					const currentUser = { userId: mockUnknownRoleUser.id } as ICurrentUser;
 					const params = { id: mockAccountWithoutRole.id } as AccountByIdParams;
 					const body = {} as AccountByIdBodyParams;
-					await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ForbiddenOperationError);
+					await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(UnauthorizedException);
 				});
 			});
 
@@ -2865,24 +1884,26 @@ describe('AccountUc', () => {
 						password: defaultPasswordHash,
 					});
 
-					userRepo.findById.mockResolvedValueOnce(mockAdminUser).mockResolvedValueOnce(mockUnknownRoleUser);
+					authorizationService.getUserWithPermissions
+						.mockResolvedValueOnce(mockAdminUser)
+						.mockResolvedValueOnce(mockUnknownRoleUser);
 					accountService.findById.mockResolvedValueOnce(AccountEntityToDoMapper.mapToDto(mockUnknownRoleUserAccount));
 
 					return { mockAdminUser, mockUnknownRoleUserAccount };
 				};
-				it('should throw ForbiddenOperationError', async () => {
+				it('should throw UnauthorizedException', async () => {
 					const { mockAdminUser, mockUnknownRoleUserAccount } = setup();
 					const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
 					const params = { id: mockUnknownRoleUserAccount.id } as AccountByIdParams;
 					const body = {} as AccountByIdBodyParams;
-					await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(ForbiddenOperationError);
+					await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(UnauthorizedException);
 				});
 			});
 		});
 	});
 
 	describe('deleteAccountById', () => {
-		describe('When current user is authorized', () => {
+		describe('When current user has the delete permission', () => {
 			const setup = () => {
 				const mockSchool = schoolFactory.buildWithId();
 
@@ -2891,7 +1912,7 @@ describe('AccountUc', () => {
 					roles: [
 						new Role({
 							name: RoleName.SUPERHERO,
-							permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT],
+							permissions: [Permission.ACCOUNT_DELETE],
 						}),
 					],
 				});
@@ -2905,8 +1926,7 @@ describe('AccountUc', () => {
 					password: defaultPasswordHash,
 				});
 
-				userRepo.findById.mockResolvedValue(mockSuperheroUser);
-
+				authorizationService.getUserWithPermissions.mockResolvedValue(mockSuperheroUser);
 				accountService.findById.mockResolvedValue(AccountEntityToDoMapper.mapToDto(mockStudentAccount));
 
 				return { mockSuperheroUser, mockStudentAccount };
@@ -2922,7 +1942,7 @@ describe('AccountUc', () => {
 			});
 		});
 
-		describe('When the current user is not superhero', () => {
+		describe('When the current user does not have the delete permission', () => {
 			const setup = () => {
 				const mockSchool = schoolFactory.buildWithId();
 
@@ -2955,23 +1975,26 @@ describe('AccountUc', () => {
 					password: defaultPasswordHash,
 				});
 
-				userRepo.findById.mockImplementation((userId: EntityId): Promise<User> => {
+				authorizationService.getUserWithPermissions.mockImplementation((userId: EntityId): Promise<User> => {
 					if (mockAdminUser.id === userId) {
 						return Promise.resolve(mockAdminUser);
 					}
 					throw new EntityNotFoundError(User.name);
 				});
+				authorizationService.checkAllPermissions.mockImplementation((): boolean => {
+					throw new UnauthorizedException();
+				});
 
 				return { mockAdminUser, mockStudentAccount };
 			};
-			it('should throw ForbiddenOperationError', async () => {
+			it('should throw UnauthorizedException', async () => {
 				const { mockAdminUser, mockStudentAccount } = setup();
 				await expect(
 					accountUc.deleteAccountById(
 						{ userId: mockAdminUser.id } as ICurrentUser,
 						{ id: mockStudentAccount.id } as AccountByIdParams
 					)
-				).rejects.toThrow(ForbiddenOperationError);
+				).rejects.toThrow(UnauthorizedException);
 			});
 		});
 
@@ -2989,7 +2012,7 @@ describe('AccountUc', () => {
 					],
 				});
 
-				userRepo.findById.mockImplementation((userId: EntityId): Promise<User> => {
+				authorizationService.getUserWithPermissions.mockImplementation((userId: EntityId): Promise<User> => {
 					if (mockSuperheroUser.id === userId) {
 						return Promise.resolve(mockSuperheroUser);
 					}
