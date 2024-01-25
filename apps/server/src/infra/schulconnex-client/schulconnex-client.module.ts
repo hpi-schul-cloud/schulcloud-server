@@ -11,7 +11,7 @@ import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options'
  */
 @Module({})
 export class SchulconnexClientModule {
-	static forRoot(options: SchulconnexRestClientOptions): DynamicModule {
+	static register(options: SchulconnexRestClientOptions): DynamicModule {
 		return {
 			imports: [HttpModule, OauthModule],
 			module: SchulconnexClientModule,

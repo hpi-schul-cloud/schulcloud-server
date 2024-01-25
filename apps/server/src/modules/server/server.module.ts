@@ -51,7 +51,7 @@ const serverModules = [
 	LessonApiModule,
 	NewsModule,
 	UserApiModule,
-	SchulconnexClientModule.forRoot({
+	SchulconnexClientModule.register({
 		apiUrl: Configuration.get('SCHULCONNEX_CLIENT__API_URL') as string,
 		tokenEndpoint: Configuration.get('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT') as string,
 		clientId: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_ID') as string,
