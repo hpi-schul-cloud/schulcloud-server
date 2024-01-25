@@ -1,4 +1,4 @@
-export enum ExternalToolParameterMustacheTemplateProperty {
+export enum ExternalToolParameterDatasheetTemplateProperty {
 	HIDDEN = 'versteckt',
 	DEACTIVATED = 'deaktiviert',
 	OPTIONAL = 'optional',

@@ -152,16 +152,16 @@ export class ExternalToolService {
 		config.frontchannelLogoutUri = oauthClient.frontchannel_logout_uri;
 	}
 
-	public async getDatasheetData(
+	public async getExternalToolDatasheetTemplateData(
 		externalToolId: EntityId,
 		firstName: string,
 		lastName: string
-	): Promise<ExternalToolMustacheTemplateData> {
+	): Promise<ExternalToolDatasheetTemplateData> {
 		const externalTool: ExternalTool = await this.findById(externalToolId);
 
-		const externalToolData: ExternalToolMustacheTemplateData =
-			ExternalToolMustacheTemplateDataMapper.mapToExternalToolData(externalTool, firstName, lastName);
+		const datasheetTemplateData: ExternalToolDatasheetTemplateData =
+			ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(externalTool, firstName, lastName);
 
-		return externalToolData;
+		return datasheetTemplateData;
 	}
 }

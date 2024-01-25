@@ -1,7 +1,7 @@
-import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from '../../common/enum';
-import { ExternalToolParameterMustacheTemplateData } from './external-tool-parameter-mustache-template-data';
+import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from '../../../common/enum';
+import { ExternalToolParameterDatasheetTemplateData } from './external-tool-parameter-datasheet-template-data';
 
-export class ExternalToolMustacheTemplateData {
+export class ExternalToolDatasheetTemplateData {
 	createdAt: string;
 
 	creatorName: string;
@@ -24,9 +24,9 @@ export class ExternalToolMustacheTemplateData {
 
 	privacy?: LtiPrivacyPermission;
 
-	parameters: ExternalToolParameterMustacheTemplateData[];
+	parameters: ExternalToolParameterDatasheetTemplateData[];
 
-	constructor(externalToolData: ExternalToolMustacheTemplateData) {
+	constructor(externalToolData: ExternalToolDatasheetTemplateData) {
 		this.createdAt = externalToolData.createdAt;
 		this.creatorName = externalToolData.creatorName;
 		this.instance = externalToolData.instance;
