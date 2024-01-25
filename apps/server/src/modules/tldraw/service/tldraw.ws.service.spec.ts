@@ -315,7 +315,7 @@ describe('TldrawWSService', () => {
 
 				service.setupWSConnection(ws);
 
-				expect(sendSpy).toHaveBeenCalledTimes(2);
+				expect(sendSpy).toHaveBeenCalledTimes(3);
 
 				ws.close();
 				messageHandlerSpy.mockRestore();
