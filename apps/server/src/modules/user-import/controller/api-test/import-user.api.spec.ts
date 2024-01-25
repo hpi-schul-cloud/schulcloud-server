@@ -96,10 +96,6 @@ describe('ImportUser Controller (API)', () => {
 		setConfig();
 	});
 
-	afterAll(async () => {
-		await app.close();
-	});
-
 	describe('[GET] /user/import', () => {
 		let importusers: ImportUser[];
 		beforeAll(async () => {
