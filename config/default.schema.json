@@ -1453,7 +1453,7 @@
 				},
 				"MAX_DOCUMENT_SIZE": {
 					"type": "number",
-					"description": "Maximum size of tldraw document size"
+					"description": "Maximum size of a single tldraw document in mongo"
 				}
 			},
 			"default": {

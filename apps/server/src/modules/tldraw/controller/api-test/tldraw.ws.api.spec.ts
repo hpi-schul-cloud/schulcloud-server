@@ -191,10 +191,12 @@ describe('WebSocketController (WsAdapter)', () => {
 		const setup = () => {
 			const setupConnectionSpy = jest.spyOn(wsService, 'setupWSConnection');
 			const wsCloseSpy = jest.spyOn(WebSocket.prototype, 'close');
+			const closeConnSpy = jest.spyOn(wsService, 'closeConn').mockRejectedValue(new Error('error'));
 
 			return {
 				setupConnectionSpy,
 				wsCloseSpy,
+				closeConnSpy,
 			};
 		};
 

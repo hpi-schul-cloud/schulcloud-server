@@ -247,6 +247,8 @@ describe('YMongoDb', () => {
 
 			describe('when single entity size is greater than MAX_DOCUMENT_SIZE', () => {
 				it('should return ydoc from the database', async () => {
+					// @ts-expect-error test-case
+					mdb.maxDocumentSize = 1;
 					const { applyUpdateSpy } = await setup();
 
 					const doc = await mdb.getYDoc('test-name');

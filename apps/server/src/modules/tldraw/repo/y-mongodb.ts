@@ -209,7 +209,7 @@ export class YMongodb {
 		}
 
 		const value = Buffer.from(update);
-		//  if our buffer exceeds it, we store the update in multiple documents
+		//  if our buffer exceeds maxDocumentSize, we store the update in multiple documents
 		if (value.length <= this.maxDocumentSize) {
 			const uniqueKey = KeyFactory.createForUpdate(docName, clock + 1);
 

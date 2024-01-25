@@ -548,7 +548,7 @@ describe('TldrawWSService', () => {
 
 				const flushDocumentSpy = jest.spyOn(boardRepo, 'flushDocument').mockResolvedValueOnce();
 				const redisUnsubscribeSpy = jest.spyOn(Ioredis.Redis.prototype, 'unsubscribe').mockResolvedValueOnce(1);
-				const closeConnSpy = jest.spyOn(service, 'closeConn').mockRejectedValue(new Error('error'));
+				const closeConnSpy = jest.spyOn(service, 'closeConn').mockRejectedValueOnce(new Error('error'));
 				const errorLogSpy = jest.spyOn(logger, 'warning');
 				const sendSpyError = jest.spyOn(service, 'send').mockReturnValue();
 				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce({});
@@ -830,6 +830,27 @@ describe('TldrawWSService', () => {
 			service.updateHandler(msg, socketMock, doc);
 
 			expect(sendSpy).toHaveBeenCalled();
+			ws.close();
+		});
+	});
+
+	describe('databaseUpdateHandler', () => {
+		const setup = async () => {
+			ws = await TestConnection.setupWs(wsUrl);
+
+			const storeUpdateSpy = jest.spyOn(boardRepo, 'storeUpdate').mockResolvedValueOnce();
+
+			return {
+				storeUpdateSpy,
+			};
+		};
+
+		it('should call send method', async () => {
+			const { storeUpdateSpy } = await setup();
+
+			await service.databaseUpdateHandler('test', new Uint8Array());
+
+			expect(storeUpdateSpy).toHaveBeenCalled();
 			ws.close();
 		});
 	});

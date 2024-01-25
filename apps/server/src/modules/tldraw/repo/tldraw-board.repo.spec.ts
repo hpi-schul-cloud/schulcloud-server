@@ -246,13 +246,30 @@ describe('TldrawBoardRepo', () => {
 			return { flushDocumentSpy };
 		};
 
-		it('should call flush method on mdbPersistence', async () => {
+		it('should call flush method on YMongo', async () => {
 			const { flushDocumentSpy } = setup();
 
 			await repo.flushDocument('test');
 
 			expect(flushDocumentSpy).toHaveBeenCalled();
 			flushDocumentSpy.mockRestore();
+		});
+	});
+
+	describe('storeUpdate', () => {
+		const setup = () => {
+			const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdateTransactional');
+
+			return { storeUpdateSpy };
+		};
+
+		it('should call store update method on YMongo', async () => {
+			const { storeUpdateSpy } = setup();
+
+			await repo.storeUpdate('test', new Uint8Array());
+
+			expect(storeUpdateSpy).toHaveBeenCalled();
+			storeUpdateSpy.mockRestore();
 		});
 	});
 });
