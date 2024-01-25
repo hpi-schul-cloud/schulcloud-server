@@ -29,6 +29,7 @@ let config: Config.InitialOptions = {
 		'^@infra/(.*)$': '<rootDir>/apps/server/src/infra/$1',
 	},
 	maxWorkers: 2, // limited for not taking all workers within of a single github action
+	workerIdleMemoryLimit: '1GB',
 };
 
 if (!process.env.RUN_WITHOUT_JEST_COVERAGE) {
