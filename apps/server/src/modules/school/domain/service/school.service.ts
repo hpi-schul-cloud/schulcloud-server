@@ -62,8 +62,9 @@ export class SchoolService {
 
 	public async getSchoolsForLdapLogin(): Promise<SchoolForLdapLogin[]> {
 		const schools = await this.schoolRepo.getAllThatHaveSystems();
-		const ldapLoginSystems = await this.systemService.findAllForLdapLogin();
+		const systems = await this.systemService.findAll();
 
+		const ldapLoginSystems = systems.filter((system) => system.isEligibleForLdapLogin());
 		const schoolsWithLdapLoginSystems = schools.filter((school) => this.hasLdapLoginSystem(school, ldapLoginSystems));
 
 		const schoolsForLdapLogin = schoolsWithLdapLoginSystems.map((school) =>

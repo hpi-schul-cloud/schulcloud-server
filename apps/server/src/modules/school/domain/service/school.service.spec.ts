@@ -388,14 +388,17 @@ describe('SchoolService', () => {
 	describe('getSchoolsForLdapLogin', () => {
 		describe('when some schools exist that have ldap login systems', () => {
 			const setup = () => {
-				const ldapLoginSystem = systemFactory.build();
+				const ldapLoginSystem = systemFactory.build({ type: 'ldap', ldapConfig: { active: true } });
+				const otherSystem = systemFactory.build({ type: 'oauth2' });
 				const schoolWithLdapLoginSystem = schoolFactory.build({ systemIds: [ldapLoginSystem.id] });
-				const schoolWithoutLdapLoginSystem = schoolFactory.build();
+				const schoolWithOtherSystem = schoolFactory.build({ systemIds: [otherSystem.id] });
+				const schoolWithoutSystem = schoolFactory.build();
 
-				systemService.findAllForLdapLogin.mockResolvedValueOnce([ldapLoginSystem]);
+				systemService.findAll.mockResolvedValueOnce([ldapLoginSystem, otherSystem]);
 				schoolRepo.getAllThatHaveSystems.mockResolvedValueOnce([
 					schoolWithLdapLoginSystem,
-					schoolWithoutLdapLoginSystem,
+					schoolWithOtherSystem,
+					schoolWithoutSystem,
 				]);
 
 				const expected = new SchoolForLdapLogin({
@@ -422,13 +425,13 @@ describe('SchoolService', () => {
 			});
 		});
 
-		describe('when a school exists that has several systems', () => {
+		describe('when a school has several systems', () => {
 			const setup = () => {
-				const ldapLoginSystem = systemFactory.build();
-				const otherSystem = systemFactory.build();
+				const ldapLoginSystem = systemFactory.build({ type: 'ldap', ldapConfig: { active: true } });
+				const otherSystem = systemFactory.build({ type: 'oauth2' });
 				const school = schoolFactory.build({ systemIds: [ldapLoginSystem.id, otherSystem.id] });
 
-				systemService.findAllForLdapLogin.mockResolvedValueOnce([ldapLoginSystem]);
+				systemService.findAll.mockResolvedValueOnce([ldapLoginSystem, otherSystem]);
 				schoolRepo.getAllThatHaveSystems.mockResolvedValueOnce([school]);
 
 				const expected = new SchoolForLdapLogin({
@@ -446,7 +449,7 @@ describe('SchoolService', () => {
 				return { expected };
 			};
 
-			it('should return the school with only the LDAP login system', async () => {
+			it('should return the school with only the LDAP login systems', async () => {
 				const { expected } = setup();
 
 				const result = await service.getSchoolsForLdapLogin();
