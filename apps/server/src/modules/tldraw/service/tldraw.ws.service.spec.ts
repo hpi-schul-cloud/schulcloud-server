@@ -744,6 +744,7 @@ describe('TldrawWSService', () => {
 				const sendSpy = jest.spyOn(service, 'send').mockImplementation(() => {});
 				const clearIntervalSpy = jest.spyOn(global, 'clearInterval');
 				const errorLogSpy = jest.spyOn(logger, 'warning');
+				jest.spyOn(boardRepo, 'updateDocument').mockImplementationOnce(() => Promise.resolve());
 				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce({});
 
 				return {
