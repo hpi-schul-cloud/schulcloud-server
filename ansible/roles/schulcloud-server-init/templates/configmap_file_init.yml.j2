@@ -317,25 +317,21 @@ data:
 
     if [ -n "$NS" ]; then
         # Set the BETTERMARKS_CLIENT_SECRET and BETTERMARKS_URL variables values according to the k8s namespace.
-        if [ "$SC_THEME" = "n21" ] && [ "$NS" = "bettermarks-test" ]; then
-            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_NBC_BETTERMARKS_TEST_CLIENT_SECRET
-            BETTERMARKS_URL=$BETTERMARKS_NBC_BETTERMARKS_TEST_ENTRYPOINT
-        elif [ "$SC_THEME" = "n21" ] && [ "$NS" = "main" ]; then
-            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_NBC_MAIN_CLIENT_SECRET
-            BETTERMARKS_URL=$BETTERMARKS_NBC_MAIN_ENTRYPOINT
-        elif [ "$SC_THEME" = "brb" ] && [ "$NS" = "bettermarks-test" ]; then
-            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_BRB_BETTERMARKS_TEST_CLIENT_SECRET
-            BETTERMARKS_URL=$BETTERMARKS_BRB_BETTERMARKS_TEST_ENTRYPOINT
-        elif [ "$SC_THEME" = "brb" ] && [ "$NS" = "main" ]; then
-            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_BRB_MAIN_CLIENT_SECRET
-            BETTERMARKS_URL=$BETTERMARKS_BRB_MAIN_ENTRYPOINT
+        if [ "$NS" = "bettermarks-test" ]; then
+            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_BETTERMARKS_TEST_CLIENT_SECRET
+            BETTERMARKS_URL=$BETTERMARKS_BETTERMARKS_TEST_ENTRYPOINT
+            BETTERMARKS_REDIRECT_DOMAIN=$BETTERMARKS_BETTERMARKS_TEST_REDIRECT_DOMAIN
+        elif [ "$NS" = "main" ]; then
+            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_MAIN_CLIENT_SECRET
+            BETTERMARKS_URL=$BETTERMARKS_MAIN_ENTRYPOINT
+            BETTERMARKS_REDIRECT_DOMAIN=$BETTERMARKS_MAIN_REDIRECT_DOMAIN
         else
             # Print some friendly message for any other namespace that's not supported.
             echo "Sorry, Bettermarks cannot be configured on the '$NS' namespace, omitting the config data init."
         fi
 
         # Perform the final Bettermarks config data init if client secret and URL has been properly set.
-        if [ -n "$BETTERMARKS_CLIENT_SECRET" ] && [ -n "$BETTERMARKS_URL" ]; then
+        if [ -n "$BETTERMARKS_CLIENT_SECRET" ] && [ -n "$BETTERMARKS_URL" ] && [ -n "$BETTERMARKS_REDIRECT_DOMAIN" ]; then
             # Add document to the 'ltitools' collection with Bettermarks tool configuration.
             mongosh $DATABASE__URL --quiet --eval 'db.getCollection("ltitools").replaceOne(
                 {
@@ -384,11 +380,9 @@ data:
                         "scope":"openid offline",
                         "token_endpoint_auth_method":"client_secret_post",
                         "redirect_uris": [
-                          "https://acc.bettermarks.com/v1.0/schulcloud/oauth/callback",
-                          "https://school.bettermarks.loc/v1.0/schulcloud/oauth/callback",
-                          "https://acc.bettermarks.com/auth/callback",
-                          "https://school.bettermarks.loc/auth/callback",
-                          "https://acc.bettermarks.com/auth/oidc/callback"
+                          "https://'$BETTERMARKS_MAIN_REDIRECT_DOMAIN'/v1.0/schulcloud/oauth/callback",
+                          "https://'$BETTERMARKS_MAIN_REDIRECT_DOMAIN'/auth/callback",
+                          "https://'$BETTERMARKS_MAIN_REDIRECT_DOMAIN'/auth/oidc/callback"
                         ],
                         "subject_type":"pairwise"
                       }'
@@ -421,6 +415,8 @@ data:
             );'
 
             echo "Bettermarks config data init performed successfully."
+        else
+          echo "Bettermarks variables not provided, omitting the config data init."
         fi
     fi
 
