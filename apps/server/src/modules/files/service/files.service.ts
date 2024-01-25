@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { DomainModel, EntityId, StatusModel } from '@shared/domain/types';
+import { DomainModel, EntityId, OperationModel, StatusModel } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
+import { DomainOperation } from '@shared/domain/interface';
+import { DomainOperationBuilder } from '@shared/domain/builder';
 import { FileEntity } from '../entity';
 import { FilesRepo } from '../repo';
 
@@ -15,7 +17,7 @@ export class FilesService {
 		return this.repo.findByPermissionRefIdOrCreatorId(userId);
 	}
 
-	async removeUserPermissionsOrCreatorReferenceToAnyFiles(userId: EntityId): Promise<number> {
+	async removeUserPermissionsOrCreatorReferenceToAnyFiles(userId: EntityId): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Files',
@@ -26,10 +28,6 @@ export class FilesService {
 		);
 		const entities = await this.repo.findByPermissionRefIdOrCreatorId(userId);
 
-		if (entities.length === 0) {
-			return 0;
-		}
-
 		entities.forEach((entity) => {
 			entity.removePermissionsByRefId(userId);
 			entity.removeCreatorId(userId);
@@ -38,6 +36,13 @@ export class FilesService {
 		await this.repo.save(entities);
 
 		const numberOfUpdatedFiles = entities.length;
+
+		const result = DomainOperationBuilder.build(
+			DomainModel.FILE,
+			OperationModel.UPDATE,
+			numberOfUpdatedFiles,
+			this.getFilesId(entities)
+		);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
@@ -50,14 +55,14 @@ export class FilesService {
 			)
 		);
 
-		return numberOfUpdatedFiles;
+		return result;
 	}
 
 	async findFilesOwnedByUser(userId: EntityId): Promise<FileEntity[]> {
 		return this.repo.findByOwnerUserId(userId);
 	}
 
-	async markFilesOwnedByUserForDeletion(userId: EntityId): Promise<number> {
+	async markFilesOwnedByUserForDeletion(userId: EntityId): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Marking user files to deletion',
@@ -68,15 +73,18 @@ export class FilesService {
 		);
 		const entities = await this.repo.findByOwnerUserId(userId);
 
-		if (entities.length === 0) {
-			return 0;
-		}
-
 		entities.forEach((entity) => entity.markForDeletion());
 
 		await this.repo.save(entities);
 
 		const numberOfMarkedForDeletionFiles = entities.length;
+
+		const result = DomainOperationBuilder.build(
+			DomainModel.FILE,
+			OperationModel.UPDATE,
+			numberOfMarkedForDeletionFiles,
+			this.getFilesId(entities)
+		);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
@@ -89,6 +97,10 @@ export class FilesService {
 			)
 		);
 
-		return numberOfMarkedForDeletionFiles;
+		return result;
+	}
+
+	private getFilesId(files: FileEntity[]): EntityId[] {
+		return files.map((file) => file.id);
 	}
 }

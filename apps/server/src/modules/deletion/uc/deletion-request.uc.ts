@@ -227,11 +227,14 @@ export class DeletionRequestUc {
 	private async removeUsersFilesAndPermissions(deletionRequest: DeletionRequest) {
 		this.logger.debug({ action: 'removeUsersFilesAndPermissions', deletionRequest });
 
-		const filesDeleted: number = await this.filesService.markFilesOwnedByUserForDeletion(deletionRequest.targetRefId);
-		const filesUpdated: number = await this.filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles(
+		const filesDeleted = await this.filesService.markFilesOwnedByUserForDeletion(deletionRequest.targetRefId);
+		const filesUpdated = await this.filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles(
 			deletionRequest.targetRefId
 		);
-		await this.logDeletion(deletionRequest, DomainModel.FILE, OperationModel.UPDATE, filesDeleted + filesUpdated, []);
+
+		const result = this.getDomainOperation([filesDeleted, filesUpdated]);
+
+		await this.logDeletion(deletionRequest, result.domain, result.operation, result.count, result.refs);
 	}
 
 	private async removeUsersDataFromFileRecords(deletionRequest: DeletionRequest) {
