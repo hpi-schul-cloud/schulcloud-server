@@ -224,7 +224,7 @@ describe('account repo', () => {
 
 				const result = await repo.deleteByUserId(user.id);
 
-				expect(result).toEqual(account.id);
+				expect(result).toEqual([account.id]);
 			});
 		});
 
@@ -234,7 +234,7 @@ describe('account repo', () => {
 
 				const result = await repo.deleteByUserId(userWithoutAccount.id);
 
-				expect(result).toBeNull();
+				expect(result).toEqual([]);
 			});
 		});
 	});
