@@ -723,4 +723,58 @@ describe('ToolController (API)', () => {
 			});
 		});
 	});
+
+	describe('[GET] tools/external-tools/:externalToolId/datasheet', () => {
+		describe('when user is not authenticated', () => {
+			const setup = () => {
+				const toolId: string = new ObjectId().toHexString();
+
+				return { toolId };
+			};
+
+			it('should return unauthorized', async () => {
+				const { toolId } = setup();
+
+				const response: Response = await testApiClient.get(`${toolId}/datasheet`);
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when externalToolId is given ', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
+
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
+				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
+
+				return { loggedInClient, toolId, externalToolEntity };
+			};
+
+			it('should return the datasheet of the externalTool', async () => {
+				const { loggedInClient, externalToolEntity } = await setup();
+
+				const response: Response = await loggedInClient.get(`${externalToolEntity.id}/datasheet`);
+
+				expect(response.statusCode).toEqual(HttpStatus.OK);
+				expect(response.header).toEqual(
+					expect.objectContaining({
+						'content-type': 'application/pdf',
+						'content-disposition': 'attachment; filename=datasheet1337.pdf',
+					})
+				);
+				// TODO N21-1626 make this work
+				expect(response.body).toEqual(
+					expect.objectContaining({
+						type: 'Buffer',
+						data: expect.any(Array) as number[],
+					})
+				);
+			});
+		});
+	});
 });

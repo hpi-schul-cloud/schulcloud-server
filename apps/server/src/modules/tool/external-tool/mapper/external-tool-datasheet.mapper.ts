@@ -94,6 +94,7 @@ export class ExternalToolDatasheetMapper {
 			type: ExternalToolDatasheetMapper.mapToType(parameter),
 			properties: ExternalToolDatasheetMapper.mapToProperties(parameter),
 			scope: ExternalToolDatasheetMapper.mapToScope(parameter),
+			location: parameter.location,
 		});
 
 		return parameterData;

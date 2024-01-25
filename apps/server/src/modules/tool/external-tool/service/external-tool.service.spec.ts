@@ -15,7 +15,7 @@ import {
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { LegacyLogger } from '@src/core/logger';
 import { User } from '@shared/domain/entity';
-import { userFactory } from '@shared/testing';
+import { setupEntities, userFactory } from '@shared/testing';
 import { externalToolDatasheetTemplateDataFactory } from '@shared/testing/factory/domainobject/tool/external-tool-datasheet-template-data.factory';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
@@ -38,6 +38,8 @@ describe('ExternalToolService', () => {
 	let versionService: DeepMocked<ExternalToolVersionIncrementService>;
 
 	beforeAll(async () => {
+		await setupEntities();
+
 		module = await Test.createTestingModule({
 			providers: [
 				ExternalToolService,
@@ -700,18 +702,17 @@ describe('ExternalToolService', () => {
 				externalToolRepo.findById.mockResolvedValue(externalTool);
 
 				return {
-					externalTool,
 					user,
 					datasheetData,
 				};
 			};
 
 			it('should find external tool', async () => {
-				const { externalTool, user } = setup();
+				const { user } = setup();
 
 				await service.getExternalToolDatasheetTemplateData('toolId', user.firstName, user.lastName);
 
-				expect(externalToolRepo.findById).toHaveBeenCalledWith(externalTool.id);
+				expect(externalToolRepo.findById).toHaveBeenCalledWith('toolId');
 			});
 
 			it('should return external tool datasheet template data', async () => {
@@ -719,7 +720,7 @@ describe('ExternalToolService', () => {
 
 				const data = await service.getExternalToolDatasheetTemplateData('toolId', user.firstName, user.lastName);
 
-				expect(data).toEqual<ExternalToolDatasheetMapper>(datasheetData);
+				expect(data).toEqual(datasheetData);
 			});
 		});
 
@@ -746,7 +747,7 @@ describe('ExternalToolService', () => {
 
 				const data = await service.getExternalToolDatasheetTemplateData('toolId', user.firstName, user.lastName);
 
-				expect(data).toEqual<ExternalToolDatasheetMapper>(datasheetData);
+				expect(data).toEqual(datasheetData);
 			});
 		});
 
@@ -773,7 +774,7 @@ describe('ExternalToolService', () => {
 
 				const data = await service.getExternalToolDatasheetTemplateData('toolId', user.firstName, user.lastName);
 
-				expect(data).toEqual<ExternalToolDatasheetMapper>(datasheetData);
+				expect(data).toEqual(datasheetData);
 			});
 		});
 	});

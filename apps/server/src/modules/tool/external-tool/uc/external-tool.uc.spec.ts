@@ -11,6 +11,7 @@ import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { externalToolFactory, oauth2ToolConfigFactory } from '@shared/testing/factory';
 import { externalToolDatasheetTemplateDataFactory } from '@shared/testing/factory/domainobject/tool/external-tool-datasheet-template-data.factory';
 import { PDFService } from '@pyxlab/nestjs-pdf';
+import { of } from 'rxjs';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
 import { ExternalTool, ExternalToolDatasheetTemplateData, ExternalToolMetadata, Oauth2ToolConfig } from '../domain';
@@ -653,6 +654,7 @@ describe('ExternalToolUc', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				externalToolService.getExternalToolDatasheetTemplateData.mockResolvedValue(datasheetData);
+				pdfService.toBuffer.mockReturnValueOnce(of(Buffer.from('mockData')));
 
 				return {
 					user,
