@@ -89,7 +89,7 @@ export class CourseController {
 			new ParseFilePipe({
 				validators: [
 					new MaxFileSizeValidator({ maxSize: config().MAX_FILE_SIZE }),
-					new FileTypeValidator({ fileType: /application\/(zip|octet-stream)/ }),
+					new FileTypeValidator({ fileType: /application\/(octet-stream|.*zip.*)/ }),
 					new CommonCartridgeFileValidator(),
 				],
 			})
