@@ -81,7 +81,7 @@ describe(UserImportFetchUc.name, () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				userImportService.getMigrationSystem.mockResolvedValueOnce(system);
 				schulconnexFetchImportUsersService.getData.mockResolvedValueOnce([importUser]);
-				schulconnexFetchImportUsersService.filterAlreadyMigratedUser.mockReturnValueOnce([importUser]);
+				schulconnexFetchImportUsersService.filterAlreadyMigratedUser.mockResolvedValueOnce([importUser]);
 				userImportService.matchUsers.mockResolvedValueOnce([importUser]);
 
 				return {

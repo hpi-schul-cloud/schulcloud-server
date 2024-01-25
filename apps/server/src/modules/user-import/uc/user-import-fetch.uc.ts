@@ -25,7 +25,7 @@ export class UserImportFetchUc {
 		const system: SystemEntity = await this.userImportService.getMigrationSystem();
 		const fetchedData: ImportUser[] = await this.schulconnexFetchImportUsersService.getData(user.school, system);
 
-		const filteredFetchedData: ImportUser[] = this.schulconnexFetchImportUsersService.filterAlreadyMigratedUser(
+		const filteredFetchedData: ImportUser[] = await this.schulconnexFetchImportUsersService.filterAlreadyMigratedUser(
 			fetchedData,
 			this.userImportFeatures.userMigrationSystemId
 		);
