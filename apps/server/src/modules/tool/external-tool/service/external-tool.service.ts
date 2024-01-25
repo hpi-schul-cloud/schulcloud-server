@@ -10,10 +10,10 @@ import { LegacyLogger } from '@src/core/logger';
 import { TokenEndpointAuthMethod } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ExternalTool, Oauth2ToolConfig } from '../domain';
+import { ExternalTool, ExternalToolDatasheetTemplateData, Oauth2ToolConfig } from '../domain';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalToolVersionIncrementService } from './external-tool-version-increment.service';
-import { ExternalToolMustacheTemplateDataMapper, ExternalToolMustacheTemplateData } from '../mustache-template';
+import { ExternalToolDatasheetMapper } from '../mapper/external-tool-datasheet.mapper';
 
 @Injectable()
 export class ExternalToolService {

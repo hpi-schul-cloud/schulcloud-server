@@ -587,7 +587,6 @@ describe('ExternalToolUc', () => {
 				const user: User = userFactory.buildWithId({ roles: [role] });
 
 				const toolId: string = new ObjectId().toHexString();
-				const userId: string = user.id;
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 
@@ -656,7 +655,11 @@ describe('ExternalToolUc', () => {
 
 				await uc.getDatasheet(user.id, toolId);
 
-				expect(externalToolService.getDatasheetData).toHaveBeenCalledWith(toolId, user.firstName, user.lastName);
+				expect(externalToolService.getExternalToolDatasheetTemplateData).toHaveBeenCalledWith(
+					toolId,
+					user.firstName,
+					user.lastName
+				);
 			});
 			// TODO N21-1626 implement tests here for pdf creation call
 		});

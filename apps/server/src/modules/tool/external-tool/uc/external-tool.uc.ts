@@ -8,11 +8,10 @@ import { EntityId } from '@shared/domain/types';
 import { firstValueFrom } from 'rxjs';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
-import { ExternalTool, ExternalToolConfig, ExternalToolMetadata } from '../domain';
+import { ExternalTool, ExternalToolConfig, ExternalToolDatasheetTemplateData, ExternalToolMetadata } from '../domain';
 import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
-import { ExternalToolMustacheTemplateData } from '../mustache-template';
-// rename mustache to datasheet
+
 @Injectable()
 export class ExternalToolUc {
 	constructor(
@@ -106,7 +105,6 @@ export class ExternalToolUc {
 				user.firstName,
 				user.lastName
 			);
-// rename functions to datasheet
 		const buffer: Promise<Buffer> = firstValueFrom(
 			this.pdfService.toBuffer('ExternalToolDatasheet', { locals: dataSheetData })
 		);
