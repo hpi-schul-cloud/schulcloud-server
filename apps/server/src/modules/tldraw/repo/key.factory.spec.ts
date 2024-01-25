@@ -10,7 +10,7 @@ describe('KeyFactory', () => {
 				return { params };
 			};
 
-			it('should return a object that support the interface UniqueKey and clock is not defined', ()=> {
+			it('should return a object that support the interface UniqueKey and clock is not defined', () => {
 				const { params } = setup();
 
 				const result = KeyFactory.createForUpdate(params.docName);
@@ -31,7 +31,7 @@ describe('KeyFactory', () => {
 				return { params };
 			};
 
-			it('should return a object that support the interface UniqueKey and pass the clock number', ()=> {
+			it('should return a object that support the interface UniqueKey and pass the clock number', () => {
 				const { params } = setup();
 
 				const result = KeyFactory.createForUpdate(params.docName, params.clock);
@@ -52,7 +52,7 @@ describe('KeyFactory', () => {
 				return { params };
 			};
 
-			it('should return a object that support the interface UniqueKey and pass the clock number', ()=> {
+			it('should return a object that support the interface UniqueKey and pass the clock number', () => {
 				const { params } = setup();
 
 				const result = KeyFactory.createForUpdate(params.docName, params.clock);

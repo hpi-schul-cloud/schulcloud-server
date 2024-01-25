@@ -186,7 +186,7 @@ describe('YMongoDb', () => {
 			};
 
 			it('should return ydoc', async () => {
-				const { applyUpdateSpy  } = await setup();
+				const { applyUpdateSpy } = await setup();
 
 				const doc = await mdb.getYDoc('test-name');
 
@@ -220,7 +220,6 @@ describe('YMongoDb', () => {
 				applyUpdateSpy.mockRestore();
 			});
 		});
-
 
 		describe('when getting document with part undefined', () => {
 			const setup = async () => {

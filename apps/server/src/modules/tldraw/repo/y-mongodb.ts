@@ -190,7 +190,7 @@ export class YMongodb {
 		encoding.writeVarUint(encoder, clock);
 		encoding.writeVarUint8Array(encoder, sv);
 		const uniqueKey = KeyFactory.createForStateVector(docName);
-	
+
 		await this.repo.put(uniqueKey, {
 			value: Buffer.from(encoding.toUint8Array(encoder)),
 		});

@@ -28,7 +28,7 @@ export class KeyFactory {
 			docName,
 			version: Version.V1,
 			action: DatabaseAction.UPDATE,
-			// TODO: Do it work when key is exists, but value is undefined? Same for action in createForStateVector 
+			// TODO: Do it work when key is exists, but value is undefined? Same for action in createForStateVector
 			clock,
 		};
 
@@ -40,7 +40,7 @@ export class KeyFactory {
 		const uniqueKey = {
 			docName,
 			version: Version.V1_SV,
-		}
+		};
 
 		return uniqueKey;
 	}
