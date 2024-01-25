@@ -51,15 +51,6 @@ export class SchoolMikroOrmRepo implements SchoolRepo {
 		return schools;
 	}
 
-	// private isEligibleForLdapLogin(school: SchoolEntity): boolean {
-	// 	const result = school.systems
-	// 		.getItems()
-	// 		// Systems with an oauthConfig are filtered out here to exclude IServ. IServ is of type LDAP for syncing purposes, but the login is done via OAuth2.
-	// 		.some((system) => system.type === 'ldap' && system.ldapConfig?.active && !system.oauthConfig);
-
-	// 	return result;
-	// }
-
 	private mapToMikroOrmOptions<P extends string = never>(
 		options?: IFindOptions<SchoolProps>,
 		populate?: AutoPath<SchoolEntity, P>[]
