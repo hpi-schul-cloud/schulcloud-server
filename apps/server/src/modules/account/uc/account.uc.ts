@@ -6,15 +6,15 @@ import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { AuthorizationService } from '@src/modules/authorization/domain/service/authorization.service';
 import { AccountService } from '..';
+import { AccountSearchType } from '../controller/dto';
+import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '../domain';
 import {
-	AccountByIdBodyParams,
-	AccountByIdParams,
-	AccountSearchQueryParams,
-	AccountSearchType,
-	PatchMyAccountParams,
-} from '../controller/dto';
-import { Account, AccountSave } from '../domain';
-import { ResolvedAccountDto, ResolvedSearchListAccountDto } from './dto/resolved-account.dto';
+	AccountSearchDto,
+	ResolvedAccountDto,
+	ResolvedSearchListAccountDto,
+	UpdateAccountDto,
+	UpdateMyAccountDto,
+} from './dto';
 import { AccountUcMapper } from './mapper/account-uc.mapper';
 
 @Injectable()
@@ -28,21 +28,21 @@ export class AccountUc {
 	 * This method processes the request on the GET account search endpoint from the account controller.
 	 *
 	 * @param currentUser the request user
-	 * @param query the request query
+	 * @param search the search request
 	 * @throws {ValidationError}
 	 * @throws {ForbiddenOperationError}
 	 */
 	public async searchAccounts(
 		currentUser: ICurrentUser,
-		query: AccountSearchQueryParams
+		search: AccountSearchDto
 	): Promise<ResolvedSearchListAccountDto> {
 		const executingUser: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
 
-		switch (query.type) {
+		switch (search.type) {
 			case AccountSearchType.USERNAME:
-				return this.searchByUsername(executingUser, query.value, query.skip, query.limit);
+				return this.searchByUsername(executingUser, search.value, search.skip, search.limit);
 			case AccountSearchType.USER_ID:
-				return this.searchByUserId(executingUser, query.value, query.skip, query.limit);
+				return this.searchByUserId(executingUser, search.value, search.skip, search.limit);
 			default:
 				throw new ValidationError('Invalid search type.');
 		}
@@ -95,15 +95,15 @@ export class AccountUc {
 	 * This method processes the request on the GET account with id endpoint from the account controller.
 	 *
 	 * @param currentUser the request user
-	 * @param params the request parameters
+	 * @param accountId the account id
 	 * @throws {ForbiddenOperationError}
 	 * @throws {EntityNotFoundError}
 	 */
-	public async findAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<ResolvedAccountDto> {
+	public async findAccountById(currentUser: ICurrentUser, accountId: string): Promise<ResolvedAccountDto> {
 		const user = await this.authorizationService.getUserWithPermissions(currentUser.userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.ACCOUNT_VIEW]);
 
-		const account = await this.accountService.findById(params.id);
+		const account = await this.accountService.findById(accountId);
 
 		return AccountUcMapper.mapToResolvedAccountDto(account);
 	}
@@ -121,18 +121,18 @@ export class AccountUc {
 	 * This method processes the request on the PATCH account with id endpoint from the account controller.
 	 *
 	 * @param currentUser the request user
-	 * @param params the request parameters
-	 * @param body the request body
+	 * @param accountId the account id
+	 * @param updateDto the update request
 	 * @throws {ForbiddenOperationError}
 	 * @throws {EntityNotFoundError}
 	 */
 	public async updateAccountById(
 		currentUser: ICurrentUser,
-		params: AccountByIdParams,
-		body: AccountByIdBodyParams
+		accountId: string,
+		updateDto: UpdateAccountDto
 	): Promise<ResolvedAccountDto> {
 		const executingUser = await this.authorizationService.getUserWithPermissions(currentUser.userId);
-		const targetAccount = await this.accountService.findById(params.id);
+		const targetAccount = await this.accountService.findById(accountId);
 
 		if (!targetAccount.userId) {
 			throw new EntityNotFoundError(User.name);
@@ -144,7 +144,8 @@ export class AccountUc {
 			throw new UnauthorizedException('Current user is not authorized to update target account.');
 		}
 
-		const updated: Account = await this.accountService.updateAccount(targetUser, targetAccount, body);
+		const updateData = new UpdateAccount(updateDto);
+		const updated: Account = await this.accountService.updateAccount(targetUser, targetAccount, updateData);
 
 		return AccountUcMapper.mapToResolvedAccountDto(updated);
 	}
@@ -153,15 +154,15 @@ export class AccountUc {
 	 * This method processes the request on the DELETE account with id endpoint from the account controller.
 	 *
 	 * @param currentUser the request user
-	 * @param params the request parameters
+	 * @param accountId the account id
 	 * @throws {ForbiddenOperationError}
 	 * @throws {EntityNotFoundError}
 	 */
-	public async deleteAccountById(currentUser: ICurrentUser, params: AccountByIdParams): Promise<ResolvedAccountDto> {
+	public async deleteAccountById(currentUser: ICurrentUser, accountId: string): Promise<ResolvedAccountDto> {
 		const user: User = await this.authorizationService.getUserWithPermissions(currentUser.userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.ACCOUNT_DELETE]);
 
-		const account: Account = await this.accountService.findById(params.id);
+		const account: Account = await this.accountService.findById(accountId);
 
 		await this.accountService.delete(account.id);
 		return AccountUcMapper.mapToResolvedAccountDto(account);
@@ -171,20 +172,21 @@ export class AccountUc {
 	 * This method allows to update my (currentUser) account details.
 	 *
 	 * @param currentUserId the current user
-	 * @param params account details
+	 * @param updateMyAccountDto account details
 	 */
-	public async updateMyAccount(currentUserId: EntityId, params: PatchMyAccountParams) {
+	public async updateMyAccount(currentUserId: EntityId, updateMyAccountDto: UpdateMyAccountDto) {
 		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
 		if (
-			(params.firstName && user.firstName !== params.firstName) ||
-			(params.lastName && user.lastName !== params.lastName)
+			(updateMyAccountDto.firstName && user.firstName !== updateMyAccountDto.firstName) ||
+			(updateMyAccountDto.lastName && user.lastName !== updateMyAccountDto.lastName)
 		) {
 			this.authorizationService.checkAllPermissions(user, [Permission.USER_CHANGE_OWN_NAME]);
 		}
 
 		const account: Account = await this.accountService.findByUserIdOrFail(currentUserId);
+		const updateData = new UpdateMyAccount(updateMyAccountDto);
 
-		await this.accountService.updateMyAccount(user, account, params);
+		await this.accountService.updateMyAccount(user, account, updateData);
 	}
 
 	/**

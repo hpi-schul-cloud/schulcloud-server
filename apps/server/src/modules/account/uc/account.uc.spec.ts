@@ -12,17 +12,13 @@ import { EntityId } from '@shared/domain/types';
 import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AccountService } from '..';
-import {
-	AccountByIdBodyParams,
-	AccountByIdParams,
-	AccountSearchQueryParams,
-	AccountSearchType,
-} from '../controller/dto';
+import { AccountSearchType } from '../controller/dto';
 import { Account, AccountSave } from '../domain';
 import { AccountEntity } from '../entity/account.entity';
 import { AccountEntityToDoMapper } from '../repo/mapper';
 import { AccountValidationService } from '../services/account.validation.service';
 import { AccountUc } from './account.uc';
+import { AccountSearchDto, UpdateAccountDto } from './dto';
 import { ResolvedAccountDto, ResolvedSearchListAccountDto } from './dto/resolved-account.dto';
 
 describe('AccountUc', () => {
@@ -305,7 +301,7 @@ describe('AccountUc', () => {
 				const { mockSuperheroUser, mockStudentUser, mockStudentAccount } = setup();
 				const accounts = await accountUc.searchAccounts(
 					{ userId: mockSuperheroUser.id } as ICurrentUser,
-					{ type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams
+					{ type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchDto
 				);
 				const expected = new ResolvedSearchListAccountDto(
 					[
@@ -363,7 +359,7 @@ describe('AccountUc', () => {
 				const { mockSuperheroUser, mockUserWithoutAccount } = setup();
 				const accounts = await accountUc.searchAccounts(
 					{ userId: mockSuperheroUser.id } as ICurrentUser,
-					{ type: AccountSearchType.USER_ID, value: mockUserWithoutAccount.id } as AccountSearchQueryParams
+					{ type: AccountSearchType.USER_ID, value: mockUserWithoutAccount.id } as AccountSearchDto
 				);
 				const expected = new ResolvedSearchListAccountDto([], 0, 0, 0);
 				expect(accounts).toStrictEqual<ResolvedSearchListAccountDto>(expected);
@@ -406,7 +402,7 @@ describe('AccountUc', () => {
 				const { mockSuperheroUser } = setup();
 				const accounts = await accountUc.searchAccounts(
 					{ userId: mockSuperheroUser.id } as ICurrentUser,
-					{ type: AccountSearchType.USERNAME, value: '' } as AccountSearchQueryParams
+					{ type: AccountSearchType.USERNAME, value: '' } as AccountSearchDto
 				);
 				expect(accounts.skip).toEqual(0);
 				expect(accounts.limit).toEqual(10);
@@ -473,21 +469,21 @@ describe('AccountUc', () => {
 				await expect(
 					accountUc.searchAccounts(
 						{ userId: mockTeacherUser.id } as ICurrentUser,
-						{ type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchQueryParams
+						{ type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchDto
 					)
 				).rejects.toThrow(UnauthorizedException);
 
 				await expect(
 					accountUc.searchAccounts(
 						{ userId: mockStudentUser.id } as ICurrentUser,
-						{ type: AccountSearchType.USER_ID, value: mockOtherStudentUser.id } as AccountSearchQueryParams
+						{ type: AccountSearchType.USER_ID, value: mockOtherStudentUser.id } as AccountSearchDto
 					)
 				).rejects.toThrow(UnauthorizedException);
 
 				await expect(
 					accountUc.searchAccounts(
 						{ userId: mockStudentUser.id } as ICurrentUser,
-						{ type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchQueryParams
+						{ type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchDto
 					)
 				).rejects.toThrow(UnauthorizedException);
 			});
@@ -516,7 +512,7 @@ describe('AccountUc', () => {
 				await expect(
 					accountUc.searchAccounts(
 						{ userId: mockSuperheroUser.id } as ICurrentUser,
-						{ type: '' as AccountSearchType } as AccountSearchQueryParams
+						{ type: '' as AccountSearchType } as AccountSearchDto
 					)
 				).rejects.toThrow('Invalid search type.');
 			});
@@ -554,7 +550,7 @@ describe('AccountUc', () => {
 				await expect(
 					accountUc.searchAccounts(
 						{ userId: mockTeacherUser.id } as ICurrentUser,
-						{ type: AccountSearchType.USERNAME, value: mockStudentUser.id } as AccountSearchQueryParams
+						{ type: AccountSearchType.USERNAME, value: mockStudentUser.id } as AccountSearchDto
 					)
 				).rejects.toThrow(UnauthorizedException);
 			});
@@ -603,7 +599,7 @@ describe('AccountUc', () => {
 				it('should be able to access teacher of the same school via user id', async () => {
 					const { mockAdminUser, mockTeacherUser } = setup();
 					const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
-					const params = { type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchQueryParams;
+					const params = { type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 				});
 			});
@@ -646,7 +642,7 @@ describe('AccountUc', () => {
 				it('should be able to access student of the same school via user id', async () => {
 					const { mockAdminUser, mockStudentUser } = setup();
 					const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
-					const params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams;
+					const params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 				});
 			});
@@ -685,7 +681,7 @@ describe('AccountUc', () => {
 				it('should not be able to access admin of the same school via user id', async () => {
 					const { mockAdminUser } = setup();
 					const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
-					const params = { type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchQueryParams;
+					const params = { type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
 				});
 			});
@@ -745,10 +741,10 @@ describe('AccountUc', () => {
 					const { mockDifferentSchoolAdminUser, mockTeacherUser, mockStudentUser } = setup();
 					const currentUser = { userId: mockDifferentSchoolAdminUser.id } as ICurrentUser;
 
-					let params = { type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchQueryParams;
+					let params = { type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
 
-					params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams;
+					params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
 				});
 			});
@@ -790,7 +786,7 @@ describe('AccountUc', () => {
 					const params = {
 						type: AccountSearchType.USER_ID,
 						value: mockOtherTeacherUser.id,
-					} as AccountSearchQueryParams;
+					} as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 				});
 			});
@@ -824,7 +820,7 @@ describe('AccountUc', () => {
 				it('should be able to access student of the same school via user id', async () => {
 					const { mockTeacherUser, mockStudentUser } = setup();
 					const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
-					const params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams;
+					const params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 				});
 			});
@@ -871,7 +867,7 @@ describe('AccountUc', () => {
 				it('should not be able to access admin of the same school via user id', async () => {
 					const { mockTeacherUser, mockAdminUser } = setup();
 					const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
-					const params = { type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchQueryParams;
+					const params = { type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
 				});
 			});
@@ -913,10 +909,10 @@ describe('AccountUc', () => {
 					const { mockDifferentSchoolTeacherUser, mockTeacherUser, mockStudentUser } = setup();
 					const currentUser = { userId: mockDifferentSchoolTeacherUser.id } as ICurrentUser;
 
-					let params = { type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchQueryParams;
+					let params = { type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
 
-					params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams;
+					params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
 				});
 			});
@@ -955,7 +951,7 @@ describe('AccountUc', () => {
 					const params = {
 						type: AccountSearchType.USER_ID,
 						value: mockStudentSchoolPermissionUser.id,
-					} as AccountSearchQueryParams;
+					} as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 				});
 			});
@@ -989,7 +985,7 @@ describe('AccountUc', () => {
 					const { mockTeacherNoUserNoSchoolPermissionUser, mockStudentUser } = setup();
 					configService.get.mockReturnValue(true);
 					const currentUser = { userId: mockTeacherNoUserNoSchoolPermissionUser.id } as ICurrentUser;
-					const params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams;
+					const params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow(UnauthorizedException);
 				});
 			});
@@ -1024,7 +1020,7 @@ describe('AccountUc', () => {
 					const params = {
 						type: AccountSearchType.USER_ID,
 						value: mockOtherStudentSchoolPermissionUser.id,
-					} as AccountSearchQueryParams;
+					} as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow(UnauthorizedException);
 				});
 			});
@@ -1082,13 +1078,13 @@ describe('AccountUc', () => {
 					const { mockStudentUser, mockAdminUser, mockTeacherUser } = setup();
 					const currentUser = { userId: mockStudentUser.id } as ICurrentUser;
 
-					let params = { type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchQueryParams;
+					let params = { type: AccountSearchType.USER_ID, value: mockAdminUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
 
-					params = { type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchQueryParams;
+					params = { type: AccountSearchType.USER_ID, value: mockTeacherUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
 
-					params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchQueryParams;
+					params = { type: AccountSearchType.USER_ID, value: mockStudentUser.id } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).rejects.toThrow();
 				});
 			});
@@ -1207,31 +1203,31 @@ describe('AccountUc', () => {
 					let params = {
 						type: AccountSearchType.USERNAME,
 						value: mockAdminAccount.username,
-					} as AccountSearchQueryParams;
+					} as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 
-					params = { type: AccountSearchType.USERNAME, value: mockTeacherAccount.username } as AccountSearchQueryParams;
+					params = { type: AccountSearchType.USERNAME, value: mockTeacherAccount.username } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 
-					params = { type: AccountSearchType.USERNAME, value: mockStudentAccount.username } as AccountSearchQueryParams;
+					params = { type: AccountSearchType.USERNAME, value: mockStudentAccount.username } as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 
 					params = {
 						type: AccountSearchType.USERNAME,
 						value: mockDifferentSchoolAdminAccount.username,
-					} as AccountSearchQueryParams;
+					} as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 
 					params = {
 						type: AccountSearchType.USERNAME,
 						value: mockDifferentSchoolTeacherAccount.username,
-					} as AccountSearchQueryParams;
+					} as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 
 					params = {
 						type: AccountSearchType.USERNAME,
 						value: mockDifferentSchoolStudentAccount.username,
-					} as AccountSearchQueryParams;
+					} as AccountSearchDto;
 					await expect(accountUc.searchAccounts(currentUser, params)).resolves.not.toThrow();
 				});
 			});
@@ -1270,7 +1266,7 @@ describe('AccountUc', () => {
 				const { mockSuperheroUser, mockStudentUser, mockStudentAccount } = setup();
 				const account = await accountUc.findAccountById(
 					{ userId: mockSuperheroUser.id } as ICurrentUser,
-					{ id: mockStudentAccount.id } as AccountByIdParams
+					mockStudentAccount.id
 				);
 				expect(account).toStrictEqual(
 					expect.objectContaining({
@@ -1315,10 +1311,7 @@ describe('AccountUc', () => {
 			it('should throw UnauthorizedException', async () => {
 				const { mockTeacherUser, mockStudentAccount } = setup();
 				await expect(
-					accountUc.findAccountById(
-						{ userId: mockTeacherUser.id } as ICurrentUser,
-						{ id: mockStudentAccount.id } as AccountByIdParams
-					)
+					accountUc.findAccountById({ userId: mockTeacherUser.id } as ICurrentUser, mockStudentAccount.id)
 				).rejects.toThrow(UnauthorizedException);
 			});
 		});
@@ -1347,10 +1340,7 @@ describe('AccountUc', () => {
 			it('should throw EntityNotFoundError', async () => {
 				const { mockSuperheroUser } = setup();
 				await expect(
-					accountUc.findAccountById(
-						{ userId: mockSuperheroUser.id } as ICurrentUser,
-						{ id: 'xxx' } as AccountByIdParams
-					)
+					accountUc.findAccountById({ userId: mockSuperheroUser.id } as ICurrentUser, 'xxx')
 				).rejects.toThrow(EntityNotFoundError);
 			});
 		});
@@ -1379,10 +1369,7 @@ describe('AccountUc', () => {
 			it('should throw EntityNotFoundError', async () => {
 				const { mockSuperheroUser } = setup();
 				await expect(
-					accountUc.findAccountById(
-						{ userId: mockSuperheroUser.id } as ICurrentUser,
-						{ id: 'xxx' } as AccountByIdParams
-					)
+					accountUc.findAccountById({ userId: mockSuperheroUser.id } as ICurrentUser, 'xxx')
 				).rejects.toThrow(EntityNotFoundError);
 			});
 		});
@@ -1436,9 +1423,10 @@ describe('AccountUc', () => {
 			it('should throw EntityNotFoundError', async () => {
 				const { mockStudentAccount } = setup();
 				const currentUser = { userId: '000000000000000' } as ICurrentUser;
-				const params = { id: mockStudentAccount.id } as AccountByIdParams;
-				const body = {} as AccountByIdBodyParams;
-				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(EntityNotFoundError);
+				const body = {} as UpdateAccountDto;
+				await expect(accountUc.updateAccountById(currentUser, mockStudentAccount.id, body)).rejects.toThrow(
+					EntityNotFoundError
+				);
 			});
 		});
 
@@ -1479,9 +1467,10 @@ describe('AccountUc', () => {
 			it('should throw EntityNotFoundError', async () => {
 				const { mockAdminUser } = setup();
 				const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
-				const params = { id: '000000000000000' } as AccountByIdParams;
-				const body = {} as AccountByIdBodyParams;
-				await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(EntityNotFoundError);
+				const body = {} as UpdateAccountDto;
+				await expect(accountUc.updateAccountById(currentUser, '000000000000000', body)).rejects.toThrow(
+					EntityNotFoundError
+				);
 			});
 		});
 
@@ -1513,11 +1502,9 @@ describe('AccountUc', () => {
 			it('should throw EntityNotFoundError', async () => {
 				const { mockSuperheroUser, mockAccountWithoutUser } = setup();
 				await expect(
-					accountUc.updateAccountById(
-						{ userId: mockSuperheroUser.id } as ICurrentUser,
-						{ id: mockAccountWithoutUser.id } as AccountByIdParams,
-						{ username: 'user-fail@to.update' } as AccountByIdBodyParams
-					)
+					accountUc.updateAccountById({ userId: mockSuperheroUser.id } as ICurrentUser, mockAccountWithoutUser.id, {
+						username: 'user-fail@to.update',
+					} as UpdateAccountDto)
 				).rejects.toThrow(EntityNotFoundError);
 			});
 		});
@@ -1571,9 +1558,8 @@ describe('AccountUc', () => {
 				it('should not throw error when editing a teacher', async () => {
 					const { mockAdminUser, mockTeacherAccount } = setup();
 					const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
-					const params = { id: mockTeacherAccount.id } as AccountByIdParams;
-					const body = {} as AccountByIdBodyParams;
-					await expect(accountUc.updateAccountById(currentUser, params, body)).resolves.not.toThrow();
+					const body = {} as UpdateAccountDto;
+					await expect(accountUc.updateAccountById(currentUser, mockTeacherAccount.id, body)).resolves.not.toThrow();
 				});
 			});
 
@@ -1611,9 +1597,8 @@ describe('AccountUc', () => {
 				it('should not throw error when editing a student', async () => {
 					const { mockTeacherUser, mockStudentAccount } = setup();
 					const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
-					const params = { id: mockStudentAccount.id } as AccountByIdParams;
-					const body = {} as AccountByIdBodyParams;
-					await expect(accountUc.updateAccountById(currentUser, params, body)).resolves.not.toThrow();
+					const body = {} as UpdateAccountDto;
+					await expect(accountUc.updateAccountById(currentUser, mockStudentAccount.id, body)).resolves.not.toThrow();
 				});
 			});
 			describe('When using an admin user', () => {
@@ -1659,9 +1644,8 @@ describe('AccountUc', () => {
 				it('should not throw error when editing a student', async () => {
 					const { mockAdminUser, mockStudentAccount } = setup();
 					const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
-					const params = { id: mockStudentAccount.id } as AccountByIdParams;
-					const body = {} as AccountByIdBodyParams;
-					await expect(accountUc.updateAccountById(currentUser, params, body)).resolves.not.toThrow();
+					const body = {} as UpdateAccountDto;
+					await expect(accountUc.updateAccountById(currentUser, mockStudentAccount.id, body)).resolves.not.toThrow();
 				});
 			});
 
@@ -1702,9 +1686,10 @@ describe('AccountUc', () => {
 				it('should throw UnauthorizedException', async () => {
 					const { mockTeacherUser, mockOtherTeacherAccount } = setup();
 					const currentUser = { userId: mockTeacherUser.id } as ICurrentUser;
-					const params = { id: mockOtherTeacherAccount.id } as AccountByIdParams;
-					const body = {} as AccountByIdBodyParams;
-					await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(UnauthorizedException);
+					const body = {} as UpdateAccountDto;
+					await expect(accountUc.updateAccountById(currentUser, mockOtherTeacherAccount.id, body)).rejects.toThrow(
+						UnauthorizedException
+					);
 				});
 			});
 
@@ -1760,9 +1745,10 @@ describe('AccountUc', () => {
 				it('should throw UnauthorizedException', async () => {
 					const { mockDifferentSchoolAdminUser, mockTeacherAccount } = setup();
 					const currentUser = { userId: mockDifferentSchoolAdminUser.id } as ICurrentUser;
-					const params = { id: mockTeacherAccount.id } as AccountByIdParams;
-					const body = {} as AccountByIdBodyParams;
-					await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(UnauthorizedException);
+					const body = {} as UpdateAccountDto;
+					await expect(accountUc.updateAccountById(currentUser, mockTeacherAccount.id, body)).rejects.toThrow(
+						UnauthorizedException
+					);
 				});
 			});
 
@@ -1814,9 +1800,8 @@ describe('AccountUc', () => {
 				it('should not throw error when editing a admin', async () => {
 					const { mockSuperheroUser, mockAdminAccount } = setup();
 					const currentUser = { userId: mockSuperheroUser.id } as ICurrentUser;
-					const params = { id: mockAdminAccount.id } as AccountByIdParams;
-					const body = {} as AccountByIdBodyParams;
-					await expect(accountUc.updateAccountById(currentUser, params, body)).resolves.not.toThrow();
+					const body = {} as UpdateAccountDto;
+					await expect(accountUc.updateAccountById(currentUser, mockAdminAccount.id, body)).resolves.not.toThrow();
 				});
 			});
 
@@ -1847,9 +1832,10 @@ describe('AccountUc', () => {
 				it('should fail by default', async () => {
 					const { mockUnknownRoleUser, mockAccountWithoutRole } = setup();
 					const currentUser = { userId: mockUnknownRoleUser.id } as ICurrentUser;
-					const params = { id: mockAccountWithoutRole.id } as AccountByIdParams;
-					const body = {} as AccountByIdBodyParams;
-					await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(UnauthorizedException);
+					const body = {} as UpdateAccountDto;
+					await expect(accountUc.updateAccountById(currentUser, mockAccountWithoutRole.id, body)).rejects.toThrow(
+						UnauthorizedException
+					);
 				});
 			});
 
@@ -1894,9 +1880,10 @@ describe('AccountUc', () => {
 				it('should throw UnauthorizedException', async () => {
 					const { mockAdminUser, mockUnknownRoleUserAccount } = setup();
 					const currentUser = { userId: mockAdminUser.id } as ICurrentUser;
-					const params = { id: mockUnknownRoleUserAccount.id } as AccountByIdParams;
-					const body = {} as AccountByIdBodyParams;
-					await expect(accountUc.updateAccountById(currentUser, params, body)).rejects.toThrow(UnauthorizedException);
+					const body = {} as UpdateAccountDto;
+					await expect(accountUc.updateAccountById(currentUser, mockUnknownRoleUserAccount.id, body)).rejects.toThrow(
+						UnauthorizedException
+					);
 				});
 			});
 		});
@@ -1934,10 +1921,7 @@ describe('AccountUc', () => {
 			it('should delete an account', async () => {
 				const { mockSuperheroUser, mockStudentAccount } = setup();
 				await expect(
-					accountUc.deleteAccountById(
-						{ userId: mockSuperheroUser.id } as ICurrentUser,
-						{ id: mockStudentAccount.id } as AccountByIdParams
-					)
+					accountUc.deleteAccountById({ userId: mockSuperheroUser.id } as ICurrentUser, mockStudentAccount.id)
 				).resolves.not.toThrow();
 			});
 		});
@@ -1990,10 +1974,7 @@ describe('AccountUc', () => {
 			it('should throw UnauthorizedException', async () => {
 				const { mockAdminUser, mockStudentAccount } = setup();
 				await expect(
-					accountUc.deleteAccountById(
-						{ userId: mockAdminUser.id } as ICurrentUser,
-						{ id: mockStudentAccount.id } as AccountByIdParams
-					)
+					accountUc.deleteAccountById({ userId: mockAdminUser.id } as ICurrentUser, mockStudentAccount.id)
 				).rejects.toThrow(UnauthorizedException);
 			});
 		});
@@ -2031,10 +2012,7 @@ describe('AccountUc', () => {
 			it('should throw, if no account matches the search term', async () => {
 				const { mockSuperheroUser } = setup();
 				await expect(
-					accountUc.deleteAccountById(
-						{ userId: mockSuperheroUser.id } as ICurrentUser,
-						{ id: 'xxx' } as AccountByIdParams
-					)
+					accountUc.deleteAccountById({ userId: mockSuperheroUser.id } as ICurrentUser, 'xxx')
 				).rejects.toThrow(EntityNotFoundError);
 			});
 		});

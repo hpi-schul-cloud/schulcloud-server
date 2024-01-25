@@ -8,8 +8,7 @@ import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactor
 import 'reflect-metadata';
 import { LegacyLogger } from '../../../core/logger';
 import { AccountConfig } from '../account-config';
-import { AccountByIdBodyParams } from '../controller/dto';
-import { Account, AccountSave } from '../domain';
+import { Account, AccountSave, UpdateAccount } from '../domain';
 import { AccountEntity } from '../entity/account.entity';
 import { AccountEntityToDoMapper } from '../repo/mapper';
 import { AccountServiceDb } from './account-db.service';
@@ -1215,7 +1214,7 @@ describe('AccountService', () => {
 			it('should update target account password', async () => {
 				const { mockStudentAccount, mockStudentAccountDo, mockStudentUser } = setup();
 				const previousPasswordHash = mockStudentAccount.password;
-				const body = { password: defaultPassword } as AccountByIdBodyParams;
+				const body = { password: defaultPassword } as UpdateAccount;
 
 				expect(mockStudentUser.forcePasswordChange).toBeFalsy();
 				await accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body);
@@ -1249,7 +1248,7 @@ describe('AccountService', () => {
 			it('should update target account username', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
 				const newUsername = 'newUsername';
-				const body = { username: newUsername } as AccountByIdBodyParams;
+				const body = { username: newUsername } as UpdateAccount;
 
 				expect(mockStudentAccountDo.username).not.toBe(newUsername);
 				await accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body);
@@ -1280,7 +1279,7 @@ describe('AccountService', () => {
 			};
 			it('should update target account activation state', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
-				const body = { activated: false } as AccountByIdBodyParams;
+				const body = { activated: false } as UpdateAccount;
 
 				await accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body);
 				expect(mockStudentAccountDo.activated).toBeFalsy();
@@ -1308,7 +1307,7 @@ describe('AccountService', () => {
 			};
 			it('should throw EntityNotFoundError', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
-				const body = { username: 'fail@to.update' } as AccountByIdBodyParams;
+				const body = { username: 'fail@to.update' } as UpdateAccount;
 
 				await expect(accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body)).rejects.toThrow(
 					EntityNotFoundError
@@ -1336,7 +1335,7 @@ describe('AccountService', () => {
 			};
 			it('should throw EntityNotFoundError', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
-				const body = { username: 'user-fail@to.update' } as AccountByIdBodyParams;
+				const body = { username: 'user-fail@to.update' } as UpdateAccount;
 
 				await expect(accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body)).rejects.toThrow(
 					EntityNotFoundError
@@ -1372,7 +1371,7 @@ describe('AccountService', () => {
 			};
 			it('should throw ValidationError', async () => {
 				const { mockStudentUser, mockStudentAccountDo, mockOtherTeacherAccount } = setup();
-				const body = { username: mockOtherTeacherAccount.username } as AccountByIdBodyParams;
+				const body = { username: mockOtherTeacherAccount.username } as UpdateAccount;
 
 				await expect(accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body)).rejects.toThrow(
 					ValidationError

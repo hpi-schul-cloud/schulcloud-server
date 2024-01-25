@@ -8,13 +8,12 @@ import { UserRepo } from '@shared/repo/user/user.repo';
 import { LegacyLogger } from '@src/core/logger';
 import { isEmail, validateOrReject } from 'class-validator';
 import { AccountConfig } from '../account-config';
-import { Account, AccountSave } from '../domain';
+import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '../domain';
 import { AccountEntity } from '../entity/account.entity';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
-import { AccountByIdBodyParams, PatchMyAccountParams } from '../controller/dto';
 
 /* TODO: extract a service that contains all things required by feathers,
 which is responsible for the additionally required validation 
@@ -47,26 +46,26 @@ export class AccountService extends AbstractAccountService {
 		}
 	}
 
-	public async updateMyAccount(user: User, account: Account, params: PatchMyAccountParams) {
+	public async updateMyAccount(user: User, account: Account, updateData: UpdateMyAccount) {
 		if (account.systemId) {
 			throw new ForbiddenOperationError('External account details can not be changed.');
 		}
 
-		if (!params.passwordOld || !(await this.validatePassword(account, params.passwordOld))) {
+		if (!updateData.passwordOld || !(await this.validatePassword(account, updateData.passwordOld))) {
 			throw new AuthorizationError('Dein Passwort ist nicht korrekt!');
 		}
 
 		let updateUser = false;
 		let updateAccount = false;
-		if (params.passwordNew) {
-			account.password = params.passwordNew;
+		if (updateData.passwordNew) {
+			account.password = updateData.passwordNew;
 			updateAccount = true;
 		} else {
 			account.password = undefined;
 		}
 
-		if (params.email && user.email !== params.email) {
-			const newMail = params.email.toLowerCase();
+		if (updateData.email && user.email !== updateData.email) {
+			const newMail = updateData.email.toLowerCase();
 			await this.checkUniqueEmail(account, user, newMail);
 			user.email = newMail;
 			account.username = newMail;
@@ -74,13 +73,13 @@ export class AccountService extends AbstractAccountService {
 			updateAccount = true;
 		}
 
-		if (params.firstName && user.firstName !== params.firstName) {
-			user.firstName = params.firstName;
+		if (updateData.firstName && user.firstName !== updateData.firstName) {
+			user.firstName = updateData.firstName;
 			updateUser = true;
 		}
 
-		if (params.lastName && user.lastName !== params.lastName) {
-			user.lastName = params.lastName;
+		if (updateData.lastName && user.lastName !== updateData.lastName) {
+			user.lastName = updateData.lastName;
 			updateUser = true;
 		}
 
@@ -100,26 +99,26 @@ export class AccountService extends AbstractAccountService {
 		}
 	}
 
-	public async updateAccount(targetUser: User, targetAccount: Account, body: AccountByIdBodyParams): Promise<Account> {
+	public async updateAccount(targetUser: User, targetAccount: Account, updateData: UpdateAccount): Promise<Account> {
 		let updateUser = false;
 		let updateAccount = false;
 
-		if (body.password !== undefined) {
-			targetAccount.password = body.password;
+		if (updateData.password !== undefined) {
+			targetAccount.password = updateData.password;
 			targetUser.forcePasswordChange = true;
 			updateUser = true;
 			updateAccount = true;
 		}
-		if (body.username !== undefined) {
-			const newMail = body.username.toLowerCase();
+		if (updateData.username !== undefined) {
+			const newMail = updateData.username.toLowerCase();
 			await this.checkUniqueEmail(targetAccount, targetUser, newMail);
 			targetUser.email = newMail;
 			targetAccount.username = newMail;
 			updateUser = true;
 			updateAccount = true;
 		}
-		if (body.activated !== undefined) {
-			targetAccount.activated = body.activated;
+		if (updateData.activated !== undefined) {
+			targetAccount.activated = updateData.activated;
 			updateAccount = true;
 		}
 
