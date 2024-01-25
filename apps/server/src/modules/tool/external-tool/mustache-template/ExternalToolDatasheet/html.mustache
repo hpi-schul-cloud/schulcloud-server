@@ -19,7 +19,7 @@
     <p class="right-aligned">{{instance}}</p>
 
     <h1 class="center-aligned">Datenblatt</h1>
-    <h1 class="center-aligned">{{toolName}}</h1>
+    <h2 class="center-aligned">{{toolName}}</h2>
     <h4 class="center-aligned"><a href="{{toolUrl}}" target="_blank">{{toolUrl}}</a></h4>
 
     <br>
@@ -31,16 +31,16 @@
         <p>Tool ist beschränkt auf folgende Kontexte: {{restrictToContexts}}</p>
     {{/restrictToContexts.length}}
 
-    <p>Tool-Typ: {{toolType}}</p>
+    <p>Typ: {{toolType}}</p>
     {{#skipConsent}}
         <p>Erteilen der Zustimmung überspringen: {{skipConsent}}</p>
     {{/skipConsent}}
 
     {{#messageType}}
-        <p>MessageType: {{messageType}}</p>
+        <p>Message Type: {{messageType}}</p>
     {{/messageType}}
     {{#privacy}}
-        <p>Privacy: {{privacy}}</p>
+        <p>Privatsphäre: {{privacy}}</p>
     {{/privacy}}
 
     <br>
@@ -54,6 +54,7 @@
                 <th>Typ</th>
                 <th>Eigenschaft</th>
                 <th>Geltungsbereich</th>
+                <th>Ort</th>
             </tr>
             </thead>
             <tbody>
@@ -63,6 +64,7 @@
                     <td>{{type}}</td>
                     <td>{{properties}}</td>
                     <td>{{scope}}</td>
+                    <td>{{location}}</td>
                 </tr>
             {{/parameters}}
             </tbody>
