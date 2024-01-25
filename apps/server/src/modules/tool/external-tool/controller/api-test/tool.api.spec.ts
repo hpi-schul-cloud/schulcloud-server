@@ -770,7 +770,7 @@ describe('ToolController (API)', () => {
 				expect(response.header).toEqual(
 					expect.objectContaining({
 						'content-type': 'application/pdf',
-						'content-disposition': `attachment; filename=CTL-Datenblatt-external-tool-1-${dateString}`,
+						'content-disposition': `attachment; filename=CTL-Datenblatt-${externalToolEntity.name}-${dateString}`,
 					})
 				);
 				// TODO N21-1626 make this work

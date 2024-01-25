@@ -5,8 +5,6 @@ import { Module } from '@nestjs/common';
 import { PDFModule } from '@pyxlab/nestjs-pdf';
 import { ExternalToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { resolve } from 'eslint-import-resolver-typescript';
-import path from 'path';
 import { CommonToolModule } from '../common';
 import { ToolContextMapper } from '../common/mapper/tool-context.mapper';
 import { ToolConfigModule } from '../tool-config.module';

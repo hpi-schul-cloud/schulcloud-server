@@ -596,7 +596,13 @@ describe('ExternalToolUc', () => {
 
 				const toolId: string = new ObjectId().toHexString();
 
+				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
+					.withParameters(1)
+					.build();
+
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				externalToolService.getExternalToolDatasheetTemplateData.mockResolvedValue(datasheetData);
+				pdfService.toBuffer.mockReturnValueOnce(of(Buffer.from('mockData')));
 
 				return {
 					user,

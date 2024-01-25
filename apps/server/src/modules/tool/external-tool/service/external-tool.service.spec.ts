@@ -23,7 +23,6 @@ import { ExternalTool, ExternalToolDatasheetTemplateData, Lti11ToolConfig, Oauth
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalToolVersionIncrementService } from './external-tool-version-increment.service';
 import { ExternalToolService } from './external-tool.service';
-import { ExternalToolDatasheetMapper } from '../mapper/external-tool-datasheet.mapper';
 
 describe('ExternalToolService', () => {
 	let module: TestingModule;
