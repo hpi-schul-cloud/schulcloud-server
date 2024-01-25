@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { schoolFactory, setupEntities, taskFactory } from '@shared/testing';
+import { schoolEntityFactory, setupEntities, taskFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { FileParamBuilder, FilesStorageClientMapper } from '../mapper';
 import { CopyFilesOfParentParamBuilder } from '../mapper/copy-files-of-parent-param.builder';
@@ -45,7 +45,7 @@ describe('FilesStorageClientAdapterService', () => {
 	describe('copyFilesOfParent', () => {
 		it('Should call all steps.', async () => {
 			const userId = new ObjectId().toHexString();
-			const school = schoolFactory.buildWithId();
+			const school = schoolEntityFactory.buildWithId();
 			const sourceEntity = taskFactory.buildWithId({ school });
 			const targetEntity = taskFactory.buildWithId({ school });
 
@@ -69,7 +69,7 @@ describe('FilesStorageClientAdapterService', () => {
 
 		it('Should call error mapper if throw an error.', async () => {
 			const userId = new ObjectId().toHexString();
-			const school = schoolFactory.buildWithId();
+			const school = schoolEntityFactory.buildWithId();
 			const sourceEntity = taskFactory.buildWithId({ school });
 			const targetEntity = taskFactory.buildWithId({ school });
 

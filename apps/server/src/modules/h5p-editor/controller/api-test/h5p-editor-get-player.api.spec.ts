@@ -5,7 +5,13 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
+import {
+	cleanupCollections,
+	mapUserToCurrentUser,
+	roleFactory,
+	schoolEntityFactory,
+	userFactory,
+} from '@shared/testing';
 import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { Request } from 'express';
@@ -83,7 +89,7 @@ describe('H5PEditor Controller (api)', () => {
 	describe('get h5p player', () => {
 		beforeEach(async () => {
 			await cleanupCollections(em);
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const roles = roleFactory.buildList(1, {
 				permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
 			});

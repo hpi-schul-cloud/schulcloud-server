@@ -2,11 +2,11 @@ import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity, SystemEntity } from '@shared/domain/entity';
 
 import { UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { SchoolEntity, SystemEntity } from '@shared/domain/entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
-import { cleanupCollections, schoolFactory, systemEntityFactory } from '@shared/testing';
+import { cleanupCollections, schoolEntityFactory, systemEntityFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { userLoginMigrationFactory } from '../../testing/factory/user-login-migration.factory';
 import { UserLoginMigrationRepo } from './user-login-migration.repo';
@@ -43,7 +43,7 @@ describe('UserLoginMigrationRepo', () => {
 	describe('save', () => {
 		describe('when saving a UserLoginMigrationDO', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				const sourceSystem: SystemEntity = systemEntityFactory.buildWithId();
 				const targetSystem: SystemEntity = systemEntityFactory.buildWithId();
 
@@ -144,7 +144,7 @@ describe('UserLoginMigrationRepo', () => {
 
 		describe('when searching for a UserLoginMigration by an unknown school id', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId({ userLoginMigration: undefined });
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({ userLoginMigration: undefined });
 
 				await em.persistAndFlush(school);
 				em.clear();

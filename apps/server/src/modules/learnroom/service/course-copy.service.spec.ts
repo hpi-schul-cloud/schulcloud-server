@@ -4,6 +4,7 @@ import { LessonCopyService } from '@modules/lesson/service';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { ToolFeatures } from '@modules/tool/tool-config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course } from '@shared/domain/entity';
 import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
@@ -12,12 +13,11 @@ import {
 	contextExternalToolFactory,
 	courseFactory,
 	courseGroupFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
 import { IToolFeatures } from '@src/modules/tool/tool-config';
-import { ToolFeatures } from '@modules/tool/tool-config';
 import { BoardCopyService } from './board-copy.service';
 import { CourseCopyService } from './course-copy.service';
 import { RoomsService } from './rooms.service';
@@ -292,7 +292,7 @@ describe('course copy service', () => {
 		it('should set school of user', async () => {
 			const { course } = setup();
 
-			const destinationSchool = schoolFactory.buildWithId();
+			const destinationSchool = schoolEntityFactory.buildWithId();
 			const targetUser = userFactory.build({ school: destinationSchool });
 			userRepo.findById.mockResolvedValue(targetUser);
 
@@ -433,7 +433,7 @@ describe('course copy service', () => {
 		describe('copy course entity', () => {
 			it('should assign user as teacher', async () => {
 				const { course } = setup();
-				const destinationSchool = schoolFactory.buildWithId();
+				const destinationSchool = schoolEntityFactory.buildWithId();
 				const targetUser = userFactory.build({ school: destinationSchool });
 				userRepo.findById.mockResolvedValue(targetUser);
 				const status = await service.copyCourse({ userId: targetUser.id, courseId: course.id });
@@ -444,7 +444,7 @@ describe('course copy service', () => {
 
 			it('should set school of user', async () => {
 				const { course } = setup();
-				const destinationSchool = schoolFactory.buildWithId();
+				const destinationSchool = schoolEntityFactory.buildWithId();
 				const targetUser = userFactory.build({ school: destinationSchool });
 				userRepo.findById.mockResolvedValue(targetUser);
 				const status = await service.copyCourse({ userId: targetUser.id, courseId: course.id });

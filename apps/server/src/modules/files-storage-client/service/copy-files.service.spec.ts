@@ -6,7 +6,7 @@ import {
 	courseFactory,
 	legacyFileEntityMockFactory,
 	lessonFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	setupEntities,
 } from '@shared/testing';
 import { CopyFilesService } from './copy-files.service';
@@ -57,7 +57,7 @@ describe('copy files service', () => {
 
 	describe('copy files of entity', () => {
 		const setup = () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const file1 = legacyFileEntityMockFactory.build();
 			const file2 = legacyFileEntityMockFactory.build();
 			const imageHTML1 = getImageHTML(file1.id, file1.name);
