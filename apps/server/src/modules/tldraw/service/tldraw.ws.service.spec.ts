@@ -965,10 +965,10 @@ describe('TldrawWSService', () => {
 
 	describe('getYDoc', () => {
 		describe('when getting yDoc by name', () => {
-			it('should assign to service docs map and return instance', () => {
+			it('should assign to service docs map and return instance', async () => {
 				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce({});
 				const docName = 'get-test';
-				const doc = service.getYDoc(docName);
+				const doc = await service.getYDoc(docName);
 
 				expect(doc).toBeInstanceOf(WsSharedDocDo);
 				expect(service.docs.get(docName)).not.toBeUndefined();
