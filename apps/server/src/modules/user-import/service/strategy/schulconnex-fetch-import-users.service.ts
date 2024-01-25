@@ -34,12 +34,15 @@ export class SchulconnexFetchImportUsersService {
 		return mappedImportUsers;
 	}
 
-	public filterAlreadyMigratedUser(importUsers: ImportUser[], systemId: EntityId): ImportUser[] {
-		const filteredUsers: ImportUser[] = importUsers.filter(async (importUser: ImportUser): Promise<boolean> => {
-			const foundUser: UserDO | null = await this.userService.findByExternalId(importUser.externalId, systemId);
-
-			return !foundUser;
-		});
+	public async filterAlreadyMigratedUser(importUsers: ImportUser[], systemId: EntityId): Promise<ImportUser[]> {
+		const filteredUsers: ImportUser[] = (
+			await Promise.all(
+				importUsers.map(async (importUser: ImportUser): Promise<ImportUser | null> => {
+					const foundUser: UserDO | null = await this.userService.findByExternalId(importUser.externalId, systemId);
+					return foundUser ? null : importUser;
+				})
+			)
+		).filter((user: ImportUser | null): user is ImportUser => user !== null);
 
 		return filteredUsers;
 	}

@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth';
 import { HttpService } from '@nestjs/axios';
-import { TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { of } from 'rxjs';
@@ -12,7 +11,6 @@ import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options'
 import { schulconnexResponseFactory } from './testing';
 
 describe(SchulconnexRestClient.name, () => {
-	let module: TestingModule;
 	let client: SchulconnexRestClient;
 
 	let httpService: DeepMocked<HttpService>;
@@ -31,10 +29,6 @@ describe(SchulconnexRestClient.name, () => {
 		logger = createMock<Logger>();
 
 		client = new SchulconnexRestClient(options, httpService, oauthAdapterService, logger);
-	});
-
-	afterAll(async () => {
-		await module.close();
 	});
 
 	afterEach(() => {

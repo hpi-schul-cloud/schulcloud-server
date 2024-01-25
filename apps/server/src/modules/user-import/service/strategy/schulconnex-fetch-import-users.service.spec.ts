@@ -52,84 +52,57 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 		jest.resetAllMocks();
 	});
 
+	const createImportUser = (externalUserData: SanisResponse, school: SchoolEntity, system: SystemEntity): ImportUser =>
+		importUserFactory.build({
+			system,
+			school,
+			ldapDn: `uid=${externalUserData.person.name.vorname}.${externalUserData.person.name.familienname},`,
+			externalId: externalUserData.pid,
+			firstName: externalUserData.person.name.vorname,
+			lastName: externalUserData.person.name.familienname,
+			email: '',
+			roleNames: [RoleName.ADMINISTRATOR],
+			classNames: undefined,
+		});
+
 	describe('getData', () => {
 		describe('when fetching the data', () => {
-			const createImportUser = (
-				externalUserData: SanisResponse,
-				school: SchoolEntity,
-				system: SystemEntity
-			): ImportUser =>
-				importUserFactory.build({
-					system,
-					school,
-					ldapDn: `uid=${externalUserData.person.name.vorname}.${externalUserData.person.name.familienname},`,
-					externalId: externalUserData.pid,
-					firstName: externalUserData.person.name.vorname,
-					lastName: externalUserData.person.name.familienname,
-					email: '',
-					roleNames: [RoleName.ADMINISTRATOR],
-					classNames: undefined,
+			const setup = () => {
+				const externalUserData: SanisResponse = schulconnexResponseFactory.build();
+				const system: SystemEntity = systemEntityFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+					systems: [system],
+					externalId: 'externalSchoolId',
 				});
+				const importUser: ImportUser = createImportUser(externalUserData, school, system);
 
-			describe('when the user was not migrated yet', () => {
-				const setup = () => {
-					const externalUserData: SanisResponse = schulconnexResponseFactory.build();
-					const system: SystemEntity = systemEntityFactory.buildWithId();
-					const school: SchoolEntity = schoolEntityFactory.buildWithId({
-						systems: [system],
-						externalId: 'externalSchoolId',
-					});
-					const importUser: ImportUser = createImportUser(externalUserData, school, system);
+				schulconnexRestClient.getPersonenInfo.mockResolvedValueOnce([externalUserData]);
 
-					schulconnexRestClient.getPersonenInfo.mockResolvedValueOnce([externalUserData]);
-
-					return {
-						school,
-						system,
-						importUser,
-					};
+				return {
+					school,
+					system,
+					importUser,
 				};
+			};
 
-				it('should return the import users', async () => {
-					const { school, system, importUser } = setup();
+			it('should call the schulconnex rest client', async () => {
+				const { school, system } = setup();
 
-					const result: ImportUser[] = await service.getData(school, system);
+				await service.getData(school, system);
 
-					// TODO test this somehow
-					expect(result).toEqual(importUser);
+				expect(schulconnexRestClient.getPersonenInfo).toHaveBeenCalledWith({
+					vollstaendig: ['personen', 'personenkontexte', 'organisationen'],
+					'organisation.id': school.externalId,
 				});
 			});
 
-			describe('when the user already was migrated', () => {
-				const setup = () => {
-					const externalUserData: SanisResponse = schulconnexResponseFactory.build();
-					const system: SystemEntity = systemEntityFactory.buildWithId();
-					const school: SchoolEntity = schoolEntityFactory.buildWithId({
-						systems: [system],
-						externalId: 'externalSchoolId',
-					});
-					const importUser: ImportUser = createImportUser(externalUserData, school, system);
-					const user: UserDO = userDoFactory.build({
-						externalId: externalUserData.pid,
-					});
+			it('should return import users', async () => {
+				const { school, system } = setup();
 
-					schulconnexRestClient.getPersonenInfo.mockResolvedValueOnce([externalUserData]);
-					userService.findByExternalId.mockResolvedValueOnce(user);
+				const result: ImportUser[] = await service.getData(school, system);
 
-					return {
-						school,
-						system,
-						importUser,
-					};
-				};
-
-				it('should return an empty array', async () => {
-					const { school, system } = setup();
-
-					const result: ImportUser[] = await service.getData(school, system);
-
-					expect(result).toEqual([]);
-				});
+				// TODO: test this somehow
+				expect(result).toHaveLength(1);
 			});
 		});
 
@@ -153,6 +126,64 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 				await expect(service.getData(school, system)).rejects.toThrow(
 					UserImportSchoolExternalIdMissingLoggableException
 				);
+			});
+		});
+	});
+
+	describe('filterAlreadyMigratedUser', () => {
+		describe('when the user was not migrated yet', () => {
+			const setup = () => {
+				const externalUserData: SanisResponse = schulconnexResponseFactory.build();
+				const system: SystemEntity = systemEntityFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+					systems: [system],
+					externalId: 'externalSchoolId',
+				});
+				const importUser: ImportUser = createImportUser(externalUserData, school, system);
+				const migratedUser: UserDO = userDoFactory.build({ externalId: externalUserData.pid });
+				userService.findByExternalId.mockResolvedValueOnce(null);
+
+				return {
+					systemId: system.id,
+					importUsers: [importUser],
+					migratedUser,
+				};
+			};
+
+			it('should return the import users', async () => {
+				const { systemId, importUsers } = setup();
+
+				const result: ImportUser[] = await service.filterAlreadyMigratedUser(importUsers, systemId);
+
+				// TODO test this somehow
+				expect(result).toHaveLength(1);
+			});
+		});
+
+		describe('when the user already was migrated', () => {
+			const setup = () => {
+				const externalUserData: SanisResponse = schulconnexResponseFactory.build();
+				const system: SystemEntity = systemEntityFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+					systems: [system],
+					externalId: 'externalSchoolId',
+				});
+				const importUser: ImportUser = createImportUser(externalUserData, school, system);
+				const migratedUser: UserDO = userDoFactory.build({ externalId: externalUserData.pid });
+				userService.findByExternalId.mockResolvedValueOnce(migratedUser);
+
+				return {
+					systemId: system.id,
+					importUsers: [importUser],
+				};
+			};
+
+			it('should return an empty array', async () => {
+				const { systemId, importUsers } = setup();
+
+				const result: ImportUser[] = await service.filterAlreadyMigratedUser(importUsers, systemId);
+
+				expect(result).toHaveLength(0);
 			});
 		});
 	});
