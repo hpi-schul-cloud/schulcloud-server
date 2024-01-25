@@ -81,7 +81,7 @@ describe('KeyFactory', () => {
 		});
 	});
 
-	describe('createForStateVector', () => {
+	describe('createForInsert', () => {
 		describe('when docName passed', () => {
 			const setup = () => {
 				const params = { docName: new ObjectId().toHexString() };
@@ -92,7 +92,7 @@ describe('KeyFactory', () => {
 			it('should return a object that support the interface UniqueKey', () => {
 				const { params } = setup();
 
-				const result = KeyFactory.createForStateVector(params.docName);
+				const result = KeyFactory.createForInsert(params.docName);
 
 				expect(result).toEqual({
 					docName: params.docName,

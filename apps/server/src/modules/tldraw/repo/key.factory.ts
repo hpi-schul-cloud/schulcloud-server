@@ -23,20 +23,27 @@ export class KeyFactory {
 
 	static createForUpdate(docName: string, clock?: number): UniqueKey {
 		KeyFactory.checkValidClock(clock);
+		let uniqueKey: UniqueKey;
 
-		const uniqueKey = {
-			docName,
-			version: Version.V1,
-			action: DatabaseAction.UPDATE,
-			// TODO: Do it work when key is exists, but value is undefined? Same for action in createForStateVector
-			clock,
-		};
+		if (clock !== undefined) {
+			uniqueKey = {
+				docName,
+				version: Version.V1,
+				action: DatabaseAction.UPDATE,
+				clock,
+			};
+		} else {
+			uniqueKey = {
+				docName,
+				version: Version.V1,
+				action: DatabaseAction.UPDATE,
+			};
+		}
 
 		return uniqueKey;
 	}
 
-	// TODO: Copy paste from source code, but i think naming must be changed.
-	static createForStateVector(docName: string): UniqueKey {
+	static createForInsert(docName: string): UniqueKey {
 		const uniqueKey = {
 			docName,
 			version: Version.V1_SV,
