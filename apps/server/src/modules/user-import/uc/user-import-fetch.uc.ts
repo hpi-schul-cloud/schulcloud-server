@@ -19,10 +19,11 @@ export class UserImportFetchUc {
 	public async populateImportUsers(currentUserId: EntityId): Promise<void> {
 		this.checkMigrationEnabled(currentUserId);
 
-		const currentUser: User = await this.getUserAndCheckPermissions(currentUserId);
+		const user: User = await this.authorizationService.getUserWithPermissions(currentUserId);
+		this.authorizationService.checkAllPermissions(user, [Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
 
 		const system: SystemEntity = await this.userImportService.getMigrationSystem();
-		const fetchedData: ImportUser[] = await this.schulconnexFetchImportUsersService.getData(currentUser.school, system);
+		const fetchedData: ImportUser[] = await this.schulconnexFetchImportUsersService.getData(user.school, system);
 
 		const filteredFetchedData: ImportUser[] = this.schulconnexFetchImportUsersService.filterAlreadyMigratedUser(
 			fetchedData,
@@ -38,12 +39,5 @@ export class UserImportFetchUc {
 		if (!this.userImportFeatures.userMigrationEnabled || !this.userImportFeatures.userMigrationSystemId) {
 			throw new UserMigrationIsNotEnabledLoggableException(userId);
 		}
-	}
-
-	private async getUserAndCheckPermissions(userId: EntityId): Promise<User> {
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkAllPermissions(user, [Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
-
-		return user;
 	}
 }

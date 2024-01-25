@@ -3,7 +3,7 @@ import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { ImportUser, MatchCreator, SystemEntity, User } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo } from '@shared/repo';
-import { UserService } from '../../user';
+import { UserService } from '@modules/user';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import { UserMigrationIsNotEnabledLoggableException } from '../loggable';
 
