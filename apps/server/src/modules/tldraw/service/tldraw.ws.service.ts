@@ -5,7 +5,7 @@ import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } fr
 import { decoding, encoding, map } from 'lib0';
 import { readSyncMessage, writeSyncStep1, writeUpdate } from 'y-protocols/sync';
 import { firstValueFrom } from 'rxjs';
-import { HttpService } from '@nestjs/axios';
+import { encodeStateAsUpdate } from 'yjs';
 import { Buffer } from 'node:buffer';
 import { Redis } from 'ioredis';
 import { Logger } from '@src/core/logger';
@@ -40,7 +40,6 @@ export class TldrawWsService {
 		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly tldrawBoardRepo: TldrawBoardRepo,
 		private readonly logger: Logger,
-		private readonly httpService: HttpService,
 		private readonly metricsService: MetricsService,
 		private readonly tldrawRedisFactory: TldrawRedisFactory
 	) {
@@ -212,6 +211,9 @@ export class TldrawWsService {
 		ws.on('message', (message: ArrayBufferLike) => {
 			this.messageHandler(ws, doc, new Uint8Array(message));
 		});
+
+        // send initial doc state to client as update
+        this.sendInitialState(ws, doc);
 
 		// check if connection is still alive
 		let pongReceived = true;
@@ -410,4 +412,11 @@ export class TldrawWsService {
 				this.logger.warning(new RedisPublishErrorLoggable('awareness', err));
 			});
 	}
+
+    private sendInitialState(ws: WebSocket, doc: WsSharedDocDo): void {
+        const encoder = encoding.createEncoder();
+        encoding.writeVarUint(encoder, WSMessageType.SYNC);
+        writeUpdate(encoder, encodeStateAsUpdate(doc));
+        this.send(doc, ws, encoding.toUint8Array(encoder));
+    }
 }

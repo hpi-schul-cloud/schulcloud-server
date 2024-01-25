@@ -485,7 +485,7 @@ describe('TldrawWSService', () => {
 
 				await delay(20);
 
-				expect(sendSpy).toHaveBeenCalledTimes(2);
+				expect(sendSpy).toHaveBeenCalledTimes(3);
 				ws.close();
 				messageHandlerSpy.mockRestore();
 				sendSpy.mockRestore();
@@ -1211,56 +1211,6 @@ describe('TldrawWSService', () => {
 				ws.close();
 				sendSpy.mockRestore();
 			});
-		});
-	});
-
-	describe('authorizeConnection', () => {
-		it('should call properly method', async () => {
-			const params = { drawingName: 'drawingName', token: 'token' };
-			const response: AxiosResponse<null> = axiosResponseFactory.build({
-				status: 200,
-			});
-
-			httpService.get.mockReturnValueOnce(of(response));
-
-			await expect(service.authorizeConnection(params.drawingName, params.token)).resolves.not.toThrow();
-			httpService.get.mockRestore();
-		});
-
-		it('should properly setup REST GET call params', async () => {
-			const params = { drawingName: 'drawingName', token: 'token' };
-			const response: AxiosResponse<null> = axiosResponseFactory.build({
-				status: 200,
-			});
-			const expectedUrl = 'http://localhost:3030/api/v3/elements/drawingName/permission';
-			const expectedHeaders = {
-				headers: {
-					Accept: 'Application/json',
-					Authorization: `Bearer ${params.token}`,
-				},
-			};
-			httpService.get.mockReturnValueOnce(of(response));
-
-			await service.authorizeConnection(params.drawingName, params.token);
-
-			expect(httpService.get).toHaveBeenCalledWith(expectedUrl, expectedHeaders);
-			httpService.get.mockRestore();
-		});
-
-		it('should throw error for http response', async () => {
-			const params = { drawingName: 'drawingName', token: 'token' };
-			const error = new Error('unknown error');
-			httpService.get.mockReturnValueOnce(throwError(() => error));
-
-			await expect(service.authorizeConnection(params.drawingName, params.token)).rejects.toThrow();
-			httpService.get.mockRestore();
-		});
-
-		it('should throw error for lack of token', async () => {
-			const params = { drawingName: 'drawingName', token: 'token' };
-
-			await expect(service.authorizeConnection(params.drawingName, '')).rejects.toThrow();
-			httpService.get.mockRestore();
 		});
 	});
 });
