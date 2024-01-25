@@ -161,7 +161,7 @@
                                 <a href="#mapExternalGroup" >mapExternalGroup</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Static</span>
                                 <a href="#mapSanisRoleToRoleName" >mapSanisRoleToRoleName</a>
                             </li>
                             <li>
@@ -331,7 +331,7 @@
                 <td class="col-md-4">
                     <a name="mapSanisRoleToRoleName"></a>
                     <span class="name">
-                            <span class="modifier">Private</span>
+                            <span class="modifier">Static</span>
                         <span ><b>mapSanisRoleToRoleName</b></span>
                         <a href="#mapSanisRoleToRoleName"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -703,20 +703,20 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { GroupTypes } from &#x27;@modules/group&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import {
+	SanisGruppenResponse,
+	SanisResponse,
+	SanisSonstigeGruppenzugehoerigeResponse,
+} from &#x27;@infra/schulconnex-client&#x27;;
+import { SanisGroupRole } from &#x27;@infra/schulconnex-client/response/sanis-group-role&#x27;;
+import { SanisGroupType } from &#x27;@infra/schulconnex-client/response/sanis-group-type&#x27;;
+import { SanisRole } from &#x27;@infra/schulconnex-client/response/sanis-role&#x27;;
+import { GroupTypes } from &#x27;@modules/group&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { RoleName } from &#x27;@shared/domain/interface&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from &#x27;../../dto&#x27;;
 import { GroupRoleUnknownLoggable } from &#x27;../../loggable&#x27;;
-import {
-	SanisGroupRole,
-	SanisGroupType,
-	SanisGruppenResponse,
-	SanisResponse,
-	SanisRole,
-	SanisSonstigeGruppenzugehoerigeResponse,
-} from &#x27;./response&#x27;;
 
 const RoleMapping: Record&lt;SanisRole, RoleName&gt; &#x3D; {
 	[SanisRole.LEHR]: RoleName.TEACHER,
@@ -762,7 +762,7 @@ export class SanisResponseMapper {
 		const mapped &#x3D; new ExternalUserDto({
 			firstName: source.person.name.vorname,
 			lastName: source.person.name.familienname,
-			roles: [this.mapSanisRoleToRoleName(source)],
+			roles: [SanisResponseMapper.mapSanisRoleToRoleName(source)],
 			externalId: source.pid,
 			birthday: source.person.geburt?.datum ? new Date(source.person.geburt?.datum) : undefined,
 		});
@@ -770,7 +770,7 @@ export class SanisResponseMapper {
 		return mapped;
 	}
 
-	private mapSanisRoleToRoleName(source: SanisResponse): RoleName {
+	public static mapSanisRoleToRoleName(source: SanisResponse): RoleName {
 		return RoleMapping[source.personenkontexte[0].rolle];
 	}
 

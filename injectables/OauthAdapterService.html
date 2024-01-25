@@ -153,7 +153,8 @@
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
-                                <a href="#sendAuthenticationCodeTokenRequest" >sendAuthenticationCodeTokenRequest</a>
+                                    <span class="modifier">Async</span>
+                                <a href="#sendTokenRequest" >sendTokenRequest</a>
                             </li>
                         </ul>
                     </td>
@@ -178,7 +179,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/oauth/service/oauth-adapter.service.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/oauth/service/oauth-adapter.service.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -243,8 +244,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="14"
-                                    class="link-to-prism">apps/server/src/modules/oauth/service/oauth-adapter.service.ts:14</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="16"
+                                    class="link-to-prism">apps/server/src/modules/oauth/service/oauth-adapter.service.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -313,8 +314,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="37"
-                                    class="link-to-prism">apps/server/src/modules/oauth/service/oauth-adapter.service.ts:37</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="44"
+                                    class="link-to-prism">apps/server/src/modules/oauth/service/oauth-adapter.service.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -350,7 +351,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/OauthTokenResponse.html" target="_self" >Promise&lt;OauthTokenResponse&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/OAuthTokenDto.html" target="_self" >Promise&lt;OAuthTokenDto&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -364,26 +365,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="sendAuthenticationCodeTokenRequest"></a>
+                    <a name="sendTokenRequest"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
-                        <span ><b>sendAuthenticationCodeTokenRequest</b></span>
-                        <a href="#sendAuthenticationCodeTokenRequest"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Async</span>
+                        <span ><b>sendTokenRequest</b></span>
+                        <a href="#sendTokenRequest"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>sendAuthenticationCodeTokenRequest(tokenEndpoint: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, payload: <a href="../classes/AuthenticationCodeGrantTokenRequest.html" target="_self">AuthenticationCodeGrantTokenRequest</a>)</code>
+                    <code>sendTokenRequest(tokenEndpoint: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, payload: AuthenticationCodeGrantTokenRequest | ClientCredentialsGrantTokenRequest)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/oauth/service/oauth-adapter.service.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/modules/oauth/service/oauth-adapter.service.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -418,7 +420,7 @@
                                         <tr>
                                                 <td>payload</td>
                                             <td>
-                                                            <code><a href="../classes/AuthenticationCodeGrantTokenRequest.html" target="_self" >AuthenticationCodeGrantTokenRequest</a></code>
+                                                        <code>AuthenticationCodeGrantTokenRequest | ClientCredentialsGrantTokenRequest</code>
                                             </td>
 
                                             <td>
@@ -431,7 +433,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/OauthTokenResponse.html" target="_self" >Promise&lt;OauthTokenResponse&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/OAuthTokenDto.html" target="_self" >Promise&lt;OAuthTokenDto&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -453,8 +455,10 @@ import { AxiosResponse, isAxiosError } from &#x27;axios&#x27;;
 import JwksRsa from &#x27;jwks-rsa&#x27;;
 import QueryString from &#x27;qs&#x27;;
 import { lastValueFrom, Observable } from &#x27;rxjs&#x27;;
+import { OAuthTokenDto } from &#x27;../interface&#x27;;
 import { TokenRequestLoggableException } from &#x27;../loggable&#x27;;
-import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from &#x27;./dto&#x27;;
+import { TokenRequestMapper } from &#x27;../mapper/token-request.mapper&#x27;;
+import { AuthenticationCodeGrantTokenRequest, ClientCredentialsGrantTokenRequest, OauthTokenResponse } from &#x27;./dto&#x27;;
 
 @Injectable()
 export class OauthAdapterService {
@@ -465,28 +469,34 @@ export class OauthAdapterService {
 			cache: true,
 			jwksUri,
 		});
+
 		const key: JwksRsa.SigningKey &#x3D; await client.getSigningKey();
+
 		return key.getPublicKey();
 	}
 
-	public sendAuthenticationCodeTokenRequest(
+	public async sendTokenRequest(
 		tokenEndpoint: string,
-		payload: AuthenticationCodeGrantTokenRequest
-	): Promise&lt;OauthTokenResponse&gt; {
+		payload: AuthenticationCodeGrantTokenRequest | ClientCredentialsGrantTokenRequest
+	): Promise&lt;OAuthTokenDto&gt; {
 		const urlEncodedPayload: string &#x3D; QueryString.stringify(payload);
+
 		const responseTokenObservable &#x3D; this.httpService.post&lt;OauthTokenResponse&gt;(tokenEndpoint, urlEncodedPayload, {
 			headers: {
 				&#x27;Content-Type&#x27;: &#x27;application/x-www-form-urlencoded&#x27;,
 			},
 		});
-		const responseData: Promise&lt;OauthTokenResponse&gt; &#x3D; this.resolveTokenRequest(responseTokenObservable);
-		return responseData;
+
+		const tokenDto: OAuthTokenDto &#x3D; await this.resolveTokenRequest(responseTokenObservable);
+
+		return tokenDto;
 	}
 
 	private async resolveTokenRequest(
 		observable: Observable&lt;AxiosResponse&lt;OauthTokenResponse, unknown&gt;&gt;
-	): Promise&lt;OauthTokenResponse&gt; {
+	): Promise&lt;OAuthTokenDto&gt; {
 		let responseToken: AxiosResponse&lt;OauthTokenResponse&gt;;
+
 		try {
 			responseToken &#x3D; await lastValueFrom(observable);
 		} catch (error: unknown) {
@@ -496,7 +506,9 @@ export class OauthAdapterService {
 			throw error;
 		}
 
-		return responseToken.data;
+		const tokenDto: OAuthTokenDto &#x3D; TokenRequestMapper.mapTokenResponseToDto(responseToken.data);
+
+		return tokenDto;
 	}
 }
 </code></pre>

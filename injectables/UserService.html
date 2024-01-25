@@ -168,6 +168,11 @@
                                 <a href="#findByIdOrNull" >findByIdOrNull</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#findUserBySchoolAndName" >findUserBySchoolAndName</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#findUsers" >findUsers</a>
                             </li>
@@ -747,6 +752,100 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;UserDO | null&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findUserBySchoolAndName"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>findUserBySchoolAndName</b></span>
+                        <a href="#findUserBySchoolAndName"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findUserBySchoolAndName(schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, firstName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, lastName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="156"
+                                    class="link-to-prism">apps/server/src/modules/user/service/user.service.ts:156</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>schoolId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>firstName</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>lastName</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/User.html" target="_self" >Promise&lt;User[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1421,6 +1520,7 @@ import { RoleDto } from &#x27;@modules/role/service/dto/role.dto&#x27;;
 import { RoleService } from &#x27;@modules/role/service/role.service&#x27;;
 import { BadRequestException, Injectable } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
+import { DataDeletionDomainOperationLoggable } from &#x27;@shared/common/loggable&#x27;;
 import { Page, RoleReference, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
 import { LanguageType, User } from &#x27;@shared/domain/entity&#x27;;
 import { IFindOptions } from &#x27;@shared/domain/interface&#x27;;
@@ -1428,7 +1528,6 @@ import { DomainModel, EntityId, StatusModel } from &#x27;@shared/domain/types&#x
 import { UserRepo } from &#x27;@shared/repo&#x27;;
 import { UserDORepo } from &#x27;@shared/repo/user/user-do.repo&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { DataDeletionDomainOperationLoggable } from &#x27;@shared/common/loggable&#x27;;
 import { UserConfig } from &#x27;../interfaces&#x27;;
 import { UserMapper } from &#x27;../mapper/user.mapper&#x27;;
 import { UserDto } from &#x27;../uc/dto/user.dto&#x27;;
@@ -1565,6 +1664,12 @@ export class UserService {
 		const parentEmails &#x3D; this.userRepo.getParentEmailsFromUser(userId);
 
 		return parentEmails;
+	}
+
+	public async findUserBySchoolAndName(schoolId: EntityId, firstName: string, lastName: string): Promise&lt;User[]&gt; {
+		const users: User[] &#x3D; await this.userRepo.findUserBySchoolAndName(schoolId, firstName, lastName);
+
+		return users;
 	}
 }
 </code></pre>

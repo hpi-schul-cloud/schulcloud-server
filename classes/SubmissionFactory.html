@@ -1452,7 +1452,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Submission, SubmissionProperties } from &#x27;@shared/domain/entity&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
 import { BaseFactory } from &#x27;./base.factory&#x27;;
-import { schoolFactory } from &#x27;./school.factory&#x27;;
+import { schoolEntityFactory } from &#x27;./school-entity.factory&#x27;;
 import { taskFactory } from &#x27;./task.factory&#x27;;
 import { userFactory } from &#x27;./user.factory&#x27;;
 
@@ -1485,7 +1485,7 @@ class SubmissionFactory extends BaseFactory&lt;Submission, SubmissionProperties&
 
 export const submissionFactory &#x3D; SubmissionFactory.define(Submission, ({ sequence }) &#x3D;&gt; {
 	return {
-		school: schoolFactory.build(),
+		school: schoolEntityFactory.build(),
 		task: taskFactory.build(),
 		student: userFactory.build(),
 		comment: &#x60;submission comment #${sequence}&#x60;,

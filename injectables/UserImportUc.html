@@ -144,10 +144,6 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#checkFeatureEnabled" >checkFeatureEnabled</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#checkNoExistingLdapBeforeStart" >checkNoExistingLdapBeforeStart</a>
                             </li>
@@ -160,6 +156,7 @@
                                 <a href="#checkSchoolNumber" >checkSchoolNumber</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#endSchoolInMaintenance" >endSchoolInMaintenance</a>
                             </li>
@@ -169,10 +166,12 @@
                                 <a href="#endSchoolInUserMigration" >endSchoolInUserMigration</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findAllImportUsers" >findAllImportUsers</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findAllUnmatchedUsers" >findAllUnmatchedUsers</a>
                             </li>
@@ -187,27 +186,27 @@
                                 <a href="#getCurrentUser" >getCurrentUser</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#getMigrationSystem" >getMigrationSystem</a>
-                            </li>
-                            <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#removeMatch" >removeMatch</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#saveAllUsersMatches" >saveAllUsersMatches</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#setMatch" >setMatch</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#startSchoolInUserMigration" >startSchoolInUserMigration</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#updateFlag" >updateFlag</a>
                             </li>
@@ -234,12 +233,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, importUserRepo: <a href="../injectables/ImportUserRepo.html" target="_self">ImportUserRepo</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, systemRepo: <a href="../injectables/LegacySystemRepo.html" target="_self">LegacySystemRepo</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, importUserRepo: <a href="../injectables/ImportUserRepo.html" target="_self">ImportUserRepo</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, systemRepo: <a href="../injectables/LegacySystemRepo.html" target="_self">LegacySystemRepo</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, userImportService: <a href="../injectables/UserImportService.html" target="_self">UserImportService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:35</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:34</a></div>
                             </td>
                         </tr>
 
@@ -340,6 +339,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>userImportService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/UserImportService.html" target="_self" >UserImportService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -354,75 +365,6 @@
     <h3 id="methods">
         Methods
     </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="checkFeatureEnabled"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>checkFeatureEnabled</b></span>
-                        <a href="#checkFeatureEnabled"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkFeatureEnabled(school: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:48</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>school</td>
-                                            <td>
-                                                            <code><a href="../classes/LegacySchoolDo.html" target="_self" >LegacySchoolDo</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>void | never</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -446,8 +388,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="305"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:305</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="290"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:290</a></div>
                         </td>
                     </tr>
 
@@ -515,8 +457,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="324"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:324</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="309"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:309</a></div>
                         </td>
                     </tr>
 
@@ -584,8 +526,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="318"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:318</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="303"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:303</a></div>
                         </td>
                     </tr>
 
@@ -649,6 +591,7 @@
                 <td class="col-md-4">
                     <a name="endSchoolInMaintenance"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>endSchoolInMaintenance</b></span>
                         <a href="#endSchoolInMaintenance"><span class="icon ion-ios-link"></span></a>
@@ -665,8 +608,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="242"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:242</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="233"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:233</a></div>
                         </td>
                     </tr>
 
@@ -735,8 +678,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="208"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:208</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="199"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:199</a></div>
                         </td>
                     </tr>
 
@@ -788,6 +731,7 @@
                 <td class="col-md-4">
                     <a name="findAllImportUsers"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>findAllImportUsers</b></span>
                         <a href="#findAllImportUsers"><span class="icon ion-ios-link"></span></a>
@@ -804,8 +748,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="64"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:64</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="55"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:55</a></div>
                         </td>
                     </tr>
 
@@ -883,6 +827,7 @@
                 <td class="col-md-4">
                     <a name="findAllUnmatchedUsers"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>findAllUnmatchedUsers</b></span>
                         <a href="#findAllUnmatchedUsers"><span class="icon ion-ios-link"></span></a>
@@ -899,8 +844,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="153"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:153</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="144"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:144</a></div>
                         </td>
                     </tr>
 
@@ -1006,8 +951,8 @@ The current user must have permission to read schools users and view importusers
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="284"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:284</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="275"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:275</a></div>
                         </td>
                     </tr>
 
@@ -1076,8 +1021,8 @@ The current user must have permission to read schools users and view importusers
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="255"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:255</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="246"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:246</a></div>
                         </td>
                     </tr>
 
@@ -1139,48 +1084,9 @@ The current user must have permission to read schools users and view importusers
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getMigrationSystem"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>getMigrationSystem</b></span>
-                        <a href="#getMigrationSystem"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getMigrationSystem()</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="299"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:299</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/System.html" target="_self" >Promise&lt;SystemEntity&gt;</a></code>
-
-                        </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="removeMatch"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>removeMatch</b></span>
                         <a href="#removeMatch"><span class="icon ion-ios-link"></span></a>
@@ -1197,8 +1103,8 @@ The current user must have permission to read schools users and view importusers
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="109"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:109</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="100"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:100</a></div>
                         </td>
                     </tr>
 
@@ -1262,6 +1168,7 @@ The current user must have permission to read schools users and view importusers
                 <td class="col-md-4">
                     <a name="saveAllUsersMatches"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>saveAllUsersMatches</b></span>
                         <a href="#saveAllUsersMatches"><span class="icon ion-ios-link"></span></a>
@@ -1278,8 +1185,8 @@ The current user must have permission to read schools users and view importusers
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="166"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:166</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="157"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:157</a></div>
                         </td>
                     </tr>
 
@@ -1331,6 +1238,7 @@ The current user must have permission to read schools users and view importusers
                 <td class="col-md-4">
                     <a name="setMatch"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>setMatch</b></span>
                         <a href="#setMatch"><span class="icon ion-ios-link"></span></a>
@@ -1347,8 +1255,8 @@ The current user must have permission to read schools users and view importusers
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="84"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:84</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:75</a></div>
                         </td>
                     </tr>
 
@@ -1427,6 +1335,7 @@ The current user must have permission to read schools users and view importusers
                 <td class="col-md-4">
                     <a name="startSchoolInUserMigration"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>startSchoolInUserMigration</b></span>
                         <a href="#startSchoolInUserMigration"><span class="icon ion-ios-link"></span></a>
@@ -1443,8 +1352,8 @@ The current user must have permission to read schools users and view importusers
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="220"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:220</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="211"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:211</a></div>
                         </td>
                     </tr>
 
@@ -1513,6 +1422,7 @@ The current user must have permission to read schools users and view importusers
                 <td class="col-md-4">
                     <a name="updateFlag"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>updateFlag</b></span>
                         <a href="#updateFlag"><span class="icon ion-ios-link"></span></a>
@@ -1529,8 +1439,8 @@ The current user must have permission to read schools users and view importusers
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="126"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:126</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="117"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:117</a></div>
                         </td>
                     </tr>
 
@@ -1623,8 +1533,8 @@ The current user must have permission to read schools users and view importusers
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="262"
-                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:262</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="253"
+                                    class="link-to-prism">apps/server/src/modules/user-import/uc/user-import.uc.ts:253</a></div>
                         </td>
                     </tr>
 
@@ -1688,28 +1598,27 @@ The current user must have permission to read schools users and view importusers
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountSaveDto } from &#x27;@modules/account&#x27;;
 import { AccountService } from &#x27;@modules/account/services/account.service&#x27;;
 import { AccountDto } from &#x27;@modules/account/services/dto/account.dto&#x27;;
 import { AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
-import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
+import { BadRequestException, ForbiddenException, Injectable } from &#x27;@nestjs/common&#x27;;
 import { UserAlreadyAssignedToImportUserError } from &#x27;@shared/common&#x27;;
 import { LegacySchoolDo } from &#x27;@shared/domain/domainobject&#x27;;
 import { Account, ImportUser, MatchCreator, SystemEntity, User } from &#x27;@shared/domain/entity&#x27;;
 import { IFindOptions, Permission } from &#x27;@shared/domain/interface&#x27;;
-import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch, SchoolFeature } from &#x27;@shared/domain/types&#x27;;
+import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch } from &#x27;@shared/domain/types&#x27;;
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { AccountSaveDto } from &#x27;../../account/services/dto&#x27;;
 import {
 	MigrationMayBeCompleted,
 	MigrationMayNotBeCompleted,
 	SchoolIdDoesNotMatchWithUserSchoolId,
 	SchoolInUserMigrationEndLoggable,
 	SchoolInUserMigrationStartLoggable,
-	UserMigrationIsNotEnabled,
 } from &#x27;../loggable&#x27;;
+import { UserImportService } from &#x27;../service&#x27;;
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,
@@ -1730,18 +1639,10 @@ export class UserImportUc {
 		private readonly schoolService: LegacySchoolService,
 		private readonly systemRepo: LegacySystemRepo,
 		private readonly userRepo: UserRepo,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		private readonly userImportService: UserImportService
 	) {
 		this.logger.setContext(UserImportUc.name);
-	}
-
-	private checkFeatureEnabled(school: LegacySchoolDo): void | never {
-		const enabled &#x3D; Configuration.get(&#x27;FEATURE_USER_MIGRATION_ENABLED&#x27;) as boolean;
-		const isLdapPilotSchool &#x3D; school.features &amp;&amp; school.features.includes(SchoolFeature.LDAP_UNIVENTION_MIGRATION);
-		if (!enabled &amp;&amp; !isLdapPilotSchool) {
-			this.logger.warning(new UserMigrationIsNotEnabled());
-			throw new InternalServerErrorException(&#x27;User Migration not enabled&#x27;);
-		}
 	}
 
 	/**
@@ -1751,14 +1652,14 @@ export class UserImportUc {
 	 * @param options
 	 * @returns
 	 */
-	async findAllImportUsers(
+	public async findAllImportUsers(
 		currentUserId: EntityId,
 		query: IImportUserScope,
 		options?: IFindOptions&lt;ImportUser&gt;
 	): Promise&lt;Counted&lt;ImportUser[]&gt;&gt; {
 		const currentUser &#x3D; await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
 		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(currentUser.school.id);
-		this.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabled(school);
 		// TODO Change ImportUserRepo to DO to fix this workaround
 		const countedImportUsers &#x3D; await this.importUserRepo.findImportUsers(currentUser.school, query, options);
 		return countedImportUsers;
@@ -1771,10 +1672,10 @@ export class UserImportUc {
 	 * @param userMatchId
 	 * @returns importuser and matched user
 	 */
-	async setMatch(currentUserId: EntityId, importUserId: EntityId, userMatchId: EntityId): Promise&lt;ImportUser&gt; {
+	public async setMatch(currentUserId: EntityId, importUserId: EntityId, userMatchId: EntityId): Promise&lt;ImportUser&gt; {
 		const currentUser &#x3D; await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
 		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(currentUser.school.id);
-		this.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabled(school);
 		const importUser &#x3D; await this.importUserRepo.findById(importUserId);
 		const userMatch &#x3D; await this.userRepo.findById(userMatchId, true);
 
@@ -1796,10 +1697,10 @@ export class UserImportUc {
 		return importUser;
 	}
 
-	async removeMatch(currentUserId: EntityId, importUserId: EntityId): Promise&lt;ImportUser&gt; {
+	public async removeMatch(currentUserId: EntityId, importUserId: EntityId): Promise&lt;ImportUser&gt; {
 		const currentUser &#x3D; await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
 		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(currentUser.school.id);
-		this.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabled(school);
 		const importUser &#x3D; await this.importUserRepo.findById(importUserId);
 		// check same school
 		if (school.id !&#x3D;&#x3D; importUser.school.id) {
@@ -1813,10 +1714,10 @@ export class UserImportUc {
 		return importUser;
 	}
 
-	async updateFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean): Promise&lt;ImportUser&gt; {
+	public async updateFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean): Promise&lt;ImportUser&gt; {
 		const currentUser &#x3D; await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
 		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(currentUser.school.id);
-		this.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabled(school);
 		const importUser &#x3D; await this.importUserRepo.findById(importUserId);
 
 		// check same school
@@ -1840,23 +1741,23 @@ export class UserImportUc {
 	 * @param options
 	 * @returns
 	 */
-	async findAllUnmatchedUsers(
+	public async findAllUnmatchedUsers(
 		currentUserId: EntityId,
 		query: NameMatch,
 		options?: IFindOptions&lt;User&gt;
 	): Promise&lt;Counted&lt;User[]&gt;&gt; {
 		const currentUser &#x3D; await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
 		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(currentUser.school.id);
-		this.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabled(school);
 		// TODO Change to UserService to fix this workaround
 		const unmatchedCountedUsers &#x3D; await this.userRepo.findWithoutImportUser(currentUser.school, query, options);
 		return unmatchedCountedUsers;
 	}
 
-	async saveAllUsersMatches(currentUserId: EntityId): Promise&lt;void&gt; {
+	public async saveAllUsersMatches(currentUserId: EntityId): Promise&lt;void&gt; {
 		const currentUser &#x3D; await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(currentUser.school.id);
-		this.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabled(school);
 		const filters: IImportUserScope &#x3D; { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
 		// TODO batch/paginated import?
 		const options: IFindOptions&lt;ImportUser&gt; &#x3D; {};
@@ -1898,7 +1799,7 @@ export class UserImportUc {
 	private async endSchoolInUserMigration(currentUserId: EntityId): Promise&lt;void&gt; {
 		const currentUser &#x3D; await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(currentUser.school.id);
-		this.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabled(school);
 		if (!school.externalId || school.inUserMigration !&#x3D;&#x3D; true || !school.inMaintenanceSince) {
 			this.logger.warning(new MigrationMayBeCompleted(school.inUserMigration));
 			throw new BadRequestException(&#x27;School cannot exit from user migration mode&#x27;);
@@ -1907,11 +1808,11 @@ export class UserImportUc {
 		await this.schoolService.save(school);
 	}
 
-	async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap &#x3D; true): Promise&lt;void&gt; {
+	public async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap &#x3D; true): Promise&lt;void&gt; {
 		const currentUser &#x3D; await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(currentUser.school.id);
 		this.logger.notice(new SchoolInUserMigrationStartLoggable(currentUserId, school.name, useCentralLdap));
-		this.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabled(school);
 		this.checkSchoolNumber(school, useCentralLdap);
 		this.checkSchoolNotInMigration(school);
 		await this.checkNoExistingLdapBeforeStart(school);
@@ -1920,7 +1821,7 @@ export class UserImportUc {
 		school.inMaintenanceSince &#x3D; new Date();
 		school.externalId &#x3D; school.officialSchoolNumber;
 		if (useCentralLdap) {
-			const migrationSystem &#x3D; await this.getMigrationSystem();
+			const migrationSystem &#x3D; await this.userImportService.getMigrationSystem();
 			if (school.systems &amp;&amp; !school.systems.includes(migrationSystem.id)) {
 				school.systems.push(migrationSystem.id);
 			}
@@ -1929,10 +1830,10 @@ export class UserImportUc {
 		await this.schoolService.save(school);
 	}
 
-	async endSchoolInMaintenance(currentUserId: EntityId): Promise&lt;void&gt; {
+	public async endSchoolInMaintenance(currentUserId: EntityId): Promise&lt;void&gt; {
 		const currentUser &#x3D; await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(currentUser.school.id);
-		this.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabled(school);
 		if (school.inUserMigration !&#x3D;&#x3D; false || !school.inMaintenanceSince || !school.externalId) {
 			this.logger.warning(new MigrationMayNotBeCompleted(school.inUserMigration));
 			throw new BadRequestException(&#x27;Sync cannot be activated for school&#x27;);
@@ -1984,12 +1885,6 @@ export class UserImportUc {
 			account &#x3D; await this.accountService.findByUserIdOrFail(user.id);
 		}
 		return account;
-	}
-
-	private async getMigrationSystem(): Promise&lt;SystemEntity&gt; {
-		const systemId &#x3D; Configuration.get(&#x27;FEATURE_USER_MIGRATION_SYSTEM_ID&#x27;) as string;
-		const system &#x3D; await this.systemRepo.findById(systemId);
-		return system;
 	}
 
 	private async checkNoExistingLdapBeforeStart(school: LegacySchoolDo): Promise&lt;void&gt; {

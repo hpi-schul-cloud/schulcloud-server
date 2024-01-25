@@ -300,8 +300,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/course.factory.ts:12</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="11"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/course.factory.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -328,8 +328,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/course.factory.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/course.factory.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -356,8 +356,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/course.factory.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="25"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/course.factory.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -416,8 +416,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/course.factory.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/course.factory.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -1481,12 +1481,11 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DeepPartial } from &#x27;fishery&#x27;;
-
-import { Course, CourseProperties } from &#x27;@shared/domain/entity&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Course, CourseProperties } from &#x27;@shared/domain/entity&#x27;;
+import { DeepPartial } from &#x27;fishery&#x27;;
 
 import { BaseFactory } from &#x27;./base.factory&#x27;;
-import { schoolFactory } from &#x27;./school.factory&#x27;;
+import { schoolEntityFactory } from &#x27;./school-entity.factory&#x27;;
 import { userFactory } from &#x27;./user.factory&#x27;;
 
 const oneDay &#x3D; 24 * 60 * 60 * 1000;
@@ -1526,7 +1525,7 @@ export const courseFactory &#x3D; CourseFactory.define(Course, ({ sequence }) &#
 		name: &#x60;course #${sequence}&#x60;,
 		description: &#x60;course #${sequence} description&#x60;,
 		color: &#x27;#FFFFFF&#x27;,
-		school: schoolFactory.build(),
+		school: schoolEntityFactory.build(),
 	};
 });
 </code></pre>

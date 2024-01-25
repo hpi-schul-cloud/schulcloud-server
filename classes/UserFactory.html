@@ -1627,7 +1627,7 @@ import _ from &#x27;lodash&#x27;;
 import { adminPermissions, studentPermissions, teacherPermissions, userPermissions } from &#x27;../user-role-permissions&#x27;;
 import { BaseFactory } from &#x27;./base.factory&#x27;;
 import { roleFactory } from &#x27;./role.factory&#x27;;
-import { schoolFactory } from &#x27;./school.factory&#x27;;
+import { schoolEntityFactory } from &#x27;./school-entity.factory&#x27;;
 
 class UserFactory extends BaseFactory&lt;User, UserProperties&gt; {
 	withRoleByName(name: RoleName): this {
@@ -1676,7 +1676,7 @@ export const userFactory &#x3D; UserFactory.define(User, ({ sequence }) &#x3D;&g
 		lastName: &#x60;Doe ${sequence}&#x60;,
 		email: &#x60;user-${sequence}@example.com&#x60;,
 		roles: [],
-		school: schoolFactory.build(),
+		school: schoolEntityFactory.build(),
 	};
 });
 </code></pre>

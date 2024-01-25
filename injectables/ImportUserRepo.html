@@ -170,6 +170,11 @@
                                 <a href="#hasMatch" >hasMatch</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#saveImportUsers" >saveImportUsers</a>
+                            </li>
+                            <li>
                                 <a href="#create" >create</a>
                             </li>
                             <li>
@@ -614,6 +619,76 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="saveImportUsers"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>saveImportUsers</b></span>
+                        <a href="#saveImportUsers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>saveImportUsers(importUsers: <a href="../interfaces/User.html" target="_self">ImportUser[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">apps/server/src/shared/repo/importuser/importuser.repo.ts:75</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>importUsers</td>
+                                            <td>
+                                                            <code><a href="../interfaces/User.html" target="_self" >ImportUser[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="create"></a>
                     <span class="name">
                         <span ><b>create</b></span>
@@ -938,6 +1013,10 @@ export class ImportUserRepo extends BaseRepo&lt;ImportUser&gt; {
 
 	async deleteImportUsersBySchool(school: SchoolEntity): Promise&lt;void&gt; {
 		await this._em.nativeDelete(ImportUser, { school });
+	}
+
+	public async saveImportUsers(importUsers: ImportUser[]): Promise&lt;void&gt; {
+		await this._em.persistAndFlush(importUsers);
 	}
 }
 </code></pre>

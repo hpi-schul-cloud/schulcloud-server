@@ -1373,23 +1373,23 @@ import { RoleName } from &#x27;@shared/domain/interface&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
 import { v4 as uuidv4 } from &#x27;uuid&#x27;;
 import { BaseFactory } from &#x27;./base.factory&#x27;;
-import { schoolFactory } from &#x27;./school.factory&#x27;;
+import { schoolEntityFactory } from &#x27;./school-entity.factory&#x27;;
 import { systemEntityFactory } from &#x27;./systemEntityFactory&#x27;;
 
 class ImportUserFactory extends BaseFactory&lt;ImportUser, ImportUserProperties&gt; {
 	matched(matchedBy: MatchCreator, user: User): this {
 		const params: DeepPartial&lt;ImportUserProperties&gt; &#x3D; { matchedBy, user };
+
 		return this.params(params);
 	}
 }
 
 export const importUserFactory &#x3D; ImportUserFactory.define(ImportUser, ({ sequence }) &#x3D;&gt; {
 	return {
-		school: schoolFactory.build(),
-		system: systemEntityFactory.build(),
+		school: schoolEntityFactory.buildWithId(),
+		system: systemEntityFactory.buildWithId(),
 		ldapDn: &#x60;uid&#x3D;john${sequence},cn&#x3D;schueler,cn&#x3D;users,ou&#x3D;1,dc&#x3D;training,dc&#x3D;ucs&#x60;,
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
-		externalId: uuidv4() as unknown as string,
+		externalId: uuidv4(),
 		firstName: &#x60;John${sequence}&#x60;,
 		lastName: &#x60;Doe${sequence}&#x60;,
 		email: &#x60;user-${sequence}@example.com&#x60;,

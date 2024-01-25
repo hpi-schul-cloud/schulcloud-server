@@ -809,6 +809,9 @@
                             <a href="#SCHOOL_YEAR_REPO" title="apps/server/src/modules/school/domain/interface/school-year.repo.interface.ts" ><b>SCHOOL_YEAR_REPO</b>&nbsp;&nbsp;&nbsp;(apps/.../school-year.repo.interface.ts)</a>
                         </li>
                         <li>
+                            <a href="#schoolEntityFactory" title="apps/server/src/shared/testing/factory/school-entity.factory.ts" ><b>schoolEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../school-entity.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#schoolExternalToolConfigurationStatusEntityFactory" title="apps/server/src/shared/testing/factory/school-external-tool-configuration-status-entity.factory.ts" ><b>schoolExternalToolConfigurationStatusEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../school-external-tool-configuration-status-entity.factory.ts)</a>
                         </li>
                         <li>
@@ -819,9 +822,6 @@
                         </li>
                         <li>
                             <a href="#schoolFactory" title="apps/server/src/modules/school/testing/school.factory.ts" ><b>schoolFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../school.factory.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#schoolFactory" title="apps/server/src/shared/testing/factory/school.factory.ts" ><b>schoolFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../school.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#schoolNewsFactory" title="apps/server/src/shared/testing/factory/news.factory.ts" ><b>schoolNewsFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../news.factory.ts)</a>
@@ -846,6 +846,9 @@
                         </li>
                         <li>
                             <a href="#schoolYearFactory" title="apps/server/src/shared/testing/factory/schoolyear.factory.ts" ><b>schoolYearFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../schoolyear.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#schulconnexResponseFactory" title="apps/server/src/infra/schulconnex-client/testing/schulconnex-response-factory.ts" ><b>schulconnexResponseFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../schulconnex-response-factory.ts)</a>
                         </li>
                         <li>
                             <a href="#scopeMapping" title="apps/server/src/modules/tool/external-tool/mapper/external-tool-request.mapper.ts" ><b>scopeMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool-request.mapper.ts)</a>
@@ -1026,6 +1029,9 @@
                         </li>
                         <li>
                             <a href="#userFactory" title="apps/server/src/shared/testing/factory/user.factory.ts" ><b>userFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../user.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#UserImportFeatures" title="apps/server/src/modules/user-import/config/user-import-config.ts" ><b>UserImportFeatures</b>&nbsp;&nbsp;&nbsp;(apps/.../user-import-config.ts)</a>
                         </li>
                         <li>
                             <a href="#userLoginMigrationDOFactory" title="apps/server/src/shared/testing/factory/domainobject/user-login-migration-do.factory.ts" ><b>userLoginMigrationDOFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../user-login-migration-do.factory.ts)</a>
@@ -4692,7 +4698,7 @@ must use</p>
 		name: &#x60;course #${sequence}&#x60;,
 		description: &#x60;course #${sequence} description&#x60;,
 		color: &#x27;#FFFFFF&#x27;,
-		school: schoolFactory.build(),
+		school: schoolEntityFactory.build(),
 	};
 })</code>
                     </td>
@@ -4770,7 +4776,7 @@ must use</p>
 		title: &#x60;news ${sequence}&#x60;,
 		content: &#x60;content of news ${sequence}&#x60;,
 		displayAt: new Date(),
-		school: schoolFactory.build(),
+		school: schoolEntityFactory.build(),
 		creator: userFactory.build(),
 		target: courseFactory.build(),
 	};
@@ -4801,7 +4807,7 @@ must use</p>
 			title: &#x60;news ${sequence}&#x60;,
 			content: &#x60;content of news ${sequence}&#x60;,
 			displayAt: new Date(Date.now() + 86400000),
-			school: schoolFactory.build(),
+			school: schoolEntityFactory.build(),
 			creator: userFactory.build(),
 			target: courseFactory.build(),
 		};
@@ -4831,9 +4837,9 @@ must use</p>
 		title: &#x60;news ${sequence}&#x60;,
 		content: &#x60;content of news ${sequence}&#x60;,
 		displayAt: new Date(),
-		school: schoolFactory.build(),
+		school: schoolEntityFactory.build(),
 		creator: userFactory.build(),
-		target: schoolFactory.build(),
+		target: schoolEntityFactory.build(),
 	};
 })</code>
                     </td>
@@ -4862,9 +4868,9 @@ must use</p>
 			title: &#x60;news ${sequence}&#x60;,
 			content: &#x60;content of news ${sequence}&#x60;,
 			displayAt: new Date(Date.now() + 86400000),
-			school: schoolFactory.build(),
+			school: schoolEntityFactory.build(),
 			creator: userFactory.build(),
-			target: schoolFactory.build(),
+			target: schoolEntityFactory.build(),
 		};
 	}
 )</code>
@@ -4892,7 +4898,7 @@ must use</p>
 		title: &#x60;news ${sequence}&#x60;,
 		content: &#x60;content of news ${sequence}&#x60;,
 		displayAt: new Date(),
-		school: schoolFactory.build(),
+		school: schoolEntityFactory.build(),
 		creator: userFactory.build(),
 		target: teamFactory.build(),
 	};
@@ -4921,7 +4927,7 @@ must use</p>
 		title: &#x60;news ${sequence}&#x60;,
 		content: &#x60;content of news ${sequence}&#x60;,
 		displayAt: new Date(Date.now() + 86400000),
-		school: schoolFactory.build(),
+		school: schoolEntityFactory.build(),
 		creator: userFactory.build(),
 		target: teamFactory.build(),
 	};
@@ -5740,7 +5746,14 @@ must use</p>
 	LessonApiModule,
 	NewsModule,
 	UserApiModule,
+	SchulconnexClientModule.register({
+		apiUrl: Configuration.get(&#x27;SCHULCONNEX_CLIENT__API_URL&#x27;) as string,
+		tokenEndpoint: Configuration.get(&#x27;SCHULCONNEX_CLIENT__TOKEN_ENDPOINT&#x27;) as string,
+		clientId: Configuration.get(&#x27;SCHULCONNEX_CLIENT__CLIENT_ID&#x27;) as string,
+		clientSecret: Configuration.get(&#x27;SCHULCONNEX_CLIENT__CLIENT_SECRET&#x27;) as string,
+	}),
 	ImportUserModule,
+	UserImportConfigModule,
 	LearnroomApiModule,
 	FilesStorageClientModule,
 	SystemApiModule,
@@ -7037,7 +7050,7 @@ it should ensure an empty result</p>
 			from: new Date(2023, 1),
 			until: new Date(2023, 6),
 		}),
-		organization: schoolFactory.buildWithId(),
+		organization: schoolEntityFactory.buildWithId(),
 		externalSource: new ExternalSourceEntity({
 			externalId: &#x60;externalId-${sequence}&#x60;,
 			system: systemEntityFactory.buildWithId(),
@@ -7748,11 +7761,10 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                     <td class="col-md-4">
                         <i>Default value : </i><code>ImportUserFactory.define(ImportUser, ({ sequence }) &#x3D;&gt; {
 	return {
-		school: schoolFactory.build(),
-		system: systemEntityFactory.build(),
+		school: schoolEntityFactory.buildWithId(),
+		system: systemEntityFactory.buildWithId(),
 		ldapDn: &#x60;uid&#x3D;john${sequence},cn&#x3D;schueler,cn&#x3D;users,ou&#x3D;1,dc&#x3D;training,dc&#x3D;ucs&#x60;,
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call
-		externalId: uuidv4() as unknown as string,
+		externalId: uuidv4(),
 		firstName: &#x60;John${sequence}&#x60;,
 		lastName: &#x60;Doe${sequence}&#x60;,
 		email: &#x60;user-${sequence}@example.com&#x60;,
@@ -9983,6 +9995,35 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/shared/testing/factory/school-entity.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="schoolEntityFactory"></a>
+                    <span class="name">
+                        <span ><b>schoolEntityFactory</b></span>
+                        <a href="#schoolEntityFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;SchoolEntity, SchoolProperties&gt;(SchoolEntity, ({ sequence }) &#x3D;&gt; {
+	return {
+		name: &#x60;school #${sequence}&#x60;,
+		currentYear: schoolYearFactory.build(),
+		federalState: federalStateFactory.build(),
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/shared/testing/factory/school-external-tool-configuration-status-entity.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -10032,7 +10073,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 &gt;(SchoolExternalToolEntity, () &#x3D;&gt; {
 	return {
 		tool: externalToolEntityFactory.buildWithId(),
-		school: schoolFactory.buildWithId(),
+		school: schoolEntityFactory.buildWithId(),
 		schoolParameters: [{ name: &#x27;schoolMockParameter&#x27;, value: &#x27;mockValue&#x27; }],
 		toolVersion: 0,
 		status: schoolExternalToolConfigurationStatusEntityFactory.build(),
@@ -10114,35 +10155,6 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
-    <h3>apps/server/src/shared/testing/factory/school.factory.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="schoolFactory"></a>
-                    <span class="name">
-                        <span ><b>schoolFactory</b></span>
-                        <a href="#schoolFactory"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;SchoolEntity, SchoolProperties&gt;(SchoolEntity, ({ sequence }) &#x3D;&gt; {
-	return {
-		name: &#x60;school #${sequence}&#x60;,
-		currentYear: schoolYearFactory.build(),
-		federalState: federalStateFactory.build(),
-	};
-})</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
     <h3>apps/server/src/shared/testing/factory/school-system-options-entity.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -10163,7 +10175,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	SchoolSystemOptionsEntityProps
 &gt;(SchoolSystemOptionsEntity, () &#x3D;&gt; {
 	return {
-		school: schoolFactory.buildWithId(),
+		school: schoolEntityFactory.buildWithId(),
 		system: systemEntityFactory.buildWithId({ provisioningStrategy: SystemProvisioningStrategy.SANIS }),
 		provisioningOptions: {
 			groupProvisioningOtherEnabled: false,
@@ -10336,6 +10348,74 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	const endDate &#x3D; new Date(&#x60;${startYear + 1}-07-31&#x60;);
 
 	return { name, startDate, endDate };
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/infra/schulconnex-client/testing/schulconnex-response-factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="schulconnexResponseFactory"></a>
+                    <span class="name">
+                        <span ><b>schulconnexResponseFactory</b></span>
+                        <a href="#schulconnexResponseFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Factory.define&lt;SanisResponse&gt;(() &#x3D;&gt; {
+	return {
+		pid: &#x27;aef1f4fd-c323-466e-962b-a84354c0e713&#x27;,
+		person: {
+			name: {
+				vorname: &#x27;Hans&#x27;,
+				familienname: &#x27;Peter&#x27;,
+			},
+			geburt: {
+				datum: &#x27;2023-11-17&#x27;,
+			},
+		},
+		personenkontexte: [
+			{
+				id: new UUID().toString(),
+				rolle: SanisRole.LEIT,
+				organisation: {
+					id: new UUID(&#x27;df66c8e6-cfac-40f7-b35b-0da5d8ee680e&#x27;).toString(),
+					name: &#x27;schoolName&#x27;,
+					kennung: &#x27;Kennung&#x27;,
+					anschrift: {
+						ort: &#x27;Hannover&#x27;,
+					},
+				},
+				gruppen: [
+					{
+						gruppe: {
+							id: new UUID().toString(),
+							bezeichnung: &#x27;bezeichnung&#x27;,
+							typ: SanisGroupType.CLASS,
+						},
+						gruppenzugehoerigkeit: {
+							rollen: [SanisGroupRole.TEACHER],
+						},
+						sonstige_gruppenzugehoerige: [
+							{
+								rollen: [SanisGroupRole.STUDENT],
+								ktid: &#x27;ktid&#x27;,
+							},
+						],
+					},
+				],
+			},
+		],
+	};
 })</code>
                     </td>
                 </tr>
@@ -11163,7 +11243,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                     <td class="col-md-4">
                         <i>Default value : </i><code>SubmissionFactory.define(Submission, ({ sequence }) &#x3D;&gt; {
 	return {
-		school: schoolFactory.build(),
+		school: schoolEntityFactory.build(),
 		task: taskFactory.build(),
 		student: userFactory.build(),
 		comment: &#x60;submission comment #${sequence}&#x60;,
@@ -11382,7 +11462,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>TaskFactory.define(Task, ({ sequence }) &#x3D;&gt; {
-	const school &#x3D; schoolFactory.build();
+	const school &#x3D; schoolEntityFactory.build();
 	const creator &#x3D; userFactory.build({ school });
 	// private is by default in constructor true, but in the most test cases we need private: false
 	return {
@@ -11465,7 +11545,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                     <td class="col-md-4">
                         <i>Default value : </i><code>TeamUserFactory.define(TeamUserEntity, () &#x3D;&gt; {
 	const role &#x3D; roleFactory.buildWithId();
-	const school &#x3D; schoolFactory.buildWithId();
+	const school &#x3D; schoolEntityFactory.buildWithId();
 	const user &#x3D; userFactory.buildWithId({ roles: [role] });
 
 	return new TeamUserEntity({
@@ -11787,9 +11867,32 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		lastName: &#x60;Doe ${sequence}&#x60;,
 		email: &#x60;user-${sequence}@example.com&#x60;,
 		roles: [],
-		school: schoolFactory.build(),
+		school: schoolEntityFactory.build(),
 	};
 })</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/user-import/config/user-import-config.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="UserImportFeatures"></a>
+                    <span class="name">
+                        <span ><b>UserImportFeatures</b></span>
+                        <a href="#UserImportFeatures"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Symbol(&#x27;UserImportFeatures&#x27;)</code>
                     </td>
                 </tr>
 
@@ -11848,7 +11951,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	UserLoginMigrationEntity,
 	() &#x3D;&gt; {
 		return {
-			school: schoolFactory.buildWithId(),
+			school: schoolEntityFactory.buildWithId(),
 			startedAt: new Date(&#x27;2023-04-28&#x27;),
 			targetSystem: systemEntityFactory.buildWithId(),
 		};

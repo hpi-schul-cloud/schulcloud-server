@@ -302,8 +302,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="130"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:130</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="131"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:131</a></div>
                         </td>
                     </tr>
 
@@ -372,8 +372,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="118"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:118</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="119"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:119</a></div>
                         </td>
                     </tr>
 
@@ -572,8 +572,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="114"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:114</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="115"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:115</a></div>
                         </td>
                     </tr>
 
@@ -637,8 +637,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="88"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:88</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="89"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:89</a></div>
                         </td>
                     </tr>
 
@@ -775,6 +775,7 @@ import { AxiosRequestConfig, AxiosResponse } from &#x27;axios&#x27;;
 import { plainToClass } from &#x27;class-transformer&#x27;;
 import { validate, ValidationError } from &#x27;class-validator&#x27;;
 import { firstValueFrom } from &#x27;rxjs&#x27;;
+import { SanisGruppenResponse, SanisResponse, SanisResponseValidationGroups } from &#x27;@infra/schulconnex-client/response&#x27;;
 import { IProvisioningFeatures, ProvisioningFeatures } from &#x27;../../config&#x27;;
 import {
 	ExternalGroupDto,
@@ -785,7 +786,6 @@ import {
 } from &#x27;../../dto&#x27;;
 import { OidcProvisioningStrategy } from &#x27;../oidc/oidc.strategy&#x27;;
 import { OidcProvisioningService } from &#x27;../oidc/service/oidc-provisioning.service&#x27;;
-import { SanisGruppenResponse, SanisResponse, SanisResponseValidationGroups } from &#x27;./response&#x27;;
 import { SanisResponseMapper } from &#x27;./sanis-response.mapper&#x27;;
 
 @Injectable()
@@ -810,6 +810,7 @@ export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
 			);
 		}
 
+		// TODO: N21-1678 use the schulconnex rest client
 		const axiosConfig: AxiosRequestConfig &#x3D; {
 			headers: {
 				Authorization: &#x60;Bearer ${input.accessToken}&#x60;,
