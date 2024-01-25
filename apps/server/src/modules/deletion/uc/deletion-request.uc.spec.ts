@@ -235,6 +235,13 @@ describe(DeletionRequestUc.name, () => {
 					new ObjectId().toHexString(),
 				]);
 
+				const registrationPinDeleted = DomainOperationBuilder.build(
+					DomainModel.REGISTRATIONPIN,
+					OperationModel.DELETE,
+					1,
+					[new ObjectId().toHexString()]
+				);
+
 				const rocketChatUser: RocketChatUser = rocketChatUserFactory.build({
 					userId: deletionRequestToExecute.targetRefId,
 				});
@@ -268,9 +275,13 @@ describe(DeletionRequestUc.name, () => {
 					new ObjectId().toHexString(),
 				]);
 
+				const userDeleted = DomainOperationBuilder.build(DomainModel.USER, OperationModel.DELETE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
 				const user = userDoFactory.buildWithId();
 
-				registrationPinService.deleteRegistrationPinByEmail.mockResolvedValueOnce(2);
+				registrationPinService.deleteRegistrationPinByEmail.mockResolvedValue(registrationPinDeleted);
 				classService.deleteUserDataFromClasses.mockResolvedValueOnce(classesUpdated);
 				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(courseGroupUpdated);
 				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(courseUpdated);
@@ -279,7 +290,7 @@ describe(DeletionRequestUc.name, () => {
 				lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(lessonsUpdated);
 				pseudonymService.deleteByUserId.mockResolvedValueOnce(pseudonymsDeleted);
 				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(teamsUpdated);
-				userService.deleteUser.mockResolvedValueOnce(1);
+				userService.deleteUser.mockResolvedValueOnce(userDeleted);
 				rocketChatUserService.deleteByUserId.mockResolvedValueOnce(rocketChatUserDeleted);
 				filesStorageClientAdapterService.removeCreatorIdFromFileRecords.mockResolvedValueOnce(fileRecordsUpdated);
 				dashboardService.deleteDashboardByUserId.mockResolvedValueOnce(dashboardDeleted);
@@ -331,16 +342,17 @@ describe(DeletionRequestUc.name, () => {
 				expect(registrationPinService.deleteRegistrationPinByEmail).toHaveBeenCalled();
 			});
 
-			it('should call userService.getParentEmailsFromUser to get parentEmails', async () => {
+			it('should call userService.findById and userService.getParentEmailsFromUser to get own email and parentEmails', async () => {
 				const { deletionRequestToExecute, user, parentEmail } = setup();
 
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
-				userService.findById.mockResolvedValueOnce(user);
+				userService.findByIdOrNull.mockResolvedValueOnce(user);
 				userService.getParentEmailsFromUser.mockRejectedValue([parentEmail]);
-				registrationPinService.deleteRegistrationPinByEmail.mockRejectedValueOnce(2);
+				registrationPinService.deleteRegistrationPinByEmail.mockRejectedValueOnce(3);
 
 				await uc.executeDeletionRequests();
 
+				expect(userService.findByIdOrNull).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 				expect(userService.getParentEmailsFromUser).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 

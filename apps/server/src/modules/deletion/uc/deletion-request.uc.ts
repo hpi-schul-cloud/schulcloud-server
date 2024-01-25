@@ -144,20 +144,32 @@ export class DeletionRequestUc {
 			emailsToDeletion = [userToDeletion.email, ...parentEmails];
 		}
 
-		const result = await Promise.all(
+		const results = await Promise.all(
 			emailsToDeletion.map((email) => this.registrationPinService.deleteRegistrationPinByEmail(email))
 		);
-		const deletedRegistrationPin = result.filter((res) => res !== 0).length;
 
-		await this.logDeletion(
-			deletionRequest,
-			DomainModel.REGISTRATIONPIN,
-			OperationModel.DELETE,
-			deletedRegistrationPin,
-			[]
+		const result = this.getDomainOperation(results);
+
+		await this.logDeletion(deletionRequest, result.domain, result.operation, result.count, result.refs);
+
+		return result.count;
+	}
+
+	private getDomainOperation(results: DomainOperation[]) {
+		return results.reduce(
+			(acc, current) => {
+				acc.count += current.count;
+				acc.refs = [...acc.refs, ...current.refs];
+
+				return acc;
+			},
+			{
+				domain: results[0].domain,
+				operation: results[0].operation,
+				count: 0,
+				refs: [],
+			}
 		);
-
-		return deletedRegistrationPin;
 	}
 
 	private async removeUserFromClasses(deletionRequest: DeletionRequest) {
@@ -283,8 +295,14 @@ export class DeletionRequestUc {
 		const registrationPinDeleted = await this.removeUserRegistrationPin(deletionRequest);
 
 		if (registrationPinDeleted) {
-			const userDeleted: number = await this.userService.deleteUser(deletionRequest.targetRefId);
-			await this.logDeletion(deletionRequest, DomainModel.USER, OperationModel.DELETE, userDeleted, []);
+			const userDeleted = await this.userService.deleteUser(deletionRequest.targetRefId);
+			await this.logDeletion(
+				deletionRequest,
+				userDeleted.domain,
+				userDeleted.operation,
+				userDeleted.count,
+				userDeleted.refs
+			);
 		}
 	}
 

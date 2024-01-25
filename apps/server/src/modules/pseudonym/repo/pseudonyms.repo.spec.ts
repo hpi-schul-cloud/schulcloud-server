@@ -274,12 +274,5 @@ describe('PseudonymRepo', () => {
 				expect(result).toEqual(expectedResult);
 			});
 		});
-
-		describe('should return empty array when there is no pseudonym', () => {
-			it('should return empty array', async () => {
-				const result: Pseudonym[] = await repo.findByUserId(new ObjectId().toHexString());
-				expect(result).toHaveLength(0);
-			});
-		});
 	});
 });

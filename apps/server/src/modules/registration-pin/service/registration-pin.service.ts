@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DomainModel, StatusModel } from '@shared/domain/types';
+import { DomainModel, OperationModel, StatusModel } from '@shared/domain/types';
+import { DomainOperation } from '@shared/domain/interface';
+import { DomainOperationBuilder } from '@shared/domain/builder';
 import { RegistrationPinRepo } from '../repo';
 
 @Injectable()
@@ -10,7 +12,7 @@ export class RegistrationPinService {
 		this.logger.setContext(RegistrationPinService.name);
 	}
 
-	async deleteRegistrationPinByEmail(email: string): Promise<number> {
+	async deleteRegistrationPinByEmail(email: string): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from RegistrationPin',
@@ -19,7 +21,19 @@ export class RegistrationPinService {
 				StatusModel.PENDING
 			)
 		);
-		const result = await this.registrationPinRepo.deleteRegistrationPinByEmail(email);
+		const response = await this.registrationPinRepo.deleteRegistrationPinByEmail(email);
+
+		const deletedRegistrationPins = response !== null ? [response] : [];
+
+		const numberOfDeletedRegistrationPins = deletedRegistrationPins.length;
+
+		const result = DomainOperationBuilder.build(
+			DomainModel.REGISTRATIONPIN,
+			OperationModel.DELETE,
+			numberOfDeletedRegistrationPins,
+			deletedRegistrationPins
+		);
+
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully deleted user data from RegistrationPin',
@@ -27,7 +41,7 @@ export class RegistrationPinService {
 				email,
 				StatusModel.FINISHED,
 				0,
-				result
+				numberOfDeletedRegistrationPins
 			)
 		);
 
