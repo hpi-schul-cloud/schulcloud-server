@@ -4,6 +4,7 @@ import WebSocket from 'ws';
 import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
 import { encoding, decoding, map } from 'lib0';
 import { readSyncMessage, writeSyncStep1, writeUpdate } from 'y-protocols/sync';
+import { encodeStateAsUpdate } from 'yjs';
 import { Persitence, WSConnectionState, WSMessageType } from '../types';
 import { TldrawConfig } from '../config';
 import { WsSharedDocDo } from '../domain/ws-shared-doc.do';
@@ -103,7 +104,7 @@ export class TldrawWsService {
 	 * @param  {boolean} gc - whether to allow gc on the doc (applies only when created)
 	 * @return {WsSharedDocDo}
 	 */
-	getYDoc(docName: string, gc = true): WsSharedDocDo {
+	public getYDoc(docName: string, gc = true): WsSharedDocDo {
 		return map.setIfUndefined(this.docs, docName, () => {
 			const doc = new WsSharedDocDo(docName, this, gc);
 			if (this.persistence !== null) {
@@ -149,7 +150,6 @@ export class TldrawWsService {
 	 * @param {string} docName
 	 */
 	public setupWSConnection(ws: WebSocket, docName = 'GLOBAL'): void {
-		console.log('setupWSConnection1');
 		ws.binaryType = 'arraybuffer';
 		// get doc, initialize if it does not exist yet
 		const doc = this.getYDoc(docName, true);
@@ -159,6 +159,9 @@ export class TldrawWsService {
 		ws.on('message', (message: ArrayBufferLike) => {
 			this.messageHandler(ws, doc, new Uint8Array(message));
 		});
+
+		// send initial doc state to client as update
+		this.sendInitialState(ws, doc);
 
 		// Check if connection is still alive
 		let pongReceived = true;
@@ -204,7 +207,6 @@ export class TldrawWsService {
 			}
 		}
 		this.metricsService.incrementNumberOfUsersOnServerCounter();
-		console.log('setupWSConnection2');
 	}
 
 	public async updateDocument(docName: string, ydoc: WsSharedDocDo): Promise<void> {
@@ -213,5 +215,12 @@ export class TldrawWsService {
 
 	public async flushDocument(docName: string): Promise<void> {
 		await this.tldrawBoardRepo.flushDocument(docName);
+	}
+
+	private sendInitialState(ws: WebSocket, doc: WsSharedDocDo): void {
+		const encoder = encoding.createEncoder();
+		encoding.writeVarUint(encoder, WSMessageType.SYNC);
+		writeUpdate(encoder, encodeStateAsUpdate(doc));
+		this.send(doc, ws, encoding.toUint8Array(encoder));
 	}
 }

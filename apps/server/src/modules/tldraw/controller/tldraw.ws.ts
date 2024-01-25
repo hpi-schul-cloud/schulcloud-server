@@ -6,7 +6,7 @@ import cookie from 'cookie';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { AxiosError } from 'axios';
-import { firstValueFrom, lastValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { WebsocketCloseErrorLoggable } from '../loggable/websocket-close-error.loggable';
 import { TldrawConfig, SOCKET_PORT } from '../config';
@@ -18,7 +18,9 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 	@WebSocketServer()
 	server!: Server;
 
-	private apiHostUrl: string;
+	private readonly apiHostUrl: string;
+
+	private readonly isTldrawEnabled: boolean;
 
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
@@ -26,56 +28,53 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		private readonly httpService: HttpService,
 		private readonly logger: Logger
 	) {
+		this.isTldrawEnabled = this.configService.get<boolean>('FEATURE_TLDRAW_ENABLED');
 		this.apiHostUrl = this.configService.get<string>('API_HOST');
 	}
 
 	public async handleConnection(client: WebSocket, request: Request): Promise<void> {
 		const docName = this.getDocNameFromRequest(request);
-		if (docName.length > 0 && this.configService.get<string>('FEATURE_TLDRAW_ENABLED')) {
-			console.log(1);
-			const cookies = this.parseCookiesFromHeader(request);
-			try {
-				console.log(2);
-				await this.resolveAfter2Seconds();
-				// await this.authorizeConnection(docName, cookies?.jwt);
-			} catch (err) {
-				console.log(3);
-				if ((err as AxiosError).response?.status === 404 || (err as AxiosError).response?.status === 400) {
-					this.closeClientAndLogError(
-						client,
-						WsCloseCodeEnum.WS_CLIENT_NOT_FOUND_CODE,
-						WsCloseMessageEnum.WS_CLIENT_NOT_FOUND_MESSAGE,
-						err as Error
-					);
-				} else {
-					this.closeClientAndLogError(
-						client,
-						WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
-						WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE,
-						err as Error
-					);
-				}
-				return;
-			}
-			try {
-				console.log(4);
-				this.tldrawWsService.setupWSConnection(client, docName);
-				console.log(5);
-			} catch (err) {
-				this.closeClientAndLogError(
-					client,
-					WsCloseCodeEnum.WS_CLIENT_ESTABLISHING_CONNECTION_CODE,
-					WsCloseMessageEnum.WS_CLIENT_ESTABLISHING_CONNECTION_MESSAGE,
-					err as Error
-				);
-			}
-		} else {
-			console.log(6);
+
+		if (!this.isTldrawEnabled || !docName) {
 			this.closeClientAndLogError(
 				client,
 				WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE,
 				WsCloseMessageEnum.WS_CLIENT_BAD_REQUEST_MESSAGE,
 				new BadRequestException()
+			);
+			return;
+		}
+
+		try {
+			const cookies = this.parseCookiesFromHeader(request);
+			await this.authorizeConnection(docName, cookies?.jwt);
+		} catch (err) {
+			if (err instanceof AxiosError && (err.response?.status === 400 || err.response?.status === 404)) {
+				this.closeClientAndLogError(
+					client,
+					WsCloseCodeEnum.WS_CLIENT_NOT_FOUND_CODE,
+					WsCloseMessageEnum.WS_CLIENT_NOT_FOUND_MESSAGE,
+					err
+				);
+			} else {
+				this.closeClientAndLogError(
+					client,
+					WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
+					WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE,
+					err
+				);
+			}
+			return;
+		}
+
+		try {
+			this.tldrawWsService.setupWSConnection(client, docName);
+		} catch (err) {
+			this.closeClientAndLogError(
+				client,
+				WsCloseCodeEnum.WS_CLIENT_FAILED_CONNECTION_CODE,
+				WsCloseMessageEnum.WS_CLIENT_FAILED_CONNECTION_MESSAGE,
+				err
 			);
 		}
 	}
@@ -103,45 +102,23 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		return parsedCookies;
 	}
 
-	private closeClientAndLogError(client: WebSocket, code: WsCloseCodeEnum, data: string, err: Error): void {
+	private closeClientAndLogError(client: WebSocket, code: WsCloseCodeEnum, data: string, err: unknown): void {
 		client.close(code, data);
 		this.logger.warning(new WebsocketCloseErrorLoggable(err, `(${code}) ${data}`));
 	}
 
-	private async authorizeConnection(drawingName: string, token: string) {
-		console.log('authorizeConnection1');
+	private async authorizeConnection(drawingName: string, token: string): Promise<void> {
 		if (!token) {
 			throw new UnauthorizedException('Token was not given');
 		}
-		const headers = {
-			Accept: 'Application/json',
-			Authorization: `Bearer ${token}`,
-		};
-		console.log('authorizeConnection2');
-		console.log(this.apiHostUrl);
 
-		// const result = await this.resolveAfter2Seconds();
-		await this.resolveAfter2Seconds();
-		// const toJestResposeZwykly = await fetch(`${this.apiHostUrl}/v3/elements/${drawingName}/permission`, {
-		// 	headers,
-		// });
-		// console.log(toJestResposeZwykly);
-		//
-		// console.log('toJestResposeZwykly.ok');
-		// console.log(toJestResposeZwykly.ok);
-
-		// await this.httpService.axiosRef.get(`${this.apiHostUrl}/v3/elements/${drawingName}/permission`, {
-		// 	headers,
-		// });
-
-		console.log('authorizeConnection3');
-	}
-
-	private resolveAfter2Seconds() {
-		return new Promise((resolve) => {
-			setTimeout(() => {
-				resolve('resolved');
-			}, 5000);
-		});
+		await firstValueFrom(
+			this.httpService.get(`${this.apiHostUrl}/v3/elements/${drawingName}/permission`, {
+				headers: {
+					Accept: 'Application/json',
+					Authorization: `Bearer ${token}`,
+				},
+			})
+		);
 	}
 }
