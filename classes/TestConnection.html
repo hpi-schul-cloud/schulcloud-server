@@ -192,7 +192,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/tldraw/testing/test-connection.ts:4</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/tldraw/testing/test-connection.ts:5</a></div>
                         </td>
                     </tr>
 
@@ -218,7 +218,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/tldraw/testing/test-connection.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/tldraw/testing/test-connection.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -238,6 +238,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import WebSocket from &#x27;ws&#x27;;
+import { HttpHeaders } from &#x27;aws-sdk/clients/iot&#x27;;
 
 export class TestConnection {
 	public static getWsUrl &#x3D; (gatewayPort: number): string &#x3D;&gt; {
@@ -245,12 +246,12 @@ export class TestConnection {
 		return wsUrl;
 	};
 
-	public static setupWs &#x3D; async (wsUrl: string, docName?: string, headers?: object): Promise&lt;WebSocket&gt; &#x3D;&gt; {
+	public static setupWs &#x3D; async (wsUrl: string, docName?: string, headers?: HttpHeaders): Promise&lt;WebSocket&gt; &#x3D;&gt; {
 		let ws: WebSocket;
 		if (docName) {
-			ws &#x3D; new WebSocket(&#x60;${wsUrl}/${docName}&#x60;, headers);
+			ws &#x3D; new WebSocket(&#x60;${wsUrl}/${docName}&#x60;, { headers });
 		} else {
-			ws &#x3D; new WebSocket(&#x60;${wsUrl}&#x60;, headers);
+			ws &#x3D; new WebSocket(&#x60;${wsUrl}&#x60;, { headers });
 		}
 		await new Promise((resolve) &#x3D;&gt; {
 			ws.on(&#x27;open&#x27;, resolve);

@@ -24,107 +24,107 @@
 <title>cluster_SchoolExternalToolModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 1067,-268 1067,-70 8,-70"/>
 </g>
+<g id="clust3" class="cluster">
+<title>cluster_SchoolExternalToolModule_imports</title>
+<polygon fill="none" stroke="black" points="611,-78 611,-130 1059,-130 1059,-78 611,-78"/>
+</g>
 <g id="clust4" class="cluster">
 <title>cluster_SchoolExternalToolModule_exports</title>
-<polygon fill="none" stroke="black" points="151,-208 151,-260 593,-260 593,-208 151,-208"/>
+<polygon fill="none" stroke="black" points="445,-208 445,-260 887,-260 887,-208 445,-208"/>
 </g>
 <g id="clust6" class="cluster">
 <title>cluster_SchoolExternalToolModule_providers</title>
-<polygon fill="none" stroke="black" points="472,-78 472,-130 1059,-130 1059,-78 472,-78"/>
-</g>
-<g id="clust3" class="cluster">
-<title>cluster_SchoolExternalToolModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 464,-130 464,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 603,-130 603,-78 16,-78"/>
 </g>
 <!-- CommonToolModule -->
 <g id="node1" class="node">
 <title>CommonToolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="456.11,-122 453.11,-126 432.11,-126 429.11,-122 317.89,-122 317.89,-86 456.11,-86 456.11,-122"/>
-<text text-anchor="middle" x="387" y="-99.8" font-family="Times,serif" font-size="14.00">CommonToolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="1051.11,-122 1048.11,-126 1027.11,-126 1024.11,-122 912.89,-122 912.89,-86 1051.11,-86 1051.11,-122"/>
+<text text-anchor="middle" x="982" y="-99.8" font-family="Times,serif" font-size="14.00">CommonToolModule</text>
 </g>
 <!-- SchoolExternalToolModule -->
 <g id="node4" class="node">
 <title>SchoolExternalToolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="473.3,-187 470.3,-191 449.3,-191 446.3,-187 300.7,-187 300.7,-151 473.3,-151 473.3,-187"/>
-<text text-anchor="middle" x="387" y="-164.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="767.3,-187 764.3,-191 743.3,-191 740.3,-187 594.7,-187 594.7,-151 767.3,-151 767.3,-187"/>
+<text text-anchor="middle" x="681" y="-164.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolModule</text>
 </g>
 <!-- CommonToolModule&#45;&gt;SchoolExternalToolModule -->
 <g id="edge1" class="edge">
 <title>CommonToolModule&#45;&gt;SchoolExternalToolModule</title>
-<path fill="none" stroke="black" d="M387,-122.11C387,-122.11 387,-140.99 387,-140.99"/>
-<polygon fill="black" stroke="black" points="383.5,-140.99 387,-150.99 390.5,-140.99 383.5,-140.99"/>
+<path fill="none" stroke="black" d="M982,-122.11C982,-141.34 982,-169 982,-169 982,-169 777.25,-169 777.25,-169"/>
+<polygon fill="black" stroke="black" points="777.25,-165.5 767.25,-169 777.25,-172.5 777.25,-165.5"/>
 </g>
 <!-- ExternalToolModule -->
 <g id="node2" class="node">
 <title>ExternalToolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="299.92,-122 296.92,-126 275.92,-126 272.92,-122 166.08,-122 166.08,-86 299.92,-86 299.92,-122"/>
-<text text-anchor="middle" x="233" y="-99.8" font-family="Times,serif" font-size="14.00">ExternalToolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="894.92,-122 891.92,-126 870.92,-126 867.92,-122 761.08,-122 761.08,-86 894.92,-86 894.92,-122"/>
+<text text-anchor="middle" x="828" y="-99.8" font-family="Times,serif" font-size="14.00">ExternalToolModule</text>
 </g>
 <!-- ExternalToolModule&#45;&gt;SchoolExternalToolModule -->
 <g id="edge2" class="edge">
 <title>ExternalToolModule&#45;&gt;SchoolExternalToolModule</title>
-<path fill="none" stroke="black" d="M299.72,-104C305.61,-104 309.4,-104 309.4,-104 309.4,-104 309.4,-140.89 309.4,-140.89"/>
-<polygon fill="black" stroke="black" points="305.9,-140.89 309.4,-150.89 312.9,-140.89 305.9,-140.89"/>
+<path fill="none" stroke="black" d="M761.04,-104C755.73,-104 752.37,-104 752.37,-104 752.37,-104 752.37,-140.89 752.37,-140.89"/>
+<polygon fill="black" stroke="black" points="748.87,-140.89 752.37,-150.89 755.87,-140.89 748.87,-140.89"/>
 </g>
 <!-- ToolConfigModule -->
 <g id="node3" class="node">
 <title>ToolConfigModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="148.38,-122 145.38,-126 124.38,-126 121.38,-122 23.62,-122 23.62,-86 148.38,-86 148.38,-122"/>
-<text text-anchor="middle" x="86" y="-99.8" font-family="Times,serif" font-size="14.00">ToolConfigModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="743.38,-122 740.38,-126 719.38,-126 716.38,-122 618.62,-122 618.62,-86 743.38,-86 743.38,-122"/>
+<text text-anchor="middle" x="681" y="-99.8" font-family="Times,serif" font-size="14.00">ToolConfigModule</text>
 </g>
 <!-- ToolConfigModule&#45;&gt;SchoolExternalToolModule -->
 <g id="edge3" class="edge">
 <title>ToolConfigModule&#45;&gt;SchoolExternalToolModule</title>
-<path fill="none" stroke="black" d="M86,-122.11C86,-141.34 86,-169 86,-169 86,-169 290.75,-169 290.75,-169"/>
-<polygon fill="black" stroke="black" points="290.75,-172.5 300.75,-169 290.75,-165.5 290.75,-172.5"/>
+<path fill="none" stroke="black" d="M681,-122.11C681,-122.11 681,-140.99 681,-140.99"/>
+<polygon fill="black" stroke="black" points="677.5,-140.99 681,-150.99 684.5,-140.99 677.5,-140.99"/>
 </g>
 <!-- SchoolExternalToolService  -->
 <g id="node5" class="node">
 <title>SchoolExternalToolService </title>
-<polygon fill="#fb8072" stroke="black" points="585.23,-252 410.77,-252 410.77,-216 585.23,-216 585.23,-252"/>
-<text text-anchor="middle" x="498" y="-229.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolService </text>
+<polygon fill="#fb8072" stroke="black" points="879.23,-252 704.77,-252 704.77,-216 879.23,-216 879.23,-252"/>
+<text text-anchor="middle" x="792" y="-229.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolService </text>
 </g>
 <!-- SchoolExternalToolModule&#45;&gt;SchoolExternalToolService  -->
 <g id="edge4" class="edge">
 <title>SchoolExternalToolModule&#45;&gt;SchoolExternalToolService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M442.02,-187.11C442.02,-187.11 442.02,-205.99 442.02,-205.99"/>
-<polygon fill="black" stroke="black" points="438.52,-205.99 442.02,-215.99 445.52,-205.99 438.52,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M736.02,-187.11C736.02,-187.11 736.02,-205.99 736.02,-205.99"/>
+<polygon fill="black" stroke="black" points="732.52,-205.99 736.02,-215.99 739.52,-205.99 732.52,-205.99"/>
 </g>
 <!-- SchoolExternalToolValidationService  -->
 <g id="node6" class="node">
 <title>SchoolExternalToolValidationService </title>
-<polygon fill="#fb8072" stroke="black" points="392.83,-252 159.17,-252 159.17,-216 392.83,-216 392.83,-252"/>
-<text text-anchor="middle" x="276" y="-229.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolValidationService </text>
+<polygon fill="#fb8072" stroke="black" points="686.83,-252 453.17,-252 453.17,-216 686.83,-216 686.83,-252"/>
+<text text-anchor="middle" x="570" y="-229.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolValidationService </text>
 </g>
 <!-- SchoolExternalToolModule&#45;&gt;SchoolExternalToolValidationService  -->
 <g id="edge5" class="edge">
 <title>SchoolExternalToolModule&#45;&gt;SchoolExternalToolValidationService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M346.76,-187.11C346.76,-187.11 346.76,-205.99 346.76,-205.99"/>
-<polygon fill="black" stroke="black" points="343.26,-205.99 346.76,-215.99 350.26,-205.99 343.26,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M640.76,-187.11C640.76,-187.11 640.76,-205.99 640.76,-205.99"/>
+<polygon fill="black" stroke="black" points="637.26,-205.99 640.76,-215.99 644.26,-205.99 637.26,-205.99"/>
 </g>
 <!-- SchoolExternalToolService -->
 <g id="node7" class="node">
 <title>SchoolExternalToolService</title>
-<ellipse fill="#fdb462" stroke="black" cx="933" cy="-104" rx="117.54" ry="18"/>
-<text text-anchor="middle" x="933" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolService</text>
+<ellipse fill="#fdb462" stroke="black" cx="477" cy="-104" rx="117.54" ry="18"/>
+<text text-anchor="middle" x="477" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolService</text>
 </g>
 <!-- SchoolExternalToolService&#45;&gt;SchoolExternalToolModule -->
 <g id="edge6" class="edge">
 <title>SchoolExternalToolService&#45;&gt;SchoolExternalToolModule</title>
-<path fill="none" stroke="black" d="M933,-122.11C933,-141.34 933,-169 933,-169 933,-169 483.21,-169 483.21,-169"/>
-<polygon fill="black" stroke="black" points="483.21,-165.5 473.21,-169 483.21,-172.5 483.21,-165.5"/>
+<path fill="none" stroke="black" d="M595.19,-104C602.33,-104 606.7,-104 606.7,-104 606.7,-104 606.7,-140.89 606.7,-140.89"/>
+<polygon fill="black" stroke="black" points="603.2,-140.89 606.7,-150.89 610.2,-140.89 603.2,-140.89"/>
 </g>
 <!-- SchoolExternalToolValidationService -->
 <g id="node8" class="node">
 <title>SchoolExternalToolValidationService</title>
-<ellipse fill="#fdb462" stroke="black" cx="639" cy="-104" rx="158.57" ry="18"/>
-<text text-anchor="middle" x="639" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolValidationService</text>
+<ellipse fill="#fdb462" stroke="black" cx="183" cy="-104" rx="158.57" ry="18"/>
+<text text-anchor="middle" x="183" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolExternalToolValidationService</text>
 </g>
 <!-- SchoolExternalToolValidationService&#45;&gt;SchoolExternalToolModule -->
 <g id="edge7" class="edge">
 <title>SchoolExternalToolValidationService&#45;&gt;SchoolExternalToolModule</title>
-<path fill="none" stroke="black" d="M480.39,-104C470.61,-104 464.6,-104 464.6,-104 464.6,-104 464.6,-140.89 464.6,-140.89"/>
-<polygon fill="black" stroke="black" points="461.1,-140.89 464.6,-150.89 468.1,-140.89 461.1,-140.89"/>
+<path fill="none" stroke="black" d="M183,-122.11C183,-141.34 183,-169 183,-169 183,-169 584.82,-169 584.82,-169"/>
+<polygon fill="black" stroke="black" points="584.82,-172.5 594.82,-169 584.82,-165.5 584.82,-172.5"/>
 </g>
 </g>
 </svg>
