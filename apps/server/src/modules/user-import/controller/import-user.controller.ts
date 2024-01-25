@@ -130,7 +130,7 @@ export class ImportUserController {
 	@ApiServiceUnavailableResponse()
 	@ApiBadRequestResponse()
 	@ApiForbiddenResponse()
-	async fetchImportUsers(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
+	async populateImportUsers(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.userImportFetchUc.populateImportUsers(currentUser.userId);
 	}
 }
