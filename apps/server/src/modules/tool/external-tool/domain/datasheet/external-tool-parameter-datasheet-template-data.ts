@@ -3,9 +3,9 @@ export class ExternalToolParameterDatasheetTemplateData {
 
 	properties: string;
 
-	scope?: string;
+	scope: string;
 
-	type?: string;
+	type: string;
 
 	constructor(parameterData: ExternalToolParameterDatasheetTemplateData) {
 		this.name = parameterData.name;

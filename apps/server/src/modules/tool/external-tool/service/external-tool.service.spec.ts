@@ -14,12 +14,16 @@ import {
 	oauth2ToolConfigFactory,
 } from '@shared/testing/factory/domainobject/tool/external-tool.factory';
 import { LegacyLogger } from '@src/core/logger';
+import { User } from '@shared/domain/entity';
+import { userFactory } from '@shared/testing';
+import { externalToolDatasheetTemplateDataFactory } from '@shared/testing/factory/domainobject/tool/external-tool-datasheet-template-data.factory';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
+import { ExternalTool, ExternalToolDatasheetTemplateData, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalToolVersionIncrementService } from './external-tool-version-increment.service';
 import { ExternalToolService } from './external-tool.service';
+import { ExternalToolDatasheetMapper } from '../mapper/external-tool-datasheet.mapper';
 
 describe('ExternalToolService', () => {
 	let module: TestingModule;
@@ -680,6 +684,96 @@ describe('ExternalToolService', () => {
 
 					expect(externalToolRepo.save).toHaveBeenCalledWith({ ...externalTool, version: 2 });
 				});
+			});
+		});
+	});
+
+	describe('getDatasheetData', () => {
+		describe('when tool is a basic tool', () => {
+			const setup = () => {
+				const { externalTool } = createTools();
+				const user: User = userFactory.build();
+				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
+					.withParameters(1)
+					.build();
+
+				externalToolRepo.findById.mockResolvedValue(externalTool);
+
+				return {
+					externalTool,
+					user,
+					datasheetData,
+				};
+			};
+
+			it('should find external tool', async () => {
+				const { externalTool, user } = setup();
+
+				await service.getExternalToolDatasheetTemplateData('toolId', user.firstName, user.lastName);
+
+				expect(externalToolRepo.findById).toHaveBeenCalledWith(externalTool.id);
+			});
+
+			it('should return external tool datasheet template data', async () => {
+				const { user, datasheetData } = setup();
+
+				const data = await service.getExternalToolDatasheetTemplateData('toolId', user.firstName, user.lastName);
+
+				expect(data).toEqual<ExternalToolDatasheetMapper>(datasheetData);
+			});
+		});
+
+		describe('when tool is an oauth2 tool', () => {
+			const setup = () => {
+				const { externalTool, oauth2ToolConfig } = createTools();
+				externalTool.config = oauth2ToolConfig;
+				const user: User = userFactory.build();
+				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
+					.asOauth2Tool()
+					.withParameters(1)
+					.build();
+
+				externalToolRepo.findById.mockResolvedValue(externalTool);
+
+				return {
+					user,
+					datasheetData,
+				};
+			};
+
+			it('should return external tool datasheet template data', async () => {
+				const { user, datasheetData } = setup();
+
+				const data = await service.getExternalToolDatasheetTemplateData('toolId', user.firstName, user.lastName);
+
+				expect(data).toEqual<ExternalToolDatasheetMapper>(datasheetData);
+			});
+		});
+
+		describe('when tool is an LTI1.1 tool', () => {
+			const setup = () => {
+				const { externalTool, lti11ToolConfig } = createTools();
+				externalTool.config = lti11ToolConfig;
+				const user: User = userFactory.build();
+				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
+					.asLti11Tool()
+					.withParameters(1)
+					.build();
+
+				externalToolRepo.findById.mockResolvedValue(externalTool);
+
+				return {
+					user,
+					datasheetData,
+				};
+			};
+
+			it('should return external tool datasheet template data', async () => {
+				const { user, datasheetData } = setup();
+
+				const data = await service.getExternalToolDatasheetTemplateData('toolId', user.firstName, user.lastName);
+
+				expect(data).toEqual<ExternalToolDatasheetMapper>(datasheetData);
 			});
 		});
 	});

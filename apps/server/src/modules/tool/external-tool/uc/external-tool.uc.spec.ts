@@ -9,11 +9,12 @@ import { Role, User } from '@shared/domain/entity';
 import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { externalToolFactory, oauth2ToolConfigFactory } from '@shared/testing/factory';
+import { externalToolDatasheetTemplateDataFactory } from '@shared/testing/factory/domainobject/tool/external-tool-datasheet-template-data.factory';
+import { PDFService } from '@pyxlab/nestjs-pdf';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
-import { ExternalTool, ExternalToolMetadata, Oauth2ToolConfig } from '../domain';
+import { ExternalTool, ExternalToolDatasheetTemplateData, ExternalToolMetadata, Oauth2ToolConfig } from '../domain';
 import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
-
 import { ExternalToolUpdate } from './dto';
 import { ExternalToolUc } from './external-tool.uc';
 
@@ -26,6 +27,7 @@ describe('ExternalToolUc', () => {
 	let toolValidationService: DeepMocked<ExternalToolValidationService>;
 	let logoService: DeepMocked<ExternalToolLogoService>;
 	let commonToolMetadataService: DeepMocked<CommonToolMetadataService>;
+	let pdfService: DeepMocked<PDFService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -53,6 +55,10 @@ describe('ExternalToolUc', () => {
 					provide: CommonToolMetadataService,
 					useValue: createMock<CommonToolMetadataService>(),
 				},
+				{
+					provide: PDFService,
+					useValue: createMock<PDFService>(),
+				},
 			],
 		}).compile();
 
@@ -62,6 +68,7 @@ describe('ExternalToolUc', () => {
 		toolValidationService = module.get(ExternalToolValidationService);
 		logoService = module.get(ExternalToolLogoService);
 		commonToolMetadataService = module.get(CommonToolMetadataService);
+		pdfService = module.get(PDFService);
 	});
 
 	afterAll(async () => {
@@ -576,6 +583,102 @@ describe('ExternalToolUc', () => {
 				const result = await uc.getMetadataForExternalTool(currentUser.userId, toolId);
 
 				expect(result).toEqual(externalToolMetadata);
+			});
+		});
+	});
+
+	describe('getDatasheet', () => {
+		describe('when authorize user', () => {
+			const setupDatasheetData = () => {
+				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
+				const user: User = userFactory.buildWithId({ roles: [role] });
+
+				const toolId: string = new ObjectId().toHexString();
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+
+				return {
+					user,
+					toolId,
+				};
+			};
+
+			it('get user with permissions', async () => {
+				const { user, toolId } = setupDatasheetData();
+
+				await uc.getDatasheet(user.id, toolId);
+
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
+			});
+
+			it('should check that the user has TOOL_ADMIN permission', async () => {
+				const { user, toolId } = setupDatasheetData();
+
+				await uc.getDatasheet(user.id, toolId);
+
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
+			});
+		});
+
+		describe('when user has insufficient permission to get an metadata for external tool ', () => {
+			const setupDatasheetData = () => {
+				const toolId: string = new ObjectId().toHexString();
+
+				const user: User = userFactory.buildWithId();
+
+				authorizationService.getUserWithPermissions.mockRejectedValue(new UnauthorizedException());
+
+				return {
+					user,
+					toolId,
+				};
+			};
+
+			it('should throw UnauthorizedException ', async () => {
+				const { toolId, user } = setupDatasheetData();
+
+				const result = uc.getDatasheet(user.id, toolId);
+
+				await expect(result).rejects.toThrow(UnauthorizedException);
+			});
+		});
+
+		describe('when externalToolId is given', () => {
+			const setupDatasheetdata = () => {
+				const toolId: string = new ObjectId().toHexString();
+				const user: User = userFactory.buildWithId();
+				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
+					.withParameters(1)
+					.build();
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				externalToolService.getExternalToolDatasheetTemplateData.mockResolvedValue(datasheetData);
+
+				return {
+					user,
+					toolId,
+					datasheetData,
+				};
+			};
+
+			it('should get datasheetData', async () => {
+				const { toolId, user } = setupDatasheetdata();
+
+				await uc.getDatasheet(user.id, toolId);
+
+				expect(externalToolService.getExternalToolDatasheetTemplateData).toHaveBeenCalledWith(
+					toolId,
+					user.firstName,
+					user.lastName
+				);
+			});
+
+			it('should create pdf buffer', async () => {
+				const { toolId, user, datasheetData } = setupDatasheetdata();
+
+				await uc.getDatasheet(user.id, toolId);
+
+				expect(pdfService.toBuffer).toHaveBeenCalledWith('ExternalToolDatasheet', { locals: datasheetData });
 			});
 		});
 	});

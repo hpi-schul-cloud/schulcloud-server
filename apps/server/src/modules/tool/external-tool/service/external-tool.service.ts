@@ -11,9 +11,9 @@ import { TokenEndpointAuthMethod } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalTool, ExternalToolDatasheetTemplateData, Oauth2ToolConfig } from '../domain';
-import { ExternalToolDatasheetMapper } from '../mapper/external-tool-datasheet.mapper';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalToolVersionIncrementService } from './external-tool-version-increment.service';
+import { ExternalToolDatasheetMapper } from '../mapper/external-tool-datasheet.mapper';
 
 @Injectable()
 export class ExternalToolService {

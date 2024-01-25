@@ -97,16 +97,14 @@ export class ExternalToolUc {
 	}
 
 	public async getDatasheet(userId: EntityId, externalToolId: EntityId): Promise<Buffer> {
-		await this.ensurePermission(userId, Permission.TOOL_ADMIN);
-
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
 		const dataSheetData: ExternalToolDatasheetTemplateData =
 			await this.externalToolService.getExternalToolDatasheetTemplateData(
 				externalToolId,
 				user.firstName,
 				user.lastName
 			);
-
 		const buffer: Promise<Buffer> = firstValueFrom(
 			this.pdfService.toBuffer('ExternalToolDatasheet', { locals: dataSheetData })
 		);
