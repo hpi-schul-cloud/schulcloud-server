@@ -247,16 +247,11 @@ describe('YMongoDb', () => {
 
 			describe('when single entity size is greater than MAX_DOCUMENT_SIZE', () => {
 				it('should return ydoc from the database', async () => {
-					// set private property to 1 instead of creating mock 15mb document
-					// eslint-disable-next-line @typescript-eslint/dot-notation
-					mdb['maxDocumentSize'] = 1;
 					const { applyUpdateSpy } = await setup();
 
 					const doc = await mdb.getYDoc('test-name');
 
 					expect(doc).toBeDefined();
-					// eslint-disable-next-line @typescript-eslint/dot-notation
-					mdb['maxDocumentSize'] = 15000000;
 					applyUpdateSpy.mockRestore();
 				});
 			});

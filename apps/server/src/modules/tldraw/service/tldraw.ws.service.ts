@@ -1,15 +1,13 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import WebSocket from 'ws';
 import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
 import { decoding, encoding, map } from 'lib0';
 import { readSyncMessage, writeSyncStep1, writeUpdate } from 'y-protocols/sync';
-import { firstValueFrom } from 'rxjs';
-import { encodeStateAsUpdate } from 'yjs';
+import { applyUpdate, encodeStateAsUpdate } from 'yjs';
 import { Buffer } from 'node:buffer';
 import { Redis } from 'ioredis';
 import { Logger } from '@src/core/logger';
-import { applyUpdate } from 'yjs';
 import { TldrawRedisFactory } from '../redis';
 import {
 	CloseConnectionLoggable,
@@ -103,6 +101,14 @@ export class TldrawWsService {
 	}
 
 	/**
+	 * @param {string} docName
+	 * @param {Uint8Array} update
+	 */
+	public async databaseUpdateHandler(docName: string, update: Uint8Array) {
+		await this.tldrawBoardRepo.storeUpdate(docName, update);
+	}
+
+	/**
 	 * @param {AwarenessConnectionsUpdate} connectionsUpdate
 	 * @param {WebSocket | null} wsConnection Origin is the connection that made the change
 	 * @param {WsSharedDocDo} doc
@@ -122,12 +128,15 @@ export class TldrawWsService {
 	 *
 	 * @param {string} docName - the name of the Y.Doc to find or create
 	 */
-	public getYDoc(docName: string) {
-		const wsSharedDocDo = map.setIfUndefined(this.docs, docName, () => {
+	public async getYDoc(docName: string) {
+		const wsSharedDocDo = await map.setIfUndefined(this.docs, docName, async () => {
 			const doc = new WsSharedDocDo(docName, this.gcEnabled);
 			this.registerAwarenessUpdateHandler(doc);
 			this.registerUpdateHandler(doc);
 			this.subscribeToRedisChannels(doc);
+
+			await this.updateDocument(docName, doc);
+			this.registerDatabaseUpdateHandler(doc);
 
 			this.docs.set(docName, doc);
 			this.metricsService.incrementNumberOfBoardsOnServerCounter();
@@ -197,12 +206,8 @@ export class TldrawWsService {
 		ws.binaryType = 'arraybuffer';
 
 		// get doc, initialize if it does not exist yet
-		const isNew = !this.docs.has(docName);
-		const doc = this.getYDoc(docName);
+		const doc = await this.getYDoc(docName);
 		doc.connections.set(ws, new Set());
-		if (isNew) {
-			await this.updateDocument(docName, doc);
-		}
 
 		ws.on('error', (err) => {
 			this.logger.warning(new WebsocketErrorLoggable(err));
@@ -212,8 +217,8 @@ export class TldrawWsService {
 			this.messageHandler(ws, doc, new Uint8Array(message));
 		});
 
-        // send initial doc state to client as update
-        this.sendInitialState(ws, doc);
+		// send initial doc state to client as update
+		this.sendInitialState(ws, doc);
 
 		// check if connection is still alive
 		let pongReceived = true;
@@ -336,22 +341,6 @@ export class TldrawWsService {
 		return changedClients;
 	}
 
-	public async authorizeConnection(drawingName: string, token: string) {
-		if (!token) {
-			throw new UnauthorizedException('Token was not given');
-		}
-		const headers = {
-			Accept: 'Application/json',
-			Authorization: `Bearer ${token}`,
-		};
-
-		await firstValueFrom(
-			this.httpService.get(`${this.configService.get<string>('API_HOST')}/v3/elements/${drawingName}/permission`, {
-				headers,
-			})
-		);
-	}
-
 	private registerAwarenessUpdateHandler(doc: WsSharedDocDo) {
 		doc.awareness.on('update', (connectionsUpdate: AwarenessConnectionsUpdate, wsConnection: WebSocket | null) =>
 			this.awarenessUpdateHandler(connectionsUpdate, wsConnection, doc)
@@ -360,6 +349,10 @@ export class TldrawWsService {
 
 	private registerUpdateHandler(doc: WsSharedDocDo) {
 		doc.on('update', (update: Uint8Array, origin) => this.updateHandler(update, origin, doc));
+	}
+
+	private registerDatabaseUpdateHandler(doc: WsSharedDocDo) {
+		doc.on('update', (update: Uint8Array) => this.databaseUpdateHandler(doc.name, update));
 	}
 
 	private subscribeToRedisChannels(doc: WsSharedDocDo) {
@@ -413,10 +406,10 @@ export class TldrawWsService {
 			});
 	}
 
-    private sendInitialState(ws: WebSocket, doc: WsSharedDocDo): void {
-        const encoder = encoding.createEncoder();
-        encoding.writeVarUint(encoder, WSMessageType.SYNC);
-        writeUpdate(encoder, encodeStateAsUpdate(doc));
-        this.send(doc, ws, encoding.toUint8Array(encoder));
-    }
+	private sendInitialState(ws: WebSocket, doc: WsSharedDocDo): void {
+		const encoder = encoding.createEncoder();
+		encoding.writeVarUint(encoder, WSMessageType.SYNC);
+		writeUpdate(encoder, encodeStateAsUpdate(doc));
+		this.send(doc, ws, encoding.toUint8Array(encoder));
+	}
 }

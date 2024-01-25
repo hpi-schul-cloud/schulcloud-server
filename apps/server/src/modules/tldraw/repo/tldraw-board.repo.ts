@@ -47,4 +47,8 @@ export class TldrawBoardRepo {
 	public async flushDocument(docName: string): Promise<void> {
 		await this.mdb.flushDocumentTransactional(docName);
 	}
+
+	public async storeUpdate(docName: string, update: Uint8Array): Promise<void> {
+		await this.mdb.storeUpdateTransactional(docName, update);
+	}
 }

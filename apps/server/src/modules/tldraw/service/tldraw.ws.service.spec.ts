@@ -10,9 +10,7 @@ import * as Ioredis from 'ioredis';
 import { encoding } from 'lib0';
 import { TldrawWsFactory } from '@shared/testing/factory/tldraw.ws.factory';
 import { HttpService } from '@nestjs/axios';
-import { of, throwError } from 'rxjs';
-import { AxiosResponse } from 'axios';
-import { axiosResponseFactory, WebSocketReadyStateEnum } from '@shared/testing';
+import { WebSocketReadyStateEnum } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigModule } from '@nestjs/config';
@@ -55,7 +53,6 @@ describe('TldrawWSService', () => {
 	let service: TldrawWsService;
 	let boardRepo: TldrawBoardRepo;
 	let logger: DeepMocked<Logger>;
-	let httpService: DeepMocked<HttpService>;
 
 	const gatewayPort = 3346;
 	const wsUrl = TestConnection.getWsUrl(gatewayPort);
@@ -94,7 +91,6 @@ describe('TldrawWSService', () => {
 		}).compile();
 
 		service = testingModule.get(TldrawWsService);
-		httpService = testingModule.get(HttpService);
 		boardRepo = testingModule.get(TldrawBoardRepo);
 		logger = testingModule.get(Logger);
 		app = testingModule.createNestApplication();
@@ -463,7 +459,7 @@ describe('TldrawWSService', () => {
 
 				const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockReturnValueOnce();
 				const sendSpy = jest.spyOn(service, 'send').mockImplementation(() => {});
-				const getYDocSpy = jest.spyOn(service, 'getYDoc').mockReturnValueOnce(doc);
+				const getYDocSpy = jest.spyOn(service, 'getYDoc').mockResolvedValueOnce(doc);
 				const closeConnSpy = jest.spyOn(service, 'closeConn').mockResolvedValue();
 				const { msg } = createMessage([0]);
 				jest.spyOn(AwarenessProtocol, 'encodeAwarenessUpdate').mockReturnValueOnce(msg);
@@ -1025,10 +1021,10 @@ describe('TldrawWSService', () => {
 					};
 				};
 
-				it('should log error', () => {
+				it('should log error', async () => {
 					const { errorLogSpy, redisSubscribeSpy, redisOnSpy } = setup();
 
-					service.getYDoc('test-redis-fail');
+					await service.getYDoc('test-redis-fail');
 
 					expect(redisSubscribeSpy).toHaveBeenCalled();
 					expect(errorLogSpy).toHaveBeenCalled();
@@ -1056,7 +1052,7 @@ describe('TldrawWSService', () => {
 			it('should log error', async () => {
 				const { errorLogSpy, redisSubscribeSpy, redisOnSpy } = setup();
 
-				service.getYDoc('test-redis-fail-2');
+				await service.getYDoc('test-redis-fail-2');
 
 				await delay(500);
 

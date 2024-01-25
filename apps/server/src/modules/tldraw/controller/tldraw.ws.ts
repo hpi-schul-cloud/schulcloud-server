@@ -6,9 +6,9 @@ import cookie from 'cookie';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { AxiosError } from 'axios';
-import { WebsocketCloseErrorLoggable } from '../loggable';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
+import { WebsocketCloseErrorLoggable } from '../loggable';
 import { TldrawConfig, SOCKET_PORT } from '../config';
 import { WsCloseCodeEnum, WsCloseMessageEnum } from '../types';
 import { TldrawWsService } from '../service';
@@ -32,52 +32,52 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		this.apiHostUrl = this.configService.get<string>('API_HOST');
 	}
 
-    public async handleConnection(client: WebSocket, request: Request): Promise<void> {
-        const docName = this.getDocNameFromRequest(request);
+	public async handleConnection(client: WebSocket, request: Request): Promise<void> {
+		const docName = this.getDocNameFromRequest(request);
 
-        if (!this.isTldrawEnabled || !docName) {
-            this.closeClientAndLogError(
-                client,
-                WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE,
-                WsCloseMessageEnum.WS_CLIENT_BAD_REQUEST_MESSAGE,
-                new BadRequestException()
-            );
-            return;
-        }
+		if (!this.isTldrawEnabled || !docName) {
+			this.closeClientAndLogError(
+				client,
+				WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE,
+				WsCloseMessageEnum.WS_CLIENT_BAD_REQUEST_MESSAGE,
+				new BadRequestException()
+			);
+			return;
+		}
 
-        try {
-            const cookies = this.parseCookiesFromHeader(request);
-            await this.authorizeConnection(docName, cookies?.jwt);
-        } catch (err) {
-            if (err instanceof AxiosError && (err.response?.status === 400 || err.response?.status === 404)) {
-                this.closeClientAndLogError(
-                    client,
-                    WsCloseCodeEnum.WS_CLIENT_NOT_FOUND_CODE,
-                    WsCloseMessageEnum.WS_CLIENT_NOT_FOUND_MESSAGE,
-                    err
-                );
-            } else {
-                this.closeClientAndLogError(
-                    client,
-                    WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
-                    WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE,
-                    err
-                );
-            }
-            return;
-        }
+		try {
+			const cookies = this.parseCookiesFromHeader(request);
+			await this.authorizeConnection(docName, cookies?.jwt);
+		} catch (err) {
+			if (err instanceof AxiosError && (err.response?.status === 400 || err.response?.status === 404)) {
+				this.closeClientAndLogError(
+					client,
+					WsCloseCodeEnum.WS_CLIENT_NOT_FOUND_CODE,
+					WsCloseMessageEnum.WS_CLIENT_NOT_FOUND_MESSAGE,
+					err
+				);
+			} else {
+				this.closeClientAndLogError(
+					client,
+					WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
+					WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE,
+					err
+				);
+			}
+			return;
+		}
 
-        try {
-            this.tldrawWsService.setupWSConnection(client, docName);
-        } catch (err) {
-            this.closeClientAndLogError(
-                client,
-                WsCloseCodeEnum.WS_CLIENT_FAILED_CONNECTION_CODE,
-                WsCloseMessageEnum.WS_CLIENT_FAILED_CONNECTION_MESSAGE,
-                err
-            );
-        }
-    }
+		try {
+			await this.tldrawWsService.setupWSConnection(client, docName);
+		} catch (err) {
+			this.closeClientAndLogError(
+				client,
+				WsCloseCodeEnum.WS_CLIENT_FAILED_CONNECTION_CODE,
+				WsCloseMessageEnum.WS_CLIENT_FAILED_CONNECTION_MESSAGE,
+				err
+			);
+		}
+	}
 
 	public async afterInit(): Promise<void> {
 		await this.tldrawWsService.createDbIndex();
@@ -95,7 +95,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 
 	private closeClientAndLogError(client: WebSocket, code: WsCloseCodeEnum, data: string, err: unknown): void {
 		client.close(code, data);
-		this.logger.warning(new WebsocketCloseErrorLoggable(`(${code}) ${data}`, err));
+		this.logger.warning(new WebsocketCloseErrorLoggable(err, `(${code}) ${data}`));
 	}
 
 	private async authorizeConnection(drawingName: string, token: string): Promise<void> {

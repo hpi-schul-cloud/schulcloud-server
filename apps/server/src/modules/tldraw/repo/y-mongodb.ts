@@ -16,7 +16,7 @@ import { KeyFactory } from './key.factory';
 
 @Injectable()
 export class YMongodb {
-	private maxDocumentSize: number;
+	private readonly maxDocumentSize: number;
 
 	private readonly flushSize: number;
 

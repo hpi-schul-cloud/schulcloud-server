@@ -1,13 +1,13 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TldrawConfig } from '@modules/tldraw/config';
 import { Test } from '@nestjs/testing';
 import { createConfigModuleOptions } from '@src/config';
-import { tldrawTestConfig } from '@modules/tldraw/testing';
-import { TldrawRedisFactory } from '@modules/tldraw/redis/tldraw-redis.factory';
 import { INestApplication } from '@nestjs/common';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@src/core/logger';
+import { TldrawConfig } from '../config';
+import { tldrawTestConfig } from '../testing';
+import { TldrawRedisFactory } from './tldraw-redis.factory';
 
 describe('TldrawRedisFactory', () => {
 	let app: INestApplication;
