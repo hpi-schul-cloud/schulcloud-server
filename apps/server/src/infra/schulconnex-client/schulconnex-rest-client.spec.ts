@@ -3,7 +3,9 @@ import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth';
 import { HttpService } from '@nestjs/axios';
 import { TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { of } from 'rxjs';
+import { SchulconnexConfigurationMissingLoggable } from './loggable';
 import { SanisResponse } from './response';
 import { SchulconnexRestClient } from './schulconnex-rest-client';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
@@ -15,6 +17,7 @@ describe(SchulconnexRestClient.name, () => {
 
 	let httpService: DeepMocked<HttpService>;
 	let oauthAdapterService: DeepMocked<OauthAdapterService>;
+	let logger: DeepMocked<Logger>;
 	const options: SchulconnexRestClientOptions = {
 		apiUrl: 'https://schulconnex.url/api',
 		clientId: 'clientId',
@@ -25,8 +28,9 @@ describe(SchulconnexRestClient.name, () => {
 	beforeAll(() => {
 		httpService = createMock<HttpService>();
 		oauthAdapterService = createMock<OauthAdapterService>();
+		logger = createMock<Logger>();
 
-		client = new SchulconnexRestClient(options, httpService, oauthAdapterService);
+		client = new SchulconnexRestClient(options, httpService, oauthAdapterService, logger);
 	});
 
 	afterAll(async () => {
@@ -35,6 +39,31 @@ describe(SchulconnexRestClient.name, () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
+	});
+
+	describe('constructor', () => {
+		describe('when configuration is missing', () => {
+			const setup = () => {
+				const badOptions: SchulconnexRestClientOptions = {
+					apiUrl: '',
+					clientId: '',
+					clientSecret: '',
+					tokenEndpoint: '',
+				};
+				return {
+					badOptions,
+				};
+			};
+
+			it('should log a message', () => {
+				const { badOptions } = setup();
+
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				const badOptionsClient = new SchulconnexRestClient(badOptions, httpService, oauthAdapterService, logger);
+
+				expect(logger.info).toHaveBeenCalledWith(new SchulconnexConfigurationMissingLoggable());
+			});
+		});
 	});
 
 	describe('getPersonInfo', () => {

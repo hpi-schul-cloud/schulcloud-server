@@ -1,6 +1,7 @@
 import { OauthAdapterService, OauthModule } from '@modules/oauth';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { DynamicModule, Global, Module } from '@nestjs/common';
+import { Logger, LoggerModule } from '@src/core/logger';
 import { SchulconnexRestClient } from './schulconnex-rest-client';
 import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options';
 
@@ -13,14 +14,14 @@ import { SchulconnexRestClientOptions } from './schulconnex-rest-client-options'
 export class SchulconnexClientModule {
 	static register(options: SchulconnexRestClientOptions): DynamicModule {
 		return {
-			imports: [HttpModule, OauthModule],
+			imports: [HttpModule, OauthModule, LoggerModule],
 			module: SchulconnexClientModule,
 			providers: [
 				{
 					provide: SchulconnexRestClient,
-					useFactory: (httpService: HttpService, oauthAdapterService: OauthAdapterService) =>
-						new SchulconnexRestClient(options, httpService, oauthAdapterService),
-					inject: [HttpService, OauthAdapterService],
+					useFactory: (httpService: HttpService, oauthAdapterService: OauthAdapterService, logger: Logger) =>
+						new SchulconnexRestClient(options, httpService, oauthAdapterService, logger),
+					inject: [HttpService, OauthAdapterService, Logger],
 				},
 			],
 			exports: [SchulconnexRestClient],
