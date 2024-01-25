@@ -164,4 +164,18 @@ export class ExternalToolService {
 
 		return datasheetTemplateData;
 	}
+
+	public createDatasheetFilename(datasheetData: ExternalToolDatasheetTemplateData): string {
+		const { toolName } = datasheetData;
+
+		const date = new Date();
+		const year = date.getFullYear();
+		const month = date.getMonth() + 1;
+		const day = date.getDate();
+		const dateString = `${year}-${month}-${day}`;
+
+		const fileName = `CTL-Datenblatt-${toolName}-${dateString}`;
+
+		return fileName;
+	}
 }

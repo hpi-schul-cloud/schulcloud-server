@@ -778,4 +778,33 @@ describe('ExternalToolService', () => {
 			});
 		});
 	});
+
+	describe('createDatasheetFilename', () => {
+		describe('when datasheetData is given', () => {
+			const setup = () => {
+				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
+					.withParameters(1)
+					.build();
+
+				const date = new Date();
+				const year = date.getFullYear();
+				const month = date.getMonth() + 1;
+				const day = date.getDate();
+				const dateString = `${year}-${month}-${day}`;
+
+				return {
+					datasheetData,
+					dateString,
+				};
+			};
+
+			it('should return a filename string', () => {
+				const { datasheetData, dateString } = setup();
+
+				const filename = service.createDatasheetFilename(datasheetData);
+
+				expect(filename).toEqual(`CTL-Datenblatt-${datasheetData.toolName}-${dateString}`);
+			});
+		});
+	});
 });

@@ -621,7 +621,7 @@ describe('ExternalToolUc', () => {
 			});
 		});
 
-		describe('when user has insufficient permission to get an metadata for external tool ', () => {
+		describe('when user has insufficient permission to create a datasheet for an external tool ', () => {
 			const setupDatasheetData = () => {
 				const toolId: string = new ObjectId().toHexString();
 
@@ -681,6 +681,55 @@ describe('ExternalToolUc', () => {
 				await uc.getDatasheet(user.id, toolId);
 
 				expect(pdfService.toBuffer).toHaveBeenCalledWith('ExternalToolDatasheet', { locals: datasheetData });
+			});
+		});
+	});
+
+	describe('createDatasheetFilename', () => {
+		describe('when externalToolId is given', () => {
+			const setupDatasheetdata = () => {
+				const toolId: string = new ObjectId().toHexString();
+				const user: User = userFactory.buildWithId();
+				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
+					.withParameters(1)
+					.build();
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				externalToolService.getExternalToolDatasheetTemplateData.mockResolvedValue(datasheetData);
+
+				return {
+					user,
+					toolId,
+					datasheetData,
+				};
+			};
+
+			it('get user with permissions', async () => {
+				const { user, toolId } = setupDatasheetdata();
+
+				await uc.createDatasheetFilename(user.id, toolId);
+
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
+			});
+
+			it('should get datasheetData', async () => {
+				const { toolId, user } = setupDatasheetdata();
+
+				await uc.createDatasheetFilename(user.id, toolId);
+
+				expect(externalToolService.getExternalToolDatasheetTemplateData).toHaveBeenCalledWith(
+					toolId,
+					user.firstName,
+					user.lastName
+				);
+			});
+
+			it('should create a filename', async () => {
+				const { toolId, user, datasheetData } = setupDatasheetdata();
+
+				await uc.createDatasheetFilename(user.id, toolId);
+
+				expect(externalToolService.createDatasheetFilename).toHaveBeenCalledWith(datasheetData);
 			});
 		});
 	});

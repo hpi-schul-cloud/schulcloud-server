@@ -111,4 +111,18 @@ export class ExternalToolUc {
 
 		return buffer;
 	}
+
+	public async createDatasheetFilename(userId: EntityId, externalToolId: EntityId): Promise<string> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		const dataSheetData: ExternalToolDatasheetTemplateData =
+			await this.externalToolService.getExternalToolDatasheetTemplateData(
+				externalToolId,
+				user.firstName,
+				user.lastName
+			);
+
+		const fileName: string = this.externalToolService.createDatasheetFilename(dataSheetData);
+
+		return fileName;
+	}
 }

@@ -212,11 +212,10 @@ export class ToolController {
 	): Promise<StreamableFile> {
 		const datasheetBuffer: Buffer = await this.externalToolUc.getDatasheet(currentUser.userId, params.externalToolId);
 
-		// TODO: get external tool name here ? ask ba
-		const meinDateiname = 'datasheet1337.pdf';
+		const myFilename = await this.externalToolUc.createDatasheetFilename(currentUser.userId, params.externalToolId);
 
 		res.setHeader('Content-Type', 'application/pdf');
-		res.setHeader('Content-Disposition', `attachment; filename=${meinDateiname}`);
+		res.setHeader('Content-Disposition', `attachment; filename=${myFilename}`);
 
 		const streamableFile: StreamableFile = new StreamableFile(datasheetBuffer);
 		return streamableFile;
