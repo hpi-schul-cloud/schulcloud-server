@@ -1490,21 +1490,21 @@
 			"properties": {
 				"API_URL": {
 					"type": "string",
-					"description": "Base URL of the schulconnex API.",
+					"description": "Base URL of the schulconnex API (from dof)",
 					"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/"]
 				},
 				"TOKEN_ENDPOINT": {
 					"type": "string",
-					"description": "Token endpoint of the schulconnex API.",
+					"description": "Token endpoint of the schulconnex API (from dof)",
 					"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/oauth2/token"]
 				},
 				"CLIENT_ID": {
 					"type": "string",
-					"description": "Client ID for accessing the schulconnex API."
+					"description": "Client ID for accessing the schulconnex API (from server vault)"
 				},
 				"CLIENT_SECRET": {
 					"type": "string",
-					"description": "Client secret for accessing the schulconnex API."
+					"description": "Client secret for accessing the schulconnex API (from server vault)"
 				}
 			},
 			"default": {

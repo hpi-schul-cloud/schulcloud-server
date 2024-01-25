@@ -123,7 +123,7 @@ export class ImportUserController {
 	@Post('populate-import-users')
 	@ApiOperation({
 		summary: 'Populates import users',
-		description: 'Populates import users from specific user migration fetching endpoint.',
+		description: 'Populates import users from specific user migration populate endpoint.',
 	})
 	@ApiCreatedResponse()
 	@ApiUnauthorizedResponse()
