@@ -1,18 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyFilesService } from '@modules/files-storage-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Task } from '@shared/domain/entity';
 import { TaskRepo } from '@shared/repo';
 import {
 	courseFactory,
+	legacyFileEntityMockFactory,
 	lessonFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	setupEntities,
 	taskFactory,
 	userFactory,
-	legacyFileEntityMockFactory,
 } from '@shared/testing';
-import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
-import { CopyFilesService } from '@modules/files-storage-client';
 import { TaskCopyService } from './task-copy.service';
 
 describe('task copy service', () => {
@@ -61,7 +61,7 @@ describe('task copy service', () => {
 	describe('handleCopyTask', () => {
 		describe('when copying task within original course', () => {
 			const setup = () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ school });
 				const destinationCourse = courseFactory.buildWithId({ school, teachers: [user] });
 				const destinationLesson = lessonFactory.buildWithId({ course: destinationCourse });
@@ -292,8 +292,8 @@ describe('task copy service', () => {
 
 		describe('when copying task into different school', () => {
 			it('should set the school of the copy to the school of the user', async () => {
-				const originalSchool = schoolFactory.buildWithId();
-				const destinationSchool = schoolFactory.buildWithId();
+				const originalSchool = schoolEntityFactory.buildWithId();
+				const destinationSchool = schoolEntityFactory.buildWithId();
 				const originalCourse = courseFactory.build({ school: originalSchool });
 				const originalLesson = lessonFactory.build({ course: originalCourse });
 				const destinationCourse = courseFactory.buildWithId({ school: destinationSchool });
@@ -409,7 +409,7 @@ describe('task copy service', () => {
 			};
 
 			const setupWithFiles = () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const file1 = legacyFileEntityMockFactory.build();
 				const file2 = legacyFileEntityMockFactory.build();
 				const imageHTML1 = getImageHTML(file1.id, file1.name);

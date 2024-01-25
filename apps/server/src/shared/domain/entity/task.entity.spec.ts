@@ -3,7 +3,7 @@ import {
 	courseFactory,
 	courseGroupFactory,
 	lessonFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	setupEntities,
 	submissionFactory,
 	taskFactory,
@@ -858,7 +858,7 @@ describe('Task Entity', () => {
 
 	describe('getSchoolId', () => {
 		it('schould return schoolId from school', () => {
-			const school = schoolFactory.buildWithId();
+			const school = schoolEntityFactory.buildWithId();
 			const task = taskFactory.buildWithId({ school });
 
 			const schoolId = task.getSchoolId();

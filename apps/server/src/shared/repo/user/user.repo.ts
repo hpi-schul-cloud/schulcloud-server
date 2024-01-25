@@ -195,4 +195,10 @@ export class UserRepo extends BaseRepo<User> {
 	async flush(): Promise<void> {
 		await this._em.flush();
 	}
+
+	public async findUserBySchoolAndName(schoolId: EntityId, firstName: string, lastName: string): Promise<User[]> {
+		const users: User[] = await this._em.find(User, { school: schoolId, firstName, lastName });
+
+		return users;
+	}
 }

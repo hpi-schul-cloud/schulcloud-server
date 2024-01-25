@@ -11,7 +11,7 @@ import {
 	columnFactory,
 	courseFactory,
 	linkElementFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
@@ -72,8 +72,8 @@ describe('column board copy service', () => {
 
 	describe('when copying a column board', () => {
 		const setup = () => {
-			const originalSchool = schoolFactory.buildWithId();
-			const targetSchool = schoolFactory.buildWithId();
+			const originalSchool = schoolEntityFactory.buildWithId();
+			const targetSchool = schoolEntityFactory.buildWithId();
 			const course = courseFactory.buildWithId({ school: originalSchool });
 			const originalExternalReference = {
 				id: course.id,

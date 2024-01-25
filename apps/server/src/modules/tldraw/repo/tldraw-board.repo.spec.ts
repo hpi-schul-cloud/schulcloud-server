@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { createMock } from '@golevelup/ts-jest';
 import { Doc } from 'yjs';
+import { HttpService } from '@nestjs/axios';
 import * as YjsUtils from '../utils/ydoc-utils';
 import { config } from '../config';
 import { TldrawBoardRepo } from './tldraw-board.repo';
@@ -36,6 +37,10 @@ describe('TldrawBoardRepo', () => {
 				{
 					provide: TldrawWsService,
 					useValue: createMock<TldrawWsService>(),
+				},
+				{
+					provide: HttpService,
+					useValue: createMock<HttpService>(),
 				},
 			],
 		}).compile();
