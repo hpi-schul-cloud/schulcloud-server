@@ -689,7 +689,7 @@ describe('ExternalToolService', () => {
 	});
 
 	describe('getDatasheetData', () => {
-		describe('when toolId is given', () => {
+		describe('when tool is a basic tool', () => {
 			const setup = () => {
 				const { externalTool } = createTools();
 				const user: User = userFactory.build();
@@ -713,6 +713,60 @@ describe('ExternalToolService', () => {
 
 				expect(externalToolRepo.findById).toHaveBeenCalledWith(externalTool.id);
 			});
+
+			it('should return external tool datasheet template data', async () => {
+				const { user, datasheetData } = setup();
+
+				const data = await service.getExternalToolDatasheetTemplateData('toolId', user.firstName, user.lastName);
+
+				expect(data).toEqual<ExternalToolDatasheetMapper>(datasheetData);
+			});
+		});
+
+		describe('when tool is an oauth2 tool', () => {
+			const setup = () => {
+				const { externalTool, oauth2ToolConfig } = createTools();
+				externalTool.config = oauth2ToolConfig;
+				const user: User = userFactory.build();
+				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
+					.asOauth2Tool()
+					.withParameters(1)
+					.build();
+
+				externalToolRepo.findById.mockResolvedValue(externalTool);
+
+				return {
+					user,
+					datasheetData,
+				};
+			};
+
+			it('should return external tool datasheet template data', async () => {
+				const { user, datasheetData } = setup();
+
+				const data = await service.getExternalToolDatasheetTemplateData('toolId', user.firstName, user.lastName);
+
+				expect(data).toEqual<ExternalToolDatasheetMapper>(datasheetData);
+			});
+		});
+
+		describe('when tool is an LTI1.1 tool', () => {
+			const setup = () => {
+				const { externalTool, lti11ToolConfig } = createTools();
+				externalTool.config = lti11ToolConfig;
+				const user: User = userFactory.build();
+				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
+					.asLti11Tool()
+					.withParameters(1)
+					.build();
+
+				externalToolRepo.findById.mockResolvedValue(externalTool);
+
+				return {
+					user,
+					datasheetData,
+				};
+			};
 
 			it('should return external tool datasheet template data', async () => {
 				const { user, datasheetData } = setup();
