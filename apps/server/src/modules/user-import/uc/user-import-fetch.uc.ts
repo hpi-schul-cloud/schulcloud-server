@@ -16,7 +16,7 @@ export class UserImportFetchUc {
 		private readonly userImportService: UserImportService
 	) {}
 
-	public async fetchImportUsers(currentUserId: EntityId): Promise<void> {
+	public async populateImportUsers(currentUserId: EntityId): Promise<void> {
 		this.checkMigrationEnabled(currentUserId);
 
 		const currentUser: User = await this.getUserAndCheckPermissions(currentUserId);

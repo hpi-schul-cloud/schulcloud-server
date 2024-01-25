@@ -120,10 +120,10 @@ export class ImportUserController {
 		await this.userImportUc.endSchoolInMaintenance(currentUser.userId);
 	}
 
-	@Post('fetch-import-users')
+	@Post('populate-import-users')
 	@ApiOperation({
-		summary: 'Fetch import users',
-		description: 'Fetches import users from specific user migration fetching endpoint.',
+		summary: 'Populates import users',
+		description: 'Populates import users from specific user migration fetching endpoint.',
 	})
 	@ApiCreatedResponse()
 	@ApiUnauthorizedResponse()
@@ -131,6 +131,6 @@ export class ImportUserController {
 	@ApiBadRequestResponse()
 	@ApiForbiddenResponse()
 	async fetchImportUsers(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
-		await this.userImportFetchUc.fetchImportUsers(currentUser.userId);
+		await this.userImportFetchUc.populateImportUsers(currentUser.userId);
 	}
 }

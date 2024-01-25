@@ -94,7 +94,7 @@ describe(UserImportFetchUc.name, () => {
 			it('should check the users permission', async () => {
 				const { user } = setup();
 
-				await uc.fetchImportUsers(user.id);
+				await uc.populateImportUsers(user.id);
 
 				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [
 					Permission.SCHOOL_IMPORT_USERS_MIGRATE,
@@ -104,7 +104,7 @@ describe(UserImportFetchUc.name, () => {
 			it('should filter migrated users', async () => {
 				const { user, importUser, system } = setup();
 
-				await uc.fetchImportUsers(user.id);
+				await uc.populateImportUsers(user.id);
 
 				expect(schulconnexFetchImportUsersService.filterAlreadyMigratedUser).toHaveBeenCalledWith(
 					[importUser],
@@ -115,7 +115,7 @@ describe(UserImportFetchUc.name, () => {
 			it('should match the users', async () => {
 				const { user, importUser } = setup();
 
-				await uc.fetchImportUsers(user.id);
+				await uc.populateImportUsers(user.id);
 
 				expect(userImportService.matchUsers).toHaveBeenCalledWith([importUser]);
 			});
@@ -123,7 +123,7 @@ describe(UserImportFetchUc.name, () => {
 			it('should save the import users', async () => {
 				const { user, importUser } = setup();
 
-				await uc.fetchImportUsers(user.id);
+				await uc.populateImportUsers(user.id);
 
 				expect(userImportService.saveImportUsers).toHaveBeenCalledWith([importUser]);
 			});
@@ -144,7 +144,7 @@ describe(UserImportFetchUc.name, () => {
 		it('should throw an error', async () => {
 			const { user } = setup();
 
-			await expect(uc.fetchImportUsers(user.id)).rejects.toThrow(UserMigrationIsNotEnabledLoggableException);
+			await expect(uc.populateImportUsers(user.id)).rejects.toThrow(UserMigrationIsNotEnabledLoggableException);
 		});
 	});
 
@@ -162,7 +162,7 @@ describe(UserImportFetchUc.name, () => {
 		it('should throw an error', async () => {
 			const { user } = setup();
 
-			await expect(uc.fetchImportUsers(user.id)).rejects.toThrow(UserMigrationIsNotEnabledLoggableException);
+			await expect(uc.populateImportUsers(user.id)).rejects.toThrow(UserMigrationIsNotEnabledLoggableException);
 		});
 	});
 });

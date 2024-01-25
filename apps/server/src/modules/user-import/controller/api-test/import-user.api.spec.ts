@@ -1120,7 +1120,7 @@ describe('ImportUser Controller (API)', () => {
 			});
 		});
 
-		describe('[POST] fetchImportUsers', () => {
+		describe('[POST] populateImportUsers', () => {
 			describe('when user is not authenticated', () => {
 				const setup = () => {
 					const notLoggedInClient = new TestApiClient(app, 'user/import');
@@ -1131,7 +1131,7 @@ describe('ImportUser Controller (API)', () => {
 				it('should return unauthorized', async () => {
 					const { notLoggedInClient } = setup();
 
-					await notLoggedInClient.post('fetch-import-users').send().expect(HttpStatus.UNAUTHORIZED);
+					await notLoggedInClient.post('populate-import-users').send().expect(HttpStatus.UNAUTHORIZED);
 				});
 			});
 
@@ -1148,7 +1148,7 @@ describe('ImportUser Controller (API)', () => {
 				it('should return with status forbidden', async () => {
 					const { loggedInClient } = await setup();
 
-					const response = await loggedInClient.post('fetch-import-users').send();
+					const response = await loggedInClient.post('populate-import-users').send();
 
 					expect(response.body).toEqual({
 						type: 'USER_MIGRATION_IS_NOT_ENABLED',
@@ -1177,7 +1177,7 @@ describe('ImportUser Controller (API)', () => {
 				it('should return with status bad request', async () => {
 					const { loggedInClient } = await setup();
 
-					const response = await loggedInClient.post('fetch-import-users').send();
+					const response = await loggedInClient.post('populate-import-users').send();
 
 					expect(response.body).toEqual({
 						type: 'USER_IMPORT_SCHOOL_EXTERNAL_ID_MISSING',
@@ -1188,7 +1188,7 @@ describe('ImportUser Controller (API)', () => {
 				});
 			});
 
-			describe('when users fetched successful', () => {
+			describe('when users were populated successful', () => {
 				const setup = async () => {
 					const { account, school, system } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
 					const loggedInClient = await testApiClient.login(account);
@@ -1211,7 +1211,7 @@ describe('ImportUser Controller (API)', () => {
 				it('should return with status created', async () => {
 					const { loggedInClient } = await setup();
 
-					await loggedInClient.post('fetch-import-users').send().expect(HttpStatus.CREATED);
+					await loggedInClient.post('populate-import-users').send().expect(HttpStatus.CREATED);
 				});
 			});
 		});
