@@ -39,27 +39,26 @@ export class SchoolMikroOrmRepo implements SchoolRepo {
 		return school;
 	}
 
-	public async getSchoolsForLdapLogin(): Promise<School[]> {
+	public async getAllThatHaveSystems(): Promise<School[]> {
 		const entities = await this.em.find(
 			SchoolEntity,
 			{ systems: { $ne: undefined } },
-			{ populate: ['systems', 'federalState', 'currentYear'] }
+			{ populate: ['federalState', 'currentYear'] }
 		);
-		const entitiesWithActiveLdapSystems = entities.filter((entity) => this.isEligibleForLdapLogin(entity));
 
-		const schools = SchoolEntityMapper.mapToDos(entitiesWithActiveLdapSystems);
+		const schools = SchoolEntityMapper.mapToDos(entities);
 
 		return schools;
 	}
 
-	private isEligibleForLdapLogin(school: SchoolEntity): boolean {
-		const result = school.systems
-			.getItems()
-			// Systems with an oauthConfig are filtered out here to exclude IServ. IServ is of type LDAP for syncing purposes, but the login is done via OAuth2.
-			.some((system) => system.type === 'ldap' && system.ldapConfig?.active && !system.oauthConfig);
+	// private isEligibleForLdapLogin(school: SchoolEntity): boolean {
+	// 	const result = school.systems
+	// 		.getItems()
+	// 		// Systems with an oauthConfig are filtered out here to exclude IServ. IServ is of type LDAP for syncing purposes, but the login is done via OAuth2.
+	// 		.some((system) => system.type === 'ldap' && system.ldapConfig?.active && !system.oauthConfig);
 
-		return result;
-	}
+	// 	return result;
+	// }
 
 	private mapToMikroOrmOptions<P extends string = never>(
 		options?: IFindOptions<SchoolProps>,

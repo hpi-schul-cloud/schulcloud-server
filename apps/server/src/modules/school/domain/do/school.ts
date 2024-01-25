@@ -42,6 +42,10 @@ export class School extends DomainObject<SchoolProps> {
 
 		return result;
 	}
+
+	public removeAllSystemIdsBut(systemIds: EntityId[]): void {
+		this.props.systemIds = this.props.systemIds?.filter((systemId) => !systemIds.includes(systemId));
+	}
 }
 
 export interface SchoolProps extends AuthorizableObject {

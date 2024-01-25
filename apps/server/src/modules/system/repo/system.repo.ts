@@ -23,6 +23,20 @@ export class SystemRepo {
 		return domainObject;
 	}
 
+	public async findAll(): Promise<System[]> {
+		const entities: SystemEntity[] = await this.em.find(SystemEntity, {});
+
+		const domainObjects: System[] = entities.map((entity) => {
+			const props: SystemProps = SystemDomainMapper.mapEntityToDomainObjectProperties(entity);
+
+			const domainObject: System = new System(props);
+
+			return domainObject;
+		});
+
+		return domainObjects;
+	}
+
 	public async delete(domainObject: System): Promise<boolean> {
 		const entity: SystemEntity | null = await this.em.findOne(SystemEntity, { id: domainObject.id });
 

@@ -29,4 +29,11 @@ export class System extends DomainObject<SystemProps> {
 	get provisioningStrategy(): SystemProvisioningStrategy | undefined {
 		return this.props.provisioningStrategy;
 	}
+
+	public isEligibleForLdapLogin(): boolean {
+		// Systems with an oauthConfig are filtered out here to exclude IServ. IServ is of type LDAP for syncing purposes, but the login is done via OAuth2.
+		const result = this.props.type === 'ldap' && !!this.props.ldapConfig?.active && !this.props.oauthConfig;
+
+		return result;
+	}
 }

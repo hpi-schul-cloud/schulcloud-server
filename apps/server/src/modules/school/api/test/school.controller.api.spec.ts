@@ -288,12 +288,12 @@ describe('School Controller (API)', () => {
 
 	describe('getSchoolListForLadpLogin', () => {
 		it('should work unauthenticated', async () => {
-			const response = await testApiClient.get('list-for-login');
+			const response = await testApiClient.get('list-for-ldap-login');
 
 			expect(response.status).toEqual(HttpStatus.OK);
 		});
 
-		describe('when no school has an active LDAP system', () => {
+		describe('when no school has an LDAP login system', () => {
 			const setup = async () => {
 				const schools = schoolFactory.buildList(3);
 				await em.persistAndFlush(schools);
@@ -302,34 +302,35 @@ describe('School Controller (API)', () => {
 			it('should return empty list', async () => {
 				await setup();
 
-				const response = await testApiClient.get('list-for-login');
+				const response = await testApiClient.get('list-for-ldap-login');
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual([]);
 			});
 		});
 
-		describe('when some schools have active LDAP systems', () => {
+		describe('when some schools have LDAP login systems', () => {
 			const setup = async () => {
-				const activeLdapSystem = systemEntityFactory.build({ type: 'ldap', ldapConfig: { active: true } });
-				const schools = schoolFactory.buildList(3, { systems: [activeLdapSystem] });
-				await em.persistAndFlush(schools);
+				const ldapLoginSystem = systemEntityFactory.build({ type: 'ldap', ldapConfig: { active: true } });
+				const schoolWithLdapLoginSystem = schoolFactory.build({ systems: [ldapLoginSystem] });
+				const schoolWithoutLdapLoginSystem = schoolFactory.build();
+				await em.persistAndFlush([schoolWithLdapLoginSystem, schoolWithoutLdapLoginSystem]);
 
-				const expectedResponse = schools.map((school) => {
-					return {
-						id: school.id,
-						name: school.name,
-						systemIds: school.systems.getItems().map((system) => system.id),
-					};
-				});
+				const expectedResponse = [
+					{
+						id: schoolWithLdapLoginSystem.id,
+						name: schoolWithLdapLoginSystem.name,
+						systems: [{ id: ldapLoginSystem.id, type: ldapLoginSystem.type, alias: ldapLoginSystem.alias }],
+					},
+				];
 
 				return { expectedResponse };
 			};
 
-			it('should return school list for LDAP login', async () => {
+			it('should return list with these schools', async () => {
 				const { expectedResponse } = await setup();
 
-				const response = await testApiClient.get('list-for-login');
+				const response = await testApiClient.get('list-for-ldap-login');
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual(expectedResponse);
