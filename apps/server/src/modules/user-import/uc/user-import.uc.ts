@@ -246,7 +246,7 @@ export class UserImportUc {
 	}
 
 	async startSchoolInUserMigration(currentUserId: EntityId, useCentralLdap = true): Promise<void> {
-		const useWithUserLoginMigration: boolean = this.userImportFeatures.instance === 'n21';
+		const useWithUserLoginMigration: boolean = this.isNbc();
 
 		if (useWithUserLoginMigration) {
 			useCentralLdap = false;
@@ -313,9 +313,8 @@ export class UserImportUc {
 
 		school.inMaintenanceSince = undefined;
 
-		// Make the migration wizard restartable, when using the user login migration
-		const useWithUserLoginMigration: boolean = this.userImportFeatures.instance === 'n21';
-		if (useWithUserLoginMigration) {
+		const isMigrationRestartable: boolean = this.isNbc();
+		if (isMigrationRestartable) {
 			school.inUserMigration = undefined;
 		}
 
@@ -332,7 +331,7 @@ export class UserImportUc {
 	}
 
 	private async updateUserAndAccount(importUser: ImportUser, school: LegacySchoolDo): Promise<void> {
-		const useWithUserLoginMigration: boolean = this.userImportFeatures.instance === 'n21';
+		const useWithUserLoginMigration: boolean = this.isNbc();
 
 		if (useWithUserLoginMigration) {
 			await this.updateUserAndAccountWithUserLoginMigration(importUser);
@@ -418,5 +417,9 @@ export class UserImportUc {
 		if (school.inUserMigration !== undefined && school.inUserMigration !== null) {
 			throw new MigrationAlreadyActivatedException();
 		}
+	}
+
+	private isNbc(): boolean {
+		return this.userImportFeatures.instance === 'n21';
 	}
 }
