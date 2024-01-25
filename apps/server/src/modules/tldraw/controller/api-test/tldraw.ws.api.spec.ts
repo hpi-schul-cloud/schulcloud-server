@@ -302,7 +302,7 @@ describe('WebSocketController (WsAdapter)', () => {
 			expect(setupConnectionSpy).toHaveBeenCalledWith(expect.anything(), 'TEST');
 			expect(wsCloseSpy).toHaveBeenCalledWith(
 				WsCloseCodeEnum.WS_CLIENT_FAILED_CONNECTION_CODE,
-                Buffer.from(WsCloseMessageEnum.WS_CLIENT_FAILED_CONNECTION_MESSAGE)
+				Buffer.from(WsCloseMessageEnum.WS_CLIENT_FAILED_CONNECTION_MESSAGE)
 			);
 
 			wsCloseSpy.mockRestore();
