@@ -61,7 +61,7 @@ describe(SchulconnexRestClient.name, () => {
 				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				const badOptionsClient = new SchulconnexRestClient(badOptions, httpService, oauthAdapterService, logger);
 
-				expect(logger.info).toHaveBeenCalledWith(new SchulconnexConfigurationMissingLoggable());
+				expect(logger.debug).toHaveBeenCalledWith(new SchulconnexConfigurationMissingLoggable());
 			});
 		});
 	});

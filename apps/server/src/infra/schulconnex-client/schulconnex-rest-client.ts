@@ -47,7 +47,7 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 
 	private checkOptions(): void {
 		if (!this.options.apiUrl || !this.options.clientId || !this.options.clientSecret || !this.options.tokenEndpoint) {
-			this.logger.info(new SchulconnexConfigurationMissingLoggable());
+			this.logger.debug(new SchulconnexConfigurationMissingLoggable());
 		}
 	}
 
