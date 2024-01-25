@@ -1,6 +1,7 @@
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { OauthDataDto, ProvisioningService } from '@modules/provisioning';
+import { OauthDataDto } from '@modules/provisioning/dto/oauth-data.dto';
+import { ProvisioningService } from '@modules/provisioning/service/provisioning.service';
 import { LegacySystemService } from '@modules/system';
 import { SystemDto } from '@modules/system/service';
 import { UserService } from '@modules/user';
