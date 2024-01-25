@@ -2,7 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import { MatchCreator } from '@shared/domain/entity';
 import { RoleName, SortOrder } from '@shared/domain/interface';
 import { MatchCreatorScope } from '@shared/domain/types';
-import { importUserFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { importUserFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import {
 	FilterImportUserParams,
 	FilterMatchType,
@@ -95,7 +95,7 @@ describe('[ImportUserMapper]', () => {
 		});
 		describe('when user and matchedBy is defined', () => {
 			it('should map match', () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const user = userFactory.build({ school });
 				const importUser = importUserFactory.matched(MatchCreator.AUTO, user).build({ school });
 				const mockResponse = Object.create(UserMatchResponse, {}) as UserMatchResponse;

@@ -9,7 +9,7 @@ import { RoleName, SortOrder } from '@shared/domain/interface';
 import {
 	groupEntityFactory,
 	roleFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	schoolYearFactory,
 	systemEntityFactory,
 	TestApiClient,
@@ -48,7 +48,7 @@ describe('Group (API)', () => {
 		describe('when an admin requests a list of classes', () => {
 			const setup = async () => {
 				const schoolYear: SchoolYearEntity = schoolYearFactory.buildWithId();
-				const school: SchoolEntity = schoolFactory.buildWithId({ currentYear: schoolYear });
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({ currentYear: schoolYear });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
 				const teacherRole: Role = roleFactory.buildWithId({ name: RoleName.TEACHER });
@@ -145,7 +145,7 @@ describe('Group (API)', () => {
 		describe('when authorized user requests a group', () => {
 			describe('when group exists', () => {
 				const setup = async () => {
-					const school: SchoolEntity = schoolFactory.buildWithId();
+					const school: SchoolEntity = schoolEntityFactory.buildWithId();
 					const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 
 					const group: GroupEntity = groupEntityFactory.buildWithId({
