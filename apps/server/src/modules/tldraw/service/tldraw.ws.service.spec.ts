@@ -734,6 +734,47 @@ describe('TldrawWSService', () => {
 			});
 		});
 
+		describe('when pong not received and close connection fails', () => {
+			const setup = async () => {
+				ws = await TestConnection.setupWs(wsUrl, 'TEST');
+
+				const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockReturnValueOnce();
+				const closeConnSpy = jest.spyOn(service, 'closeConn').mockRejectedValue(new Error('error'));
+				const pingSpy = jest.spyOn(ws, 'ping').mockImplementationOnce(() => {});
+				const sendSpy = jest.spyOn(service, 'send').mockImplementation(() => {});
+				const clearIntervalSpy = jest.spyOn(global, 'clearInterval');
+				const errorLogSpy = jest.spyOn(logger, 'warning');
+				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce({});
+
+				return {
+					messageHandlerSpy,
+					closeConnSpy,
+					pingSpy,
+					sendSpy,
+					clearIntervalSpy,
+					errorLogSpy,
+				};
+			};
+
+			it('should log error', async () => {
+				const { messageHandlerSpy, closeConnSpy, pingSpy, sendSpy, clearIntervalSpy, errorLogSpy } = await setup();
+
+				await service.setupWSConnection(ws, 'TEST');
+
+				await delay(20);
+
+				expect(closeConnSpy).toHaveBeenCalled();
+				expect(clearIntervalSpy).toHaveBeenCalled();
+				expect(errorLogSpy).toHaveBeenCalled();
+				ws.close();
+				messageHandlerSpy.mockRestore();
+				pingSpy.mockRestore();
+				closeConnSpy.mockRestore();
+				sendSpy.mockRestore();
+				clearIntervalSpy.mockRestore();
+			});
+		});
+
 		describe('when flushDocument failed', () => {
 			const setup = async () => {
 				ws = await TestConnection.setupWs(wsUrl, 'TEST');
@@ -1014,10 +1055,11 @@ describe('TldrawWSService', () => {
 			it('should log error', async () => {
 				const { errorLogSpy, redisSubscribeSpy, redisOnSpy } = setup();
 
-				service.getYDoc('test-redis-fail');
+				service.getYDoc('test-redis-fail-2');
 
 				await delay(500);
 
+				expect(redisSubscribeSpy).toHaveBeenCalled();
 				expect(errorLogSpy).toHaveBeenCalled();
 				redisSubscribeSpy.mockRestore();
 				redisOnSpy.mockRestore();
