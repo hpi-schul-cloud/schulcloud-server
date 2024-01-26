@@ -56,11 +56,11 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 		importUserFactory.build({
 			system,
 			school,
-			ldapDn: `uid=${externalUserData.person.name.vorname}.${externalUserData.person.name.familienname},`,
+			ldapDn: `uid=${externalUserData.person.name.vorname}.${externalUserData.person.name.familienname}.${externalUserData.pid},`,
 			externalId: externalUserData.pid,
 			firstName: externalUserData.person.name.vorname,
 			lastName: externalUserData.person.name.familienname,
-			email: '',
+			email: `${externalUserData.person.name.vorname}.${externalUserData.person.name.familienname}.${externalUserData.pid}@schul-cloud.org`,
 			roleNames: [RoleName.ADMINISTRATOR],
 			classNames: undefined,
 		});
@@ -101,7 +101,6 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 
 				const result: ImportUser[] = await service.getData(school, system);
 
-				// TODO: test this somehow
 				expect(result).toHaveLength(1);
 			});
 		});
@@ -155,7 +154,6 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 
 				const result: ImportUser[] = await service.filterAlreadyMigratedUser(importUsers, systemId);
 
-				// TODO test this somehow
 				expect(result).toHaveLength(1);
 			});
 		});
