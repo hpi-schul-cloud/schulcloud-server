@@ -7,7 +7,15 @@ RUN git config --global --add safe.directory /app && echo "{\"sha\": \"$(git rev
 
 FROM docker.io/node:18-alpine
 ENV TZ=Europe/Berlin
-RUN apk add --no-cache git make python3
+RUN apk add --no-cache git make python3 \
+    # Required dependencies for Puppeteer
+    chromium \
+    nss \
+    freetype \
+    freetype-dev \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont
 # to run ldap sync as script curl is needed
 RUN apk add --no-cache curl
 WORKDIR /schulcloud-server

@@ -2,7 +2,6 @@ import { EncryptionModule } from '@infra/encryption';
 import { OauthProviderServiceModule } from '@infra/oauth-provider';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { PDFModule } from '@pyxlab/nestjs-pdf';
 import { ExternalToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { CommonToolModule } from '../common';

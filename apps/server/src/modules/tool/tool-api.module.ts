@@ -1,3 +1,4 @@
+import { PdfGeneratorModule } from '@infra/pdf-generator/pdf-generator.module';
 import { AuthorizationModule } from '@modules/authorization';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { UserModule } from '@modules/user';
@@ -35,6 +36,7 @@ import { ToolModule } from './tool.module';
 		ToolConfigModule,
 		LearnroomModule,
 		BoardModule,
+		PdfGeneratorModule,
 		PDFModule.register({
 			view: {
 				// TODO: can we do this better e.g. make it relative to the module file
