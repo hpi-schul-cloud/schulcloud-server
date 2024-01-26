@@ -11,11 +11,8 @@ import * as AwarenessProtocol from 'y-protocols/awareness';
 import { encoding } from 'lib0';
 import { TldrawWsFactory } from '@shared/testing/factory/tldraw.ws.factory';
 import { HttpService } from '@nestjs/axios';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { of, throwError } from 'rxjs';
-import { AxiosResponse } from 'axios';
-import { axiosResponseFactory } from '@shared/testing';
-import { MetricsService } from '@modules/tldraw/metrics';
+import { createMock } from '@golevelup/ts-jest';
+import { MetricsService } from '../metrics';
 import { WsSharedDocDo } from '../domain/ws-shared-doc.do';
 import { config } from '../config';
 import { TldrawBoardRepo } from '../repo';
@@ -42,7 +39,6 @@ describe('TldrawWSService', () => {
 	let app: INestApplication;
 	let ws: WebSocket;
 	let service: TldrawWsService;
-	let httpService: DeepMocked<HttpService>;
 
 	const gatewayPort = 3346;
 	const wsUrl = TestConnection.getWsUrl(gatewayPort);
@@ -71,7 +67,6 @@ describe('TldrawWSService', () => {
 		}).compile();
 
 		service = testingModule.get<TldrawWsService>(TldrawWsService);
-		httpService = testingModule.get(HttpService);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
 		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] });
@@ -95,7 +90,7 @@ describe('TldrawWSService', () => {
 		};
 	};
 
-	it('should chcek if service properties are set correctly', () => {
+	it('should check if service properties are set correctly', () => {
 		expect(service).toBeDefined();
 		expect(service.pingTimeout).toBeDefined();
 		expect(service.persistence).toBeDefined();
@@ -320,7 +315,7 @@ describe('TldrawWSService', () => {
 
 				service.setupWSConnection(ws);
 
-				expect(sendSpy).toHaveBeenCalledTimes(2);
+				expect(sendSpy).toHaveBeenCalledTimes(3);
 
 				ws.close();
 				messageHandlerSpy.mockRestore();
@@ -461,56 +456,6 @@ describe('TldrawWSService', () => {
 			expect(flushDocumentSpy).toHaveBeenCalled();
 
 			flushDocumentSpy.mockRestore();
-		});
-	});
-
-	describe('authorizeConnection', () => {
-		it('should call properly method', async () => {
-			const params = { drawingName: 'drawingName', token: 'token' };
-			const response: AxiosResponse<null> = axiosResponseFactory.build({
-				status: 200,
-			});
-
-			httpService.get.mockReturnValueOnce(of(response));
-
-			await expect(service.authorizeConnection(params.drawingName, params.token)).resolves.not.toThrow();
-			httpService.get.mockRestore();
-		});
-
-		it('should properly setup REST GET call params', async () => {
-			const params = { drawingName: 'drawingName', token: 'token' };
-			const response: AxiosResponse<null> = axiosResponseFactory.build({
-				status: 200,
-			});
-			const expectedUrl = 'http://localhost:3030/api/v3/elements/drawingName/permission';
-			const expectedHeaders = {
-				headers: {
-					Accept: 'Application/json',
-					Authorization: `Bearer ${params.token}`,
-				},
-			};
-			httpService.get.mockReturnValueOnce(of(response));
-
-			await service.authorizeConnection(params.drawingName, params.token);
-
-			expect(httpService.get).toHaveBeenCalledWith(expectedUrl, expectedHeaders);
-			httpService.get.mockRestore();
-		});
-
-		it('should throw error for http response', async () => {
-			const params = { drawingName: 'drawingName', token: 'token' };
-			const error = new Error('unknown error');
-			httpService.get.mockReturnValueOnce(throwError(() => error));
-
-			await expect(service.authorizeConnection(params.drawingName, params.token)).rejects.toThrow();
-			httpService.get.mockRestore();
-		});
-
-		it('should throw error for lack of token', async () => {
-			const params = { drawingName: 'drawingName', token: 'token' };
-
-			await expect(service.authorizeConnection(params.drawingName, '')).rejects.toThrow();
-			httpService.get.mockRestore();
 		});
 	});
 });

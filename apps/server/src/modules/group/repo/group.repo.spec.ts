@@ -8,7 +8,7 @@ import {
 	groupEntityFactory,
 	groupFactory,
 	roleFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	systemEntityFactory,
 	userDoFactory,
 	userFactory,
@@ -181,7 +181,7 @@ describe('GroupRepo', () => {
 	describe('findBySchoolIdAndGroupTypes', () => {
 		describe('when groups for the school exist', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				const groups: GroupEntity[] = groupEntityFactory.buildListWithId(3, {
 					type: GroupEntityTypes.CLASS,
 					organization: school,
@@ -189,7 +189,7 @@ describe('GroupRepo', () => {
 				groups[1].type = GroupEntityTypes.COURSE;
 				groups[2].type = GroupEntityTypes.OTHER;
 
-				const otherSchool: SchoolEntity = schoolFactory.buildWithId();
+				const otherSchool: SchoolEntity = schoolEntityFactory.buildWithId();
 				const otherGroups: GroupEntity[] = groupEntityFactory.buildListWithId(2, {
 					type: GroupEntityTypes.CLASS,
 					organization: otherSchool,
@@ -249,7 +249,7 @@ describe('GroupRepo', () => {
 
 		describe('when no group exists', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 
 				await em.persistAndFlush(school);
 				em.clear();
@@ -273,7 +273,7 @@ describe('GroupRepo', () => {
 		describe('when groups for the school exist', () => {
 			const setup = async () => {
 				const system: SystemEntity = systemEntityFactory.buildWithId();
-				const school: SchoolEntity = schoolFactory.buildWithId({ systems: [system] });
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({ systems: [system] });
 				const groups: GroupEntity[] = groupEntityFactory.buildListWithId(3, {
 					type: GroupEntityTypes.CLASS,
 					organization: school,
@@ -284,7 +284,7 @@ describe('GroupRepo', () => {
 				groups[1].type = GroupEntityTypes.COURSE;
 				groups[2].type = GroupEntityTypes.OTHER;
 
-				const otherSchool: SchoolEntity = schoolFactory.buildWithId({ systems: [system] });
+				const otherSchool: SchoolEntity = schoolEntityFactory.buildWithId({ systems: [system] });
 				const otherGroups: GroupEntity[] = groupEntityFactory.buildListWithId(2, {
 					type: GroupEntityTypes.CLASS,
 					organization: otherSchool,
@@ -352,7 +352,7 @@ describe('GroupRepo', () => {
 
 		describe('when no group exists', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				const system: SystemEntity = systemEntityFactory.buildWithId();
 
 				await em.persistAndFlush([school, system]);

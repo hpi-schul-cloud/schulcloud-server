@@ -74,6 +74,13 @@
 		"DB_MULTIPLE_COLLECTIONS": false,
 		"ASSETS_ENABLED": true,
 		"ASSETS_MAX_SIZE": 25000000,
-		"ASSETS_ALLOWED_EXTENSIONS_LIST": ""
+		"ASSETS_ALLOWED_EXTENSIONS_LIST": "",
+		"DB_MULTIPLE_COLLECTIONS": false
+	},
+	"SCHULCONNEX_CLIENT": {
+		"API_URL": "http://localhost:8888/v1/",
+		"TOKEN_ENDPOINT": "http://localhost:8888/realms/SANIS/protocol/openid-connect/token",
+		"CLIENT_ID": "schulcloud",
+		"CLIENT_SECRET": "secret"
 	}
 }

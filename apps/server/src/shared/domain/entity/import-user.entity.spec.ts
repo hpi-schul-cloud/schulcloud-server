@@ -1,4 +1,4 @@
-import { importUserFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { importUserFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import { MatchCreator } from '.';
 
 describe('ImportUser entity', () => {
@@ -43,7 +43,7 @@ describe('ImportUser entity', () => {
 
 	describe('match', () => {
 		it('should set and unset both, user and matchedBy', () => {
-			const school = schoolFactory.buildWithId();
+			const school = schoolEntityFactory.buildWithId();
 			const user = userFactory.buildWithId({ school });
 			const importUser = importUserFactory.matched(MatchCreator.AUTO, user).buildWithId({ school });
 			expect(importUser.user).toEqual(user);
