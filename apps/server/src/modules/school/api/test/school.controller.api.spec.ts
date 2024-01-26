@@ -295,7 +295,7 @@ describe('School Controller (API)', () => {
 
 		describe('when no school has an LDAP login system', () => {
 			const setup = async () => {
-				const schools = schoolFactory.buildList(3);
+				const schools = schoolEntityFactory.buildList(3);
 				await em.persistAndFlush(schools);
 			};
 
