@@ -208,7 +208,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 				externalToolParameterDatasheetTemplateDataFactory.build({ type: 'Auto Schul-ID' }),
 				externalToolParameterDatasheetTemplateDataFactory.build({ type: 'Auto Kontext-ID' }),
 				externalToolParameterDatasheetTemplateDataFactory.build({ type: 'Auto Kontext-Name' }),
-				externalToolParameterDatasheetTemplateDataFactory.build({ type: '', scope: '' }),
+				externalToolParameterDatasheetTemplateDataFactory.build({ type: 'unbekannt', scope: 'unbekannt' }),
 			];
 			const datasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory.build({
 				parameters,

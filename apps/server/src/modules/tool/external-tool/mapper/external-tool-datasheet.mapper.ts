@@ -79,14 +79,17 @@ export class ExternalToolDatasheetMapper {
 		return restrictToContexts;
 	}
 
-	private static mapToParameterDataList(externalTool: ExternalTool): ExternalToolParameterDatasheetTemplateData[] {
-		const parameterData: ExternalToolParameterDatasheetTemplateData[] = [];
+	private static mapToParameterDataList(
+		externalTool: ExternalTool
+	): ExternalToolParameterDatasheetTemplateData[] | undefined {
+		const parameterData: ExternalToolParameterDatasheetTemplateData[] | undefined = externalTool.parameters?.map(
+			(parameter: CustomParameter) => {
+				const paramData: ExternalToolParameterDatasheetTemplateData =
+					ExternalToolDatasheetMapper.mapToParameterData(parameter);
 
-		externalTool.parameters?.forEach((parameter: CustomParameter) => {
-			const paramData: ExternalToolParameterDatasheetTemplateData =
-				ExternalToolDatasheetMapper.mapToParameterData(parameter);
-			parameterData.push(paramData);
-		});
+				return paramData;
+			}
+		);
 
 		return parameterData;
 	}
@@ -118,52 +121,36 @@ export class ExternalToolDatasheetMapper {
 	}
 
 	private static mapToType(parameter: CustomParameter): string {
-		let type = '';
 		switch (parameter.type) {
 			case CustomParameterType.STRING:
-				type = 'Zeichenkette';
-				break;
+				return 'Zeichenkette';
 			case CustomParameterType.BOOLEAN:
-				type = 'Wahrheitswert';
-				break;
+				return 'Wahrheitswert';
 			case CustomParameterType.NUMBER:
-				type = 'Zahl';
-				break;
+				return 'Zahl';
 			case CustomParameterType.AUTO_CONTEXTID:
-				type = 'Auto Kontext-ID';
-				break;
+				return 'Auto Kontext-ID';
 			case CustomParameterType.AUTO_CONTEXTNAME:
-				type = 'Auto Kontext-Name';
-				break;
+				return 'Auto Kontext-Name';
 			case CustomParameterType.AUTO_SCHOOLID:
-				type = 'Auto Schul-ID';
-				break;
+				return 'Auto Schul-ID';
 			case CustomParameterType.AUTO_SCHOOLNUMBER:
-				type = 'Auto Schulnummer';
-				break;
+				return 'Auto Schulnummer';
 			default:
-				break;
+				return 'unbekannt';
 		}
-
-		return type;
 	}
 
 	private static mapToScope(parameter: CustomParameter): string {
-		let scope = '';
 		switch (parameter.scope) {
 			case CustomParameterScope.CONTEXT:
-				scope = 'Kontext';
-				break;
+				return 'Kontext';
 			case CustomParameterScope.SCHOOL:
-				scope = 'Schule';
-				break;
+				return 'Schule';
 			case CustomParameterScope.GLOBAL:
-				scope = 'Global';
-				break;
+				return 'Global';
 			default:
-				break;
+				return 'unbekannt';
 		}
-
-		return scope;
 	}
 }
