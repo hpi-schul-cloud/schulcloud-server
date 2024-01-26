@@ -296,7 +296,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({type: undefined})<br />
+                            @ApiProperty({type: undefined, description: &#x27;Contains user login migration responses&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -459,12 +459,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { PaginationResponse } from &#x27;@shared/controller&#x27;;
-import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
+import { PaginationResponse } from &#x27;@shared/controller&#x27;;
 import { UserLoginMigrationResponse } from &#x27;./user-login-migration.response&#x27;;
 
 export class UserLoginMigrationSearchListResponse extends PaginationResponse&lt;UserLoginMigrationResponse[]&gt; {
-	@ApiProperty({ type: [UserLoginMigrationResponse] })
+	@ApiProperty({ type: [UserLoginMigrationResponse], description: &#x27;Contains user login migration responses&#x27; })
 	data: UserLoginMigrationResponse[];
 
 	constructor(data: UserLoginMigrationResponse[], total: number, skip?: number, limit?: number) {

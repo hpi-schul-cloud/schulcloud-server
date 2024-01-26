@@ -342,7 +342,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />
+                            @ApiProperty({description: &#x27;Id of the migration&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -516,7 +516,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
 
 export class UserLoginMigrationResponse {
-	@ApiProperty()
+	@ApiProperty({ description: &#x27;Id of the migration&#x27; })
 	id: string;
 
 	@ApiPropertyOptional({
