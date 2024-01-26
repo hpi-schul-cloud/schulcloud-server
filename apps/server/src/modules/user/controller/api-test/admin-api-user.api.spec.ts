@@ -103,7 +103,7 @@ describe('Admin API - Users (API)', () => {
 				const { body } = await setup();
 				const response = await testXApiKeyClient.post('', body);
 
-				const { username, initialPassword: password } = response.body;
+				const { username, initialPassword: password } = response.body as AdminApiUserCreateResponse;
 
 				const loginResponse = await supertest(app.getHttpServer())
 					.post('/authentication/local')
