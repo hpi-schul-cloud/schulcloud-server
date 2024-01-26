@@ -5,12 +5,12 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	cleanupCollections,
 	externalToolEntityFactory,
 	externalToolPseudonymEntityFactory,
-	schoolFactory,
+	schoolEntityFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { UUID } from 'bson';
 import { Response } from 'supertest';
@@ -55,7 +55,7 @@ describe('PseudonymController (API)', () => {
 
 		describe('when valid params are given', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school }, []);
 				const pseudonymString: string = new UUID().toString();
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
@@ -89,7 +89,7 @@ describe('PseudonymController (API)', () => {
 
 		describe('when pseudonym is not connected to the users school', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school });
 				const pseudonymString: string = new UUID().toString();
@@ -127,7 +127,7 @@ describe('PseudonymController (API)', () => {
 
 		describe('when pseudonym does not exist in db', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
 				const pseudonymString: string = new UUID().toString();
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();

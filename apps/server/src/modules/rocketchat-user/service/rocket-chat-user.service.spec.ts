@@ -49,7 +49,7 @@ describe(RocketChatUserService.name, () => {
 
 				const rocketChatUser: RocketChatUser = rocketChatUserFactory.build();
 
-				rocketChatUserRepo.findByUserId.mockResolvedValueOnce(rocketChatUser);
+				rocketChatUserRepo.findByUserId.mockResolvedValueOnce([rocketChatUser]);
 
 				return {
 					userId,
@@ -60,9 +60,9 @@ describe(RocketChatUserService.name, () => {
 			it('should return the rocketChatUser', async () => {
 				const { userId, rocketChatUser } = setup();
 
-				const result: RocketChatUser = await service.findByUserId(userId);
+				const result: RocketChatUser[] = await service.findByUserId(userId);
 
-				expect(result).toEqual(rocketChatUser);
+				expect(result[0]).toEqual(rocketChatUser);
 			});
 		});
 	});

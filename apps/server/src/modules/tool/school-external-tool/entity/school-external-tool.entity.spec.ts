@@ -2,13 +2,13 @@ import {
 	basicToolConfigFactory,
 	customParameterEntityFactory,
 	externalToolEntityFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	setupEntities,
 } from '@shared/testing';
 import { schoolExternalToolConfigurationStatusEntityFactory } from '@shared/testing/factory/school-external-tool-configuration-status-entity.factory';
 import { schoolExternalToolEntityFactory } from '@shared/testing/factory/school-external-tool-entity.factory';
-import { CustomParameterEntity, ExternalToolEntity, ExternalToolConfigEntity } from '../../external-tool/entity';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '../../common/enum';
+import { CustomParameterEntity, ExternalToolConfigEntity, ExternalToolEntity } from '../../external-tool/entity';
 import { SchoolExternalToolEntity } from './school-external-tool.entity';
 
 describe('SchoolExternalToolEntity', () => {
@@ -58,7 +58,7 @@ describe('SchoolExternalToolEntity', () => {
 			});
 			const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 				tool: externalToolEntity,
-				school: schoolFactory.buildWithId(),
+				school: schoolEntityFactory.buildWithId(),
 				schoolParameters: [],
 				toolVersion: 1,
 				status: schoolExternalToolConfigurationStatusEntityFactory.build(),
@@ -97,7 +97,7 @@ describe('SchoolExternalToolEntity', () => {
 			});
 			const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 				tool: externalToolEntity,
-				school: schoolFactory.buildWithId(),
+				school: schoolEntityFactory.buildWithId(),
 				schoolParameters: [],
 				toolVersion: 1,
 				status: schoolExternalToolConfigurationStatusEntityFactory.build(),
