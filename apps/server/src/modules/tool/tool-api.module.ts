@@ -37,16 +37,6 @@ import { ToolModule } from './tool.module';
 		LearnroomModule,
 		BoardModule,
 		PdfGeneratorModule,
-		PDFModule.register({
-			view: {
-				// TODO: can we do this better e.g. make it relative to the module file
-				root: 'apps/server/src/modules/tool/external-tool/mustache-template',
-				engine: 'mustache',
-				engineOptions: {
-					cache: true,
-				},
-			},
-		}),
 	],
 	controllers: [
 		ToolLaunchController,
