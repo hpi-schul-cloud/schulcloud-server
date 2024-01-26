@@ -36,9 +36,9 @@ class UserAction extends BaseConsumerAction {
 			}
 
 			if (
-				migratedSchool?.userLoginMigration &&
+				migratedSchool.userLoginMigration &&
 				!migratedSchool.userLoginMigration.closedAt &&
-				migratedSchool?.features?.includes(SCHOOL_FEATURES.ENABLE_LDAP_SYNC_DURING_MIGRATION)
+				migratedSchool.features?.includes(SCHOOL_FEATURES.ENABLE_LDAP_SYNC_DURING_MIGRATION)
 			) {
 				school = migratedSchool;
 			} else {
@@ -64,7 +64,7 @@ class UserAction extends BaseConsumerAction {
 		}
 
 		// create migration user when the ldapId is not existing on a real user
-		if (school.inUserMigration === true && !foundUser) {
+		if (school.inUserMigration === true && !foundUser && !school.userLoginMigration) {
 			await this.createImportUser(user, school);
 			return;
 		}
