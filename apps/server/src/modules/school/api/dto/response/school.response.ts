@@ -40,6 +40,9 @@ export class SchoolResponse {
 	@ApiProperty()
 	systemIds: string[];
 
+	@ApiPropertyOptional()
+	inUserMigration?: boolean;
+
 	@ApiProperty()
 	inMaintenance: boolean;
 
@@ -79,6 +82,7 @@ export class SchoolResponse {
 		this.features = props.features;
 		this.county = props.county;
 		this.systemIds = props.systemIds;
+		this.inUserMigration = props.inUserMigration;
 		this.inMaintenance = props.inMaintenance;
 		this.isExternal = props.isExternal;
 		this.logo_dataUrl = props.logo_dataUrl;
