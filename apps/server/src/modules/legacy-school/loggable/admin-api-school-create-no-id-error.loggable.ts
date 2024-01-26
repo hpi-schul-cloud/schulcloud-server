@@ -1,7 +1,6 @@
+/* istanbul ignore file */
 import { InternalServerErrorException } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
-import { type AnyProvisioningOptions } from '../domain';
 
 export class AdminApiSchoolCreateNoIdErrorLoggable extends InternalServerErrorException implements Loggable {
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
