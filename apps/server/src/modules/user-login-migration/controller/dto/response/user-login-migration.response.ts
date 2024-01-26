@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class UserLoginMigrationResponse {
-	@ApiProperty()
+	@ApiProperty({ description: 'Id of the migration' })
 	id: string;
 
 	@ApiPropertyOptional({
