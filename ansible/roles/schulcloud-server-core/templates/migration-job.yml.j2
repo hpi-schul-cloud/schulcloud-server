@@ -30,4 +30,4 @@ spec:
             cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
             memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
       restartPolicy: Never
-  backoffLimit: 3
+  backoffLimit: 5

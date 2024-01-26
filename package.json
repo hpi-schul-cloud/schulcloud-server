@@ -96,7 +96,7 @@
 		"nest:test": "npm run nest:test:cov && npm run nest:lint",
 		"nest:test:all": "jest",
 		"nest:test:unit": "jest \"^((?!\\.api\\.spec\\.ts).)*\\.spec\\.ts$\"",
-		"nest:test:api": "node --expose-gc ./node_modules/.bin/jest \"\\.api\\.spec\\.ts$\" --silent --logHeapUsage",
+		"nest:test:api": "jest \"\\.api\\.spec\\.ts$\"",
 		"nest:test:watch": "jest --watch",
 		"nest:test:cov": "jest --coverage --force-exit --maxWorkers='50%'",
 		"nest:test:debug": "jest --runInBand",
