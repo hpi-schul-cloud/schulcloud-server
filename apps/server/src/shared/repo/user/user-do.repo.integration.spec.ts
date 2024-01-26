@@ -13,7 +13,7 @@ import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import {
 	cleanupCollections,
 	roleFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	systemEntityFactory,
 	userDoFactory,
 	userFactory,
@@ -108,7 +108,7 @@ describe('UserRepo', () => {
 
 		beforeEach(async () => {
 			system = systemEntityFactory.buildWithId();
-			school = schoolFactory.buildWithId();
+			school = schoolEntityFactory.buildWithId();
 			school.systems.add(system);
 			user = userFactory.buildWithId({ externalId, school });
 
@@ -152,7 +152,7 @@ describe('UserRepo', () => {
 
 		beforeEach(async () => {
 			system = systemEntityFactory.buildWithId();
-			school = schoolFactory.buildWithId();
+			school = schoolEntityFactory.buildWithId();
 			school.systems.add(system);
 			user = userFactory.buildWithId({ externalId, school });
 
@@ -234,7 +234,7 @@ describe('UserRepo', () => {
 					email: 'email@email.email',
 					firstName: 'firstName',
 					lastName: 'lastName',
-					school: schoolFactory.buildWithId(),
+					school: schoolEntityFactory.buildWithId(),
 					ldapDn: 'ldapDn',
 					externalId: 'externalId',
 					language: LanguageType.DE,

@@ -4,6 +4,7 @@ import WebSocket from 'ws';
 import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
 import { encoding, decoding, map } from 'lib0';
 import { readSyncMessage, writeSyncStep1, writeUpdate } from 'y-protocols/sync';
+import { encodeStateAsUpdate } from 'yjs';
 import { Persitence, WSConnectionState, WSMessageType } from '../types';
 import { TldrawConfig } from '../config';
 import { WsSharedDocDo } from '../domain/ws-shared-doc.do';
@@ -103,7 +104,7 @@ export class TldrawWsService {
 	 * @param  {boolean} gc - whether to allow gc on the doc (applies only when created)
 	 * @return {WsSharedDocDo}
 	 */
-	getYDoc(docName: string, gc = true): WsSharedDocDo {
+	public getYDoc(docName: string, gc = true): WsSharedDocDo {
 		return map.setIfUndefined(this.docs, docName, () => {
 			const doc = new WsSharedDocDo(docName, this, gc);
 			if (this.persistence !== null) {
@@ -159,6 +160,9 @@ export class TldrawWsService {
 			this.messageHandler(ws, doc, new Uint8Array(message));
 		});
 
+		// send initial doc state to client as update
+		this.sendInitialState(ws, doc);
+
 		// Check if connection is still alive
 		let pongReceived = true;
 		const pingInterval = setInterval(() => {
@@ -211,5 +215,12 @@ export class TldrawWsService {
 
 	public async flushDocument(docName: string): Promise<void> {
 		await this.tldrawBoardRepo.flushDocument(docName);
+	}
+
+	private sendInitialState(ws: WebSocket, doc: WsSharedDocDo): void {
+		const encoder = encoding.createEncoder();
+		encoding.writeVarUint(encoder, WSMessageType.SYNC);
+		writeUpdate(encoder, encodeStateAsUpdate(doc));
+		this.send(doc, ws, encoding.toUint8Array(encoder));
 	}
 }

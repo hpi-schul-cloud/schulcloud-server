@@ -66,7 +66,6 @@ describe(RocketChatUserRepo.name, () => {
 					createdAt: entity.createdAt,
 					updatedAt: entity.updatedAt,
 				};
-
 				return {
 					entity,
 					expectedRocketChatUser,
@@ -76,10 +75,10 @@ describe(RocketChatUserRepo.name, () => {
 			it('should find the rocketChatUser', async () => {
 				const { entity, expectedRocketChatUser } = await setup();
 
-				const result: RocketChatUser = await repo.findByUserId(entity.userId.toHexString());
+				const result: RocketChatUser[] = await repo.findByUserId(entity.userId.toHexString());
 
 				// Verify explicit fields.
-				expect(result).toEqual(expect.objectContaining(expectedRocketChatUser));
+				expect(result[0]).toEqual(expect.objectContaining(expectedRocketChatUser));
 			});
 		});
 	});

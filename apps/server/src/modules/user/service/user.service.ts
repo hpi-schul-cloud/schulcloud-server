@@ -7,12 +7,14 @@ import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { RoleService } from '@modules/role/service/role.service';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { LanguageType, User } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { DomainModel, EntityId, StatusModel } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import { Logger } from '@src/core/logger';
 import { UserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
@@ -25,8 +27,11 @@ export class UserService {
 		private readonly userDORepo: UserDORepo,
 		private readonly configService: ConfigService<UserConfig, true>,
 		private readonly roleService: RoleService,
-		private readonly accountService: AccountService
-	) {}
+		private readonly accountService: AccountService,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(UserService.name);
+	}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
 		const user = await this.userRepo.findById(userId, true);
@@ -124,7 +129,20 @@ export class UserService {
 	}
 
 	async deleteUser(userId: EntityId): Promise<number> {
-		const deletedUserNumber: Promise<number> = this.userRepo.deleteUser(userId);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable('Deleting user', DomainModel.USER, userId, StatusModel.PENDING)
+		);
+		const deletedUserNumber = await this.userRepo.deleteUser(userId);
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully deleted user',
+				DomainModel.USER,
+				userId,
+				StatusModel.FINISHED,
+				0,
+				deletedUserNumber
+			)
+		);
 
 		return deletedUserNumber;
 	}
@@ -133,5 +151,11 @@ export class UserService {
 		const parentEmails = this.userRepo.getParentEmailsFromUser(userId);
 
 		return parentEmails;
+	}
+
+	public async findUserBySchoolAndName(schoolId: EntityId, firstName: string, lastName: string): Promise<User[]> {
+		const users: User[] = await this.userRepo.findUserBySchoolAndName(schoolId, firstName, lastName);
+
+		return users;
 	}
 }

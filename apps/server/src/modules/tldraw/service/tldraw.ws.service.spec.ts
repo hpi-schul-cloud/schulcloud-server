@@ -10,7 +10,9 @@ import * as SyncProtocols from 'y-protocols/sync';
 import * as AwarenessProtocol from 'y-protocols/awareness';
 import { encoding } from 'lib0';
 import { TldrawWsFactory } from '@shared/testing/factory/tldraw.ws.factory';
-import { MetricsService } from '@modules/tldraw/metrics';
+import { HttpService } from '@nestjs/axios';
+import { createMock } from '@golevelup/ts-jest';
+import { MetricsService } from '../metrics';
 import { WsSharedDocDo } from '../domain/ws-shared-doc.do';
 import { config } from '../config';
 import { TldrawBoardRepo } from '../repo';
@@ -52,7 +54,16 @@ describe('TldrawWSService', () => {
 		const imports = [CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config))];
 		const testingModule = await Test.createTestingModule({
 			imports,
-			providers: [TldrawWs, TldrawBoardRepo, TldrawWsService, MetricsService],
+			providers: [
+				TldrawWs,
+				TldrawBoardRepo,
+				TldrawWsService,
+				MetricsService,
+				{
+					provide: HttpService,
+					useValue: createMock<HttpService>(),
+				},
+			],
 		}).compile();
 
 		service = testingModule.get<TldrawWsService>(TldrawWsService);
@@ -79,7 +90,7 @@ describe('TldrawWSService', () => {
 		};
 	};
 
-	it('should chcek if service properties are set correctly', () => {
+	it('should check if service properties are set correctly', () => {
 		expect(service).toBeDefined();
 		expect(service.pingTimeout).toBeDefined();
 		expect(service.persistence).toBeDefined();
@@ -88,7 +99,7 @@ describe('TldrawWSService', () => {
 	describe('send', () => {
 		describe('when client is not connected to WS', () => {
 			const setup = async () => {
-				ws = await TestConnection.setupWs(wsUrl);
+				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 				const clientMessageMock = 'test-message';
 
 				const closeConSpy = jest.spyOn(service, 'closeConn').mockImplementationOnce(() => {});
@@ -152,7 +163,7 @@ describe('TldrawWSService', () => {
 
 		describe('when websocket has ready state 0', () => {
 			const setup = async () => {
-				ws = await TestConnection.setupWs(wsUrl);
+				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 				const clientMessageMock = 'test-message';
 
 				const sendSpy = jest.spyOn(service, 'send');
@@ -304,7 +315,7 @@ describe('TldrawWSService', () => {
 
 				service.setupWSConnection(ws);
 
-				expect(sendSpy).toHaveBeenCalledTimes(2);
+				expect(sendSpy).toHaveBeenCalledTimes(3);
 
 				ws.close();
 				messageHandlerSpy.mockRestore();

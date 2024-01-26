@@ -15,7 +15,7 @@ import {
 	mapUserToCurrentUser,
 	richTextElementNodeFactory,
 	roleFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	userFactory,
 } from '@shared/testing';
 import { Request } from 'express';
@@ -77,7 +77,7 @@ describe(`card lookup (api)`, () => {
 
 	const setup = async () => {
 		await cleanupCollections(em);
-		const school = schoolFactory.build();
+		const school = schoolEntityFactory.build();
 		const roles = roleFactory.buildList(1, {
 			// permissions: [Permission.COURSE_CREATE],
 		});

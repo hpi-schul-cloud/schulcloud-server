@@ -1,16 +1,21 @@
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { ComponentProperties, LessonEntity } from '@shared/domain/entity';
-import { Counted, EntityId } from '@shared/domain/types';
+import { Counted, DomainModel, EntityId, StatusModel } from '@shared/domain/types';
 import { AuthorizationLoaderService } from '@src/modules/authorization';
+import { Logger } from '@src/core/logger';
+import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { LessonRepo } from '../repository';
 
 @Injectable()
 export class LessonService implements AuthorizationLoaderService {
 	constructor(
 		private readonly lessonRepo: LessonRepo,
-		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
-	) {}
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(LessonService.name);
+	}
 
 	async deleteLesson(lesson: LessonEntity): Promise<void> {
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(lesson.id);
@@ -33,6 +38,14 @@ export class LessonService implements AuthorizationLoaderService {
 	}
 
 	async deleteUserDataFromLessons(userId: EntityId): Promise<number> {
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Deleting user data from Lessons',
+				DomainModel.LESSONS,
+				userId,
+				StatusModel.PENDING
+			)
+		);
 		const lessons = await this.lessonRepo.findByUserId(userId);
 
 		const updatedLessons = lessons.map((lesson: LessonEntity) => {
@@ -47,6 +60,19 @@ export class LessonService implements AuthorizationLoaderService {
 
 		await this.lessonRepo.save(updatedLessons);
 
-		return updatedLessons.length;
+		const numberOfUpdatedLessons = updatedLessons.length;
+
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully removed user data from Classes',
+				DomainModel.LESSONS,
+				userId,
+				StatusModel.FINISHED,
+				numberOfUpdatedLessons,
+				0
+			)
+		);
+
+		return numberOfUpdatedLessons;
 	}
 }

@@ -1,5 +1,8 @@
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { IToolFeatures } from '@modules/tool/tool-config';
 import {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
@@ -23,7 +26,11 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 
 	copyMap = new Map<EntityId, AnyBoardDo>();
 
-	constructor(private readonly fileCopyService: SchoolSpecificFileCopyService) {}
+	constructor(
+		private readonly fileCopyService: SchoolSpecificFileCopyService,
+		private readonly contextExternalToolService: ContextExternalToolService,
+		private readonly toolFeatures: IToolFeatures
+	) {}
 
 	async copy(original: AnyBoardDo): Promise<CopyStatus> {
 		await original.acceptAsync(this);
@@ -235,7 +242,9 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		return Promise.resolve();
 	}
 
-	visitExternalToolElementAsync(original: ExternalToolElement): Promise<void> {
+	async visitExternalToolElementAsync(original: ExternalToolElement): Promise<void> {
+		let status: CopyStatusEnum = CopyStatusEnum.SUCCESS;
+
 		const copy = new ExternalToolElement({
 			id: new ObjectId().toHexString(),
 			contextExternalToolId: undefined,
@@ -243,10 +252,28 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});
+
+		if (this.toolFeatures.ctlToolsCopyEnabled && original.contextExternalToolId) {
+			const tool: ContextExternalTool | null = await this.contextExternalToolService.findById(
+				original.contextExternalToolId
+			);
+
+			if (tool) {
+				const copiedTool: ContextExternalTool = await this.contextExternalToolService.copyContextExternalTool(
+					tool,
+					copy.id
+				);
+
+				copy.contextExternalToolId = copiedTool.id;
+			} else {
+				status = CopyStatusEnum.FAIL;
+			}
+		}
+
 		this.resultMap.set(original.id, {
 			copyEntity: copy,
 			type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
-			status: CopyStatusEnum.SUCCESS,
+			status,
 		});
 		this.copyMap.set(original.id, copy);
 

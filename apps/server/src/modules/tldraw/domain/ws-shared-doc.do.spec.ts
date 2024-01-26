@@ -7,6 +7,7 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { createMock } from '@golevelup/ts-jest';
 import * as AwarenessProtocol from 'y-protocols/awareness';
+import { HttpService } from '@nestjs/axios';
 import { config } from '../config';
 import { TldrawBoardRepo } from '../repo/tldraw-board.repo';
 import { TldrawWsService } from '../service';
@@ -35,6 +36,10 @@ describe('WsSharedDocDo', () => {
 					provide: TldrawWsService,
 					useValue: createMock<TldrawWsService>(),
 				},
+				{
+					provide: HttpService,
+					useValue: createMock<HttpService>(),
+				},
 			],
 		}).compile();
 
@@ -51,7 +56,7 @@ describe('WsSharedDocDo', () => {
 
 	describe('ydoc client awareness change handler', () => {
 		const setup = async () => {
-			ws = await TestConnection.setupWs(wsUrl);
+			ws = await TestConnection.setupWs(wsUrl, 'TEST');
 
 			class MockAwareness {
 				on = jest.fn();

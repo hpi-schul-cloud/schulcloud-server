@@ -48,7 +48,7 @@ const setupApp = async (orm) => {
 
 	setupFacadeLocator(app);
 	setupSwagger(app);
-	await initializeRedisClient();
+	initializeRedisClient();
 	rabbitMq.setup(app);
 	app
 		.use(compress())
