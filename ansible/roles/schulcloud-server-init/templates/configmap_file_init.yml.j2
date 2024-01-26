@@ -317,17 +317,16 @@ data:
 
     if [ -n "$NS" ]; then
         # Set the BETTERMARKS_CLIENT_SECRET and BETTERMARKS_URL variables values according to the k8s namespace.
-        if [ "$NS" = "bettermarks-test" ]; then
-            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_BETTERMARKS_TEST_CLIENT_SECRET
-            BETTERMARKS_URL=$BETTERMARKS_BETTERMARKS_TEST_ENTRYPOINT
-            BETTERMARKS_REDIRECT_DOMAIN=$BETTERMARKS_BETTERMARKS_TEST_REDIRECT_DOMAIN
-        elif [ "$NS" = "main" ]; then
+        if [ "$NS" = "main" ]; then
             BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_MAIN_CLIENT_SECRET
             BETTERMARKS_URL=$BETTERMARKS_MAIN_ENTRYPOINT
-            BETTERMARKS_REDIRECT_DOMAIN=$BETTERMARKS_MAIN_REDIRECT_DOMAIN
+        #elif [ "$NS" = "bettermarks-test" ]; then
         else
-            # Print some friendly message for any other namespace that's not supported.
-            echo "Sorry, Bettermarks cannot be configured on the '$NS' namespace, omitting the config data init."
+            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_BETTERMARKS_TEST_CLIENT_SECRET
+            BETTERMARKS_URL=$BETTERMARKS_BETTERMARKS_TEST_ENTRYPOINT
+        #else
+        #    # Print some friendly message for any other namespace that's not supported.
+        #    echo "Sorry, Bettermarks cannot be configured on the '$NS' namespace, omitting the config data init."
         fi
 
         # Perform the final Bettermarks config data init if client secret and URL has been properly set.
@@ -380,9 +379,9 @@ data:
                         "scope":"openid offline",
                         "token_endpoint_auth_method":"client_secret_post",
                         "redirect_uris": [
-                          "https://'$BETTERMARKS_MAIN_REDIRECT_DOMAIN'/v1.0/schulcloud/oauth/callback",
-                          "https://'$BETTERMARKS_MAIN_REDIRECT_DOMAIN'/auth/callback",
-                          "https://'$BETTERMARKS_MAIN_REDIRECT_DOMAIN'/auth/oidc/callback"
+                          "https://'$BETTERMARKS_REDIRECT_DOMAIN'/v1.0/schulcloud/oauth/callback",
+                          "https://'$BETTERMARKS_REDIRECT_DOMAIN'/auth/callback",
+                          "https://'$BETTERMARKS_REDIRECT_DOMAIN'/auth/oidc/callback"
                         ],
                         "subject_type":"pairwise"
                       }'
