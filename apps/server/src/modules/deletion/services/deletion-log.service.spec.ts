@@ -2,7 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DomainModel, OperationModel } from '@shared/domain/types';
+import { DomainModel, OperationType } from '@shared/domain/types';
 import { DeletionLogRepo } from '../repo';
 import { DeletionLogService } from './deletion-log.service';
 import { deletionLogFactory } from '../domain/testing/factory/deletion-log.factory';
@@ -48,7 +48,7 @@ describe(DeletionLogService.name, () => {
 			const setup = () => {
 				const deletionRequestId = '653e4833cc39e5907a1e18d2';
 				const domain = DomainModel.USER;
-				const operation = OperationModel.DELETE;
+				const operation = OperationType.DELETE;
 				const count = 1;
 				const refs = [new ObjectId().toHexString()];
 

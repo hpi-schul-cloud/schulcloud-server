@@ -10,7 +10,7 @@ import { RocketChatUserService } from '@modules/rocketchat-user';
 import { TeamService } from '@modules/teams';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { DomainModel, EntityId, OperationModel } from '@shared/domain/types';
+import { DomainModel, EntityId, OperationType } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { TaskService } from '@modules/task';
@@ -122,7 +122,7 @@ export class DeletionRequestUc {
 	private async logDeletion(
 		deletionRequest: DeletionRequest,
 		domainModel: DomainModel,
-		operation: OperationModel,
+		operation: OperationType,
 		count: number,
 		refs: string[]
 	): Promise<void> {
@@ -133,7 +133,7 @@ export class DeletionRequestUc {
 		this.logger.debug({ action: 'removeAccount', deletionRequest });
 
 		await this.accountService.deleteByUserId(deletionRequest.targetRefId);
-		await this.logDeletion(deletionRequest, DomainModel.ACCOUNT, OperationModel.DELETE, 1, []);
+		await this.logDeletion(deletionRequest, DomainModel.ACCOUNT, OperationType.DELETE, 1, []);
 	}
 
 	private async removeUserRegistrationPin(deletionRequest: DeletionRequest): Promise<number> {
@@ -328,7 +328,7 @@ export class DeletionRequestUc {
 		);
 
 		if (rocketChatDeleted) {
-			await this.logDeletion(deletionRequest, DomainModel.ROCKETCHATSERVICE, OperationModel.DELETE, 1, [
+			await this.logDeletion(deletionRequest, DomainModel.ROCKETCHATSERVICE, OperationType.DELETE, 1, [
 				rocketChatUser[0].username,
 			]);
 		}

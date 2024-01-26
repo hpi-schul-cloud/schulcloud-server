@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DashboardElementRepo, IDashboardRepo, UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
-import { DomainModel, LearnroomMetadata, LearnroomTypes, OperationModel } from '@shared/domain/types';
+import { DomainModel, LearnroomMetadata, LearnroomTypes, OperationType } from '@shared/domain/types';
 import { DashboardEntity, GridElement } from '@shared/domain/entity';
 import { Logger } from '@src/core/logger';
 import { DomainOperationBuilder } from '@shared/domain/builder';
@@ -71,13 +71,22 @@ describe(DashboardService.name, () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
 			const dashboardId = new ObjectId().toHexString();
+			const dashboard = new DashboardEntity(dashboardId, {
+				grid: [
+					{
+						pos: { x: 1, y: 2 },
+						gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
+					},
+				],
+				userId: user.id,
+			});
 			userRepo.findById.mockResolvedValue(user);
 
-			const expectedResult = DomainOperationBuilder.build(DomainModel.DASHBOARD, OperationModel.DELETE, 1, [
+			const expectedResult = DomainOperationBuilder.build(DomainModel.DASHBOARD, OperationType.DELETE, 1, [
 				dashboardId,
 			]);
 
-			return { dashboardId, expectedResult, user };
+			return { dashboard, expectedResult, user };
 		};
 
 		describe('when dashboard exist', () => {
@@ -91,23 +100,13 @@ describe(DashboardService.name, () => {
 			});
 
 			it('should call dashboardElementRepo.deleteByDashboardId', async () => {
-				const { user } = setup();
-				jest.spyOn(dashboardRepo, 'getUsersDashboardIfExist').mockResolvedValueOnce(
-					new DashboardEntity('dashboardId', {
-						grid: [
-							{
-								pos: { x: 1, y: 2 },
-								gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
-							},
-						],
-						userId: 'userId',
-					})
-				);
+				const { dashboard, user } = setup();
+				jest.spyOn(dashboardRepo, 'getUsersDashboardIfExist').mockResolvedValueOnce(dashboard);
 				const spy = jest.spyOn(dashboardElementRepo, 'deleteByDashboardId');
 
 				await dashboardService.deleteDashboardByUserId(user.id);
 
-				expect(spy).toHaveBeenCalledWith('dashboardId');
+				expect(spy).toHaveBeenCalledWith(dashboard.id);
 			});
 
 			it('should call dashboardRepo.deleteDashboardByUserId', async () => {
@@ -120,18 +119,8 @@ describe(DashboardService.name, () => {
 			});
 
 			it('should delete users dashboard', async () => {
-				const { dashboardId, expectedResult, user } = setup();
-				jest.spyOn(dashboardRepo, 'getUsersDashboardIfExist').mockResolvedValueOnce(
-					new DashboardEntity(dashboardId, {
-						grid: [
-							{
-								pos: { x: 1, y: 2 },
-								gridElement: GridElement.FromPersistedReference('elementId', learnroomMock('referenceId', 'Mathe')),
-							},
-						],
-						userId: 'userId',
-					})
-				);
+				const { dashboard, expectedResult, user } = setup();
+				jest.spyOn(dashboardRepo, 'getUsersDashboardIfExist').mockResolvedValueOnce(dashboard);
 				jest.spyOn(dashboardRepo, 'deleteDashboardByUserId').mockImplementation(() => Promise.resolve(1));
 
 				const result = await dashboardService.deleteDashboardByUserId(user.id);

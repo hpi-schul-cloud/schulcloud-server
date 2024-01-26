@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DomainModel, OperationModel, StatusModel } from '@shared/domain/types';
+import { DomainModel, OperationType, StatusModel } from '@shared/domain/types';
 import { DomainOperation } from '@shared/domain/interface';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { RegistrationPinRepo } from '../repo';
@@ -29,7 +29,7 @@ export class RegistrationPinService {
 
 		const result = DomainOperationBuilder.build(
 			DomainModel.REGISTRATIONPIN,
-			OperationModel.DELETE,
+			OperationType.DELETE,
 			numberOfDeletedRegistrationPins,
 			deletedRegistrationPins
 		);

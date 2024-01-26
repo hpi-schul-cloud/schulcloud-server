@@ -7,7 +7,7 @@ import { DomainOperation, IFindOptions } from '@shared/domain/interface';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DomainModel, EntityId, OperationModel, StatusModel } from '@shared/domain/types';
+import { DomainModel, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
@@ -101,7 +101,7 @@ export class PseudonymService {
 
 		const result = DomainOperationBuilder.build(
 			DomainModel.PSEUDONYMS,
-			OperationModel.DELETE,
+			OperationType.DELETE,
 			numberOfDeletedPseudonyms,
 			[...deletedPseudonyms, ...deletedExternalToolPseudonyms]
 		);

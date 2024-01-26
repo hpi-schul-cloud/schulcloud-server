@@ -12,4 +12,4 @@ export * from './task.types';
 export * from './value-of';
 export * from './domain';
 export * from './status-model.enum';
-export * from './operation';
+export * from './operation-type.enum';

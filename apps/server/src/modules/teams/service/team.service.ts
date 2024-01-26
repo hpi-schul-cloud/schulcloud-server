@@ -3,7 +3,7 @@ import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { TeamEntity } from '@shared/domain/entity';
 import { DomainOperation } from '@shared/domain/interface';
-import { DomainModel, EntityId, OperationModel, StatusModel } from '@shared/domain/types';
+import { DomainModel, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 
@@ -40,7 +40,7 @@ export class TeamService {
 
 		const result = DomainOperationBuilder.build(
 			DomainModel.TASK,
-			OperationModel.UPDATE,
+			OperationType.UPDATE,
 			numberOfUpdatedTeams,
 			this.getTeamsId(teams)
 		);

@@ -1,4 +1,4 @@
-import { DomainModel, OperationModel } from '@shared/domain/types';
+import { DomainModel, OperationType } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { DeletionLogStatisticBuilder } from '.';
 
@@ -6,17 +6,20 @@ describe(DeletionLogStatisticBuilder.name, () => {
 	afterAll(() => {
 		jest.clearAllMocks();
 	});
-
-	it('should build generic deletionLogStatistic with all attributes', () => {
-		// Arrange
+	const setup = () => {
 		const domain = DomainModel.PSEUDONYMS;
-		const operation = OperationModel.DELETE;
+		const operation = OperationType.DELETE;
 		const count = 2;
 		const refs = [new ObjectId().toHexString(), new ObjectId().toHexString()];
 
+		return { domain, operation, count, refs };
+	};
+
+	it('should build generic deletionLogStatistic with all attributes', () => {
+		const { domain, operation, count, refs } = setup();
+
 		const result = DeletionLogStatisticBuilder.build(domain, operation, count, refs);
 
-		// Assert
 		expect(result.domain).toEqual(domain);
 		expect(result.operation).toEqual(operation);
 		expect(result.count).toEqual(count);

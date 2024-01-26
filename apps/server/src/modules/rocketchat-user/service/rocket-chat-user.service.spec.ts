@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { DomainModel, OperationModel } from '@shared/domain/types';
+import { DomainModel, OperationType } from '@shared/domain/types';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { DomainOperation } from '@shared/domain/interface';
 import { RocketChatUserService } from './rocket-chat-user.service';
@@ -79,7 +79,7 @@ describe(RocketChatUserService.name, () => {
 				rocketChatUserRepo.findByUserId.mockResolvedValueOnce([rocketChatUser]);
 				rocketChatUserRepo.deleteByUserId.mockResolvedValueOnce(1);
 
-				const expectedResult = DomainOperationBuilder.build(DomainModel.ROCKETCHATUSER, OperationModel.DELETE, 1, [
+				const expectedResult = DomainOperationBuilder.build(DomainModel.ROCKETCHATUSER, OperationType.DELETE, 1, [
 					rocketChatUser.id,
 				]);
 

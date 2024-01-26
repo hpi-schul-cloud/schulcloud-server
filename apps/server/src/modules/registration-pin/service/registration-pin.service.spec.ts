@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userDoFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { DomainOperationBuilder } from '@shared/domain/builder';
-import { DomainModel, OperationModel } from '@shared/domain/types';
+import { DomainModel, OperationType } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { RegistrationPinRepo } from '../repo';
 import { RegistrationPinService } from '.';
@@ -49,7 +49,7 @@ describe(RegistrationPinService.name, () => {
 
 				registrationPinRepo.deleteRegistrationPinByEmail.mockResolvedValueOnce(null);
 
-				const expectedResult = DomainOperationBuilder.build(DomainModel.REGISTRATIONPIN, OperationModel.DELETE, 0, []);
+				const expectedResult = DomainOperationBuilder.build(DomainModel.REGISTRATIONPIN, OperationType.DELETE, 0, []);
 
 				return {
 					expectedResult,
@@ -73,7 +73,7 @@ describe(RegistrationPinService.name, () => {
 
 				registrationPinRepo.deleteRegistrationPinByEmail.mockResolvedValueOnce(registrationPinId);
 
-				const expectedResult = DomainOperationBuilder.build(DomainModel.REGISTRATIONPIN, OperationModel.DELETE, 1, [
+				const expectedResult = DomainOperationBuilder.build(DomainModel.REGISTRATIONPIN, OperationType.DELETE, 1, [
 					registrationPinId,
 				]);
 

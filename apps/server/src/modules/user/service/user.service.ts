@@ -11,7 +11,7 @@ import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { LanguageType, User } from '@shared/domain/entity';
 import { DomainOperation, IFindOptions } from '@shared/domain/interface';
-import { DomainModel, EntityId, OperationModel, StatusModel } from '@shared/domain/types';
+import { DomainModel, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { Logger } from '@src/core/logger';
@@ -141,7 +141,7 @@ export class UserService {
 
 		const result = DomainOperationBuilder.build(
 			DomainModel.USER,
-			OperationModel.DELETE,
+			OperationType.DELETE,
 			numberOfDeletedUsers,
 			deletedUsers
 		);

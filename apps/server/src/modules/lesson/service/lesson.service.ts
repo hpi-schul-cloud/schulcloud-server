@@ -1,7 +1,7 @@
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { ComponentProperties, LessonEntity } from '@shared/domain/entity';
-import { Counted, DomainModel, EntityId, OperationModel, StatusModel } from '@shared/domain/types';
+import { Counted, DomainModel, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { AuthorizationLoaderService } from '@src/modules/authorization';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
@@ -66,7 +66,7 @@ export class LessonService implements AuthorizationLoaderService {
 
 		const result = DomainOperationBuilder.build(
 			DomainModel.LESSONS,
-			OperationModel.UPDATE,
+			OperationType.UPDATE,
 			numberOfUpdatedLessons,
 			this.getLessonsId(updatedLessons)
 		);

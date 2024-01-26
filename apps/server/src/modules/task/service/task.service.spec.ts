@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TaskRepo } from '@shared/repo';
 import { courseFactory, setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { DomainModel, OperationModel } from '@shared/domain/types';
+import { DomainModel, OperationType } from '@shared/domain/types';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { Logger } from '@src/core/logger';
 import { SubmissionService } from './submission.service';
@@ -118,7 +118,7 @@ describe('TaskService', () => {
 
 				taskRepo.findByOnlyCreatorId.mockResolvedValue([[taskWithoutCourse], 1]);
 
-				const expectedResult = DomainOperationBuilder.build(DomainModel.TASK, OperationModel.DELETE, 1, [
+				const expectedResult = DomainOperationBuilder.build(DomainModel.TASK, OperationType.DELETE, 1, [
 					taskWithoutCourse.id,
 				]);
 
@@ -152,7 +152,7 @@ describe('TaskService', () => {
 
 				taskRepo.findByCreatorIdWithCourseAndLesson.mockResolvedValue([[taskWithCourse], 1]);
 
-				const expectedResult = DomainOperationBuilder.build(DomainModel.TASK, OperationModel.UPDATE, 1, [
+				const expectedResult = DomainOperationBuilder.build(DomainModel.TASK, OperationType.UPDATE, 1, [
 					taskWithCourse.id,
 				]);
 				const taskWithCourseToUpdate = { ...taskWithCourse, creator: undefined };
@@ -194,7 +194,7 @@ describe('TaskService', () => {
 
 				taskRepo.findByUserIdInFinished.mockResolvedValue([[finishedTask], 1]);
 
-				const expectedResult = DomainOperationBuilder.build(DomainModel.TASK, OperationModel.UPDATE, 1, [
+				const expectedResult = DomainOperationBuilder.build(DomainModel.TASK, OperationType.UPDATE, 1, [
 					finishedTask.id,
 				]);
 

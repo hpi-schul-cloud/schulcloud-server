@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { DomainModel, EntityId, OperationModel, StatusModel } from '@shared/domain/types';
+import { DomainModel, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainOperationBuilder } from '@shared/domain/builder';
@@ -54,7 +54,7 @@ export class ClassService {
 
 		const result = DomainOperationBuilder.build(
 			DomainModel.CLASS,
-			OperationModel.UPDATE,
+			OperationType.UPDATE,
 			numberOfUpdatedClasses,
 			this.getClassesId(updatedClasses)
 		);

@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { DomainOperation } from '@shared/domain/interface';
-import { DomainModel, EntityId, OperationModel, StatusModel } from '@shared/domain/types';
+import { DomainModel, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { IDashboardRepo, DashboardElementRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 
@@ -34,7 +34,7 @@ export class DashboardService {
 			refs.push(usersDashboard.id);
 		}
 
-		const result = DomainOperationBuilder.build(DomainModel.DASHBOARD, OperationModel.DELETE, deletedDashboard, refs);
+		const result = DomainOperationBuilder.build(DomainModel.DASHBOARD, OperationType.DELETE, deletedDashboard, refs);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(

@@ -1,11 +1,11 @@
-import { DomainModel, EntityId, OperationModel } from '@shared/domain/types';
+import { DomainModel, EntityId, OperationType } from '@shared/domain/types';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 
 export interface DeletionLogProps extends AuthorizableObject {
 	createdAt?: Date;
 	updatedAt?: Date;
 	domain: DomainModel;
-	operation: OperationModel;
+	operation: OperationType;
 	count: number;
 	refs: string[];
 	deletionRequestId?: EntityId;
@@ -25,7 +25,7 @@ export class DeletionLog extends DomainObject<DeletionLogProps> {
 		return this.props.domain;
 	}
 
-	get operation(): OperationModel {
+	get operation(): OperationType {
 		return this.props.operation;
 	}
 

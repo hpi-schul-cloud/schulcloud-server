@@ -1,8 +1,8 @@
-import { DomainModel, OperationModel } from '../types';
+import { DomainModel, OperationType } from '../types';
 
 export interface DomainOperation {
 	domain: DomainModel;
-	operation: OperationModel;
+	operation: OperationType;
 	count: number;
 	refs: string[];
 }

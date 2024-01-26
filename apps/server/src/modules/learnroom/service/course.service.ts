@@ -3,7 +3,7 @@ import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { Course } from '@shared/domain/entity';
 import { DomainOperation } from '@shared/domain/interface';
-import { Counted, DomainModel, EntityId, OperationModel, StatusModel } from '@shared/domain/types';
+import { Counted, DomainModel, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 
@@ -40,7 +40,7 @@ export class CourseService {
 
 		const result = DomainOperationBuilder.build(
 			DomainModel.COURSE,
-			OperationModel.UPDATE,
+			OperationType.UPDATE,
 			count,
 			this.getCoursesId(courses)
 		);

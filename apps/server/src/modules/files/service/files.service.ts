@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DomainModel, EntityId, OperationModel, StatusModel } from '@shared/domain/types';
+import { DomainModel, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainOperation } from '@shared/domain/interface';
@@ -39,7 +39,7 @@ export class FilesService {
 
 		const result = DomainOperationBuilder.build(
 			DomainModel.FILE,
-			OperationModel.UPDATE,
+			OperationType.UPDATE,
 			numberOfUpdatedFiles,
 			this.getFilesId(entities)
 		);
@@ -81,7 +81,7 @@ export class FilesService {
 
 		const result = DomainOperationBuilder.build(
 			DomainModel.FILE,
-			OperationModel.UPDATE,
+			OperationType.UPDATE,
 			numberOfMarkedForDeletionFiles,
 			this.getFilesId(entities)
 		);

@@ -438,17 +438,35 @@ describe('user repo', () => {
 				const user3: User = userFactory.buildWithId();
 				await em.persistAndFlush([user1, user2, user3]);
 
+				const expectedUser2 = {
+					firstName: user2.firstName,
+					lastName: user2.lastName,
+					email: user2.email,
+					roles: user2.roles,
+					school: user2.school,
+				};
+
+				const expectedUser3 = {
+					firstName: user3.firstName,
+					lastName: user3.lastName,
+					email: user3.email,
+					roles: user3.roles,
+					school: user3.school,
+				};
+
 				const expectedResult = user1.id;
 
 				return {
 					expectedResult,
+					expectedUser2,
+					expectedUser3,
 					user1,
 					user2,
 					user3,
 				};
 			};
 			it('should delete user', async () => {
-				const { expectedResult, user1, user2, user3 } = await setup();
+				const { expectedResult, expectedUser2, expectedUser3, user1, user2, user3 } = await setup();
 				const deleteResult = await repo.deleteUser(user1.id);
 				expect(deleteResult).toEqual(expectedResult);
 
@@ -456,22 +474,10 @@ describe('user repo', () => {
 				expect(result1).toHaveLength(0);
 
 				const result2 = await repo.findById(user2.id);
-				expect(result2).toMatchObject({
-					firstName: user2.firstName,
-					lastName: user2.lastName,
-					email: user2.email,
-					roles: user2.roles,
-					school: user2.school,
-				});
+				expect(result2).toMatchObject(expectedUser2);
 
 				const result3 = await repo.findById(user3.id);
-				expect(result3).toMatchObject({
-					firstName: user3.firstName,
-					lastName: user3.lastName,
-					email: user3.email,
-					roles: user3.roles,
-					school: user3.school,
-				});
+				expect(result3).toMatchObject(expectedUser3);
 			});
 		});
 	});

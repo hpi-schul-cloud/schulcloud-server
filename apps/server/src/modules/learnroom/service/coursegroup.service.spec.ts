@@ -4,7 +4,7 @@ import { CourseGroupRepo, UserRepo } from '@shared/repo';
 import { courseGroupFactory, setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { DomainOperationBuilder } from '@shared/domain/builder';
-import { DomainModel, OperationModel } from '@shared/domain/types';
+import { DomainModel, OperationType } from '@shared/domain/types';
 import { CourseGroupService } from './coursegroup.service';
 
 describe('CourseGroupService', () => {
@@ -88,7 +88,7 @@ describe('CourseGroupService', () => {
 			userRepo.findById.mockResolvedValue(user);
 			courseGroupRepo.findByUserId.mockResolvedValue([[courseGroup1, courseGroup2], 2]);
 
-			const expectedResult = DomainOperationBuilder.build(DomainModel.COURSEGROUP, OperationModel.UPDATE, 2, [
+			const expectedResult = DomainOperationBuilder.build(DomainModel.COURSEGROUP, OperationType.UPDATE, 2, [
 				courseGroup1.id,
 				courseGroup2.id,
 			]);

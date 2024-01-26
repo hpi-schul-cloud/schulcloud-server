@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DomainModel, EntityId, OperationModel } from '@shared/domain/types';
+import { DomainModel, EntityId, OperationType } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { FileDO } from '@src/infra/rabbitmq';
 import { DomainOperation } from '@shared/domain/interface';
@@ -44,7 +44,7 @@ export class FilesStorageClientAdapterService {
 
 		const result = DomainOperationBuilder.build(
 			DomainModel.FILERECORDS,
-			OperationModel.UPDATE,
+			OperationType.UPDATE,
 			response.length,
 			this.getFileRecordsId(response)
 		);

@@ -2,7 +2,7 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { Injectable } from '@nestjs/common';
 import { Task } from '@shared/domain/entity';
 import { DomainOperation, IFindOptions } from '@shared/domain/interface';
-import { Counted, DomainModel, EntityId, OperationModel, StatusModel } from '@shared/domain/types';
+import { Counted, DomainModel, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { TaskRepo } from '@shared/repo';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { Logger } from '@src/core/logger';
@@ -67,7 +67,7 @@ export class TaskService {
 
 		const result = DomainOperationBuilder.build(
 			DomainModel.TASK,
-			OperationModel.DELETE,
+			OperationType.DELETE,
 			counterOfTasksOnlyWithCreatorId,
 			this.getTasksId(tasksByOnlyCreatorId)
 		);
@@ -104,7 +104,7 @@ export class TaskService {
 
 		const result = DomainOperationBuilder.build(
 			DomainModel.TASK,
-			OperationModel.UPDATE,
+			OperationType.UPDATE,
 			counterOfTasksWithCoursesorLessons,
 			this.getTasksId(tasksByCreatorIdWithCoursesAndLessons)
 		);
@@ -142,7 +142,7 @@ export class TaskService {
 
 		const result = DomainOperationBuilder.build(
 			DomainModel.TASK,
-			OperationModel.UPDATE,
+			OperationType.UPDATE,
 			counterOfTasksWithUserInFinished,
 			this.getTasksId(tasksWithUserInFinished)
 		);
