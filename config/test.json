@@ -73,5 +73,11 @@
 		"DB_FLUSH_SIZE": 400,
 		"DB_MULTIPLE_COLLECTIONS": false
 	},
+	"SCHULCONNEX_CLIENT": {
+		"API_URL": "http://localhost:8888/v1/",
+		"TOKEN_ENDPOINT": "http://localhost:8888/realms/SANIS/protocol/openid-connect/token",
+		"CLIENT_ID": "schulcloud",
+		"CLIENT_SECRET": "secret"
+	},
 	"ADMIN_API": { "ALLOWED_API_KEYS": "thisistheadminapitokeninthetestconfig" }
 }

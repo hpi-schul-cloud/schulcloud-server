@@ -11,7 +11,7 @@ import { Account, Role, SchoolEntity, User } from '@shared/domain/entity';
 
 import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { accountFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import bcrypt from 'bcryptjs';
 import { LegacyLogger } from '../../../core/logger';
 import { AccountRepo } from '../repo/account.repo';
@@ -149,7 +149,7 @@ describe('AccountDbService', () => {
 		jest.useFakeTimers();
 		jest.setSystemTime(new Date(2020, 1, 1));
 
-		mockSchool = schoolFactory.buildWithId();
+		mockSchool = schoolEntityFactory.buildWithId();
 
 		mockTeacherUser = userFactory.buildWithId({
 			school: mockSchool,

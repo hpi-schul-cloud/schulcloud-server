@@ -1,8 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MongoMemoryDatabaseModule } from '@infra/database';
-import { cleanupCollections, schoolFactory, shareTokenFactory } from '@shared/testing';
+import { cleanupCollections, schoolEntityFactory, shareTokenFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ShareTokenContextType } from '../domainobject/share-token.do';
 import { ShareTokenRepo } from './share-token.repo';
@@ -47,7 +47,7 @@ describe('ShareTokenRepo', () => {
 		});
 
 		it('should include context id', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			await em.persistAndFlush([school]);
 			const shareToken = shareTokenFactory.build({
 				context: { contextType: ShareTokenContextType.School, contextId: school.id },

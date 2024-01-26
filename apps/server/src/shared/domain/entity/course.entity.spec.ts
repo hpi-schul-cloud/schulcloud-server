@@ -1,6 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 import { InternalServerErrorException } from '@nestjs/common';
-import { courseFactory, courseGroupFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { courseFactory, courseGroupFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
@@ -33,7 +33,7 @@ describe('CourseEntity', () => {
 
 	describe('defaults', () => {
 		it('should return defaults values', () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const course = new Course({ school });
 
 			expect(course.name).toEqual(DEFAULT.name);

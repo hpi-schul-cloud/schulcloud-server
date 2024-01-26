@@ -3,7 +3,7 @@ import { BaseFactory } from './base.factory';
 import { federalStateFactory } from './federal-state.factory';
 import { schoolYearFactory } from './schoolyear.factory';
 
-export const schoolFactory = BaseFactory.define<SchoolEntity, SchoolProperties>(SchoolEntity, ({ sequence }) => {
+export const schoolEntityFactory = BaseFactory.define<SchoolEntity, SchoolProperties>(SchoolEntity, ({ sequence }) => {
 	return {
 		name: `school #${sequence}`,
 		currentYear: schoolYearFactory.build(),

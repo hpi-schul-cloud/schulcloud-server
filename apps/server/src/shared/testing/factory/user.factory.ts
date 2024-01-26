@@ -6,7 +6,7 @@ import _ from 'lodash';
 import { adminPermissions, studentPermissions, teacherPermissions, userPermissions } from '../user-role-permissions';
 import { BaseFactory } from './base.factory';
 import { roleFactory } from './role.factory';
-import { schoolFactory } from './school.factory';
+import { schoolEntityFactory } from './school-entity.factory';
 
 class UserFactory extends BaseFactory<User, UserProperties> {
 	withRoleByName(name: RoleName): this {
@@ -55,6 +55,6 @@ export const userFactory = UserFactory.define(User, ({ sequence }) => {
 		lastName: `Doe ${sequence}`,
 		email: `user-${sequence}@example.com`,
 		roles: [],
-		school: schoolFactory.build(),
+		school: schoolEntityFactory.build(),
 	};
 });

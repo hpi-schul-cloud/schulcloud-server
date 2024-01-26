@@ -11,8 +11,8 @@ export class RocketChatUserService {
 		this.logger.setContext(RocketChatUserService.name);
 	}
 
-	public async findByUserId(userId: EntityId): Promise<RocketChatUser> {
-		const user: RocketChatUser = await this.rocketChatUserRepo.findByUserId(userId);
+	public async findByUserId(userId: EntityId): Promise<RocketChatUser[]> {
+		const user: RocketChatUser[] = await this.rocketChatUserRepo.findByUserId(userId);
 
 		return user;
 	}

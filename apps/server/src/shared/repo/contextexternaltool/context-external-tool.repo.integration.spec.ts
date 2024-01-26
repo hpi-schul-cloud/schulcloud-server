@@ -14,8 +14,8 @@ import {
 	cleanupCollections,
 	contextExternalToolEntityFactory,
 	contextExternalToolFactory,
+	schoolEntityFactory,
 	schoolExternalToolEntityFactory,
-	schoolFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ContextExternalToolRepo } from './context-external-tool.repo';
@@ -51,7 +51,7 @@ describe('ContextExternalToolRepo', () => {
 	});
 
 	const createExternalTools = () => {
-		const school: SchoolEntity = schoolFactory.buildWithId();
+		const school: SchoolEntity = schoolEntityFactory.buildWithId();
 		const schoolExternalTool1: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({ school });
 		const schoolExternalTool2: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({ school });
 		const contextExternalTool1: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
