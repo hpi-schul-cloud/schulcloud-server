@@ -5,6 +5,7 @@ import { Account, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { schoolFactory, TestApiClient, TestXApiKeyClient } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
+import { nanoid } from 'nanoid';
 import supertest from 'supertest';
 
 const baseRouteName = '/admin/users';
@@ -52,7 +53,7 @@ describe('Admin API - Users (API)', () => {
 				const schoolId = school.id;
 				const firstName = 'firstname';
 				const lastName = 'lastName';
-				const email = 'mail@domain.de';
+				const email = `mail${nanoid(12)}@domain.de`;
 				const roleNames = [RoleName.STUDENT];
 
 				const body = { schoolId, firstName, lastName, email, roleNames };

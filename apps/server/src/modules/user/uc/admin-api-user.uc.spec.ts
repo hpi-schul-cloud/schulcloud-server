@@ -102,7 +102,7 @@ describe('admin api user uc', () => {
 		it('should have persisted account', async () => {
 			const { schoolId, firstName, lastName, email, roleNames, user } = setup();
 
-			const result = await uc.createUserAndAccount({ schoolId, firstName, lastName, email, roleNames });
+			await uc.createUserAndAccount({ schoolId, firstName, lastName, email, roleNames });
 
 			expect(accountService.save).toHaveBeenCalledWith(
 				expect.objectContaining({

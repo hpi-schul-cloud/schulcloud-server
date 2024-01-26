@@ -5,6 +5,8 @@ import { EntityId } from '@shared/domain/types';
 import { RoleService } from '@src/modules/role';
 import { AccountService } from '@src/modules/account';
 import { UserService } from '../service/user.service';
+import crypto from 'crypto';
+import { nanoid } from 'nanoid';
 
 @Injectable()
 export class AdminApiUserUc {
@@ -28,7 +30,7 @@ export class AdminApiUserUc {
 		});
 		const user = await this.userService.save({ ...props, roles });
 		if (!user.id) throw new Error();
-		const initialPassword = `pswd_${crypto.randomUUID()}`;
+		const initialPassword = nanoid(12);
 		const account = await this.accountService.save({
 			username: props.email,
 			userId: user.id,
