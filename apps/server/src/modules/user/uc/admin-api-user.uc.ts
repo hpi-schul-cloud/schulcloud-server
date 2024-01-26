@@ -28,16 +28,17 @@ export class AdminApiUserUc {
 		});
 		const user = await this.userService.save({ ...props, roles });
 		if (!user.id) throw new Error();
+		const initialPassword = `pswd_${crypto.randomUUID()}`;
 		const account = await this.accountService.save({
 			username: props.email,
 			userId: user.id,
-			password: 'fixme',
+			password: initialPassword,
 		});
 		return {
 			userId: user.id,
 			accountId: account.id,
 			username: account.username,
-			initialPassword: 'fixme',
+			initialPassword,
 		};
 	}
 }
