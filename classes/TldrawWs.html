@@ -181,6 +181,7 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#afterInit" >afterInit</a>
                             </li>
                             <li>
@@ -413,6 +414,7 @@
                     <a name="afterInit"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
                         <span ><b>afterInit</b></span>
                         <a href="#afterInit"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -438,7 +440,7 @@
                 <td class="col-md-4">
 
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                         </div>
                 </td>
@@ -468,8 +470,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="110"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:110</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="101"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:101</a></div>
                         </td>
                     </tr>
 
@@ -549,8 +551,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="105"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:105</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="96"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:96</a></div>
                         </td>
                     </tr>
 
@@ -653,8 +655,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="95"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:95</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="86"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:86</a></div>
                         </td>
                     </tr>
 
@@ -804,8 +806,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="100"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:100</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="91"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:91</a></div>
                         </td>
                     </tr>
 
@@ -871,7 +873,7 @@ import { Logger } from &#x27;@src/core/logger&#x27;;
 import { AxiosError } from &#x27;axios&#x27;;
 import { firstValueFrom } from &#x27;rxjs&#x27;;
 import { HttpService } from &#x27;@nestjs/axios&#x27;;
-import { WebsocketCloseErrorLoggable } from &#x27;../loggable/websocket-close-error.loggable&#x27;;
+import { WebsocketCloseErrorLoggable } from &#x27;../loggable&#x27;;
 import { TldrawConfig, SOCKET_PORT } from &#x27;../config&#x27;;
 import { WsCloseCodeEnum, WsCloseMessageEnum } from &#x27;../types&#x27;;
 import { TldrawWsService } from &#x27;../service&#x27;;
@@ -931,7 +933,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		}
 
 		try {
-			this.tldrawWsService.setupWSConnection(client, docName);
+			await this.tldrawWsService.setupWSConnection(client, docName);
 		} catch (err) {
 			this.closeClientAndLogError(
 				client,
@@ -942,17 +944,8 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		}
 	}
 
-	public afterInit(): void {
-		this.tldrawWsService.setPersistence({
-			bindState: async (docName, ydoc) &#x3D;&gt; {
-				await this.tldrawWsService.updateDocument(docName, ydoc);
-			},
-			writeState: async (docName) &#x3D;&gt; {
-				// This is called when all connections to the document are closed.
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-				await this.tldrawWsService.flushDocument(docName);
-			},
-		});
+	public async afterInit(): Promise&lt;void&gt; {
+		await this.tldrawWsService.createDbIndex();
 	}
 
 	private getDocNameFromRequest(request: Request): string {

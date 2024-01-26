@@ -2577,13 +2577,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/TldrawModule.html" data-type="entity-link" >TldrawModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-TldrawModule-893cfd9103b05f104b491cb9349f97523e8f84428d5f98fd5d7d054f0e7e4c4313e343e236824c762c66b328a86f86654f8f16265e9969906ab32a54b635980f"' : 'data-bs-target="#xs-controllers-links-module-TldrawModule-893cfd9103b05f104b491cb9349f97523e8f84428d5f98fd5d7d054f0e7e4c4313e343e236824c762c66b328a86f86654f8f16265e9969906ab32a54b635980f"' }>
+                                            'data-bs-target="#controllers-links-module-TldrawModule-575e2490e5936a6c79b348d3f7e6a573240e3251b60e3253601c5160a34feb835c321d3d9019e4f4dd1836c43945509aead73495135589cbb3871af97f7c9d7a"' : 'data-bs-target="#xs-controllers-links-module-TldrawModule-575e2490e5936a6c79b348d3f7e6a573240e3251b60e3253601c5160a34feb835c321d3d9019e4f4dd1836c43945509aead73495135589cbb3871af97f7c9d7a"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-TldrawModule-893cfd9103b05f104b491cb9349f97523e8f84428d5f98fd5d7d054f0e7e4c4313e343e236824c762c66b328a86f86654f8f16265e9969906ab32a54b635980f"' :
-                                            'id="xs-controllers-links-module-TldrawModule-893cfd9103b05f104b491cb9349f97523e8f84428d5f98fd5d7d054f0e7e4c4313e343e236824c762c66b328a86f86654f8f16265e9969906ab32a54b635980f"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-TldrawModule-575e2490e5936a6c79b348d3f7e6a573240e3251b60e3253601c5160a34feb835c321d3d9019e4f4dd1836c43945509aead73495135589cbb3871af97f7c9d7a"' :
+                                            'id="xs-controllers-links-module-TldrawModule-575e2490e5936a6c79b348d3f7e6a573240e3251b60e3253601c5160a34feb835c321d3d9019e4f4dd1836c43945509aead73495135589cbb3871af97f7c9d7a"' }>
                                             <li class="link">
                                                 <a href="controllers/TldrawController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawController</a>
                                             </li>
@@ -2591,16 +2591,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-TldrawModule-893cfd9103b05f104b491cb9349f97523e8f84428d5f98fd5d7d054f0e7e4c4313e343e236824c762c66b328a86f86654f8f16265e9969906ab32a54b635980f"' : 'data-bs-target="#xs-injectables-links-module-TldrawModule-893cfd9103b05f104b491cb9349f97523e8f84428d5f98fd5d7d054f0e7e4c4313e343e236824c762c66b328a86f86654f8f16265e9969906ab32a54b635980f"' }>
+                                        'data-bs-target="#injectables-links-module-TldrawModule-575e2490e5936a6c79b348d3f7e6a573240e3251b60e3253601c5160a34feb835c321d3d9019e4f4dd1836c43945509aead73495135589cbb3871af97f7c9d7a"' : 'data-bs-target="#xs-injectables-links-module-TldrawModule-575e2490e5936a6c79b348d3f7e6a573240e3251b60e3253601c5160a34feb835c321d3d9019e4f4dd1836c43945509aead73495135589cbb3871af97f7c9d7a"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawModule-893cfd9103b05f104b491cb9349f97523e8f84428d5f98fd5d7d054f0e7e4c4313e343e236824c762c66b328a86f86654f8f16265e9969906ab32a54b635980f"' :
-                                        'id="xs-injectables-links-module-TldrawModule-893cfd9103b05f104b491cb9349f97523e8f84428d5f98fd5d7d054f0e7e4c4313e343e236824c762c66b328a86f86654f8f16265e9969906ab32a54b635980f"' }>
-                                        <li class="link">
-                                            <a href="injectables/Logger.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >Logger</a>
-                                        </li>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawModule-575e2490e5936a6c79b348d3f7e6a573240e3251b60e3253601c5160a34feb835c321d3d9019e4f4dd1836c43945509aead73495135589cbb3871af97f7c9d7a"' :
+                                        'id="xs-injectables-links-module-TldrawModule-575e2490e5936a6c79b348d3f7e6a573240e3251b60e3253601c5160a34feb835c321d3d9019e4f4dd1836c43945509aead73495135589cbb3871af97f7c9d7a"' }>
                                         <li class="link">
                                             <a href="injectables/TldrawBoardRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawBoardRepo</a>
                                         </li>
@@ -2610,6 +2607,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         <li class="link">
                                             <a href="injectables/TldrawService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawService</a>
                                         </li>
+                                        <li class="link">
+                                            <a href="injectables/YMongodb.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >YMongodb</a>
+                                        </li>
                                     </ul>
                                 </li>
                             </li>
@@ -2617,18 +2617,21 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/TldrawTestModule.html" data-type="entity-link" >TldrawTestModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-TldrawTestModule-5b87d7a0f04abe32aaf6fa3b2a50c9a61be55fbe6598391fde9c5ca7e5dcce2b8d69ead35b887b23c8974c2d109a1da7ed001dee7f6db6b8f67256c43f40f823"' : 'data-bs-target="#xs-injectables-links-module-TldrawTestModule-5b87d7a0f04abe32aaf6fa3b2a50c9a61be55fbe6598391fde9c5ca7e5dcce2b8d69ead35b887b23c8974c2d109a1da7ed001dee7f6db6b8f67256c43f40f823"' }>
+                                        'data-bs-target="#injectables-links-module-TldrawTestModule-ea5f3877d8cc549ad986f292e08f61580b0ffc46492045475bf513fb4009dc6c708e669f34c963701a39465b1d674ebb9311255449bca59b7045f0cfc547777e"' : 'data-bs-target="#xs-injectables-links-module-TldrawTestModule-ea5f3877d8cc549ad986f292e08f61580b0ffc46492045475bf513fb4009dc6c708e669f34c963701a39465b1d674ebb9311255449bca59b7045f0cfc547777e"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawTestModule-5b87d7a0f04abe32aaf6fa3b2a50c9a61be55fbe6598391fde9c5ca7e5dcce2b8d69ead35b887b23c8974c2d109a1da7ed001dee7f6db6b8f67256c43f40f823"' :
-                                        'id="xs-injectables-links-module-TldrawTestModule-5b87d7a0f04abe32aaf6fa3b2a50c9a61be55fbe6598391fde9c5ca7e5dcce2b8d69ead35b887b23c8974c2d109a1da7ed001dee7f6db6b8f67256c43f40f823"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawTestModule-ea5f3877d8cc549ad986f292e08f61580b0ffc46492045475bf513fb4009dc6c708e669f34c963701a39465b1d674ebb9311255449bca59b7045f0cfc547777e"' :
+                                        'id="xs-injectables-links-module-TldrawTestModule-ea5f3877d8cc549ad986f292e08f61580b0ffc46492045475bf513fb4009dc6c708e669f34c963701a39465b1d674ebb9311255449bca59b7045f0cfc547777e"' }>
                                         <li class="link">
                                             <a href="injectables/Logger.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >Logger</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/MetricsService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >MetricsService</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/TldrawRedisFactory.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawRedisFactory</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/TldrawRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawRepo</a>
@@ -2643,16 +2646,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/TldrawWsModule.html" data-type="entity-link" >TldrawWsModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-TldrawWsModule-06b0c560b1545e612a09c69f915c9d5424947c51fbe6f6537b25330acb98c7b979997fd4a3808783437887475d1f70f1100de8524f0a919e20c64a954f299221"' : 'data-bs-target="#xs-injectables-links-module-TldrawWsModule-06b0c560b1545e612a09c69f915c9d5424947c51fbe6f6537b25330acb98c7b979997fd4a3808783437887475d1f70f1100de8524f0a919e20c64a954f299221"' }>
+                                        'data-bs-target="#injectables-links-module-TldrawWsModule-99fab3f22e23881c45509893b732b1c4297c609d78165881eddde77e7b1d763bd22bfbb04522c24306ae52061e40bb3bd8c720b05edbba6037a6d3a36cebb858"' : 'data-bs-target="#xs-injectables-links-module-TldrawWsModule-99fab3f22e23881c45509893b732b1c4297c609d78165881eddde77e7b1d763bd22bfbb04522c24306ae52061e40bb3bd8c720b05edbba6037a6d3a36cebb858"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawWsModule-06b0c560b1545e612a09c69f915c9d5424947c51fbe6f6537b25330acb98c7b979997fd4a3808783437887475d1f70f1100de8524f0a919e20c64a954f299221"' :
-                                        'id="xs-injectables-links-module-TldrawWsModule-06b0c560b1545e612a09c69f915c9d5424947c51fbe6f6537b25330acb98c7b979997fd4a3808783437887475d1f70f1100de8524f0a919e20c64a954f299221"' }>
-                                        <li class="link">
-                                            <a href="injectables/Logger.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >Logger</a>
-                                        </li>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawWsModule-99fab3f22e23881c45509893b732b1c4297c609d78165881eddde77e7b1d763bd22bfbb04522c24306ae52061e40bb3bd8c720b05edbba6037a6d3a36cebb858"' :
+                                        'id="xs-injectables-links-module-TldrawWsModule-99fab3f22e23881c45509893b732b1c4297c609d78165881eddde77e7b1d763bd22bfbb04522c24306ae52061e40bb3bd8c720b05edbba6037a6d3a36cebb858"' }>
                                         <li class="link">
                                             <a href="injectables/MetricsService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >MetricsService</a>
                                         </li>
@@ -2660,7 +2660,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                             <a href="injectables/TldrawBoardRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawBoardRepo</a>
                                         </li>
                                         <li class="link">
+                                            <a href="injectables/TldrawRedisFactory.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawRedisFactory</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/TldrawRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawRepo</a>
+                                        </li>
+                                        <li class="link">
                                             <a href="injectables/TldrawWsService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawWsService</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/YMongodb.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >YMongodb</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -2669,13 +2678,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/TldrawWsTestModule.html" data-type="entity-link" >TldrawWsTestModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-TldrawWsTestModule-99106eda2f0e3e97bf3580d51beeb9f24ec4375cc852d2222156d47e6fa752205a2bb753a04d2597d8dfb846b1b29b058c26619a0e5a41ed284e3458eb643e22"' : 'data-bs-target="#xs-injectables-links-module-TldrawWsTestModule-99106eda2f0e3e97bf3580d51beeb9f24ec4375cc852d2222156d47e6fa752205a2bb753a04d2597d8dfb846b1b29b058c26619a0e5a41ed284e3458eb643e22"' }>
+                                        'data-bs-target="#injectables-links-module-TldrawWsTestModule-3fdcf6424bfce021d1826d630f2fe05eb5a76765c3afc9e3efcf4b0d9d21f0176de361ac58512a960b83e029984f0800c830fd30c98f63063c945949d225c37e"' : 'data-bs-target="#xs-injectables-links-module-TldrawWsTestModule-3fdcf6424bfce021d1826d630f2fe05eb5a76765c3afc9e3efcf4b0d9d21f0176de361ac58512a960b83e029984f0800c830fd30c98f63063c945949d225c37e"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawWsTestModule-99106eda2f0e3e97bf3580d51beeb9f24ec4375cc852d2222156d47e6fa752205a2bb753a04d2597d8dfb846b1b29b058c26619a0e5a41ed284e3458eb643e22"' :
-                                        'id="xs-injectables-links-module-TldrawWsTestModule-99106eda2f0e3e97bf3580d51beeb9f24ec4375cc852d2222156d47e6fa752205a2bb753a04d2597d8dfb846b1b29b058c26619a0e5a41ed284e3458eb643e22"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawWsTestModule-3fdcf6424bfce021d1826d630f2fe05eb5a76765c3afc9e3efcf4b0d9d21f0176de361ac58512a960b83e029984f0800c830fd30c98f63063c945949d225c37e"' :
+                                        'id="xs-injectables-links-module-TldrawWsTestModule-3fdcf6424bfce021d1826d630f2fe05eb5a76765c3afc9e3efcf4b0d9d21f0176de361ac58512a960b83e029984f0800c830fd30c98f63063c945949d225c37e"' }>
                                         <li class="link">
                                             <a href="injectables/MetricsService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >MetricsService</a>
                                         </li>
@@ -2683,7 +2692,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                             <a href="injectables/TldrawBoardRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawBoardRepo</a>
                                         </li>
                                         <li class="link">
+                                            <a href="injectables/TldrawRedisFactory.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawRedisFactory</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/TldrawRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawRepo</a>
+                                        </li>
+                                        <li class="link">
                                             <a href="injectables/TldrawWsService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawWsService</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/YMongodb.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >YMongodb</a>
                                         </li>
                                     </ul>
                                 </li>
@@ -3118,6 +3136,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="controllers/TaskController.html" data-type="entity-link" >TaskController</a>
+                                </li>
+                                <li class="link">
+                                    <a href="controllers/TldrawController.html" data-type="entity-link" >TldrawController</a>
                                 </li>
                                 <li class="link">
                                     <a href="controllers/ToolConfigurationController.html" data-type="entity-link" >ToolConfigurationController</a>
@@ -3627,6 +3648,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/ClientCredentialsGrantTokenRequest.html" data-type="entity-link" >ClientCredentialsGrantTokenRequest</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CloseConnectionLoggable.html" data-type="entity-link" >CloseConnectionLoggable</a>
                             </li>
                             <li class="link">
                                 <a href="classes/Column.html" data-type="entity-link" >Column</a>
@@ -4430,6 +4454,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/KeycloakSeedService.html" data-type="entity-link" >KeycloakSeedService</a>
                             </li>
                             <li class="link">
+                                <a href="classes/KeyFactory.html" data-type="entity-link" >KeyFactory</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/LdapAlreadyPersistedException.html" data-type="entity-link" >LdapAlreadyPersistedException</a>
                             </li>
                             <li class="link">
@@ -4581,6 +4608,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/MongoPatterns.html" data-type="entity-link" >MongoPatterns</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/MongoTransactionErrorLoggable.html" data-type="entity-link" >MongoTransactionErrorLoggable</a>
                             </li>
                             <li class="link">
                                 <a href="classes/MoveCardBodyParams.html" data-type="entity-link" >MoveCardBodyParams</a>
@@ -4863,6 +4893,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/RedirectResponse.html" data-type="entity-link" >RedirectResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/RedisErrorLoggable.html" data-type="entity-link" >RedisErrorLoggable</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/RedisPublishErrorLoggable.html" data-type="entity-link" >RedisPublishErrorLoggable</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ReferencedEntityNotFoundLoggable.html" data-type="entity-link" >ReferencedEntityNotFoundLoggable</a>
@@ -5456,6 +5492,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/TldrawDeleteParams.html" data-type="entity-link" >TldrawDeleteParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/TldrawDrawing.html" data-type="entity-link" >TldrawDrawing</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/TldrawWs.html" data-type="entity-link" >TldrawWs</a>
                             </li>
                             <li class="link">
@@ -5744,7 +5783,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/WebsocketCloseErrorLoggable.html" data-type="entity-link" >WebsocketCloseErrorLoggable</a>
                             </li>
                             <li class="link">
+                                <a href="classes/WebsocketErrorLoggable.html" data-type="entity-link" >WebsocketErrorLoggable</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/WebsocketMessageErrorLoggable.html" data-type="entity-link" >WebsocketMessageErrorLoggable</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/WsSharedDocDo.html" data-type="entity-link" >WsSharedDocDo</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/WsSharedDocErrorLoggable.html" data-type="entity-link" >WsSharedDocErrorLoggable</a>
                             </li>
                             <li class="link">
                                 <a href="classes/YearsResponse.html" data-type="entity-link" >YearsResponse</a>
@@ -6450,6 +6498,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/TldrawBoardRepo.html" data-type="entity-link" >TldrawBoardRepo</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/TldrawRedisFactory.html" data-type="entity-link" >TldrawRedisFactory</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/TldrawWsService.html" data-type="entity-link" >TldrawWsService</a>
                                 </li>
                                 <li class="link">
@@ -6529,6 +6580,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="injectables/VideoConferenceService.html" data-type="entity-link" >VideoConferenceService</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/YMongodb.html" data-type="entity-link" >YMongodb</a>
                                 </li>
                             </ul>
                         </li>
@@ -7382,6 +7436,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/TriggerDeletionExecutionOptions.html" data-type="entity-link" >TriggerDeletionExecutionOptions</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/UniqueKey.html" data-type="entity-link" >UniqueKey</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/UrlHandler.html" data-type="entity-link" >UrlHandler</a>

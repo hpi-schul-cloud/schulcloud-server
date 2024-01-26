@@ -149,13 +149,6 @@
                             <ul class="index-list">
                                 <li>
                                             <span class="modifier">Optional</span>
-                                        <a href="#_id" 
->
-                                            _id
-                                        </a>
-                                </li>
-                                <li>
-                                            <span class="modifier">Optional</span>
                                         <a href="#action" 
 >
                                             action
@@ -172,6 +165,20 @@
                                         <a href="#docName" 
 >
                                             docName
+                                        </a>
+                                </li>
+                                <li>
+                                            <span class="modifier">Optional</span>
+                                        <a href="#id" 
+>
+                                            id
+                                        </a>
+                                </li>
+                                <li>
+                                            <span class="modifier">Optional</span>
+                                        <a href="#part" 
+>
+                                            part
                                         </a>
                                 </li>
                                 <li>
@@ -197,44 +204,6 @@
 
             <section data-compodoc="block-properties">
                 <h3 id="inputs">Properties</h3>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <a name="_id"></a>
-                                        <span class="name "><b>_id</b>
-                                            <a href="#_id">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>_id:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                                        </td>
-                                    </tr>
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Optional</i>
-                                        </td>
-                                    </tr>
-
-
-
-
-                        </tbody>
-                    </table>
                     <table class="table table-sm table-bordered">
                         <tbody>
                                 <tr>
@@ -348,6 +317,82 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
+                                        <a name="id"></a>
+                                        <span class="name "><b>id</b>
+                                            <a href="#id">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>id:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="part"></a>
+                                        <span class="name "><b>part</b>
+                                            <a href="#part">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>part:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
                                         <a name="value"></a>
                                         <span class="name "><b>value</b>
                                             <a href="#value">
@@ -358,7 +403,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>value:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                        <code>value:     <code>Buffer</code>
 </code>
                                     </td>
                                 </tr>
@@ -366,7 +411,7 @@
 
                                     <tr>
                                         <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            <i>Type : </i>    <code>Buffer</code>
 
                                         </td>
                                     </tr>
@@ -415,51 +460,49 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, PrimaryKey, Property } from &#x27;@mikro-orm/core&#x27;;
-import { BadRequestException } from &#x27;@nestjs/common&#x27;;
-import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Index, Property } from &#x27;@mikro-orm/core&#x27;;
+import { BaseEntity } from &#x27;@shared/domain/entity/base.entity&#x27;;
+
+export interface TldrawDrawingProps {
+	id?: string;
+	docName: string;
+	version: string;
+	clock?: number;
+	action?: string;
+	value: Buffer;
+	part?: number;
+}
 
 @Entity({ tableName: &#x27;drawings&#x27; })
-export class TldrawDrawing {
+@Index({ properties: [&#x27;version&#x27;, &#x27;docName&#x27;, &#x27;action&#x27;, &#x27;clock&#x27;, &#x27;part&#x27;] })
+export class TldrawDrawing extends BaseEntity {
+	@Property({ nullable: false })
+	docName: string;
+
+	@Property({ nullable: false })
+	version: string;
+
+	@Property({ nullable: false })
+	value: Buffer;
+
+	@Property({ nullable: true })
+	clock?: number;
+
+	@Property({ nullable: true })
+	action?: string;
+
+	@Property({ nullable: true })
+	part?: number;
+
 	constructor(props: TldrawDrawingProps) {
-		if (!props.docName) throw new BadRequestException(&#x27;Tldraw element should have name.&#x27;);
+		super();
 		this.docName &#x3D; props.docName;
 		this.version &#x3D; props.version;
 		this.value &#x3D; props.value;
-		if (typeof props.clock &#x3D;&#x3D;&#x3D; &#x27;number&#x27;) {
-			this.clock &#x3D; props.clock;
-		}
-		if (props.action) {
-			this.action &#x3D; props.action;
-		}
+		this.clock &#x3D; props.clock;
+		this.action &#x3D; props.action;
+		this.part &#x3D; props.part;
 	}
-
-	@PrimaryKey()
-	_id!: ObjectId;
-
-	@Property({ nullable: false })
-	docName: string;
-
-	@Property({ nullable: false })
-	version: string;
-
-	@Property({ nullable: false })
-	value: string;
-
-	@Property({ nullable: true })
-	clock?: number;
-
-	@Property({ nullable: true })
-	action?: string;
-}
-
-export interface TldrawDrawingProps {
-	_id?: string;
-	docName: string;
-	version: string;
-	clock?: number;
-	action?: string;
-	value: string;
 }
 </code></pre>
     </div>

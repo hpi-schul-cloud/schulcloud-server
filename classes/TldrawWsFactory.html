@@ -189,15 +189,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createWebsocket(readyState: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                    <code>createWebsocket(readyState: <a href="../undefineds/WebSocketReadyStateEnum.html" target="_self">WebSocketReadyStateEnum</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="9"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/tldraw.ws.factory.ts:9</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="10"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/tldraw.ws.factory.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -220,7 +220,7 @@
                                         <tr>
                                                 <td>readyState</td>
                                             <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                                            <code><a href="../miscellaneous/enumerations.html#WebSocketReadyStateEnum" target="_self" >WebSocketReadyStateEnum</a></code>
                                             </td>
 
                                             <td>
@@ -265,8 +265,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="5"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/tldraw.ws.factory.ts:5</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="6"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/tldraw.ws.factory.ts:6</a></div>
                         </td>
                     </tr>
 
@@ -294,14 +294,19 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { WsSharedDocDo } from &#x27;@modules/tldraw/domain/ws-shared-doc.do&#x27;;
 import WebSocket from &#x27;ws&#x27;;
+import { WebSocketReadyStateEnum } from &#x27;@shared/testing&#x27;;
 
 export class TldrawWsFactory {
 	public static createWsSharedDocDo(): WsSharedDocDo {
-		return { conns: new Map(), destroy: () &#x3D;&gt; {} } as WsSharedDocDo;
+		return { connections: new Map(), destroy: () &#x3D;&gt; {} } as WsSharedDocDo;
 	}
 
-	public static createWebsocket(readyState: number): WebSocket {
-		return { readyState, close: () &#x3D;&gt; {} } as WebSocket;
+	public static createWebsocket(readyState: WebSocketReadyStateEnum): WebSocket {
+		return {
+			readyState,
+			close: () &#x3D;&gt; {},
+			send: () &#x3D;&gt; {},
+		} as unknown as WebSocket;
 	}
 }
 </code></pre>

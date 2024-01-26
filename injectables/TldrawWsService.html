@@ -143,15 +143,35 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Public</span>
+                                <a href="#awarenessUpdateHandler" >awarenessUpdateHandler</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#docs" >docs</a>
                             </li>
                             <li>
-                                    <span class="modifier">Public</span>
-                                <a href="#persistence" >persistence</a>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#gcEnabled" >gcEnabled</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#pingTimeout" >pingTimeout</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#pub" >pub</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
-                                <a href="#pingTimeout" >pingTimeout</a>
+                                <a href="#redisMessageHandler" >redisMessageHandler</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#sub" >sub</a>
                             </li>
                         </ul>
                     </td>
@@ -167,20 +187,55 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#closeConn" >closeConn</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#flushDocument" >flushDocument</a>
+                                <a href="#createDbIndex" >createDbIndex</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#databaseUpdateHandler" >databaseUpdateHandler</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#getYDoc" >getYDoc</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#manageClientsConnections" >manageClientsConnections</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
                                 <a href="#messageHandler" >messageHandler</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#prepareAwarenessMessage" >prepareAwarenessMessage</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#propagateUpdate" >propagateUpdate</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#publishUpdateToRedis" >publishUpdateToRedis</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#registerAwarenessUpdateHandler" >registerAwarenessUpdateHandler</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#registerDatabaseUpdateHandler" >registerDatabaseUpdateHandler</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#registerUpdateHandler" >registerUpdateHandler</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -188,18 +243,32 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                <a href="#sendAwarenessMessage" >sendAwarenessMessage</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#sendInitialState" >sendInitialState</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
-                                <a href="#setPersistence" >setPersistence</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#setupWSConnection" >setupWSConnection</a>
                             </li>
                             <li>
-                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#storeStateAndDestroyYDocIfPersisted" >storeStateAndDestroyYDocIfPersisted</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#subscribeToRedisChannels" >subscribeToRedisChannels</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#unsubscribeFromRedisChannels" >unsubscribeFromRedisChannels</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#updateDocument" >updateDocument</a>
                             </li>
@@ -225,12 +294,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(configService: <a href="../interfaces/TldrawConfig.html" target="_self">ConfigService&lt;TldrawConfig | &gt;</a>, tldrawBoardRepo: <a href="../injectables/TldrawBoardRepo.html" target="_self">TldrawBoardRepo</a>, metricsService: <a href="../injectables/MetricsService.html" target="_self">MetricsService</a>)</code>
+<code>constructor(configService: <a href="../interfaces/TldrawConfig.html" target="_self">ConfigService&lt;TldrawConfig | &gt;</a>, tldrawBoardRepo: <a href="../injectables/TldrawBoardRepo.html" target="_self">TldrawBoardRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, metricsService: <a href="../injectables/MetricsService.html" target="_self">MetricsService</a>, tldrawRedisFactory: <a href="../injectables/TldrawRedisFactory.html" target="_self">TldrawRedisFactory</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:20</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:35</a></div>
                             </td>
                         </tr>
 
@@ -272,10 +341,34 @@
                                                     
                                                 </tr>
                                                 <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>metricsService</td>
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/MetricsService.html" target="_self" >MetricsService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>tldrawRedisFactory</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/TldrawRedisFactory.html" target="_self" >TldrawRedisFactory</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -304,6 +397,7 @@
                     <a name="closeConn"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
                         <span ><b>closeConn</b></span>
                         <a href="#closeConn"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -319,8 +413,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="38"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:38</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:56</a></div>
                         </td>
                     </tr>
 
@@ -368,7 +462,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -382,27 +476,67 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="flushDocument"></a>
+                    <a name="createDbIndex"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>flushDocument</b></span>
-                        <a href="#flushDocument"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>createDbIndex</b></span>
+                        <a href="#createDbIndex"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>flushDocument(docName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>createDbIndex()</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="216"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:216</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="149"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:149</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="databaseUpdateHandler"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>databaseUpdateHandler</b></span>
+                        <a href="#databaseUpdateHandler"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>databaseUpdateHandler(docName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, update: Uint8Array)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="107"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:107</a></div>
                         </td>
                     </tr>
 
@@ -434,11 +568,23 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>update</td>
+                                            <td>
+                                                        <code>Uint8Array</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                         </div>
                             <div class="io-description">
@@ -455,6 +601,7 @@
                     <a name="getYDoc"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
                         <span ><b>getYDoc</b></span>
                         <a href="#getYDoc"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -463,15 +610,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getYDoc(docName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, gc)</code>
+                    <code>getYDoc(docName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="107"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:107</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="131"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:131</a></div>
                         </td>
                     </tr>
 
@@ -490,7 +637,6 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
-                                                <td>Default value</td>
                                                 <td>Description</td>
                                         </tr>
                                     </thead>
@@ -505,8 +651,6 @@
                                                     No
                                             </td>
 
-                                            <td>
-                                            </td>
 
                                             <td>
                                                     <ul>
@@ -515,31 +659,113 @@
 
                                             </td>
                                         </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="manageClientsConnections"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>manageClientsConnections</b></span>
+                        <a href="#manageClientsConnections"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>manageClientsConnections(connectionsUpdate: <a href="../undefineds/AwarenessConnectionsUpdate.html" target="_self">AwarenessConnectionsUpdate</a>, wsConnection: WebSocket | null, doc: <a href="../classes/WsSharedDocDo.html" target="_self">WsSharedDocDo</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="324"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:324</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
                                         <tr>
-                                                <td>gc</td>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>connectionsUpdate</td>
                                             <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#AwarenessConnectionsUpdate" target="_self" >AwarenessConnectionsUpdate</a></code>
                                             </td>
 
                                             <td>
                                                     No
                                             </td>
 
+
                                             <td>
-                                                    <code>true</code>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>wsConnection</td>
+                                            <td>
+                                                        <code>WebSocket | null</code>
                                             </td>
 
                                             <td>
-                                                    <ul>
-<li>whether to allow gc on the doc (applies only when created)</li>
-</ul>
+                                                    No
+                                            </td>
 
+
+                                            <td>
+                                                    <p>Origin is the connection that made the change</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>doc</td>
+                                            <td>
+                                                            <code><a href="../classes/WsSharedDocDo.html" target="_self" >WsSharedDocDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/WsSharedDocDo.html" target="_self" >WsSharedDocDo</a></code>
+                            <b>Returns : </b>    <code>number[]</code>
 
                         </div>
                             <div class="io-description">
@@ -571,8 +797,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="119"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:119</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="153"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:153</a></div>
                         </td>
                     </tr>
 
@@ -620,6 +846,475 @@
                                                 <td>message</td>
                                             <td>
                                                         <code>Uint8Array</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="prepareAwarenessMessage"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>prepareAwarenessMessage</b></span>
+                        <a href="#prepareAwarenessMessage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>prepareAwarenessMessage(changedClients: number[], doc: <a href="../classes/WsSharedDocDo.html" target="_self">WsSharedDocDo</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="301"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:301</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>changedClients</td>
+                                            <td>
+                                                        <code>number[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>array of changed clients</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>doc</td>
+                                            <td>
+                                                            <code><a href="../classes/WsSharedDocDo.html" target="_self" >WsSharedDocDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Uint8Array</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="propagateUpdate"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>propagateUpdate</b></span>
+                        <a href="#propagateUpdate"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>propagateUpdate(update: Uint8Array, doc: <a href="../classes/WsSharedDocDo.html" target="_self">WsSharedDocDo</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="286"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:286</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>update</td>
+                                            <td>
+                                                        <code>Uint8Array</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>doc</td>
+                                            <td>
+                                                            <code><a href="../classes/WsSharedDocDo.html" target="_self" >WsSharedDocDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="publishUpdateToRedis"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>publishUpdateToRedis</b></span>
+                        <a href="#publishUpdateToRedis"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>publishUpdateToRedis(doc: <a href="../classes/WsSharedDocDo.html" target="_self">WsSharedDocDo</a>, update: Uint8Array, type: "awareness" | "document")</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="396"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:396</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>doc</td>
+                                            <td>
+                                                            <code><a href="../classes/WsSharedDocDo.html" target="_self" >WsSharedDocDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>update</td>
+                                            <td>
+                                                        <code>Uint8Array</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>type</td>
+                                            <td>
+                                                        <code>&quot;awareness&quot; | &quot;document&quot;</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="registerAwarenessUpdateHandler"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>registerAwarenessUpdateHandler</b></span>
+                        <a href="#registerAwarenessUpdateHandler"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>registerAwarenessUpdateHandler(doc: <a href="../classes/WsSharedDocDo.html" target="_self">WsSharedDocDo</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="344"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:344</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>doc</td>
+                                            <td>
+                                                            <code><a href="../classes/WsSharedDocDo.html" target="_self" >WsSharedDocDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="registerDatabaseUpdateHandler"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>registerDatabaseUpdateHandler</b></span>
+                        <a href="#registerDatabaseUpdateHandler"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>registerDatabaseUpdateHandler(doc: <a href="../classes/WsSharedDocDo.html" target="_self">WsSharedDocDo</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="354"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:354</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>doc</td>
+                                            <td>
+                                                            <code><a href="../classes/WsSharedDocDo.html" target="_self" >WsSharedDocDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="registerUpdateHandler"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>registerUpdateHandler</b></span>
+                        <a href="#registerUpdateHandler"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>registerUpdateHandler(doc: <a href="../classes/WsSharedDocDo.html" target="_self">WsSharedDocDo</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="350"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:350</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>doc</td>
+                                            <td>
+                                                            <code><a href="../classes/WsSharedDocDo.html" target="_self" >WsSharedDocDo</a></code>
                                             </td>
 
                                             <td>
@@ -664,8 +1359,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="70"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:70</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -739,6 +1434,94 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="sendAwarenessMessage"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>sendAwarenessMessage</b></span>
+                        <a href="#sendAwarenessMessage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>sendAwarenessMessage(buff: Uint8Array, doc: <a href="../classes/WsSharedDocDo.html" target="_self">WsSharedDocDo</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="313"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:313</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>buff</td>
+                                            <td>
+                                                        <code>Uint8Array</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                                    <p>encoded message about changes</p>
+
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                                <td>doc</td>
+                                            <td>
+                                                            <code><a href="../classes/WsSharedDocDo.html" target="_self" >WsSharedDocDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                            <td>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="sendInitialState"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -757,8 +1540,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="220"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:220</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="409"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:409</a></div>
                         </td>
                     </tr>
 
@@ -820,26 +1603,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="setPersistence"></a>
+                    <a name="setupWSConnection"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
-                        <span ><b>setPersistence</b></span>
-                        <a href="#setPersistence"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Async</span>
+                        <span ><b>setupWSConnection</b></span>
+                        <a href="#setupWSConnection"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>setPersistence(persistence_: <a href="../undefineds/Persitence.html" target="_self">Persitence</a>)</code>
+                    <code>setupWSConnection(ws: WebSocket, docName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="30"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:30</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="205"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:205</a></div>
                         </td>
                     </tr>
 
@@ -860,9 +1644,160 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>persistence_</td>
+                                                <td>ws</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#Persitence" target="_self" >Persitence</a></code>
+                                                        <code>WebSocket</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>docName</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="storeStateAndDestroyYDocIfPersisted"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>storeStateAndDestroyYDocIfPersisted</b></span>
+                        <a href="#storeStateAndDestroyYDocIfPersisted"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>storeStateAndDestroyYDocIfPersisted(doc: <a href="../classes/WsSharedDocDo.html" target="_self">WsSharedDocDo</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="269"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:269</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>doc</td>
+                                            <td>
+                                                            <code><a href="../classes/WsSharedDocDo.html" target="_self" >WsSharedDocDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="subscribeToRedisChannels"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>subscribeToRedisChannels</b></span>
+                        <a href="#subscribeToRedisChannels"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>subscribeToRedisChannels(doc: <a href="../classes/WsSharedDocDo.html" target="_self">WsSharedDocDo</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="358"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:358</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>doc</td>
+                                            <td>
+                                                            <code><a href="../classes/WsSharedDocDo.html" target="_self" >WsSharedDocDo</a></code>
                                             </td>
 
                                             <td>
@@ -889,26 +1824,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="setupWSConnection"></a>
+                    <a name="unsubscribeFromRedisChannels"></a>
                     <span class="name">
-                            <span class="modifier">Public</span>
-                        <span ><b>setupWSConnection</b></span>
-                        <a href="#setupWSConnection"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Private</span>
+                        <span ><b>unsubscribeFromRedisChannels</b></span>
+                        <a href="#unsubscribeFromRedisChannels"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>setupWSConnection(ws: WebSocket, docName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>unsubscribeFromRedisChannels(doc: <a href="../classes/WsSharedDocDo.html" target="_self">WsSharedDocDo</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="152"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:152</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="371"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:371</a></div>
                         </td>
                     </tr>
 
@@ -925,37 +1860,19 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
-                                                <td>Default value</td>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>ws</td>
+                                                <td>doc</td>
                                             <td>
-                                                        <code>WebSocket</code>
+                                                            <code><a href="../classes/WsSharedDocDo.html" target="_self" >WsSharedDocDo</a></code>
                                             </td>
 
                                             <td>
                                                     No
                                             </td>
 
-                                            <td>
-                                            </td>
-
-                                        </tr>
-                                        <tr>
-                                                <td>docName</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-                                            <td>
-                                                    <code>&#x27;GLOBAL&#x27;</code>
-                                            </td>
 
                                         </tr>
                                     </tbody>
@@ -978,7 +1895,7 @@
                 <td class="col-md-4">
                     <a name="updateDocument"></a>
                     <span class="name">
-                            <span class="modifier">Public</span>
+                            <span class="modifier">Private</span>
                             <span class="modifier">Async</span>
                         <span ><b>updateDocument</b></span>
                         <a href="#updateDocument"><span class="icon ion-ios-link"></span></a>
@@ -988,15 +1905,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateDocument(docName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, ydoc: <a href="../classes/WsSharedDocDo.html" target="_self">WsSharedDocDo</a>)</code>
+                    <code>updateDocument(docName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, doc: <a href="../classes/WsSharedDocDo.html" target="_self">WsSharedDocDo</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="212"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:212</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="387"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:387</a></div>
                         </td>
                     </tr>
 
@@ -1029,7 +1946,7 @@
 
                                         </tr>
                                         <tr>
-                                                <td>ydoc</td>
+                                                <td>doc</td>
                                             <td>
                                                             <code><a href="../classes/WsSharedDocDo.html" target="_self" >WsSharedDocDo</a></code>
                                             </td>
@@ -1044,7 +1961,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1076,8 +1993,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="90"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:90</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="94"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:94</a></div>
                         </td>
                     </tr>
 
@@ -1156,6 +2073,66 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="awarenessUpdateHandler"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>awarenessUpdateHandler</b></span>
+                        <a href="#awarenessUpdateHandler"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>() &#x3D;&gt; {...}</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="116" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:116</a></div>
+                        </td>
+                    </tr>
+
+
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description">
+                                <b>Parameters :</b>
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                            <tr>
+                                                    <td>connectionsUpdate</td>
+                                                    <td>
+                                                    </td>
+                                            </tr>
+                                            <tr>
+                                                    <td>wsConnection</td>
+                                                    <td>
+                                                            <code><p>Origin is the connection that made the change</p>
+</code>
+                                                    </td>
+                                            </tr>
+                                            <tr>
+                                                    <td>doc</td>
+                                                    <td>
+                                                    </td>
+                                            </tr>
+                                    </tbody>
+                                </table>
+                        </div>
+                    </td>
+                </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="docs"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -1171,7 +2148,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:20</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -1182,28 +2159,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="persistence"></a>
+                    <a name="gcEnabled"></a>
                     <span class="name">
-                            <span class="modifier">Public</span>
-                        <span ><b>persistence</b></span>
-                        <a href="#persistence"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>gcEnabled</b></span>
+                        <a href="#gcEnabled"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#Persitence" target="_self" >Persitence | null</a></code>
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
 
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>null</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -1216,7 +2189,8 @@
                 <td class="col-md-4">
                     <a name="pingTimeout"></a>
                     <span class="name">
-                            <span class="modifier">Public</span>
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
                         <span ><b>pingTimeout</b></span>
                         <a href="#pingTimeout"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -1230,7 +2204,127 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:29</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="pub"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>pub</b></span>
+                        <a href="#pub"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Redis</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:35</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="redisMessageHandler"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>redisMessageHandler</b></span>
+                        <a href="#redisMessageHandler"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>() &#x3D;&gt; {...}</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="189" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:189</a></div>
+                        </td>
+                    </tr>
+
+
+                <tr>
+                    <td class="col-md-4">
+                        <div class="io-description">
+                                <b>Parameters :</b>
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Description</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                            <tr>
+                                                    <td>channel</td>
+                                                    <td>
+                                                            <code><p>redis channel</p>
+</code>
+                                                    </td>
+                                            </tr>
+                                            <tr>
+                                                    <td>update</td>
+                                                    <td>
+                                                            <code><p>update message</p>
+</code>
+                                                    </td>
+                                            </tr>
+                                            <tr>
+                                                    <td>doc</td>
+                                                    <td>
+                                                            <code><p>ydoc</p>
+</code>
+                                                    </td>
+                                            </tr>
+                                    </tbody>
+                                </table>
+                        </div>
+                    </td>
+                </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="sub"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>sub</b></span>
+                        <a href="#sub"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>Redis</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -1247,64 +2341,67 @@
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import WebSocket from &#x27;ws&#x27;;
 import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from &#x27;y-protocols/awareness&#x27;;
-import { encoding, decoding, map } from &#x27;lib0&#x27;;
+import { decoding, encoding, map } from &#x27;lib0&#x27;;
 import { readSyncMessage, writeSyncStep1, writeUpdate } from &#x27;y-protocols/sync&#x27;;
-import { encodeStateAsUpdate } from &#x27;yjs&#x27;;
-import { Persitence, WSConnectionState, WSMessageType } from &#x27;../types&#x27;;
+import { applyUpdate, encodeStateAsUpdate } from &#x27;yjs&#x27;;
+import { Buffer } from &#x27;node:buffer&#x27;;
+import { Redis } from &#x27;ioredis&#x27;;
+import { Logger } from &#x27;@src/core/logger&#x27;;
+import { TldrawRedisFactory } from &#x27;../redis&#x27;;
+import {
+	CloseConnectionLoggable,
+	RedisPublishErrorLoggable,
+	WebsocketErrorLoggable,
+	WebsocketMessageErrorLoggable,
+	WsSharedDocErrorLoggable,
+} from &#x27;../loggable&#x27;;
 import { TldrawConfig } from &#x27;../config&#x27;;
-import { WsSharedDocDo } from &#x27;../domain/ws-shared-doc.do&#x27;;
+import { AwarenessConnectionsUpdate, RedisConnectionTypeEnum, WSConnectionState, WSMessageType } from &#x27;../types&#x27;;
+import { WsSharedDocDo } from &#x27;../domain&#x27;;
 import { TldrawBoardRepo } from &#x27;../repo&#x27;;
 import { MetricsService } from &#x27;../metrics&#x27;;
 
 @Injectable()
 export class TldrawWsService {
-	public pingTimeout: number;
-
-	public persistence: Persitence | null &#x3D; null;
-
 	public docs &#x3D; new Map();
+
+	private readonly pingTimeout: number;
+
+	private readonly gcEnabled: boolean;
+
+	public readonly sub: Redis;
+
+	private readonly pub: Redis;
 
 	constructor(
 		private readonly configService: ConfigService&lt;TldrawConfig, true&gt;,
 		private readonly tldrawBoardRepo: TldrawBoardRepo,
-		private readonly metricsService: MetricsService
+		private readonly logger: Logger,
+		private readonly metricsService: MetricsService,
+		private readonly tldrawRedisFactory: TldrawRedisFactory
 	) {
+		this.logger.setContext(TldrawWsService.name);
 		this.pingTimeout &#x3D; this.configService.get&lt;number&gt;(&#x27;TLDRAW_PING_TIMEOUT&#x27;);
-	}
+		this.gcEnabled &#x3D; this.configService.get&lt;boolean&gt;(&#x27;TLDRAW_GC_ENABLED&#x27;);
 
-	public setPersistence(persistence_: Persitence): void {
-		this.persistence &#x3D; persistence_;
+		this.sub &#x3D; this.tldrawRedisFactory.build(RedisConnectionTypeEnum.SUBSCRIBE);
+		this.pub &#x3D; this.tldrawRedisFactory.build(RedisConnectionTypeEnum.PUBLISH);
 	}
 
 	/**
 	 * @param {WsSharedDocDo} doc
 	 * @param {WebSocket} ws
 	 */
-	public closeConn(doc: WsSharedDocDo, ws: WebSocket): void {
-		if (doc.conns.has(ws)) {
-			const controlledIds &#x3D; doc.conns.get(ws) as Set&lt;number&gt;;
-			doc.conns.delete(ws);
+	public async closeConn(doc: WsSharedDocDo, ws: WebSocket): Promise&lt;void&gt; {
+		if (doc.connections.has(ws)) {
+			const controlledIds &#x3D; doc.connections.get(ws) as Set&lt;number&gt;;
+			doc.connections.delete(ws);
 			removeAwarenessStates(doc.awareness, Array.from(controlledIds), null);
-			if (doc.conns.size &#x3D;&#x3D;&#x3D; 0 &amp;&amp; this.persistence !&#x3D;&#x3D; null) {
-				// if persisted, we store state and destroy ydocument
-				this.persistence
-					.writeState(doc.name, doc)
-					.then(() &#x3D;&gt; {
-						doc.destroy();
-						return null;
-					})
-					.catch(() &#x3D;&gt; {});
-				this.docs.delete(doc.name);
-				this.metricsService.decrementNumberOfBoardsOnServerCounter();
-			}
+			await this.storeStateAndDestroyYDocIfPersisted(doc);
 			this.metricsService.decrementNumberOfUsersOnServerCounter();
 		}
 
-		try {
-			ws.close();
-		} catch (err) {
-			throw new Error(&#x27;Cannot close the connection. It is possible that connection is already closed.&#x27;);
-		}
+		ws.close();
 	}
 
 	/**
@@ -1314,17 +2411,18 @@ export class TldrawWsService {
 	 */
 	public send(doc: WsSharedDocDo, conn: WebSocket, message: Uint8Array): void {
 		if (conn.readyState !&#x3D;&#x3D; WSConnectionState.CONNECTING &amp;&amp; conn.readyState !&#x3D;&#x3D; WSConnectionState.OPEN) {
-			this.closeConn(doc, conn);
-		}
-		try {
-			conn.send(message, (err: Error | undefined) &#x3D;&gt; {
-				if (err !&#x3D; null) {
-					this.closeConn(doc, conn);
-				}
+			this.closeConn(doc, conn).catch((err) &#x3D;&gt; {
+				this.logger.warning(new CloseConnectionLoggable(err));
 			});
-		} catch (e) {
-			this.closeConn(doc, conn);
 		}
+
+		conn.send(message, (err) &#x3D;&gt; {
+			if (err) {
+				this.closeConn(doc, conn).catch((e) &#x3D;&gt; {
+					this.logger.warning(new CloseConnectionLoggable(e));
+				});
+			}
+		});
 	}
 
 	/**
@@ -1333,32 +2431,62 @@ export class TldrawWsService {
 	 * @param {WsSharedDocDo} doc
 	 */
 	public updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): void {
-		const encoder &#x3D; encoding.createEncoder();
-		encoding.writeVarUint(encoder, WSMessageType.SYNC);
-		writeUpdate(encoder, update);
-		const message &#x3D; encoding.toUint8Array(encoder);
-		doc.conns.forEach((_, conn) &#x3D;&gt; {
-			this.send(doc, conn, message);
-		});
+		const isOriginWSConn &#x3D; doc.connections.has(origin as WebSocket);
+		if (isOriginWSConn) {
+			this.publishUpdateToRedis(doc, update, &#x27;document&#x27;);
+		}
+
+		this.propagateUpdate(update, doc);
 	}
+
+	/**
+	 * @param {string} docName
+	 * @param {Uint8Array} update
+	 */
+	public async databaseUpdateHandler(docName: string, update: Uint8Array) {
+		await this.tldrawBoardRepo.storeUpdate(docName, update);
+	}
+
+	/**
+	 * @param {AwarenessConnectionsUpdate} connectionsUpdate
+	 * @param {WebSocket | null} wsConnection Origin is the connection that made the change
+	 * @param {WsSharedDocDo} doc
+	 */
+	public awarenessUpdateHandler &#x3D; (
+		connectionsUpdate: AwarenessConnectionsUpdate,
+		wsConnection: WebSocket | null,
+		doc: WsSharedDocDo
+	): void &#x3D;&gt; {
+		const changedClients &#x3D; this.manageClientsConnections(connectionsUpdate, wsConnection, doc);
+		const buff &#x3D; this.prepareAwarenessMessage(changedClients, doc);
+		this.sendAwarenessMessage(buff, doc);
+	};
 
 	/**
 	 * Gets a Y.Doc by name, whether in memory or on disk
 	 *
 	 * @param {string} docName - the name of the Y.Doc to find or create
-	 * @param  {boolean} gc - whether to allow gc on the doc (applies only when created)
-	 * @return {WsSharedDocDo}
 	 */
-	public getYDoc(docName: string, gc &#x3D; true): WsSharedDocDo {
-		return map.setIfUndefined(this.docs, docName, () &#x3D;&gt; {
-			const doc &#x3D; new WsSharedDocDo(docName, this, gc);
-			if (this.persistence !&#x3D;&#x3D; null) {
-				this.persistence.bindState(docName, doc).catch(() &#x3D;&gt; {});
-			}
+	public async getYDoc(docName: string) {
+		const wsSharedDocDo &#x3D; await map.setIfUndefined(this.docs, docName, async () &#x3D;&gt; {
+			const doc &#x3D; new WsSharedDocDo(docName, this.gcEnabled);
+			this.registerAwarenessUpdateHandler(doc);
+			this.registerUpdateHandler(doc);
+			this.subscribeToRedisChannels(doc);
+
+			await this.updateDocument(docName, doc);
+			this.registerDatabaseUpdateHandler(doc);
+
 			this.docs.set(docName, doc);
 			this.metricsService.incrementNumberOfBoardsOnServerCounter();
 			return doc;
 		});
+
+		return wsSharedDocDo;
+	}
+
+	public async createDbIndex(): Promise&lt;void&gt; {
+		await this.tldrawBoardRepo.createDbIndex();
 	}
 
 	public messageHandler(conn: WebSocket, doc: WsSharedDocDo, message: Uint8Array): void {
@@ -1379,28 +2507,51 @@ export class TldrawWsService {
 					}
 					break;
 				case WSMessageType.AWARENESS: {
-					applyAwarenessUpdate(doc.awareness, decoding.readVarUint8Array(decoder), conn);
+					const update &#x3D; decoding.readVarUint8Array(decoder);
+					this.publishUpdateToRedis(doc, update, &#x27;awareness&#x27;);
 					break;
 				}
 				default:
 					break;
 			}
 		} catch (err) {
-			doc.emit(&#x27;error&#x27;, [err]);
+			this.logger.warning(new WebsocketMessageErrorLoggable(err));
+			throw err;
 		}
 	}
+
+	/**
+	 * @param {{ Buffer }} channel redis channel
+	 * @param {{ Buffer }} update update message
+	 * @param {{ WsSharedDocDo }} doc ydoc
+	 */
+	public redisMessageHandler &#x3D; (channel: Buffer, update: Buffer, doc: WsSharedDocDo): void &#x3D;&gt; {
+		const channelId &#x3D; channel.toString();
+
+		if (channelId &#x3D;&#x3D;&#x3D; doc.name) {
+			applyUpdate(doc, update, this.sub);
+		}
+
+		if (channelId &#x3D;&#x3D;&#x3D; doc.awarenessChannel) {
+			applyAwarenessUpdate(doc.awareness, update, this.sub);
+		}
+	};
 
 	/**
 	 * @param {WebSocket} ws
 	 * @param {string} docName
 	 */
-	public setupWSConnection(ws: WebSocket, docName &#x3D; &#x27;GLOBAL&#x27;): void {
+	public async setupWSConnection(ws: WebSocket, docName: string) {
 		ws.binaryType &#x3D; &#x27;arraybuffer&#x27;;
-		// get doc, initialize if it does not exist yet
-		const doc &#x3D; this.getYDoc(docName, true);
-		doc.conns.set(ws, new Set());
 
-		// listen and reply to events
+		// get doc, initialize if it does not exist yet
+		const doc &#x3D; await this.getYDoc(docName);
+		doc.connections.set(ws, new Set());
+
+		ws.on(&#x27;error&#x27;, (err) &#x3D;&gt; {
+			this.logger.warning(new WebsocketErrorLoggable(err));
+		});
+
 		ws.on(&#x27;message&#x27;, (message: ArrayBufferLike) &#x3D;&gt; {
 			this.messageHandler(ws, doc, new Uint8Array(message));
 		});
@@ -1408,58 +2559,190 @@ export class TldrawWsService {
 		// send initial doc state to client as update
 		this.sendInitialState(ws, doc);
 
-		// Check if connection is still alive
+		// check if connection is still alive
 		let pongReceived &#x3D; true;
 		const pingInterval &#x3D; setInterval(() &#x3D;&gt; {
-			const hasConn &#x3D; doc.conns.has(ws);
-
-			if (pongReceived) {
-				if (!hasConn) return;
+			if (pongReceived &amp;&amp; doc.connections.has(ws)) {
 				pongReceived &#x3D; false;
-
-				try {
-					ws.ping();
-				} catch (e) {
-					this.closeConn(doc, ws);
-					clearInterval(pingInterval);
-				}
+				ws.ping();
 				return;
 			}
 
-			if (hasConn) {
-				this.closeConn(doc, ws);
-			}
-
+			this.closeConn(doc, ws).catch((err) &#x3D;&gt; {
+				this.logger.warning(new CloseConnectionLoggable(err));
+			});
 			clearInterval(pingInterval);
 		}, this.pingTimeout);
+
 		ws.on(&#x27;close&#x27;, () &#x3D;&gt; {
-			this.closeConn(doc, ws);
+			this.closeConn(doc, ws).catch((err) &#x3D;&gt; {
+				this.logger.warning(new CloseConnectionLoggable(err));
+			});
 			clearInterval(pingInterval);
 		});
+
 		ws.on(&#x27;pong&#x27;, () &#x3D;&gt; {
 			pongReceived &#x3D; true;
 		});
+
 		{
-			const encoder &#x3D; encoding.createEncoder();
-			encoding.writeVarUint(encoder, WSMessageType.SYNC);
-			writeSyncStep1(encoder, doc);
-			this.send(doc, ws, encoding.toUint8Array(encoder));
+			const syncEncoder &#x3D; encoding.createEncoder();
+			encoding.writeVarUint(syncEncoder, WSMessageType.SYNC);
+			writeSyncStep1(syncEncoder, doc);
+			this.send(doc, ws, encoding.toUint8Array(syncEncoder));
+
 			const awarenessStates &#x3D; doc.awareness.getStates();
 			if (awarenessStates.size &gt; 0) {
-				encoding.writeVarUint(encoder, WSMessageType.AWARENESS);
-				encoding.writeVarUint8Array(encoder, encodeAwarenessUpdate(doc.awareness, Array.from(awarenessStates.keys())));
-				this.send(doc, ws, encoding.toUint8Array(encoder));
+				const awarenessEncoder &#x3D; encoding.createEncoder();
+				encoding.writeVarUint(awarenessEncoder, WSMessageType.AWARENESS);
+				encoding.writeVarUint8Array(
+					awarenessEncoder,
+					encodeAwarenessUpdate(doc.awareness, Array.from(awarenessStates.keys()))
+				);
+				this.send(doc, ws, encoding.toUint8Array(awarenessEncoder));
 			}
 		}
 		this.metricsService.incrementNumberOfUsersOnServerCounter();
 	}
 
-	public async updateDocument(docName: string, ydoc: WsSharedDocDo): Promise&lt;void&gt; {
-		await this.tldrawBoardRepo.updateDocument(docName, ydoc);
+	private async storeStateAndDestroyYDocIfPersisted(doc: WsSharedDocDo) {
+		if (doc.connections.size &#x3D;&#x3D;&#x3D; 0) {
+			// if persisted, we store state and destroy ydocument
+			try {
+				await this.tldrawBoardRepo.flushDocument(doc.name);
+				this.unsubscribeFromRedisChannels(doc);
+				doc.destroy();
+			} catch (err) {
+				this.logger.warning(new WsSharedDocErrorLoggable(doc.name, &#x27;Error while flushing doc&#x27;, err));
+				throw err;
+			}
+
+			this.docs.delete(doc.name);
+			this.metricsService.decrementNumberOfBoardsOnServerCounter();
+		}
 	}
 
-	public async flushDocument(docName: string): Promise&lt;void&gt; {
-		await this.tldrawBoardRepo.flushDocument(docName);
+	private propagateUpdate(update: Uint8Array, doc: WsSharedDocDo): void {
+		const encoder &#x3D; encoding.createEncoder();
+		encoding.writeVarUint(encoder, WSMessageType.SYNC);
+		writeUpdate(encoder, update);
+		const message &#x3D; encoding.toUint8Array(encoder);
+
+		doc.connections.forEach((_, conn) &#x3D;&gt; {
+			this.send(doc, conn, message);
+		});
+	}
+
+	/**
+	 * @param changedClients array of changed clients
+	 * @param {WsSharedDocDo} doc
+	 */
+	private prepareAwarenessMessage(changedClients: number[], doc: WsSharedDocDo): Uint8Array {
+		const encoder &#x3D; encoding.createEncoder();
+		encoding.writeVarUint(encoder, WSMessageType.AWARENESS);
+		encoding.writeVarUint8Array(encoder, encodeAwarenessUpdate(doc.awareness, changedClients));
+		const message &#x3D; encoding.toUint8Array(encoder);
+		return message;
+	}
+
+	/**
+	 * @param {{ Uint8Array }} buff encoded message about changes
+	 * @param {WsSharedDocDo} doc
+	 */
+	private sendAwarenessMessage(buff: Uint8Array, doc: WsSharedDocDo): void {
+		doc.connections.forEach((_, c) &#x3D;&gt; {
+			this.send(doc, c, buff);
+		});
+	}
+
+	/**
+	 * @param connectionsUpdate
+	 * @param {WebSocket | null} wsConnection Origin is the connection that made the change
+	 * @param {WsSharedDocDo} doc
+	 */
+	private manageClientsConnections(
+		connectionsUpdate: AwarenessConnectionsUpdate,
+		wsConnection: WebSocket | null,
+		doc: WsSharedDocDo
+	): number[] {
+		const changedClients &#x3D; connectionsUpdate.added.concat(connectionsUpdate.updated, connectionsUpdate.removed);
+		if (wsConnection !&#x3D;&#x3D; null) {
+			const connControlledIDs &#x3D; doc.connections.get(wsConnection);
+			if (connControlledIDs !&#x3D;&#x3D; undefined) {
+				connectionsUpdate.added.forEach((clientID) &#x3D;&gt; {
+					connControlledIDs.add(clientID);
+				});
+				connectionsUpdate.removed.forEach((clientID) &#x3D;&gt; {
+					connControlledIDs.delete(clientID);
+				});
+			}
+		}
+		return changedClients;
+	}
+
+	private registerAwarenessUpdateHandler(doc: WsSharedDocDo) {
+		doc.awareness.on(&#x27;update&#x27;, (connectionsUpdate: AwarenessConnectionsUpdate, wsConnection: WebSocket | null) &#x3D;&gt;
+			this.awarenessUpdateHandler(connectionsUpdate, wsConnection, doc)
+		);
+	}
+
+	private registerUpdateHandler(doc: WsSharedDocDo) {
+		doc.on(&#x27;update&#x27;, (update: Uint8Array, origin) &#x3D;&gt; this.updateHandler(update, origin, doc));
+	}
+
+	private registerDatabaseUpdateHandler(doc: WsSharedDocDo) {
+		doc.on(&#x27;update&#x27;, (update: Uint8Array) &#x3D;&gt; this.databaseUpdateHandler(doc.name, update));
+	}
+
+	private subscribeToRedisChannels(doc: WsSharedDocDo) {
+		this.sub
+			.subscribe(doc.name, doc.awarenessChannel, (err) &#x3D;&gt; {
+				if (err) {
+					this.logger.warning(new WsSharedDocErrorLoggable(doc.name, &#x27;Error while subscribing to Redis channels&#x27;, err));
+				}
+			})
+			.catch((err) &#x3D;&gt; {
+				this.logger.warning(new WsSharedDocErrorLoggable(doc.name, &#x27;Error while subscribing to Redis channels&#x27;, err));
+			});
+		this.sub.on(&#x27;messageBuffer&#x27;, (channel, message) &#x3D;&gt; this.redisMessageHandler(channel, message, doc));
+	}
+
+	private unsubscribeFromRedisChannels(doc: WsSharedDocDo) {
+		this.sub
+			.unsubscribe(doc.name, doc.awarenessChannel, (err) &#x3D;&gt; {
+				if (err) {
+					this.logger.warning(
+						new WsSharedDocErrorLoggable(doc.name, &#x27;Error while unsubscribing from Redis channels&#x27;, err)
+					);
+				}
+			})
+			.catch((err) &#x3D;&gt; {
+				this.logger.warning(
+					new WsSharedDocErrorLoggable(doc.name, &#x27;Error while unsubscribing from Redis channels&#x27;, err)
+				);
+			});
+	}
+
+	private async updateDocument(docName: string, doc: WsSharedDocDo) {
+		try {
+			await this.tldrawBoardRepo.updateDocument(docName, doc);
+		} catch (err) {
+			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, &#x27;Error while updating document&#x27;, err));
+			throw err;
+		}
+	}
+
+	private publishUpdateToRedis(doc: WsSharedDocDo, update: Uint8Array, type: &#x27;awareness&#x27; | &#x27;document&#x27;) {
+		const channel &#x3D; type &#x3D;&#x3D;&#x3D; &#x27;awareness&#x27; ? doc.awarenessChannel : doc.name;
+		this.pub
+			.publish(channel, Buffer.from(update), (err) &#x3D;&gt; {
+				if (err) {
+					this.logger.warning(new RedisPublishErrorLoggable(&#x27;awareness&#x27;, err));
+				}
+			})
+			.catch((err) &#x3D;&gt; {
+				this.logger.warning(new RedisPublishErrorLoggable(&#x27;awareness&#x27;, err));
+			});
 	}
 
 	private sendInitialState(ws: WebSocket, doc: WsSharedDocDo): void {

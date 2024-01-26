@@ -365,6 +365,9 @@
                             <a href="#defaultMikroOrmOptions" title="apps/server/src/modules/server/server.module.ts" ><b>defaultMikroOrmOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../server.module.ts)</a>
                         </li>
                         <li>
+                            <a href="#defaultMikroOrmOptions" title="apps/server/src/modules/tldraw/tldraw-ws.module.ts" ><b>defaultMikroOrmOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../tldraw-ws.module.ts)</a>
+                        </li>
+                        <li>
                             <a href="#defaultMikroOrmOptions" title="apps/server/src/modules/tldraw/tldraw.module.ts" ><b>defaultMikroOrmOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../tldraw.module.ts)</a>
                         </li>
                         <li>
@@ -977,10 +980,10 @@
                             <a href="#tldrawConfig" title="apps/server/src/modules/tldraw/config.ts" ><b>tldrawConfig</b>&nbsp;&nbsp;&nbsp;(apps/.../config.ts)</a>
                         </li>
                         <li>
-                            <a href="#tldrawConnectionString" title="apps/server/src/modules/tldraw/config.ts" ><b>tldrawConnectionString</b>&nbsp;&nbsp;&nbsp;(apps/.../config.ts)</a>
+                            <a href="#tldrawEntityFactory" title="apps/server/src/modules/tldraw/testing/tldraw.factory.ts" ><b>tldrawEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../tldraw.factory.ts)</a>
                         </li>
                         <li>
-                            <a href="#tldrawEntityFactory" title="apps/server/src/modules/tldraw/factory/tldraw.factory.ts" ><b>tldrawEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../tldraw.factory.ts)</a>
+                            <a href="#tldrawTestConfig" title="apps/server/src/modules/tldraw/testing/testConfig.ts" ><b>tldrawTestConfig</b>&nbsp;&nbsp;&nbsp;(apps/.../testConfig.ts)</a>
                         </li>
                         <li>
                             <a href="#toolConfigTypeToToolLaunchDataTypeMapping" title="apps/server/src/modules/tool/tool-launch/mapper/tool-launch.mapper.ts" ><b>toolConfigTypeToToolLaunchDataTypeMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../tool-launch.mapper.ts)</a>
@@ -3812,41 +3815,15 @@ This allows adding console commands to execute provider methods.</p>
                         <i>Default value : </i><code>{
 	NEST_LOG_LEVEL: Configuration.get(&#x27;NEST_LOG_LEVEL&#x27;) as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get(&#x27;INCOMING_REQUEST_TIMEOUT_API&#x27;) as number,
-	TLDRAW_DB_COLLECTION_NAME: Configuration.get(&#x27;TLDRAW__DB_COLLECTION_NAME&#x27;) as string,
 	TLDRAW_DB_FLUSH_SIZE: Configuration.get(&#x27;TLDRAW__DB_FLUSH_SIZE&#x27;) as number,
-	TLDRAW_DB_MULTIPLE_COLLECTIONS: Configuration.get(&#x27;TLDRAW__DB_MULTIPLE_COLLECTIONS&#x27;) as boolean,
 	FEATURE_TLDRAW_ENABLED: Configuration.get(&#x27;FEATURE_TLDRAW_ENABLED&#x27;) as boolean,
-	CONNECTION_STRING: tldrawConnectionString,
+	CONNECTION_STRING: Configuration.get(&#x27;TLDRAW_DB_URL&#x27;) as string,
 	TLDRAW_PING_TIMEOUT: Configuration.get(&#x27;TLDRAW__PING_TIMEOUT&#x27;) as number,
 	TLDRAW_GC_ENABLED: Configuration.get(&#x27;TLDRAW__GC_ENABLED&#x27;) as boolean,
+	REDIS_URI: Configuration.has(&#x27;REDIS_URI&#x27;) ? (Configuration.get(&#x27;REDIS_URI&#x27;) as string) : null,
 	API_HOST: Configuration.get(&#x27;API_HOST&#x27;) as string,
+	TLDRAW_MAX_DOCUMENT_SIZE: Configuration.get(&#x27;TLDRAW__MAX_DOCUMENT_SIZE&#x27;) as number,
 }</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="tldrawConnectionString"></a>
-                    <span class="name">
-                        <span ><b>tldrawConnectionString</b></span>
-                        <a href="#tldrawConnectionString"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>Configuration.get(&#x27;TLDRAW_DB_URL&#x27;) as string</code>
                     </td>
                 </tr>
 
@@ -5788,6 +5765,39 @@ must use</p>
         </tbody>
     </table>
 </section>
+    <h3>apps/server/src/modules/tldraw/tldraw-ws.module.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="defaultMikroOrmOptions"></a>
+                    <span class="name">
+                        <span ><b>defaultMikroOrmOptions</b></span>
+                        <a href="#defaultMikroOrmOptions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/Options.html" target="_self" >MikroOrmModuleSyncOptions</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) &#x3D;&gt;
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+		new NotFoundException(&#x60;The requested ${entityName}: ${where} has not been found.&#x60;),
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
     <h3>apps/server/src/modules/tldraw/tldraw.module.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -7681,7 +7691,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                 </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>[Logger, TldrawService, TldrawRepo, MetricsService]</code>
+                        <i>Default value : </i><code>[Logger, TldrawService, TldrawRepo, MetricsService, TldrawRedisFactory]</code>
                     </td>
                 </tr>
 
@@ -7710,7 +7720,13 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                 </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>[CoreModule, ConfigModule.forRoot(createConfigModuleOptions(config)), HttpModule]</code>
+                        <i>Default value : </i><code>[
+	HttpModule,
+	LoggerModule,
+	CoreModule,
+	MongoMemoryDatabaseModule.forRoot({ entities: [TldrawDrawing] }),
+	ConfigModule.forRoot(createConfigModuleOptions(config)),
+]</code>
                     </td>
                 </tr>
 
@@ -7736,7 +7752,15 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                 </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>[TldrawWs, TldrawBoardRepo, TldrawWsService, MetricsService]</code>
+                        <i>Default value : </i><code>[
+	TldrawWs,
+	TldrawWsService,
+	TldrawBoardRepo,
+	TldrawRepo,
+	YMongodb,
+	MetricsService,
+	TldrawRedisFactory,
+]</code>
                     </td>
                 </tr>
 
@@ -11561,7 +11585,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
-    <h3>apps/server/src/modules/tldraw/factory/tldraw.factory.ts</h3>
+    <h3>apps/server/src/modules/tldraw/testing/tldraw.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
         <tbody>
@@ -11580,14 +11604,48 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	TldrawDrawing,
 	({ sequence }) &#x3D;&gt; {
 		return {
-			_id: &#x27;test-id&#x27;,
-			id: &#x27;test-id&#x27;,
+			id: new ObjectId().toHexString(),
 			docName: &#x27;test-name&#x27;,
-			value: &#x27;test-value&#x27;,
-			version: &#x60;test-version-${sequence}&#x60;,
+			value: Buffer.from(&#x27;test&#x27;),
+			version: &#x60;v1&#x60;,
+			action: &#x27;update&#x27;,
+			clock: sequence,
+			part: sequence,
 		};
 	}
 )</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/tldraw/testing/testConfig.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="tldrawTestConfig"></a>
+                    <span class="name">
+                        <span ><b>tldrawTestConfig</b></span>
+                        <a href="#tldrawTestConfig"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>() &#x3D;&gt; {
+	const conf &#x3D; config();
+	if (!conf.REDIS_URI) {
+		conf.REDIS_URI &#x3D; &#x27;redis://127.0.0.1:6379&#x27;;
+	}
+	conf.TLDRAW_DB_FLUSH_SIZE &#x3D; 2;
+	conf.TLDRAW_PING_TIMEOUT &#x3D; 0;
+	conf.TLDRAW_MAX_DOCUMENT_SIZE &#x3D; 3;
+	return conf;
+}</code>
                     </td>
                 </tr>
 
