@@ -260,7 +260,7 @@ export class UserImportUc {
 		school.inMaintenanceSince = new Date();
 
 		if (useCentralLdap) {
-			const migrationSystem: SystemEntity = await this.getMigrationSystem();
+			const migrationSystem: SystemEntity = await this.userImportService.getMigrationSystem();
 
 			if (school.systems && !school.systems.includes(migrationSystem.id)) {
 				school.systems.push(migrationSystem.id);
@@ -367,14 +367,6 @@ export class UserImportUc {
 		}
 
 		return account;
-	}
-
-	private async getMigrationSystem(): Promise<SystemEntity> {
-		const systemId = this.userImportFeatures.userMigrationSystemId;
-
-		const system = await this.systemRepo.findById(systemId);
-
-		return system;
 	}
 
 	private async checkNoExistingLdapBeforeStart(school: LegacySchoolDo): Promise<void> {

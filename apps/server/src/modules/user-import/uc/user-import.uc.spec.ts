@@ -710,7 +710,7 @@ describe('[ImportUserModule]', () => {
 			it('Should fetch system id from configuration', async () => {
 				await uc.startSchoolInUserMigration(currentUser.id);
 
-				expect(systemRepoSpy).toHaveBeenCalledWith(system.id);
+				expect(userImportService.getMigrationSystem).toHaveBeenCalled();
 			});
 
 			it('Should request authorization service', async () => {
