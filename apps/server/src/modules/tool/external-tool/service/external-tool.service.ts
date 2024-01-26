@@ -10,10 +10,9 @@ import { LegacyLogger } from '@src/core/logger';
 import { TokenEndpointAuthMethod } from '../../common/enum';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ExternalTool, ExternalToolDatasheetTemplateData, Oauth2ToolConfig } from '../domain';
+import { ExternalTool, Oauth2ToolConfig } from '../domain';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalToolVersionIncrementService } from './external-tool-version-increment.service';
-import { ExternalToolDatasheetMapper } from '../mapper/external-tool-datasheet.mapper';
 
 @Injectable()
 export class ExternalToolService {
@@ -150,32 +149,5 @@ export class ExternalToolService {
 		config.tokenEndpointAuthMethod = oauthClient.token_endpoint_auth_method as TokenEndpointAuthMethod;
 		config.redirectUris = oauthClient.redirect_uris;
 		config.frontchannelLogoutUri = oauthClient.frontchannel_logout_uri;
-	}
-
-	public async getExternalToolDatasheetTemplateData(
-		externalToolId: EntityId,
-		firstName: string,
-		lastName: string
-	): Promise<ExternalToolDatasheetTemplateData> {
-		const externalTool: ExternalTool = await this.findById(externalToolId);
-
-		const datasheetTemplateData: ExternalToolDatasheetTemplateData =
-			ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(externalTool, firstName, lastName);
-
-		return datasheetTemplateData;
-	}
-
-	public createDatasheetFilename(datasheetData: ExternalToolDatasheetTemplateData): string {
-		const { toolName } = datasheetData;
-
-		const date = new Date();
-		const year = date.getFullYear();
-		const month = date.getMonth() + 1;
-		const day = date.getDate();
-		const dateString = `${year}-${month}-${day}`;
-
-		const fileName = `CTL-Datenblatt-${toolName}-${dateString}`;
-
-		return fileName;
 	}
 }

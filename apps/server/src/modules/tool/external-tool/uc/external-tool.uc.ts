@@ -5,12 +5,13 @@ import { Page } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
 import { ExternalTool, ExternalToolConfig, ExternalToolDatasheetTemplateData, ExternalToolMetadata } from '../domain';
 import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
+import { ExternalToolDatasheetMapper } from '../mapper/external-tool-datasheet.mapper';
 
 @Injectable()
 export class ExternalToolUc {
@@ -100,29 +101,39 @@ export class ExternalToolUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkOneOfPermissions(user, [Permission.TOOL_ADMIN, Permission.SCHOOL_TOOL_ADMIN]);
 
+		const externalTool: ExternalTool = await this.externalToolService.findById(externalToolId);
 		const dataSheetData: ExternalToolDatasheetTemplateData =
-			await this.externalToolService.getExternalToolDatasheetTemplateData(
-				externalToolId,
-				user.firstName,
-				user.lastName
-			);
-		const buffer: Promise<Buffer> = firstValueFrom(
-			this.pdfService.toBuffer('ExternalToolDatasheet', { locals: dataSheetData })
-		);
+			ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(externalTool, user.firstName, user.lastName);
+
+		const observable: Observable<Buffer> = this.pdfService.toBuffer('ExternalToolDatasheet', { locals: dataSheetData });
+		const buffer: Promise<Buffer> = firstValueFrom(observable);
 
 		return buffer;
 	}
 
-	public async createDatasheetFilename(userId: EntityId, externalToolId: EntityId): Promise<string> {
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		const dataSheetData: ExternalToolDatasheetTemplateData =
+	public async createDatasheetFilename(externalToolId: EntityId): Promise<string> {
+		const externalTool: ExternalTool = await this.externalToolService.findById(externalToolId);
+		/* const dataSheetData: ExternalToolDatasheetTemplateData =
 			await this.externalToolService.getExternalToolDatasheetTemplateData(
 				externalToolId,
 				user.firstName,
 				user.lastName
-			);
+			); */
 
-		const fileName: string = this.externalToolService.createDatasheetFilename(dataSheetData);
+		// const fileName: string = this.externalToolService.createDatasheetFilename(dataSheetData);
+		const filename: string = this.buildFilename(externalTool.name);
+
+		return filename;
+	}
+
+	private buildFilename(toolName: string): string {
+		const date = new Date();
+		const year = date.getFullYear();
+		const month = date.getMonth() + 1;
+		const day = date.getDate();
+		const dateString = `${year}-${month}-${day}`;
+
+		const fileName = `CTL-Datenblatt-${toolName}-${dateString}`;
 
 		return fileName;
 	}

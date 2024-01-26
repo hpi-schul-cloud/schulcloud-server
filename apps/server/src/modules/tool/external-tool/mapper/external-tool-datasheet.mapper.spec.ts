@@ -26,7 +26,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 			const datasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
 				.withOptionalParameters()
 				.withParameters(1, { properties: 'optional, geschützt' })
-				.build();
+				.build({ instance: 'dBildungscloud' });
 
 			return { user, externalTool, datasheet };
 		};
@@ -46,7 +46,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 			const externalTool = externalToolFactory.withOauth2Config({ skipConsent: true }).build();
 			const datasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
 				.asOauth2Tool()
-				.build({ skipConsent: 'ja' });
+				.build({ skipConsent: 'ja', instance: 'dBildungscloud' });
 
 			return { user, externalTool, datasheet };
 		};
@@ -66,7 +66,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 			const externalTool = externalToolFactory.withLti11Config().build();
 			const datasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
 				.asLti11Tool()
-				.build();
+				.build({ instance: 'dBildungscloud' });
 
 			return { user, externalTool, datasheet };
 		};

@@ -20,24 +20,7 @@ import {
 } from './service';
 
 @Module({
-	imports: [
-		CommonToolModule,
-		ToolConfigModule,
-		LoggerModule,
-		OauthProviderServiceModule,
-		EncryptionModule,
-		HttpModule,
-		PDFModule.register({
-			view: {
-				// TODO: can we do this better e.g. make it relative to the module file
-				root: 'apps/server/src/modules/tool/external-tool/mustache-template',
-				engine: 'mustache',
-				engineOptions: {
-					cache: true,
-				},
-			},
-		}),
-	],
+	imports: [CommonToolModule, ToolConfigModule, LoggerModule, OauthProviderServiceModule, EncryptionModule, HttpModule],
 	providers: [
 		ExternalToolService,
 		ExternalToolServiceMapper,
@@ -51,7 +34,6 @@ import {
 		ToolContextMapper,
 	],
 	exports: [
-		PDFModule,
 		ExternalToolService,
 		ExternalToolValidationService,
 		ExternalToolVersionIncrementService,

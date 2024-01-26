@@ -9,22 +9,13 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { User } from '@shared/domain/entity';
-import {
-	setupEntities,
-	userFactory,
-	externalToolDatasheetTemplateDataFactory,
-	externalToolFactory,
-	lti11ToolConfigFactory,
-	oauth2ToolConfigFactory,
-} from '@shared/testing';
+import { externalToolFactory, lti11ToolConfigFactory, oauth2ToolConfigFactory } from '@shared/testing';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { ExternalTool, ExternalToolDatasheetTemplateData, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
+import { ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalToolVersionIncrementService } from './external-tool-version-increment.service';
 import { ExternalToolService } from './external-tool.service';
-import { CustomParameter } from '../../common/domain';
 
 describe('ExternalToolService', () => {
 	let module: TestingModule;
@@ -39,7 +30,7 @@ describe('ExternalToolService', () => {
 	let versionService: DeepMocked<ExternalToolVersionIncrementService>;
 
 	beforeAll(async () => {
-		await setupEntities();
+		// await setupEntities();
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -687,130 +678,6 @@ describe('ExternalToolService', () => {
 
 					expect(externalToolRepo.save).toHaveBeenCalledWith({ ...externalTool, version: 2 });
 				});
-			});
-		});
-	});
-
-	describe('getDatasheetData', () => {
-		describe('when tool is a basic tool', () => {
-			const setup = () => {
-				const user: User = userFactory.build();
-				const { externalTool } = createTools();
-
-				const params = externalTool.parameters as CustomParameter[];
-				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
-					.withParameters(1, { name: params[0].name })
-					.build({ toolName: externalTool.name, instance: 'dBildungscloud' });
-
-				externalToolRepo.findById.mockResolvedValue(externalTool);
-
-				return {
-					user,
-					datasheetData,
-				};
-			};
-
-			it('should find external tool', async () => {
-				const { user } = setup();
-
-				await service.getExternalToolDatasheetTemplateData('toolId', user.firstName, user.lastName);
-
-				expect(externalToolRepo.findById).toHaveBeenCalledWith('toolId');
-			});
-
-			it('should return external tool datasheet template data', async () => {
-				const { user, datasheetData } = setup();
-
-				const data = await service.getExternalToolDatasheetTemplateData('toolId', user.firstName, user.lastName);
-
-				expect(data).toEqual(datasheetData);
-			});
-		});
-
-		describe('when tool is an oauth2 tool', () => {
-			const setup = () => {
-				const user: User = userFactory.build();
-				const { externalTool, oauth2ToolConfig } = createTools();
-				externalTool.config = oauth2ToolConfig;
-
-				const params = externalTool.parameters as CustomParameter[];
-				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
-					.asOauth2Tool()
-					.withParameters(1, { name: params[0].name })
-					.build({ toolName: externalTool.name, instance: 'dBildungscloud' });
-
-				externalToolRepo.findById.mockResolvedValue(externalTool);
-
-				return {
-					user,
-					datasheetData,
-				};
-			};
-
-			it('should return external tool datasheet template data', async () => {
-				const { user, datasheetData } = setup();
-
-				const data = await service.getExternalToolDatasheetTemplateData('toolId', user.firstName, user.lastName);
-
-				expect(data).toEqual(datasheetData);
-			});
-		});
-
-		describe('when tool is an LTI1.1 tool', () => {
-			const setup = () => {
-				const user: User = userFactory.build();
-				const { externalTool, lti11ToolConfig } = createTools();
-				externalTool.config = lti11ToolConfig;
-
-				const params = externalTool.parameters as CustomParameter[];
-				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
-					.asLti11Tool()
-					.withParameters(1, { name: params[0].name })
-					.build({ toolName: externalTool.name, instance: 'dBildungscloud' });
-
-				externalToolRepo.findById.mockResolvedValue(externalTool);
-
-				return {
-					user,
-					datasheetData,
-				};
-			};
-
-			it('should return external tool datasheet template data', async () => {
-				const { user, datasheetData } = setup();
-
-				const data = await service.getExternalToolDatasheetTemplateData('toolId', user.firstName, user.lastName);
-
-				expect(data).toEqual(datasheetData);
-			});
-		});
-	});
-
-	describe('createDatasheetFilename', () => {
-		describe('when datasheetData is given', () => {
-			const setup = () => {
-				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
-					.withParameters(1)
-					.build();
-
-				const date = new Date();
-				const year = date.getFullYear();
-				const month = date.getMonth() + 1;
-				const day = date.getDate();
-				const dateString = `${year}-${month}-${day}`;
-
-				return {
-					datasheetData,
-					dateString,
-				};
-			};
-
-			it('should return a filename string', () => {
-				const { datasheetData, dateString } = setup();
-
-				const filename = service.createDatasheetFilename(datasheetData);
-
-				expect(filename).toEqual(`CTL-Datenblatt-${datasheetData.toolName}-${dateString}`);
 			});
 		});
 	});

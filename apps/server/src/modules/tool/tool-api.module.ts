@@ -4,6 +4,7 @@ import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { LtiToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
+import { PDFModule } from '@pyxlab/nestjs-pdf';
 import { BoardModule } from '../board';
 import { LearnroomModule } from '../learnroom';
 import { CommonToolModule } from './common';
@@ -34,6 +35,16 @@ import { ToolModule } from './tool.module';
 		ToolConfigModule,
 		LearnroomModule,
 		BoardModule,
+		PDFModule.register({
+			view: {
+				// TODO: can we do this better e.g. make it relative to the module file
+				root: 'apps/server/src/modules/tool/external-tool/mustache-template',
+				engine: 'mustache',
+				engineOptions: {
+					cache: true,
+				},
+			},
+		}),
 	],
 	controllers: [
 		ToolLaunchController,

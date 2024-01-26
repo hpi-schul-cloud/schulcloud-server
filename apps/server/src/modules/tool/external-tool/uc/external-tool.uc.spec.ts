@@ -23,6 +23,7 @@ import { ExternalTool, ExternalToolDatasheetTemplateData, ExternalToolMetadata, 
 import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolUpdate } from './dto';
 import { ExternalToolUc } from './external-tool.uc';
+import { CustomParameter } from '../../common/domain';
 
 describe('ExternalToolUc', () => {
 	let module: TestingModule;
@@ -597,15 +598,11 @@ describe('ExternalToolUc', () => {
 		describe('when authorize user', () => {
 			const setupDatasheetData = () => {
 				const user: User = userFactory.buildWithId();
-
 				const toolId: string = new ObjectId().toHexString();
-
-				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
-					.withParameters(1)
-					.build();
+				const externalTool: ExternalTool = externalToolFactory.withCustomParameters(1).build();
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				externalToolService.getExternalToolDatasheetTemplateData.mockResolvedValue(datasheetData);
+				externalToolService.findById.mockResolvedValue(externalTool);
 				pdfService.toBuffer.mockReturnValueOnce(of(Buffer.from('mockData')));
 
 				return {
@@ -657,16 +654,23 @@ describe('ExternalToolUc', () => {
 			});
 		});
 
-		describe('when externalToolId is given', () => {
+		describe('when externalToolId is a basic tool', () => {
 			const setupDatasheetdata = () => {
 				const toolId: string = new ObjectId().toHexString();
 				const user: User = userFactory.buildWithId();
+
+				const externalTool: ExternalTool = externalToolFactory.withCustomParameters(1).build();
+				const params = externalTool.parameters as CustomParameter[];
 				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
-					.withParameters(1)
-					.build();
+					.withParameters(1, { name: params[0].name })
+					.build({
+						toolName: externalTool.name,
+						instance: 'dBildungscloud',
+						creatorName: `${user.firstName} ${user.lastName}`,
+					});
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				externalToolService.getExternalToolDatasheetTemplateData.mockResolvedValue(datasheetData);
+				externalToolService.findById.mockResolvedValue(externalTool);
 				pdfService.toBuffer.mockReturnValueOnce(of(Buffer.from('mockData')));
 
 				return {
@@ -676,20 +680,88 @@ describe('ExternalToolUc', () => {
 				};
 			};
 
-			it('should get datasheetData', async () => {
+			it('should get external tool', async () => {
 				const { toolId, user } = setupDatasheetdata();
 
 				await uc.getDatasheet(user.id, toolId);
 
-				expect(externalToolService.getExternalToolDatasheetTemplateData).toHaveBeenCalledWith(
-					toolId,
-					user.firstName,
-					user.lastName
-				);
+				expect(externalToolService.findById).toHaveBeenCalledWith(toolId);
 			});
 
 			it('should create pdf buffer', async () => {
 				const { toolId, user, datasheetData } = setupDatasheetdata();
+
+				await uc.getDatasheet(user.id, toolId);
+
+				expect(pdfService.toBuffer).toHaveBeenCalledWith('ExternalToolDatasheet', { locals: datasheetData });
+			});
+		});
+
+		describe('when tool is an oauth2 tool', () => {
+			const setupDatasheeetData = () => {
+				const user: User = userFactory.build();
+				const toolId: string = new ObjectId().toHexString();
+				const externalTool = externalToolFactory.withOauth2Config().withCustomParameters(1).build();
+
+				const params: CustomParameter[] = externalTool.parameters as CustomParameter[];
+				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
+					.asOauth2Tool()
+					.withParameters(1, { name: params[0].name })
+					.build({
+						toolName: externalTool.name,
+						instance: 'dBildungscloud',
+						creatorName: `${user.firstName} ${user.lastName}`,
+					});
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				externalToolService.findById.mockResolvedValue(externalTool);
+				pdfService.toBuffer.mockReturnValueOnce(of(Buffer.from('mockData')));
+
+				return {
+					user,
+					datasheetData,
+					toolId,
+				};
+			};
+
+			it('should return external tool datasheet template data', async () => {
+				const { user, datasheetData, toolId } = setupDatasheeetData();
+
+				await uc.getDatasheet(user.id, toolId);
+
+				expect(pdfService.toBuffer).toHaveBeenCalledWith('ExternalToolDatasheet', { locals: datasheetData });
+			});
+		});
+
+		describe('when tool is an LTI1.1 tool', () => {
+			const setupDatasheetData = () => {
+				const user: User = userFactory.build();
+				const toolId: string = new ObjectId().toHexString();
+				const externalTool = externalToolFactory.withLti11Config().withCustomParameters(1).build();
+
+				const params: CustomParameter[] = externalTool.parameters as CustomParameter[];
+				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
+					.asLti11Tool()
+					.withParameters(1, { name: params[0].name })
+					.build({
+						toolName: externalTool.name,
+						instance: 'dBildungscloud',
+						creatorName: `${user.firstName} ${user.lastName}`,
+					});
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				externalToolService.findById.mockResolvedValue(externalTool);
+				pdfService.toBuffer.mockReturnValueOnce(of(Buffer.from('mockData')));
+
+				return {
+					user,
+					datasheetData,
+					toolId,
+				};
+			};
+
+			it('should return external tool datasheet template data', async () => {
+				const { user, datasheetData, toolId } = setupDatasheetData();
 
 				await uc.getDatasheet(user.id, toolId);
 
@@ -702,47 +774,38 @@ describe('ExternalToolUc', () => {
 		describe('when externalToolId is given', () => {
 			const setupDatasheetdata = () => {
 				const toolId: string = new ObjectId().toHexString();
-				const user: User = userFactory.buildWithId();
-				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
-					.withParameters(1)
-					.build();
+				const externalTool: ExternalTool = externalToolFactory.withCustomParameters(1).build();
 
-				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				externalToolService.getExternalToolDatasheetTemplateData.mockResolvedValue(datasheetData);
+				const date = new Date();
+				const year = date.getFullYear();
+				const month = date.getMonth() + 1;
+				const day = date.getDate();
+				const dateString = `${year}-${month}-${day}`;
+
+				const filename = `CTL-Datenblatt-${externalTool.name}-${dateString}`;
+
+				externalToolService.findById.mockResolvedValue(externalTool);
 
 				return {
-					user,
 					toolId,
-					datasheetData,
+					filename,
 				};
 			};
 
-			it('get user with permissions', async () => {
-				const { user, toolId } = setupDatasheetdata();
-
-				await uc.createDatasheetFilename(user.id, toolId);
-
-				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
-			});
-
 			it('should get datasheetData', async () => {
-				const { toolId, user } = setupDatasheetdata();
+				const { toolId } = setupDatasheetdata();
 
-				await uc.createDatasheetFilename(user.id, toolId);
+				await uc.createDatasheetFilename(toolId);
 
-				expect(externalToolService.getExternalToolDatasheetTemplateData).toHaveBeenCalledWith(
-					toolId,
-					user.firstName,
-					user.lastName
-				);
+				expect(externalToolService.findById).toHaveBeenCalledWith(toolId);
 			});
 
 			it('should create a filename', async () => {
-				const { toolId, user, datasheetData } = setupDatasheetdata();
+				const { toolId, filename } = setupDatasheetdata();
 
-				await uc.createDatasheetFilename(user.id, toolId);
+				const result = await uc.createDatasheetFilename(toolId);
 
-				expect(externalToolService.createDatasheetFilename).toHaveBeenCalledWith(datasheetData);
+				expect(result).toEqual(filename);
 			});
 		});
 	});
