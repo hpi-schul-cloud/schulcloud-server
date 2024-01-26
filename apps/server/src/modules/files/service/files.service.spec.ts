@@ -300,12 +300,11 @@ describe(FilesService.name, () => {
 				entity1.id,
 			]);
 
-			const expectedResultWhenManyFilesExists = DomainOperationBuilder.build(
-				DomainName.FILE,
-				OperationType.UPDATE,
-				3,
-				[entity1.id, entity2.id, entity3.id]
-			);
+			const expectedResultWhenManyFilesExists = DomainOperationBuilder.build(DomainName.FILE, OperationType.UPDATE, 3, [
+				entity1.id,
+				entity2.id,
+				entity3.id,
+			]);
 
 			return {
 				entities,

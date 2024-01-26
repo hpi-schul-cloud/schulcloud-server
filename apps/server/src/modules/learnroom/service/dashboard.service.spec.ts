@@ -82,9 +82,7 @@ describe(DashboardService.name, () => {
 			});
 			userRepo.findById.mockResolvedValue(user);
 
-			const expectedResult = DomainOperationBuilder.build(DomainName.DASHBOARD, OperationType.DELETE, 1, [
-				dashboardId,
-			]);
+			const expectedResult = DomainOperationBuilder.build(DomainName.DASHBOARD, OperationType.DELETE, 1, [dashboardId]);
 
 			return { dashboard, expectedResult, user };
 		};

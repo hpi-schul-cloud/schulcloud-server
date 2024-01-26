@@ -254,19 +254,13 @@ describe(DeletionRequestUc.name, () => {
 					userId: deletionRequestToExecute.targetRefId,
 				});
 
-				const rocketChatUserDeleted = DomainOperationBuilder.build(
-					DomainName.ROCKETCHATUSER,
-					OperationType.DELETE,
-					1,
-					[new ObjectId().toHexString()]
-				);
+				const rocketChatUserDeleted = DomainOperationBuilder.build(DomainName.ROCKETCHATUSER, OperationType.DELETE, 1, [
+					new ObjectId().toHexString(),
+				]);
 
-				const tasksModifiedByRemoveCreatorId = DomainOperationBuilder.build(
-					DomainName.TASK,
-					OperationType.UPDATE,
-					1,
-					[new ObjectId().toHexString()]
-				);
+				const tasksModifiedByRemoveCreatorId = DomainOperationBuilder.build(DomainName.TASK, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
 
 				const tasksModifiedByRemoveUserFromFinished = DomainOperationBuilder.build(
 					DomainName.TASK,
