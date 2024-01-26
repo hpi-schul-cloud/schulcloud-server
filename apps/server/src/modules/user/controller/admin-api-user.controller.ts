@@ -8,7 +8,7 @@ import { AdminApiUserCreateResponse } from './dto/admin-api-user-create.response
 @ApiTags('AdminApiUsers')
 @UseGuards(AuthGuard('api-key'))
 @Controller('/admin/users')
-export class AdminUsersController {
+export class AdminApiUsersController {
 	constructor(private readonly uc: AdminApiUserUc) {}
 
 	@Post('')
