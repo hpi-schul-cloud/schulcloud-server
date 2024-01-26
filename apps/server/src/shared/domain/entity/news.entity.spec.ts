@@ -14,17 +14,14 @@ describe(News.name, () => {
 					creator,
 				});
 
-				const expectedNews = news;
-				expectedNews.creator = undefined;
-
-				return { creator, news, expectedNews };
+				return { creator, news };
 			};
 			it('should properly remove this creator reference', () => {
-				const { creator, news, expectedNews } = setup();
+				const { creator, news } = setup();
 
 				news.removeCreatorReference(creator.id);
 
-				expect(news).toEqual(expectedNews);
+				expect(news.creator).toEqual(undefined);
 			});
 		});
 	});
@@ -36,17 +33,14 @@ describe(News.name, () => {
 					updater,
 				});
 
-				const expectedNews = news;
-				expectedNews.updater = undefined;
-
-				return { updater, news, expectedNews };
+				return { updater, news };
 			};
-			it('should properly remove this creator reference', () => {
-				const { updater, news, expectedNews } = setup();
+			it('should properly remove this updater reference', () => {
+				const { updater, news } = setup();
 
 				news.removeUpdaterReference(updater.id);
 
-				expect(news).toEqual(expectedNews);
+				expect(news).toEqual(undefined);
 			});
 		});
 	});
