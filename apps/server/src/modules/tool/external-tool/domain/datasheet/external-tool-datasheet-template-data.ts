@@ -24,7 +24,7 @@ export class ExternalToolDatasheetTemplateData {
 
 	privacy?: LtiPrivacyPermission;
 
-	parameters: ExternalToolParameterDatasheetTemplateData[];
+	parameters?: ExternalToolParameterDatasheetTemplateData[];
 
 	constructor(externalToolData: ExternalToolDatasheetTemplateData) {
 		this.createdAt = externalToolData.createdAt;

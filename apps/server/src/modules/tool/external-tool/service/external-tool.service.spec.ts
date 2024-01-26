@@ -23,6 +23,7 @@ import { ExternalTool, ExternalToolDatasheetTemplateData, Lti11ToolConfig, Oauth
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';
 import { ExternalToolVersionIncrementService } from './external-tool-version-increment.service';
 import { ExternalToolService } from './external-tool.service';
+import { CustomParameter } from '../../common/domain';
 
 describe('ExternalToolService', () => {
 	let module: TestingModule;
@@ -692,11 +693,13 @@ describe('ExternalToolService', () => {
 	describe('getDatasheetData', () => {
 		describe('when tool is a basic tool', () => {
 			const setup = () => {
-				const { externalTool } = createTools();
 				const user: User = userFactory.build();
+				const { externalTool } = createTools();
+
+				const params = externalTool.parameters as CustomParameter[];
 				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
-					.withParameters(1)
-					.build();
+					.withParameters(1, { name: params[0].name })
+					.build({ toolName: externalTool.name, instance: 'dBildungscloud' });
 
 				externalToolRepo.findById.mockResolvedValue(externalTool);
 
@@ -725,13 +728,15 @@ describe('ExternalToolService', () => {
 
 		describe('when tool is an oauth2 tool', () => {
 			const setup = () => {
+				const user: User = userFactory.build();
 				const { externalTool, oauth2ToolConfig } = createTools();
 				externalTool.config = oauth2ToolConfig;
-				const user: User = userFactory.build();
+
+				const params = externalTool.parameters as CustomParameter[];
 				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
 					.asOauth2Tool()
-					.withParameters(1)
-					.build();
+					.withParameters(1, { name: params[0].name })
+					.build({ toolName: externalTool.name, instance: 'dBildungscloud' });
 
 				externalToolRepo.findById.mockResolvedValue(externalTool);
 
@@ -752,13 +757,15 @@ describe('ExternalToolService', () => {
 
 		describe('when tool is an LTI1.1 tool', () => {
 			const setup = () => {
+				const user: User = userFactory.build();
 				const { externalTool, lti11ToolConfig } = createTools();
 				externalTool.config = lti11ToolConfig;
-				const user: User = userFactory.build();
+
+				const params = externalTool.parameters as CustomParameter[];
 				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
 					.asLti11Tool()
-					.withParameters(1)
-					.build();
+					.withParameters(1, { name: params[0].name })
+					.build({ toolName: externalTool.name, instance: 'dBildungscloud' });
 
 				externalToolRepo.findById.mockResolvedValue(externalTool);
 

@@ -25,8 +25,11 @@ export class ExternalToolDatasheetMapper {
 				? ExternalToolDatasheetMapper.mapToLimitedContexts(externalTool)
 				: undefined,
 			toolType: externalTool.config.type,
-			parameters: ExternalToolDatasheetMapper.mapToParameterDataList(externalTool),
 		});
+
+		if (externalTool.parameters) {
+			externalToolData.parameters = ExternalToolDatasheetMapper.mapToParameterDataList(externalTool);
+		}
 
 		if (ExternalTool.isOauth2Config(externalTool.config)) {
 			if (externalTool.config.skipConsent) {
