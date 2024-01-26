@@ -1,3 +1,4 @@
+import { EntityManager, RequestContext } from '@mikro-orm/core';
 import { AuthorizationContext } from '@modules/authorization';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { HttpService } from '@nestjs/axios';
@@ -36,7 +37,8 @@ export class FilesStorageUC {
 		private readonly authorizationReferenceService: AuthorizationReferenceService,
 		private readonly httpService: HttpService,
 		private readonly filesStorageService: FilesStorageService,
-		private readonly previewService: PreviewService
+		private readonly previewService: PreviewService,
+		private readonly em: EntityManager
 	) {
 		this.logger.setContext(FilesStorageUC.name);
 	}
@@ -63,18 +65,25 @@ export class FilesStorageUC {
 	private async uploadFileWithBusboy(userId: EntityId, params: FileRecordParams, req: Request): Promise<FileRecord> {
 		const promise = new Promise<FileRecord>((resolve, reject) => {
 			const bb = busboy({ headers: req.headers, defParamCharset: 'utf8' });
+			let fileRecordPromise: Promise<FileRecord>;
 
-			// eslint-disable-next-line @typescript-eslint/no-misused-promises
-			bb.on('file', async (_name, file, info) => {
+			bb.on('file', (_name, file, info) => {
 				const fileDto = FileDtoBuilder.buildFromRequest(info, file);
 
-				try {
-					const record = await this.filesStorageService.uploadFile(userId, params, fileDto);
-					resolve(record);
-				} catch (error) {
-					req.unpipe(bb);
-					reject(error);
-				}
+				fileRecordPromise = RequestContext.createAsync(this.em, () => {
+					const record = this.filesStorageService.uploadFile(userId, params, fileDto);
+
+					return record;
+				});
+			});
+
+			bb.on('finish', () => {
+				fileRecordPromise
+					.then((result) => resolve(result))
+					.catch((error) => {
+						req.unpipe(bb);
+						reject(error);
+					});
 			});
 
 			req.pipe(bb);

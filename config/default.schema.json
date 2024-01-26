@@ -729,7 +729,7 @@
 		},
 		"FEATURE_SCHOOL_TERMS_OF_USE_ENABLED": {
 			"type": "boolean",
-			"default": false,
+			"default": true,
 			"description": "Enables uploading of school specific Terms of Use on new admin page."
 		},
 		"ROCKETCHAT_SERVICE_ENABLED": {
@@ -1335,11 +1335,6 @@
 				"ALLOWED_API_KEYS": ""
 			}
 		},
-		"FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Makes the new school administration page the default page"
-		},
 		"FEATURE_CTL_TOOLS_TAB_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1488,6 +1483,36 @@
 			"type": "string",
 			"default": "http://localhost:3349",
 			"description": "Address for tldraw management app"
+		},
+		"SCHULCONNEX_CLIENT": {
+			"type": "object",
+			"description": "Configuration of the schulcloud's schulconnex client.",
+			"properties": {
+				"API_URL": {
+					"type": "string",
+					"description": "Base URL of the schulconnex API (from dof)",
+					"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/"]
+				},
+				"TOKEN_ENDPOINT": {
+					"type": "string",
+					"description": "Token endpoint of the schulconnex API (from dof)",
+					"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/oauth2/token"]
+				},
+				"CLIENT_ID": {
+					"type": "string",
+					"description": "Client ID for accessing the schulconnex API (from server vault)"
+				},
+				"CLIENT_SECRET": {
+					"type": "string",
+					"description": "Client secret for accessing the schulconnex API (from server vault)"
+				}
+			},
+			"default": {
+				"API_URL": "",
+				"TOKEN_ENDPOINT": "",
+				"CLIENT_ID": "",
+				"CLIENT_SECRET": ""
+			}
 		}
 	},
 	"required": [],

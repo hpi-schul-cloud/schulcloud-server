@@ -385,16 +385,6 @@ describe(DeletionRequestUc.name, () => {
 				expect(teamService.deleteUserDataFromTeams).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
-			it('should call userService.deleteUsers to delete user in user module', async () => {
-				const { deletionRequestToExecute } = setup();
-
-				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
-
-				await uc.executeDeletionRequests();
-
-				expect(userService.deleteUser).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
-			});
-
 			it('should call rocketChatUserService.findByUserId to find rocketChatUser in rocketChatUser module', async () => {
 				const { deletionRequestToExecute } = setup();
 
@@ -409,7 +399,7 @@ describe(DeletionRequestUc.name, () => {
 				const { deletionRequestToExecute, rocketChatUser } = setup();
 
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
-				rocketChatUserService.findByUserId.mockResolvedValueOnce(rocketChatUser);
+				rocketChatUserService.findByUserId.mockResolvedValueOnce([rocketChatUser]);
 
 				await uc.executeDeletionRequests();
 
@@ -420,7 +410,7 @@ describe(DeletionRequestUc.name, () => {
 				const { deletionRequestToExecute, rocketChatUser } = setup();
 
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
-				rocketChatUserService.findByUserId.mockResolvedValueOnce(rocketChatUser);
+				rocketChatUserService.findByUserId.mockResolvedValueOnce([rocketChatUser]);
 
 				await uc.executeDeletionRequests();
 
@@ -474,7 +464,8 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(14);
+
+				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(12);
 			});
 		});
 

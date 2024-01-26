@@ -245,6 +245,53 @@ describe('dashboard repo', () => {
 		});
 	});
 
+	describe('getUsersDashboardIfExist', () => {
+		describe('when user has no dashboard', () => {
+			const setup = async () => {
+				const user = userFactory.build();
+				await em.persistAndFlush(user);
+
+				return { user };
+			};
+
+			it('should return null', async () => {
+				const { user } = await setup();
+
+				const result = await repo.getUsersDashboardIfExist(user.id);
+
+				expect(result).toBeNull();
+			});
+		});
+
+		describe('when user has a dashboard already', () => {
+			const setup = async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build({ students: [user], name: 'Mathe' });
+				await em.persistAndFlush([user, course]);
+				const dashboard = new DashboardEntity(new ObjectId().toString(), {
+					grid: [
+						{
+							pos: { x: 1, y: 3 },
+							gridElement: GridElement.FromSingleReference(course),
+						},
+					],
+					userId: user.id,
+				});
+				await repo.persistAndFlush(dashboard);
+
+				return { user, dashboard };
+			};
+
+			it('should return the existing dashboard', async () => {
+				const { user, dashboard } = await setup();
+
+				const result = await repo.getUsersDashboardIfExist(user.id);
+				expect(result?.id).toEqual(dashboard.id);
+				expect(result?.userId).toEqual(dashboard.userId);
+			});
+		});
+	});
+
 	describe('deleteDashboardByUserId', () => {
 		const setup = async () => {
 			const userWithoutDashoard = userFactory.build();

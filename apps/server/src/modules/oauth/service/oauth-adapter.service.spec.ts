@@ -5,6 +5,7 @@ import { axiosResponseFactory } from '@shared/testing';
 import { axiosErrorFactory } from '@shared/testing/factory';
 import { AxiosError } from 'axios';
 import { of, throwError } from 'rxjs';
+import { OAuthTokenDto } from '../interface';
 import { OAuthGrantType } from '../interface/oauth-grant-type.enum';
 import { TokenRequestLoggableException } from '../loggable';
 import { AuthenticationCodeGrantTokenRequest, OauthTokenResponse } from './dto';
@@ -65,7 +66,7 @@ describe('OauthAdapterServive', () => {
 		});
 	});
 
-	describe('sendRequestToken', () => {
+	describe('sendTokenRequest', () => {
 		const tokenResponse: OauthTokenResponse = {
 			access_token: 'accessToken',
 			refresh_token: 'refreshToken',
@@ -85,12 +86,13 @@ describe('OauthAdapterServive', () => {
 
 		describe('when it requests a token', () => {
 			it('should get token from the external server', async () => {
-				const responseToken: OauthTokenResponse = await service.sendAuthenticationCodeTokenRequest(
-					'tokenEndpoint',
-					testPayload
-				);
+				const responseToken: OAuthTokenDto = await service.sendTokenRequest('tokenEndpoint', testPayload);
 
-				expect(responseToken).toStrictEqual(tokenResponse);
+				expect(responseToken).toEqual<OAuthTokenDto>({
+					idToken: tokenResponse.id_token,
+					accessToken: tokenResponse.access_token,
+					refreshToken: tokenResponse.refresh_token,
+				});
 			});
 		});
 
@@ -107,7 +109,7 @@ describe('OauthAdapterServive', () => {
 			it('should throw an error', async () => {
 				const { error } = setup();
 
-				const resp = service.sendAuthenticationCodeTokenRequest('tokenEndpoint', testPayload);
+				const resp = service.sendTokenRequest('tokenEndpoint', testPayload);
 
 				await expect(resp).rejects.toEqual(error);
 			});
@@ -127,7 +129,7 @@ describe('OauthAdapterServive', () => {
 				it('should throw the default sso error', async () => {
 					const { error } = setup();
 
-					const resp = service.sendAuthenticationCodeTokenRequest('tokenEndpoint', testPayload);
+					const resp = service.sendTokenRequest('tokenEndpoint', testPayload);
 
 					await expect(resp).rejects.toEqual(error);
 				});
@@ -150,7 +152,7 @@ describe('OauthAdapterServive', () => {
 				it('should throw an error', async () => {
 					const { axiosError } = setup();
 
-					const resp = service.sendAuthenticationCodeTokenRequest('tokenEndpoint', testPayload);
+					const resp = service.sendTokenRequest('tokenEndpoint', testPayload);
 
 					await expect(resp).rejects.toEqual(new TokenRequestLoggableException(axiosError));
 				});
