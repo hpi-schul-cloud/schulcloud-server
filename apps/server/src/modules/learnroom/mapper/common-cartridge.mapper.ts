@@ -43,7 +43,7 @@ export class CommonCartridgeMapper {
 
 	public mapTaskToOrganization(task: Task): CommonCartridgeOrganizationBuilderOptions {
 		return {
-			identifier: createIdentifier(task.id),
+			identifier: createIdentifier(),
 			title: task.name,
 		};
 	}
