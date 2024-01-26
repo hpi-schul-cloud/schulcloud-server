@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DomainModel, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainOperation } from '@shared/domain/interface';
@@ -21,7 +21,7 @@ export class FilesService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Files',
-				DomainModel.FILE,
+				DomainName.FILE,
 				userId,
 				StatusModel.PENDING
 			)
@@ -38,7 +38,7 @@ export class FilesService {
 		const numberOfUpdatedFiles = entities.length;
 
 		const result = DomainOperationBuilder.build(
-			DomainModel.FILE,
+			DomainName.FILE,
 			OperationType.UPDATE,
 			numberOfUpdatedFiles,
 			this.getFilesId(entities)
@@ -47,7 +47,7 @@ export class FilesService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully removed user data from Files',
-				DomainModel.FILE,
+				DomainName.FILE,
 				userId,
 				StatusModel.FINISHED,
 				numberOfUpdatedFiles,
@@ -66,7 +66,7 @@ export class FilesService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Marking user files to deletion',
-				DomainModel.FILE,
+				DomainName.FILE,
 				userId,
 				StatusModel.PENDING
 			)
@@ -80,7 +80,7 @@ export class FilesService {
 		const numberOfMarkedForDeletionFiles = entities.length;
 
 		const result = DomainOperationBuilder.build(
-			DomainModel.FILE,
+			DomainName.FILE,
 			OperationType.UPDATE,
 			numberOfMarkedForDeletionFiles,
 			this.getFilesId(entities)
@@ -89,7 +89,7 @@ export class FilesService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully marked user files for deletion',
-				DomainModel.FILE,
+				DomainName.FILE,
 				userId,
 				StatusModel.FINISHED,
 				numberOfMarkedForDeletionFiles,

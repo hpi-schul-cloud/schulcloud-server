@@ -1,4 +1,4 @@
-import { DomainModel, OperationType } from '@shared/domain/types';
+import { DomainName, OperationType } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { DomainOperationBuilder } from '.';
 
@@ -8,7 +8,7 @@ describe(DomainOperationBuilder.name, () => {
 	});
 
 	const setup = () => {
-		const domain = DomainModel.PSEUDONYMS;
+		const domain = DomainName.PSEUDONYMS;
 		const operation = OperationType.DELETE;
 		const refs = [new ObjectId().toHexString(), new ObjectId().toHexString()];
 		const count = 2;

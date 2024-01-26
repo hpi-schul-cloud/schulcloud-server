@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from 'bson';
 import { DomainOperationBuilder } from '@shared/domain/builder';
-import { DomainModel, OperationType } from '@shared/domain/types';
+import { DomainName, OperationType } from '@shared/domain/types';
 import { LegacyLogger } from '../../../core/logger';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
@@ -298,7 +298,7 @@ describe('AccountService', () => {
 			const accountId = new ObjectId().toHexString();
 			const spy = jest.spyOn(accountService, 'deleteByUserId');
 
-			const expectedResult = DomainOperationBuilder.build(DomainModel.ACCOUNT, OperationType.DELETE, 1, [accountId]);
+			const expectedResult = DomainOperationBuilder.build(DomainName.ACCOUNT, OperationType.DELETE, 1, [accountId]);
 
 			return { accountId, expectedResult, spy, userId };
 		};

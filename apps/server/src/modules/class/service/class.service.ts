@@ -1,5 +1,5 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { DomainModel, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainOperationBuilder } from '@shared/domain/builder';
@@ -29,7 +29,7 @@ export class ClassService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting data from Classes',
-				DomainModel.CLASS,
+				DomainName.CLASS,
 				userId,
 				StatusModel.PENDING
 			)
@@ -53,7 +53,7 @@ export class ClassService {
 		await this.classesRepo.updateMany(updatedClasses);
 
 		const result = DomainOperationBuilder.build(
-			DomainModel.CLASS,
+			DomainName.CLASS,
 			OperationType.UPDATE,
 			numberOfUpdatedClasses,
 			this.getClassesId(updatedClasses)
@@ -62,7 +62,7 @@ export class ClassService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully removed user data from Classes',
-				DomainModel.CLASS,
+				DomainName.CLASS,
 				userId,
 				StatusModel.FINISHED,
 				numberOfUpdatedClasses,

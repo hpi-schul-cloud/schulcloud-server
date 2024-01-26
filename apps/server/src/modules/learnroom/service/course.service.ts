@@ -3,7 +3,7 @@ import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { Course } from '@shared/domain/entity';
 import { DomainOperation } from '@shared/domain/interface';
-import { Counted, DomainModel, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { Counted, DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 
@@ -27,7 +27,7 @@ export class CourseService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting data from Courses',
-				DomainModel.COURSE,
+				DomainName.COURSE,
 				userId,
 				StatusModel.PENDING
 			)
@@ -39,7 +39,7 @@ export class CourseService {
 		await this.repo.save(courses);
 
 		const result = DomainOperationBuilder.build(
-			DomainModel.COURSE,
+			DomainName.COURSE,
 			OperationType.UPDATE,
 			count,
 			this.getCoursesId(courses)
@@ -48,7 +48,7 @@ export class CourseService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully removed data from Courses',
-				DomainModel.COURSE,
+				DomainName.COURSE,
 				userId,
 				StatusModel.FINISHED,
 				0,

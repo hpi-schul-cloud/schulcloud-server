@@ -11,7 +11,7 @@ import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { LanguageType, User } from '@shared/domain/entity';
 import { DomainOperation, IFindOptions } from '@shared/domain/interface';
-import { DomainModel, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { Logger } from '@src/core/logger';
@@ -131,7 +131,7 @@ export class UserService {
 
 	async deleteUser(userId: EntityId): Promise<DomainOperation> {
 		this.logger.info(
-			new DataDeletionDomainOperationLoggable('Deleting user', DomainModel.USER, userId, StatusModel.PENDING)
+			new DataDeletionDomainOperationLoggable('Deleting user', DomainName.USER, userId, StatusModel.PENDING)
 		);
 		const response = await this.userRepo.deleteUser(userId);
 
@@ -140,7 +140,7 @@ export class UserService {
 		const numberOfDeletedUsers = deletedUsers.length;
 
 		const result = DomainOperationBuilder.build(
-			DomainModel.USER,
+			DomainName.USER,
 			OperationType.DELETE,
 			numberOfDeletedUsers,
 			deletedUsers
@@ -149,7 +149,7 @@ export class UserService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully deleted user',
-				DomainModel.USER,
+				DomainName.USER,
 				userId,
 				StatusModel.FINISHED,
 				0,

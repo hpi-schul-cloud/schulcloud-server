@@ -15,7 +15,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from 'bson';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { DomainModel, OperationType } from '@shared/domain/types';
+import { DomainName, OperationType } from '@shared/domain/types';
 import { TaskService } from '@modules/task';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { DeletionStatusModel } from '../domain/types';
@@ -157,7 +157,7 @@ describe(DeletionRequestUc.name, () => {
 			const setup = () => {
 				const deletionRequestToCreate: DeletionRequestBodyProps = {
 					targetRef: {
-						domain: DomainModel.USER,
+						domain: DomainName.USER,
 						id: new ObjectId().toHexString(),
 					},
 					deleteInMinutes: 1440,
@@ -203,48 +203,48 @@ describe(DeletionRequestUc.name, () => {
 	describe('executeDeletionRequests', () => {
 		describe('when executing deletionRequests', () => {
 			const setup = () => {
-				const classesUpdated = DomainOperationBuilder.build(DomainModel.CLASS, OperationType.UPDATE, 1, [
+				const classesUpdated = DomainOperationBuilder.build(DomainName.CLASS, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const courseGroupUpdated = DomainOperationBuilder.build(DomainModel.COURSEGROUP, OperationType.UPDATE, 1, [
+				const courseGroupUpdated = DomainOperationBuilder.build(DomainName.COURSEGROUP, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const courseUpdated = DomainOperationBuilder.build(DomainModel.COURSE, OperationType.UPDATE, 1, [
+				const courseUpdated = DomainOperationBuilder.build(DomainName.COURSE, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
 				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
 
-				const dashboardDeleted = DomainOperationBuilder.build(DomainModel.DASHBOARD, OperationType.DELETE, 1, [
+				const dashboardDeleted = DomainOperationBuilder.build(DomainName.DASHBOARD, OperationType.DELETE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const filesDeleted = DomainOperationBuilder.build(DomainModel.FILE, OperationType.UPDATE, 1, [
+				const filesDeleted = DomainOperationBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const filesUpdated = DomainOperationBuilder.build(DomainModel.FILE, OperationType.UPDATE, 1, [
+				const filesUpdated = DomainOperationBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const fileRecordsUpdated = DomainOperationBuilder.build(DomainModel.FILERECORDS, OperationType.UPDATE, 1, [
+				const fileRecordsUpdated = DomainOperationBuilder.build(DomainName.FILERECORDS, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const lessonsUpdated = DomainOperationBuilder.build(DomainModel.LESSONS, OperationType.UPDATE, 1, [
+				const lessonsUpdated = DomainOperationBuilder.build(DomainName.LESSONS, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
 				const parentEmail = 'parent@parent.eu';
 
-				const pseudonymsDeleted = DomainOperationBuilder.build(DomainModel.PSEUDONYMS, OperationType.DELETE, 1, [
+				const pseudonymsDeleted = DomainOperationBuilder.build(DomainName.PSEUDONYMS, OperationType.DELETE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
 				const registrationPinDeleted = DomainOperationBuilder.build(
-					DomainModel.REGISTRATIONPIN,
+					DomainName.REGISTRATIONPIN,
 					OperationType.DELETE,
 					1,
 					[new ObjectId().toHexString()]
@@ -255,35 +255,35 @@ describe(DeletionRequestUc.name, () => {
 				});
 
 				const rocketChatUserDeleted = DomainOperationBuilder.build(
-					DomainModel.ROCKETCHATUSER,
+					DomainName.ROCKETCHATUSER,
 					OperationType.DELETE,
 					1,
 					[new ObjectId().toHexString()]
 				);
 
 				const tasksModifiedByRemoveCreatorId = DomainOperationBuilder.build(
-					DomainModel.TASK,
+					DomainName.TASK,
 					OperationType.UPDATE,
 					1,
 					[new ObjectId().toHexString()]
 				);
 
 				const tasksModifiedByRemoveUserFromFinished = DomainOperationBuilder.build(
-					DomainModel.TASK,
+					DomainName.TASK,
 					OperationType.UPDATE,
 					1,
 					[new ObjectId().toHexString()]
 				);
 
-				const tasksDeleted = DomainOperationBuilder.build(DomainModel.TASK, OperationType.DELETE, 1, [
+				const tasksDeleted = DomainOperationBuilder.build(DomainName.TASK, OperationType.DELETE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const teamsUpdated = DomainOperationBuilder.build(DomainModel.TEAMS, OperationType.UPDATE, 1, [
+				const teamsUpdated = DomainOperationBuilder.build(DomainName.TEAMS, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const userDeleted = DomainOperationBuilder.build(DomainModel.USER, OperationType.DELETE, 1, [
+				const userDeleted = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
@@ -547,35 +547,35 @@ describe(DeletionRequestUc.name, () => {
 			const setup = () => {
 				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
 
-				const classesUpdated = DomainOperationBuilder.build(DomainModel.CLASS, OperationType.UPDATE, 1, [
+				const classesUpdated = DomainOperationBuilder.build(DomainName.CLASS, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const courseGroupUpdated = DomainOperationBuilder.build(DomainModel.COURSEGROUP, OperationType.UPDATE, 1, [
+				const courseGroupUpdated = DomainOperationBuilder.build(DomainName.COURSEGROUP, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const courseUpdated = DomainOperationBuilder.build(DomainModel.COURSE, OperationType.UPDATE, 1, [
+				const courseUpdated = DomainOperationBuilder.build(DomainName.COURSE, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const filesDeleted = DomainOperationBuilder.build(DomainModel.FILE, OperationType.UPDATE, 1, [
+				const filesDeleted = DomainOperationBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const filesUpdated = DomainOperationBuilder.build(DomainModel.FILE, OperationType.UPDATE, 1, [
+				const filesUpdated = DomainOperationBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const lessonsUpdated = DomainOperationBuilder.build(DomainModel.LESSONS, OperationType.UPDATE, 1, [
+				const lessonsUpdated = DomainOperationBuilder.build(DomainName.LESSONS, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const pseudonymsDeleted = DomainOperationBuilder.build(DomainModel.PSEUDONYMS, OperationType.DELETE, 1, [
+				const pseudonymsDeleted = DomainOperationBuilder.build(DomainName.PSEUDONYMS, OperationType.DELETE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const teamsUpdated = DomainOperationBuilder.build(DomainModel.TEAMS, OperationType.UPDATE, 1, [
+				const teamsUpdated = DomainOperationBuilder.build(DomainName.TEAMS, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 

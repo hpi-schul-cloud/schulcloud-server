@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { DomainModel, EntityId, OperationType } from '@shared/domain/types';
+import { DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { FileDO } from '@src/infra/rabbitmq';
 import { DomainOperation } from '@shared/domain/interface';
@@ -43,7 +43,7 @@ export class FilesStorageClientAdapterService {
 		const response = await this.fileStorageMQProducer.removeCreatorIdFromFileRecords(creatorId);
 
 		const result = DomainOperationBuilder.build(
-			DomainModel.FILERECORDS,
+			DomainName.FILERECORDS,
 			OperationType.UPDATE,
 			response.length,
 			this.getFileRecordsId(response)

@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DashboardElementRepo, IDashboardRepo, UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
-import { DomainModel, LearnroomMetadata, LearnroomTypes, OperationType } from '@shared/domain/types';
+import { DomainName, LearnroomMetadata, LearnroomTypes, OperationType } from '@shared/domain/types';
 import { DashboardEntity, GridElement } from '@shared/domain/entity';
 import { Logger } from '@src/core/logger';
 import { DomainOperationBuilder } from '@shared/domain/builder';
@@ -82,7 +82,7 @@ describe(DashboardService.name, () => {
 			});
 			userRepo.findById.mockResolvedValue(user);
 
-			const expectedResult = DomainOperationBuilder.build(DomainModel.DASHBOARD, OperationType.DELETE, 1, [
+			const expectedResult = DomainOperationBuilder.build(DomainName.DASHBOARD, OperationType.DELETE, 1, [
 				dashboardId,
 			]);
 

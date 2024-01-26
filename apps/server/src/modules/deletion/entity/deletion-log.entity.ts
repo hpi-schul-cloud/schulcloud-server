@@ -1,11 +1,11 @@
 import { Entity, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { DomainModel, EntityId, OperationType } from '@shared/domain/types';
+import { DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 
 export interface DeletionLogEntityProps {
 	id?: EntityId;
-	domain: DomainModel;
+	domain: DomainName;
 	operation: OperationType;
 	count: number;
 	refs: EntityId[];
@@ -18,7 +18,7 @@ export interface DeletionLogEntityProps {
 @Entity({ tableName: 'deletionlogs' })
 export class DeletionLogEntity extends BaseEntityWithTimestamps {
 	@Property()
-	domain: DomainModel;
+	domain: DomainName;
 
 	@Property()
 	operation: OperationType;

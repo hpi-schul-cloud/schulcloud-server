@@ -2,7 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
-import { Counted, DomainModel, EntityId, OperationType } from '@shared/domain/types';
+import { Counted, DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { isEmail, validateOrReject } from 'class-validator';
 import { DomainOperation } from '@shared/domain/interface';
 import { DomainOperationBuilder } from '@shared/domain/builder';
@@ -175,7 +175,7 @@ export class AccountService extends AbstractAccountService {
 		const deletedAccounts = await this.deleteByUserId(userId);
 
 		const result = DomainOperationBuilder.build(
-			DomainModel.ACCOUNT,
+			DomainName.ACCOUNT,
 			OperationType.DELETE,
 			deletedAccounts.length,
 			deletedAccounts

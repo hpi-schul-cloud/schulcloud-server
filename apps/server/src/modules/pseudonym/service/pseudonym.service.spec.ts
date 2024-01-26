@@ -10,7 +10,7 @@ import { externalToolFactory, ltiToolDOFactory, pseudonymFactory, userDoFactory 
 import { Logger } from '@src/core/logger';
 import { ObjectId } from 'bson';
 import { DomainOperationBuilder } from '@shared/domain/builder';
-import { DomainModel, OperationType } from '@shared/domain/types';
+import { DomainName, OperationType } from '@shared/domain/types';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 import { PseudonymService } from './pseudonym.service';
@@ -423,7 +423,7 @@ describe('PseudonymService', () => {
 				];
 
 				const expectedResult = DomainOperationBuilder.build(
-					DomainModel.PSEUDONYMS,
+					DomainName.PSEUDONYMS,
 					OperationType.DELETE,
 					pseudonymsDeleted.length + externalPseudonymsDeleted.length,
 					[...pseudonymsDeleted, ...externalPseudonymsDeleted]

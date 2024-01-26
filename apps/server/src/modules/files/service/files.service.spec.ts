@@ -4,7 +4,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { DomainOperationBuilder } from '@shared/domain/builder';
-import { DomainModel, OperationType } from '@shared/domain/types';
+import { DomainName, OperationType } from '@shared/domain/types';
 import { FilesService } from './files.service';
 import { FilesRepo } from '../repo';
 import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
@@ -137,21 +137,21 @@ describe(FilesService.name, () => {
 			const entities = [entity4, entity5, entity6];
 
 			const expectedResultWhenFilesNotExists = DomainOperationBuilder.build(
-				DomainModel.FILE,
+				DomainName.FILE,
 				OperationType.UPDATE,
 				0,
 				[]
 			);
 
 			const expectedResultWhenFilesExistsWithOnlyUserId = DomainOperationBuilder.build(
-				DomainModel.FILE,
+				DomainName.FILE,
 				OperationType.UPDATE,
 				3,
 				[entity1.id, entity2.id, entity3.id]
 			);
 
 			const expectedResultWhenManyFilesExistsWithOtherUsers = DomainOperationBuilder.build(
-				DomainModel.FILE,
+				DomainName.FILE,
 				OperationType.UPDATE,
 				3,
 				[entity4.id, entity5.id, entity6.id]
@@ -290,18 +290,18 @@ describe(FilesService.name, () => {
 			const entities = [entity1, entity2, entity3];
 
 			const expectedResultWhenFilesNotExists = DomainOperationBuilder.build(
-				DomainModel.FILE,
+				DomainName.FILE,
 				OperationType.UPDATE,
 				0,
 				[]
 			);
 
-			const expectedResultWhenOneFileExists = DomainOperationBuilder.build(DomainModel.FILE, OperationType.UPDATE, 1, [
+			const expectedResultWhenOneFileExists = DomainOperationBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
 				entity1.id,
 			]);
 
 			const expectedResultWhenManyFilesExists = DomainOperationBuilder.build(
-				DomainModel.FILE,
+				DomainName.FILE,
 				OperationType.UPDATE,
 				3,
 				[entity1.id, entity2.id, entity3.id]

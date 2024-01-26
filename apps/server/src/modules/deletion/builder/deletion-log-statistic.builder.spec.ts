@@ -1,4 +1,4 @@
-import { DomainModel, OperationType } from '@shared/domain/types';
+import { DomainName, OperationType } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { DeletionLogStatisticBuilder } from '.';
 
@@ -7,7 +7,7 @@ describe(DeletionLogStatisticBuilder.name, () => {
 		jest.clearAllMocks();
 	});
 	const setup = () => {
-		const domain = DomainModel.PSEUDONYMS;
+		const domain = DomainName.PSEUDONYMS;
 		const operation = OperationType.DELETE;
 		const count = 2;
 		const refs = [new ObjectId().toHexString(), new ObjectId().toHexString()];

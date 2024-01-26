@@ -3,7 +3,7 @@ import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { TeamEntity } from '@shared/domain/entity';
 import { DomainOperation } from '@shared/domain/interface';
-import { DomainModel, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 
@@ -23,7 +23,7 @@ export class TeamService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Teams',
-				DomainModel.TEAMS,
+				DomainName.TEAMS,
 				userId,
 				StatusModel.PENDING
 			)
@@ -39,7 +39,7 @@ export class TeamService {
 		const numberOfUpdatedTeams = teams.length;
 
 		const result = DomainOperationBuilder.build(
-			DomainModel.TASK,
+			DomainName.TASK,
 			OperationType.UPDATE,
 			numberOfUpdatedTeams,
 			this.getTeamsId(teams)
@@ -48,7 +48,7 @@ export class TeamService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully deleted user data from Teams',
-				DomainModel.TEAMS,
+				DomainName.TEAMS,
 				userId,
 				StatusModel.FINISHED,
 				numberOfUpdatedTeams,

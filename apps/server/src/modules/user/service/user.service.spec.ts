@@ -9,7 +9,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { LanguageType, Role, User } from '@shared/domain/entity';
 import { IFindOptions, Permission, RoleName, SortOrder } from '@shared/domain/interface';
-import { DomainModel, EntityId, OperationType } from '@shared/domain/types';
+import { DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
@@ -395,7 +395,7 @@ describe('UserService', () => {
 
 				userRepo.deleteUser.mockResolvedValue(null);
 
-				const expectedResult = DomainOperationBuilder.build(DomainModel.USER, OperationType.DELETE, 0, []);
+				const expectedResult = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 0, []);
 
 				return {
 					expectedResult,
@@ -416,7 +416,7 @@ describe('UserService', () => {
 			const setup = () => {
 				const user1: User = userFactory.asStudent().buildWithId();
 
-				const expectedResult = DomainOperationBuilder.build(DomainModel.USER, OperationType.DELETE, 1, [user1.id]);
+				const expectedResult = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 1, [user1.id]);
 
 				userRepo.findById.mockResolvedValue(user1);
 				userRepo.deleteUser.mockResolvedValue(user1.id);

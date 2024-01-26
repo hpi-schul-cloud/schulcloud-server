@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { DomainOperation } from '@shared/domain/interface';
-import { DomainModel, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { IDashboardRepo, DashboardElementRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 
@@ -20,7 +20,7 @@ export class DashboardService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Dashboard',
-				DomainModel.DASHBOARD,
+				DomainName.DASHBOARD,
 				userId,
 				StatusModel.PENDING
 			)
@@ -34,12 +34,12 @@ export class DashboardService {
 			refs.push(usersDashboard.id);
 		}
 
-		const result = DomainOperationBuilder.build(DomainModel.DASHBOARD, OperationType.DELETE, deletedDashboard, refs);
+		const result = DomainOperationBuilder.build(DomainName.DASHBOARD, OperationType.DELETE, deletedDashboard, refs);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully deleted user data from Dashboard',
-				DomainModel.DASHBOARD,
+				DomainName.DASHBOARD,
 				userId,
 				StatusModel.FINISHED,
 				0,

@@ -1,7 +1,7 @@
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { ComponentProperties, LessonEntity } from '@shared/domain/entity';
-import { Counted, DomainModel, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { Counted, DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { AuthorizationLoaderService } from '@src/modules/authorization';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
@@ -43,7 +43,7 @@ export class LessonService implements AuthorizationLoaderService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Lessons',
-				DomainModel.LESSONS,
+				DomainName.LESSONS,
 				userId,
 				StatusModel.PENDING
 			)
@@ -65,7 +65,7 @@ export class LessonService implements AuthorizationLoaderService {
 		const numberOfUpdatedLessons = updatedLessons.length;
 
 		const result = DomainOperationBuilder.build(
-			DomainModel.LESSONS,
+			DomainName.LESSONS,
 			OperationType.UPDATE,
 			numberOfUpdatedLessons,
 			this.getLessonsId(updatedLessons)
@@ -74,7 +74,7 @@ export class LessonService implements AuthorizationLoaderService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully removed user data from Classes',
-				DomainModel.LESSONS,
+				DomainName.LESSONS,
 				userId,
 				StatusModel.FINISHED,
 				numberOfUpdatedLessons,

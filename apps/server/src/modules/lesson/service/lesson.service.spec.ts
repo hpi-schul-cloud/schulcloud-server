@@ -6,7 +6,7 @@ import { ComponentProperties, ComponentType } from '@shared/domain/entity';
 import { lessonFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { DomainOperationBuilder } from '@shared/domain/builder';
-import { DomainModel, OperationType } from '@shared/domain/types';
+import { DomainName, OperationType } from '@shared/domain/types';
 import { LessonRepo } from '../repository';
 import { LessonService } from './lesson.service';
 
@@ -151,7 +151,7 @@ describe('LessonService', () => {
 
 				lessonRepo.findByUserId.mockResolvedValue([lesson1, lesson2]);
 
-				const expectedResult = DomainOperationBuilder.build(DomainModel.LESSONS, OperationType.UPDATE, 2, [
+				const expectedResult = DomainOperationBuilder.build(DomainName.LESSONS, OperationType.UPDATE, 2, [
 					lesson1.id,
 					lesson2.id,
 				]);

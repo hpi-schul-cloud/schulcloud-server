@@ -3,7 +3,7 @@ import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { CourseGroup } from '@shared/domain/entity';
 import { DomainOperation } from '@shared/domain/interface';
-import { Counted, DomainModel, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { Counted, DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { CourseGroupRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 
@@ -23,7 +23,7 @@ export class CourseGroupService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from CourseGroup',
-				DomainModel.COURSEGROUP,
+				DomainName.COURSEGROUP,
 				userId,
 				StatusModel.PENDING
 			)
@@ -35,7 +35,7 @@ export class CourseGroupService {
 		await this.repo.save(courseGroups);
 
 		const result = DomainOperationBuilder.build(
-			DomainModel.COURSEGROUP,
+			DomainName.COURSEGROUP,
 			OperationType.UPDATE,
 			count,
 			this.getCourseGroupsId(courseGroups)
@@ -44,7 +44,7 @@ export class CourseGroupService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully deleted user data from CourseGroup',
-				DomainModel.COURSEGROUP,
+				DomainName.COURSEGROUP,
 				userId,
 				StatusModel.FINISHED,
 				count,

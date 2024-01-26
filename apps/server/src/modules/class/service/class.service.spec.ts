@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DomainModel, EntityId, OperationType } from '@shared/domain/types';
+import { DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { DomainOperationBuilder } from '@shared/domain/builder';
@@ -135,7 +135,7 @@ describe(ClassService.name, () => {
 
 				classesRepo.findAllByUserId.mockResolvedValue(mappedClasses);
 
-				const expectedResult = DomainOperationBuilder.build(DomainModel.CLASS, OperationType.UPDATE, 2, [
+				const expectedResult = DomainOperationBuilder.build(DomainName.CLASS, OperationType.UPDATE, 2, [
 					class1.id,
 					class2.id,
 				]);

@@ -7,7 +7,7 @@ import { DomainOperation, IFindOptions } from '@shared/domain/interface';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DomainModel, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
@@ -83,7 +83,7 @@ export class PseudonymService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Pseudonyms',
-				DomainModel.PSEUDONYMS,
+				DomainName.PSEUDONYMS,
 				userId,
 				StatusModel.PENDING
 			)
@@ -100,7 +100,7 @@ export class PseudonymService {
 		const numberOfDeletedPseudonyms = deletedPseudonyms.length + deletedExternalToolPseudonyms.length;
 
 		const result = DomainOperationBuilder.build(
-			DomainModel.PSEUDONYMS,
+			DomainName.PSEUDONYMS,
 			OperationType.DELETE,
 			numberOfDeletedPseudonyms,
 			[...deletedPseudonyms, ...deletedExternalToolPseudonyms]
@@ -109,7 +109,7 @@ export class PseudonymService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully deleted user data from Pseudonyms',
-				DomainModel.PSEUDONYMS,
+				DomainName.PSEUDONYMS,
 				userId,
 				StatusModel.FINISHED,
 				0,
