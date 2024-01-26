@@ -152,6 +152,10 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#createSchool" >createSchool</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#getSchoolByExternalId" >getSchoolByExternalId</a>
                             </li>
                             <li>
@@ -192,12 +196,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(schoolRepo: <a href="../injectables/LegacySchoolRepo.html" target="_self">LegacySchoolRepo</a>, schoolValidationService: <a href="../injectables/SchoolValidationService.html" target="_self">SchoolValidationService</a>)</code>
+<code>constructor(schoolRepo: <a href="../injectables/LegacySchoolRepo.html" target="_self">LegacySchoolRepo</a>, schoolValidationService: <a href="../injectables/SchoolValidationService.html" target="_self">SchoolValidationService</a>, federalStateService: <a href="../injectables/FederalStateService.html" target="_self">FederalStateService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/legacy-school/service/legacy-school.service.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/legacy-school/service/legacy-school.service.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -238,6 +242,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>federalStateService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/FederalStateService.html" target="_self" >FederalStateService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -252,6 +268,75 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createSchool"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>createSchool</b></span>
+                        <a href="#createSchool"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createSchool(props: literal type)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/legacy-school.service.ts:60</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>props</td>
+                                            <td>
+                                                        <code>literal type</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;LegacySchoolDo&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -274,8 +359,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/legacy-school.service.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="38"
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/legacy-school.service.ts:38</a></div>
                         </td>
                     </tr>
 
@@ -355,8 +440,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="30"
-                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/legacy-school.service.ts:30</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/legacy-school.service.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -424,8 +509,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/legacy-school.service.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="44"
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/legacy-school.service.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -493,8 +578,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/legacy-school.service.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="19"
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/legacy-school.service.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -574,8 +659,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/legacy-school.service.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/legacy-school.service.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -655,8 +740,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/legacy-school.service.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="50"
+                                    class="link-to-prism">apps/server/src/modules/legacy-school/service/legacy-school.service.ts:50</a></div>
                         </td>
                     </tr>
 
@@ -729,6 +814,7 @@
 import { LegacySchoolDo } from &#x27;@shared/domain/domainobject&#x27;;
 import { EntityId, SchoolFeature } from &#x27;@shared/domain/types&#x27;;
 import { LegacySchoolRepo } from &#x27;@shared/repo&#x27;;
+import { FederalStateService } from &#x27;./federal-state.service&#x27;;
 import { SchoolValidationService } from &#x27;./validation&#x27;;
 
 /**
@@ -738,7 +824,8 @@ import { SchoolValidationService } from &#x27;./validation&#x27;;
 export class LegacySchoolService {
 	constructor(
 		private readonly schoolRepo: LegacySchoolRepo,
-		private readonly schoolValidationService: SchoolValidationService
+		private readonly schoolValidationService: SchoolValidationService,
+		private readonly federalStateService: FederalStateService
 	) {}
 
 	async hasFeature(schoolId: EntityId, feature: SchoolFeature): Promise&lt;boolean&gt; {
@@ -780,6 +867,13 @@ export class LegacySchoolService {
 		const ret: LegacySchoolDo &#x3D; await this.schoolRepo.save(school);
 
 		return ret;
+	}
+
+	async createSchool(props: { name: string; federalStateName: string }): Promise&lt;LegacySchoolDo&gt; {
+		const federalState &#x3D; await this.federalStateService.findFederalStateByName(props.federalStateName);
+		const school &#x3D; new LegacySchoolDo({ name: props.name, federalState });
+		await this.schoolRepo.save(school);
+		return school;
 	}
 }
 </code></pre>
