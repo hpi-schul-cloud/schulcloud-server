@@ -4,8 +4,8 @@ import { AuthorizationModule } from '@modules/authorization';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { OauthModule } from '@modules/oauth';
 import { UserModule } from '@modules/user';
-import { HttpModule } from '@nestjs/axios';
 import { UserLoginMigrationModule } from '@modules/user-login-migration';
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ImportUserRepo, LegacySchoolRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
@@ -25,7 +25,7 @@ import { UserImportConfigModule } from './user-import-config.module';
 		UserModule,
 		OauthModule,
 		SchulconnexClientModule,
-    UserLoginMigrationModule,
+		UserLoginMigrationModule,
 	],
 	controllers: [ImportUserController],
 	providers: [
