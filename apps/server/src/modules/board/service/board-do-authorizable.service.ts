@@ -6,7 +6,7 @@ import {
 	BoardExternalReferenceType,
 	BoardRoles,
 	ColumnBoard,
-	DrawingElement,
+	isDrawingElement,
 	UserBoardRoles,
 	UserRoleEnum,
 } from '@shared/domain/domainobject';
@@ -35,12 +35,14 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 		const ids = [...ancestorIds, boardDo.id];
 		const rootId = ids[0];
 		const rootBoardDo = await this.boardDoRepo.findById(rootId, 1);
-		const isDrawingElement = boardDo instanceof DrawingElement;
+
+		// TODO: fix this temporary hack to allow students to upload Files to the DrawingElement
+		const isDrawing = isDrawingElement(boardDo);
 
 		if (rootBoardDo instanceof ColumnBoard) {
 			if (rootBoardDo.context?.type === BoardExternalReferenceType.Course) {
 				const course = await this.courseRepo.findById(rootBoardDo.context.id);
-				const users = this.mapCourseUsersToUsergroup(course, isDrawingElement);
+				const users = this.mapCourseUsersToUsergroup(course, isDrawing);
 				return new BoardDoAuthorizable({ users, id: boardDo.id });
 			}
 		} else {
@@ -50,7 +52,7 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 		return new BoardDoAuthorizable({ users: [], id: boardDo.id });
 	}
 
-	private mapCourseUsersToUsergroup(course: Course, isDrawingElement: boolean): UserBoardRoles[] {
+	private mapCourseUsersToUsergroup(course: Course, isDrawing: boolean): UserBoardRoles[] {
 		const users = [
 			...course.getTeachersList().map((user) => {
 				return {
@@ -75,7 +77,7 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 					userId: user.id,
 					firstName: user.firstName,
 					lastName: user.lastName,
-					roles: isDrawingElement ? [BoardRoles.EDITOR] : [BoardRoles.READER],
+					roles: isDrawing ? [BoardRoles.EDITOR] : [BoardRoles.READER],
 					userRoleEnum: UserRoleEnum.STUDENT,
 				};
 			}),

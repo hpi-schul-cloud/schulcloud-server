@@ -3,6 +3,7 @@ import { ForbiddenException, forwardRef, Inject, Injectable, UnprocessableEntity
 import {
 	AnyBoardDo,
 	AnyContentElementDo,
+	isDrawingElement,
 	isSubmissionContainerElement,
 	isSubmissionItem,
 	SubmissionItem,
@@ -54,7 +55,9 @@ export class ElementUc extends BaseUc {
 		if (isSubmissionItem(parent)) {
 			await this.checkSubmissionItemWritePermission(userId, parent);
 		} else {
-			await this.checkPermission(userId, element, Action.write);
+			// TODO: fix this temporary hack to prevent students from deleting the DrawingElement
+			const requiredRole = isDrawingElement(element) ? UserRoleEnum.TEACHER : undefined;
+			await this.checkPermission(userId, element, Action.write, requiredRole);
 		}
 
 		return element;
