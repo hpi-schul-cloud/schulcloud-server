@@ -160,15 +160,15 @@ export class AccountService extends AbstractAccountService {
 	}
 
 	async deleteByUserId(userId: string): Promise<EntityId[]> {
-		const deletedAccountDb = await this.accountDb.deleteByUserId(userId);
+		const deletedAccounts = await this.accountDb.deleteByUserId(userId);
 		await this.executeIdmMethod(async () => {
 			this.logger.debug(`Deleting account with userId ${userId} ...`);
 			const deletedAccountIdm = await this.accountIdm.deleteByUserId(userId);
-			deletedAccountDb.push(...deletedAccountIdm);
+			deletedAccounts.push(...deletedAccountIdm);
 			this.logger.debug(`Deleted account with userId ${userId}`);
 		});
 
-		return deletedAccountDb;
+		return deletedAccounts;
 	}
 
 	async deleteAccountByUserId(userId: string): Promise<DomainOperation> {
