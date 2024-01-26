@@ -7,6 +7,7 @@ import { schoolEntityFactory, TestApiClient, TestXApiKeyClient } from '@shared/t
 import { ServerTestModule } from '@src/modules/server';
 import { nanoid } from 'nanoid';
 import supertest from 'supertest';
+import { AdminApiUserCreateResponse } from '../dto/admin-api-user-create.response.dto';
 
 const baseRouteName = '/admin/users';
 
@@ -71,7 +72,7 @@ describe('Admin API - Users (API)', () => {
 			it('should persist user', async () => {
 				const { body } = await setup();
 				const response = await testXApiKeyClient.post('', body);
-				const { userId } = response.body;
+				const { userId } = response.body as AdminApiUserCreateResponse;
 
 				const loaded = await em.findOneOrFail(User, userId);
 				expect(loaded).toEqual(
@@ -87,7 +88,7 @@ describe('Admin API - Users (API)', () => {
 			it('should persist account', async () => {
 				const { body } = await setup();
 				const response = await testXApiKeyClient.post('', body);
-				const { accountId } = response.body;
+				const { accountId } = response.body as AdminApiUserCreateResponse;
 
 				const loaded = await em.findOneOrFail(Account, accountId);
 				expect(loaded).toEqual(
