@@ -52,7 +52,7 @@ export class AccountService extends AbstractAccountService {
 		}
 
 		if (!updateData.passwordOld || !(await this.validatePassword(account, updateData.passwordOld))) {
-			throw new AuthorizationError('Dein Passwort ist nicht korrekt!');
+			throw new AuthorizationError('Your old password is not correct.');
 		}
 
 		let updateUser = false;
