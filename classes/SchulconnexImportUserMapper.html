@@ -290,12 +290,12 @@ export class SchulconnexImportUserMapper {
 			const importUser: ImportUser &#x3D; new ImportUser({
 				system,
 				school,
-				ldapDn: &#x60;uid&#x3D;${externalUser.person.name.vorname}.${externalUser.person.name.familienname},&#x60;,
+				ldapDn: &#x60;uid&#x3D;${externalUser.person.name.vorname}.${externalUser.person.name.familienname}.${externalUser.pid},&#x60;,
 				externalId: externalUser.pid,
 				firstName: externalUser.person.name.vorname,
 				lastName: externalUser.person.name.familienname,
 				roleNames: ImportUser.isImportUserRole(role) ? [role] : [],
-				email: &#x27;&#x27;,
+				email: &#x60;${externalUser.person.name.vorname}.${externalUser.person.name.familienname}.${externalUser.pid}@schul-cloud.org&#x60;,
 			});
 
 			return importUser;

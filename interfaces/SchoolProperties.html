@@ -1198,6 +1198,7 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 		(userLoginMigration: UserLoginMigrationEntity) &#x3D;&gt; userLoginMigration.school,
 		{
 			orphanRemoval: true,
+			eager: true,
 		}
 	)
 	userLoginMigration?: UserLoginMigrationEntity;

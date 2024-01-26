@@ -192,12 +192,13 @@
                         <i>Default value : </i><code>{
 		userMigrationEnabled: Configuration.get(&#x27;FEATURE_USER_MIGRATION_ENABLED&#x27;) as boolean,
 		userMigrationSystemId: Configuration.get(&#x27;FEATURE_USER_MIGRATION_SYSTEM_ID&#x27;) as string,
+		instance: Configuration.get(&#x27;SC_THEME&#x27;) as string,
 	}</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/user-import/config/user-import-config.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/user-import/config/user-import-config.ts:12</a></div>
                         </td>
                     </tr>
 
@@ -223,12 +224,14 @@ export const UserImportFeatures &#x3D; Symbol(&#x27;UserImportFeatures&#x27;);
 export interface IUserImportFeatures {
 	userMigrationEnabled: boolean;
 	userMigrationSystemId: string;
+	instance: string;
 }
 
 export class UserImportConfiguration {
 	static userImportFeatures: IUserImportFeatures &#x3D; {
 		userMigrationEnabled: Configuration.get(&#x27;FEATURE_USER_MIGRATION_ENABLED&#x27;) as boolean,
 		userMigrationSystemId: Configuration.get(&#x27;FEATURE_USER_MIGRATION_SYSTEM_ID&#x27;) as string,
+		instance: Configuration.get(&#x27;SC_THEME&#x27;) as string,
 	};
 }
 </code></pre>
