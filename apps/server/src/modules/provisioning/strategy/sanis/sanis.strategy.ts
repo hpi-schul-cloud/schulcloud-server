@@ -7,6 +7,7 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
 import { firstValueFrom } from 'rxjs';
+import { SanisGruppenResponse, SanisResponse, SanisResponseValidationGroups } from '@infra/schulconnex-client/response';
 import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import {
 	ExternalGroupDto,
@@ -17,7 +18,6 @@ import {
 } from '../../dto';
 import { OidcProvisioningStrategy } from '../oidc/oidc.strategy';
 import { OidcProvisioningService } from '../oidc/service/oidc-provisioning.service';
-import { SanisGruppenResponse, SanisResponse, SanisResponseValidationGroups } from './response';
 import { SanisResponseMapper } from './sanis-response.mapper';
 
 @Injectable()
@@ -42,6 +42,7 @@ export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
 			);
 		}
 
+		// TODO: N21-1678 use the schulconnex rest client
 		const axiosConfig: AxiosRequestConfig = {
 			headers: {
 				Authorization: `Bearer ${input.accessToken}`,

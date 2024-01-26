@@ -12,8 +12,8 @@ import {
 	externalToolElementNodeFactory,
 	externalToolEntityFactory,
 	externalToolFactory,
+	schoolEntityFactory,
 	schoolExternalToolEntityFactory,
-	schoolFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
@@ -661,7 +661,7 @@ describe('ToolController (API)', () => {
 				const toolId: string = new ObjectId().toHexString();
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
 
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				const schoolExternalToolEntitys: SchoolExternalToolEntity[] = schoolExternalToolEntityFactory.buildList(2, {
 					tool: externalToolEntity,
 					school,

@@ -3,7 +3,7 @@ import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
-import { accountFactory, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
+import { accountFactory, mapUserToCurrentUser, roleFactory, schoolEntityFactory, userFactory } from '@shared/testing';
 import {
 	AccountByIdBodyParams,
 	AccountSearchQueryParams,
@@ -39,7 +39,7 @@ describe('Account Controller (API)', () => {
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
 
 	const setup = async () => {
-		const school = schoolFactory.buildWithId();
+		const school = schoolEntityFactory.buildWithId();
 
 		const adminRoles = roleFactory.build({
 			name: RoleName.ADMINISTRATOR,
