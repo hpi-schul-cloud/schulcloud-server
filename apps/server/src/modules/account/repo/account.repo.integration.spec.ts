@@ -228,7 +228,7 @@ describe('account repo', () => {
 			});
 		});
 
-		describe('when user has not account', () => {
+		describe('when user has no account', () => {
 			it('should return null', async () => {
 				const { userWithoutAccount } = await setup();
 
