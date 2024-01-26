@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { RoleReference, UserDO } from '@shared/domain/domainobject';
+import { RoleReference } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { RoleService } from '@src/modules/role';
 import { AccountService } from '@src/modules/account';
-import { UserService } from '../service/user.service';
+import { RoleService } from '@src/modules/role';
 import { nanoid } from 'nanoid';
+import { UserService } from '../service/user.service';
 
 @Injectable()
 export class AdminApiUserUc {
