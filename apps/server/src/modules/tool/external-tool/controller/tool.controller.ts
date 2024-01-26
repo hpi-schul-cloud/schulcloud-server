@@ -215,7 +215,7 @@ export class ToolController {
 		const myFilename = await this.externalToolUc.createDatasheetFilename(currentUser.userId, params.externalToolId);
 
 		res.setHeader('Content-Type', 'application/pdf');
-		res.setHeader('Content-Disposition', `attachment; filename=${myFilename}`);
+		res.setHeader('Content-Disposition', `inline; filename=${myFilename}`);
 
 		const streamableFile: StreamableFile = new StreamableFile(datasheetBuffer);
 		return streamableFile;

@@ -770,16 +770,10 @@ describe('ToolController (API)', () => {
 				expect(response.header).toEqual(
 					expect.objectContaining({
 						'content-type': 'application/pdf',
-						'content-disposition': `attachment; filename=CTL-Datenblatt-${externalToolEntity.name}-${dateString}`,
+						'content-disposition': `inline; filename=CTL-Datenblatt-${externalToolEntity.name}-${dateString}`,
 					})
 				);
-				// TODO N21-1626 make this work
-				/* expect(response.body).toEqual(
-					expect.objectContaining({
-						type: 'Buffer',
-						data: expect.any(Array) as number[],
-					})
-				); */
+				expect(response.body).toEqual(expect.any(Buffer));
 			});
 		});
 	});

@@ -7,9 +7,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject/page';
 import { Role, User } from '@shared/domain/entity';
 import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
-import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { externalToolFactory, oauth2ToolConfigFactory } from '@shared/testing/factory';
-import { externalToolDatasheetTemplateDataFactory } from '@shared/testing/factory/domainobject/tool/external-tool-datasheet-template-data.factory';
+import {
+	roleFactory,
+	setupEntities,
+	userFactory,
+	externalToolDatasheetTemplateDataFactory,
+	externalToolFactory,
+	oauth2ToolConfigFactory,
+} from '@shared/testing';
 import { PDFService } from '@pyxlab/nestjs-pdf';
 import { of } from 'rxjs';
 import { ExternalToolSearchQuery } from '../../common/interface';
@@ -591,8 +596,7 @@ describe('ExternalToolUc', () => {
 	describe('getDatasheet', () => {
 		describe('when authorize user', () => {
 			const setupDatasheetData = () => {
-				const role: Role = roleFactory.buildWithId({ permissions: [Permission.TOOL_ADMIN] });
-				const user: User = userFactory.buildWithId({ roles: [role] });
+				const user: User = userFactory.buildWithId();
 
 				const toolId: string = new ObjectId().toHexString();
 
@@ -623,7 +627,10 @@ describe('ExternalToolUc', () => {
 
 				await uc.getDatasheet(user.id, toolId);
 
-				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.TOOL_ADMIN]);
+				expect(authorizationService.checkOneOfPermissions).toHaveBeenCalledWith(user, [
+					Permission.TOOL_ADMIN,
+					Permission.SCHOOL_TOOL_ADMIN,
+				]);
 			});
 		});
 

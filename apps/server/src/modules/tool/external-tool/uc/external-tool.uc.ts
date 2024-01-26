@@ -98,7 +98,8 @@ export class ExternalToolUc {
 
 	public async getDatasheet(userId: EntityId, externalToolId: EntityId): Promise<Buffer> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkAllPermissions(user, [Permission.TOOL_ADMIN]);
+		this.authorizationService.checkOneOfPermissions(user, [Permission.TOOL_ADMIN, Permission.SCHOOL_TOOL_ADMIN]);
+
 		const dataSheetData: ExternalToolDatasheetTemplateData =
 			await this.externalToolService.getExternalToolDatasheetTemplateData(
 				externalToolId,

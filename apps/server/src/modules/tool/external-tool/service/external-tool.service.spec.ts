@@ -8,15 +8,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { ContextExternalToolRepo, ExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
+import { LegacyLogger } from '@src/core/logger';
+import { User } from '@shared/domain/entity';
 import {
+	setupEntities,
+	userFactory,
+	externalToolDatasheetTemplateDataFactory,
 	externalToolFactory,
 	lti11ToolConfigFactory,
 	oauth2ToolConfigFactory,
-} from '@shared/testing/factory/domainobject/tool/external-tool.factory';
-import { LegacyLogger } from '@src/core/logger';
-import { User } from '@shared/domain/entity';
-import { setupEntities, userFactory } from '@shared/testing';
-import { externalToolDatasheetTemplateDataFactory } from '@shared/testing/factory/domainobject/tool/external-tool-datasheet-template-data.factory';
+} from '@shared/testing';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalTool, ExternalToolDatasheetTemplateData, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';

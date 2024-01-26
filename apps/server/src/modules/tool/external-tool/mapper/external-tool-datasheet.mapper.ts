@@ -70,7 +70,7 @@ export class ExternalToolDatasheetMapper {
 	private static mapToLimitedContexts(externalTool: ExternalTool): string[] {
 		const restrictToContexts: string[] = [];
 		if (externalTool.restrictToContexts?.includes(ToolContextType.COURSE)) {
-			restrictToContexts.push('Kurs ');
+			restrictToContexts.push('Kurs');
 		}
 		if (externalTool.restrictToContexts?.includes(ToolContextType.BOARD_ELEMENT)) {
 			restrictToContexts.push('Kurs-Board');
@@ -105,7 +105,6 @@ export class ExternalToolDatasheetMapper {
 
 	private static mapToProperties(parameter: CustomParameter): string {
 		const properties: ExternalToolParameterDatasheetTemplateProperty[] = [];
-		let propertiesString = '';
 		if (parameter.isOptional) {
 			properties.push(ExternalToolParameterDatasheetTemplateProperty.OPTIONAL);
 		}
@@ -114,12 +113,8 @@ export class ExternalToolDatasheetMapper {
 			properties.push(ExternalToolParameterDatasheetTemplateProperty.PROTECTED);
 		}
 
-		properties.forEach((property: ExternalToolParameterDatasheetTemplateProperty) => {
-			propertiesString += `${property}, `;
-		});
-
-		propertiesString = propertiesString.substring(0, propertiesString.length - 2);
-		return propertiesString;
+		const propertyString = properties.join(', ');
+		return propertyString;
 	}
 
 	private static mapToType(parameter: CustomParameter): string {

@@ -59,6 +59,14 @@ export class ExternalToolDatasheetTemplateDataFactory extends DoBaseFactory<
 		};
 		return this.params(params);
 	}
+
+	withOptionalParameters(): this {
+		const params: DeepPartial<ExternalToolDatasheetTemplateData> = {
+			isDeactivated: 'Das Tool ist deaktiviert',
+			restrictToContexts: ['Kurs', 'Kurs-Board'],
+		};
+		return this.params(params);
+	}
 }
 export const externalToolDatasheetTemplateDataFactory = ExternalToolDatasheetTemplateDataFactory.define(
 	ExternalToolDatasheetTemplateData,
@@ -70,7 +78,6 @@ export const externalToolDatasheetTemplateDataFactory = ExternalToolDatasheetTem
 			toolName: `external-tool-${sequence}`,
 			toolUrl: 'https://www.basic-baseUrl.com/',
 			toolType: ToolConfigType.BASIC,
-			parameters: [],
 		};
 	}
 );
