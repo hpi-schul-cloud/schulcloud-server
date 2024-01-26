@@ -168,7 +168,7 @@ describe('SchoolMikroOrmRepo', () => {
 	describe('getAllThatHaveSystems', () => {
 		describe('when no school has systems', () => {
 			const setup = async () => {
-				const entities = schoolFactory.buildList(2);
+				const entities = schoolEntityFactory.buildList(2);
 				await em.persistAndFlush(entities);
 				em.clear();
 
@@ -187,8 +187,8 @@ describe('SchoolMikroOrmRepo', () => {
 		describe('when some schools have systems', () => {
 			const setup = async () => {
 				const systemEntity = systemEntityFactory.build();
-				const schoolEntityWithSystem = schoolFactory.build({ systems: [systemEntity] });
-				const schoolEntityWithoutSystem = schoolFactory.build();
+				const schoolEntityWithSystem = schoolEntityFactory.build({ systems: [systemEntity] });
+				const schoolEntityWithoutSystem = schoolEntityFactory.build();
 				await em.persistAndFlush([systemEntity, schoolEntityWithSystem, schoolEntityWithoutSystem]);
 				em.clear();
 

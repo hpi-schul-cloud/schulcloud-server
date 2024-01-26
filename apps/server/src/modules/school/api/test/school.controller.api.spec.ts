@@ -269,7 +269,7 @@ describe('School Controller (API)', () => {
 
 		describe('when requested school is found', () => {
 			const setup = async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				await em.persistAndFlush(school);
 
 				return { schoolId: school.id };
@@ -312,8 +312,8 @@ describe('School Controller (API)', () => {
 		describe('when some schools have LDAP login systems', () => {
 			const setup = async () => {
 				const ldapLoginSystem = systemEntityFactory.build({ type: 'ldap', ldapConfig: { active: true } });
-				const schoolWithLdapLoginSystem = schoolFactory.build({ systems: [ldapLoginSystem] });
-				const schoolWithoutLdapLoginSystem = schoolFactory.build();
+				const schoolWithLdapLoginSystem = schoolEntityFactory.build({ systems: [ldapLoginSystem] });
+				const schoolWithoutLdapLoginSystem = schoolEntityFactory.build();
 				await em.persistAndFlush([schoolWithLdapLoginSystem, schoolWithoutLdapLoginSystem]);
 
 				const expectedResponse = [
