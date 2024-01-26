@@ -2,13 +2,7 @@ import { AccountDto, AccountSaveDto, AccountService } from '@modules/account';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserLoginMigrationService, UserMigrationService } from '@modules/user-login-migration';
-import {
-	BadRequestException,
-	ForbiddenException,
-	Inject,
-	Injectable,
-	InternalServerErrorException,
-} from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
@@ -25,7 +19,6 @@ import {
 	SchoolInUserMigrationEndLoggable,
 	SchoolInUserMigrationStartLoggable,
 	SchoolNotMigratedLoggableException,
-	UserMigrationIsNotEnabled,
 } from '../loggable';
 import { UserImportService } from '../service';
 import {
@@ -50,22 +43,11 @@ export class UserImportUc {
 		private readonly userRepo: UserRepo,
 		private readonly logger: Logger,
 		private readonly userImportService: UserImportService,
-		private readonly logger: Logger,
 		@Inject(UserImportFeatures) private readonly userImportFeatures: IUserImportFeatures,
 		private readonly userLoginMigrationService: UserLoginMigrationService,
 		private readonly userMigrationService: UserMigrationService
 	) {
 		this.logger.setContext(UserImportUc.name);
-	}
-
-	private checkFeatureEnabled(school: LegacySchoolDo): void {
-		const enabled = this.userImportFeatures.userMigrationEnabled;
-		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeature.LDAP_UNIVENTION_MIGRATION);
-
-		if (!enabled && !isLdapPilotSchool) {
-			this.logger.warning(new UserMigrationIsNotEnabled());
-			throw new InternalServerErrorException('User Migration not enabled');
-		}
 	}
 
 	/**
@@ -84,8 +66,6 @@ export class UserImportUc {
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 		this.userImportService.checkFeatureEnabled(school);
 
-		this.checkFeatureEnabled(school);
-
 		// TODO Change ImportUserRepo to DO to fix this workaround
 		const countedImportUsers = await this.importUserRepo.findImportUsers(currentUser.school, query, options);
 
@@ -103,7 +83,7 @@ export class UserImportUc {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
-		this.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabled(school);
 
 		const importUser = await this.importUserRepo.findById(importUserId);
 		const userMatch = await this.userRepo.findById(userMatchId, true);
@@ -130,7 +110,7 @@ export class UserImportUc {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
-		this.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabled(school);
 
 		const importUser = await this.importUserRepo.findById(importUserId);
 		// check same school
@@ -149,7 +129,7 @@ export class UserImportUc {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
-		this.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabled(school);
 
 		const importUser = await this.importUserRepo.findById(importUserId);
 
@@ -182,7 +162,7 @@ export class UserImportUc {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
-		this.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabled(school);
 
 		// TODO Change to UserService to fix this workaround
 		const unmatchedCountedUsers = await this.userRepo.findWithoutImportUser(currentUser.school, query, options);
@@ -194,7 +174,7 @@ export class UserImportUc {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
-		this.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabled(school);
 
 		const filters: IImportUserScope = { matches: [MatchCreatorScope.MANUAL, MatchCreatorScope.AUTO] };
 		// TODO batch/paginated import?
@@ -259,7 +239,7 @@ export class UserImportUc {
 		const currentUser: User = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
-		this.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabled(school);
 		if (useCentralLdap || useWithUserLoginMigration) {
 			this.checkSchoolNumber(school);
 		}
@@ -308,7 +288,7 @@ export class UserImportUc {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
-		this.checkFeatureEnabled(school);
+		this.userImportService.checkFeatureEnabled(school);
 
 		if (school.inUserMigration !== false || !school.inMaintenanceSince || !school.externalId) {
 			this.logger.warning(new MigrationMayNotBeCompleted(school.inUserMigration));

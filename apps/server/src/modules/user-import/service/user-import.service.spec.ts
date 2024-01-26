@@ -1,7 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { logger } from '@mikro-orm/nestjs';
 import { UserService } from '@modules/user';
+import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
@@ -16,8 +18,9 @@ import {
 	systemEntityFactory,
 	userFactory,
 } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
-import { UserMigrationIsNotEnabledLoggableException } from '../loggable';
+import { UserMigrationIsNotEnabled } from '../loggable';
 import { UserImportService } from './user-import.service';
 
 describe(UserImportService.name, () => {
@@ -28,10 +31,12 @@ describe(UserImportService.name, () => {
 	let importUserRepo: DeepMocked<ImportUserRepo>;
 	let legacySystemRepo: DeepMocked<LegacySystemRepo>;
 	let userService: DeepMocked<UserService>;
+	let logger: DeepMocked<Logger>;
 
 	const features: IUserImportFeatures = {
 		userMigrationSystemId: new ObjectId().toHexString(),
 		userMigrationEnabled: true,
+		instance: 'n21',
 	};
 
 	beforeAll(async () => {
@@ -57,6 +62,10 @@ describe(UserImportService.name, () => {
 					provide: UserImportFeatures,
 					useValue: features,
 				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 			],
 		}).compile();
 
@@ -65,6 +74,7 @@ describe(UserImportService.name, () => {
 		importUserRepo = module.get(ImportUserRepo);
 		legacySystemRepo = module.get(LegacySystemRepo);
 		userService = module.get(UserService);
+		logger = module.get(Logger);
 	});
 
 	afterAll(async () => {
@@ -173,112 +183,123 @@ describe(UserImportService.name, () => {
 			it('should do nothing', () => {
 				const { school } = setup();
 
-				expect(() => service.checkFeatureEnabled(school)).toThrow(UserMigrationIsNotEnabledLoggableException);
+				expect(() => service.checkFeatureEnabled(school)).toThrow(
+					new InternalServerErrorException('User Migration not enabled')
+				);
 			});
-		});
-	});
 
-	describe('matchUsers', () => {
-		describe('when all users have unique names', () => {
-			const setup = () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
-				const user1: User = userFactory.buildWithId({ firstName: 'First1', lastName: 'Last1' });
-				const user2: User = userFactory.buildWithId({ firstName: 'First2', lastName: 'Last2' });
-				const importUser1: ImportUser = importUserFactory.buildWithId({
-					school,
-					firstName: user1.firstName,
-					lastName: user1.lastName,
-				});
-				const importUser2: ImportUser = importUserFactory.buildWithId({
-					school,
-					firstName: user2.firstName,
-					lastName: user2.lastName,
-				});
+			it('should log a warning', () => {
+				const { school } = setup();
 
-				userService.findUserBySchoolAndName.mockResolvedValueOnce([user1]);
-				userService.findUserBySchoolAndName.mockResolvedValueOnce([user2]);
-
-				return {
-					user1,
-					user2,
-					importUser1,
-					importUser2,
-				};
-			};
-
-			it('should return all users as auto matched', async () => {
-				const { user1, user2, importUser1, importUser2 } = setup();
-
-				const result: ImportUser[] = await service.matchUsers([importUser1, importUser2]);
-
-				expect(result).toEqual([
-					{ ...importUser1, user: user1, matchedBy: MatchCreator.AUTO },
-					{ ...importUser2, user: user2, matchedBy: MatchCreator.AUTO },
-				]);
+				expect(() => service.checkFeatureEnabled(school)).toThrow(
+					new InternalServerErrorException('User Migration not enabled')
+				);
+				expect(logger.warning).toHaveBeenCalledWith(new UserMigrationIsNotEnabled());
 			});
 		});
 
-		describe('when the imported users have the same names', () => {
-			const setup = () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
-				const user1: User = userFactory.buildWithId({ firstName: 'First', lastName: 'Last' });
-				const importUser1: ImportUser = importUserFactory.buildWithId({
-					school,
-					firstName: user1.firstName,
-					lastName: user1.lastName,
-				});
-				const importUser2: ImportUser = importUserFactory.buildWithId({
-					school,
-					firstName: user1.firstName,
-					lastName: user1.lastName,
-				});
+		describe('matchUsers', () => {
+			describe('when all users have unique names', () => {
+				const setup = () => {
+					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+					const user1: User = userFactory.buildWithId({ firstName: 'First1', lastName: 'Last1' });
+					const user2: User = userFactory.buildWithId({ firstName: 'First2', lastName: 'Last2' });
+					const importUser1: ImportUser = importUserFactory.buildWithId({
+						school,
+						firstName: user1.firstName,
+						lastName: user1.lastName,
+					});
+					const importUser2: ImportUser = importUserFactory.buildWithId({
+						school,
+						firstName: user2.firstName,
+						lastName: user2.lastName,
+					});
 
-				userService.findUserBySchoolAndName.mockResolvedValueOnce([user1]);
-				userService.findUserBySchoolAndName.mockResolvedValueOnce([user1]);
+					userService.findUserBySchoolAndName.mockResolvedValueOnce([user1]);
+					userService.findUserBySchoolAndName.mockResolvedValueOnce([user2]);
 
-				return {
-					user1,
-					importUser1,
-					importUser2,
+					return {
+						user1,
+						user2,
+						importUser1,
+						importUser2,
+					};
 				};
-			};
 
-			it('should return the users without a match', async () => {
-				const { importUser1, importUser2 } = setup();
+				it('should return all users as auto matched', async () => {
+					const { user1, user2, importUser1, importUser2 } = setup();
 
-				const result: ImportUser[] = await service.matchUsers([importUser1, importUser2]);
+					const result: ImportUser[] = await service.matchUsers([importUser1, importUser2]);
 
-				expect(result).toEqual([importUser1, importUser2]);
+					expect(result).toEqual([
+						{ ...importUser1, user: user1, matchedBy: MatchCreator.AUTO },
+						{ ...importUser2, user: user2, matchedBy: MatchCreator.AUTO },
+					]);
+				});
 			});
-		});
 
-		describe('when existing users have the same names', () => {
-			const setup = () => {
-				const school: SchoolEntity = schoolEntityFactory.buildWithId();
-				const user1: User = userFactory.buildWithId({ firstName: 'First', lastName: 'Last' });
-				const user2: User = userFactory.buildWithId({ firstName: 'First', lastName: 'Last' });
-				const importUser1: ImportUser = importUserFactory.buildWithId({
-					school,
-					firstName: user1.firstName,
-					lastName: user1.lastName,
-				});
+			describe('when the imported users have the same names', () => {
+				const setup = () => {
+					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+					const user1: User = userFactory.buildWithId({ firstName: 'First', lastName: 'Last' });
+					const importUser1: ImportUser = importUserFactory.buildWithId({
+						school,
+						firstName: user1.firstName,
+						lastName: user1.lastName,
+					});
+					const importUser2: ImportUser = importUserFactory.buildWithId({
+						school,
+						firstName: user1.firstName,
+						lastName: user1.lastName,
+					});
 
-				userService.findUserBySchoolAndName.mockResolvedValueOnce([user1, user2]);
-				userService.findUserBySchoolAndName.mockResolvedValueOnce([user1, user2]);
+					userService.findUserBySchoolAndName.mockResolvedValueOnce([user1]);
+					userService.findUserBySchoolAndName.mockResolvedValueOnce([user1]);
 
-				return {
-					user1,
-					user2,
-					importUser1,
+					return {
+						user1,
+						importUser1,
+						importUser2,
+					};
 				};
-			};
 
-			it('should return the users without a match', async () => {
-				const { importUser1 } = setup();
+				it('should return the users without a match', async () => {
+					const { importUser1, importUser2 } = setup();
 
-				const result: ImportUser[] = await service.matchUsers([importUser1]);
+					const result: ImportUser[] = await service.matchUsers([importUser1, importUser2]);
 
-				expect(result).toEqual([importUser1]);
+					expect(result).toEqual([importUser1, importUser2]);
+				});
+			});
+
+			describe('when existing users have the same names', () => {
+				const setup = () => {
+					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+					const user1: User = userFactory.buildWithId({ firstName: 'First', lastName: 'Last' });
+					const user2: User = userFactory.buildWithId({ firstName: 'First', lastName: 'Last' });
+					const importUser1: ImportUser = importUserFactory.buildWithId({
+						school,
+						firstName: user1.firstName,
+						lastName: user1.lastName,
+					});
+
+					userService.findUserBySchoolAndName.mockResolvedValueOnce([user1, user2]);
+					userService.findUserBySchoolAndName.mockResolvedValueOnce([user1, user2]);
+
+					return {
+						user1,
+						user2,
+						importUser1,
+					};
+				};
+
+				it('should return the users without a match', async () => {
+					const { importUser1 } = setup();
+
+					const result: ImportUser[] = await service.matchUsers([importUser1]);
+
+					expect(result).toEqual([importUser1]);
+				});
 			});
 		});
 	});

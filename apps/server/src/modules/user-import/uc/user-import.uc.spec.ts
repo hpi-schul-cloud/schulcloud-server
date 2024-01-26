@@ -17,16 +17,16 @@ import {
 	federalStateFactory,
 	importUserFactory,
 	legacySchoolDoFactory,
-  schoolEntityFactory,
+	schoolEntityFactory,
 	setupEntities,
 	userFactory,
 	userLoginMigrationDOFactory,
 } from '@shared/testing';
 import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory';
-import { LoggerModule, Logger } from '@src/core/logger';
-import { UserImportService } from '../service';
+import { Logger } from '@src/core/logger';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import { SchoolNotMigratedLoggableException } from '../loggable';
+import { UserImportService } from '../service';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,
@@ -608,7 +608,7 @@ describe('[ImportUserModule]', () => {
 				describe('when migrating users', () => {
 					const setup = () => {
 						const system = systemEntityFactory.buildWithId();
-						const schoolEntity = schoolFactory.buildWithId();
+						const schoolEntity = schoolEntityFactory.buildWithId();
 						const user = userFactory.buildWithId({
 							school: schoolEntity,
 						});
