@@ -40,7 +40,7 @@ describe(News.name, () => {
 
 				news.removeUpdaterReference(updater.id);
 
-				expect(news).toEqual(undefined);
+				expect(news.updater).toEqual(undefined);
 			});
 		});
 	});
