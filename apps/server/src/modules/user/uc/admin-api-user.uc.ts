@@ -5,7 +5,6 @@ import { EntityId } from '@shared/domain/types';
 import { RoleService } from '@src/modules/role';
 import { AccountService } from '@src/modules/account';
 import { UserService } from '../service/user.service';
-import crypto from 'crypto';
 import { nanoid } from 'nanoid';
 
 @Injectable()

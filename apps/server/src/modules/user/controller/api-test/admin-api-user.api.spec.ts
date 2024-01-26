@@ -4,7 +4,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Account, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { schoolEntityFactory, TestApiClient, TestXApiKeyClient } from '@shared/testing';
-import { schoolFactory } from '@src/modules/school/testing';
 import { ServerTestModule } from '@src/modules/server';
 import { nanoid } from 'nanoid';
 import supertest from 'supertest';

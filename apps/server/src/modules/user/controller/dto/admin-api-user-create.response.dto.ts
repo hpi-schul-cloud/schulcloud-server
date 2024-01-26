@@ -1,10 +1,3 @@
-/* {
-	userId: user.id,
-	accountId: account.id,
-	username: account.username,
-	initialPassword: 'fixme',
-} */
-
 import { ApiProperty } from '@nestjs/swagger';
 
 export class AdminApiUserCreateResponse {
