@@ -62,7 +62,7 @@ export abstract class News extends BaseEntityWithTimestamps {
 	school!: SchoolEntity;
 
 	@ManyToOne('User', { fieldName: 'creatorId', nullable: true })
-	creator?: User | undefined;
+	creator?: User;
 
 	@ManyToOne('User', { fieldName: 'updaterId', nullable: true })
 	updater?: User;
@@ -72,6 +72,12 @@ export abstract class News extends BaseEntityWithTimestamps {
 	public removeCreatorReference(creatorId: EntityId): void {
 		if (creatorId === this.creator?.id) {
 			this.creator = undefined;
+		}
+	}
+
+	public removeUpdaterReference(updaterId: EntityId): void {
+		if (updaterId === this.updater?.id) {
+			this.updater = undefined;
 		}
 	}
 

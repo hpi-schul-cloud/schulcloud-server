@@ -310,14 +310,8 @@ export class DeletionRequestUc {
 	}
 
 	private async removeUsersDataFromNews(deletionRequest: DeletionRequest) {
-		const newsesModifiedByRemoveCreator = await this.newsUc.deleteCreatorReference(deletionRequest.targetRefId);
+		const newsesModified = await this.newsUc.deleteCreatorOrUpdaterReference(deletionRequest.targetRefId);
 
-		await this.logDeletion(
-			deletionRequest,
-			DomainModel.NEWS,
-			DeletionOperationModel.UPDATE,
-			newsesModifiedByRemoveCreator,
-			0
-		);
+		await this.logDeletion(deletionRequest, DomainModel.NEWS, DeletionOperationModel.UPDATE, newsesModified, 0);
 	}
 }

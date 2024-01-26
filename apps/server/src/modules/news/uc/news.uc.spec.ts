@@ -111,7 +111,7 @@ describe('NewsUc', () => {
 							}
 							throw new NotFoundException();
 						},
-						findByCreatorId(creatorId) {
+						findByCreatorOrUpdaterId(creatorId) {
 							if (creatorId === creator.id) {
 								return [[exampleNews], 1];
 							}
@@ -346,14 +346,14 @@ describe('NewsUc', () => {
 
 	describe('deleteCreatorReference', () => {
 		it('should successfully delete creator reference from news', async () => {
-			const result = await service.deleteCreatorReference(creator.id);
+			const result = await service.deleteCreatorOrUpdaterReference(creator.id);
 			expect(exampleNews.creator).toBeUndefined();
 			expect(result).toBe(1);
 		});
 
 		it('should return 0 if news not found', async () => {
 			const anotherUser = new ObjectId().toHexString();
-			const result = await service.deleteCreatorReference(anotherUser);
+			const result = await service.deleteCreatorOrUpdaterReference(anotherUser);
 			expect(result).toBe(0);
 		});
 	});

@@ -75,9 +75,10 @@ export class NewsRepo extends BaseRepo<News> {
 		return [newsEntities, count];
 	}
 
-	async findByCreatorId(creatorId: EntityId): Promise<Counted<News[]>> {
-		const scope = new NewsScope();
-		scope.byCreator(creatorId);
+	async findByCreatorOrUpdaterId(userId: EntityId): Promise<Counted<News[]>> {
+		const scope = new NewsScope('$or');
+		scope.byCreator(userId);
+		scope.byUpdater(userId);
 
 		const countedNewsList = await this.findNewsAndCount(scope.query);
 		return countedNewsList;

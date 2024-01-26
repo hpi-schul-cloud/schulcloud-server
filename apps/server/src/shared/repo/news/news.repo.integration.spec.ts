@@ -307,27 +307,32 @@ describe('NewsRepo', () => {
 
 	describe('findByCreatorId', () => {
 		const setup = async () => {
-			const creator = userFactory.buildWithId();
+			const user = userFactory.buildWithId();
 			const news = teamNewsFactory.build({
-				creator,
+				creator: user,
+			});
+			const news2 = teamNewsFactory.build({
+				updater: user,
 			});
 
-			await em.persistAndFlush(news);
+			await em.persistAndFlush([news, news2]);
 			em.clear();
 
-			return { news, creator };
+			return { news, news2, user };
 		};
 		it('should find a news entity by creatorId', async () => {
-			const { news, creator } = await setup();
+			const { news, user, news2 } = await setup();
 
-			const result = await repo.findByCreatorId(creator.id);
+			const result = await repo.findByCreatorOrUpdaterId(user.id);
 			expect(result).toBeDefined();
 			expect(result[0][0].id).toEqual(news.id);
+			expect(result[0][0].id).toEqual(news2.id);
+			expect(result[0].length).toEqual(2);
 		});
 
 		it('should throw an exception if not found', async () => {
 			const failNewsId = new ObjectId().toString();
-			const result = await repo.findByCreatorId(failNewsId);
+			const result = await repo.findByCreatorOrUpdaterId(failNewsId);
 			expect(result[1]).toEqual(0);
 		});
 	});

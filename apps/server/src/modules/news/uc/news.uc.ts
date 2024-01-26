@@ -157,17 +157,17 @@ export class NewsUc {
 		return id;
 	}
 
-	public async deleteCreatorReference(creatorId: EntityId): Promise<number> {
+	public async deleteCreatorOrUpdaterReference(userId: EntityId): Promise<number> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from News',
 				DomainModel.NEWS,
-				creatorId,
+				userId,
 				StatusModel.PENDING
 			)
 		);
 
-		const news = await this.newsRepo.findByCreatorId(creatorId);
+		const news = await this.newsRepo.findByCreatorOrUpdaterId(userId);
 
 		const newsCount = news[1];
 		if (newsCount === 0) {
@@ -175,7 +175,8 @@ export class NewsUc {
 		}
 
 		news[0].forEach((newsEntity) => {
-			newsEntity.removeCreatorReference(creatorId);
+			newsEntity.removeCreatorReference(userId);
+			newsEntity.removeUpdaterReference(userId);
 		});
 
 		await this.newsRepo.save(news[0]);
@@ -184,7 +185,7 @@ export class NewsUc {
 			new DataDeletionDomainOperationLoggable(
 				'Successfully removed user data from News',
 				DomainModel.NEWS,
-				creatorId,
+				userId,
 				StatusModel.FINISHED,
 				newsCount,
 				0
