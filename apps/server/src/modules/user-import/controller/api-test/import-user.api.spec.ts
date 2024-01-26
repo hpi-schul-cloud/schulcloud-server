@@ -1,3 +1,4 @@
+import { SanisResponse, schulconnexResponseFactory } from '@infra/schulconnex-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import {
@@ -27,12 +28,15 @@ import {
 	cleanupCollections,
 	importUserFactory,
 	roleFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	systemEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { IUserImportFeatures, UserImportFeatures } from '../../config';
 
 describe('ImportUser Controller (API)', () => {
@@ -41,6 +45,7 @@ describe('ImportUser Controller (API)', () => {
 
 	let testApiClient: TestApiClient;
 	let userImportFeatures: IUserImportFeatures;
+	let axiosMock: MockAdapter;
 
 	const authenticatedUser = async (
 		permissions: Permission[] = [],
@@ -48,7 +53,7 @@ describe('ImportUser Controller (API)', () => {
 		schoolHasExternalId = true
 	) => {
 		const system = systemEntityFactory.buildWithId();
-		const school = schoolFactory.build({
+		const school = schoolEntityFactory.build({
 			officialSchoolNumber: 'foo',
 			features,
 			systems: [system],
@@ -81,6 +86,7 @@ describe('ImportUser Controller (API)', () => {
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'user/import');
 		userImportFeatures = app.get(UserImportFeatures);
+		axiosMock = new MockAdapter(axios);
 	});
 
 	afterAll(async () => {
@@ -413,7 +419,7 @@ describe('ImportUser Controller (API)', () => {
 				describe('When set a match on import user', () => {
 					it('should fail for different school of match- and import-user', async () => {
 						const importUser = importUserFactory.build({ school });
-						const otherSchool = schoolFactory.build();
+						const otherSchool = schoolEntityFactory.build();
 						const userMatch = userFactory.build({ school: otherSchool });
 						await em.persistAndFlush([userMatch, importUser]);
 						em.clear();
@@ -422,7 +428,7 @@ describe('ImportUser Controller (API)', () => {
 					});
 
 					it('should fail for different school of current-/authenticated- and import-user', async () => {
-						const otherSchool = schoolFactory.build();
+						const otherSchool = schoolEntityFactory.build();
 						const importUser = importUserFactory.build({ school: otherSchool });
 						const userMatch = userFactory.build({ school: otherSchool });
 						await em.persistAndFlush([userMatch, importUser]);
@@ -448,7 +454,7 @@ describe('ImportUser Controller (API)', () => {
 			describe('[removeMatch]', () => {
 				describe('When remove a match on import user', () => {
 					it('should fail for different school of current- and import-user', async () => {
-						const otherSchool = schoolFactory.build();
+						const otherSchool = schoolEntityFactory.build();
 						const importUser = importUserFactory.build({ school: otherSchool });
 						await em.persistAndFlush(importUser);
 						em.clear();
@@ -459,7 +465,7 @@ describe('ImportUser Controller (API)', () => {
 			describe('[updateFlag]', () => {
 				describe('When change flag on import user', () => {
 					it('should fail for different school of current- and import-user', async () => {
-						const otherSchool = schoolFactory.build();
+						const otherSchool = schoolEntityFactory.build();
 						const importUser = importUserFactory.build({ school: otherSchool });
 						await em.persistAndFlush(importUser);
 						em.clear();
@@ -892,8 +898,8 @@ describe('ImportUser Controller (API)', () => {
 								match: [FilterMatchType.AUTO, FilterMatchType.MANUAL],
 							};
 
-							const response = await testApiClient.get().query(query).expect(HttpStatus.OK);
 
+							const response = await testApiClient.get().query(query).expect(HttpStatus.OK);
 							const result = response.body as ImportUserListResponse;
 							expect(result.data.some((iu) => iu.match?.matchedBy === MatchType.MANUAL)).toEqual(true);
 							expect(result.data.some((iu) => iu.match?.matchedBy === MatchType.AUTO)).toEqual(true);
@@ -1093,7 +1099,7 @@ describe('ImportUser Controller (API)', () => {
 			describe('[endSchoolMaintenance]', () => {
 				describe('POST user/import/startSync', () => {
 					it('should remove inMaintenanceSince from school', async () => {
-						const school = schoolFactory.buildWithId({
+						const school = schoolEntityFactory.buildWithId({
 							externalId: 'foo',
 							inMaintenanceSince: new Date(),
 							inUserMigration: false,
@@ -1117,6 +1123,102 @@ describe('ImportUser Controller (API)', () => {
 
 						await testApiClient.post('startSync').expect(HttpStatus.CREATED);
 					});
+				});
+			});
+		});
+
+		describe('[POST] populateImportUsers', () => {
+			describe('when user is not authenticated', () => {
+				const setup = () => {
+					const notLoggedInClient = new TestApiClient(app, 'user/import');
+
+					return { notLoggedInClient };
+				};
+
+				it('should return unauthorized', async () => {
+					const { notLoggedInClient } = setup();
+
+					await notLoggedInClient.post('populate-import-users').send().expect(HttpStatus.UNAUTHORIZED);
+				});
+			});
+
+			describe('when migration is not activated', () => {
+				const setup = async () => {
+					const { account } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
+					const loggedInClient = await testApiClient.login(account);
+
+					userImportFeatures.userMigrationEnabled = false;
+
+					return { loggedInClient };
+				};
+
+				it('should return with status forbidden', async () => {
+					const { loggedInClient } = await setup();
+
+					const response = await loggedInClient.post('populate-import-users').send();
+
+					expect(response.body).toEqual({
+						type: 'USER_MIGRATION_IS_NOT_ENABLED',
+						title: 'User Migration Is Not Enabled',
+						message: 'Feature flag of user migration may be disable or the school is not an LDAP pilot',
+						code: HttpStatus.FORBIDDEN,
+					});
+				});
+			});
+
+			describe('when users school has no external id', () => {
+				const setup = async () => {
+					const { account, school, system } = await authenticatedUser(
+						[Permission.SCHOOL_IMPORT_USERS_MIGRATE],
+						[],
+						false
+					);
+					const loggedInClient = await testApiClient.login(account);
+					userImportFeatures.userMigrationSystemId = system.id;
+
+					school.externalId = undefined;
+
+					return { loggedInClient };
+				};
+
+				it('should return with status bad request', async () => {
+					const { loggedInClient } = await setup();
+
+					const response = await loggedInClient.post('populate-import-users').send();
+
+					expect(response.body).toEqual({
+						type: 'USER_IMPORT_SCHOOL_EXTERNAL_ID_MISSING',
+						title: 'User Import School External Id Missing',
+						message: 'Bad Request',
+						code: HttpStatus.BAD_REQUEST,
+					});
+				});
+			});
+
+			describe('when users were populated successful', () => {
+				const setup = async () => {
+					const { account, school, system } = await authenticatedUser([Permission.SCHOOL_IMPORT_USERS_MIGRATE]);
+					const loggedInClient = await testApiClient.login(account);
+
+					userImportFeatures.userMigrationEnabled = true;
+					userImportFeatures.userMigrationSystemId = system.id;
+
+					axiosMock.onPost(/(.*)\/token/).reply<OauthTokenResponse>(HttpStatus.OK, {
+						id_token: 'idToken',
+						refresh_token: 'refreshToken',
+						access_token: 'accessToken',
+					});
+
+					const schulconnexResponse: SanisResponse = schulconnexResponseFactory.build();
+					axiosMock.onGet(/(.*)\/personen-info/).reply(HttpStatus.OK, [schulconnexResponse]);
+
+					return { loggedInClient, account, school };
+				};
+
+				it('should return with status created', async () => {
+					const { loggedInClient } = await setup();
+
+					await loggedInClient.post('populate-import-users').send().expect(HttpStatus.CREATED);
 				});
 			});
 		});

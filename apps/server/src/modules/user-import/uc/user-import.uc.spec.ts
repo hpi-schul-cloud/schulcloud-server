@@ -17,13 +17,14 @@ import {
 	federalStateFactory,
 	importUserFactory,
 	legacySchoolDoFactory,
-	schoolFactory,
+  schoolEntityFactory,
 	setupEntities,
 	userFactory,
 	userLoginMigrationDOFactory,
 } from '@shared/testing';
 import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory';
-import { Logger } from '@src/core/logger';
+import { LoggerModule, Logger } from '@src/core/logger';
+import { UserImportService } from '../service';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import { SchoolNotMigratedLoggableException } from '../loggable';
 import {
@@ -43,6 +44,7 @@ describe('[ImportUserModule]', () => {
 		let systemRepo: DeepMocked<LegacySystemRepo>;
 		let userRepo: DeepMocked<UserRepo>;
 		let authorizationService: DeepMocked<AuthorizationService>;
+		let userImportService: DeepMocked<UserImportService>;
 		let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
 		let userMigrationService: DeepMocked<UserMigrationService>;
 
@@ -79,6 +81,10 @@ describe('[ImportUserModule]', () => {
 						useValue: createMock<AuthorizationService>(),
 					},
 					{
+						provide: UserImportService,
+						useValue: createMock<UserImportService>(),
+					},
+					{
 						provide: UserLoginMigrationService,
 						useValue: createMock<UserLoginMigrationService>(),
 					},
@@ -104,6 +110,7 @@ describe('[ImportUserModule]', () => {
 			systemRepo = module.get(LegacySystemRepo);
 			userRepo = module.get(UserRepo);
 			authorizationService = module.get(AuthorizationService);
+			userImportService = module.get(UserImportService);
 			userImportFeatures = module.get(UserImportFeatures);
 			userLoginMigrationService = module.get(UserLoginMigrationService);
 			userMigrationService = module.get(UserMigrationService);
@@ -195,7 +202,7 @@ describe('[ImportUserModule]', () => {
 		describe('[setMatch]', () => {
 			describe('When not having same school for current user, user match and importuser', () => {
 				it('should not change match', async () => {
-					const school = schoolFactory.buildWithId();
+					const school = schoolEntityFactory.buildWithId();
 					const user = userFactory.buildWithId();
 					const importUser = importUserFactory.buildWithId({ school });
 					const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
@@ -221,7 +228,7 @@ describe('[ImportUserModule]', () => {
 			describe('When having same school for current user, user-match and importuser', () => {
 				describe('When not having a user already assigned as match', () => {
 					it('should set user as new match', async () => {
-						const school = schoolFactory.buildWithId();
+						const school = schoolEntityFactory.buildWithId();
 						const currentUser = userFactory.buildWithId({ school });
 						const usermatch = userFactory.buildWithId({ school });
 						const importUser = importUserFactory.buildWithId({ school });
@@ -262,7 +269,7 @@ describe('[ImportUserModule]', () => {
 
 				describe('When having a user already assigned as match', () => {
 					it('should not set user as new match twice', async () => {
-						const school = schoolFactory.buildWithId();
+						const school = schoolEntityFactory.buildWithId();
 						const currentUser = userFactory.buildWithId({ school });
 						const usermatch = userFactory.buildWithId({ school });
 						const importUser = importUserFactory.buildWithId({ school });
@@ -311,7 +318,7 @@ describe('[ImportUserModule]', () => {
 			describe('When having permission Permission.SCHOOL_IMPORT_USERS_UPDATE', () => {
 				describe('When not having same school for user and importuser', () => {
 					it('should not change flag', async () => {
-						const school = schoolFactory.buildWithId();
+						const school = schoolEntityFactory.buildWithId();
 						const user = userFactory.buildWithId();
 						const importUser = importUserFactory.buildWithId({ school });
 						const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
@@ -334,7 +341,7 @@ describe('[ImportUserModule]', () => {
 				});
 				describe('When having same school for user and importuser', () => {
 					it('should enable flag', async () => {
-						const school = schoolFactory.buildWithId();
+						const school = schoolEntityFactory.buildWithId();
 						const user = userFactory.buildWithId({ school });
 						const importUser = importUserFactory.buildWithId({ school });
 						const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
@@ -360,7 +367,7 @@ describe('[ImportUserModule]', () => {
 						importUserSaveSpy.mockRestore();
 					});
 					it('should disable flag', async () => {
-						const school = schoolFactory.buildWithId();
+						const school = schoolEntityFactory.buildWithId();
 						const user = userFactory.buildWithId({ school });
 						const importUser = importUserFactory.buildWithId({ school });
 						const userRepoByIdSpy = jest.spyOn(userRepo, 'findById').mockResolvedValue(user);
@@ -393,7 +400,7 @@ describe('[ImportUserModule]', () => {
 			describe('When having permission Permission.SCHOOL_IMPORT_USERS_UPDATE', () => {
 				describe('When having same school for user and importuser', () => {
 					it('should revoke match', async () => {
-						const school = schoolFactory.buildWithId();
+						const school = schoolEntityFactory.buildWithId();
 						const user = userFactory.buildWithId({ school });
 						const importUser = importUserFactory.matched(MatchCreator.AUTO, user).buildWithId({ school });
 						const schoolServiceSpy = jest
@@ -425,7 +432,7 @@ describe('[ImportUserModule]', () => {
 				});
 				describe('When not having same school for user and importuser', () => {
 					it('should not revoke match', async () => {
-						const school = schoolFactory.buildWithId();
+						const school = schoolEntityFactory.buildWithId();
 						const user = userFactory.buildWithId();
 						const usermatch = userFactory.buildWithId({ school });
 						const importUser = importUserFactory.matched(MatchCreator.AUTO, usermatch).buildWithId({ school });
@@ -476,7 +483,7 @@ describe('[ImportUserModule]', () => {
 			let accountServiceFindByUserIdSpy: jest.SpyInstance;
 			beforeEach(() => {
 				system = systemEntityFactory.buildWithId();
-				school = schoolFactory.buildWithId({ systems: [system] });
+				school = schoolEntityFactory.buildWithId({ systems: [system] });
 				school.externalId = 'foo';
 				school.inMaintenanceSince = new Date();
 				school.inUserMigration = true;
@@ -679,7 +686,7 @@ describe('[ImportUserModule]', () => {
 
 			beforeEach(() => {
 				system = systemEntityFactory.buildWithId({ ldapConfig: {} });
-				school = schoolFactory.buildWithId();
+				school = schoolEntityFactory.buildWithId();
 				school.officialSchoolNumber = 'foo';
 				currentUser = userFactory.buildWithId({ school });
 				userRepoByIdSpy = userRepo.findById.mockResolvedValueOnce(currentUser);
@@ -718,7 +725,10 @@ describe('[ImportUserModule]', () => {
 				schoolServiceSaveSpy = schoolService.save.mockImplementation((schoolDo: LegacySchoolDo) =>
 					Promise.resolve(schoolDo)
 				);
+				userImportService.getMigrationSystem.mockResolvedValueOnce(system);
+
 				await uc.startSchoolInUserMigration(currentUser.id);
+
 				const schoolParams: LegacySchoolDo = { ...createMockSchoolDo(school) };
 				schoolParams.inUserMigration = true;
 				schoolParams.externalId = 'foo';
@@ -759,7 +769,7 @@ describe('[ImportUserModule]', () => {
 
 			it('should throw if school already has a persisted LDAP ', async () => {
 				dateSpy.mockRestore();
-				school = schoolFactory.buildWithId({ systems: [system] });
+				school = schoolEntityFactory.buildWithId({ systems: [system] });
 				schoolServiceSpy = schoolService.getSchoolById.mockResolvedValueOnce(createMockSchoolDo(school));
 				const result = uc.startSchoolInUserMigration(currentUser.id, false);
 				await expect(result).rejects.toThrowError(LdapAlreadyPersistedException);
@@ -902,7 +912,7 @@ describe('[ImportUserModule]', () => {
 			let schoolServiceSaveSpy: jest.SpyInstance;
 			let schoolServiceSpy: jest.SpyInstance;
 			beforeEach(() => {
-				school = schoolFactory.buildWithId();
+				school = schoolEntityFactory.buildWithId();
 				school.externalId = 'foo';
 				school.inMaintenanceSince = new Date();
 				school.inUserMigration = false;

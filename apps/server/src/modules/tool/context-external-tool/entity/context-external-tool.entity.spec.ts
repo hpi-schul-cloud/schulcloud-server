@@ -1,8 +1,8 @@
 import {
 	contextExternalToolEntityFactory,
 	externalToolEntityFactory,
+	schoolEntityFactory,
 	schoolExternalToolEntityFactory,
-	schoolFactory,
 	setupEntities,
 } from '@shared/testing';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '../../common/enum';
@@ -10,8 +10,8 @@ import { CustomParameterLocation, CustomParameterScope, CustomParameterType, Too
 import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,
-	ExternalToolEntity,
 	ExternalToolConfigEntity,
+	ExternalToolEntity,
 } from '../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../school-external-tool/entity';
 import { ContextExternalToolEntity } from './context-external-tool.entity';
@@ -57,7 +57,7 @@ describe('ExternalToolEntity', () => {
 			});
 			const schoolTool: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 				tool: externalToolEntity,
-				school: schoolFactory.buildWithId(),
+				school: schoolEntityFactory.buildWithId(),
 				schoolParameters: [],
 				toolVersion: 1,
 			});

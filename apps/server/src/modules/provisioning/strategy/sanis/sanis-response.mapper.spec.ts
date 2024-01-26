@@ -4,7 +4,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { Logger } from '@src/core/logger';
 import { UUID } from 'bson';
-import { ExternalGroupDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
 import {
 	SanisGroupRole,
 	SanisGroupType,
@@ -13,7 +12,8 @@ import {
 	SanisResponse,
 	SanisRole,
 	SanisSonstigeGruppenzugehoerigeResponse,
-} from './response';
+} from '@infra/schulconnex-client';
+import { ExternalGroupDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
 import { SanisResponseMapper } from './sanis-response.mapper';
 
 describe('SanisResponseMapper', () => {

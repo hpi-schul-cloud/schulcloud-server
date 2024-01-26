@@ -5,7 +5,7 @@ import {
 	cleanupCollections,
 	countyEmbeddableFactory,
 	federalStateFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	schoolYearFactory,
 	systemEntityFactory,
 	TestApiClient,
@@ -97,7 +97,7 @@ describe('School Controller (API)', () => {
 
 		describe('when user is not in requested school', () => {
 			const setup = async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
 				await em.persistAndFlush([school, studentAccount, studentUser]);
@@ -124,7 +124,7 @@ describe('School Controller (API)', () => {
 				const federalState = federalStateFactory.build();
 				const county = countyEmbeddableFactory.build();
 				const systems = systemEntityFactory.buildList(3);
-				const school = schoolFactory.build({ currentYear, federalState, systems, county });
+				const school = schoolEntityFactory.build({ currentYear, federalState, systems, county });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 
 				await em.persistAndFlush([...schoolYears, federalState, school, studentAccount, studentUser]);
@@ -207,7 +207,7 @@ describe('School Controller (API)', () => {
 
 		describe('when a user is logged in', () => {
 			const setup = async () => {
-				const schools = schoolFactory.buildList(3);
+				const schools = schoolEntityFactory.buildList(3);
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				await em.persistAndFlush([...schools, studentAccount, studentUser]);
 

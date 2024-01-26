@@ -14,7 +14,7 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
 import { ImportUser, MatchCreator, SystemEntity, User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
-import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch, SchoolFeature } from '@shared/domain/types';
+import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
@@ -27,6 +27,7 @@ import {
 	SchoolNotMigratedLoggableException,
 	UserMigrationIsNotEnabled,
 } from '../loggable';
+import { UserImportService } from '../service';
 import {
 	LdapAlreadyPersistedException,
 	MigrationAlreadyActivatedException,
@@ -47,6 +48,8 @@ export class UserImportUc {
 		private readonly schoolService: LegacySchoolService,
 		private readonly systemRepo: LegacySystemRepo,
 		private readonly userRepo: UserRepo,
+		private readonly logger: Logger,
+		private readonly userImportService: UserImportService,
 		private readonly logger: Logger,
 		@Inject(UserImportFeatures) private readonly userImportFeatures: IUserImportFeatures,
 		private readonly userLoginMigrationService: UserLoginMigrationService,
@@ -72,13 +75,14 @@ export class UserImportUc {
 	 * @param options
 	 * @returns
 	 */
-	async findAllImportUsers(
+	public async findAllImportUsers(
 		currentUserId: EntityId,
 		query: IImportUserScope,
 		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_VIEW);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
+		this.userImportService.checkFeatureEnabled(school);
 
 		this.checkFeatureEnabled(school);
 
@@ -95,7 +99,7 @@ export class UserImportUc {
 	 * @param userMatchId
 	 * @returns importuser and matched user
 	 */
-	async setMatch(currentUserId: EntityId, importUserId: EntityId, userMatchId: EntityId): Promise<ImportUser> {
+	public async setMatch(currentUserId: EntityId, importUserId: EntityId, userMatchId: EntityId): Promise<ImportUser> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
@@ -122,7 +126,7 @@ export class UserImportUc {
 		return importUser;
 	}
 
-	async removeMatch(currentUserId: EntityId, importUserId: EntityId): Promise<ImportUser> {
+	public async removeMatch(currentUserId: EntityId, importUserId: EntityId): Promise<ImportUser> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
@@ -141,7 +145,7 @@ export class UserImportUc {
 		return importUser;
 	}
 
-	async updateFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean): Promise<ImportUser> {
+	public async updateFlag(currentUserId: EntityId, importUserId: EntityId, flagged: boolean): Promise<ImportUser> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_UPDATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 
@@ -170,7 +174,7 @@ export class UserImportUc {
 	 * @param options
 	 * @returns
 	 */
-	async findAllUnmatchedUsers(
+	public async findAllUnmatchedUsers(
 		currentUserId: EntityId,
 		query: NameMatch,
 		options?: IFindOptions<User>
@@ -186,7 +190,7 @@ export class UserImportUc {
 		return unmatchedCountedUsers;
 	}
 
-	async saveAllUsersMatches(currentUserId: EntityId): Promise<void> {
+	public async saveAllUsersMatches(currentUserId: EntityId): Promise<void> {
 		const currentUser = await this.getCurrentUser(currentUserId, Permission.SCHOOL_IMPORT_USERS_MIGRATE);
 		const school: LegacySchoolDo = await this.schoolService.getSchoolById(currentUser.school.id);
 

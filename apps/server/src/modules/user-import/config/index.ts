@@ -1,1 +1,1 @@
-export { IUserImportFeatures, UserImportConfiguration, UserImportFeatures } from './user-import-config';
+export { UserImportFeatures, UserImportConfiguration, IUserImportFeatures } from './user-import-config';
