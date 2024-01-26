@@ -1,7 +1,6 @@
 import { PdfService } from '@infra/pdf-generator/pdf.service';
 import { AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
-import { PDFService } from '@pyxlab/nestjs-pdf';
 import { Page } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
@@ -20,7 +19,6 @@ export class ExternalToolUc {
 		private readonly toolValidationService: ExternalToolValidationService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
 		private readonly commonToolMetadataService: CommonToolMetadataService,
-		private readonly pdfService2: PDFService,
 		private readonly pdfService: PdfService
 	) {}
 

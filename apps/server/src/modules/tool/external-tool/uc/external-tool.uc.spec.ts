@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { PdfService } from '@infra/pdf-generator';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ICurrentUser } from '@modules/authentication';
 import { Action, AuthorizationService } from '@modules/authorization';
@@ -8,14 +9,13 @@ import { Page } from '@shared/domain/domainobject/page';
 import { Role, User } from '@shared/domain/entity';
 import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
 import {
-	roleFactory,
-	setupEntities,
-	userFactory,
 	externalToolDatasheetTemplateDataFactory,
 	externalToolFactory,
 	oauth2ToolConfigFactory,
+	roleFactory,
+	setupEntities,
+	userFactory,
 } from '@shared/testing';
-import { PDFService } from '@pyxlab/nestjs-pdf';
 import { of } from 'rxjs';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
@@ -23,6 +23,7 @@ import { ExternalTool, ExternalToolDatasheetTemplateData, ExternalToolMetadata, 
 import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolUpdate } from './dto';
 import { ExternalToolUc } from './external-tool.uc';
+import any = jasmine.any;
 
 describe('ExternalToolUc', () => {
 	let module: TestingModule;
@@ -33,7 +34,7 @@ describe('ExternalToolUc', () => {
 	let toolValidationService: DeepMocked<ExternalToolValidationService>;
 	let logoService: DeepMocked<ExternalToolLogoService>;
 	let commonToolMetadataService: DeepMocked<CommonToolMetadataService>;
-	let pdfService: DeepMocked<PDFService>;
+	let pdfService: DeepMocked<PdfService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -62,8 +63,8 @@ describe('ExternalToolUc', () => {
 					useValue: createMock<CommonToolMetadataService>(),
 				},
 				{
-					provide: PDFService,
-					useValue: createMock<PDFService>(),
+					provide: PdfService,
+					useValue: createMock<PdfService>(),
 				},
 			],
 		}).compile();
@@ -74,7 +75,7 @@ describe('ExternalToolUc', () => {
 		toolValidationService = module.get(ExternalToolValidationService);
 		logoService = module.get(ExternalToolLogoService);
 		commonToolMetadataService = module.get(CommonToolMetadataService);
-		pdfService = module.get(PDFService);
+		pdfService = module.get(PdfService);
 	});
 
 	afterAll(async () => {
@@ -606,7 +607,7 @@ describe('ExternalToolUc', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				externalToolService.getExternalToolDatasheetTemplateData.mockResolvedValue(datasheetData);
-				pdfService.toBuffer.mockReturnValueOnce(of(Buffer.from('mockData')));
+				pdfService.generatePdfFromTemplate.mockResolvedValueOnce(Buffer.from('mockData'));
 
 				return {
 					user,
@@ -667,7 +668,7 @@ describe('ExternalToolUc', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				externalToolService.getExternalToolDatasheetTemplateData.mockResolvedValue(datasheetData);
-				pdfService.toBuffer.mockReturnValueOnce(of(Buffer.from('mockData')));
+				pdfService.generatePdfFromTemplate.mockResolvedValueOnce(Buffer.from('mockData'));
 
 				return {
 					user,
@@ -693,7 +694,9 @@ describe('ExternalToolUc', () => {
 
 				await uc.getDatasheet(user.id, toolId);
 
-				expect(pdfService.toBuffer).toHaveBeenCalledWith('ExternalToolDatasheet', { locals: datasheetData });
+				expect(pdfService.generatePdfFromTemplate).toHaveBeenCalledWith(any, {
+					locals: datasheetData,
+				});
 			});
 		});
 	});
