@@ -6,7 +6,7 @@ type EmptyResultQueryType = typeof EmptyResultQuery;
 type ScopeOperator = '$and' | '$or';
 
 export class Scope<T> {
-	private _queries: FilterQuery<T | EmptyResultQueryType>[] = [];
+	private _queries: (FilterQuery<T> | EmptyResultQueryType)[] = [];
 
 	private _operator: ScopeOperator;
 
@@ -29,8 +29,6 @@ export class Scope<T> {
 	}
 
 	addQuery(query: FilterQuery<T> | EmptyResultQueryType): void {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
 		this._queries.push(query);
 	}
 
