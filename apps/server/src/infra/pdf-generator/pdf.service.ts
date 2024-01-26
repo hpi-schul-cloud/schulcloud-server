@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import * as mustache from 'mustache';
-import { Browser, Page } from 'puppeteer';
-import * as puppeteer from 'puppeteer';
+import puppeteer, { Browser, Page } from 'puppeteer';
 
 @Injectable()
 export class PdfService {

@@ -30,6 +30,7 @@ COPY apps /schulcloud-server/apps
 COPY --from=git /app/serverversion /schulcloud-server/apps/server/static-assets
 COPY scripts/ldapSync.sh /schulcloud-server/scripts/
 RUN npm run build
+RUN npx puppeteer browsers install chrome
 
 ENV NODE_ENV=production
 ENV NO_COLOR="true"
