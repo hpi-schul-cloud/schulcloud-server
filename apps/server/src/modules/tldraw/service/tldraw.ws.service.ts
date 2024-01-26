@@ -1,11 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import WebSocket from 'ws';
 import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
 import { encoding, decoding, map } from 'lib0';
 import { readSyncMessage, writeSyncStep1, writeUpdate } from 'y-protocols/sync';
-import { firstValueFrom } from 'rxjs';
-import { HttpService } from '@nestjs/axios';
+import { encodeStateAsUpdate } from 'yjs';
 import { Persitence, WSConnectionState, WSMessageType } from '../types';
 import { TldrawConfig } from '../config';
 import { WsSharedDocDo } from '../domain/ws-shared-doc.do';
@@ -23,7 +22,6 @@ export class TldrawWsService {
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly tldrawBoardRepo: TldrawBoardRepo,
-		private readonly httpService: HttpService,
 		private readonly metricsService: MetricsService
 	) {
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
@@ -106,7 +104,7 @@ export class TldrawWsService {
 	 * @param  {boolean} gc - whether to allow gc on the doc (applies only when created)
 	 * @return {WsSharedDocDo}
 	 */
-	getYDoc(docName: string, gc = true): WsSharedDocDo {
+	public getYDoc(docName: string, gc = true): WsSharedDocDo {
 		return map.setIfUndefined(this.docs, docName, () => {
 			const doc = new WsSharedDocDo(docName, this, gc);
 			if (this.persistence !== null) {
@@ -162,6 +160,9 @@ export class TldrawWsService {
 			this.messageHandler(ws, doc, new Uint8Array(message));
 		});
 
+		// send initial doc state to client as update
+		this.sendInitialState(ws, doc);
+
 		// Check if connection is still alive
 		let pongReceived = true;
 		const pingInterval = setInterval(() => {
@@ -216,19 +217,10 @@ export class TldrawWsService {
 		await this.tldrawBoardRepo.flushDocument(docName);
 	}
 
-	public async authorizeConnection(drawingName: string, token: string) {
-		if (!token) {
-			throw new UnauthorizedException('Token was not given');
-		}
-		const headers = {
-			Accept: 'Application/json',
-			Authorization: `Bearer ${token}`,
-		};
-
-		await firstValueFrom(
-			this.httpService.get(`${this.configService.get<string>('API_HOST')}/v3/elements/${drawingName}/permission`, {
-				headers,
-			})
-		);
+	private sendInitialState(ws: WebSocket, doc: WsSharedDocDo): void {
+		const encoder = encoding.createEncoder();
+		encoding.writeVarUint(encoder, WSMessageType.SYNC);
+		writeUpdate(encoder, encodeStateAsUpdate(doc));
+		this.send(doc, ws, encoding.toUint8Array(encoder));
 	}
 }

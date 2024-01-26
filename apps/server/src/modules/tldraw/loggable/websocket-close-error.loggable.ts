@@ -1,7 +1,13 @@
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
 export class WebsocketCloseErrorLoggable implements Loggable {
-	constructor(private readonly error: Error, private readonly message: string) {}
+	private readonly error: Error | undefined;
+
+	constructor(private readonly err: unknown, private readonly message: string) {
+		if (err instanceof Error) {
+			this.error = err;
+		}
+	}
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {

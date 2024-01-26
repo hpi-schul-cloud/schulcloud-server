@@ -5,7 +5,7 @@ import { Test } from '@nestjs/testing';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { SchoolEntity } from '@shared/domain/entity';
-import { cleanupCollections, schoolFactory } from '@shared/testing';
+import { cleanupCollections, schoolEntityFactory } from '@shared/testing';
 import { Class } from '../domain';
 import { ClassEntity } from '../entity';
 import { ClassesRepo } from './classes.repo';
@@ -45,7 +45,7 @@ describe(ClassesRepo.name, () => {
 
 		describe('when school has classes', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				const classes: ClassEntity[] = classEntityFactory.buildListWithId(3, { schoolId: school.id });
 
 				await em.persistAndFlush(classes);
