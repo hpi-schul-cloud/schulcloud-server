@@ -1,6 +1,7 @@
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
 import { CommonCartridgeElement } from '../../interfaces/common-cartridge-element.interface';
 import { CommonCartridgeResource } from '../../interfaces/common-cartridge-resource.interface';
+import { createIdentifier } from '../../utils';
 
 export type CommonCartridgeOrganizationElementPropsV130 = {
 	type: CommonCartridgeElementType.ORGANIZATION;
@@ -39,7 +40,7 @@ export class CommonCartridgeOrganizationElementV130 extends CommonCartridgeEleme
 				if (item instanceof CommonCartridgeResource) {
 					return {
 						$: {
-							identifier: item.identifier,
+							identifier: createIdentifier(),
 							identifierref: item.identifier,
 						},
 						title: item.title,

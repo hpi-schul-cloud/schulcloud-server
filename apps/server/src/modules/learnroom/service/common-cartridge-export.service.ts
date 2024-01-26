@@ -22,10 +22,7 @@ export class CommonCartridgeExportService {
 
 	public async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);
-		const builder = new CommonCartridgeFileBuilder({
-			identifier: courseId,
-			version,
-		});
+		const builder = new CommonCartridgeFileBuilder(this.commonCartridgeMapper.mapCourseToManifest(version, course));
 
 		builder.addMetadata(this.commonCartridgeMapper.mapCourseToMetadata(course));
 
