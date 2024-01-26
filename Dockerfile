@@ -10,7 +10,6 @@ ENV TZ=Europe/Berlin
 RUN apk add --no-cache git make python3
 # to run ldap sync as script curl is needed
 RUN apk add --no-cache curl
-
 WORKDIR /schulcloud-server
 COPY tsconfig.json tsconfig.build.json package.json package-lock.json .eslintrc.js .eslintignore nest-cli.json ./
 COPY esbuild ./esbuild
@@ -21,14 +20,6 @@ COPY migrations /schulcloud-server/migrations
 COPY src /schulcloud-server/src
 COPY apps /schulcloud-server/apps
 COPY --from=git /app/serverversion /schulcloud-server/apps/server/static-assets
-
-# install phantom for pdf generation
-RUN wget -O /tmp/phantomjs-2.1.1-linux-x86_64.tar.bz2 https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2
-RUN mkdir -p /usr/local/lib/node_modules/phantomjs/lib/phantom/
-RUN tar xvjf /tmp/phantomjs-2.1.1-linux-x86_64.tar.bz2 -C /tmp/phantomjs
-RUN mv /tmp/phantomjs/phantomjs-2.1.1-linux-x86_64/* /usr/local/lib/node_modules/phantomjs/lib/phantom/
-RUN rm -rf /tmp/phantomjs-2.1.1-linux-x86_64.tar.bz && rm -rf /tmp/phantomjs
-
 COPY scripts/ldapSync.sh /schulcloud-server/scripts/
 RUN npm run build
 
