@@ -3,7 +3,8 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { schoolFactory, TestApiClient, TestXApiKeyClient } from '@shared/testing';
+import { schoolEntityFactory, TestApiClient, TestXApiKeyClient } from '@shared/testing';
+import { schoolFactory } from '@src/modules/school/testing';
 import { ServerTestModule } from '@src/modules/server';
 import { nanoid } from 'nanoid';
 import supertest from 'supertest';
@@ -47,7 +48,7 @@ describe('Admin API - Users (API)', () => {
 
 		describe('with api token', () => {
 			const setup = async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				await em.persistAndFlush(school);
 
 				const schoolId = school.id;
