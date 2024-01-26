@@ -78,5 +78,6 @@
 		"TOKEN_ENDPOINT": "http://localhost:8888/realms/SANIS/protocol/openid-connect/token",
 		"CLIENT_ID": "schulcloud",
 		"CLIENT_SECRET": "secret"
-	}
+	},
+	"ADMIN_API": { "ALLOWED_API_KEYS": "thisistheadminapitokeninthetestconfig" }
 }
