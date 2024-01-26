@@ -326,7 +326,7 @@ describe('NewsRepo', () => {
 			const result = await repo.findByCreatorOrUpdaterId(user.id);
 			expect(result).toBeDefined();
 			expect(result[0][0].id).toEqual(news.id);
-			expect(result[0][0].id).toEqual(news2.id);
+			expect(result[0][1].id).toEqual(news2.id);
 			expect(result[0].length).toEqual(2);
 		});
 
