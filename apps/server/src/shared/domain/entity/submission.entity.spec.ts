@@ -490,7 +490,7 @@ describe('Submission entity', () => {
 
 				const courseGroup = courseGroupFactory.build();
 				const submission = submissionFactory.studentWithId().buildWithId({ courseGroup });
-				const creatorId = submission.student.id;
+				const creatorId = submission.student?.id;
 
 				const spy = jest.spyOn(courseGroup, 'getStudentIds').mockReturnValueOnce(studentIds);
 
