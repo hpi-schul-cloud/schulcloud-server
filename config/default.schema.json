@@ -1442,7 +1442,7 @@
 		"TLDRAW": {
 			"type": "object",
 			"description": "Tldraw managing variables.",
-			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_COLLECTION_NAME", "DB_FLUSH_SIZE", "DB_MULTIPLE_COLLECTIONS"],
+			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_FLUSH_SIZE", "MAX_DOCUMENT_SIZE"],
 			"properties": {
 				"SOCKET_PORT": {
 					"type": "number",
@@ -1456,26 +1456,21 @@
 					"type": "boolean",
 					"description": "If tldraw garbage collector should be enabled"
 				},
-				"DB_COLLECTION_NAME": {
-					"type": "string",
-					"description": "Collection name in which tldraw drawing are stored"
-				},
 				"DB_FLUSH_SIZE": {
 					"type": "integer",
 					"description": "DB collection flushing size"
 				},
-				"DB_MULTIPLE_COLLECTIONS": {
-					"type": "boolean",
-					"description": "DB collection allowing multiple collections for drawing"
+				"MAX_DOCUMENT_SIZE": {
+					"type": "number",
+					"description": "Maximum size of a single tldraw document in mongo"
 				}
 			},
 			"default": {
 				"SOCKET_PORT": 3345,
 				"PING_TIMEOUT": 10000,
 				"GC_ENABLED": true,
-				"DB_COLLECTION_NAME": "drawings",
 				"DB_FLUSH_SIZE": 400,
-				"DB_MULTIPLE_COLLECTIONS": false
+				"MAX_DOCUMENT_SIZE": 15000000
 			}
 		},
 		"TLDRAW_DB_URL": {
