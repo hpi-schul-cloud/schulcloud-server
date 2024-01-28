@@ -8,8 +8,6 @@ import { Permission } from '@shared/domain/interface';
 import { CreateNews, NewsTargetModel } from '@shared/domain/types';
 import { NewsRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { FederalStateEntity, Role, SchoolEntity, TeamNews, User } from '@shared/domain/entity';
-import { Collection } from '@mikro-orm/core';
 import { NewsUc } from './news.uc';
 
 describe('NewsUc', () => {
@@ -42,40 +40,6 @@ describe('NewsUc', () => {
 			id: courseTargetId,
 		},
 	};
-	const federalState = new FederalStateEntity({
-		name: 'string',
-		abbreviation: 'string',
-		logoUrl: 'string',
-		createdAt: new Date(),
-		updatedAt: new Date(),
-	});
-
-	const school = new SchoolEntity({
-		_id: schoolId,
-
-		name: 'string',
-		federalState,
-	});
-	const creator: User = {
-		_id: new ObjectId(userId),
-		id: userId,
-		email: 'string',
-		firstName: 'string',
-		lastName: 'string',
-		roles: new Collection<Role>(User),
-		school,
-		createdAt: new Date(),
-		updatedAt: new Date(),
-		resolvePermissions: () => ['a'],
-	};
-	const exampleNews: TeamNews = new TeamNews({
-		title: 'string',
-		content: 'string',
-		displayAt,
-		creator,
-		school: schoolId,
-		target: teamTargetId,
-	});
 	const pagination = {};
 
 	const targets = [
@@ -110,12 +74,6 @@ describe('NewsUc', () => {
 								return exampleCourseNews;
 							}
 							throw new NotFoundException();
-						},
-						findByCreatorOrUpdaterId(creatorId) {
-							if (creatorId === creator.id) {
-								return [[exampleNews], 1];
-							}
-							return [[undefined], 0];
 						},
 						delete() {},
 					},
@@ -341,20 +299,6 @@ describe('NewsUc', () => {
 		it('should throw Unauthorized exception if user doesnt have permission NEWS_EDIT', async () => {
 			const anotherUser = new ObjectId().toHexString();
 			await expect(service.delete(newsId, anotherUser)).rejects.toThrow(UnauthorizedException);
-		});
-	});
-
-	describe('deleteCreatorReference', () => {
-		it('should successfully delete creator reference from news', async () => {
-			const result = await service.deleteCreatorOrUpdaterReference(creator.id);
-			expect(exampleNews.creator).toBeUndefined();
-			expect(result).toBe(1);
-		});
-
-		it('should return 0 if news not found', async () => {
-			const anotherUser = new ObjectId().toHexString();
-			const result = await service.deleteCreatorOrUpdaterReference(anotherUser);
-			expect(result).toBe(0);
 		});
 	});
 });

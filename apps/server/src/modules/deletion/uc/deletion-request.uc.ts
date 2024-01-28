@@ -16,7 +16,7 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { TaskService } from '@modules/task';
 import { DomainOperation } from '@shared/domain/interface';
 import { DomainOperationBuilder } from '@shared/domain/builder/domain-operation.builder';
-import { NewsUc } from '@src/modules/news/uc';
+import { NewsService } from '@src/modules/news/service/news.service';
 import { DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../builder';
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 import { DeletionRequest, DeletionLog } from '../domain';
@@ -44,7 +44,7 @@ export class DeletionRequestUc {
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly dashboardService: DashboardService,
 		private readonly taskService: TaskService,
-		private readonly newsUc: NewsUc
+		private readonly newsService: NewsService
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
 	}
@@ -310,7 +310,7 @@ export class DeletionRequestUc {
 	}
 
 	private async removeUsersDataFromNews(deletionRequest: DeletionRequest) {
-		const newsesModified = await this.newsUc.deleteCreatorOrUpdaterReference(deletionRequest.targetRefId);
+		const newsesModified = await this.newsService.deleteCreatorOrUpdaterReference(deletionRequest.targetRefId);
 
 		await this.logDeletion(deletionRequest, DomainModel.NEWS, DeletionOperationModel.UPDATE, newsesModified, 0);
 	}
