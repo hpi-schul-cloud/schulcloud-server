@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
-import * as mustache from 'mustache';
+import Mustache from 'mustache';
 import PDFDocument from 'pdfkit';
 
 @Injectable()
@@ -8,8 +8,7 @@ export class PdfService {
 	generatePdfFromTemplate<T>(templatePath: string, data: T): Promise<Buffer> {
 		const promise: Promise<Buffer> = new Promise<Buffer>((resolve, reject) => {
 			const template: string = this.readTemplateFile(templatePath);
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-			const rendered: string = mustache.render(template, data) as string;
+			const rendered: string = Mustache.render(template, data);
 
 			const pdf: PDFKit.PDFDocument = new PDFDocument();
 			const chunks: Uint8Array[] = [];
