@@ -9,7 +9,7 @@ FROM docker.io/node:18-alpine
 ENV TZ=Europe/Berlin
 RUN apk add --no-cache git make python3
 # to run ldap sync as script curl is needed
-RUN apk add --no-cache curl chromium
+RUN apk add --no-cache curl
 WORKDIR /schulcloud-server
 COPY tsconfig.json tsconfig.build.json package.json package-lock.json .eslintrc.js .eslintignore nest-cli.json ./
 COPY esbuild ./esbuild

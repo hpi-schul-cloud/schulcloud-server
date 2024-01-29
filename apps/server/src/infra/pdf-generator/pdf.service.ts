@@ -1,27 +1,30 @@
 import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import * as mustache from 'mustache';
-import puppeteer, { Browser, Page } from 'puppeteer';
+import PDFDocument from 'pdfkit';
 
 @Injectable()
 export class PdfService {
-	async generatePdfFromTemplate<T>(templatePath: string, data: T): Promise<Buffer> {
-		const template: string = this.readTemplateFile(templatePath);
-		const html: string = this.renderTemplate(template, data);
-		const browser: Browser = await puppeteer.launch({
-			executablePath: '/usr/bin/chromium-browser',
-			headless: 'new',
-			ignoreDefaultArgs: ['--disable-extensions'],
-			args: ['--no-sandbox', '--disable-setuid-sandbox'],
+	generatePdfFromTemplate<T>(templatePath: string, data: T): Promise<Buffer> {
+		const promise = new Promise<Buffer>((resolve, reject) => {
+			const template: string = this.readTemplateFile(templatePath);
+			const rendered: string = mustache.render(template, data);
+
+			const pdf = new PDFDocument();
+			const chunks: Uint8Array[] = [];
+
+			pdf.on('data', (chunk: Uint8Array) => chunks.push(chunk));
+
+			pdf.on('end', () => resolve(Buffer.concat(chunks)));
+
+			pdf.on('error', (error: Error) => reject(error));
+
+			pdf.text(rendered);
+
+			pdf.end();
 		});
-		const page: Page = await browser.newPage();
 
-		await page.setContent(html);
-		const pdfBuffer: Buffer = await page.pdf();
-
-		await browser.close();
-
-		return pdfBuffer;
+		return promise;
 	}
 
 	private readTemplateFile(templatePath: string): string {
@@ -30,10 +33,5 @@ export class PdfService {
 		} catch (error) {
 			throw new Error(`Error reading template file: ${error.message}`);
 		}
-	}
-
-	private renderTemplate<T>(template: string, data: T): string {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
-		return mustache.render(template, data);
 	}
 }
