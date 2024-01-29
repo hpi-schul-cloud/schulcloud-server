@@ -2,6 +2,7 @@ import { BoardModule } from '@modules/board';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { LessonModule } from '@modules/lesson';
 import { TaskModule } from '@modules/task';
+import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { Module } from '@nestjs/common';
 import {
 	BoardRepo,
@@ -13,8 +14,8 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
+import { ToolConfigModule } from '../tool/tool-config.module';
 import { CommonCartridgeMapper } from './mapper/common-cartridge.mapper';
-import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import {
 	BoardCopyService,
 	ColumnBoardTargetService,
@@ -25,7 +26,6 @@ import {
 	DashboardService,
 	RoomsService,
 } from './service';
-import { ToolConfigModule } from '../tool/tool-config.module';
 
 @Module({
 	imports: [
