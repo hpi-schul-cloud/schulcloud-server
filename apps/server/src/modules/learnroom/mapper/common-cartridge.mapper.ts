@@ -92,7 +92,7 @@ export class CommonCartridgeMapper {
 				return {
 					type: CommonCartridgeResourceType.WEB_LINK,
 					identifier: createIdentifier(content._id),
-					title: `${content.content.title} - ${content.content.description}`,
+					title: `${content.title} - ${content.content.description}`,
 					url: content.content.url,
 				};
 			case ComponentType.LERNSTORE:
