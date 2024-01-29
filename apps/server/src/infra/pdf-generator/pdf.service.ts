@@ -8,7 +8,12 @@ export class PdfService {
 	async generatePdfFromTemplate<T>(templatePath: string, data: T): Promise<Buffer> {
 		const template: string = this.readTemplateFile(templatePath);
 		const html: string = this.renderTemplate(template, data);
-		const browser: Browser = await puppeteer.launch({ headless: 'new' });
+		const browser: Browser = await puppeteer.launch({
+			executablePath: '/usr/bin/google-chrome',
+			headless: 'new',
+			ignoreDefaultArgs: ['--disable-extensions'],
+			args: ['--no-sandbox', '--disable-setuid-sandbox'],
+		});
 		const page: Page = await browser.newPage();
 
 		await page.setContent(html);
