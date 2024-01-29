@@ -4,36 +4,26 @@ import {
 	LtiPrivacyPermission,
 	ToolConfigType,
 } from '@modules/tool/common/enum';
-import { DeepPartial } from 'fishery';
+import { DeepPartial, Factory } from 'fishery';
 import {
 	ExternalToolDatasheetTemplateData,
 	ExternalToolParameterDatasheetTemplateData,
 } from '@modules/tool/external-tool/domain';
-import { DoBaseFactory } from '../do-base.factory';
 
-class ExternalToolParameterDatasheetTemplateDataFactory extends DoBaseFactory<
+export const externalToolParameterDatasheetTemplateDataFactory = Factory.define<
 	ExternalToolParameterDatasheetTemplateData,
 	ExternalToolParameterDatasheetTemplateData
-> {}
+>(({ sequence }) => {
+	return {
+		name: `custom-parameter-${sequence}`,
+		properties: '',
+		type: 'Zeichenkette',
+		scope: 'Schule',
+		location: CustomParameterLocation.BODY,
+	};
+});
 
-export const externalToolParameterDatasheetTemplateDataFactory =
-	ExternalToolParameterDatasheetTemplateDataFactory.define(
-		ExternalToolParameterDatasheetTemplateData,
-		({ sequence }) => {
-			return {
-				name: `custom-parameter-${sequence}`,
-				properties: '',
-				type: 'Zeichenkette',
-				scope: 'Schule',
-				location: CustomParameterLocation.BODY,
-			};
-		}
-	);
-
-export class ExternalToolDatasheetTemplateDataFactory extends DoBaseFactory<
-	ExternalToolDatasheetTemplateData,
-	ExternalToolDatasheetTemplateData
-> {
+export class ExternalToolDatasheetTemplateDataFactory extends Factory<ExternalToolDatasheetTemplateData> {
 	asOauth2Tool(): this {
 		const params: DeepPartial<ExternalToolDatasheetTemplateData> = {
 			toolType: ToolConfigType.OAUTH2,
@@ -69,7 +59,6 @@ export class ExternalToolDatasheetTemplateDataFactory extends DoBaseFactory<
 	}
 }
 export const externalToolDatasheetTemplateDataFactory = ExternalToolDatasheetTemplateDataFactory.define(
-	ExternalToolDatasheetTemplateData,
 	({ sequence }) => {
 		return {
 			createdAt: new Date().toLocaleDateString('de-DE'),
