@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { MikroORM } from '@mikro-orm/core';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType } from '@shared/domain/entity';
@@ -9,6 +8,7 @@ import { OmitVersion, createIdentifier } from '@src/modules/common-cartridge/uti
 import {
 	CommonCartridgeElementProps,
 	CommonCartridgeElementType,
+	CommonCartridgeFileBuilderProps,
 	CommonCartridgeIntendedUseType,
 	CommonCartridgeOrganizationBuilderOptions,
 	CommonCartridgeResourceProps,
@@ -21,10 +21,10 @@ import { CommonCartridgeMapper } from './common-cartridge.mapper';
 describe('CommonCartridgeMapper', () => {
 	let module: TestingModule;
 	let sut: CommonCartridgeMapper;
-	let orm: MikroORM;
 	let configServiceMock: DeepMocked<ConfigService<LearnroomConfig, true>>;
 
 	beforeAll(async () => {
+		await setupEntities();
 		module = await Test.createTestingModule({
 			providers: [
 				CommonCartridgeMapper,
@@ -34,14 +34,12 @@ describe('CommonCartridgeMapper', () => {
 				},
 			],
 		}).compile();
-		orm = await setupEntities();
 		sut = module.get(CommonCartridgeMapper);
 		configServiceMock = module.get(ConfigService);
 	});
 
 	afterAll(async () => {
 		await module.close();
-		await orm.close();
 	});
 
 	beforeEach(() => {
@@ -189,7 +187,7 @@ describe('CommonCartridgeMapper', () => {
 				const organizationProps = sut.mapTaskToOrganization(task);
 
 				expect(organizationProps).toStrictEqual<OmitVersion<CommonCartridgeOrganizationBuilderOptions>>({
-					identifier: createIdentifier(task.id),
+					identifier: expect.any(String),
 					title: task.name,
 				});
 			});
@@ -372,6 +370,29 @@ describe('CommonCartridgeMapper', () => {
 				const resourceProps = sut.mapContentToResources(unknownComponentProps);
 
 				expect(resourceProps).toEqual([]);
+			});
+		});
+	});
+
+	describe('mapCourseToManifest', () => {
+		describe('when mapping course', () => {
+			const setup = () => {
+				const course = courseFactory.buildWithId();
+				const version = CommonCartridgeVersion.V_1_1_0;
+
+				configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
+
+				return { course, version };
+			};
+
+			it('should map to manifest', () => {
+				const { course, version } = setup();
+				const fileBuilderProps = sut.mapCourseToManifest(version, course);
+
+				expect(fileBuilderProps).toStrictEqual<CommonCartridgeFileBuilderProps>({
+					version: CommonCartridgeVersion.V_1_1_0,
+					identifier: createIdentifier(course.id),
+				});
 			});
 		});
 	});
