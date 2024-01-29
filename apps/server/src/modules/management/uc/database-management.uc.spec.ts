@@ -657,4 +657,27 @@ describe('DatabaseManagementService', () => {
 			expect(collectionsSeeded).toStrictEqual(expectedCollectionsWithLength);
 		});
 	});
+
+	describe('migration', () => {
+		it('should call migrationUp', async () => {
+			dbService.migrationUp = jest.fn();
+			await uc.migrationUp();
+			expect(dbService.migrationUp).toHaveBeenCalled();
+		});
+		it('should call migrationUp with params', async () => {
+			dbService.migrationUp = jest.fn();
+			await uc.migrationUp('foo', 'bar', 'baz');
+			expect(dbService.migrationUp).toHaveBeenCalledWith('foo', 'bar', 'baz');
+		});
+		it('should call migrationDown', async () => {
+			dbService.migrationDown = jest.fn();
+			await uc.migrationDown();
+			expect(dbService.migrationDown).toHaveBeenCalled();
+		});
+		it('should call migrationDown with params', async () => {
+			dbService.migrationDown = jest.fn();
+			await uc.migrationDown('foo', 'bar', 'baz');
+			expect(dbService.migrationDown).toHaveBeenCalledWith('foo', 'bar', 'baz');
+		});
+	});
 });
