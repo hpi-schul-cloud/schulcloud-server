@@ -6,7 +6,6 @@ export interface TldrawConfig {
 	INCOMING_REQUEST_TIMEOUT: number;
 	TLDRAW_DB_FLUSH_SIZE: string;
 	CONNECTION_STRING: string;
-	TLDRAW_DB_MULTIPLE_COLLECTIONS: boolean;
 	FEATURE_TLDRAW_ENABLED: boolean;
 	TLDRAW_PING_TIMEOUT: number;
 	TLDRAW_GC_ENABLED: number;
