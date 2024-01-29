@@ -69,7 +69,9 @@ export class PseudonymsRepo {
 			return [];
 		}
 
-		await Promise.all(pseudonyms.map((pseudonym) => this.em.removeAndFlush(pseudonym)));
+		const removePromises = pseudonyms.map((pseudonym) => this.em.removeAndFlush(pseudonym));
+		
+		await Promise.all(removePromises);
 
 		return this.getPseudonymId(pseudonyms);
 	}
