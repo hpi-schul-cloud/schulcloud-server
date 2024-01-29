@@ -9,7 +9,7 @@ import { Request } from 'express';
 import { TldrawService } from '../../service';
 import { TldrawController } from '..';
 import { TldrawRepo } from '../../repo';
-import { tldrawEntityFactory } from '../../factory';
+import { tldrawEntityFactory } from '../../testing';
 
 const baseRouteName = '/tldraw-document';
 describe('tldraw controller (api)', () => {

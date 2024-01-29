@@ -13,7 +13,7 @@ import {
 	defaultTestPassword,
 	defaultTestPasswordHash,
 	legacySchoolDoFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	setupEntities,
 	systemEntityFactory,
 	userFactory,
@@ -389,7 +389,7 @@ describe('LdapStrategy', () => {
 
 				const user: User = userFactory
 					.withRoleByName(RoleName.STUDENT)
-					.buildWithId({ ldapDn: 'mockLdapDn', school: schoolFactory.buildWithId() });
+					.buildWithId({ ldapDn: 'mockLdapDn', school: schoolEntityFactory.buildWithId() });
 
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(
 					{ systems: [system.id], previousExternalId: undefined },
@@ -452,7 +452,7 @@ describe('LdapStrategy', () => {
 
 				const user: User = userFactory
 					.withRoleByName(RoleName.STUDENT)
-					.buildWithId({ ldapDn: 'mockLdapDn', school: schoolFactory.buildWithId() });
+					.buildWithId({ ldapDn: 'mockLdapDn', school: schoolEntityFactory.buildWithId() });
 
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId(
 					{ systems: [system.id], previousExternalId: 'previousExternalId' },

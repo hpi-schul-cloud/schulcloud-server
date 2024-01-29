@@ -2,7 +2,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Controller, Delete, ForbiddenException, HttpCode, NotFoundException, Param, UseGuards } from '@nestjs/common';
 import { ApiValidationError } from '@shared/common';
 import { AuthGuard } from '@nestjs/passport';
-import { TldrawService } from '../service/tldraw.service';
+import { TldrawService } from '../service';
 import { TldrawDeleteParams } from './tldraw.params';
 
 @ApiTags('Tldraw Document')

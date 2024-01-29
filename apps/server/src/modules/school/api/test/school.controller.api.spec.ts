@@ -1,15 +1,16 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { cleanupCollections, TestApiClient } from '@shared/testing';
 import {
+	cleanupCollections,
+	countyEmbeddableFactory,
 	federalStateFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	schoolYearFactory,
 	systemEntityFactory,
+	TestApiClient,
 	UserAndAccountTestFactory,
-} from '@shared/testing/factory';
-import { countyEmbeddableFactory } from '@shared/testing/factory/county.embeddable.factory';
+} from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
 
 describe('School Controller (API)', () => {
@@ -96,7 +97,7 @@ describe('School Controller (API)', () => {
 
 		describe('when user is not in requested school', () => {
 			const setup = async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
 				await em.persistAndFlush([school, studentAccount, studentUser]);
@@ -123,7 +124,7 @@ describe('School Controller (API)', () => {
 				const federalState = federalStateFactory.build();
 				const county = countyEmbeddableFactory.build();
 				const systems = systemEntityFactory.buildList(3);
-				const school = schoolFactory.build({ currentYear, federalState, systems, county });
+				const school = schoolEntityFactory.build({ currentYear, federalState, systems, county });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 
 				await em.persistAndFlush([...schoolYears, federalState, school, studentAccount, studentUser]);
@@ -163,6 +164,7 @@ describe('School Controller (API)', () => {
 						countyId: county.countyId,
 						antaresKey: county.antaresKey,
 					},
+					inUserMigration: undefined,
 					inMaintenance: false,
 					isExternal: false,
 					currentYear: schoolYearResponses[1],
@@ -205,7 +207,7 @@ describe('School Controller (API)', () => {
 
 		describe('when a user is logged in', () => {
 			const setup = async () => {
-				const schools = schoolFactory.buildList(3);
+				const schools = schoolEntityFactory.buildList(3);
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				await em.persistAndFlush([...schools, studentAccount, studentUser]);
 
