@@ -6,17 +6,16 @@ import PDFDocument from 'pdfkit';
 @Injectable()
 export class PdfService {
 	generatePdfFromTemplate<T>(templatePath: string, data: T): Promise<Buffer> {
-		const promise = new Promise<Buffer>((resolve, reject) => {
+		const promise: Promise<Buffer> = new Promise<Buffer>((resolve, reject) => {
 			const template: string = this.readTemplateFile(templatePath);
-			const rendered: string = mustache.render(template, data);
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+			const rendered: string = mustache.render(template, data) as string;
 
-			const pdf = new PDFDocument();
+			const pdf: PDFKit.PDFDocument = new PDFDocument();
 			const chunks: Uint8Array[] = [];
 
 			pdf.on('data', (chunk: Uint8Array) => chunks.push(chunk));
-
 			pdf.on('end', () => resolve(Buffer.concat(chunks)));
-
 			pdf.on('error', (error: Error) => reject(error));
 
 			pdf.text(rendered);
@@ -31,6 +30,7 @@ export class PdfService {
 		try {
 			return fs.readFileSync(templatePath, 'utf8');
 		} catch (error) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/restrict-template-expressions
 			throw new Error(`Error reading template file: ${error.message}`);
 		}
 	}
