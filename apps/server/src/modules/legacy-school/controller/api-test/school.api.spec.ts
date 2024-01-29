@@ -5,12 +5,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity, SystemEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import {
-	schoolEntityFactory,
 	schoolSystemOptionsEntityFactory,
 	systemEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
+import { schoolEntityFactory } from '@shared/testing/factory/school-entity.factory';
 import { SchoolSystemOptionsEntity } from '../../entity';
 import { SchulConneXProvisioningOptionsResponse } from '../dto';
 
