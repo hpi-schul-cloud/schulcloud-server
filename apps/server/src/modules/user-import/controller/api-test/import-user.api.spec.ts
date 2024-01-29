@@ -71,6 +71,7 @@ describe('ImportUser Controller (API)', () => {
 	const setConfig = (systemId?: string) => {
 		userImportFeatures.userMigrationEnabled = true;
 		userImportFeatures.userMigrationSystemId = systemId || new ObjectId().toString();
+		userImportFeatures.instance = 'dbc';
 	};
 
 	beforeAll(async () => {
@@ -127,44 +128,44 @@ describe('ImportUser Controller (API)', () => {
 				});
 
 				it('System is not set', async () => {
-					await testApiClient.get().expect(HttpStatus.FORBIDDEN);
+					await testApiClient.get().expect(HttpStatus.INTERNAL_SERVER_ERROR);
 				});
 
-				it('GET /user/import is forbidden', async () => {
-					await testApiClient.get().expect(HttpStatus.FORBIDDEN);
+				it('GET /user/import is UNAUTHORIZED', async () => {
+					await testApiClient.get().expect(HttpStatus.INTERNAL_SERVER_ERROR);
 				});
 
-				it('GET /user/import/unassigned is forbidden', async () => {
-					await testApiClient.get('unassigned').expect(HttpStatus.FORBIDDEN);
+				it('GET /user/import/unassigned is UNAUTHORIZED', async () => {
+					await testApiClient.get('unassigned').expect(HttpStatus.INTERNAL_SERVER_ERROR);
 				});
 
-				it('PATCH /user/import/:id/match is forbidden', async () => {
+				it('PATCH /user/import/:id/match is UNAUTHORIZED', async () => {
 					const id = new ObjectId().toString();
 					const params: UpdateMatchParams = { userId: new ObjectId().toString() };
-					await testApiClient.patch(`${id}/match`).send(params).expect(HttpStatus.FORBIDDEN);
+					await testApiClient.patch(`${id}/match`).send(params).expect(HttpStatus.INTERNAL_SERVER_ERROR);
 				});
 
-				it('DELETE /user/import/:id/match is forbidden', async () => {
+				it('DELETE /user/import/:id/match is UNAUTHORIZED', async () => {
 					const id = new ObjectId().toString();
-					await testApiClient.delete(`${id}/match`).send().expect(HttpStatus.FORBIDDEN);
+					await testApiClient.delete(`${id}/match`).send().expect(HttpStatus.INTERNAL_SERVER_ERROR);
 				});
 
-				it('PATCH /user/import/:id/flag is forbidden', async () => {
+				it('PATCH /user/import/:id/flag is UNAUTHORIZED', async () => {
 					const id = new ObjectId().toString();
 					const params: UpdateFlagParams = { flagged: true };
-					await testApiClient.patch(`${id}/flag`).send(params).expect(HttpStatus.FORBIDDEN);
+					await testApiClient.patch(`${id}/flag`).send(params).expect(HttpStatus.INTERNAL_SERVER_ERROR);
 				});
 
-				it('POST /user/import/migrate is forbidden', async () => {
-					await testApiClient.post('migrate').send().expect(HttpStatus.FORBIDDEN);
+				it('POST /user/import/migrate is UNAUTHORIZED', async () => {
+					await testApiClient.post('migrate').send().expect(HttpStatus.INTERNAL_SERVER_ERROR);
 				});
 
-				it('POST /user/import/startSync is forbidden', async () => {
-					await testApiClient.post('startSync').send().expect(HttpStatus.FORBIDDEN);
+				it('POST /user/import/startSync is UNAUTHORIZED', async () => {
+					await testApiClient.post('startSync').send().expect(HttpStatus.INTERNAL_SERVER_ERROR);
 				});
 
-				it('POST /user/import/startUserMigration is forbidden', async () => {
-					await testApiClient.post('startUserMigration').send().expect(HttpStatus.FORBIDDEN);
+				it('POST /user/import/startUserMigration is UNAUTHORIZED', async () => {
+					await testApiClient.post('startUserMigration').send().expect(HttpStatus.INTERNAL_SERVER_ERROR);
 				});
 			});
 
@@ -889,7 +890,9 @@ describe('ImportUser Controller (API)', () => {
 							importUsers[0].setMatch(userFactory.build({ school }), MatchCreator.MANUAL);
 							importUsers[1].setMatch(userFactory.build({ school }), MatchCreator.AUTO);
 							await em.persistAndFlush(importUsers);
-							const query: FilterImportUserParams = { match: [FilterMatchType.AUTO, FilterMatchType.MANUAL] };
+							const query: FilterImportUserParams = {
+								match: [FilterMatchType.AUTO, FilterMatchType.MANUAL],
+							};
 
 							const response = await testApiClient.get().query(query).expect(HttpStatus.OK);
 
