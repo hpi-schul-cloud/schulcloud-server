@@ -11,7 +11,7 @@ import type { User } from './user.entity';
 export interface SubmissionProperties {
 	school: SchoolEntity;
 	task: Task;
-	student?: User;
+	student: User;
 	courseGroup?: CourseGroup;
 	teamMembers?: User[];
 	comment: string;
@@ -33,8 +33,8 @@ export class Submission extends BaseEntityWithTimestamps {
 	@Index()
 	task: Task;
 
-	@ManyToOne('User', { fieldName: 'studentId', nullable: true })
-	student?: User;
+	@ManyToOne('User', { fieldName: 'studentId' })
+	student: User;
 
 	@ManyToOne('CourseGroup', { fieldName: 'courseGroupId', nullable: true })
 	courseGroup?: CourseGroup;
@@ -60,9 +60,7 @@ export class Submission extends BaseEntityWithTimestamps {
 	constructor(props: SubmissionProperties) {
 		super();
 		this.school = props.school;
-		if (props.student !== undefined) {
-			this.student = props.student;
-		}
+		this.student = props.student;
 		this.comment = props.comment;
 		this.task = props.task;
 		this.submitted = props.submitted || false;
@@ -114,14 +112,11 @@ export class Submission extends BaseEntityWithTimestamps {
 	// Bad that the logic is needed to expose the userIds, but is used in task for now.
 	// Check later if it can be replaced and remove all related code.
 	public getSubmitterIds(): EntityId[] {
+		const creatorId = this.student.id;
 		const teamMemberIds = this.getTeamMemberIds();
 		const courseGroupMemberIds = this.getCourseGroupStudentIds();
-		const creatorId = this.student?.id ?? undefined;
+		const memberIds = [creatorId, ...teamMemberIds, ...courseGroupMemberIds];
 
-		const memberIds =
-			creatorId !== undefined
-				? [creatorId, ...teamMemberIds, ...courseGroupMemberIds]
-				: [...teamMemberIds, ...courseGroupMemberIds];
 		const uniqueMemberIds = [...new Set(memberIds)];
 
 		return uniqueMemberIds;
