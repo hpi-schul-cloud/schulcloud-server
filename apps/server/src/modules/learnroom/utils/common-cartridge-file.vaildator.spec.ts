@@ -62,6 +62,16 @@ describe('CommonCartridgeFileValidator', () => {
 				expect(result).toBe(false);
 			});
 		});
+
+		describe('when no file is provided', () => {
+			it('should return false', () => {
+				const sut = new CommonCartridgeFileValidator();
+
+				const result = sut.isValid(undefined as unknown as Express.Multer.File);
+
+				expect(result).toBe(false);
+			});
+		});
 	});
 
 	describe('buildErrorMessage', () => {
