@@ -17,6 +17,7 @@ export class DatasheetPdfService {
 						{ text: 'Datenblatt', style: 'center-aligned' },
 						{ text: templateData.toolName, style: 'center-aligned' },
 						{ text: templateData.toolUrl, style: 'center-aligned', link: templateData.toolUrl },
+						{ text: templateData.toolType, link: templateData.toolType },
 						{ text: '' }, // line break
 
 						...(templateData?.parameters?.length
