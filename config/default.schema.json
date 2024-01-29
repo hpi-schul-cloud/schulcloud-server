@@ -1468,6 +1468,7 @@
 				"MAX_DOCUMENT_SIZE": {
 					"type": "number",
 					"description": "Maximum size of a single tldraw document in mongo"
+				},
 				"ASSETS_ENABLED": {
 					"type": "boolean",
 					"description": "Enables uploading assets to tldraw board"
