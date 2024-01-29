@@ -729,7 +729,7 @@
 		},
 		"FEATURE_SCHOOL_TERMS_OF_USE_ENABLED": {
 			"type": "boolean",
-			"default": true,
+			"default": false,
 			"description": "Enables uploading of school specific Terms of Use on new admin page."
 		},
 		"ROCKETCHAT_SERVICE_ENABLED": {
@@ -1334,6 +1334,11 @@
 				"PORT": 4030,
 				"ALLOWED_API_KEYS": ""
 			}
+		},
+		"FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Makes the new school administration page the default page"
 		},
 		"FEATURE_CTL_TOOLS_TAB_ENABLED": {
 			"type": "boolean",
