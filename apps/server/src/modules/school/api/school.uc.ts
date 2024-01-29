@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { SchoolQuery, SchoolService, SchoolYearService, SchoolYearHelper } from '../domain';
-import { SchoolForExternalInviteResponse, SchoolResponse } from './dto/response';
+import { SchoolExistsResponse, SchoolForExternalInviteResponse, SchoolResponse } from './dto/response';
 import { SchoolForLdapLoginResponse } from './dto/response/school-for-ldap-login.response';
 import { SchoolResponseMapper } from './mapper';
 import { YearsResponseMapper } from './mapper/years.response.mapper';
@@ -51,10 +51,12 @@ export class SchoolUc {
 		return dtos;
 	}
 
-	public async doesSchoolExist(schoolId: EntityId): Promise<boolean> {
+	public async doesSchoolExist(schoolId: EntityId): Promise<SchoolExistsResponse> {
 		const result = await this.schoolService.doesSchoolExist(schoolId);
 
-		return result;
+		const res = new SchoolExistsResponse({ exists: result });
+
+		return res;
 	}
 
 	public async getSchoolListForLdapLogin(): Promise<SchoolForLdapLoginResponse[]> {

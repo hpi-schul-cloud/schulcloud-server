@@ -37,9 +37,7 @@ export class SchoolController {
 
 	@Get('/exists/id/:schoolId')
 	public async doesSchoolExist(@Param() urlParams: SchoolUrlParams): Promise<SchoolExistsResponse> {
-		const result = await this.schoolUc.doesSchoolExist(urlParams.schoolId);
-
-		const res = new SchoolExistsResponse({ exists: result });
+		const res = await this.schoolUc.doesSchoolExist(urlParams.schoolId);
 
 		return res;
 	}
