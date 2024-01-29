@@ -16,14 +16,12 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { of } from 'rxjs';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
 import { ExternalTool, ExternalToolDatasheetTemplateData, ExternalToolMetadata, Oauth2ToolConfig } from '../domain';
 import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
 import { ExternalToolUpdate } from './dto';
 import { ExternalToolUc } from './external-tool.uc';
-import any = jasmine.any;
 import { CustomParameter } from '../../common/domain';
 
 describe('ExternalToolUc', () => {
@@ -694,7 +692,7 @@ describe('ExternalToolUc', () => {
 
 				await uc.getDatasheet(user.id, toolId);
 
-				expect(pdfService.generatePdfFromTemplate).toHaveBeenCalledWith(any, {
+				expect(pdfService.generatePdfFromTemplate).toHaveBeenCalledWith(expect.anything(), {
 					locals: datasheetData,
 				});
 			});
@@ -732,7 +730,7 @@ describe('ExternalToolUc', () => {
 
 				await uc.getDatasheet(user.id, toolId);
 
-				expect(pdfService.generatePdfFromTemplate).toHaveBeenCalledWith(any, {
+				expect(pdfService.generatePdfFromTemplate).toHaveBeenCalledWith(expect.anything(), {
 					locals: datasheetData,
 				});
 			});
@@ -770,7 +768,7 @@ describe('ExternalToolUc', () => {
 
 				await uc.getDatasheet(user.id, toolId);
 
-				expect(pdfService.generatePdfFromTemplate).toHaveBeenCalledWith(any, {
+				expect(pdfService.generatePdfFromTemplate).toHaveBeenCalledWith(expect.anything(), {
 					locals: datasheetData,
 				});
 			});
