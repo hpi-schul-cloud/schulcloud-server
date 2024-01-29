@@ -5,7 +5,6 @@ import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { LtiToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { PDFModule } from '@pyxlab/nestjs-pdf';
 import { BoardModule } from '../board';
 import { LearnroomModule } from '../learnroom';
 import { CommonToolModule } from './common';
