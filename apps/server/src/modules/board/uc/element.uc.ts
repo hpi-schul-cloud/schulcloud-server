@@ -54,10 +54,15 @@ export class ElementUc extends BaseUc {
 
 		if (isSubmissionItem(parent)) {
 			await this.checkSubmissionItemWritePermission(userId, parent);
+		} else if (isDrawingElement(element)) {
+			// TODO: fix this temporary hack preventing students from deleting the DrawingElement
+			// linked with getBoardAuthorizable method in board-do-authorizable.service.ts
+			// the roles are hacked for the DrawingElement to allow students for file upload
+			// so because students have BoardRoles.EDITOR role, they can delete the DrawingElement by calling delete endpoint directly
+			// to prevent this, we add UserRoleEnum.TEACHER to the requiredUserRole
+			await this.checkPermission(userId, element, Action.write, UserRoleEnum.TEACHER);
 		} else {
-			// TODO: fix this temporary hack to prevent students from deleting the DrawingElement
-			const requiredRole = isDrawingElement(element) ? UserRoleEnum.TEACHER : undefined;
-			await this.checkPermission(userId, element, Action.write, requiredRole);
+			await this.checkPermission(userId, element, Action.write);
 		}
 
 		return element;

@@ -35,8 +35,6 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 		const ids = [...ancestorIds, boardDo.id];
 		const rootId = ids[0];
 		const rootBoardDo = await this.boardDoRepo.findById(rootId, 1);
-
-		// TODO: fix this temporary hack to allow students to upload Files to the DrawingElement
 		const isDrawing = isDrawingElement(boardDo);
 
 		if (rootBoardDo instanceof ColumnBoard) {
@@ -77,6 +75,9 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 					userId: user.id,
 					firstName: user.firstName,
 					lastName: user.lastName,
+					// TODO: fix this temporary hack allowing students to upload files to the DrawingElement
+					// linked with getElementWithWritePermission method in element.uc.ts
+					// this is needed to allow students to upload/delete files to/from the tldraw whiteboard (DrawingElement)
 					roles: isDrawing ? [BoardRoles.EDITOR] : [BoardRoles.READER],
 					userRoleEnum: UserRoleEnum.STUDENT,
 				};
