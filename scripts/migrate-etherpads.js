@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 const arg = require('arg');
 
-const appPromise = require('./src/app');
+const appPromise = require('../src/app');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const etherpadClient = require('./src/services/etherpad/utils/EtherpadClient.js');
+const etherpadClient = require('../src/services/etherpad/utils/EtherpadClient.js');
 const { randomBytes } = require('crypto');
 const { ObjectId } = require('mongodb');
 const fs = require('fs').promises;
