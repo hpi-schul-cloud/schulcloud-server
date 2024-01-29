@@ -74,7 +74,9 @@ export class ExternalToolPseudonymRepo {
 			return [];
 		}
 
-		await Promise.all(externalPseudonyms.map((externalPseudonym) => this.em.removeAndFlush(externalPseudonym)));
+		const removePromises = externalPseudonyms.map((externalPseudonym) => this.em.removeAndFlush(externalPseudonym));
+		
+		await Promise.all(removePromises);
 
 		return this.getExternalPseudonymId(externalPseudonyms);
 	}
