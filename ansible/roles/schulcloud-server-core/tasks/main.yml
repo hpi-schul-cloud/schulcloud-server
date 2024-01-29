@@ -191,7 +191,9 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: tldraw-server-onepassword.yml.j2
-    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+    when: 
+     - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+     - WITH_TLDRAW is defined and WITH_TLDRAW|bool
 
   - name: TlDraw server deployment
     kubernetes.core.k8s:
