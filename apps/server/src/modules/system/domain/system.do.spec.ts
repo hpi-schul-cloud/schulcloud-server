@@ -1,5 +1,6 @@
 import { System } from './system.do';
 import { OauthConfig } from './oauth-config';
+import { SystemTypeEnum } from '@shared/domain/types';
 
 describe('System', () => {
 	describe('isEligibleForLdapLogin', () => {
@@ -7,7 +8,7 @@ describe('System', () => {
 			const setup = () => {
 				const system = new System({
 					id: '123',
-					type: 'ldap',
+					type: SystemTypeEnum.LDAP,
 					ldapConfig: {
 						active: true,
 						url: 'test',
@@ -30,7 +31,7 @@ describe('System', () => {
 			const setup = () => {
 				const system = new System({
 					id: '123',
-					type: 'oauth2',
+					type: SystemTypeEnum.OAUTH,
 					ldapConfig: {
 						active: true,
 						url: 'test',
@@ -53,7 +54,7 @@ describe('System', () => {
 			const setup = () => {
 				const system = new System({
 					id: '123',
-					type: 'ldap',
+					type: SystemTypeEnum.LDAP,
 				});
 
 				return { system };
@@ -72,7 +73,7 @@ describe('System', () => {
 			const setup = () => {
 				const system = new System({
 					id: '123',
-					type: 'ldap',
+					type: SystemTypeEnum.LDAP,
 					ldapConfig: {
 						active: false,
 						url: 'test',
@@ -95,7 +96,7 @@ describe('System', () => {
 			const setup = () => {
 				const system = new System({
 					id: '123',
-					type: 'ldap',
+					type: SystemTypeEnum.LDAP,
 					ldapConfig: {
 						active: true,
 						url: 'test',

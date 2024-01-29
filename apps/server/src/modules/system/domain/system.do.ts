@@ -1,5 +1,6 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { SystemTypeEnum } from '@shared/domain/types';
 import { LdapConfig } from './ldap-config';
 import { OauthConfig } from './oauth-config';
 
@@ -32,7 +33,8 @@ export class System extends DomainObject<SystemProps> {
 
 	public isEligibleForLdapLogin(): boolean {
 		// Systems with an oauthConfig are filtered out here to exclude IServ. IServ is of type LDAP for syncing purposes, but the login is done via OAuth2.
-		const result = this.props.type === 'ldap' && !!this.props.ldapConfig?.active && !this.props.oauthConfig;
+		const result =
+			this.props.type === SystemTypeEnum.LDAP && !!this.props.ldapConfig?.active && !this.props.oauthConfig;
 
 		return result;
 	}
