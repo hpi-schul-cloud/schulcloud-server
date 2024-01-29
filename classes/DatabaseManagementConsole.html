@@ -155,6 +155,11 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
+                                <a href="#migration" >migration</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
                                 <a href="#seedCollections" >seedCollections</a>
                             </li>
                             <li>
@@ -185,7 +190,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/management/console/database-management.console.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/management/console/database-management.console.ts:20</a></div>
                             </td>
                         </tr>
 
@@ -271,8 +276,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="58"
-                                    class="link-to-prism">apps/server/src/modules/management/console/database-management.console.ts:58</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="66"
+                                    class="link-to-prism">apps/server/src/modules/management/console/database-management.console.ts:66</a></div>
                         </td>
                     </tr>
 
@@ -322,6 +327,83 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="migration"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>migration</b></span>
+                        <a href="#migration"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>migration(migrationOptions: <a href="../interfaces/MigrationOptions.html" target="_self">MigrationOptions</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Command({command: &#x27;migration&#x27;, options: undefined, description: &#x27;Execute MikroOrm migration up/down&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="118"
+                                    class="link-to-prism">apps/server/src/modules/management/console/database-management.console.ts:118</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>migrationOptions</td>
+                                            <td>
+                                                            <code><a href="../interfaces/MigrationOptions.html" target="_self" >MigrationOptions</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;string&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="seedCollections"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -348,8 +430,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">apps/server/src/modules/management/console/database-management.console.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="39"
+                                    class="link-to-prism">apps/server/src/modules/management/console/database-management.console.ts:39</a></div>
                         </td>
                     </tr>
 
@@ -425,8 +507,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">apps/server/src/modules/management/console/database-management.console.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="80"
+                                    class="link-to-prism">apps/server/src/modules/management/console/database-management.console.ts:80</a></div>
                         </td>
                     </tr>
 
@@ -460,6 +542,14 @@ interface Options {
 	collection?: string;
 	override?: boolean;
 	onlyfactories?: boolean;
+}
+
+interface MigrationOptions {
+	up?: boolean;
+	down?: boolean;
+	from?: string;
+	to?: string;
+	only?: string;
 }
 
 @Console({ command: &#x27;database&#x27;, description: &#x27;database setup console&#x27; })
@@ -526,6 +616,56 @@ export class DatabaseManagementConsole {
 	async syncIndexes(): Promise&lt;string&gt; {
 		await this.databaseManagementUc.syncIndexes();
 		const report &#x3D; &#x27;sync of indexes is completed&#x27;;
+		this.consoleWriter.info(report);
+		return report;
+	}
+
+	@Command({
+		command: &#x27;migration&#x27;,
+		options: [
+			{
+				flags: &#x27;--up&#x27;,
+				required: false,
+				description: &#x27;execute migration up&#x27;,
+			},
+			{
+				flags: &#x27;--down&#x27;,
+				required: false,
+				description: &#x27;rollback migration (down)&#x27;,
+			},
+			{
+				flags: &#x27;-f, --from&#x27;,
+				required: false,
+				description: &#x27;run migration up/down from specified name&#x27;,
+			},
+			{
+				flags: &#x27;-t, --to&#x27;,
+				required: false,
+				description: &#x27;run migration up/down to specified name&#x27;,
+			},
+			{
+				flags: &#x27;-o, --only&#x27;,
+				required: false,
+				description: &#x27;run a single migration&#x27;,
+			},
+		],
+		description: &#x27;Execute MikroOrm migration up/down&#x27;,
+	})
+	async migration(migrationOptions: MigrationOptions): Promise&lt;string&gt; {
+		let report &#x3D; &#x27;no migration option was given&#x27;;
+		if (!migrationOptions.up &amp;&amp; !migrationOptions.down) {
+			this.consoleWriter.error(report);
+			return report;
+		}
+		if (migrationOptions.up) {
+			await this.databaseManagementUc.migrationUp(migrationOptions.from, migrationOptions.to, migrationOptions.only);
+			report &#x3D; &#x27;migration up is completed&#x27;;
+		}
+		if (migrationOptions.down) {
+			await this.databaseManagementUc.migrationDown(migrationOptions.from, migrationOptions.to, migrationOptions.only);
+			report &#x3D; &#x27;migration down is completed&#x27;;
+		}
+
 		this.consoleWriter.info(report);
 		return report;
 	}

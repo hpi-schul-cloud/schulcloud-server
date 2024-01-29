@@ -139,7 +139,7 @@ Keycloak with any user.</p>
 <ul>
 <li>Set env vars (or in your .env file) &#39;OIDCMOCK__BASE_URL&#39; to http://&lt;your-local-ip&gt;:4011.</li>
 <li>To make it work with the nuxt client set the env var HOST=<a href="http://localhost:4000">http://localhost:4000</a></li>
-<li>re-trigger <code>npm run setup:db</code> and <code>npm run setup:idm</code> to reset and apply seed data.</li>
+<li>re-trigger <code>npm run setup:db:seed</code> and <code>npm run setup:idm</code> to reset and apply seed data.</li>
 <li>start the &#39;oidc-server-mock&#39; as follows:</li>
 </ul>
 <b>Example :</b><div><pre class="line-numbers"><code class="language-bash">docker run \

@@ -308,6 +308,14 @@ interface Options {
 	onlyfactories?: boolean;
 }
 
+interface MigrationOptions {
+	up?: boolean;
+	down?: boolean;
+	from?: string;
+	to?: string;
+	only?: string;
+}
+
 @Console({ command: &#x27;database&#x27;, description: &#x27;database setup console&#x27; })
 export class DatabaseManagementConsole {
 	constructor(private consoleWriter: ConsoleWriterService, private databaseManagementUc: DatabaseManagementUc) {}
@@ -372,6 +380,56 @@ export class DatabaseManagementConsole {
 	async syncIndexes(): Promise&lt;string&gt; {
 		await this.databaseManagementUc.syncIndexes();
 		const report &#x3D; &#x27;sync of indexes is completed&#x27;;
+		this.consoleWriter.info(report);
+		return report;
+	}
+
+	@Command({
+		command: &#x27;migration&#x27;,
+		options: [
+			{
+				flags: &#x27;--up&#x27;,
+				required: false,
+				description: &#x27;execute migration up&#x27;,
+			},
+			{
+				flags: &#x27;--down&#x27;,
+				required: false,
+				description: &#x27;rollback migration (down)&#x27;,
+			},
+			{
+				flags: &#x27;-f, --from&#x27;,
+				required: false,
+				description: &#x27;run migration up/down from specified name&#x27;,
+			},
+			{
+				flags: &#x27;-t, --to&#x27;,
+				required: false,
+				description: &#x27;run migration up/down to specified name&#x27;,
+			},
+			{
+				flags: &#x27;-o, --only&#x27;,
+				required: false,
+				description: &#x27;run a single migration&#x27;,
+			},
+		],
+		description: &#x27;Execute MikroOrm migration up/down&#x27;,
+	})
+	async migration(migrationOptions: MigrationOptions): Promise&lt;string&gt; {
+		let report &#x3D; &#x27;no migration option was given&#x27;;
+		if (!migrationOptions.up &amp;&amp; !migrationOptions.down) {
+			this.consoleWriter.error(report);
+			return report;
+		}
+		if (migrationOptions.up) {
+			await this.databaseManagementUc.migrationUp(migrationOptions.from, migrationOptions.to, migrationOptions.only);
+			report &#x3D; &#x27;migration up is completed&#x27;;
+		}
+		if (migrationOptions.down) {
+			await this.databaseManagementUc.migrationDown(migrationOptions.from, migrationOptions.to, migrationOptions.only);
+			report &#x3D; &#x27;migration down is completed&#x27;;
+		}
+
 		this.consoleWriter.info(report);
 		return report;
 	}

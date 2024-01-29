@@ -4586,6 +4586,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/MetaTagExtractorResponse.html" data-type="entity-link" >MetaTagExtractorResponse</a>
                             </li>
                             <li class="link">
+                                <a href="classes/Migration20240108111130.html" data-type="entity-link" >Migration20240108111130</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/Migration20240115103302.html" data-type="entity-link" >Migration20240115103302</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/MigrationAlreadyActivatedException.html" data-type="entity-link" >MigrationAlreadyActivatedException</a>
                             </li>
                             <li class="link">
@@ -7151,6 +7157,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/MigrationOptions.html" data-type="entity-link" >MigrationOptions</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/MigrationOptions-1.html" data-type="entity-link" >MigrationOptions</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/NameMatch.html" data-type="entity-link" >NameMatch</a>
