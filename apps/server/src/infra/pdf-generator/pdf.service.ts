@@ -9,7 +9,7 @@ export class PdfService {
 		const template: string = this.readTemplateFile(templatePath);
 		const html: string = this.renderTemplate(template, data);
 		const browser: Browser = await puppeteer.launch({
-			executablePath: '/usr/bin/google-chrome',
+			executablePath: '/usr/bin/chromium-browser',
 			headless: 'new',
 			ignoreDefaultArgs: ['--disable-extensions'],
 			args: ['--no-sandbox', '--disable-setuid-sandbox'],
