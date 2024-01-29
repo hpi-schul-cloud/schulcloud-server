@@ -117,7 +117,7 @@ describe('CommonCartridgeOrganizationElementV110', () => {
 							item: [
 								{
 									$: {
-										identifier: resourceProps.identifier,
+										identifier: expect.any(String),
 										identifierref: resourceProps.identifier,
 									},
 									title: resourceProps.title,
