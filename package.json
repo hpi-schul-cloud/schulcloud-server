@@ -136,6 +136,7 @@
 		"@types/connect-redis": "^0.0.19",
 		"@types/gm": "^1.25.1",
 		"@types/ldapjs": "^2.2.5",
+		"@types/mustache": "^4.2.5",
 		"@types/pdfkit": "^0.13.3",
 		"@types/redis": "^2.8.32",
 		"@types/xml2js": "^0.4.11",
