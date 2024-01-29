@@ -3,16 +3,23 @@ import { Test } from '@nestjs/testing';
 import WebSocket from 'ws';
 import { TextEncoder } from 'util';
 import { INestApplication } from '@nestjs/common';
+import { MongoMemoryDatabaseModule } from '@infra/database';
+import { createConfigModuleOptions } from '@src/config';
+import { Logger } from '@src/core/logger';
 import { of, throwError } from 'rxjs';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ConfigModule } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { AxiosError, AxiosHeaders, AxiosResponse } from 'axios';
 import { axiosResponseFactory } from '@shared/testing';
-import { WsCloseCodeEnum, WsCloseMessageEnum } from '../../types';
-import { TldrawWsTestModule } from '../../tldraw-ws-test.module';
+import { TldrawRedisFactory } from '../../redis';
+import { TldrawDrawing } from '../../entities';
 import { TldrawWsService } from '../../service';
-import { TestConnection } from '../../testing/test-connection';
-import { TldrawWs } from '../tldraw.ws';
+import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../../repo';
+import { TestConnection, tldrawTestConfig } from '../../testing';
+import { MetricsService } from '../../metrics';
+import { TldrawWs } from '..';
+import { WsCloseCodeEnum, WsCloseMessageEnum } from '../../types';
 
 describe('WebSocketController (WsAdapter)', () => {
 	let app: INestApplication;
@@ -29,14 +36,32 @@ describe('WebSocketController (WsAdapter)', () => {
 
 	beforeAll(async () => {
 		const testingModule = await Test.createTestingModule({
-			imports: [TldrawWsTestModule],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({ entities: [TldrawDrawing] }),
+				ConfigModule.forRoot(createConfigModuleOptions(tldrawTestConfig)),
+			],
 			providers: [
+				TldrawWs,
+				TldrawWsService,
+				TldrawBoardRepo,
+				YMongodb,
+				MetricsService,
+				TldrawRedisFactory,
+				{
+					provide: TldrawRepo,
+					useValue: createMock<TldrawRepo>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
 				},
 			],
 		}).compile();
+
 		gateway = testingModule.get(TldrawWs);
 		wsService = testingModule.get(TldrawWsService);
 		httpService = testingModule.get(HttpService);
@@ -49,10 +74,6 @@ describe('WebSocketController (WsAdapter)', () => {
 		await app.close();
 	});
 
-	beforeEach(() => {
-		jest.useFakeTimers({ advanceTimers: true, doNotFake: ['setInterval', 'clearInterval', 'setTimeout'] });
-	});
-
 	afterEach(() => {
 		jest.clearAllMocks();
 	});
@@ -63,7 +84,6 @@ describe('WebSocketController (WsAdapter)', () => {
 			jest.spyOn(Uint8Array.prototype, 'reduce').mockReturnValueOnce(1);
 
 			ws = await TestConnection.setupWs(wsUrl, 'TEST');
-
 			const { buffer } = getMessage();
 
 			return { handleConnectionSpy, buffer };
@@ -71,6 +91,7 @@ describe('WebSocketController (WsAdapter)', () => {
 
 		it(`should handle connection`, async () => {
 			const { handleConnectionSpy, buffer } = await setup();
+
 			ws.send(buffer, () => {});
 
 			expect(handleConnectionSpy).toHaveBeenCalledTimes(1);
@@ -110,10 +131,10 @@ describe('WebSocketController (WsAdapter)', () => {
 
 		it(`should handle 2 connections at same doc and data transfer`, async () => {
 			const { handleConnectionSpy, ws2, buffer } = await setup();
+
 			ws.send(buffer);
 			ws2.send(buffer);
 
-			expect(handleConnectionSpy).toHaveBeenCalled();
 			expect(handleConnectionSpy).toHaveBeenCalledTimes(2);
 
 			handleConnectionSpy.mockRestore();
@@ -140,7 +161,7 @@ describe('WebSocketController (WsAdapter)', () => {
 
 			expect(wsCloseSpy).toHaveBeenCalledWith(
 				WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
-				WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE
+				Buffer.from(WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE)
 			);
 
 			httpGetCallSpy.mockRestore();
@@ -157,7 +178,7 @@ describe('WebSocketController (WsAdapter)', () => {
 
 			expect(wsCloseSpy).toHaveBeenCalledWith(
 				WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
-				WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE
+				Buffer.from(WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE)
 			);
 
 			httpGetCallSpy.mockRestore();
@@ -170,10 +191,12 @@ describe('WebSocketController (WsAdapter)', () => {
 		const setup = () => {
 			const setupConnectionSpy = jest.spyOn(wsService, 'setupWSConnection');
 			const wsCloseSpy = jest.spyOn(WebSocket.prototype, 'close');
+			const closeConnSpy = jest.spyOn(wsService, 'closeConn').mockRejectedValue(new Error('error'));
 
 			return {
 				setupConnectionSpy,
 				wsCloseSpy,
+				closeConnSpy,
 			};
 		};
 
@@ -186,7 +209,7 @@ describe('WebSocketController (WsAdapter)', () => {
 
 			expect(wsCloseSpy).toHaveBeenCalledWith(
 				WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE,
-				WsCloseMessageEnum.WS_CLIENT_BAD_REQUEST_MESSAGE
+				Buffer.from(WsCloseMessageEnum.WS_CLIENT_BAD_REQUEST_MESSAGE)
 			);
 
 			wsCloseSpy.mockRestore();
@@ -211,7 +234,7 @@ describe('WebSocketController (WsAdapter)', () => {
 
 			expect(wsCloseSpy).toHaveBeenCalledWith(
 				WsCloseCodeEnum.WS_CLIENT_NOT_FOUND_CODE,
-				WsCloseMessageEnum.WS_CLIENT_NOT_FOUND_MESSAGE
+				Buffer.from(WsCloseMessageEnum.WS_CLIENT_NOT_FOUND_MESSAGE)
 			);
 
 			wsCloseSpy.mockRestore();
@@ -232,7 +255,7 @@ describe('WebSocketController (WsAdapter)', () => {
 
 			expect(wsCloseSpy).toHaveBeenCalledWith(
 				WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
-				WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE
+				Buffer.from(WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE)
 			);
 
 			wsCloseSpy.mockRestore();
@@ -281,7 +304,7 @@ describe('WebSocketController (WsAdapter)', () => {
 			expect(setupConnectionSpy).toHaveBeenCalledWith(expect.anything(), 'TEST');
 			expect(wsCloseSpy).toHaveBeenCalledWith(
 				WsCloseCodeEnum.WS_CLIENT_FAILED_CONNECTION_CODE,
-				WsCloseMessageEnum.WS_CLIENT_FAILED_CONNECTION_MESSAGE
+				Buffer.from(WsCloseMessageEnum.WS_CLIENT_FAILED_CONNECTION_MESSAGE)
 			);
 
 			wsCloseSpy.mockRestore();

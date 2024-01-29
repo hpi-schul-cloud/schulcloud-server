@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { LegacySchoolRepo } from '@shared/repo';
+import { FederalStateService } from './federal-state.service';
 import { SchoolValidationService } from './validation';
 
 /**
@@ -11,7 +12,8 @@ import { SchoolValidationService } from './validation';
 export class LegacySchoolService {
 	constructor(
 		private readonly schoolRepo: LegacySchoolRepo,
-		private readonly schoolValidationService: SchoolValidationService
+		private readonly schoolValidationService: SchoolValidationService,
+		private readonly federalStateService: FederalStateService
 	) {}
 
 	async hasFeature(schoolId: EntityId, feature: SchoolFeature): Promise<boolean> {
@@ -53,5 +55,12 @@ export class LegacySchoolService {
 		const ret: LegacySchoolDo = await this.schoolRepo.save(school);
 
 		return ret;
+	}
+
+	async createSchool(props: { name: string; federalStateName: string }): Promise<LegacySchoolDo> {
+		const federalState = await this.federalStateService.findFederalStateByName(props.federalStateName);
+		const school = new LegacySchoolDo({ name: props.name, federalState });
+		await this.schoolRepo.save(school);
+		return school;
 	}
 }
