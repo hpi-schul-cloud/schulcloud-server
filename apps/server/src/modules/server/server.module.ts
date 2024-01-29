@@ -1,7 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
 import { MailModule } from '@infra/mail';
-import { PdfGeneratorModule } from '@infra/pdf-generator/pdf-generator.module';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { SchulconnexClientModule } from '@infra/schulconnex-client';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
@@ -86,7 +85,6 @@ const serverModules = [
 	PseudonymApiModule,
 	SchoolApiModule,
 	LegacySchoolApiModule,
-	PdfGeneratorModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

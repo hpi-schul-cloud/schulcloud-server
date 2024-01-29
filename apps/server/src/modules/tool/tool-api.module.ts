@@ -1,4 +1,3 @@
-import { PdfGeneratorModule } from '@infra/pdf-generator/pdf-generator.module';
 import { AuthorizationModule } from '@modules/authorization';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { UserModule } from '@modules/user';
@@ -35,7 +34,6 @@ import { ToolModule } from './tool.module';
 		ToolConfigModule,
 		LearnroomModule,
 		BoardModule,
-		PdfGeneratorModule,
 	],
 	controllers: [
 		ToolLaunchController,

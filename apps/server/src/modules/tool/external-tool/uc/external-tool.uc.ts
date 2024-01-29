@@ -1,4 +1,3 @@
-import { PdfService } from '@infra/pdf-generator/pdf.service';
 import { AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
@@ -8,7 +7,12 @@ import { EntityId } from '@shared/domain/types';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
 import { ExternalTool, ExternalToolConfig, ExternalToolDatasheetTemplateData, ExternalToolMetadata } from '../domain';
-import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
+import {
+	ExternalToolLogoService,
+	ExternalToolService,
+	ExternalToolValidationService,
+	DatasheetPdfService,
+} from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
 import { ExternalToolDatasheetMapper } from '../mapper/external-tool-datasheet.mapper';
 
@@ -20,7 +24,7 @@ export class ExternalToolUc {
 		private readonly toolValidationService: ExternalToolValidationService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
 		private readonly commonToolMetadataService: CommonToolMetadataService,
-		private readonly pdfService: PdfService
+		private readonly datasheetPdfService: DatasheetPdfService
 	) {}
 
 	async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
@@ -104,10 +108,7 @@ export class ExternalToolUc {
 		const dataSheetData: ExternalToolDatasheetTemplateData =
 			ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(externalTool, user.firstName, user.lastName);
 
-		const buffer: Buffer = await this.pdfService.generatePdfFromTemplate<ExternalToolDatasheetTemplateData>(
-			'apps/server/src/modules/tool/external-tool/mustache-template/ExternalToolDatasheet/html.mustache',
-			dataSheetData
-		);
+		const buffer: Buffer = await this.datasheetPdfService.generatePdf(dataSheetData);
 
 		return buffer;
 	}
