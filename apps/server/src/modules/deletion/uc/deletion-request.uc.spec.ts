@@ -203,6 +203,10 @@ describe(DeletionRequestUc.name, () => {
 	describe('executeDeletionRequests', () => {
 		describe('when executing deletionRequests', () => {
 			const setup = () => {
+				const accountDeleted = DomainOperationBuilder.build(DomainName.ACCOUNT, OperationType.DELETE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
 				const classesUpdated = DomainOperationBuilder.build(DomainName.CLASS, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
@@ -258,6 +262,8 @@ describe(DeletionRequestUc.name, () => {
 					new ObjectId().toHexString(),
 				]);
 
+				const rocketChatServiceDeleted = { success: true };
+
 				const tasksModifiedByRemoveCreatorId = DomainOperationBuilder.build(DomainName.TASK, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
@@ -283,7 +289,8 @@ describe(DeletionRequestUc.name, () => {
 
 				const user = userDoFactory.buildWithId();
 
-				registrationPinService.deleteRegistrationPinByEmail.mockResolvedValue(registrationPinDeleted);
+				accountService.deleteAccountByUserId.mockResolvedValueOnce(accountDeleted);
+				registrationPinService.deleteRegistrationPinByEmail.mockResolvedValueOnce(registrationPinDeleted);
 				classService.deleteUserDataFromClasses.mockResolvedValueOnce(classesUpdated);
 				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(courseGroupUpdated);
 				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(courseUpdated);
@@ -294,10 +301,11 @@ describe(DeletionRequestUc.name, () => {
 				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(teamsUpdated);
 				userService.deleteUser.mockResolvedValueOnce(userDeleted);
 				rocketChatUserService.deleteByUserId.mockResolvedValueOnce(rocketChatUserDeleted);
+				rocketChatService.deleteUser.mockResolvedValueOnce(rocketChatServiceDeleted);
 				filesStorageClientAdapterService.removeCreatorIdFromFileRecords.mockResolvedValueOnce(fileRecordsUpdated);
 				dashboardService.deleteDashboardByUserId.mockResolvedValueOnce(dashboardDeleted);
 				taskService.removeCreatorIdFromTasks.mockResolvedValueOnce(tasksModifiedByRemoveCreatorId);
-				taskService.removeCreatorIdFromTasks.mockResolvedValueOnce(tasksModifiedByRemoveUserFromFinished);
+				taskService.removeUserFromFinished.mockResolvedValueOnce(tasksModifiedByRemoveUserFromFinished);
 				taskService.deleteTasksByOnlyCreator.mockResolvedValueOnce(tasksDeleted);
 
 				return {
@@ -324,14 +332,14 @@ describe(DeletionRequestUc.name, () => {
 				expect(deletionRequestService.markDeletionRequestAsExecuted).toHaveBeenCalledWith(deletionRequestToExecute.id);
 			});
 
-			it('should call accountService.deleteByUserId to delete user data in account module', async () => {
+			it('should call accountService.deleteAccountByUserId to delete user data in account module', async () => {
 				const { deletionRequestToExecute } = setup();
 
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
 
 				await uc.executeDeletionRequests();
 
-				expect(accountService.deleteByUserId).toHaveBeenCalled();
+				expect(accountService.deleteAccountByUserId).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call registrationPinService.deleteRegistrationPinByEmail to delete user data in registrationPin module', async () => {

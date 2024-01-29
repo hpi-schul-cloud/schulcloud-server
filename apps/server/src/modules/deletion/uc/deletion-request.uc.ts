@@ -132,8 +132,14 @@ export class DeletionRequestUc {
 	private async removeAccount(deletionRequest: DeletionRequest) {
 		this.logger.debug({ action: 'removeAccount', deletionRequest });
 
-		await this.accountService.deleteByUserId(deletionRequest.targetRefId);
-		await this.logDeletion(deletionRequest, DomainName.ACCOUNT, OperationType.DELETE, 1, []);
+		const accountDeleted = await this.accountService.deleteAccountByUserId(deletionRequest.targetRefId);
+		await this.logDeletion(
+			deletionRequest,
+			accountDeleted.domain,
+			accountDeleted.operation,
+			accountDeleted.count,
+			accountDeleted.refs
+		);
 	}
 
 	private async removeUserRegistrationPin(deletionRequest: DeletionRequest): Promise<number> {
@@ -343,6 +349,9 @@ export class DeletionRequestUc {
 			deletionRequest.targetRefId
 		);
 
+		const modifiedTasksCount = tasksModifiedByRemoveCreator.count + tasksModifiedByRemoveUserFromFinished.count;
+		const modifiedTasksRef = [...tasksModifiedByRemoveCreator.refs, ...tasksModifiedByRemoveUserFromFinished.refs];
+
 		await this.logDeletion(
 			deletionRequest,
 			tasksDeleted.domain,
@@ -355,8 +364,8 @@ export class DeletionRequestUc {
 			deletionRequest,
 			tasksModifiedByRemoveCreator.domain,
 			tasksModifiedByRemoveCreator.operation,
-			tasksModifiedByRemoveCreator.count + tasksModifiedByRemoveUserFromFinished.count,
-			[]
+			modifiedTasksCount,
+			modifiedTasksRef
 		);
 	}
 }
