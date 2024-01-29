@@ -2,18 +2,17 @@ import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
-import { Logger } from '@src/core/logger';
+import { LoggerModule } from '@src/core/logger';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
-import { AuthenticationModule } from '@modules/authentication/authentication.module';
-import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
+import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
+import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { AuthorizationModule } from '@modules/authorization';
-import { TldrawDrawing } from './entities';
 import { config, TLDRAW_DB_URL } from './config';
-import { TldrawService } from './service/tldraw.service';
-import { TldrawBoardRepo } from './repo';
-import { TldrawController } from './controller/tldraw.controller';
-import { TldrawRepo } from './repo/tldraw.repo';
+import { TldrawDrawing } from './entities';
+import { TldrawController } from './controller';
+import { TldrawService } from './service';
+import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
@@ -23,10 +22,11 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 
 @Module({
 	imports: [
+		LoggerModule,
 		AuthorizationModule,
 		AuthenticationModule,
 		CoreModule,
-		RabbitMQWrapperTestModule,
+		RabbitMQWrapperModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',
@@ -37,7 +37,7 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		}),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 	],
-	providers: [Logger, TldrawService, TldrawBoardRepo, TldrawRepo],
+	providers: [TldrawService, TldrawBoardRepo, TldrawRepo, YMongodb],
 	controllers: [TldrawController],
 })
 export class TldrawModule {}

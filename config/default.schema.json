@@ -1396,6 +1396,15 @@
 			"default": false,
 			"description": "Enables the copying of ctl tools when copying a course."
 		},
+		"FEATURE_SHOW_MIGRATION_WIZARD": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the migration wizard on the school administration page in the migration section."
+		},
+		"MIGRATION_WIZARD_DOCUMENTATION_LINK": {
+			"type": "string",
+			"description": "The documentation page that gets rendered in the migration wizard tool."
+		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",
 			"description": "TSP School Syncer properties",
@@ -1438,7 +1447,7 @@
 		"TLDRAW": {
 			"type": "object",
 			"description": "Configuration of tldraw related settings",
-			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_COLLECTION_NAME", "DB_FLUSH_SIZE", "DB_MULTIPLE_COLLECTIONS", "ASSETS_ENABLED", "ASSETS_MAX_SIZE", "ASSETS_ALLOWED_EXTENSIONS_LIST"],
+			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_FLUSH_SIZE", "MAX_DOCUMENT_SIZE", "ASSETS_ENABLED", "ASSETS_MAX_SIZE", "ASSETS_ALLOWED_EXTENSIONS_LIST"],
 			"properties": {
 				"SOCKET_PORT": {
 					"type": "number",
@@ -1452,14 +1461,13 @@
 					"type": "boolean",
 					"description": "If tldraw garbage collector should be enabled"
 				},
-				"DB_COLLECTION_NAME": {
-					"type": "string",
-					"description": "Collection name in which tldraw drawing are stored"
-				},
 				"DB_FLUSH_SIZE": {
 					"type": "integer",
 					"description": "DB collection flushing size"
 				},
+				"MAX_DOCUMENT_SIZE": {
+					"type": "number",
+					"description": "Maximum size of a single tldraw document in mongo"
 				"DB_MULTIPLE_COLLECTIONS": {
 					"type": "boolean",
 					"description": "DB collection allowing multiple collections for drawing"
@@ -1482,8 +1490,8 @@
 				"SOCKET_PORT": 3345,
 				"PING_TIMEOUT": 30000,
 				"GC_ENABLED": true,
-				"DB_COLLECTION_NAME": "drawings",
 				"DB_FLUSH_SIZE": 400,
+				"MAX_DOCUMENT_SIZE": 15000000,
 				"DB_MULTIPLE_COLLECTIONS": false,
 				"ASSETS_ENABLED": true,
 				"ASSETS_MAX_SIZE": 25000000,

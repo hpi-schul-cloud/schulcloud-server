@@ -8,7 +8,7 @@ import { Logger } from '@src/core/logger';
 import { AxiosError } from 'axios';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
-import { WebsocketCloseErrorLoggable } from '../loggable/websocket-close-error.loggable';
+import { WebsocketCloseErrorLoggable } from '../loggable';
 import { TldrawConfig, TLDRAW_SOCKET_PORT } from '../config';
 import { WsCloseCodeEnum, WsCloseMessageEnum } from '../types';
 import { TldrawWsService } from '../service';
@@ -68,7 +68,7 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		}
 
 		try {
-			this.tldrawWsService.setupWSConnection(client, docName);
+			await this.tldrawWsService.setupWSConnection(client, docName);
 		} catch (err) {
 			this.closeClientAndLogError(
 				client,
@@ -79,17 +79,8 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		}
 	}
 
-	public afterInit(): void {
-		this.tldrawWsService.setPersistence({
-			bindState: async (docName, ydoc) => {
-				await this.tldrawWsService.updateDocument(docName, ydoc);
-			},
-			writeState: async (docName) => {
-				// This is called when all connections to the document are closed.
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-				await this.tldrawWsService.flushDocument(docName);
-			},
-		});
+	public async afterInit(): Promise<void> {
+		await this.tldrawWsService.createDbIndex();
 	}
 
 	private getDocNameFromRequest(request: Request): string {
