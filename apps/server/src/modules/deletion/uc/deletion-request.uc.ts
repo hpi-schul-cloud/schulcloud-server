@@ -303,7 +303,7 @@ export class DeletionRequestUc {
 
 		const registrationPinDeleted = await this.removeUserRegistrationPin(deletionRequest);
 
-		if (registrationPinDeleted) {
+		if (registrationPinDeleted >= 0) {
 			const userDeleted = await this.userService.deleteUser(deletionRequest.targetRefId);
 			await this.logDeletion(
 				deletionRequest,
