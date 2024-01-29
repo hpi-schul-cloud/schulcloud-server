@@ -74,6 +74,6 @@ export class ClassService {
 	}
 
 	private getClassesId(classes: Class[]): EntityId[] {
-		return classes.map((clazz) => clazz.id);
+		return classes.map((item) => item.id);
 	}
 }
