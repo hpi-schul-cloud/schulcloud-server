@@ -1,5 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
-import { roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { Role } from '.';
 import { Permission } from '../interface';
@@ -24,7 +24,7 @@ describe('User Entity', () => {
 		});
 
 		it('should create a user when passing required properties', () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const user = new User({
 				firstName: 'John',
 				lastName: 'Cale',

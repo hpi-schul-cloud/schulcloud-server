@@ -5,17 +5,18 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Course, SchoolEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	basicToolConfigFactory,
 	contextExternalToolEntityFactory,
 	contextExternalToolFactory,
 	courseFactory,
-	externalToolEntityFactory,
-	schoolExternalToolEntityFactory,
-	schoolFactory,
 	customParameterFactory,
+	externalToolEntityFactory,
+	schoolEntityFactory,
+	schoolExternalToolEntityFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
+import { schoolExternalToolConfigurationStatusEntityFactory } from '@shared/testing/factory/school-external-tool-configuration-status-entity.factory';
 import { Response } from 'supertest';
 import { CustomParameterLocation, CustomParameterScope, ToolConfigType } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
@@ -57,7 +58,7 @@ describe('ToolLaunchController (API)', () => {
 	describe('[GET] tools/context/{contextExternalToolId}/launch', () => {
 		describe('when valid data is given', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);
@@ -125,7 +126,7 @@ describe('ToolLaunchController (API)', () => {
 
 		describe('when user wants to launch an outdated tool', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);
@@ -174,10 +175,118 @@ describe('ToolLaunchController (API)', () => {
 			});
 		});
 
+		describe('when user wants to launch a deactivated tool', () => {
+			describe('when external tool is deactivated', () => {
+				const setup = async () => {
+					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+					const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
+						Permission.CONTEXT_TOOL_USER,
+					]);
+					const course: Course = courseFactory.buildWithId({ school, teachers: [teacherUser] });
+
+					const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+						config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
+						version: 1,
+						isDeactivated: true,
+					});
+					const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+						tool: externalToolEntity,
+						school,
+						toolVersion: 0,
+					});
+					const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+						schoolTool: schoolExternalToolEntity,
+						contextId: course.id,
+						contextType: ContextExternalToolType.COURSE,
+						toolVersion: 0,
+					});
+
+					const params: ToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
+
+					await em.persistAndFlush([
+						school,
+						teacherUser,
+						teacherAccount,
+						course,
+						externalToolEntity,
+						schoolExternalToolEntity,
+						contextExternalToolEntity,
+					]);
+					em.clear();
+
+					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
+					return { params, loggedInClient };
+				};
+
+				it('should return a bad request', async () => {
+					const { params, loggedInClient } = await setup();
+
+					const response: Response = await loggedInClient.get(`${params.contextExternalToolId}/launch`);
+
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+				});
+			});
+
+			describe('when school external tool is deactivated', () => {
+				const setup = async () => {
+					const school: SchoolEntity = schoolEntityFactory.buildWithId();
+					const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school }, [
+						Permission.CONTEXT_TOOL_USER,
+					]);
+					const course: Course = courseFactory.buildWithId({ school, teachers: [teacherUser] });
+
+					const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId({
+						config: basicToolConfigFactory.build({ baseUrl: 'https://mockurl.de', type: ToolConfigType.BASIC }),
+						version: 1,
+					});
+					const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
+						tool: externalToolEntity,
+						school,
+						toolVersion: 0,
+						status: schoolExternalToolConfigurationStatusEntityFactory.build({
+							isDeactivated: true,
+						}),
+					});
+					const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+						schoolTool: schoolExternalToolEntity,
+						contextId: course.id,
+						contextType: ContextExternalToolType.COURSE,
+						toolVersion: 0,
+					});
+
+					const params: ToolLaunchParams = { contextExternalToolId: contextExternalToolEntity.id };
+
+					await em.persistAndFlush([
+						school,
+						teacherUser,
+						teacherAccount,
+						course,
+						externalToolEntity,
+						schoolExternalToolEntity,
+						contextExternalToolEntity,
+					]);
+					em.clear();
+
+					const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+
+					return { params, loggedInClient };
+				};
+
+				it('should return a bad request', async () => {
+					const { params, loggedInClient } = await setup();
+
+					const response: Response = await loggedInClient.get(`${params.contextExternalToolId}/launch`);
+
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+				});
+			});
+		});
+
 		describe('when user wants to launch tool from another school', () => {
 			const setup = async () => {
-				const toolSchool: SchoolEntity = schoolFactory.buildWithId();
-				const usersSchool: SchoolEntity = schoolFactory.buildWithId();
+				const toolSchool: SchoolEntity = schoolEntityFactory.buildWithId();
+				const usersSchool: SchoolEntity = schoolEntityFactory.buildWithId();
 
 				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school: usersSchool }, [
 					Permission.CONTEXT_TOOL_USER,

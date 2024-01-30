@@ -13,7 +13,7 @@ import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import {
 	cleanupCollections,
 	roleFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	systemEntityFactory,
 	userDoFactory,
 	userFactory,
@@ -108,7 +108,7 @@ describe('UserRepo', () => {
 
 		beforeEach(async () => {
 			system = systemEntityFactory.buildWithId();
-			school = schoolFactory.buildWithId();
+			school = schoolEntityFactory.buildWithId();
 			school.systems.add(system);
 			user = userFactory.buildWithId({ externalId, school });
 
@@ -152,7 +152,7 @@ describe('UserRepo', () => {
 
 		beforeEach(async () => {
 			system = systemEntityFactory.buildWithId();
-			school = schoolFactory.buildWithId();
+			school = schoolEntityFactory.buildWithId();
 			school.systems.add(system);
 			user = userFactory.buildWithId({ externalId, school });
 
@@ -181,6 +181,51 @@ describe('UserRepo', () => {
 		});
 	});
 
+	describe('findByEmail', () => {
+		it('should find user by email', async () => {
+			const originalUsername = 'USER@EXAMPLE.COM';
+			const user = userFactory.build({ email: originalUsername });
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			const result = await repo.findByEmail('USER@EXAMPLE.COM');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ email: originalUsername }));
+		});
+
+		it('should find user by email, ignoring case', async () => {
+			const originalUsername = 'USER@EXAMPLE.COM';
+			const user = userFactory.build({ email: originalUsername });
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			let result: UserDO[];
+
+			result = await repo.findByEmail('USER@example.COM');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ email: originalUsername }));
+
+			result = await repo.findByEmail('user@example.com');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ email: originalUsername }));
+		});
+
+		it('should not find by wildcard', async () => {
+			const originalUsername = 'USER@EXAMPLE.COM';
+			const user = userFactory.build({ email: originalUsername });
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			let result: UserDO[];
+
+			result = await repo.findByEmail('USER@EXAMPLECCOM');
+			expect(result).toHaveLength(0);
+
+			result = await repo.findByEmail('.*');
+			expect(result).toHaveLength(0);
+		});
+	});
+
 	describe('mapEntityToDO', () => {
 		it('should return a domain object', () => {
 			const id = new ObjectId();
@@ -189,7 +234,7 @@ describe('UserRepo', () => {
 					email: 'email@email.email',
 					firstName: 'firstName',
 					lastName: 'lastName',
-					school: schoolFactory.buildWithId(),
+					school: schoolEntityFactory.buildWithId(),
 					ldapDn: 'ldapDn',
 					externalId: 'externalId',
 					language: LanguageType.DE,

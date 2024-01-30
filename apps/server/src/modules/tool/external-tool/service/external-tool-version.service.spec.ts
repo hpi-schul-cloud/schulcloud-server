@@ -17,6 +17,7 @@ describe('ExternalToolVersionService', () => {
 			displayName: 'displayName',
 			default: 'defaulValueParam1',
 			isOptional: false,
+			isProtected: false,
 			location: CustomParameterLocation.PATH,
 			regex: '*',
 			regexComment: '',

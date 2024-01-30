@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
@@ -9,14 +10,16 @@ import {
 	SubmissionContainerElement,
 } from '@shared/domain/domainobject';
 import { InputFormat } from '@shared/domain/types';
-import { drawingElementFactory, setupEntities } from '@shared/testing';
 import {
 	cardFactory,
+	contextExternalToolFactory,
+	drawingElementFactory,
 	fileElementFactory,
 	linkElementFactory,
 	richTextElementFactory,
+	setupEntities,
 	submissionContainerElementFactory,
-} from '@shared/testing/factory/domainobject';
+} from '@shared/testing';
 import {
 	DrawingContentBody,
 	FileContentBody,
@@ -118,7 +121,7 @@ describe(ContentElementService.name, () => {
 	});
 
 	describe('findParentOfId', () => {
-		describe('when parent is a vaid node', () => {
+		describe('when parent is a valid node', () => {
 			const setup = () => {
 				const card = cardFactory.build();
 				const element = richTextElementFactory.build();
@@ -150,6 +153,36 @@ describe(ContentElementService.name, () => {
 				const result = await service.findParentOfId(element.id);
 
 				expect(result).toEqual(card);
+			});
+		});
+	});
+
+	describe('countBoardUsageForExternalTools', () => {
+		describe('when counting the amount of boards used by tools', () => {
+			const setup = () => {
+				const contextExternalTools: ContextExternalTool[] = contextExternalToolFactory.buildListWithId(3);
+
+				boardDoRepo.countBoardUsageForExternalTools.mockResolvedValueOnce(3);
+
+				return {
+					contextExternalTools,
+				};
+			};
+
+			it('should count the usages', async () => {
+				const { contextExternalTools } = setup();
+
+				await service.countBoardUsageForExternalTools(contextExternalTools);
+
+				expect(boardDoRepo.countBoardUsageForExternalTools).toHaveBeenCalledWith(contextExternalTools);
+			});
+
+			it('should return the amount of boards', async () => {
+				const { contextExternalTools } = setup();
+
+				const result: number = await service.countBoardUsageForExternalTools(contextExternalTools);
+
+				expect(result).toEqual(3);
 			});
 		});
 	});

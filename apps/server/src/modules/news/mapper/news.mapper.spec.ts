@@ -10,7 +10,7 @@ import {
 	User,
 } from '@shared/domain/entity';
 import { CreateNews, INewsScope, IUpdateNews, NewsTarget, NewsTargetModel } from '@shared/domain/types';
-import { courseFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { courseFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import {
 	CreateNewsParams,
 	FilterNewsParams,
@@ -117,7 +117,7 @@ describe('NewsMapper', () => {
 
 	describe('mapToResponse', () => {
 		it('should correctly map school news to Dto', () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const creator = userFactory.build();
 			const newsProps = { title: 'test title', content: 'test content' };
 			const schoolNews = createNews(newsProps, SchoolNews, school, creator, school);
@@ -127,7 +127,7 @@ describe('NewsMapper', () => {
 			expect(result).toStrictEqual(expected);
 		});
 		it('should correctly map course news to dto', () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const creator = userFactory.build();
 			const course = courseFactory.build({ school });
 			const newsProps = { title: 'test title', content: 'test content' };
@@ -139,7 +139,7 @@ describe('NewsMapper', () => {
 			expect(result).toStrictEqual(expected);
 		});
 		it('should correctly map team news to dto', () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const team = new TeamEntity({ name: 'team #1' });
 			const creator = userFactory.build();
 			const newsProps = { title: 'test title', content: 'test content' };

@@ -2,8 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { DomainModel } from '@shared/domain/types';
 import { DeletionLogRepo } from '../repo';
-import { DeletionDomainModel, DeletionOperationModel } from '../domain/types';
+import { DeletionOperationModel } from '../domain/types';
 import { DeletionLogService } from './deletion-log.service';
 import { deletionLogFactory } from '../domain/testing/factory/deletion-log.factory';
 
@@ -47,7 +48,7 @@ describe(DeletionLogService.name, () => {
 		describe('when creating a deletionRequest', () => {
 			const setup = () => {
 				const deletionRequestId = '653e4833cc39e5907a1e18d2';
-				const domain = DeletionDomainModel.USER;
+				const domain = DomainModel.USER;
 				const operation = DeletionOperationModel.DELETE;
 				const modifiedCount = 0;
 				const deletedCount = 1;
@@ -82,7 +83,7 @@ describe(DeletionLogService.name, () => {
 				const deletionLog1 = deletionLogFactory.build({ deletionRequestId });
 				const deletionLog2 = deletionLogFactory.build({
 					deletionRequestId,
-					domain: DeletionDomainModel.PSEUDONYMS,
+					domain: DomainModel.PSEUDONYMS,
 				});
 				const deletionLogs = [deletionLog1, deletionLog2];
 

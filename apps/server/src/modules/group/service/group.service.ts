@@ -44,6 +44,20 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		return group;
 	}
 
+	public async findGroupsBySchoolIdAndSystemIdAndGroupType(
+		schoolId: EntityId,
+		systemId: EntityId,
+		groupType: GroupTypes
+	): Promise<Group[]> {
+		const group: Group[] = await this.groupRepo.findGroupsBySchoolIdAndSystemIdAndGroupType(
+			schoolId,
+			systemId,
+			groupType
+		);
+
+		return group;
+	}
+
 	public async save(group: Group): Promise<Group> {
 		const savedGroup: Group = await this.groupRepo.save(group);
 

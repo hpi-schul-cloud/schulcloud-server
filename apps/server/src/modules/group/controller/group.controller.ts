@@ -6,12 +6,13 @@ import { ErrorResponse } from '@src/core/error/dto';
 import { GroupUc } from '../uc';
 import { ClassInfoDto, ResolvedGroupDto } from '../uc/dto';
 import {
+	ClassCallerParams,
 	ClassFilterParams,
 	ClassInfoSearchListResponse,
 	ClassSortParams,
 	GroupIdParams,
-	GroupResponse,
 	GroupPaginationParams,
+	GroupResponse,
 } from './dto';
 import { GroupResponseMapper } from './mapper';
 
@@ -30,12 +31,14 @@ export class GroupController {
 		@Query() pagination: GroupPaginationParams,
 		@Query() sortingQuery: ClassSortParams,
 		@Query() filterParams: ClassFilterParams,
+		@Query() callerParams: ClassCallerParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ClassInfoSearchListResponse> {
 		const board: Page<ClassInfoDto> = await this.groupUc.findAllClasses(
 			currentUser.userId,
 			currentUser.schoolId,
 			filterParams.type,
+			callerParams.calledFrom,
 			pagination.skip,
 			pagination.limit,
 			sortingQuery.sortBy,
