@@ -291,7 +291,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;number&gt;</code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Promise&lt;EntityId | null&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -566,8 +566,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="195"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:195</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="199"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:199</a></div>
                         </td>
                     </tr>
 
@@ -754,8 +754,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="191"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:191</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="195"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:195</a></div>
                         </td>
                     </tr>
 
@@ -793,8 +793,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="165"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:165</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="169"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:169</a></div>
                         </td>
                     </tr>
 
@@ -863,8 +863,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="175"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:175</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="179"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:179</a></div>
                         </td>
                     </tr>
 
@@ -930,8 +930,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="187"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:187</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="191"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:191</a></div>
                         </td>
                     </tr>
 
@@ -1390,11 +1390,15 @@ export class UserRepo extends BaseRepo&lt;User&gt; {
 		return promise;
 	}
 
-	async deleteUser(userId: EntityId): Promise&lt;number&gt; {
-		const deletedUserNumber: Promise&lt;number&gt; &#x3D; this._em.nativeDelete(User, {
-			id: userId,
-		});
-		return deletedUserNumber;
+	async deleteUser(userId: EntityId): Promise&lt;EntityId | null&gt; {
+		const user &#x3D; await this._em.findOne(User, { id: userId });
+		if (user &#x3D;&#x3D;&#x3D; null) {
+			return null;
+		}
+
+		await this._em.removeAndFlush(user);
+
+		return user.id;
 	}
 
 	async getParentEmailsFromUser(userId: EntityId): Promise&lt;string[]&gt; {

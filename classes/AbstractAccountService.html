@@ -354,7 +354,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Promise&lt;EntityId[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1405,7 +1405,7 @@ export abstract class AbstractAccountService {
 
 	abstract delete(id: EntityId): Promise&lt;void&gt;;
 
-	abstract deleteByUserId(userId: EntityId): Promise&lt;void&gt;;
+	abstract deleteByUserId(userId: EntityId): Promise&lt;EntityId[]&gt;;
 
 	abstract searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise&lt;Counted&lt;AccountDto[]&gt;&gt;;
 

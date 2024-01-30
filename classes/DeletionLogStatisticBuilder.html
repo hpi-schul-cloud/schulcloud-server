@@ -185,7 +185,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>build(domain: <a href="../undefineds/DomainModel.html" target="_self">DomainModel</a>, modifiedCount: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, deletedCount: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, modifiedRef?: string[], deletedRef?: string[])</code>
+                    <code>build(domain: <a href="../undefineds/DomainName.html" target="_self">DomainName</a>, operation: <a href="../undefineds/OperationType.html" target="_self">OperationType</a>, count: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, refs: <a href="../undefineds/EntityId.html" target="_self">EntityId[]</a>)</code>
                 </td>
             </tr>
 
@@ -216,7 +216,7 @@
                                         <tr>
                                                 <td>domain</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#DomainModel" target="_self" >DomainModel</a></code>
+                                                            <code><a href="../miscellaneous/enumerations.html#DomainName" target="_self" >DomainName</a></code>
                                             </td>
 
                                             <td>
@@ -226,7 +226,19 @@
 
                                         </tr>
                                         <tr>
-                                                <td>modifiedCount</td>
+                                                <td>operation</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#OperationType" target="_self" >OperationType</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>count</td>
                                             <td>
                                                             <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
                                             </td>
@@ -238,37 +250,13 @@
 
                                         </tr>
                                         <tr>
-                                                <td>deletedCount</td>
+                                                <td>refs</td>
                                             <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId[]</a></code>
                                             </td>
 
                                             <td>
                                                     No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>modifiedRef</td>
-                                            <td>
-                                                        <code>string[]</code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>deletedRef</td>
-                                            <td>
-                                                        <code>string[]</code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
                                             </td>
 
 
@@ -298,17 +286,11 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DomainOperation } from &#x27;@shared/domain/interface&#x27;;
-import { DomainModel } from &#x27;@shared/domain/types&#x27;;
+import { DomainName, EntityId, OperationType } from &#x27;@shared/domain/types&#x27;;
 
 export class DeletionLogStatisticBuilder {
-	static build(
-		domain: DomainModel,
-		modifiedCount: number,
-		deletedCount: number,
-		modifiedRef?: string[],
-		deletedRef?: string[]
-	): DomainOperation {
-		const deletionLogStatistic &#x3D; { domain, modifiedCount, deletedCount, modifiedRef, deletedRef };
+	static build(domain: DomainName, operation: OperationType, count: number, refs: EntityId[]): DomainOperation {
+		const deletionLogStatistic &#x3D; { domain, operation, count, refs };
 
 		return deletionLogStatistic;
 	}

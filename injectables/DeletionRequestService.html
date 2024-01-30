@@ -251,7 +251,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createDeletionRequest(targetRefId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, targetRefDomain: <a href="../undefineds/DomainModel.html" target="_self">DomainModel</a>, deleteInMinutes: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                    <code>createDeletionRequest(targetRefId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, targetRefDomain: <a href="../undefineds/DomainName.html" target="_self">DomainName</a>, deleteInMinutes: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
@@ -297,7 +297,7 @@
                                         <tr>
                                                 <td>targetRefDomain</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#DomainModel" target="_self" >DomainModel</a></code>
+                                                            <code><a href="../miscellaneous/enumerations.html#DomainName" target="_self" >DomainName</a></code>
                                             </td>
 
                                             <td>
@@ -759,7 +759,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { DomainModel, EntityId } from &#x27;@shared/domain/types&#x27;;
+import { DomainName, EntityId } from &#x27;@shared/domain/types&#x27;;
 import { DeletionRequest } from &#x27;../domain/deletion-request.do&#x27;;
 import { DeletionStatusModel } from &#x27;../domain/types&#x27;;
 import { DeletionRequestRepo } from &#x27;../repo/deletion-request.repo&#x27;;
@@ -770,7 +770,7 @@ export class DeletionRequestService {
 
 	async createDeletionRequest(
 		targetRefId: EntityId,
-		targetRefDomain: DomainModel,
+		targetRefDomain: DomainName,
 		deleteInMinutes &#x3D; 43200
 	): Promise&lt;{ requestId: EntityId; deletionPlannedAt: Date }&gt; {
 		const dateOfDeletion &#x3D; new Date();

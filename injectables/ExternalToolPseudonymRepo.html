@@ -171,6 +171,10 @@
                                 <a href="#findPseudonymByPseudonym" >findPseudonymByPseudonym</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getExternalPseudonymId" >getExternalPseudonymId</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Protected</span>
                                 <a href="#mapDomainObjectToEntityProperties" >mapDomainObjectToEntityProperties</a>
                             </li>
@@ -372,7 +376,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;number&gt;</code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Promise&lt;EntityId[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -635,8 +639,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="114"
-                                    class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:114</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="123"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:123</a></div>
                         </td>
                     </tr>
 
@@ -716,8 +720,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="79"
-                                    class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:79</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="84"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:84</a></div>
                         </td>
                     </tr>
 
@@ -767,6 +771,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getExternalPseudonymId"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>getExternalPseudonymId</b></span>
+                        <a href="#getExternalPseudonymId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getExternalPseudonymId(externalPseudonyms: ExternalToolPseudonymEntity[])</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="98"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:98</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>externalPseudonyms</td>
+                                            <td>
+                                                        <code>ExternalToolPseudonymEntity[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId[]</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="mapDomainObjectToEntityProperties"></a>
                     <span class="name">
                             <span class="modifier">Protected</span>
@@ -785,8 +858,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="106"
-                                    class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:106</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="115"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:115</a></div>
                         </td>
                     </tr>
 
@@ -854,8 +927,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="93"
-                                    class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:93</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/repo/external-tool-pseudonym.repo.ts:102</a></div>
                         </td>
                     </tr>
 
@@ -977,12 +1050,17 @@ export class ExternalToolPseudonymRepo {
 		return savedDomainObject;
 	}
 
-	async deletePseudonymsByUserId(userId: EntityId): Promise&lt;number&gt; {
-		const promise: Promise&lt;number&gt; &#x3D; this.em.nativeDelete(ExternalToolPseudonymEntity, {
-			userId: new ObjectId(userId),
-		});
+	async deletePseudonymsByUserId(userId: EntityId): Promise&lt;EntityId[]&gt; {
+		const externalPseudonyms &#x3D; await this.em.find(ExternalToolPseudonymEntity, { userId: new ObjectId(userId) });
+		if (externalPseudonyms.length &#x3D;&#x3D;&#x3D; 0) {
+			return [];
+		}
 
-		return promise;
+		const removePromises &#x3D; externalPseudonyms.map((externalPseudonym) &#x3D;&gt; this.em.removeAndFlush(externalPseudonym));
+
+		await Promise.all(removePromises);
+
+		return this.getExternalPseudonymId(externalPseudonyms);
 	}
 
 	async findPseudonymByPseudonym(pseudonym: string): Promise&lt;Pseudonym | null&gt; {
@@ -997,6 +1075,10 @@ export class ExternalToolPseudonymRepo {
 		const domainObject: Pseudonym &#x3D; this.mapEntityToDomainObject(entities);
 
 		return domainObject;
+	}
+
+	private getExternalPseudonymId(externalPseudonyms: ExternalToolPseudonymEntity[]): EntityId[] {
+		return externalPseudonyms.map((externalPseudonym) &#x3D;&gt; externalPseudonym.id);
 	}
 
 	protected mapEntityToDomainObject(entity: ExternalToolPseudonymEntity): Pseudonym {

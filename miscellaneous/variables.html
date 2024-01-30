@@ -5972,10 +5972,10 @@ must use</p>
 	() &#x3D;&gt; {
 		return {
 			id: new ObjectId().toHexString(),
-			domain: DomainModel.USER,
-			operation: DeletionOperationModel.DELETE,
-			modifiedCount: 0,
-			deletedCount: 1,
+			domain: DomainName.USER,
+			operation: OperationType.DELETE,
+			count: 1,
+			refs: [new ObjectId().toHexString()],
 			deletionRequestId: new ObjectId(),
 			createdAt: new Date(),
 			updatedAt: new Date(),
@@ -6007,10 +6007,10 @@ must use</p>
                         <i>Default value : </i><code>DoBaseFactory.define&lt;DeletionLog, DeletionLogProps&gt;(DeletionLog, () &#x3D;&gt; {
 	return {
 		id: new ObjectId().toHexString(),
-		domain: DomainModel.USER,
-		operation: DeletionOperationModel.DELETE,
-		modifiedCount: 0,
-		deletedCount: 1,
+		domain: DomainName.USER,
+		operation: OperationType.DELETE,
+		count: 1,
+		refs: [new ObjectId().toHexString()],
 		deletionRequestId: new ObjectId().toHexString(),
 		performedAt: new Date(),
 		createdAt: new Date(),
@@ -6044,7 +6044,7 @@ must use</p>
 	() &#x3D;&gt; {
 		return {
 			id: new ObjectId().toHexString(),
-			targetRefDomain: DomainModel.USER,
+			targetRefDomain: DomainName.USER,
 			deleteAfter: new Date(),
 			targetRefId: new ObjectId().toHexString(),
 			status: DeletionStatusModel.REGISTERED,
@@ -6078,7 +6078,7 @@ must use</p>
                         <i>Default value : </i><code>DeletionRequestFactory.define(DeletionRequest, () &#x3D;&gt; {
 	return {
 		id: new ObjectId().toHexString(),
-		targetRefDomain: DomainModel.USER,
+		targetRefDomain: DomainName.USER,
 		deleteAfter: new Date(),
 		targetRefId: new ObjectId().toHexString(),
 		status: DeletionStatusModel.REGISTERED,

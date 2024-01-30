@@ -174,7 +174,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(message: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, domain: <a href="../undefineds/DomainModel.html" target="_self">DomainModel</a>, user: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, status: <a href="../undefineds/StatusModel.html" target="_self">StatusModel</a>, modifiedCount?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, deletedCount?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+<code>constructor(message: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, domain: <a href="../undefineds/DomainName.html" target="_self">DomainName</a>, user: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, status: <a href="../undefineds/StatusModel.html" target="_self">StatusModel</a>, modifiedCount?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, deletedCount?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -212,7 +212,7 @@
                                                         <td>domain</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../miscellaneous/enumerations.html#DomainModel" target="_self" >DomainModel</a></code>
+                                                                        <code><a href="../miscellaneous/enumerations.html#DomainName" target="_self" >DomainName</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -330,13 +330,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DomainModel, EntityId, StatusModel } from &#x27;@shared/domain/types&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DomainName, EntityId, StatusModel } from &#x27;@shared/domain/types&#x27;;
 import { ErrorLogMessage, LogMessage, Loggable, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
 
 export class DataDeletionDomainOperationLoggable implements Loggable {
 	constructor(
 		private readonly message: string,
-		private readonly domain: DomainModel,
+		private readonly domain: DomainName,
 		private readonly user: EntityId,
 		private readonly status: StatusModel,
 		private readonly modifiedCount?: number,

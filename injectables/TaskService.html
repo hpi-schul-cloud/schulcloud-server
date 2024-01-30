@@ -164,6 +164,10 @@
                                 <a href="#findBySingleParent" >findBySingleParent</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getTasksId" >getTasksId</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#removeCreatorIdFromTasks" >removeCreatorIdFromTasks</a>
                             </li>
@@ -659,6 +663,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getTasksId"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>getTasksId</b></span>
+                        <a href="#getTasksId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getTasksId(tasks: <a href="../classes/Task.html" target="_self">Task[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="163"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:163</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>tasks</td>
+                                            <td>
+                                                            <code><a href="../classes/Task.html" target="_self" >Task[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId[]</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="removeCreatorIdFromTasks"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -677,8 +750,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="83"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:83</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="88"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:88</a></div>
                         </td>
                     </tr>
 
@@ -746,8 +819,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="114"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:114</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="124"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:124</a></div>
                         </td>
                     </tr>
 
@@ -803,7 +876,7 @@
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { Task } from &#x27;@shared/domain/entity&#x27;;
 import { DomainOperation, IFindOptions } from &#x27;@shared/domain/interface&#x27;;
-import { Counted, DomainModel, EntityId, StatusModel } from &#x27;@shared/domain/types&#x27;;
+import { Counted, DomainName, EntityId, OperationType, StatusModel } from &#x27;@shared/domain/types&#x27;;
 import { TaskRepo } from &#x27;@shared/repo&#x27;;
 import { DomainOperationBuilder } from &#x27;@shared/domain/builder&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
@@ -853,7 +926,7 @@ export class TaskService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				&#x27;Deleting data from Task&#x27;,
-				DomainModel.TASK,
+				DomainName.TASK,
 				creatorId,
 				StatusModel.PENDING
 			)
@@ -866,11 +939,16 @@ export class TaskService {
 			await Promise.all(promiseDeletedTasks);
 		}
 
-		const result &#x3D; DomainOperationBuilder.build(DomainModel.TASK, 0, counterOfTasksOnlyWithCreatorId);
+		const result &#x3D; DomainOperationBuilder.build(
+			DomainName.TASK,
+			OperationType.DELETE,
+			counterOfTasksOnlyWithCreatorId,
+			this.getTasksId(tasksByOnlyCreatorId)
+		);
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				&#x27;Successfully deleted data from Task&#x27;,
-				DomainModel.TASK,
+				DomainName.TASK,
 				creatorId,
 				StatusModel.FINISHED,
 				counterOfTasksOnlyWithCreatorId,
@@ -885,7 +963,7 @@ export class TaskService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				&#x27;Deleting user data from Task&#x27;,
-				DomainModel.TASK,
+				DomainName.TASK,
 				creatorId,
 				StatusModel.PENDING
 			)
@@ -898,11 +976,16 @@ export class TaskService {
 			await this.taskRepo.save(tasksByCreatorIdWithCoursesAndLessons);
 		}
 
-		const result &#x3D; DomainOperationBuilder.build(DomainModel.TASK, counterOfTasksWithCoursesorLessons, 0);
+		const result &#x3D; DomainOperationBuilder.build(
+			DomainName.TASK,
+			OperationType.UPDATE,
+			counterOfTasksWithCoursesorLessons,
+			this.getTasksId(tasksByCreatorIdWithCoursesAndLessons)
+		);
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				&#x27;Successfully deleted user data from Task&#x27;,
-				DomainModel.TASK,
+				DomainName.TASK,
 				creatorId,
 				StatusModel.FINISHED,
 				counterOfTasksWithCoursesorLessons,
@@ -916,7 +999,7 @@ export class TaskService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				&#x27;Deleting user data from Task archive collection&#x27;,
-				DomainModel.TASK,
+				DomainName.TASK,
 				userId,
 				StatusModel.PENDING
 			)
@@ -931,11 +1014,16 @@ export class TaskService {
 			await this.taskRepo.save(tasksWithUserInFinished);
 		}
 
-		const result &#x3D; DomainOperationBuilder.build(DomainModel.TASK, counterOfTasksWithUserInFinished, 0);
+		const result &#x3D; DomainOperationBuilder.build(
+			DomainName.TASK,
+			OperationType.UPDATE,
+			counterOfTasksWithUserInFinished,
+			this.getTasksId(tasksWithUserInFinished)
+		);
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				&#x27;Successfully deleted user data from Task archive collection&#x27;,
-				DomainModel.TASK,
+				DomainName.TASK,
 				userId,
 				StatusModel.FINISHED,
 				counterOfTasksWithUserInFinished,
@@ -944,6 +1032,10 @@ export class TaskService {
 		);
 
 		return result;
+	}
+
+	private getTasksId(tasks: Task[]): EntityId[] {
+		return tasks.map((task) &#x3D;&gt; task.id);
 	}
 }
 </code></pre>

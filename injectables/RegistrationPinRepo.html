@@ -169,7 +169,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/registration-pin/repo/registration-pin.repo.ts:6</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/registration-pin/repo/registration-pin.repo.ts:7</a></div>
                             </td>
                         </tr>
 
@@ -234,8 +234,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="9"
-                                    class="link-to-prism">apps/server/src/modules/registration-pin/repo/registration-pin.repo.ts:9</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="10"
+                                    class="link-to-prism">apps/server/src/modules/registration-pin/repo/registration-pin.repo.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -271,7 +271,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;number&gt;</code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Promise&lt;EntityId | null&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -289,16 +289,22 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { RegistrationPinEntity } from &#x27;../entity&#x27;;
 
 @Injectable()
 export class RegistrationPinRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async deleteRegistrationPinByEmail(email: string): Promise&lt;number&gt; {
-		const promise: Promise&lt;number&gt; &#x3D; this.em.nativeDelete(RegistrationPinEntity, { email });
+	async deleteRegistrationPinByEmail(email: string): Promise&lt;EntityId | null&gt; {
+		const registrationPin &#x3D; await this.em.findOne(RegistrationPinEntity, { email });
+		if (registrationPin &#x3D;&#x3D;&#x3D; null) {
+			return null;
+		}
 
-		return promise;
+		await this.em.removeAndFlush(registrationPin);
+
+		return registrationPin.id;
 	}
 }
 </code></pre>

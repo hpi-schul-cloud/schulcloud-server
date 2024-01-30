@@ -152,6 +152,10 @@
                                     <span class="modifier">Async</span>
                                 <a href="#findAllCourseGroupsByUserId" >findAllCourseGroupsByUserId</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getCourseGroupsId" >getCourseGroupsId</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -175,7 +179,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/learnroom/service/coursegroup.service.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/learnroom/service/coursegroup.service.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -253,8 +257,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/coursegroup.service.ts:20</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="22"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/coursegroup.service.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -290,7 +294,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;number&gt;</code>
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperation.html" target="_self" >Promise&lt;DomainOperation&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -323,8 +327,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="14"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/coursegroup.service.ts:14</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="16"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/coursegroup.service.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -370,6 +374,75 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getCourseGroupsId"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>getCourseGroupsId</b></span>
+                        <a href="#getCourseGroupsId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getCourseGroupsId(courseGroups: <a href="../interfaces/Group.html" target="_self">CourseGroup[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="58"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/coursegroup.service.ts:58</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>courseGroups</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Group.html" target="_self" >CourseGroup[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId[]</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -378,8 +451,10 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { DataDeletionDomainOperationLoggable } from &#x27;@shared/common/loggable&#x27;;
+import { DomainOperationBuilder } from &#x27;@shared/domain/builder&#x27;;
 import { CourseGroup } from &#x27;@shared/domain/entity&#x27;;
-import { Counted, DomainModel, EntityId, StatusModel } from &#x27;@shared/domain/types&#x27;;
+import { DomainOperation } from &#x27;@shared/domain/interface&#x27;;
+import { Counted, DomainName, EntityId, OperationType, StatusModel } from &#x27;@shared/domain/types&#x27;;
 import { CourseGroupRepo } from &#x27;@shared/repo&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 
@@ -395,11 +470,11 @@ export class CourseGroupService {
 		return [courseGroups, count];
 	}
 
-	public async deleteUserDataFromCourseGroup(userId: EntityId): Promise&lt;number&gt; {
+	public async deleteUserDataFromCourseGroup(userId: EntityId): Promise&lt;DomainOperation&gt; {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				&#x27;Deleting user data from CourseGroup&#x27;,
-				DomainModel.COURSEGROUP,
+				DomainName.COURSEGROUP,
 				userId,
 				StatusModel.PENDING
 			)
@@ -409,10 +484,18 @@ export class CourseGroupService {
 		courseGroups.forEach((courseGroup) &#x3D;&gt; courseGroup.removeStudent(userId));
 
 		await this.repo.save(courseGroups);
+
+		const result &#x3D; DomainOperationBuilder.build(
+			DomainName.COURSEGROUP,
+			OperationType.UPDATE,
+			count,
+			this.getCourseGroupsId(courseGroups)
+		);
+
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				&#x27;Successfully deleted user data from CourseGroup&#x27;,
-				DomainModel.COURSEGROUP,
+				DomainName.COURSEGROUP,
 				userId,
 				StatusModel.FINISHED,
 				count,
@@ -420,7 +503,11 @@ export class CourseGroupService {
 			)
 		);
 
-		return count;
+		return result;
+	}
+
+	private getCourseGroupsId(courseGroups: CourseGroup[]): EntityId[] {
+		return courseGroups.map((courseGroup) &#x3D;&gt; courseGroup.id);
 	}
 }
 </code></pre>

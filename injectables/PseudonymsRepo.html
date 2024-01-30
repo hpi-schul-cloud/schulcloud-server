@@ -163,6 +163,10 @@
                                 <a href="#findByUserIdAndToolIdOrFail" >findByUserIdAndToolIdOrFail</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getPseudonymId" >getPseudonymId</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Protected</span>
                                 <a href="#mapDomainObjectToEntityProperties" >mapDomainObjectToEntityProperties</a>
                             </li>
@@ -364,7 +368,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;number&gt;</code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Promise&lt;EntityId[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -609,6 +613,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getPseudonymId"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>getPseudonymId</b></span>
+                        <a href="#getPseudonymId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getPseudonymId(pseudonyms: <a href="../entitys/PseudonymEntity.html" target="_self">PseudonymEntity[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="79"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/repo/pseudonyms.repo.ts:79</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>pseudonyms</td>
+                                            <td>
+                                                            <code><a href="../entitys/PseudonymEntity.html" target="_self" >PseudonymEntity[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId[]</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="mapDomainObjectToEntityProperties"></a>
                     <span class="name">
                             <span class="modifier">Protected</span>
@@ -627,8 +700,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="83"
-                                    class="link-to-prism">apps/server/src/modules/pseudonym/repo/pseudonyms.repo.ts:83</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="94"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/repo/pseudonyms.repo.ts:94</a></div>
                         </td>
                     </tr>
 
@@ -696,8 +769,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">apps/server/src/modules/pseudonym/repo/pseudonyms.repo.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="83"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/repo/pseudonyms.repo.ts:83</a></div>
                         </td>
                     </tr>
 
@@ -814,10 +887,21 @@ export class PseudonymsRepo {
 		return savedDomainObject;
 	}
 
-	async deletePseudonymsByUserId(userId: EntityId): Promise&lt;number&gt; {
-		const promise: Promise&lt;number&gt; &#x3D; this.em.nativeDelete(PseudonymEntity, { userId: new ObjectId(userId) });
+	async deletePseudonymsByUserId(userId: EntityId): Promise&lt;EntityId[]&gt; {
+		const pseudonyms &#x3D; await this.em.find(PseudonymEntity, { userId: new ObjectId(userId) });
+		if (pseudonyms.length &#x3D;&#x3D;&#x3D; 0) {
+			return [];
+		}
 
-		return promise;
+		const removePromises &#x3D; pseudonyms.map((pseudonym) &#x3D;&gt; this.em.removeAndFlush(pseudonym));
+
+		await Promise.all(removePromises);
+
+		return this.getPseudonymId(pseudonyms);
+	}
+
+	private getPseudonymId(pseudonyms: PseudonymEntity[]): EntityId[] {
+		return pseudonyms.map((pseudonym) &#x3D;&gt; pseudonym.id);
 	}
 
 	protected mapEntityToDomainObject(entity: PseudonymEntity): Pseudonym {

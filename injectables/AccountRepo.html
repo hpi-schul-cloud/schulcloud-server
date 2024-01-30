@@ -374,7 +374,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >Promise&lt;EntityId[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -637,8 +637,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="74"
-                                    class="link-to-prism">apps/server/src/modules/account/repo/account.repo.ts:74</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="77"
+                                    class="link-to-prism">apps/server/src/modules/account/repo/account.repo.ts:77</a></div>
                         </td>
                     </tr>
 
@@ -988,8 +988,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="80"
-                                    class="link-to-prism">apps/server/src/modules/account/repo/account.repo.ts:80</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="83"
+                                    class="link-to-prism">apps/server/src/modules/account/repo/account.repo.ts:83</a></div>
                         </td>
                     </tr>
 
@@ -1669,11 +1669,14 @@ export class AccountRepo extends BaseRepo&lt;Account&gt; {
 		return this.delete(account);
 	}
 
-	async deleteByUserId(userId: EntityId): Promise&lt;void&gt; {
+	async deleteByUserId(userId: EntityId): Promise&lt;EntityId[]&gt; {
 		const account &#x3D; await this.findByUserId(userId);
-		if (account) {
-			await this._em.removeAndFlush(account);
+		if (account &#x3D;&#x3D;&#x3D; null) {
+			return [];
 		}
+		await this._em.removeAndFlush(account);
+
+		return [account.id];
 	}
 
 	/**
