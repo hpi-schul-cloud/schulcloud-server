@@ -177,7 +177,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:19</a></div>
                             </td>
                         </tr>
 
@@ -254,8 +254,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="24"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:24</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="25"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -323,8 +323,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -385,15 +385,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapCourseUsersToUsergroup(course: <a href="../entitys/Course.html" target="_self">Course</a>)</code>
+                    <code>mapCourseUsersToUsergroup(course: <a href="../entitys/Course.html" target="_self">Course</a>, isDrawing: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="50"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:50</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:53</a></div>
                         </td>
                     </tr>
 
@@ -417,6 +417,18 @@
                                                 <td>course</td>
                                             <td>
                                                             <code><a href="../entitys/Course.html" target="_self" >Course</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>isDrawing</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
                                             </td>
 
                                             <td>
@@ -453,6 +465,7 @@ import {
 	BoardExternalReferenceType,
 	BoardRoles,
 	ColumnBoard,
+	isDrawingElement,
 	UserBoardRoles,
 	UserRoleEnum,
 } from &#x27;@shared/domain/domainobject&#x27;;
@@ -481,10 +494,12 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 		const ids &#x3D; [...ancestorIds, boardDo.id];
 		const rootId &#x3D; ids[0];
 		const rootBoardDo &#x3D; await this.boardDoRepo.findById(rootId, 1);
+		const isDrawing &#x3D; isDrawingElement(boardDo);
+
 		if (rootBoardDo instanceof ColumnBoard) {
 			if (rootBoardDo.context?.type &#x3D;&#x3D;&#x3D; BoardExternalReferenceType.Course) {
 				const course &#x3D; await this.courseRepo.findById(rootBoardDo.context.id);
-				const users &#x3D; this.mapCourseUsersToUsergroup(course);
+				const users &#x3D; this.mapCourseUsersToUsergroup(course, isDrawing);
 				return new BoardDoAuthorizable({ users, id: boardDo.id });
 			}
 		} else {
@@ -494,7 +509,7 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 		return new BoardDoAuthorizable({ users: [], id: boardDo.id });
 	}
 
-	private mapCourseUsersToUsergroup(course: Course): UserBoardRoles[] {
+	private mapCourseUsersToUsergroup(course: Course, isDrawing: boolean): UserBoardRoles[] {
 		const users &#x3D; [
 			...course.getTeachersList().map((user) &#x3D;&gt; {
 				return {
@@ -519,7 +534,10 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 					userId: user.id,
 					firstName: user.firstName,
 					lastName: user.lastName,
-					roles: [BoardRoles.READER],
+					// TODO: fix this temporary hack allowing students to upload files to the DrawingElement
+					// linked with getElementWithWritePermission method in element.uc.ts
+					// this is needed to allow students to upload/delete files to/from the tldraw whiteboard (DrawingElement)
+					roles: isDrawing ? [BoardRoles.EDITOR] : [BoardRoles.READER],
 					userRoleEnum: UserRoleEnum.STUDENT,
 				};
 			}),

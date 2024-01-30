@@ -311,8 +311,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="99"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:99</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="100"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:100</a></div>
                         </td>
                     </tr>
 
@@ -449,8 +449,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="103"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:103</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="104"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:104</a></div>
                         </td>
                     </tr>
 
@@ -725,8 +725,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="83"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:83</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="84"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:84</a></div>
                         </td>
                     </tr>
 
@@ -1001,8 +1001,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="73"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:73</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="74"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:74</a></div>
                         </td>
                     </tr>
 
@@ -1070,8 +1070,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="78"
-                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:78</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="79"
+                                    class="link-to-prism">apps/server/src/modules/board/repo/recursive-delete.vistor.ts:79</a></div>
                         </td>
                     </tr>
 
@@ -1190,6 +1190,7 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 
 	async visitDrawingElementAsync(drawingElement: DrawingElement): Promise&lt;void&gt; {
 		await this.drawingElementAdapterService.deleteDrawingBinData(drawingElement.id);
+		await this.filesStorageClientAdapterService.deleteFilesOfParent(drawingElement.id);
 
 		this.deleteNode(drawingElement);
 		await this.visitChildrenAsync(drawingElement);

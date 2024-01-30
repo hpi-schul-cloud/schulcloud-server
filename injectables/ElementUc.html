@@ -207,7 +207,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:20</a></div>
                             </td>
                         </tr>
 
@@ -320,8 +320,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="63"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:63</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="71"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:71</a></div>
                         </td>
                     </tr>
 
@@ -401,8 +401,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="68"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:68</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -494,8 +494,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="43"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:43</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="44"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -576,8 +576,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="49"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:49</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="50"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:50</a></div>
                         </td>
                     </tr>
 
@@ -657,8 +657,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -1027,6 +1027,7 @@ import { ForbiddenException, forwardRef, Inject, Injectable, UnprocessableEntity
 import {
 	AnyBoardDo,
 	AnyContentElementDo,
+	isDrawingElement,
 	isSubmissionContainerElement,
 	isSubmissionItem,
 	SubmissionItem,
@@ -1077,6 +1078,13 @@ export class ElementUc extends BaseUc {
 
 		if (isSubmissionItem(parent)) {
 			await this.checkSubmissionItemWritePermission(userId, parent);
+		} else if (isDrawingElement(element)) {
+			// TODO: fix this temporary hack preventing students from deleting the DrawingElement
+			// linked with getBoardAuthorizable method in board-do-authorizable.service.ts
+			// the roles are hacked for the DrawingElement to allow students for file upload
+			// so because students have BoardRoles.EDITOR role, they can delete the DrawingElement by calling delete endpoint directly
+			// to prevent this, we add UserRoleEnum.TEACHER to the requiredUserRole
+			await this.checkPermission(userId, element, Action.write, UserRoleEnum.TEACHER);
 		} else {
 			await this.checkPermission(userId, element, Action.write);
 		}

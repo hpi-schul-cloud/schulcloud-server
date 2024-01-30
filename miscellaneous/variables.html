@@ -905,9 +905,6 @@
                             <a href="#signOptions" title="apps/server/src/modules/authentication/authentication.module.ts" ><b>signOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../authentication.module.ts)</a>
                         </li>
                         <li>
-                            <a href="#SOCKET_PORT" title="apps/server/src/modules/tldraw/config.ts" ><b>SOCKET_PORT</b>&nbsp;&nbsp;&nbsp;(apps/.../config.ts)</a>
-                        </li>
-                        <li>
                             <a href="#stateMapping" title="apps/server/src/modules/video-conference/mapper/video-conference.mapper.ts" ><b>stateMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference.mapper.ts)</a>
                         </li>
                         <li>
@@ -981,6 +978,12 @@
                         </li>
                         <li>
                             <a href="#testReqestConst" title="apps/server/src/shared/testing/test-api-client.ts" ><b>testReqestConst</b>&nbsp;&nbsp;&nbsp;(apps/.../test-api-client.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#TLDRAW_DB_URL" title="apps/server/src/modules/tldraw/config.ts" ><b>TLDRAW_DB_URL</b>&nbsp;&nbsp;&nbsp;(apps/.../config.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#TLDRAW_SOCKET_PORT" title="apps/server/src/modules/tldraw/config.ts" ><b>TLDRAW_SOCKET_PORT</b>&nbsp;&nbsp;&nbsp;(apps/.../config.ts)</a>
                         </li>
                         <li>
                             <a href="#tldrawConfig" title="apps/server/src/modules/tldraw/config.ts" ><b>tldrawConfig</b>&nbsp;&nbsp;&nbsp;(apps/.../config.ts)</a>
@@ -3784,10 +3787,36 @@ This allows adding console commands to execute provider methods.</p>
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="SOCKET_PORT"></a>
+                    <a name="TLDRAW_DB_URL"></a>
                     <span class="name">
-                        <span ><b>SOCKET_PORT</b></span>
-                        <a href="#SOCKET_PORT"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>TLDRAW_DB_URL</b></span>
+                        <a href="#TLDRAW_DB_URL"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Configuration.get(&#x27;TLDRAW_DB_URL&#x27;) as string</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="TLDRAW_SOCKET_PORT"></a>
+                    <span class="name">
+                        <span ><b>TLDRAW_SOCKET_PORT</b></span>
+                        <a href="#TLDRAW_SOCKET_PORT"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -3820,6 +3849,7 @@ This allows adding console commands to execute provider methods.</p>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>{
+	TLDRAW_DB_URL,
 	NEST_LOG_LEVEL: Configuration.get(&#x27;NEST_LOG_LEVEL&#x27;) as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get(&#x27;INCOMING_REQUEST_TIMEOUT_API&#x27;) as number,
 	TLDRAW_DB_FLUSH_SIZE: Configuration.get(&#x27;TLDRAW__DB_FLUSH_SIZE&#x27;) as number,
@@ -3828,6 +3858,9 @@ This allows adding console commands to execute provider methods.</p>
 	TLDRAW_PING_TIMEOUT: Configuration.get(&#x27;TLDRAW__PING_TIMEOUT&#x27;) as number,
 	TLDRAW_GC_ENABLED: Configuration.get(&#x27;TLDRAW__GC_ENABLED&#x27;) as boolean,
 	REDIS_URI: Configuration.has(&#x27;REDIS_URI&#x27;) ? (Configuration.get(&#x27;REDIS_URI&#x27;) as string) : null,
+	TLDRAW_ASSETS_ENABLED: Configuration.get(&#x27;TLDRAW__ASSETS_ENABLED&#x27;) as boolean,
+	TLDRAW_ASSETS_MAX_SIZE: Configuration.get(&#x27;TLDRAW__ASSETS_MAX_SIZE&#x27;) as number,
+	TLDRAW_ASSETS_ALLOWED_EXTENSIONS_LIST: Configuration.get(&#x27;TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST&#x27;) as string,
 	API_HOST: Configuration.get(&#x27;API_HOST&#x27;) as string,
 	TLDRAW_MAX_DOCUMENT_SIZE: Configuration.get(&#x27;TLDRAW__MAX_DOCUMENT_SIZE&#x27;) as number,
 }</code>

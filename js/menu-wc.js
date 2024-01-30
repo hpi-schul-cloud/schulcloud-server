@@ -2577,13 +2577,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/TldrawModule.html" data-type="entity-link" >TldrawModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-TldrawModule-575e2490e5936a6c79b348d3f7e6a573240e3251b60e3253601c5160a34feb835c321d3d9019e4f4dd1836c43945509aead73495135589cbb3871af97f7c9d7a"' : 'data-bs-target="#xs-controllers-links-module-TldrawModule-575e2490e5936a6c79b348d3f7e6a573240e3251b60e3253601c5160a34feb835c321d3d9019e4f4dd1836c43945509aead73495135589cbb3871af97f7c9d7a"' }>
+                                            'data-bs-target="#controllers-links-module-TldrawModule-3d8d433e7a776172c8cc2f838855affa5120a4a436cb35054d73e883021eb44d70f7dd45a7eed04e31130c2f585327a3c971115c06ae6a567accccf4403975fa"' : 'data-bs-target="#xs-controllers-links-module-TldrawModule-3d8d433e7a776172c8cc2f838855affa5120a4a436cb35054d73e883021eb44d70f7dd45a7eed04e31130c2f585327a3c971115c06ae6a567accccf4403975fa"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-TldrawModule-575e2490e5936a6c79b348d3f7e6a573240e3251b60e3253601c5160a34feb835c321d3d9019e4f4dd1836c43945509aead73495135589cbb3871af97f7c9d7a"' :
-                                            'id="xs-controllers-links-module-TldrawModule-575e2490e5936a6c79b348d3f7e6a573240e3251b60e3253601c5160a34feb835c321d3d9019e4f4dd1836c43945509aead73495135589cbb3871af97f7c9d7a"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-TldrawModule-3d8d433e7a776172c8cc2f838855affa5120a4a436cb35054d73e883021eb44d70f7dd45a7eed04e31130c2f585327a3c971115c06ae6a567accccf4403975fa"' :
+                                            'id="xs-controllers-links-module-TldrawModule-3d8d433e7a776172c8cc2f838855affa5120a4a436cb35054d73e883021eb44d70f7dd45a7eed04e31130c2f585327a3c971115c06ae6a567accccf4403975fa"' }>
                                             <li class="link">
                                                 <a href="controllers/TldrawController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawController</a>
                                             </li>
@@ -2591,13 +2591,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-TldrawModule-575e2490e5936a6c79b348d3f7e6a573240e3251b60e3253601c5160a34feb835c321d3d9019e4f4dd1836c43945509aead73495135589cbb3871af97f7c9d7a"' : 'data-bs-target="#xs-injectables-links-module-TldrawModule-575e2490e5936a6c79b348d3f7e6a573240e3251b60e3253601c5160a34feb835c321d3d9019e4f4dd1836c43945509aead73495135589cbb3871af97f7c9d7a"' }>
+                                        'data-bs-target="#injectables-links-module-TldrawModule-3d8d433e7a776172c8cc2f838855affa5120a4a436cb35054d73e883021eb44d70f7dd45a7eed04e31130c2f585327a3c971115c06ae6a567accccf4403975fa"' : 'data-bs-target="#xs-injectables-links-module-TldrawModule-3d8d433e7a776172c8cc2f838855affa5120a4a436cb35054d73e883021eb44d70f7dd45a7eed04e31130c2f585327a3c971115c06ae6a567accccf4403975fa"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawModule-575e2490e5936a6c79b348d3f7e6a573240e3251b60e3253601c5160a34feb835c321d3d9019e4f4dd1836c43945509aead73495135589cbb3871af97f7c9d7a"' :
-                                        'id="xs-injectables-links-module-TldrawModule-575e2490e5936a6c79b348d3f7e6a573240e3251b60e3253601c5160a34feb835c321d3d9019e4f4dd1836c43945509aead73495135589cbb3871af97f7c9d7a"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawModule-3d8d433e7a776172c8cc2f838855affa5120a4a436cb35054d73e883021eb44d70f7dd45a7eed04e31130c2f585327a3c971115c06ae6a567accccf4403975fa"' :
+                                        'id="xs-injectables-links-module-TldrawModule-3d8d433e7a776172c8cc2f838855affa5120a4a436cb35054d73e883021eb44d70f7dd45a7eed04e31130c2f585327a3c971115c06ae6a567accccf4403975fa"' }>
                                         <li class="link">
                                             <a href="injectables/TldrawBoardRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawBoardRepo</a>
                                         </li>
@@ -2646,13 +2646,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/TldrawWsModule.html" data-type="entity-link" >TldrawWsModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-TldrawWsModule-99fab3f22e23881c45509893b732b1c4297c609d78165881eddde77e7b1d763bd22bfbb04522c24306ae52061e40bb3bd8c720b05edbba6037a6d3a36cebb858"' : 'data-bs-target="#xs-injectables-links-module-TldrawWsModule-99fab3f22e23881c45509893b732b1c4297c609d78165881eddde77e7b1d763bd22bfbb04522c24306ae52061e40bb3bd8c720b05edbba6037a6d3a36cebb858"' }>
+                                        'data-bs-target="#injectables-links-module-TldrawWsModule-f32b87cf6451f7523021dadabe627ce7c39d818ef1f06964c7e8297904811c93a75cda97f858813a42a77a97249b28a844c866685a77efe05e612adfc9ba3ee3"' : 'data-bs-target="#xs-injectables-links-module-TldrawWsModule-f32b87cf6451f7523021dadabe627ce7c39d818ef1f06964c7e8297904811c93a75cda97f858813a42a77a97249b28a844c866685a77efe05e612adfc9ba3ee3"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawWsModule-99fab3f22e23881c45509893b732b1c4297c609d78165881eddde77e7b1d763bd22bfbb04522c24306ae52061e40bb3bd8c720b05edbba6037a6d3a36cebb858"' :
-                                        'id="xs-injectables-links-module-TldrawWsModule-99fab3f22e23881c45509893b732b1c4297c609d78165881eddde77e7b1d763bd22bfbb04522c24306ae52061e40bb3bd8c720b05edbba6037a6d3a36cebb858"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawWsModule-f32b87cf6451f7523021dadabe627ce7c39d818ef1f06964c7e8297904811c93a75cda97f858813a42a77a97249b28a844c866685a77efe05e612adfc9ba3ee3"' :
+                                        'id="xs-injectables-links-module-TldrawWsModule-f32b87cf6451f7523021dadabe627ce7c39d818ef1f06964c7e8297904811c93a75cda97f858813a42a77a97249b28a844c866685a77efe05e612adfc9ba3ee3"' }>
                                         <li class="link">
                                             <a href="injectables/MetricsService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >MetricsService</a>
                                         </li>
