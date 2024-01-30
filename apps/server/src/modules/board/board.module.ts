@@ -8,10 +8,7 @@ import { CourseRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { HttpModule } from '@nestjs/axios';
 import { ToolConfigModule } from '@modules/tool/tool-config.module';
-import { createConfigModuleOptions } from '@src/config';
-import { ConfigModule } from '@nestjs/config';
-import { DrawingElementAdapterService } from './tldraw-client/service/drawing-element-adapter.service';
-import { getTldrawClientConfig } from './tldraw-client/tldraw-client.config';
+import { TldrawClientModule } from '@modules/tldraw-client';
 import { BoardDoRepo, BoardNodeRepo, RecursiveDeleteVisitor } from './repo';
 import {
 	BoardDoAuthorizableService,
@@ -34,7 +31,7 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		ContextExternalToolModule,
 		HttpModule,
 		ToolConfigModule,
-		ConfigModule.forRoot(createConfigModuleOptions(getTldrawClientConfig)),
+		TldrawClientModule,
 	],
 	providers: [
 		BoardDoAuthorizableService,
@@ -52,7 +49,6 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		BoardDoCopyService,
 		ColumnBoardCopyService,
 		SchoolSpecificFileCopyServiceFactory,
-		DrawingElementAdapterService,
 	],
 	exports: [
 		BoardDoAuthorizableService,
