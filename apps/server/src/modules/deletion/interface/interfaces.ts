@@ -1,6 +1,6 @@
-import { DomainModel, EntityId } from '@shared/domain/types';
+import { DomainName, EntityId } from '@shared/domain/types';
 
 export interface DeletionTargetRef {
-	domain: DomainModel;
+	domain: DomainName;
 	id: EntityId;
 }

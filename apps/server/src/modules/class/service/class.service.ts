@@ -1,7 +1,9 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { DomainModel, EntityId, StatusModel } from '@shared/domain/types';
+import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
+import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainOperation } from '@shared/domain/interface';
 import { Class } from '../domain';
 import { ClassesRepo } from '../repo';
 
@@ -23,11 +25,11 @@ export class ClassService {
 		return classes;
 	}
 
-	public async deleteUserDataFromClasses(userId: EntityId): Promise<number> {
+	public async deleteUserDataFromClasses(userId: EntityId): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting data from Classes',
-				DomainModel.CLASS,
+				DomainName.CLASS,
 				userId,
 				StatusModel.PENDING
 			)
@@ -49,10 +51,18 @@ export class ClassService {
 		const numberOfUpdatedClasses = updatedClasses.length;
 
 		await this.classesRepo.updateMany(updatedClasses);
+
+		const result = DomainOperationBuilder.build(
+			DomainName.CLASS,
+			OperationType.UPDATE,
+			numberOfUpdatedClasses,
+			this.getClassesId(updatedClasses)
+		);
+
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully removed user data from Classes',
-				DomainModel.CLASS,
+				DomainName.CLASS,
 				userId,
 				StatusModel.FINISHED,
 				numberOfUpdatedClasses,
@@ -60,6 +70,10 @@ export class ClassService {
 			)
 		);
 
-		return numberOfUpdatedClasses;
+		return result;
+	}
+
+	private getClassesId(classes: Class[]): EntityId[] {
+		return classes.map((item) => item.id);
 	}
 }

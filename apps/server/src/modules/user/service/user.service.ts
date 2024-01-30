@@ -10,11 +10,12 @@ import { ConfigService } from '@nestjs/config';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { LanguageType, User } from '@shared/domain/entity';
-import { IFindOptions } from '@shared/domain/interface';
-import { DomainModel, EntityId, StatusModel } from '@shared/domain/types';
+import { DomainOperation, IFindOptions } from '@shared/domain/interface';
+import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { Logger } from '@src/core/logger';
+import { DomainOperationBuilder } from '@shared/domain/builder';
 import { UserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
@@ -128,23 +129,35 @@ export class UserService {
 		}
 	}
 
-	async deleteUser(userId: EntityId): Promise<number> {
+	async deleteUser(userId: EntityId): Promise<DomainOperation> {
 		this.logger.info(
-			new DataDeletionDomainOperationLoggable('Deleting user', DomainModel.USER, userId, StatusModel.PENDING)
+			new DataDeletionDomainOperationLoggable('Deleting user', DomainName.USER, userId, StatusModel.PENDING)
 		);
-		const deletedUserNumber = await this.userRepo.deleteUser(userId);
+		const response = await this.userRepo.deleteUser(userId);
+
+		const deletedUsers = response !== null ? [response] : [];
+
+		const numberOfDeletedUsers = deletedUsers.length;
+
+		const result = DomainOperationBuilder.build(
+			DomainName.USER,
+			OperationType.DELETE,
+			numberOfDeletedUsers,
+			deletedUsers
+		);
+
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully deleted user',
-				DomainModel.USER,
+				DomainName.USER,
 				userId,
 				StatusModel.FINISHED,
 				0,
-				deletedUserNumber
+				numberOfDeletedUsers
 			)
 		);
 
-		return deletedUserNumber;
+		return result;
 	}
 
 	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
