@@ -5,7 +5,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { TestXApiKeyClient } from '@shared/testing';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
-import { DomainModel } from '@shared/domain/types';
+import { DomainName } from '@shared/domain/types';
 import { DeletionRequestBodyProps, DeletionRequestResponse } from '../dto';
 import { DeletionRequestEntity } from '../../entity';
 
@@ -86,14 +86,14 @@ describe(`deletionRequest create (api)`, () => {
 			const setup = () => {
 				const deletionRequestToCreate: DeletionRequestBodyProps = {
 					targetRef: {
-						domain: DomainModel.USER,
+						domain: DomainName.USER,
 						id: '653e4833cc39e5907a1e18d2',
 					},
 				};
 
 				const deletionRequestToImmediateRemoval: DeletionRequestBodyProps = {
 					targetRef: {
-						domain: DomainModel.USER,
+						domain: DomainName.USER,
 						id: '653e4833cc39e5907a1e18d2',
 					},
 					deleteInMinutes: 0,
