@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@shared/testing';
-import { DomainModel } from '@shared/domain/types';
+import { DomainName } from '@shared/domain/types';
 import { DeletionStatusModel } from '../../../domain/types';
 import { DeletionRequestEntity, DeletionRequestEntityProps } from '../../deletion-request.entity';
 
@@ -9,7 +9,7 @@ export const deletionRequestEntityFactory = BaseFactory.define<DeletionRequestEn
 	() => {
 		return {
 			id: new ObjectId().toHexString(),
-			targetRefDomain: DomainModel.USER,
+			targetRefDomain: DomainName.USER,
 			deleteAfter: new Date(),
 			targetRefId: new ObjectId().toHexString(),
 			status: DeletionStatusModel.REGISTERED,

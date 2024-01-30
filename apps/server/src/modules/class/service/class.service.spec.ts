@@ -2,9 +2,10 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId } from '@shared/domain/types';
+import { DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { DomainOperationBuilder } from '@shared/domain/builder';
 import { Class } from '../domain';
 import { classFactory } from '../domain/testing';
 import { classEntityFactory } from '../entity/testing';
@@ -134,7 +135,13 @@ describe(ClassService.name, () => {
 
 				classesRepo.findAllByUserId.mockResolvedValue(mappedClasses);
 
+				const expectedResult = DomainOperationBuilder.build(DomainName.CLASS, OperationType.UPDATE, 2, [
+					class1.id,
+					class2.id,
+				]);
+
 				return {
+					expectedResult,
 					userId1,
 				};
 			};
@@ -147,11 +154,11 @@ describe(ClassService.name, () => {
 			});
 
 			it('should update classes without updated user', async () => {
-				const { userId1 } = setup();
+				const { expectedResult, userId1 } = setup();
 
 				const result = await service.deleteUserDataFromClasses(userId1.toHexString());
 
-				expect(result).toEqual(2);
+				expect(result).toEqual(expectedResult);
 			});
 		});
 	});
