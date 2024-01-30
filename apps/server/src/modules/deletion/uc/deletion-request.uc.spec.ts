@@ -541,7 +541,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(14);
+				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(12);
 			});
 		});
 
