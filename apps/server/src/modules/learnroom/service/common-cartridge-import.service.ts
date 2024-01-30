@@ -4,10 +4,10 @@ import { CommonCartridgeFileParser } from '@src/modules/common-cartridge/import'
 
 @Injectable()
 export class CommonCartridgeImportService {
-	public importCourse(user: User, file: Buffer): Promise<Course> {
+	public createCourse(user: User, file: Buffer): Course {
 		const parser = new CommonCartridgeFileParser(file);
 		const course = new Course({ teachers: [user], school: user.school, name: parser.manifest.getTitle() });
 
-		return Promise.resolve(course);
+		return course;
 	}
 }

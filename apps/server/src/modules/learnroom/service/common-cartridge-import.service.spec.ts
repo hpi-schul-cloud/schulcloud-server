@@ -27,7 +27,7 @@ describe('CommonCartridgeImportService', () => {
 		expect(sut).toBeDefined();
 	});
 
-	describe('import', () => {
+	describe('createCourse', () => {
 		describe('when the common cartridge is valid', () => {
 			const setup = async () => {
 				const user = userFactory.buildWithId();
@@ -39,7 +39,7 @@ describe('CommonCartridgeImportService', () => {
 			it('should return course with name from the common cartridge file', async () => {
 				const { user, buffer } = await setup();
 
-				const result = await sut.importCourse(user, buffer);
+				const result = sut.createCourse(user, buffer);
 
 				expect(result.name).toBe('201510-AMH-2020-70C-12218-US History Since 1877');
 			});
@@ -47,7 +47,7 @@ describe('CommonCartridgeImportService', () => {
 			it('should return course with teachers set', async () => {
 				const { user, buffer } = await setup();
 
-				const result = await sut.importCourse(user, buffer);
+				const result = sut.createCourse(user, buffer);
 
 				expect(result.teachers).toHaveLength(1);
 				expect(result.teachers[0]).toStrictEqual(user);
@@ -56,7 +56,7 @@ describe('CommonCartridgeImportService', () => {
 			it('should return course with school set', async () => {
 				const { user, buffer } = await setup();
 
-				const result = await sut.importCourse(user, buffer);
+				const result = sut.createCourse(user, buffer);
 
 				expect(result.school).toStrictEqual(user.school);
 			});

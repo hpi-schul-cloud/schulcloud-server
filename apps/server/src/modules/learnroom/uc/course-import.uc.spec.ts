@@ -73,7 +73,7 @@ describe('CourseImportUc', () => {
 
 				configServiceMock.get.mockReturnValue(true);
 				authorizationServiceMock.getUserWithPermissions.mockResolvedValue(user);
-				courseImportServiceMock.importCourse.mockResolvedValue(course);
+				courseImportServiceMock.createCourse.mockReturnValue(course);
 
 				return { user, course, file };
 			};

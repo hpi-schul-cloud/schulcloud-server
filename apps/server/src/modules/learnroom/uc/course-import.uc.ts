@@ -24,7 +24,7 @@ export class CourseImportUc {
 
 		this.authorizationService.checkAllPermissions(user, [Permission.COURSE_CREATE]);
 
-		const course = await this.courseImportService.importCourse(user, file);
+		const course = this.courseImportService.createCourse(user, file);
 
 		await this.courseService.create(course);
 	}
