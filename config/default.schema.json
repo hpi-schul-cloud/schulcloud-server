@@ -1444,10 +1444,15 @@
 				"API_KEY": ""
 			}
 		},
+		"FEATURE_TLDRAW_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enables tldraw feature"
+		},
 		"TLDRAW": {
 			"type": "object",
-			"description": "Tldraw managing variables.",
-			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_FLUSH_SIZE", "MAX_DOCUMENT_SIZE"],
+			"description": "Configuration of tldraw related settings",
+			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_FLUSH_SIZE", "MAX_DOCUMENT_SIZE", "ASSETS_ENABLED", "ASSETS_MAX_SIZE", "ASSETS_ALLOWED_EXTENSIONS_LIST"],
 			"properties": {
 				"SOCKET_PORT": {
 					"type": "number",
@@ -1468,25 +1473,36 @@
 				"MAX_DOCUMENT_SIZE": {
 					"type": "number",
 					"description": "Maximum size of a single tldraw document in mongo"
+				},
+				"ASSETS_ENABLED": {
+					"type": "boolean",
+					"description": "Enables uploading assets to tldraw board"
+				},
+				"ASSETS_MAX_SIZE": {
+					"type": "integer",
+					"description": "Maximum asset size in bytes"
+				},
+				"ASSETS_ALLOWED_EXTENSIONS_LIST": {
+					"type": "string",
+					"description": "List with allowed assets extensions, comma separated, empty if all extensions should be allowed",
+					"examples": ["png,jpg,jpeg,svg,webp"]
 				}
 			},
 			"default": {
 				"SOCKET_PORT": 3345,
-				"PING_TIMEOUT": 10000,
+				"PING_TIMEOUT": 30000,
 				"GC_ENABLED": true,
 				"DB_FLUSH_SIZE": 400,
-				"MAX_DOCUMENT_SIZE": 15000000
+				"MAX_DOCUMENT_SIZE": 15000000,
+				"ASSETS_ENABLED": true,
+				"ASSETS_MAX_SIZE": 25000000,
+				"ASSETS_ALLOWED_EXTENSIONS_LIST": ""
 			}
 		},
 		"TLDRAW_DB_URL": {
 			"type": "string",
 			"default": "mongodb://127.0.0.1:27017/tldraw",
 			"description": "DB connection url"
-		},
-		"FEATURE_TLDRAW_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Tldraw feature enabled"
 		},
 		"TLDRAW_URI": {
 			"type": "string",
