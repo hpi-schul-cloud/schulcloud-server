@@ -6,6 +6,7 @@ import {
 	BoardExternalReferenceType,
 	BoardRoles,
 	ColumnBoard,
+	isDrawingElement,
 	UserBoardRoles,
 	UserRoleEnum,
 } from '@shared/domain/domainobject';
@@ -34,10 +35,12 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 		const ids = [...ancestorIds, boardDo.id];
 		const rootId = ids[0];
 		const rootBoardDo = await this.boardDoRepo.findById(rootId, 1);
+		const isDrawing = isDrawingElement(boardDo);
+
 		if (rootBoardDo instanceof ColumnBoard) {
 			if (rootBoardDo.context?.type === BoardExternalReferenceType.Course) {
 				const course = await this.courseRepo.findById(rootBoardDo.context.id);
-				const users = this.mapCourseUsersToUsergroup(course);
+				const users = this.mapCourseUsersToUsergroup(course, isDrawing);
 				return new BoardDoAuthorizable({ users, id: boardDo.id });
 			}
 		} else {
@@ -47,7 +50,7 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 		return new BoardDoAuthorizable({ users: [], id: boardDo.id });
 	}
 
-	private mapCourseUsersToUsergroup(course: Course): UserBoardRoles[] {
+	private mapCourseUsersToUsergroup(course: Course, isDrawing: boolean): UserBoardRoles[] {
 		const users = [
 			...course.getTeachersList().map((user) => {
 				return {
@@ -72,7 +75,10 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 					userId: user.id,
 					firstName: user.firstName,
 					lastName: user.lastName,
-					roles: [BoardRoles.READER],
+					// TODO: fix this temporary hack allowing students to upload files to the DrawingElement
+					// linked with getElementWithWritePermission method in element.uc.ts
+					// this is needed to allow students to upload/delete files to/from the tldraw whiteboard (DrawingElement)
+					roles: isDrawing ? [BoardRoles.EDITOR] : [BoardRoles.READER],
 					userRoleEnum: UserRoleEnum.STUDENT,
 				};
 			}),
