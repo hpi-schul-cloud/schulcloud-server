@@ -2,13 +2,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { cleanupCollections } from '@shared/testing';
+import { ConfigModule } from '@nestjs/config';
+import { createConfigModuleOptions } from '@src/config';
 import { NotFoundException } from '@nestjs/common';
 import { TldrawDrawing } from '../entities';
-import { tldrawEntityFactory } from '../factory';
+import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
 import { TldrawRepo } from '../repo/tldraw.repo';
 import { TldrawService } from './tldraw.service';
 
-describe(TldrawService.name, () => {
+describe('TldrawService', () => {
 	let module: TestingModule;
 	let service: TldrawService;
 	let repo: TldrawRepo;
@@ -16,7 +18,10 @@ describe(TldrawService.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [TldrawDrawing] })],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({ entities: [TldrawDrawing] }),
+				ConfigModule.forRoot(createConfigModuleOptions(tldrawTestConfig)),
+			],
 			providers: [TldrawService, TldrawRepo],
 		}).compile();
 
@@ -31,7 +36,7 @@ describe(TldrawService.name, () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
-		jest.resetAllMocks();
+		jest.clearAllMocks();
 	});
 
 	describe('delete', () => {
@@ -41,11 +46,9 @@ describe(TldrawService.name, () => {
 
 				await repo.create(drawing);
 				const result = await repo.findByDocName(drawing.docName);
-
-				expect(result.length).toEqual(1);
-
 				await service.deleteByDocName(drawing.docName);
 
+				expect(result.length).toEqual(1);
 				await expect(repo.findByDocName(drawing.docName)).rejects.toThrow(NotFoundException);
 			});
 
