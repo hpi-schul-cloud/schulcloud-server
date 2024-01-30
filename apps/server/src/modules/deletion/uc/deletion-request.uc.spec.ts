@@ -18,6 +18,7 @@ import { FilesStorageClientAdapterService } from '@src/modules/files-storage-cli
 import { DomainModel } from '@shared/domain/types';
 import { TaskService } from '@modules/task';
 import { DomainOperationBuilder } from '@shared/domain/builder';
+import { NewsService } from '@src/modules/news/service/news.service';
 import { DeletionStatusModel } from '../domain/types';
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequestService } from '../services';
@@ -124,6 +125,7 @@ describe(DeletionRequestUc.name, () => {
 					provide: TaskService,
 					useValue: createMock<TaskService>(),
 				},
+				{ provide: NewsService, useValue: createMock<NewsService>() },
 			],
 		}).compile();
 
@@ -462,7 +464,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(12);
+				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(13);
 			});
 		});
 

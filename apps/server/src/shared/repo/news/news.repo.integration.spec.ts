@@ -223,8 +223,9 @@ describe('NewsRepo', () => {
 				targetIds: [news.target.id],
 			};
 			const pagination = { skip: 0, limit: 20 };
+			const creatorId = news.creator?.id as string;
 
-			const [result, count] = await repo.findAllUnpublishedByUser([target], news.creator.id, { pagination });
+			const [result, count] = await repo.findAllUnpublishedByUser([target], creatorId, { pagination });
 
 			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(1);
@@ -241,7 +242,8 @@ describe('NewsRepo', () => {
 				targetModel: NewsTargetModel.School,
 				targetIds: [news.target.id],
 			};
-			const [result, count] = await repo.findAllUnpublishedByUser([target], news.creator.id, { pagination });
+			const creatorId = news.creator?.id as string;
+			const [result, count] = await repo.findAllUnpublishedByUser([target], creatorId, { pagination });
 			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(news.id);
@@ -256,8 +258,9 @@ describe('NewsRepo', () => {
 				targetModel: NewsTargetModel.Course,
 				targetIds: [news.target.id],
 			};
+			const creatorId = news.creator?.id as string;
 			const pagination = { skip: 0, limit: 20 };
-			const [result, count] = await repo.findAllUnpublishedByUser([target], news.creator.id, { pagination });
+			const [result, count] = await repo.findAllUnpublishedByUser([target], creatorId, { pagination });
 			expect(count).toBeGreaterThanOrEqual(result.length);
 			expect(result.length).toEqual(1);
 			expect(result[0].id).toEqual(news.id);
@@ -299,6 +302,38 @@ describe('NewsRepo', () => {
 		it('should throw an exception if not found', async () => {
 			const failNewsId = new ObjectId().toString();
 			await expect(repo.findOneById(failNewsId)).rejects.toThrow(NotFoundError);
+		});
+	});
+
+	describe('findByCreatorId', () => {
+		const setup = async () => {
+			const user = userFactory.buildWithId();
+			const news = teamNewsFactory.build({
+				creator: user,
+			});
+			const news2 = teamNewsFactory.build({
+				updater: user,
+			});
+
+			await em.persistAndFlush([news, news2]);
+			em.clear();
+
+			return { news, news2, user };
+		};
+		it('should find a news entity by creatorId', async () => {
+			const { news, user, news2 } = await setup();
+
+			const result = await repo.findByCreatorOrUpdaterId(user.id);
+			expect(result).toBeDefined();
+			expect(result[0][0].id).toEqual(news.id);
+			expect(result[0][1].id).toEqual(news2.id);
+			expect(result[0].length).toEqual(2);
+		});
+
+		it('should throw an exception if not found', async () => {
+			const failNewsId = new ObjectId().toString();
+			const result = await repo.findByCreatorOrUpdaterId(failNewsId);
+			expect(result[1]).toEqual(0);
 		});
 	});
 });
