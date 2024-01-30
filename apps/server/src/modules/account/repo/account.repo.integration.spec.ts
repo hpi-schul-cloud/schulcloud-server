@@ -2,9 +2,10 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { accountFactory, cleanupCollections, userFactory } from '@shared/testing';
 import { AccountRepo } from './account.repo';
+import { AccountEntity } from '../entity/account.entity';
 
 describe('account repo', () => {
 	let module: TestingModule;
@@ -29,7 +30,7 @@ describe('account repo', () => {
 	});
 
 	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(Account);
+		expect(repo.entityName).toBe(AccountEntity);
 	});
 
 	describe('findByUserId', () => {
@@ -60,10 +61,7 @@ describe('account repo', () => {
 
 			it('should return account', async () => {
 				const accountToFind = await setup();
-				const account = await repo.findByUsernameAndSystemId(
-					accountToFind.username ?? '',
-					accountToFind.systemId ?? ''
-				);
+				const account = await repo.findByUsernameAndSystemId(accountToFind.username, accountToFind.systemId ?? '');
 				expect(account?.username).toEqual(accountToFind.username);
 			});
 		});

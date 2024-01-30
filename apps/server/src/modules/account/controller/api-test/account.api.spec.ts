@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import {
 	TestApiClient,
@@ -19,6 +19,7 @@ import {
 	PatchMyPasswordParams,
 } from '@src/modules/account/controller/dto';
 import { ServerTestModule } from '@src/modules/server/server.module';
+import { AccountEntity } from '../../entity/account.entity';
 
 describe('Account Controller (API)', () => {
 	const basePath = '/account';
@@ -30,7 +31,7 @@ describe('Account Controller (API)', () => {
 	const defaultPassword = 'DummyPasswd!1';
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
 
-	const mapUserToAccount = (user: User): Account =>
+	const mapUserToAccount = (user: User): AccountEntity =>
 		accountFactory.buildWithId({
 			userId: user.id,
 			username: user.email,
@@ -83,7 +84,7 @@ describe('Account Controller (API)', () => {
 
 				await loggedInClient.patch('/me/password', passwordPatchParams).expect(200);
 
-				const updatedAccount = await em.findOneOrFail(Account, studentAccount.id);
+				const updatedAccount = await em.findOneOrFail(AccountEntity, studentAccount.id);
 				expect(updatedAccount.password).not.toEqual(defaultPasswordHash);
 			});
 		});
@@ -142,7 +143,7 @@ describe('Account Controller (API)', () => {
 
 				await loggedInClient.patch('/me', patchMyAccountParams).expect(200);
 
-				const updatedAccount = await em.findOneOrFail(Account, studentAccount.id);
+				const updatedAccount = await em.findOneOrFail(AccountEntity, studentAccount.id);
 				expect(updatedAccount.username).toEqual(newEmailValue);
 			});
 		});
@@ -259,7 +260,7 @@ describe('Account Controller (API)', () => {
 				const school = schoolFactory.buildWithId();
 
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
+				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [Permission.ACCOUNT_VIEW] });
 
 				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
 				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
@@ -365,7 +366,7 @@ describe('Account Controller (API)', () => {
 			it('should reject search for user', async () => {
 				const { query, loggedInClient } = await setup();
 
-				await loggedInClient.get().query(query).send().expect(403);
+				await loggedInClient.get().query(query).send().expect(401);
 			});
 		});
 	});
@@ -376,7 +377,7 @@ describe('Account Controller (API)', () => {
 				const school = schoolFactory.buildWithId();
 
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
+				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [Permission.ACCOUNT_VIEW] });
 
 				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
 				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
@@ -428,7 +429,7 @@ describe('Account Controller (API)', () => {
 			};
 			it('should reject request', async () => {
 				const { loggedInClient, studentAccount } = await setup();
-				await loggedInClient.get(`/${studentAccount.id}`).expect(403);
+				await loggedInClient.get(`/${studentAccount.id}`).expect(401);
 			});
 		});
 
@@ -436,7 +437,7 @@ describe('Account Controller (API)', () => {
 			const setup = async () => {
 				const school = schoolFactory.buildWithId();
 
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
+				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [Permission.ACCOUNT_VIEW] });
 				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
 				const superheroAccount = mapUserToAccount(superheroUser);
 
@@ -516,7 +517,7 @@ describe('Account Controller (API)', () => {
 			it('should reject update request', async () => {
 				const { body, loggedInClient, studentAccount } = await setup();
 
-				await loggedInClient.patch(`/${studentAccount.id}`, body).expect(403);
+				await loggedInClient.patch(`/${studentAccount.id}`, body).expect(401);
 			});
 		});
 
@@ -562,7 +563,10 @@ describe('Account Controller (API)', () => {
 				const school = schoolFactory.buildWithId();
 
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
+				const superheroRoles = roleFactory.build({
+					name: RoleName.SUPERHERO,
+					permissions: [Permission.ACCOUNT_DELETE],
+				});
 
 				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
 				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
@@ -615,14 +619,17 @@ describe('Account Controller (API)', () => {
 
 			it('should reject delete request', async () => {
 				const { loggedInClient, studentAccount } = await setup();
-				await loggedInClient.delete(`/${studentAccount.id}`).expect(403);
+				await loggedInClient.delete(`/${studentAccount.id}`).expect(401);
 			});
 		});
 
 		describe('When using a superhero user', () => {
 			const setup = async () => {
 				const school = schoolFactory.buildWithId();
-				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
+				const superheroRoles = roleFactory.build({
+					name: RoleName.SUPERHERO,
+					permissions: [Permission.ACCOUNT_DELETE],
+				});
 				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
 				const superheroAccount = mapUserToAccount(superheroUser);
 

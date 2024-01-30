@@ -1,17 +1,17 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { AccountService } from '@modules/account/services/account.service';
-import { AccountDto } from '@modules/account/services/dto/account.dto';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { UserAlreadyAssignedToImportUserError } from '@shared/common';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
-import { Account, ImportUser, MatchCreator, SystemEntity, User } from '@shared/domain/entity';
+import { ImportUser, MatchCreator, SystemEntity, User } from '@shared/domain/entity';
 import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch, SchoolFeature } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { AccountSaveDto } from '../../account/services/dto';
+import { Account, AccountSave } from '@src/modules/account/domain/account';
+import { AccountEntity } from '@src/modules/account/entity/account.entity';
 import {
 	MigrationMayBeCompleted,
 	MigrationMayNotBeCompleted,
@@ -262,7 +262,7 @@ export class UserImportUc {
 	private async updateUserAndAccount(
 		importUser: ImportUser,
 		school: LegacySchoolDo
-	): Promise<[User, Account] | undefined> {
+	): Promise<[User, AccountEntity] | undefined> {
 		if (!importUser.user || !importUser.loginName || !school.externalId) {
 			return;
 		}
@@ -270,7 +270,7 @@ export class UserImportUc {
 		user.ldapDn = importUser.ldapDn;
 		user.externalId = importUser.externalId;
 
-		const account: AccountDto = await this.getAccount(user);
+		const account: Account = await this.getAccount(user);
 
 		account.systemId = importUser.system.id;
 		account.password = undefined;
@@ -281,14 +281,14 @@ export class UserImportUc {
 		await this.importUserRepo.delete(importUser);
 	}
 
-	private async getAccount(user: User): Promise<AccountDto> {
-		let account: AccountDto | null = await this.accountService.findByUserId(user.id);
+	private async getAccount(user: User): Promise<Account> {
+		let account: Account | null = await this.accountService.findByUserId(user.id);
 
 		if (!account) {
-			const newAccount: AccountSaveDto = new AccountSaveDto({
+			const newAccount = {
 				userId: user.id,
 				username: user.email,
-			});
+			} as AccountSave;
 
 			await this.accountService.saveWithValidation(newAccount);
 			account = await this.accountService.findByUserIdOrFail(user.id);

@@ -1,8 +1,8 @@
 import { accountFactory } from '@shared/testing';
-import { Account } from '@shared/domain/entity';
-import { AccountEntityToDtoMapper } from './account-entity-to-dto.mapper';
+import { AccountEntityToDoMapper } from './account-entity-to-do.mapper';
+import { AccountEntity } from '../../entity/account.entity';
 
-describe('AccountEntityToDtoMapper', () => {
+describe('AccountEntityToDoMapper', () => {
 	beforeEach(() => {
 		jest.useFakeTimers();
 		jest.setSystemTime(new Date(2020, 1, 1));
@@ -14,11 +14,11 @@ describe('AccountEntityToDtoMapper', () => {
 	});
 
 	describe('mapToDto', () => {
-		describe('When mapping AccountEntity to AccountDto', () => {
+		describe('When mapping AccountEntity to Account', () => {
 			const setup = () => {
 				const accountEntity = accountFactory.withAllProperties().buildWithId({}, '000000000000000000000001');
 
-				const missingSystemUserIdEntity: Account = accountFactory.withoutSystemAndUserId().build();
+				const missingSystemUserIdEntity: AccountEntity = accountFactory.withoutSystemAndUserId().build();
 
 				return { accountEntity, missingSystemUserIdEntity };
 			};
@@ -26,15 +26,15 @@ describe('AccountEntityToDtoMapper', () => {
 			it('should map all fields', () => {
 				const { accountEntity } = setup();
 
-				const ret = AccountEntityToDtoMapper.mapToDto(accountEntity);
+				const ret = AccountEntityToDoMapper.mapToDto(accountEntity);
 
-				expect({ ...ret, _id: accountEntity._id }).toMatchObject(accountEntity);
+				expect({ ...ret.getProps(), _id: accountEntity._id }).toMatchObject(accountEntity);
 			});
 
 			it('should ignore missing ids', () => {
 				const { missingSystemUserIdEntity } = setup();
 
-				const ret = AccountEntityToDtoMapper.mapToDto(missingSystemUserIdEntity);
+				const ret = AccountEntityToDoMapper.mapToDto(missingSystemUserIdEntity);
 
 				expect(ret.userId).toBeUndefined();
 				expect(ret.systemId).toBeUndefined();
@@ -45,8 +45,8 @@ describe('AccountEntityToDtoMapper', () => {
 	describe('mapSearchResult', () => {
 		describe('When mapping multiple Account entities', () => {
 			const setup = () => {
-				const testEntity1: Account = accountFactory.buildWithId({}, '000000000000000000000001');
-				const testEntity2: Account = accountFactory.buildWithId({}, '000000000000000000000002');
+				const testEntity1: AccountEntity = accountFactory.buildWithId({}, '000000000000000000000001');
+				const testEntity2: AccountEntity = accountFactory.buildWithId({}, '000000000000000000000002');
 
 				const testAmount = 10;
 
@@ -58,7 +58,7 @@ describe('AccountEntityToDtoMapper', () => {
 			it('should map exact same amount of entities', () => {
 				const { testEntities, testAmount } = setup();
 
-				const [accounts, total] = AccountEntityToDtoMapper.mapSearchResult([testEntities, testAmount]);
+				const [accounts, total] = AccountEntityToDoMapper.mapSearchResult([testEntities, testAmount]);
 
 				expect(total).toBe(testAmount);
 				expect(accounts).toHaveLength(2);
@@ -71,8 +71,8 @@ describe('AccountEntityToDtoMapper', () => {
 	describe('mapAccountsToDto', () => {
 		describe('When mapping multiple Account entities', () => {
 			const setup = () => {
-				const testEntity1: Account = accountFactory.buildWithId({}, '000000000000000000000001');
-				const testEntity2: Account = accountFactory.buildWithId({}, '000000000000000000000002');
+				const testEntity1: AccountEntity = accountFactory.buildWithId({}, '000000000000000000000001');
+				const testEntity2: AccountEntity = accountFactory.buildWithId({}, '000000000000000000000002');
 
 				const testEntities = [testEntity1, testEntity2];
 
@@ -82,7 +82,7 @@ describe('AccountEntityToDtoMapper', () => {
 			it('should map all entities', () => {
 				const testEntities = setup();
 
-				const ret = AccountEntityToDtoMapper.mapAccountsToDto(testEntities);
+				const ret = AccountEntityToDoMapper.mapAccountsToDto(testEntities);
 
 				expect(ret).toHaveLength(2);
 				expect(ret).toContainEqual(expect.objectContaining({ id: '000000000000000000000001' }));

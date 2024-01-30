@@ -1,30 +1,30 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { IdmAccount } from '@shared/domain/interface';
-import { AccountDto } from '../services/dto';
-import { AccountIdmToDtoMapper } from './account-idm-to-dto.mapper.abstract';
-import { AccountIdmToDtoMapperDb } from './account-idm-to-dto.mapper.db';
+import { Account } from '../../domain';
+import { AccountIdmToDoMapper } from './account-idm-to-do.mapper.abstract';
+import { AccountIdmToDoMapperDb } from './account-idm-to-do.mapper.db';
 
-describe('AccountIdmToDtoMapperDb', () => {
+describe('AccountIdmToDoMapperDb', () => {
 	let module: TestingModule;
-	let mapper: AccountIdmToDtoMapper;
+	let mapper: AccountIdmToDoMapper;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				{
-					provide: AccountIdmToDtoMapper,
-					useClass: AccountIdmToDtoMapperDb,
+					provide: AccountIdmToDoMapper,
+					useClass: AccountIdmToDoMapperDb,
 				},
 			],
 		}).compile();
 
-		mapper = module.get(AccountIdmToDtoMapper);
+		mapper = module.get(AccountIdmToDoMapper);
 	});
 
 	afterAll(async () => {
 		await module.close();
 	});
-	describe('mapToDto', () => {
+	describe('mapToDo', () => {
 		describe('when mapping from entity to dto', () => {
 			const setup = () => {
 				const testIdmEntity: IdmAccount = {
@@ -44,10 +44,10 @@ describe('AccountIdmToDtoMapperDb', () => {
 			it('should map all fields', () => {
 				const testIdmEntity = setup();
 
-				const ret = mapper.mapToDto(testIdmEntity);
+				const ret = mapper.mapToDo(testIdmEntity);
 
 				expect(ret).toEqual(
-					expect.objectContaining<Partial<AccountDto>>({
+					expect.objectContaining<Partial<Account>>({
 						id: testIdmEntity.attDbcAccountId,
 						idmReferenceId: testIdmEntity.id,
 						userId: testIdmEntity.attDbcUserId,
@@ -76,7 +76,7 @@ describe('AccountIdmToDtoMapperDb', () => {
 			it('should use actual date', () => {
 				const { testIdmEntity, dateMock } = setup();
 
-				const ret = mapper.mapToDto(testIdmEntity);
+				const ret = mapper.mapToDo(testIdmEntity);
 
 				expect(ret.createdAt).toEqual(dateMock);
 				expect(ret.updatedAt).toEqual(dateMock);
@@ -97,7 +97,7 @@ describe('AccountIdmToDtoMapperDb', () => {
 		it('should fill with empty string', () => {
 			const testIdmEntity = setup();
 
-			const ret = mapper.mapToDto(testIdmEntity);
+			const ret = mapper.mapToDo(testIdmEntity);
 
 			expect(ret.id).toBe('');
 			expect(ret.username).toBe('');

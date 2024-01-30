@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountDto, AccountService } from '@modules/account';
+import { AccountService } from '@modules/account';
 import { OauthCurrentUser } from '@modules/authentication/interface';
 import { RoleService } from '@modules/role';
 import { ConfigService } from '@nestjs/config';
@@ -13,6 +13,7 @@ import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
+import { Account } from '@src/modules/account/domain';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
 import { UserService } from './user.service';
@@ -187,7 +188,7 @@ describe('UserService', () => {
 					permissions: [Permission.DASHBOARD_VIEW],
 				});
 				const user: UserDO = userDoFactory.buildWithId({ roles: [role] });
-				const account: AccountDto = new AccountDto({
+				const account: Account = new Account({
 					id: 'accountId',
 					systemId,
 					username: 'username',
@@ -217,7 +218,7 @@ describe('UserService', () => {
 					userId,
 					systemId,
 					schoolId: user.schoolId,
-					accountId: account.id,
+					accountId: account.id ?? '',
 					roles: [role.id],
 					isExternalUser: true,
 				});

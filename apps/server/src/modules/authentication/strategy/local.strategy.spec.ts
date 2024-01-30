@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IdentityManagementOauthService } from '@infra/identity-management';
-import { AccountEntityToDtoMapper } from '@modules/account/mapper';
-import { AccountDto } from '@modules/account/services/dto';
+import { AccountEntityToDoMapper } from '@src/modules/account/repo/mapper';
+import { Account } from '@src/modules/account/domain';
 import { ServerConfig } from '@modules/server';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -16,7 +16,7 @@ import { LocalStrategy } from './local.strategy';
 describe('LocalStrategy', () => {
 	let strategy: LocalStrategy;
 	let mockUser: User;
-	let mockAccount: AccountDto;
+	let mockAccount: Account;
 	let userRepoMock: DeepMocked<UserRepo>;
 	let authenticationServiceMock: DeepMocked<AuthenticationService>;
 	let idmOauthServiceMock: DeepMocked<IdentityManagementOauthService>;
@@ -33,7 +33,7 @@ describe('LocalStrategy', () => {
 		userRepoMock = createMock<UserRepo>();
 		strategy = new LocalStrategy(authenticationServiceMock, idmOauthServiceMock, configServiceMock, userRepoMock);
 		mockUser = userFactory.withRoleByName(RoleName.STUDENT).buildWithId();
-		mockAccount = AccountEntityToDtoMapper.mapToDto(
+		mockAccount = AccountEntityToDoMapper.mapToDto(
 			accountFactory.buildWithId({ userId: mockUser.id, password: mockPasswordHash })
 		);
 	});
@@ -86,7 +86,7 @@ describe('LocalStrategy', () => {
 
 		describe('when an account has no password', () => {
 			it('should throw unauthorized error', async () => {
-				const accountNoPassword = { ...mockAccount };
+				const accountNoPassword = { ...mockAccount } as Account;
 				delete accountNoPassword.password;
 				authenticationServiceMock.loadAccount.mockResolvedValueOnce(accountNoPassword);
 				await expect(strategy.validate(mockAccount.username, mockPassword)).rejects.toThrow(UnauthorizedException);
@@ -102,12 +102,10 @@ describe('LocalStrategy', () => {
 
 		describe('when an account has no user id', () => {
 			it('should throw error', async () => {
-				const accountNoUser = { ...mockAccount };
+				const accountNoUser = { ...mockAccount } as Account;
 				delete accountNoUser.userId;
 				authenticationServiceMock.loadAccount.mockResolvedValueOnce(accountNoUser);
-				await expect(strategy.validate('mockUsername', mockPassword)).rejects.toThrow(
-					new Error(`login failing, because account ${mockAccount.id} has no userId`)
-				);
+				await expect(strategy.validate('mockUsername', mockPassword)).rejects.toThrow(new UnauthorizedException());
 			});
 		});
 	});

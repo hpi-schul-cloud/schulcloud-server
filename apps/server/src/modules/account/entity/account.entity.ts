@@ -1,12 +1,12 @@
 import { Entity, Property, Index } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BaseEntityWithTimestamps } from './base.entity';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 
-export type IdmAccountProperties = Readonly<Omit<Account, keyof BaseEntityWithTimestamps>>;
+export type IdmAccountProperties = Readonly<Omit<AccountEntity, keyof BaseEntityWithTimestamps>>;
 
 @Entity({ tableName: 'accounts' })
 @Index({ properties: ['userId', 'systemId'] })
-export class Account extends BaseEntityWithTimestamps {
+export class AccountEntity extends BaseEntityWithTimestamps {
 	@Property()
 	@Index()
 	username!: string;

@@ -1,17 +1,13 @@
-import { AccountDto } from '@modules/account/services/dto';
+import { Account, AccountProps } from '@src/modules/account/domain';
 import { ObjectId } from 'bson';
-import { defaultTestPasswordHash } from './account.factory';
-import { BaseFactory } from './base.factory';
+import { DomainObjectFactory } from './domainobject';
 
-export const accountDtoFactory = BaseFactory.define<AccountDto, AccountDto>(AccountDto, ({ sequence }) => {
+export const accountDtoFactory = DomainObjectFactory.define<Account, AccountProps>(Account, ({ sequence, params }) => {
 	return {
-		id: new ObjectId().toHexString(),
+		...params,
+		id: params.id || new ObjectId().toHexString(),
+		username: params.username || `Username-${sequence}`,
 		createdAt: new Date(),
 		updatedAt: new Date(),
-		systemId: new ObjectId().toHexString(),
-		username: `Username-${sequence}`,
-		password: defaultTestPasswordHash,
-		activated: true,
-		userId: new ObjectId().toHexString(),
 	};
 });

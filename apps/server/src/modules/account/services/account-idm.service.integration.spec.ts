@@ -2,16 +2,15 @@ import { IdentityManagementModule, IdentityManagementService } from '@infra/iden
 import { KeycloakAdministrationService } from '@infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountSaveDto } from '@modules/account/services/dto';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IdmAccount } from '@shared/domain/interface';
 import { LoggerModule } from '@src/core/logger';
 import { v1 } from 'uuid';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../repo/mapper';
 import { AccountServiceIdm } from './account-idm.service';
-import { AccountLookupService } from './account-lookup.service';
 import { AbstractAccountService } from './account.service.abstract';
+import { AccountSave } from '../domain';
 
 describe('AccountIdmService Integration', () => {
 	let module: TestingModule;
@@ -23,13 +22,13 @@ describe('AccountIdmService Integration', () => {
 
 	const testRealm = `test-realm-${v1()}`;
 	const testDbcAccountId = new ObjectId().toString();
-	const testAccount = new AccountSaveDto({
+	const testAccount = {
 		username: 'john.doe@mail.tld',
 		password: 'super-secret-password',
 		userId: new ObjectId().toString(),
 		systemId: new ObjectId().toString(),
 		idmReferenceId: testDbcAccountId,
-	});
+	} as AccountSave;
 	const createAccount = async (): Promise<string> =>
 		identityManagementService.createAccount(
 			{
@@ -60,10 +59,9 @@ describe('AccountIdmService Integration', () => {
 			],
 			providers: [
 				AccountServiceIdm,
-				AccountLookupService,
 				{
-					provide: AccountIdmToDtoMapper,
-					useClass: AccountIdmToDtoMapperDb,
+					provide: AccountIdmToDoMapper,
+					useClass: AccountIdmToDoMapperDb,
 				},
 			],
 		}).compile();
@@ -128,7 +126,7 @@ describe('AccountIdmService Integration', () => {
 				await accountIdmService.save({
 					id: testDbcAccountId,
 					username: newUserName,
-				});
+				} as AccountSave);
 
 				const foundAccount = await identityManagementService.findAccountById(idmId);
 

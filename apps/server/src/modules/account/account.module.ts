@@ -5,20 +5,19 @@ import { PermissionService } from '@shared/domain/service';
 import { LegacySystemRepo, UserRepo } from '@shared/repo';
 
 import { LoggerModule } from '@src/core/logger/logger.module';
-import { ServerConfig } from '../server/server.config';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb, AccountIdmToDtoMapperIdm } from './mapper';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb, AccountIdmToDoMapperIdm } from './repo/mapper';
 import { AccountRepo } from './repo/account.repo';
 import { AccountServiceDb } from './services/account-db.service';
 import { AccountServiceIdm } from './services/account-idm.service';
-import { AccountLookupService } from './services/account-lookup.service';
 import { AccountService } from './services/account.service';
 import { AccountValidationService } from './services/account.validation.service';
+import { AccountConfig } from './account-config';
 
-function accountIdmToDtoMapperFactory(configService: ConfigService<ServerConfig, true>): AccountIdmToDtoMapper {
+function accountIdmToDtoMapperFactory(configService: ConfigService<AccountConfig, true>): AccountIdmToDoMapper {
 	if (configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
-		return new AccountIdmToDtoMapperIdm();
+		return new AccountIdmToDoMapperIdm();
 	}
-	return new AccountIdmToDtoMapperDb();
+	return new AccountIdmToDoMapperDb();
 }
 
 @Module({
@@ -31,10 +30,9 @@ function accountIdmToDtoMapperFactory(configService: ConfigService<ServerConfig,
 		AccountServiceDb,
 		AccountServiceIdm,
 		AccountService,
-		AccountLookupService,
 		AccountValidationService,
 		{
-			provide: AccountIdmToDtoMapper,
+			provide: AccountIdmToDoMapper,
 			useFactory: accountIdmToDtoMapperFactory,
 			inject: [ConfigService],
 		},

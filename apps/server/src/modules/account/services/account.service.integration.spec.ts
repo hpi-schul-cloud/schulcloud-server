@@ -8,22 +8,21 @@ import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-ad
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account } from '@shared/domain/entity';
 import { IdmAccount } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, cleanupCollections } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { v1 } from 'uuid';
 import { LegacyLogger } from '../../../core/logger';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../repo/mapper';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
-import { AccountLookupService } from './account-lookup.service';
 import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
-import { AccountDto, AccountSaveDto } from './dto';
+import { Account, AccountSave } from '../domain';
+import { AccountEntity } from '../entity/account.entity';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;
@@ -36,12 +35,12 @@ describe('AccountService Integration', () => {
 	let isIdmReachable = true;
 
 	const testRealm = `test-realm-${v1()}`;
-	const testAccount = new AccountSaveDto({
+	const testAccount = {
 		username: 'john.doe@mail.tld',
 		password: 'super-secret-password',
 		userId: new ObjectId().toString(),
 		systemId: new ObjectId().toString(),
-	});
+	} as AccountSave;
 
 	const createDbAccount = async (): Promise<string> => {
 		const accountEntity = accountFactory.build({
@@ -96,10 +95,9 @@ describe('AccountService Integration', () => {
 				AccountRepo,
 				UserRepo,
 				AccountValidationService,
-				AccountLookupService,
 				{
-					provide: AccountIdmToDtoMapper,
-					useValue: new AccountIdmToDtoMapperDb(),
+					provide: AccountIdmToDoMapper,
+					useValue: new AccountIdmToDoMapperDb(),
 				},
 				{
 					provide: LegacyLogger,
@@ -136,7 +134,7 @@ describe('AccountService Integration', () => {
 		await cleanupCollections(em);
 	});
 
-	const compareIdmAccount = async (idmId: string, createdAccount: AccountDto): Promise<void> => {
+	const compareIdmAccount = async (idmId: string, createdAccount: Account): Promise<void> => {
 		const foundAccount = await identityManagementService.findAccountById(idmId);
 		expect(foundAccount).toEqual(
 			expect.objectContaining<IdmAccount>({
@@ -149,10 +147,10 @@ describe('AccountService Integration', () => {
 		);
 	};
 
-	const compareDbAccount = async (dbId: string, createdAccount: AccountDto): Promise<void> => {
+	const compareDbAccount = async (dbId: string, createdAccount: Account): Promise<void> => {
 		const foundDbAccount = await accountRepo.findById(dbId);
 		expect(foundDbAccount).toEqual(
-			expect.objectContaining<Partial<Account>>({
+			expect.objectContaining<Partial<AccountEntity>>({
 				username: createdAccount.username,
 				userId: new ObjectId(createdAccount.userId),
 				systemId: new ObjectId(createdAccount.systemId),
@@ -181,9 +179,9 @@ describe('AccountService Integration', () => {
 				if (!isIdmReachable) return;
 				const { newUsername, dbId, idmId, originalAccount } = await setup();
 				const updatedAccount = await accountService.save({
-					...originalAccount,
+					...originalAccount.getProps(),
 					username: newUsername,
-				});
+				} as AccountSave);
 				await compareDbAccount(dbId, updatedAccount);
 				await compareIdmAccount(idmId, updatedAccount);
 			});
@@ -201,9 +199,9 @@ describe('AccountService Integration', () => {
 				const { newUsername, dbId, originalAccount } = await setup();
 
 				const updatedAccount = await accountService.save({
-					...originalAccount,
+					...originalAccount.getProps(),
 					username: newUsername,
-				});
+				} as AccountSave);
 				await compareDbAccount(dbId, updatedAccount);
 				await compareIdmAccount(updatedAccount.idmReferenceId ?? '', updatedAccount);
 			});
@@ -232,7 +230,7 @@ describe('AccountService Integration', () => {
 					})
 				);
 				expect(foundDbAccount).toEqual(
-					expect.objectContaining<Partial<Account>>({
+					expect.objectContaining<Partial<AccountEntity>>({
 						username: newUsername,
 					})
 				);

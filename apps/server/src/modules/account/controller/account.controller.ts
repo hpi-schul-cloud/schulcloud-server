@@ -4,6 +4,9 @@ import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
 import { AccountUc } from '../uc/account.uc';
+import { AccountSearchDto } from '../uc/dto/account-search.dto';
+import { UpdateAccountDto } from '../uc/dto/update-account.dto';
+import { UpdateMyAccountDto } from '../uc/dto/update-my-account.dto';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,
@@ -13,6 +16,7 @@ import {
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
 } from './dto';
+import { AccountResponseMapper } from './mapper/account-response.mapper';
 
 @ApiTags('Account')
 @Authenticate('jwt')
@@ -32,9 +36,10 @@ export class AccountController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() query: AccountSearchQueryParams
 	): Promise<AccountSearchListResponse> {
-		return this.accountUc.searchAccounts(currentUser, query);
+		const search = new AccountSearchDto(query);
+		const searchResult = await this.accountUc.searchAccounts(currentUser, search);
 
-		// TODO: mapping from domain to api dto should be a responsability of the controller (also every other function here)
+		return AccountResponseMapper.mapToAccountSearchListResponse(searchResult);
 	}
 
 	@Get(':id')
@@ -47,7 +52,8 @@ export class AccountController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: AccountByIdParams
 	): Promise<AccountResponse> {
-		return this.accountUc.findAccountById(currentUser, params);
+		const dto = await this.accountUc.findAccountById(currentUser, params.id);
+		return AccountResponseMapper.mapToAccountResponse(dto);
 	}
 
 	// IMPORTANT!!!
@@ -60,7 +66,8 @@ export class AccountController {
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid password.' })
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Account not found.' })
 	async updateMyAccount(@CurrentUser() currentUser: ICurrentUser, @Body() params: PatchMyAccountParams): Promise<void> {
-		return this.accountUc.updateMyAccount(currentUser.userId, params);
+		const updateData = new UpdateMyAccountDto(params);
+		return this.accountUc.updateMyAccount(currentUser.userId, updateData);
 	}
 
 	@Patch(':id')
@@ -74,7 +81,10 @@ export class AccountController {
 		@Param() params: AccountByIdParams,
 		@Body() body: AccountByIdBodyParams
 	): Promise<AccountResponse> {
-		return this.accountUc.updateAccountById(currentUser, params, body);
+		const updateData = new UpdateAccountDto(body);
+		const dto = await this.accountUc.updateAccountById(currentUser, params.id, updateData);
+
+		return AccountResponseMapper.mapToAccountResponse(dto);
 	}
 
 	@Delete(':id')
@@ -87,7 +97,8 @@ export class AccountController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: AccountByIdParams
 	): Promise<AccountResponse> {
-		return this.accountUc.deleteAccountById(currentUser, params);
+		const dto = await this.accountUc.deleteAccountById(currentUser, params.id);
+		return AccountResponseMapper.mapToAccountResponse(dto);
 	}
 
 	@Patch('me/password')

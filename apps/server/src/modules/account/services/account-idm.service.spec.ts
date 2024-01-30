@@ -2,23 +2,23 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { IdentityManagementOauthService, IdentityManagementService } from '@infra/identity-management';
 import { NotImplementedException } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { IdmAccount } from '@shared/domain/interface';
-import { LoggerModule } from '@src/core/logger';
-import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
+import { LegacyLogger } from '@src/core/logger';
+import { AccountConfig } from '../account-config';
+import { Account, AccountSave } from '../domain';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../repo/mapper';
 import { AccountServiceIdm } from './account-idm.service';
-import { AccountLookupService } from './account-lookup.service';
-import { AccountDto, AccountSaveDto } from './dto';
 
 describe('AccountIdmService', () => {
 	let module: TestingModule;
 	let accountIdmService: AccountServiceIdm;
-	let mapper: AccountIdmToDtoMapper;
+	let mapper: AccountIdmToDoMapper;
 	let idmServiceMock: DeepMocked<IdentityManagementService>;
-	let accountLookupServiceMock: DeepMocked<AccountLookupService>;
 	let idmOauthServiceMock: DeepMocked<IdentityManagementOauthService>;
+	let configServiceMock: DeepMocked<ConfigService>;
 
 	const mockIdmAccountRefId = 'dbcAccountId';
 	const mockIdmAccount: IdmAccount = {
@@ -35,36 +35,36 @@ describe('AccountIdmService', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				MongoMemoryDatabaseModule.forRoot(),
-				LoggerModule,
-				ConfigModule.forRoot({ isGlobal: true, ignoreEnvFile: true, ignoreEnvVars: true }),
-			],
+			imports: [MongoMemoryDatabaseModule.forRoot()],
 			providers: [
 				AccountServiceIdm,
 				{
-					provide: AccountIdmToDtoMapper,
-					useValue: new AccountIdmToDtoMapperDb(),
+					provide: AccountIdmToDoMapper,
+					useValue: new AccountIdmToDoMapperDb(),
 				},
 				{
 					provide: IdentityManagementService,
 					useValue: createMock<IdentityManagementService>(),
 				},
 				{
-					provide: AccountLookupService,
-					useValue: createMock<AccountLookupService>(),
+					provide: ConfigService,
+					useValue: createMock<ConfigService<AccountConfig, true>>(),
 				},
 				{
 					provide: IdentityManagementOauthService,
 					useValue: createMock<IdentityManagementOauthService>(),
 				},
+				{
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
+				},
 			],
 		}).compile();
 		accountIdmService = module.get(AccountServiceIdm);
-		mapper = module.get(AccountIdmToDtoMapper);
+		mapper = module.get(AccountIdmToDoMapper);
 		idmServiceMock = module.get(IdentityManagementService);
-		accountLookupServiceMock = module.get(AccountLookupService);
 		idmOauthServiceMock = module.get(IdentityManagementOauthService);
+		configServiceMock = module.get(ConfigService);
 	});
 
 	afterAll(async () => {
@@ -82,16 +82,19 @@ describe('AccountIdmService', () => {
 				idmServiceMock.updateAccount.mockResolvedValue(mockIdmAccount.id);
 				idmServiceMock.updateAccountPassword.mockResolvedValue(mockIdmAccount.id);
 				idmServiceMock.findAccountById.mockResolvedValue(mockIdmAccount);
+				idmServiceMock.findAccountByDbcAccountId.mockResolvedValue(mockIdmAccount);
+				configServiceMock.get.mockReturnValue(true);
+
 				const updateSpy = jest.spyOn(idmServiceMock, 'updateAccount');
 				const createSpy = jest.spyOn(idmServiceMock, 'createAccount');
-
-				const mockAccountDto = {
+				const mockAccountSave = {
 					id: mockIdmAccountRefId,
 					username: 'testUserName',
 					userId: 'userId',
 					systemId: 'systemId',
-				};
-				return { updateSpy, createSpy, mockAccountDto };
+				} as AccountSave;
+
+				return { updateSpy, createSpy, mockAccountDto: mockAccountSave };
 			};
 
 			it('should update account information', async () => {
@@ -103,7 +106,7 @@ describe('AccountIdmService', () => {
 				expect(createSpy).not.toHaveBeenCalled();
 
 				expect(ret).toBeDefined();
-				expect(ret).toMatchObject<Partial<AccountDto>>({
+				expect(ret).toMatchObject<Partial<Account>>({
 					id: mockIdmAccount.attDbcAccountId,
 					idmReferenceId: mockIdmAccount.id,
 					createdAt: mockIdmAccount.createdDate,
@@ -122,14 +125,14 @@ describe('AccountIdmService', () => {
 				const updateSpy = jest.spyOn(idmServiceMock, 'updateAccount');
 				const updatePasswordSpy = jest.spyOn(idmServiceMock, 'updateAccountPassword');
 
-				const mockAccountDto: AccountSaveDto = {
+				const mockAccountSave = {
 					id: mockIdmAccountRefId,
 					username: 'testUserName',
 					userId: 'userId',
 					systemId: 'systemId',
 					password: 'password',
-				};
-				return { updateSpy, updatePasswordSpy, mockAccountDto };
+				} as AccountSave;
+				return { updateSpy, updatePasswordSpy, mockAccountDto: mockAccountSave };
 			};
 			it('should update account password', async () => {
 				const { updateSpy, updatePasswordSpy, mockAccountDto } = setup();
@@ -151,9 +154,14 @@ describe('AccountIdmService', () => {
 				const updateSpy = jest.spyOn(idmServiceMock, 'updateAccount');
 				const createSpy = jest.spyOn(idmServiceMock, 'createAccount');
 
-				const mockAccountDto = { username: 'testUserName', id: undefined, userId: 'userId', systemId: 'systemId' };
+				const mockAccountSave = {
+					username: 'testUserName',
+					id: undefined,
+					userId: 'userId',
+					systemId: 'systemId',
+				} as AccountSave;
 
-				return { updateSpy, createSpy, mockAccountDto };
+				return { updateSpy, createSpy, mockAccountDto: mockAccountSave };
 			};
 			it('should create a new account', async () => {
 				const { updateSpy, createSpy, mockAccountDto } = setup();
@@ -164,7 +172,7 @@ describe('AccountIdmService', () => {
 				expect(createSpy).toHaveBeenCalled();
 
 				expect(ret).toBeDefined();
-				expect(ret).toMatchObject<Partial<AccountDto>>({
+				expect(ret).toMatchObject<Partial<Account>>({
 					id: mockIdmAccount.attDbcAccountId,
 					idmReferenceId: mockIdmAccount.id,
 					createdAt: mockIdmAccount.createdDate,
@@ -180,15 +188,16 @@ describe('AccountIdmService', () => {
 				idmServiceMock.updateAccount.mockResolvedValue(mockIdmAccount.id);
 				idmServiceMock.updateAccountPassword.mockResolvedValue(mockIdmAccount.id);
 				idmServiceMock.findAccountById.mockResolvedValue(mockIdmAccount);
-				accountLookupServiceMock.getExternalId.mockResolvedValue(null);
-				const mockAccountDto = {
+				configServiceMock.get.mockReturnValue(false);
+
+				const mockAccountSave = {
 					id: mockIdmAccountRefId,
 					username: 'testUserName',
 					userId: 'userId',
 					systemId: 'systemId',
-				};
+				} as AccountSave;
 
-				return { mockAccountDto };
+				return { mockAccountDto: mockAccountSave };
 			};
 			it('should create a new account on update error', async () => {
 				const { mockAccountDto } = setup();
@@ -197,7 +206,7 @@ describe('AccountIdmService', () => {
 
 				expect(idmServiceMock.createAccount).toHaveBeenCalled();
 				expect(ret).toBeDefined();
-				expect(ret).toMatchObject<Partial<AccountDto>>({
+				expect(ret).toMatchObject<Partial<Account>>({
 					id: mockIdmAccount.attDbcAccountId,
 					idmReferenceId: mockIdmAccount.id,
 					createdAt: mockIdmAccount.createdDate,
@@ -211,14 +220,15 @@ describe('AccountIdmService', () => {
 	describe('updateUsername', () => {
 		describe('when update Username', () => {
 			const setup = () => {
-				accountLookupServiceMock.getExternalId.mockResolvedValue(mockIdmAccount.id);
+				configServiceMock.get.mockReturnValue(true);
+				idmServiceMock.findAccountByDbcAccountId.mockResolvedValue(mockIdmAccount);
 			};
 			it('should map result correctly', async () => {
 				setup();
 				const ret = await accountIdmService.updateUsername(mockIdmAccountRefId, 'any');
 
 				expect(ret).toBeDefined();
-				expect(ret).toMatchObject<Partial<AccountDto>>({
+				expect(ret).toMatchObject<Partial<Account>>({
 					id: mockIdmAccount.attDbcAccountId,
 					idmReferenceId: mockIdmAccount.id,
 					createdAt: mockIdmAccount.createdDate,
@@ -232,14 +242,15 @@ describe('AccountIdmService', () => {
 	describe('updatePassword', () => {
 		describe('when update password', () => {
 			const setup = () => {
-				accountLookupServiceMock.getExternalId.mockResolvedValue(mockIdmAccount.id);
+				configServiceMock.get.mockReturnValue(true);
+				idmServiceMock.findAccountByDbcAccountId.mockResolvedValue(mockIdmAccount);
 			};
 			it('should map result correctly', async () => {
 				setup();
 				const ret = await accountIdmService.updatePassword(mockIdmAccountRefId, 'any');
 
 				expect(ret).toBeDefined();
-				expect(ret).toMatchObject<Partial<AccountDto>>({
+				expect(ret).toMatchObject<Partial<Account>>({
 					id: mockIdmAccount.attDbcAccountId,
 					idmReferenceId: mockIdmAccount.id,
 					createdAt: mockIdmAccount.createdDate,
@@ -260,7 +271,7 @@ describe('AccountIdmService', () => {
 			it('should validate password by checking JWT', async () => {
 				setup(true);
 				const ret = await accountIdmService.validatePassword(
-					{ username: 'username' } as unknown as AccountDto,
+					{ username: 'username' } as unknown as Account,
 					'password'
 				);
 				expect(ret).toBe(true);
@@ -268,7 +279,7 @@ describe('AccountIdmService', () => {
 			it('should report wrong password, i. e. non successful JWT creation', async () => {
 				setup(false);
 				const ret = await accountIdmService.validatePassword(
-					{ username: 'username' } as unknown as AccountDto,
+					{ username: 'username' } as unknown as Account,
 					'password'
 				);
 				expect(ret).toBe(false);
@@ -280,7 +291,8 @@ describe('AccountIdmService', () => {
 		describe('when deleting existing account', () => {
 			const setup = () => {
 				idmServiceMock.deleteAccountById.mockResolvedValue(mockIdmAccount.id);
-				accountLookupServiceMock.getExternalId.mockResolvedValue(mockIdmAccount.id);
+				idmServiceMock.findAccountByDbcAccountId.mockResolvedValue(mockIdmAccount);
+				configServiceMock.get.mockReturnValueOnce(true);
 			};
 
 			it('should delete account via idm', async () => {
@@ -293,7 +305,7 @@ describe('AccountIdmService', () => {
 		describe('when deleting non existing account', () => {
 			const setup = () => {
 				idmServiceMock.deleteAccountById.mockResolvedValue(mockIdmAccount.id);
-				accountLookupServiceMock.getExternalId.mockResolvedValue(null);
+				configServiceMock.get.mockReturnValueOnce(false);
 			};
 
 			it('should throw account not found error', async () => {
@@ -329,7 +341,7 @@ describe('AccountIdmService', () => {
 			it('should return the account', async () => {
 				setup();
 				const result = await accountIdmService.findById(mockIdmAccountRefId);
-				expect(result).toStrictEqual<AccountDto>(mapper.mapToDto(mockIdmAccount));
+				expect(result).toStrictEqual<Account>(mapper.mapToDo(mockIdmAccount));
 			});
 		});
 
@@ -361,7 +373,7 @@ describe('AccountIdmService', () => {
 			it('should return the accounts', async () => {
 				setup();
 				const result = await accountIdmService.findMultipleByUserId(['id', 'id1', 'id2']);
-				expect(result).toStrictEqual<AccountDto[]>([mapper.mapToDto(mockIdmAccount)]);
+				expect(result).toStrictEqual<Account[]>([mapper.mapToDo(mockIdmAccount)]);
 			});
 		});
 	});
@@ -375,7 +387,7 @@ describe('AccountIdmService', () => {
 			it('should return the account', async () => {
 				setup();
 				const result = await accountIdmService.findByUserId(mockIdmAccount.attDbcUserId ?? '');
-				expect(result).toStrictEqual<AccountDto>(mapper.mapToDto(mockIdmAccount));
+				expect(result).toStrictEqual<Account>(mapper.mapToDo(mockIdmAccount));
 			});
 		});
 
@@ -401,7 +413,7 @@ describe('AccountIdmService', () => {
 			it('should return the account', async () => {
 				setup();
 				const result = await accountIdmService.findByUserIdOrFail(mockIdmAccountRefId);
-				expect(result).toStrictEqual<AccountDto>(mapper.mapToDto(mockIdmAccount));
+				expect(result).toStrictEqual<Account>(mapper.mapToDo(mockIdmAccount));
 			});
 		});
 
@@ -426,7 +438,7 @@ describe('AccountIdmService', () => {
 			it('should return the account', async () => {
 				setup();
 				const result = await accountIdmService.findByUsernameAndSystemId('username', 'attDbcSystemId');
-				expect(result).toStrictEqual<AccountDto>(mapper.mapToDto(mockIdmAccount));
+				expect(result).toStrictEqual<Account>(mapper.mapToDo(mockIdmAccount));
 			});
 		});
 
@@ -452,7 +464,7 @@ describe('AccountIdmService', () => {
 			it('should return the account', async () => {
 				setup();
 				const [result] = await accountIdmService.searchByUsernamePartialMatch('username', 0, 10);
-				expect(result).toStrictEqual<AccountDto[]>([mapper.mapToDto(mockIdmAccount)]);
+				expect(result).toStrictEqual<Account[]>([mapper.mapToDo(mockIdmAccount)]);
 			});
 		});
 
@@ -464,7 +476,7 @@ describe('AccountIdmService', () => {
 			it('should return an empty list', async () => {
 				setup();
 				const [result] = await accountIdmService.searchByUsernamePartialMatch('username', 0, 10);
-				expect(result).toStrictEqual<AccountDto[]>([]);
+				expect(result).toStrictEqual<Account[]>([]);
 			});
 		});
 	});
@@ -478,7 +490,7 @@ describe('AccountIdmService', () => {
 			it('should return the account', async () => {
 				setup();
 				const [result] = await accountIdmService.searchByUsernameExactMatch('username');
-				expect(result).toStrictEqual<AccountDto[]>([mapper.mapToDto(mockIdmAccount)]);
+				expect(result).toStrictEqual<Account[]>([mapper.mapToDo(mockIdmAccount)]);
 			});
 		});
 
@@ -490,7 +502,7 @@ describe('AccountIdmService', () => {
 			it('should return an empty list', async () => {
 				setup();
 				const [result] = await accountIdmService.searchByUsernameExactMatch('username');
-				expect(result).toStrictEqual<AccountDto[]>([]);
+				expect(result).toStrictEqual<Account[]>([]);
 			});
 		});
 	});
@@ -500,13 +512,13 @@ describe('AccountIdmService', () => {
 			const setup = () => {
 				idmServiceMock.findAccountByDbcAccountId.mockResolvedValue(mockIdmAccount);
 				idmServiceMock.findAccountById.mockResolvedValue(mockIdmAccount);
-				accountLookupServiceMock.getExternalId.mockResolvedValue(mockIdmAccount.id);
+				configServiceMock.get.mockReturnValue(true);
 			};
 
 			it('should return the account', async () => {
 				setup();
 				const result = await accountIdmService.updateLastTriedFailedLogin('id', new Date());
-				expect(result).toStrictEqual<AccountDto>(mapper.mapToDto(mockIdmAccount));
+				expect(result).toStrictEqual<Account>(mapper.mapToDo(mockIdmAccount));
 			});
 
 			it('should set an user attribute', async () => {
