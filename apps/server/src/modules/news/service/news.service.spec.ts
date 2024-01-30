@@ -4,6 +4,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities, teamNewsFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { NewsRepo } from '@shared/repo';
+import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainName, OperationType } from '@shared/domain/types';
 import { NewsService } from './news.service';
 
 describe(NewsService.name, () => {
@@ -45,6 +47,7 @@ describe(NewsService.name, () => {
 		const setup = () => {
 			const user = userFactory.build();
 			const user2 = userFactory.build();
+			const anotherUserId = new ObjectId().toHexString();
 
 			const news1 = teamNewsFactory.build({
 				creator: user,
@@ -59,24 +62,51 @@ describe(NewsService.name, () => {
 				updater: user,
 			});
 
-			return { user, news1, news2, news3 };
+			const expectedResultWithUpdatedNews = DomainOperationBuilder.build(DomainName.NEWS, OperationType.UPDATE, 3, [
+				news1.id,
+				news2.id,
+				news3.id,
+			]);
+
+			const expectedResultWithoutUpdatedNews = DomainOperationBuilder.build(
+				DomainName.NEWS,
+				OperationType.UPDATE,
+				0,
+				[]
+			);
+
+			return {
+				anotherUserId,
+				expectedResultWithUpdatedNews,
+				expectedResultWithoutUpdatedNews,
+				user,
+				news1,
+				news2,
+				news3,
+			};
 		};
 		it('should successfully delete creator or updater reference from news', async () => {
-			const { user, news1, news2, news3 } = setup();
+			const { expectedResultWithUpdatedNews, user, news1, news2, news3 } = setup();
+
 			repo.findByCreatorOrUpdaterId.mockResolvedValueOnce([[news1, news2, news3], 3]);
+
 			const result = await service.deleteCreatorOrUpdaterReference(user.id);
+
 			expect(news1.creator).toBeUndefined();
 			expect(news1.updater).toBeUndefined();
 			expect(news2.creator).toBeUndefined();
 			expect(news3.updater).toBeUndefined();
-			expect(result).toBe(3);
+			expect(result).toEqual(expectedResultWithUpdatedNews);
 		});
 
 		it('should return 0 if news not found', async () => {
-			const anotherUser = new ObjectId().toHexString();
+			const { anotherUserId, expectedResultWithoutUpdatedNews } = setup();
+
 			repo.findByCreatorOrUpdaterId.mockResolvedValueOnce([[], 0]);
-			const result = await service.deleteCreatorOrUpdaterReference(anotherUser);
-			expect(result).toBe(0);
+
+			const result = await service.deleteCreatorOrUpdaterReference(anotherUserId);
+
+			expect(result).toEqual(expectedResultWithoutUpdatedNews);
 		});
 	});
 });

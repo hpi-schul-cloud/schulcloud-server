@@ -1,8 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { DomainModel, EntityId, StatusModel } from '@shared/domain/types';
+import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { NewsRepo } from '@shared/repo';
+import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainOperation } from '@shared/domain/interface';
+import { News } from '@shared/domain/entity';
 
 @Injectable()
 export class NewsService {
@@ -10,40 +13,46 @@ export class NewsService {
 		this.logger.setContext(NewsService.name);
 	}
 
-	public async deleteCreatorOrUpdaterReference(userId: EntityId): Promise<number> {
+	public async deleteCreatorOrUpdaterReference(userId: EntityId): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from News',
-				DomainModel.NEWS,
+				DomainName.NEWS,
 				userId,
 				StatusModel.PENDING
 			)
 		);
 
-		const news = await this.newsRepo.findByCreatorOrUpdaterId(userId);
+		const [newsWithUserData, counterOfNews] = await this.newsRepo.findByCreatorOrUpdaterId(userId);
 
-		const newsCount = news[1];
-		if (newsCount === 0) {
-			return 0;
-		}
-
-		news[0].forEach((newsEntity) => {
+		newsWithUserData.forEach((newsEntity) => {
 			newsEntity.removeCreatorReference(userId);
 			newsEntity.removeUpdaterReference(userId);
 		});
 
-		await this.newsRepo.save(news[0]);
+		await this.newsRepo.save(newsWithUserData);
+
+		const result = DomainOperationBuilder.build(
+			DomainName.NEWS,
+			OperationType.UPDATE,
+			counterOfNews,
+			this.getNewsId(newsWithUserData)
+		);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully removed user data from News',
-				DomainModel.NEWS,
+				DomainName.NEWS,
 				userId,
 				StatusModel.FINISHED,
-				newsCount,
+				counterOfNews,
 				0
 			)
 		);
-		return newsCount;
+		return result;
+	}
+
+	private getNewsId(news: News[]): EntityId[] {
+		return news.map((item) => item.id);
 	}
 }

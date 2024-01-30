@@ -48,6 +48,7 @@ describe(DeletionRequestUc.name, () => {
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 	let dashboardService: DeepMocked<DashboardService>;
 	let taskService: DeepMocked<TaskService>;
+	let newsService: DeepMocked<NewsService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -147,6 +148,7 @@ describe(DeletionRequestUc.name, () => {
 		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
 		dashboardService = module.get(DashboardService);
 		taskService = module.get(TaskService);
+		newsService = module.get(NewsService);
 		await setupEntities();
 	});
 
@@ -243,6 +245,10 @@ describe(DeletionRequestUc.name, () => {
 					new ObjectId().toHexString(),
 				]);
 
+				const newsUpdated = DomainOperationBuilder.build(DomainName.LESSONS, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
 				const parentEmail = 'parent@parent.eu';
 
 				const pseudonymsDeleted = DomainOperationBuilder.build(DomainName.PSEUDONYMS, OperationType.DELETE, 1, [
@@ -309,6 +315,7 @@ describe(DeletionRequestUc.name, () => {
 				taskService.removeCreatorIdFromTasks.mockResolvedValueOnce(tasksModifiedByRemoveCreatorId);
 				taskService.removeUserFromFinished.mockResolvedValueOnce(tasksModifiedByRemoveUserFromFinished);
 				taskService.deleteTasksByOnlyCreator.mockResolvedValueOnce(tasksDeleted);
+				newsService.deleteCreatorOrUpdaterReference.mockResolvedValueOnce(newsUpdated);
 
 				return {
 					deletionRequestToExecute,
@@ -534,6 +541,16 @@ describe(DeletionRequestUc.name, () => {
 				await uc.executeDeletionRequests();
 
 				expect(taskService.removeUserFromFinished).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+			});
+
+			it('should call newsService.deleteCreatorOrUpdaterReference to update News without creatorId', async () => {
+				const { deletionRequestToExecute } = setup();
+
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+
+				await uc.executeDeletionRequests();
+
+				expect(newsService.deleteCreatorOrUpdaterReference).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call deletionLogService.createDeletionLog to create logs for deletionRequest', async () => {

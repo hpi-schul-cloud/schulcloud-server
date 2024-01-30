@@ -375,8 +375,15 @@ export class DeletionRequestUc {
 	}
 
 	private async removeUsersDataFromNews(deletionRequest: DeletionRequest) {
+		this.logger.debug({ action: 'removeUsersDataFromNews', deletionRequest });
 		const newsesModified = await this.newsService.deleteCreatorOrUpdaterReference(deletionRequest.targetRefId);
 
-		await this.logDeletion(deletionRequest, DomainModel.NEWS, DeletionOperationModel.UPDATE, newsesModified, 0);
+		await this.logDeletion(
+			deletionRequest,
+			newsesModified.domain,
+			newsesModified.operation,
+			newsesModified.count,
+			newsesModified.refs
+		);
 	}
 }
