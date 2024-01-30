@@ -39,7 +39,7 @@ export class TeamService {
 		const numberOfUpdatedTeams = teams.length;
 
 		const result = DomainOperationBuilder.build(
-			DomainName.TASK,
+			DomainName.TEAMS,
 			OperationType.UPDATE,
 			numberOfUpdatedTeams,
 			this.getTeamsId(teams)

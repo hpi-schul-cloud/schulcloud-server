@@ -83,7 +83,7 @@ describe('TeamService', () => {
 
 				teamsRepo.findByUserId.mockResolvedValue([team1, team2]);
 
-				const expectedResult = DomainOperationBuilder.build(DomainName.TASK, OperationType.UPDATE, 2, [
+				const expectedResult = DomainOperationBuilder.build(DomainName.TEAMS, OperationType.UPDATE, 2, [
 					team1.id,
 					team2.id,
 				]);

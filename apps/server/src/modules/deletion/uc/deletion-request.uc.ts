@@ -320,34 +320,36 @@ export class DeletionRequestUc {
 
 		const rocketChatUser = await this.rocketChatUserService.findByUserId(deletionRequest.targetRefId);
 
-		const [rocketChatDeleted, rocketChatUserDeleted] = await Promise.all([
-			this.rocketChatService.deleteUser(rocketChatUser[0].username),
-			this.rocketChatUserService.deleteByUserId(rocketChatUser[0].userId),
-		]);
-
-		await this.logDeletion(
-			deletionRequest,
-			rocketChatUserDeleted.domain,
-			rocketChatUserDeleted.operation,
-			rocketChatUserDeleted.count,
-			rocketChatUserDeleted.refs
-		);
-
-		if (rocketChatDeleted) {
-			await this.logDeletion(deletionRequest, DomainName.ROCKETCHATSERVICE, OperationType.DELETE, 1, [
-				rocketChatUser[0].username,
+		if (rocketChatUser.length > 0) {
+			const [rocketChatDeleted, rocketChatUserDeleted] = await Promise.all([
+				this.rocketChatService.deleteUser(rocketChatUser[0].username),
+				this.rocketChatUserService.deleteByUserId(rocketChatUser[0].userId),
 			]);
+
+			await this.logDeletion(
+				deletionRequest,
+				rocketChatUserDeleted.domain,
+				rocketChatUserDeleted.operation,
+				rocketChatUserDeleted.count,
+				rocketChatUserDeleted.refs
+			);
+
+			if (rocketChatDeleted) {
+				await this.logDeletion(deletionRequest, DomainName.ROCKETCHATSERVICE, OperationType.DELETE, 1, [
+					rocketChatUser[0].username,
+				]);
+			}
 		}
 	}
 
 	private async removeUserFromTasks(deletionRequest: DeletionRequest) {
 		this.logger.debug({ action: 'removeUserFromTasks', deletionRequest });
 
-		const tasksDeleted = await this.taskService.deleteTasksByOnlyCreator(deletionRequest.targetRefId);
-		const tasksModifiedByRemoveCreator = await this.taskService.removeCreatorIdFromTasks(deletionRequest.targetRefId);
-		const tasksModifiedByRemoveUserFromFinished = await this.taskService.removeUserFromFinished(
-			deletionRequest.targetRefId
-		);
+		const [tasksDeleted, tasksModifiedByRemoveCreator, tasksModifiedByRemoveUserFromFinished] = await Promise.all([
+			this.taskService.deleteTasksByOnlyCreator(deletionRequest.targetRefId),
+			this.taskService.removeCreatorIdFromTasks(deletionRequest.targetRefId),
+			this.taskService.removeUserFromFinished(deletionRequest.targetRefId),
+		]);
 
 		const modifiedTasksCount = tasksModifiedByRemoveCreator.count + tasksModifiedByRemoveUserFromFinished.count;
 		const modifiedTasksRef = [...tasksModifiedByRemoveCreator.refs, ...tasksModifiedByRemoveUserFromFinished.refs];
