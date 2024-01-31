@@ -23,8 +23,8 @@ export class ArixTestClient {
 	private arixPassword: string;
 
 	constructor(private readonly httpService: HttpService, private readonly convertUtil: ConverterUtil) {
-		this.arixUser = Configuration.get('ARIX_USER') as string;
-		this.arixPassword = Configuration.get('ARIX_PASSWORD') as string;
+		this.arixUser = Configuration.get('ARIX_CLIENT__USER') as string;
+		this.arixPassword = Configuration.get('ARIX_CLIENT__PASSWORD') as string;
 	}
 
 	private async postData<T>(data: string): Promise<T> {
