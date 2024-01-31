@@ -101,7 +101,7 @@ export class CommonCartridgeMapper {
 						return {
 							type: CommonCartridgeResourceType.WEB_LINK,
 							identifier: createIdentifier(),
-							title: resource.description,
+							title: resource.title,
 							url: resource.url,
 						};
 					}) || []
