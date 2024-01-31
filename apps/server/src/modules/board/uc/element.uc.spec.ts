@@ -189,6 +189,30 @@ describe(ElementUc.name, () => {
 			});
 		});
 
+		describe('when deleting an element which is of DrawingElement type', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const element = drawingElementFactory.build();
+
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
+					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
+				);
+
+				elementService.findById.mockResolvedValueOnce(element);
+				return { element, user };
+			};
+
+			it('should authorize the user to delete the element', async () => {
+				const { element, user } = setup();
+
+				const boardDoAuthorizable = await boardDoAuthorizableService.getBoardAuthorizable(element);
+				const context = { action: Action.write, requiredPermissions: [] };
+				await uc.deleteElement(user.id, element.id);
+
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, boardDoAuthorizable, context);
+			});
+		});
+
 		describe('when deleting a content element', () => {
 			const setup = () => {
 				const user = userFactory.build();

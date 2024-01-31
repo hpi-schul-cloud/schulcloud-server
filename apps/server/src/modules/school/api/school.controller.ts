@@ -1,5 +1,4 @@
-import { Authenticate, CurrentUser } from '@modules/authentication/decorator/auth.decorator';
-import { ICurrentUser } from '@modules/authentication/interface/user';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { SchoolQueryParams, SchoolUrlParams } from './dto/param';

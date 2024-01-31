@@ -1,15 +1,16 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { cleanupCollections, TestApiClient } from '@shared/testing';
 import {
+	cleanupCollections,
+	countyEmbeddableFactory,
 	federalStateFactory,
 	schoolEntityFactory,
 	schoolYearFactory,
 	systemEntityFactory,
+	TestApiClient,
 	UserAndAccountTestFactory,
-} from '@shared/testing/factory';
-import { countyEmbeddableFactory } from '@shared/testing/factory/county.embeddable.factory';
+} from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
 
 describe('School Controller (API)', () => {
@@ -163,6 +164,7 @@ describe('School Controller (API)', () => {
 						countyId: county.countyId,
 						antaresKey: county.antaresKey,
 					},
+					inUserMigration: undefined,
 					inMaintenance: false,
 					isExternal: false,
 					currentYear: schoolYearResponses[1],
