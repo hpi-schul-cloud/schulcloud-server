@@ -31,4 +31,29 @@ describe('ConverterUtil', () => {
 			});
 		});
 	});
+
+	describe('object2xml', () => {
+		it('should map TestObject correctly to xml', () => {
+			const testObject = {
+				test: {
+					array: [
+						{
+							n: 'nr1',
+							value: 1,
+						},
+						{
+							n: 'nr2',
+							value: 2,
+						},
+					],
+					str: 'test1',
+					value: 'test2',
+				},
+			};
+
+			const result = service.object2xml(testObject);
+
+			expect(result).toEqual('<test str="test1"><array n="nr1">1</array><array n="nr2">2</array>test2</test>');
+		});
+	});
 });

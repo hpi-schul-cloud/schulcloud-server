@@ -1,4 +1,3 @@
-import { ArixF } from '../type/arix-f';
 import { ArixRecordEntry } from './arix-record-entry';
 
 export interface ArixRecordResponse {
