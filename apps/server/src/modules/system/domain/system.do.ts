@@ -1,6 +1,5 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SystemTypeEnum } from '@shared/domain/types';
 import { LdapConfig } from './ldap-config';
 import { OauthConfig } from './oauth-config';
 
