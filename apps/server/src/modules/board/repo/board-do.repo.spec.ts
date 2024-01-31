@@ -25,7 +25,7 @@ import {
 	richTextElementFactory,
 	richTextElementNodeFactory,
 } from '@shared/testing';
-import { DrawingElementAdapterService } from '@modules/tldraw-client/service';
+import { DrawingElementAdapterService } from '../../tldraw-client/service';
 import { ContextExternalToolEntity } from '../../tool';
 import { ContextExternalTool } from '../../tool/context-external-tool/domain';
 import { BoardDoRepo } from './board-do.repo';
