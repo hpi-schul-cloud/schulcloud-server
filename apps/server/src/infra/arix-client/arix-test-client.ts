@@ -7,6 +7,7 @@ import crypto from 'crypto';
 import { lastValueFrom, Observable } from 'rxjs';
 import { ArisOkResponse } from './response/aris-ok-response';
 import { ArixRecordResponse } from './response/arix-record-response';
+import { ArixSearchResponse } from './response/arix-search-response';
 import { ArixUuidResponse } from './response/arix-uuid-response';
 
 /**
@@ -23,6 +24,7 @@ export class ArixTestClient {
 	private arixPassword: string;
 
 	constructor(private readonly httpService: HttpService, private readonly convertUtil: ConverterUtil) {
+		// TODO: inject from options which comes from module
 		this.arixUser = Configuration.get('ARIX_CLIENT__USER') as string;
 		this.arixPassword = Configuration.get('ARIX_CLIENT__PASSWORD') as string;
 	}
@@ -78,7 +80,7 @@ export class ArixTestClient {
 		}
 	}
 
-	async testCall(): Promise<void> {
+	public async getMediaRecord(): Promise<void> {
 		try {
 			// Request 1: Fetch a UUID for the user.
 			const resp1: ArixUuidResponse = await this.getUUID(this.arixUser);
@@ -97,5 +99,9 @@ export class ArixTestClient {
 			console.error('Error:', error);
 			return Promise.reject(error);
 		}
+	}
+
+	public async doSearch(): Promise<ArixSearchResponse> {
+		return {} as ArixSearchResponse;
 	}
 }

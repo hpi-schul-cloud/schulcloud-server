@@ -9,7 +9,7 @@ export class ArixController {
 
 	@Get()
 	public async test(): Promise<string> {
-		await this.arixRestClient.testCall();
+		await this.arixRestClient.getMediaRecord();
 		return 'Hello world';
 	}
 }
