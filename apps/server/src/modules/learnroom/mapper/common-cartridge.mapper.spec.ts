@@ -319,7 +319,7 @@ describe('CommonCartridgeMapper', () => {
 					{
 						type: CommonCartridgeResourceType.WEB_LINK,
 						identifier: expect.any(String),
-						title: componentProps.content?.resources[0].description as string,
+						title: componentProps.content?.resources[0].title as string,
 						url: componentProps.content?.resources[0].url as string,
 					},
 				]);
