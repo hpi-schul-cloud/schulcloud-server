@@ -17,7 +17,6 @@
 		"outDir": "./dist",
 		"baseUrl": "./",
 		"incremental": true,
-		"skipLibCheck": true,
 		"paths": {
 			"@shared/*": ["apps/server/src/shared/*"],
 			"@src/*": ["apps/server/src/*"],
