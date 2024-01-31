@@ -1,4 +1,4 @@
-export const enum DomainModel {
+export const enum DomainName {
 	ACCOUNT = 'account',
 	CLASS = 'class',
 	COURSEGROUP = 'courseGroup',
@@ -10,6 +10,7 @@ export const enum DomainModel {
 	PSEUDONYMS = 'pseudonyms',
 	REGISTRATIONPIN = 'registrationPin',
 	ROCKETCHATUSER = 'rocketChatUser',
+	ROCKETCHATSERVICE = 'rocketChatService',
 	TASK = 'task',
 	TEAMS = 'teams',
 	USER = 'user',

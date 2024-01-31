@@ -36,7 +36,10 @@ describe(RegistrationPinRepo.name, () => {
 
 			await em.persistAndFlush(registrationPinForUser);
 
+			const expectedResult = registrationPinForUser.id;
+
 			return {
+				expectedResult,
 				user,
 				userWithoutRegistrationPin,
 			};
@@ -44,11 +47,11 @@ describe(RegistrationPinRepo.name, () => {
 
 		describe('when registrationPin exists', () => {
 			it('should delete registrationPins by email', async () => {
-				const { user } = await setup();
+				const { expectedResult, user } = await setup();
 
-				const result: number = await repo.deleteRegistrationPinByEmail(user.email);
+				const result = await repo.deleteRegistrationPinByEmail(user.email);
 
-				expect(result).toEqual(1);
+				expect(result).toEqual(expectedResult);
 			});
 		});
 
@@ -56,8 +59,8 @@ describe(RegistrationPinRepo.name, () => {
 			it('should return empty array', async () => {
 				const { userWithoutRegistrationPin } = await setup();
 
-				const result: number = await repo.deleteRegistrationPinByEmail(userWithoutRegistrationPin.email);
-				expect(result).toEqual(0);
+				const result = await repo.deleteRegistrationPinByEmail(userWithoutRegistrationPin.email);
+				expect(result).toBeNull();
 			});
 		});
 	});
