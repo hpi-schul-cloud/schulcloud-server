@@ -15,7 +15,7 @@ data:
         add_header 'Access-Control-Allow-Origin' $http_origin;
         proxy_ssl_server_name on;
         proxy_intercept_errors off;
-        proxy_cookie_domain h5p.org h5p.brb-bc-5876-implement-h5p-proxy.cd.dbildungscloud.dev;
+        proxy_cookie_domain h5p.org '{{ H5P_PROXY_PREFIX |default("h5p-") }}{{ DOMAIN }}';
         # Turn off gzip so that we can perform regex replacement
         proxy_set_header Accept-Encoding "";
         # Search for ORIGIN and replace with HOST
@@ -30,7 +30,7 @@ data:
         add_header 'Access-Control-Allow-Origin' $http_origin;
         proxy_ssl_server_name on;
         proxy_intercept_errors off;
-        proxy_cookie_domain h5p.org h5p.brb-bc-5876-implement-h5p-proxy.cd.dbildungscloud.dev;
+        proxy_cookie_domain h5p.org '{{ H5P_PROXY_PREFIX |default("h5p-") }}{{ DOMAIN }}';
         # Turn off gzip so that we can perform regex replacement
         proxy_set_header Accept-Encoding "";
         # Search for ORIGIN and replace with HOST
@@ -45,7 +45,7 @@ data:
         add_header 'Access-Control-Allow-Origin' $http_origin;
         proxy_ssl_server_name on;
         proxy_intercept_errors off;
-        proxy_cookie_domain h5p.org h5p.brb-bc-5876-implement-h5p-proxy.cd.dbildungscloud.dev;
+        proxy_cookie_domain h5p.org '{{ H5P_PROXY_PREFIX |default("h5p-") }}{{ DOMAIN }}';
         # Turn off gzip so that we can perform regex replacement
         proxy_set_header Accept-Encoding "";
         # Search for ORIGIN and replace with HOST
