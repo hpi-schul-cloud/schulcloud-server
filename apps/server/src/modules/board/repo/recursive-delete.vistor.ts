@@ -65,6 +65,7 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 
 	async visitDrawingElementAsync(drawingElement: DrawingElement): Promise<void> {
 		await this.drawingElementAdapterService.deleteDrawingBinData(drawingElement.id);
+		await this.filesStorageClientAdapterService.deleteFilesOfParent(drawingElement.id);
 
 		this.deleteNode(drawingElement);
 		await this.visitChildrenAsync(drawingElement);
