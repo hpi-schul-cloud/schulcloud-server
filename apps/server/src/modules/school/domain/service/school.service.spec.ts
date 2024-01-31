@@ -391,15 +391,9 @@ describe('SchoolService', () => {
 				const ldapLoginSystem = systemFactory.build({ type: 'ldap', ldapConfig: { active: true } });
 				const otherSystem = systemFactory.build({ type: 'oauth2' });
 				const schoolWithLdapLoginSystem = schoolFactory.build({ systemIds: [ldapLoginSystem.id] });
-				const schoolWithOtherSystem = schoolFactory.build({ systemIds: [otherSystem.id] });
-				const schoolWithoutSystem = schoolFactory.build();
 
-				systemService.findAll.mockResolvedValueOnce([ldapLoginSystem, otherSystem]);
-				schoolRepo.getAllThatHaveSystems.mockResolvedValueOnce([
-					schoolWithLdapLoginSystem,
-					schoolWithOtherSystem,
-					schoolWithoutSystem,
-				]);
+				systemService.findAllForLdapLogin.mockResolvedValueOnce([ldapLoginSystem, otherSystem]);
+				schoolRepo.getSchoolsBySystemIds.mockResolvedValueOnce([schoolWithLdapLoginSystem]);
 
 				const expected = new SchoolForLdapLogin({
 					id: schoolWithLdapLoginSystem.id,
@@ -431,8 +425,8 @@ describe('SchoolService', () => {
 				const otherSystem = systemFactory.build({ type: 'oauth2' });
 				const school = schoolFactory.build({ systemIds: [ldapLoginSystem.id, otherSystem.id] });
 
-				systemService.findAll.mockResolvedValueOnce([ldapLoginSystem, otherSystem]);
-				schoolRepo.getAllThatHaveSystems.mockResolvedValueOnce([school]);
+				systemService.findAllForLdapLogin.mockResolvedValueOnce([ldapLoginSystem]);
+				schoolRepo.getSchoolsBySystemIds.mockResolvedValueOnce([school]);
 
 				const expected = new SchoolForLdapLogin({
 					id: school.id,

@@ -39,10 +39,10 @@ export class SchoolMikroOrmRepo implements SchoolRepo {
 		return school;
 	}
 
-	public async getAllThatHaveSystems(): Promise<School[]> {
+	public async getSchoolsBySystemIds(systemIds: string[]): Promise<School[]> {
 		const entities = await this.em.find(
 			SchoolEntity,
-			{ systems: { $ne: undefined } },
+			{ systems: { $in: systemIds } },
 			{ populate: ['federalState', 'currentYear'] }
 		);
 

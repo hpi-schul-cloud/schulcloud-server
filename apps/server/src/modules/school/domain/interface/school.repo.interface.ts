@@ -8,7 +8,7 @@ export interface SchoolRepo {
 
 	getSchoolById(schoolId: EntityId): Promise<School>;
 
-	getAllThatHaveSystems(): Promise<School[]>;
+	getSchoolsBySystemIds(systemIds: EntityId[]): Promise<School[]>;
 }
 
 export const SCHOOL_REPO = 'SCHOOL_REPO';

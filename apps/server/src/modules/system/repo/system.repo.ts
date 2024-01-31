@@ -23,8 +23,13 @@ export class SystemRepo {
 		return domainObject;
 	}
 
-	public async findAll(): Promise<System[]> {
-		const entities: SystemEntity[] = await this.em.find(SystemEntity, {});
+	public async findAllForLdapLogin(): Promise<System[]> {
+		// Systems with an oauthConfig are filtered out here to exclude IServ. IServ is of type LDAP for syncing purposes, but the login is done via OAuth2.
+		const entities: SystemEntity[] = await this.em.find(SystemEntity, {
+			type: 'ldap',
+			ldapConfig: { active: true },
+			oauthConfig: undefined,
+		});
 
 		const domainObjects: System[] = entities.map((entity) => {
 			const props: SystemProps = SystemDomainMapper.mapEntityToDomainObjectProperties(entity);

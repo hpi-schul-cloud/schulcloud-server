@@ -165,7 +165,7 @@ describe('SchoolMikroOrmRepo', () => {
 		});
 	});
 
-	describe('getAllThatHaveSystems', () => {
+	describe('getSchoolsBySystemIds', () => {
 		describe('when no school has systems', () => {
 			const setup = async () => {
 				const entities = schoolEntityFactory.buildList(2);
@@ -178,31 +178,48 @@ describe('SchoolMikroOrmRepo', () => {
 			it('should return empty array', async () => {
 				await setup();
 
-				const result = await repo.getAllThatHaveSystems();
+				const result = await repo.getSchoolsBySystemIds([]);
 
 				expect(result).toEqual([]);
 			});
 		});
 
-		describe('when some schools have systems', () => {
+		describe('when some schools have specified systems', () => {
 			const setup = async () => {
-				const systemEntity = systemEntityFactory.build();
-				const schoolEntityWithSystem = schoolEntityFactory.build({ systems: [systemEntity] });
-				const schoolEntityWithoutSystem = schoolEntityFactory.build();
-				await em.persistAndFlush([systemEntity, schoolEntityWithSystem, schoolEntityWithoutSystem]);
+				const specifiedSystem = systemEntityFactory.build();
+				const otherSystem = systemEntityFactory.build();
+				const schoolEntityWithSpecifiedSystem = schoolEntityFactory.build({ systems: [specifiedSystem] });
+				const schoolEntityWithSpecifiedSystemAndOtherSystem = schoolEntityFactory.build({
+					systems: [specifiedSystem, otherSystem],
+				});
+				const schoolEntityWithOtherSystem = schoolEntityFactory.build({ systems: [otherSystem] });
+				const schoolEntityWithEmptySystemsArray = schoolEntityFactory.build({ systems: [] });
+				const schoolEntityWithoutSystems = schoolEntityFactory.build();
+				await em.persistAndFlush([
+					specifiedSystem,
+					otherSystem,
+					schoolEntityWithSpecifiedSystem,
+					schoolEntityWithSpecifiedSystemAndOtherSystem,
+					schoolEntityWithOtherSystem,
+					schoolEntityWithEmptySystemsArray,
+					schoolEntityWithoutSystems,
+				]);
 				em.clear();
 
-				const expected = SchoolEntityMapper.mapToDo(schoolEntityWithSystem);
+				const expected = [
+					SchoolEntityMapper.mapToDo(schoolEntityWithSpecifiedSystem),
+					SchoolEntityMapper.mapToDo(schoolEntityWithSpecifiedSystemAndOtherSystem),
+				];
 
-				return { expected };
+				return { expected, specifiedSystem };
 			};
 
 			it('should return these schools', async () => {
-				const { expected } = await setup();
+				const { expected, specifiedSystem } = await setup();
 
-				const result = await repo.getAllThatHaveSystems();
+				const result = await repo.getSchoolsBySystemIds([specifiedSystem.id]);
 
-				expect(result).toEqual([expected]);
+				expect(result).toEqual(expected);
 			});
 		});
 	});
