@@ -1,15 +1,15 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ArixRestClient } from './arix-rest-client';
+import { ArixTestClient } from './arix-test-client';
 
 @ApiTags('Arix')
 @Controller('arix')
 export class ArixController {
-	constructor(private readonly arixRestClient: ArixRestClient) {}
+	constructor(private readonly arixRestClient: ArixTestClient) {}
 
 	@Get()
 	public async test(): Promise<string> {
-		await this.arixRestClient.runArixService();
+		await this.arixRestClient.testCall();
 		return 'Hello world';
 	}
 }
