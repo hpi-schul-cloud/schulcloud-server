@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BoardDoAuthorizable, BoardRoles } from '@shared/domain/domainobject/board/types';
+import { BoardDoAuthorizable, BoardRoles, UserBoardRoles } from '@shared/domain/domainobject/board/types';
 import { User } from '@shared/domain/entity/user.entity';
 import { Action, AuthorizationContext, Rule } from '../type';
 import { AuthorizationHelper } from '../service/authorization.helper';
@@ -16,30 +16,34 @@ export class BoardDoRule implements Rule {
 
 	public hasPermission(user: User, boardDoAuthorizable: BoardDoAuthorizable, context: AuthorizationContext): boolean {
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
-		if (hasPermission === false) {
+		if (!hasPermission) {
 			return false;
 		}
 
-		const userBoardRole = boardDoAuthorizable.users.find(({ userId }) => userId === user.id);
-		if (!userBoardRole) {
+		const userBoardRoles = boardDoAuthorizable.users.find(({ userId }) => userId === user.id);
+		if (!userBoardRoles) {
 			return false;
 		}
 
-		if (boardDoAuthorizable.requiredUserRole && boardDoAuthorizable.requiredUserRole !== userBoardRole.userRoleEnum) {
+		if (boardDoAuthorizable.requiredUserRole && boardDoAuthorizable.requiredUserRole !== userBoardRoles.userRoleEnum) {
 			return false;
 		}
 
-		if (context.action === Action.write && userBoardRole.roles.includes(BoardRoles.EDITOR)) {
-			return true;
+		switch (context.action) {
+			case Action.write:
+				return this.hasWritePermission(userBoardRoles);
+			case Action.read:
+				return this.hasReadPermission(userBoardRoles);
+			default:
+				return false;
 		}
+	}
 
-		if (
-			context.action === Action.read &&
-			(userBoardRole.roles.includes(BoardRoles.EDITOR) || userBoardRole.roles.includes(BoardRoles.READER))
-		) {
-			return true;
-		}
+	private hasWritePermission(userBoardRole: UserBoardRoles): boolean {
+		return userBoardRole.roles.includes(BoardRoles.EDITOR);
+	}
 
-		return false;
+	private hasReadPermission(userBoardRole: UserBoardRoles): boolean {
+		return userBoardRole.roles.includes(BoardRoles.READER) || userBoardRole.roles.includes(BoardRoles.EDITOR);
 	}
 }

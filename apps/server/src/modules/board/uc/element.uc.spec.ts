@@ -89,7 +89,7 @@ describe(ElementUc.name, () => {
 			it('should get element', async () => {
 				const { richTextElement, user, content, elementSpy } = setup();
 
-				await uc.updateElementContent(user.id, richTextElement.id, content);
+				await uc.updateElement(user.id, richTextElement.id, content);
 
 				expect(elementSpy).toHaveBeenCalledWith(richTextElement.id);
 			});
@@ -97,7 +97,7 @@ describe(ElementUc.name, () => {
 			it('should call the service', async () => {
 				const { richTextElement, user, content } = setup();
 
-				await uc.updateElementContent(user.id, richTextElement.id, content);
+				await uc.updateElement(user.id, richTextElement.id, content);
 
 				expect(elementService.update).toHaveBeenCalledWith(richTextElement, content);
 			});
@@ -117,7 +117,7 @@ describe(ElementUc.name, () => {
 			it('should get element', async () => {
 				const { fileElement, user, content, elementSpy } = setup();
 
-				await uc.updateElementContent(user.id, fileElement.id, content);
+				await uc.updateElement(user.id, fileElement.id, content);
 
 				expect(elementSpy).toHaveBeenCalledWith(fileElement.id);
 			});
@@ -125,7 +125,7 @@ describe(ElementUc.name, () => {
 			it('should call the service', async () => {
 				const { fileElement, user, content } = setup();
 
-				await uc.updateElementContent(user.id, fileElement.id, content);
+				await uc.updateElement(user.id, fileElement.id, content);
 
 				expect(elementService.update).toHaveBeenCalledWith(fileElement, content);
 			});

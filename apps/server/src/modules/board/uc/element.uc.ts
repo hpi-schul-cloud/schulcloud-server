@@ -1,7 +1,6 @@
 import { Action, AuthorizationService } from '@modules/authorization';
 import { ForbiddenException, forwardRef, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
-	AnyBoardDo,
 	AnyContentElementDo,
 	isDrawingElement,
 	isSubmissionContainerElement,
@@ -30,7 +29,7 @@ export class ElementUc extends BaseUc {
 		this.logger.setContext(ElementUc.name);
 	}
 
-	async updateElementContent(
+	async updateElement(
 		userId: EntityId,
 		elementId: EntityId,
 		content: AnyElementContentBody
@@ -50,10 +49,18 @@ export class ElementUc extends BaseUc {
 	private async getElementWithWritePermission(userId: EntityId, elementId: EntityId): Promise<AnyContentElementDo> {
 		const element = await this.elementService.findById(elementId);
 
-		const parent: AnyBoardDo = await this.elementService.findParentOfId(elementId);
+		await this.checkElementWritePermission(userId, elementId);
+
+		return element;
+	}
+
+	private async checkElementWritePermission(userId: EntityId, elementId: EntityId): Promise<void> {
+		const element = await this.elementService.findById(elementId);
+		const parent = await this.elementService.findParentOfId(elementId);
 
 		if (isSubmissionItem(parent)) {
-			await this.checkSubmissionItemWritePermission(userId, parent);
+			this.checkCreator(userId, parent);
+			await this.checkPermission(userId, element, Action.read);
 		} else if (isDrawingElement(element)) {
 			// TODO: fix this temporary hack preventing students from deleting the DrawingElement
 			// linked with getBoardAuthorizable method in board-do-authorizable.service.ts
@@ -64,8 +71,6 @@ export class ElementUc extends BaseUc {
 		} else {
 			await this.checkPermission(userId, element, Action.write);
 		}
-
-		return element;
 	}
 
 	async checkElementReadPermission(userId: EntityId, elementId: EntityId): Promise<void> {

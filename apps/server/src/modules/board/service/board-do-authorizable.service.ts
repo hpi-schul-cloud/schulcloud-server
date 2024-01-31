@@ -24,33 +24,28 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 
 	async findById(id: EntityId): Promise<BoardDoAuthorizable> {
 		const boardDo = await this.boardDoRepo.findById(id, 1);
-		const { users } = await this.getBoardAuthorizable(boardDo);
-		const boardDoAuthorizable = new BoardDoAuthorizable({ users, id });
+		const boardDoAuthorizable = await this.getBoardAuthorizable(boardDo);
 
 		return boardDoAuthorizable;
 	}
 
 	async getBoardAuthorizable(boardDo: AnyBoardDo): Promise<BoardDoAuthorizable> {
-		const ancestorIds = await this.boardDoRepo.getAncestorIds(boardDo);
-		const ids = [...ancestorIds, boardDo.id];
-		const rootId = ids[0];
-		const rootBoardDo = await this.boardDoRepo.findById(rootId, 1);
-		const isDrawing = isDrawingElement(boardDo);
+		const rootBoardDo = await this.getRootBoardDo(boardDo);
+		let users: UserBoardRoles[] = [];
 
-		if (rootBoardDo instanceof ColumnBoard) {
-			if (rootBoardDo.context?.type === BoardExternalReferenceType.Course) {
-				const course = await this.courseRepo.findById(rootBoardDo.context.id);
-				const users = this.mapCourseUsersToUsergroup(course, isDrawing);
-				return new BoardDoAuthorizable({ users, id: boardDo.id });
-			}
-		} else {
-			throw new Error('root boardnode was expected to be a ColumnBoard');
+		if (rootBoardDo.context?.type === BoardExternalReferenceType.Course) {
+			const course = await this.courseRepo.findById(rootBoardDo.context.id);
+			// TODO find a better way to handle authorization depending on BoardDo type
+			const isDrawing = isDrawingElement(boardDo);
+			users = this.mapCourseUsersToUserBoardRoles(course, isDrawing);
 		}
 
-		return new BoardDoAuthorizable({ users: [], id: boardDo.id });
+		const boardDoAuthorizable = new BoardDoAuthorizable({ users, id: boardDo.id });
+
+		return boardDoAuthorizable;
 	}
 
-	private mapCourseUsersToUsergroup(course: Course, isDrawing: boolean): UserBoardRoles[] {
+	private mapCourseUsersToUserBoardRoles(course: Course, isDrawing: boolean): UserBoardRoles[] {
 		const users = [
 			...course.getTeachersList().map((user) => {
 				return {
@@ -83,6 +78,20 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 				};
 			}),
 		];
+		// TODO check unique
 		return users;
+	}
+
+	private async getRootBoardDo(boardDo: AnyBoardDo): Promise<ColumnBoard> {
+		const ancestorIds = await this.boardDoRepo.getAncestorIds(boardDo);
+		const ids = [...ancestorIds, boardDo.id];
+		const rootId = ids[0];
+		const rootBoardDo = await this.boardDoRepo.findById(rootId, 1);
+
+		if (!(rootBoardDo instanceof ColumnBoard)) {
+			throw new Error('root boardnode was expected to be a ColumnBoard');
+		}
+
+		return rootBoardDo;
 	}
 }

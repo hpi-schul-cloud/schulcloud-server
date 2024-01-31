@@ -1,6 +1,7 @@
 import { Action, AuthorizationService } from '@modules/authorization';
 import {
 	BadRequestException,
+	ForbiddenException,
 	forwardRef,
 	Inject,
 	Injectable,
@@ -49,11 +50,13 @@ export class SubmissionItemUc extends BaseUc {
 
 		let submissionItems = submissionContainerElement.children.filter(isSubmissionItem);
 
-		const boardAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(submissionContainerElement);
-		let users = boardAuthorizable.users.filter((user) => user.userRoleEnum === UserRoleEnum.STUDENT);
-
-		const isAuthorizedStudent = await this.isAuthorizedStudent(userId, submissionContainerElement);
-		if (isAuthorizedStudent) {
+		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(submissionContainerElement);
+		let users = boardDoAuthorizable.users.filter((user) => user.userRoleEnum === UserRoleEnum.STUDENT);
+		const userRoleEnum = boardDoAuthorizable.users.find((u) => u.userId === userId)?.userRoleEnum;
+		if (!userRoleEnum) {
+			throw new ForbiddenException('User not part of this board');
+		}
+		if (userRoleEnum === UserRoleEnum.STUDENT) {
 			submissionItems = submissionItems.filter((item) => item.userId === userId);
 			users = [];
 		}
@@ -67,7 +70,9 @@ export class SubmissionItemUc extends BaseUc {
 		completed: boolean
 	): Promise<SubmissionItem> {
 		const submissionItem = await this.submissionItemService.findById(submissionItemId);
-		await this.checkSubmissionItemWritePermission(userId, submissionItem);
+
+		this.checkCreator(userId, submissionItem);
+		await this.checkPermission(userId, submissionItem, Action.read, UserRoleEnum.STUDENT);
 		await this.submissionItemService.update(submissionItem, completed);
 
 		return submissionItem;
@@ -84,7 +89,8 @@ export class SubmissionItemUc extends BaseUc {
 
 		const submissionItem = await this.submissionItemService.findById(submissionItemId);
 
-		await this.checkSubmissionItemWritePermission(userId, submissionItem);
+		this.checkCreator(userId, submissionItem);
+		await this.checkPermission(userId, submissionItem, Action.read, UserRoleEnum.STUDENT);
 
 		const element = await this.elementService.create(submissionItem, type);
 
