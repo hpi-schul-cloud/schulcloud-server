@@ -1,5 +1,5 @@
 import { ObjectId } from 'bson';
-import { DomainModel, EntityId, StatusModel } from '@shared/domain/types';
+import { DomainName, EntityId, StatusModel } from '@shared/domain/types';
 import { DataDeletionDomainOperationLoggable } from './data-deletion-domain-operation-loggable';
 
 describe(DataDeletionDomainOperationLoggable.name, () => {
@@ -7,7 +7,7 @@ describe(DataDeletionDomainOperationLoggable.name, () => {
 		const setup = () => {
 			const user: EntityId = new ObjectId().toHexString();
 			const message = 'Test message.';
-			const domain = DomainModel.USER;
+			const domain = DomainName.USER;
 			const status = StatusModel.FINISHED;
 			const modifiedCount = 0;
 			const deletedCount = 1;

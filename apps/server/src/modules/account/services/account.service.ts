@@ -2,8 +2,10 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
-import { Counted } from '@shared/domain/types';
+import { Counted, DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { isEmail, validateOrReject } from 'class-validator';
+import { DomainOperation } from '@shared/domain/interface';
+import { DomainOperationBuilder } from '@shared/domain/builder';
 import { LegacyLogger } from '../../../core/logger';
 import { ServerConfig } from '../../server/server.config';
 import { AccountServiceDb } from './account-db.service';
@@ -157,13 +159,29 @@ export class AccountService extends AbstractAccountService {
 		});
 	}
 
-	async deleteByUserId(userId: string): Promise<void> {
-		await this.accountDb.deleteByUserId(userId);
+	async deleteByUserId(userId: string): Promise<EntityId[]> {
+		const deletedAccounts = await this.accountDb.deleteByUserId(userId);
 		await this.executeIdmMethod(async () => {
 			this.logger.debug(`Deleting account with userId ${userId} ...`);
-			await this.accountIdm.deleteByUserId(userId);
+			const deletedAccountIdm = await this.accountIdm.deleteByUserId(userId);
+			deletedAccounts.push(...deletedAccountIdm);
 			this.logger.debug(`Deleted account with userId ${userId}`);
 		});
+
+		return deletedAccounts;
+	}
+
+	async deleteAccountByUserId(userId: string): Promise<DomainOperation> {
+		const deletedAccounts = await this.deleteByUserId(userId);
+
+		const result = DomainOperationBuilder.build(
+			DomainName.ACCOUNT,
+			OperationType.DELETE,
+			deletedAccounts.length,
+			deletedAccounts
+		);
+
+		return result;
 	}
 
 	/**

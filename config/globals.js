@@ -24,14 +24,12 @@ switch (NODE_ENV) {
 }
 
 let defaultDbUrl = null;
-let defaultTldrawDbUrl = null;
 switch (NODE_ENV) {
 	case ENVIRONMENTS.TEST:
 		defaultDbUrl = 'mongodb://127.0.0.1:27017/schulcloud-test';
 		break;
 	default:
 		defaultDbUrl = 'mongodb://127.0.0.1:27017/schulcloud';
-		defaultTldrawDbUrl = 'mongodb://127.0.0.1:27017/tldraw';
 }
 
 const globals = {
@@ -106,9 +104,6 @@ const globals = {
 
 	// calendar
 	CALENDAR_URI: process.env.CALENDAR_URI,
-
-	// tldraw
-	TLDRAW_DB_URL: process.env.TLDRAW_DB_URL || defaultTldrawDbUrl,
 };
 
 // validation /////////////////////////////////////////////////
