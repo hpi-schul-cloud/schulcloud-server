@@ -305,7 +305,7 @@ describe('NewsRepo', () => {
 		});
 	});
 
-	describe('findByCreatorId', () => {
+	describe('findByCreatorOrUpdaterId', () => {
 		const setup = async () => {
 			const user = userFactory.buildWithId();
 			const news = teamNewsFactory.build({
