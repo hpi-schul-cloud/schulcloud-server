@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConverterUtil } from '@shared/common';
@@ -17,11 +18,14 @@ import { ArixUuidResponse } from './response/arix-uuid-response';
 export class ArixTestClient {
 	private readonly endpoint = 'https://arix.datenbank-bildungsmedien.net/NDS';
 
-	private readonly arixUser = 'scdlbfelahtly';
+	private arixUser: string;
 
-	private readonly arixPW = 'x9l1Gtnp18TMgABV96f4';
+	private arixPassword: string;
 
-	constructor(private readonly httpService: HttpService, private readonly convertUtil: ConverterUtil) {}
+	constructor(private readonly httpService: HttpService, private readonly convertUtil: ConverterUtil) {
+		this.arixUser = Configuration.get('ARIX_USER') as string;
+		this.arixPassword = Configuration.get('ARIX_PASSWORD') as string;
+	}
 
 	private async postData<T>(data: string): Promise<T> {
 		const observable: Observable<AxiosResponse<string>> = this.httpService.post(
@@ -81,7 +85,7 @@ export class ArixTestClient {
 			console.log('Response from request 1:', resp1.uuid);
 
 			// Request 2: Activate the ID with a generated passphrase.
-			const resp2: ArisOkResponse = await this.activateID(resp1.uuid, this.arixPW);
+			const resp2: ArisOkResponse = await this.activateID(resp1.uuid, this.arixPassword);
 			console.log('Response from request 2:', resp2);
 
 			// Request 3: Perform an authenticated action using the activated ID.
