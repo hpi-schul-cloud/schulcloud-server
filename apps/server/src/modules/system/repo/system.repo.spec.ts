@@ -3,6 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LdapConfigEntity, OauthConfigEntity, SystemEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { SystemTypeEnum } from '@shared/domain/types';
 import { cleanupCollections, systemEntityFactory } from '@shared/testing';
 import { System, SystemProps } from '../domain';
 import { SystemDomainMapper } from './system-domain.mapper';
@@ -133,21 +134,21 @@ describe(SystemRepo.name, () => {
 		describe('when different systems exist', () => {
 			const setup = async () => {
 				const activeLdapSystem: SystemEntity = systemEntityFactory.buildWithId({
-					type: 'ldap',
+					type: SystemTypeEnum.LDAP,
 					ldapConfig: { active: true },
 				});
 				const inActiveLdapSystem: SystemEntity = systemEntityFactory.buildWithId({
-					type: 'ldap',
+					type: SystemTypeEnum.LDAP,
 					ldapConfig: { active: false },
 				});
 				const activeLdapSystemWithOauthConfig = systemEntityFactory.buildWithId({
-					type: 'ldap',
+					type: SystemTypeEnum.LDAP,
 					ldapConfig: {
 						active: true,
 					},
 					oauthConfig: {},
 				});
-				const otherSystem = systemEntityFactory.buildWithId({ type: 'oauth' });
+				const otherSystem = systemEntityFactory.buildWithId({ type: SystemTypeEnum.OAUTH });
 
 				await em.persistAndFlush([activeLdapSystem, inActiveLdapSystem, activeLdapSystemWithOauthConfig, otherSystem]);
 				em.clear();
