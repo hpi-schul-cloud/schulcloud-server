@@ -65,16 +65,18 @@ export class ExternalToolDatasheetMapper {
 		return 'unbekannt';
 	}
 
-	private static mapToLimitedContexts(externalTool: ExternalTool): string[] {
+	private static mapToLimitedContexts(externalTool: ExternalTool): string {
 		const restrictToContexts: string[] = [];
 		if (externalTool.restrictToContexts?.includes(ToolContextType.COURSE)) {
-			restrictToContexts.push(' Kurs');
+			restrictToContexts.push('Kurs');
 		}
 		if (externalTool.restrictToContexts?.includes(ToolContextType.BOARD_ELEMENT)) {
-			restrictToContexts.push(' Kurs-Board');
+			restrictToContexts.push('Kurs-Board');
 		}
 
-		return restrictToContexts;
+		const restrictToContextsString = restrictToContexts.join(', ');
+
+		return restrictToContextsString;
 	}
 
 	private static mapToToolType(externalTool: ExternalTool): string {

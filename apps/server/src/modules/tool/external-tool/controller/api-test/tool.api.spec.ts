@@ -20,7 +20,6 @@ import {
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';
-import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,

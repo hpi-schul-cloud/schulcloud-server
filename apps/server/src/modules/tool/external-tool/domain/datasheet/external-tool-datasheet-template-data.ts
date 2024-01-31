@@ -1,4 +1,4 @@
-import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from '../../../common/enum';
+import { LtiMessageType, LtiPrivacyPermission } from '../../../common/enum';
 import { ExternalToolParameterDatasheetTemplateData } from './external-tool-parameter-datasheet-template-data';
 
 export class ExternalToolDatasheetTemplateData {
@@ -14,7 +14,7 @@ export class ExternalToolDatasheetTemplateData {
 
 	isDeactivated?: string;
 
-	restrictToContexts?: string[];
+	restrictToContexts?: string;
 
 	toolType: string;
 

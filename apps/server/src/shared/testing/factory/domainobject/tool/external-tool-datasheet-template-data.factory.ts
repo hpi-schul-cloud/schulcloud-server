@@ -53,7 +53,7 @@ export class ExternalToolDatasheetTemplateDataFactory extends Factory<ExternalTo
 	withOptionalParameters(): this {
 		const params: DeepPartial<ExternalToolDatasheetTemplateData> = {
 			isDeactivated: 'Das Tool ist deaktiviert',
-			restrictToContexts: [' Kurs', ' Kurs-Board'],
+			restrictToContexts: 'Kurs, Kurs-Board',
 		};
 		return this.params(params);
 	}
