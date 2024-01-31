@@ -20,6 +20,7 @@ import {
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,
@@ -741,7 +742,7 @@ describe('ToolController (API)', () => {
 			});
 		});
 
-		describe('when externalToolId is given ', () => {
+		describe('when externalToolId is given', () => {
 			const setup = async () => {
 				const toolId: string = new ObjectId().toHexString();
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
@@ -758,7 +759,7 @@ describe('ToolController (API)', () => {
 				const day = date.getDate();
 				const dateString = `${year}-${month}-${day}`;
 
-				return { loggedInClient, toolId, externalToolEntity, dateString };
+				return { loggedInClient, externalToolEntity, dateString };
 			};
 
 			it('should return the datasheet of the externalTool', async () => {
@@ -774,6 +775,28 @@ describe('ToolController (API)', () => {
 					})
 				);
 				expect(response.body).toEqual(expect.any(Buffer));
+			});
+		});
+
+		describe('when external tool cannot be found', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
+				await em.persistAndFlush([adminAccount, adminUser]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
+
+				return { loggedInClient, toolId };
+			};
+
+			it('should return a not found exception', async () => {
+				const { loggedInClient, toolId } = await setup();
+
+				const response: Response = await loggedInClient.get(`${toolId}/datasheet`);
+
+				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
 			});
 		});
 	});

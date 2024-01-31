@@ -5,7 +5,6 @@ import { StyleDictionary } from 'pdfmake/interfaces';
 import { ExternalToolDatasheetTemplateData, ExternalToolParameterDatasheetTemplateData } from '../domain';
 import { ToolConfigType } from '../../common/enum';
 
-// TODO: should be typed and tested https://pdfmake.github.io/docs/0.1/
 @Injectable()
 export class DatasheetPdfService {
 	public generatePdf(templateData: ExternalToolDatasheetTemplateData): Promise<Buffer> {

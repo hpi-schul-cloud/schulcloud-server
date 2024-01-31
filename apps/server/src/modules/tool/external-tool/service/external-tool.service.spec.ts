@@ -30,8 +30,6 @@ describe('ExternalToolService', () => {
 	let versionService: DeepMocked<ExternalToolVersionIncrementService>;
 
 	beforeAll(async () => {
-		// await setupEntities();
-
 		module = await Test.createTestingModule({
 			providers: [
 				ExternalToolService,

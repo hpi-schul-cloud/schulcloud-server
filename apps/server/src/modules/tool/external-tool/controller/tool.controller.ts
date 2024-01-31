@@ -16,6 +16,7 @@ import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiFoundResponse,
+	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
 	ApiResponse,
@@ -205,6 +206,8 @@ export class ToolController {
 
 	@Get(':externalToolId/datasheet')
 	@ApiOperation({ summary: 'Returns a pdf of the external tool information' })
+	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
+	@ApiNotFoundResponse({ description: 'The external tool has not been found' })
 	async getDatasheet(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolIdParams,
