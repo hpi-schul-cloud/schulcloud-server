@@ -1,4 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { ArixClientModule } from '@infra/arix-client/arix-client.module';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
 import { MailModule } from '@infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
@@ -85,6 +86,7 @@ const serverModules = [
 	PseudonymApiModule,
 	SchoolApiModule,
 	LegacySchoolApiModule,
+	ArixClientModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
