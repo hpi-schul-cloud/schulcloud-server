@@ -5,7 +5,7 @@ import {
 	ExternalToolParameterDatasheetTemplateData,
 	ExternalToolParameterDatasheetTemplateProperty,
 } from '../domain';
-import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../common/enum';
+import { CustomParameterScope, CustomParameterType, ToolConfigType, ToolContextType } from '../../common/enum';
 import { CustomParameter } from '../../common/domain';
 
 export class ExternalToolDatasheetMapper {
@@ -24,7 +24,7 @@ export class ExternalToolDatasheetMapper {
 			restrictToContexts: externalTool.restrictToContexts
 				? ExternalToolDatasheetMapper.mapToLimitedContexts(externalTool)
 				: undefined,
-			toolType: externalTool.config.type,
+			toolType: ExternalToolDatasheetMapper.mapToToolType(externalTool),
 		});
 
 		if (externalTool.parameters) {
@@ -34,8 +34,6 @@ export class ExternalToolDatasheetMapper {
 		if (ExternalTool.isOauth2Config(externalTool.config)) {
 			if (externalTool.config.skipConsent) {
 				externalToolData.skipConsent = 'ja';
-			} else {
-				externalToolData.skipConsent = 'nein';
 			}
 		}
 
@@ -70,13 +68,25 @@ export class ExternalToolDatasheetMapper {
 	private static mapToLimitedContexts(externalTool: ExternalTool): string[] {
 		const restrictToContexts: string[] = [];
 		if (externalTool.restrictToContexts?.includes(ToolContextType.COURSE)) {
-			restrictToContexts.push('Kurs');
+			restrictToContexts.push(' Kurs');
 		}
 		if (externalTool.restrictToContexts?.includes(ToolContextType.BOARD_ELEMENT)) {
-			restrictToContexts.push('Kurs-Board');
+			restrictToContexts.push(' Kurs-Board');
 		}
 
 		return restrictToContexts;
+	}
+
+	private static mapToToolType(externalTool: ExternalTool): string {
+		let toolType: string = externalTool.config.type;
+		if (externalTool.config.type === ToolConfigType.OAUTH2) {
+			toolType = 'OAuth 2.0';
+		}
+		if (externalTool.config.type === ToolConfigType.LTI11) {
+			toolType = 'LTI 1.1';
+		}
+
+		return toolType;
 	}
 
 	private static mapToParameterDataList(
@@ -110,6 +120,8 @@ export class ExternalToolDatasheetMapper {
 		const properties: ExternalToolParameterDatasheetTemplateProperty[] = [];
 		if (parameter.isOptional) {
 			properties.push(ExternalToolParameterDatasheetTemplateProperty.OPTIONAL);
+		} else {
+			properties.push(ExternalToolParameterDatasheetTemplateProperty.MANDATORY);
 		}
 
 		if (parameter.isProtected) {

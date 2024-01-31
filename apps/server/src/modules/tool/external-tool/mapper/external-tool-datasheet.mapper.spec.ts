@@ -46,7 +46,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 			const externalTool = externalToolFactory.withOauth2Config({ skipConsent: true }).build();
 			const datasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
 				.asOauth2Tool()
-				.build({ skipConsent: 'ja', instance: 'dBildungscloud' });
+				.build({ instance: 'dBildungscloud' });
 
 			return { user, externalTool, datasheet };
 		};

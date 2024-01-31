@@ -26,8 +26,8 @@ export const externalToolParameterDatasheetTemplateDataFactory = Factory.define<
 export class ExternalToolDatasheetTemplateDataFactory extends Factory<ExternalToolDatasheetTemplateData> {
 	asOauth2Tool(): this {
 		const params: DeepPartial<ExternalToolDatasheetTemplateData> = {
-			toolType: ToolConfigType.OAUTH2,
-			skipConsent: 'nein',
+			toolType: 'OAuth 2.0',
+			skipConsent: 'ja',
 			toolUrl: 'https://www.oauth2-baseUrl.com/',
 		};
 		return this.params(params);
@@ -35,7 +35,7 @@ export class ExternalToolDatasheetTemplateDataFactory extends Factory<ExternalTo
 
 	asLti11Tool(): this {
 		const params: DeepPartial<ExternalToolDatasheetTemplateData> = {
-			toolType: ToolConfigType.LTI11,
+			toolType: 'LTI 1.1',
 			messageType: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 			privacy: LtiPrivacyPermission.PSEUDONYMOUS,
 			toolUrl: 'https://www.lti11-baseUrl.com/',
@@ -53,7 +53,7 @@ export class ExternalToolDatasheetTemplateDataFactory extends Factory<ExternalTo
 	withOptionalParameters(): this {
 		const params: DeepPartial<ExternalToolDatasheetTemplateData> = {
 			isDeactivated: 'Das Tool ist deaktiviert',
-			restrictToContexts: ['Kurs', 'Kurs-Board'],
+			restrictToContexts: [' Kurs', ' Kurs-Board'],
 		};
 		return this.params(params);
 	}

@@ -2,23 +2,23 @@ import { Injectable } from '@nestjs/common';
 import { createPdf, TCreatedPdf } from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { StyleDictionary } from 'pdfmake/interfaces';
-import { ExternalToolDatasheetTemplateData } from '../domain';
+import { ExternalToolDatasheetTemplateData, ExternalToolParameterDatasheetTemplateData } from '../domain';
 import { ToolConfigType } from '../../common/enum';
 
 // TODO: should be typed and tested https://pdfmake.github.io/docs/0.1/
 @Injectable()
 export class DatasheetPdfService {
 	public generatePdf(templateData: ExternalToolDatasheetTemplateData): Promise<Buffer> {
-		const deactivated = templateData.isDeactivated ? { text: 'Dieses Tool ist deaktivert.' } : { text: '' };
-		const restricted =
+		const deactivated: string = templateData.isDeactivated ? 'Dieses Tool ist deaktivert.' : '';
+		const restricted: string =
 			templateData.restrictToContexts && templateData.restrictToContexts.length > 0
-				? { text: `Dieses Tool ist auf folgende Kontexte beschränkt: ${templateData.restrictToContexts}` }
-				: { text: '' };
+				? `Dieses Tool ist auf folgende Kontexte beschränkt:${templateData.restrictToContexts}`
+				: '';
 
-		const oauthParam = { text: `Zustimmung überspringen: ${templateData.skipConsent}` };
-		const ltiParam1 = { text: `lti_message type: ${templateData.messageType}` };
-		const ltiParam2 = { text: `privacy_permissions: ${templateData.privacy}` };
-		const toolTypeParams = [{ text: '' }];
+		const oauthParam: string = templateData.skipConsent ? `Zustimmung überspringen: ${templateData.skipConsent}` : '';
+		const ltiParam1 = `Message Type: ${templateData.messageType}`;
+		const ltiParam2 = `Privatsphäre: ${templateData.privacy}`;
+		const toolTypeParams = [''];
 		if (templateData.toolType === ToolConfigType.OAUTH2) {
 			toolTypeParams.push(oauthParam);
 		}
@@ -31,28 +31,31 @@ export class DatasheetPdfService {
 				const documentDefinition = {
 					content: [
 						{ text: `Erstellt am ${templateData.createdAt} von ${templateData.creatorName}`, style: 'right-aligned' },
+						'\n',
 						{ text: templateData.instance, style: 'right-aligned' },
-						{ text: '\n' },
-						{ text: 'Datenblatt', style: 'center-aligned' },
-						{ text: templateData.toolName, style: 'center-aligned' },
-						{ text: templateData.toolUrl, style: 'center-aligned', link: templateData.toolUrl },
-						{ text: '\n' },
+						'\n',
+						{ text: 'Datenblatt', style: ['center-aligned', 'h1'] },
+						{ text: templateData.toolName, style: ['center-aligned', 'h2'] },
+						'\n',
+						{ text: templateData.toolUrl, style: ['center-aligned', 'link'], link: templateData.toolUrl },
+						'\n\n',
 						deactivated,
 						restricted,
-						{ text: `Tool-Typ: ${templateData.toolType}`, link: templateData.toolType },
+						'\n',
+						`Typ des Tools: ${templateData.toolType}`,
 						toolTypeParams,
 
 						...(templateData?.parameters?.length
 							? [
 									{ text: 'An den Dienst übermittelte Parameter', style: 'h4' },
-									{ text: '\n' },
+									'\n',
 									{
 										table: {
 											headerRows: 1,
-											widths: ['auto', 'auto', 'auto', 'auto', 'auto'],
+											widths: [200, 'auto', 'auto', 'auto', 'auto'],
 											body: [
-												['Name', 'Typ', 'Eigenschaften', 'Geltungsbereich', 'Ort'],
-												...templateData.parameters.map((param) => [
+												['Name', 'Typ', 'Eigenschaften', 'Geltungsbereich', 'Ort '],
+												...templateData.parameters.map((param: ExternalToolParameterDatasheetTemplateData) => [
 													param.name,
 													param.type,
 													param.properties,
@@ -63,12 +66,15 @@ export class DatasheetPdfService {
 										},
 									},
 							  ]
-							: []),
+							: ['\n', 'Die Konfiguration dieses Tools enthält keine benutzerspezifischen Parameter.']),
 					],
 					styles: {
 						'right-aligned': { alignment: 'right' },
 						'center-aligned': { alignment: 'center' },
 						h4: { fontSize: 14, bold: true, margin: [0, 10, 0, 5] },
+						h1: { fontSize: 22, bold: true, margin: [0, 10, 0, 5] },
+						h2: { fontSize: 18, bold: true, margin: [0, 10, 0, 5] },
+						link: { color: 'blue', decoration: 'underline' },
 					} as StyleDictionary,
 				};
 

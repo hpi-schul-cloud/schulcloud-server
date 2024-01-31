@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { PdfService } from '@infra/pdf-generator';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ICurrentUser } from '@modules/authentication';
 import { Action, AuthorizationService } from '@modules/authorization';
@@ -19,7 +18,12 @@ import {
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
 import { ExternalTool, ExternalToolDatasheetTemplateData, ExternalToolMetadata, Oauth2ToolConfig } from '../domain';
-import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
+import {
+	DatasheetPdfService,
+	ExternalToolLogoService,
+	ExternalToolService,
+	ExternalToolValidationService,
+} from '../service';
 import { ExternalToolUpdate } from './dto';
 import { ExternalToolUc } from './external-tool.uc';
 import { CustomParameter } from '../../common/domain';
@@ -33,7 +37,7 @@ describe('ExternalToolUc', () => {
 	let toolValidationService: DeepMocked<ExternalToolValidationService>;
 	let logoService: DeepMocked<ExternalToolLogoService>;
 	let commonToolMetadataService: DeepMocked<CommonToolMetadataService>;
-	let pdfService: DeepMocked<PdfService>;
+	let pdfService: DeepMocked<DatasheetPdfService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -62,8 +66,8 @@ describe('ExternalToolUc', () => {
 					useValue: createMock<CommonToolMetadataService>(),
 				},
 				{
-					provide: PdfService,
-					useValue: createMock<PdfService>(),
+					provide: DatasheetPdfService,
+					useValue: createMock<DatasheetPdfService>(),
 				},
 			],
 		}).compile();
@@ -74,7 +78,7 @@ describe('ExternalToolUc', () => {
 		toolValidationService = module.get(ExternalToolValidationService);
 		logoService = module.get(ExternalToolLogoService);
 		commonToolMetadataService = module.get(CommonToolMetadataService);
-		pdfService = module.get(PdfService);
+		pdfService = module.get(DatasheetPdfService);
 	});
 
 	afterAll(async () => {
@@ -602,7 +606,7 @@ describe('ExternalToolUc', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				externalToolService.findById.mockResolvedValue(externalTool);
-				pdfService.generatePdfFromTemplate.mockResolvedValueOnce(Buffer.from('mockData'));
+				pdfService.generatePdf.mockResolvedValueOnce(Buffer.from('mockData'));
 
 				return {
 					user,
@@ -670,7 +674,7 @@ describe('ExternalToolUc', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				externalToolService.findById.mockResolvedValue(externalTool);
-				pdfService.generatePdfFromTemplate.mockResolvedValueOnce(Buffer.from('mockData'));
+				pdfService.generatePdf.mockResolvedValueOnce(Buffer.from('mockData'));
 
 				return {
 					user,
@@ -692,9 +696,7 @@ describe('ExternalToolUc', () => {
 
 				await uc.getDatasheet(user.id, toolId);
 
-				expect(pdfService.generatePdfFromTemplate).toHaveBeenCalledWith(expect.anything(), {
-					locals: datasheetData,
-				});
+				expect(pdfService.generatePdf).toHaveBeenCalledWith(datasheetData);
 			});
 		});
 
@@ -716,7 +718,7 @@ describe('ExternalToolUc', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				externalToolService.findById.mockResolvedValue(externalTool);
-				pdfService.generatePdfFromTemplate.mockResolvedValueOnce(Buffer.from('mockData'));
+				pdfService.generatePdf.mockResolvedValueOnce(Buffer.from('mockData'));
 
 				return {
 					user,
@@ -730,9 +732,7 @@ describe('ExternalToolUc', () => {
 
 				await uc.getDatasheet(user.id, toolId);
 
-				expect(pdfService.generatePdfFromTemplate).toHaveBeenCalledWith(expect.anything(), {
-					locals: datasheetData,
-				});
+				expect(pdfService.generatePdf).toHaveBeenCalledWith(datasheetData);
 			});
 		});
 
@@ -754,7 +754,7 @@ describe('ExternalToolUc', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				externalToolService.findById.mockResolvedValue(externalTool);
-				pdfService.generatePdfFromTemplate.mockResolvedValueOnce(Buffer.from('mockData'));
+				pdfService.generatePdf.mockResolvedValueOnce(Buffer.from('mockData'));
 
 				return {
 					user,
@@ -768,9 +768,7 @@ describe('ExternalToolUc', () => {
 
 				await uc.getDatasheet(user.id, toolId);
 
-				expect(pdfService.generatePdfFromTemplate).toHaveBeenCalledWith(expect.anything(), {
-					locals: datasheetData,
-				});
+				expect(pdfService.generatePdf).toHaveBeenCalledWith(datasheetData);
 			});
 		});
 	});

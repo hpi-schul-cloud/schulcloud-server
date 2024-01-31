@@ -16,7 +16,7 @@ export class ExternalToolDatasheetTemplateData {
 
 	restrictToContexts?: string[];
 
-	toolType: ToolConfigType;
+	toolType: string;
 
 	skipConsent?: string;
 
