@@ -1,21 +1,31 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import { ConverterUtil } from '@shared/common';
 import { AxiosResponse } from 'axios';
 import crypto from 'crypto';
 import { lastValueFrom, Observable } from 'rxjs';
+import { ArisOkResponse } from './response/aris-ok-response';
 import { ArixRecordResponse } from './response/arix-record-response';
 import { ArixUuidResponse } from './response/arix-uuid-response';
 
+/**
+ * This is a test client for the Arix API.
+ *
+ * https://docs.dbildungscloud.de/display/N21P/EduPool+Overview
+ */
 @Injectable()
-export class ArixRestClient {
+export class ArixTestClient {
 	private readonly endpoint = 'https://arix.datenbank-bildungsmedien.net/NDS';
 
-	private readonly arixUser = 'INSERT USER HERE';
+	private arixUser: string;
 
-	private readonly arixPW = 'INSERT PW HERE';
+	private arixPassword: string;
 
-	constructor(private readonly httpService: HttpService, private readonly convertUtil: ConverterUtil) {}
+	constructor(private readonly httpService: HttpService, private readonly convertUtil: ConverterUtil) {
+		this.arixUser = Configuration.get('ARIX_USER') as string;
+		this.arixPassword = Configuration.get('ARIX_PASSWORD') as string;
+	}
 
 	private async postData<T>(data: string): Promise<T> {
 		const observable: Observable<AxiosResponse<string>> = this.httpService.post(
@@ -45,12 +55,13 @@ export class ArixRestClient {
 			const uuidResponse: ArixUuidResponse = await this.postData(`<getpassphrase client="${arixUser}" />`);
 			return uuidResponse;
 		} catch (error) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/restrict-template-expressions
 			throw new Error(`Error in getUUID: ${error.message}`);
 		}
 	}
 
-	private async activateID(uuid: string, passphrase: string): Promise<string> {
-		return this.postData<string>(
+	private async activateID(uuid: string, passphrase: string): Promise<ArisOkResponse> {
+		return this.postData<ArisOkResponse>(
 			`<getpassphrase uuid="${uuid}">${this.generatePhrase(uuid, passphrase)}</getpassphrase>`
 		);
 	}
@@ -62,23 +73,24 @@ export class ArixRestClient {
 			);
 			return response;
 		} catch (error) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/restrict-template-expressions
 			throw new Error(`Error in performAuthenticatedAction: ${error.message}`);
 		}
 	}
 
-	async runArixService(): Promise<void> {
+	async testCall(): Promise<void> {
 		try {
 			// Request 1: Fetch a UUID for the user.
 			const resp1: ArixUuidResponse = await this.getUUID(this.arixUser);
 			console.log('Response from request 1:', resp1.uuid);
 
 			// Request 2: Activate the ID with a generated passphrase.
-			const resp2 = await this.activateID(resp1.uuid, this.arixPW);
+			const resp2: ArisOkResponse = await this.activateID(resp1.uuid, this.arixPassword);
 			console.log('Response from request 2:', resp2);
 
 			// Request 3: Perform an authenticated action using the activated ID.
 			const resp3: ArixRecordResponse = await this.performAuthenticatedAction(resp1.uuid);
-			console.log('Response from request 3:', resp3.record);
+			console.log('Response from request 3:', resp3);
 
 			return await Promise.resolve();
 		} catch (error) {
