@@ -75,6 +75,7 @@
 		"nest:start:files-storage:prod": "node dist/apps/server/apps/files-storage.app",
 		"nest:start:files-storage-amqp:prod": "node dist/apps/server/apps/files-storage-consumer.app",
 		"nest:start:preview-generator-amqp:prod": "node dist/apps/server/apps/preview-generator-consumer.app",
+		"nest:start:preview-generator-amqp:debug": "nest start preview-generator-amqp --debug",
 		"nest:start:fwu-learning-contents": "nest start fwu-learning-contents",
 		"nest:start:fwu-learning-contents:debug": "nest start fwu-learning-contents --debug --watch",
 		"nest:start:fwu-learning-contents:prod": "node dist/apps/server/apps/fwu-learning-contents.app",
