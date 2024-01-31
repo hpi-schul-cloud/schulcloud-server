@@ -3,6 +3,7 @@ import { ForbiddenException, forwardRef, Inject, Injectable, UnprocessableEntity
 import {
 	AnyBoardDo,
 	AnyContentElementDo,
+	isDrawingElement,
 	isSubmissionContainerElement,
 	isSubmissionItem,
 	SubmissionItem,
@@ -53,11 +54,23 @@ export class ElementUc extends BaseUc {
 
 		if (isSubmissionItem(parent)) {
 			await this.checkSubmissionItemWritePermission(userId, parent);
+		} else if (isDrawingElement(element)) {
+			// TODO: fix this temporary hack preventing students from deleting the DrawingElement
+			// linked with getBoardAuthorizable method in board-do-authorizable.service.ts
+			// the roles are hacked for the DrawingElement to allow students for file upload
+			// so because students have BoardRoles.EDITOR role, they can delete the DrawingElement by calling delete endpoint directly
+			// to prevent this, we add UserRoleEnum.TEACHER to the requiredUserRole
+			await this.checkPermission(userId, element, Action.write, UserRoleEnum.TEACHER);
 		} else {
 			await this.checkPermission(userId, element, Action.write);
 		}
 
 		return element;
+	}
+
+	async checkElementReadPermission(userId: EntityId, elementId: EntityId): Promise<void> {
+		const element = await this.elementService.findById(elementId);
+		await this.checkPermission(userId, element, Action.read);
 	}
 
 	async createSubmissionItem(

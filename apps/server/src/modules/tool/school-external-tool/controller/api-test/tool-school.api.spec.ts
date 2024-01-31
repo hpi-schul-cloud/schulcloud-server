@@ -3,17 +3,19 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, SchoolEntity, User } from '@shared/domain/entity';
+import { Account, ColumnBoardNode, ExternalToolElementNodeEntity, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	accountFactory,
+	columnBoardNodeFactory,
 	contextExternalToolEntityFactory,
 	customParameterEntityFactory,
+	externalToolElementNodeFactory,
 	externalToolEntityFactory,
+	schoolEntityFactory,
 	schoolExternalToolEntityFactory,
-	schoolFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
 import { schoolToolConfigurationStatusFactory } from '@shared/testing/factory';
@@ -59,7 +61,7 @@ describe('ToolSchoolController (API)', () => {
 
 	describe('[POST] tools/school-external-tools', () => {
 		const setup = async () => {
-			const school: SchoolEntity = schoolFactory.buildWithId();
+			const school: SchoolEntity = schoolEntityFactory.buildWithId();
 
 			const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 				Permission.SCHOOL_TOOL_ADMIN,
@@ -94,8 +96,9 @@ describe('ToolSchoolController (API)', () => {
 				version: 1,
 				parameters: [
 					{ name: 'param1', value: 'value' },
-					{ name: 'param2', value: '' },
+					{ name: 'param2', value: 'false' },
 				],
+				isDeactivated: false,
 			};
 
 			em.persist([
@@ -147,7 +150,7 @@ describe('ToolSchoolController (API)', () => {
 				toolVersion: postParams.version,
 				parameters: [
 					{ name: 'param1', value: 'value' },
-					{ name: 'param2', value: undefined },
+					{ name: 'param2', value: 'false' },
 				],
 			});
 
@@ -161,7 +164,7 @@ describe('ToolSchoolController (API)', () => {
 
 	describe('[DELETE] tools/school-external-tools/:schoolExternalToolId', () => {
 		const setup = async () => {
-			const school: SchoolEntity = schoolFactory.buildWithId();
+			const school: SchoolEntity = schoolEntityFactory.buildWithId();
 
 			const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 				Permission.SCHOOL_TOOL_ADMIN,
@@ -226,7 +229,7 @@ describe('ToolSchoolController (API)', () => {
 
 	describe('[GET] tools/school-external-tools/', () => {
 		const setup = async () => {
-			const school: SchoolEntity = schoolFactory.buildWithId();
+			const school: SchoolEntity = schoolEntityFactory.buildWithId();
 
 			const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 				Permission.SCHOOL_TOOL_ADMIN,
@@ -319,7 +322,7 @@ describe('ToolSchoolController (API)', () => {
 
 	describe('[GET] tools/school-external-tools/:schoolExternalToolId', () => {
 		const setup = async () => {
-			const school: SchoolEntity = schoolFactory.buildWithId();
+			const school: SchoolEntity = schoolEntityFactory.buildWithId();
 
 			const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 				Permission.SCHOOL_TOOL_ADMIN,
@@ -402,7 +405,7 @@ describe('ToolSchoolController (API)', () => {
 
 	describe('[PUT] tools/school-external-tools/:schoolExternalToolId', () => {
 		const setup = async () => {
-			const school: SchoolEntity = schoolFactory.buildWithId();
+			const school: SchoolEntity = schoolEntityFactory.buildWithId();
 
 			const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 				Permission.SCHOOL_TOOL_ADMIN,
@@ -458,6 +461,7 @@ describe('ToolSchoolController (API)', () => {
 				schoolId: school.id,
 				version: 1,
 				parameters: [paramEntry],
+				isDeactivated: false,
 			};
 
 			const updatedParamEntry: CustomParameterEntryParam = { name: 'param1', value: 'updatedValue' };
@@ -466,6 +470,7 @@ describe('ToolSchoolController (API)', () => {
 				schoolId: school.id,
 				version: 1,
 				parameters: [updatedParamEntry],
+				isDeactivated: false,
 			};
 
 			const schoolExternalToolResponse: SchoolExternalToolResponse = new SchoolExternalToolResponse({
@@ -540,7 +545,7 @@ describe('ToolSchoolController (API)', () => {
 
 		describe('when schoolExternalToolId is given ', () => {
 			const setup = async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const schoolToolId: string = new ObjectId().toHexString();
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId(
 					{ school },
@@ -559,9 +564,14 @@ describe('ToolSchoolController (API)', () => {
 					contextId: new ObjectId().toHexString(),
 				});
 
-				const schoolExternalToolMetadata: SchoolExternalToolMetadataResponse = new SchoolExternalToolMetadataResponse({
-					contextExternalToolCountPerContext: { course: 3, boardElement: 2 },
-				});
+				const board: ColumnBoardNode = columnBoardNodeFactory.buildWithId();
+				const externalToolElements: ExternalToolElementNodeEntity[] = externalToolElementNodeFactory.buildListWithId(
+					2,
+					{
+						contextExternalTool: boardExternalToolEntitys[0],
+						parent: board,
+					}
+				);
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 					Permission.SCHOOL_TOOL_ADMIN,
@@ -573,12 +583,14 @@ describe('ToolSchoolController (API)', () => {
 					schoolExternalToolEntity,
 					...courseExternalToolEntitys,
 					...boardExternalToolEntitys,
+					board,
+					...externalToolElements,
 				]);
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
-				return { loggedInClient, schoolExternalToolEntity, schoolExternalToolMetadata };
+				return { loggedInClient, schoolExternalToolEntity };
 			};
 
 			it('should return the metadata of schoolExternalTool', async () => {
@@ -589,8 +601,8 @@ describe('ToolSchoolController (API)', () => {
 				expect(response.statusCode).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual<SchoolExternalToolMetadataResponse>({
 					contextExternalToolCountPerContext: {
-						course: 3,
-						boardElement: 2,
+						course: 1,
+						boardElement: 1,
 					},
 				});
 			});

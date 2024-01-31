@@ -155,16 +155,23 @@ export class UserRepo extends BaseRepo<User> {
 		return promise;
 	}
 
-	async deleteUser(userId: EntityId): Promise<number> {
-		const deletedUserNumber: Promise<number> = this._em.nativeDelete(User, {
-			id: userId,
-		});
-		return deletedUserNumber;
+	async deleteUser(userId: EntityId): Promise<EntityId | null> {
+		const user = await this._em.findOne(User, { id: userId });
+		if (user === null) {
+			return null;
+		}
+
+		await this._em.removeAndFlush(user);
+
+		return user.id;
 	}
 
 	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
-		const user = await this._em.findOneOrFail(User, { id: userId });
-		const parentsEmails = user.parents?.map((parent) => parent.email) ?? [];
+		const user: User | null = await this._em.findOne(User, { id: userId });
+		let parentsEmails: string[] = [];
+		if (user !== null) {
+			parentsEmails = user.parents?.map((parent) => parent.email) ?? [];
+		}
 
 		return parentsEmails;
 	}
@@ -187,5 +194,11 @@ export class UserRepo extends BaseRepo<User> {
 
 	async flush(): Promise<void> {
 		await this._em.flush();
+	}
+
+	public async findUserBySchoolAndName(schoolId: EntityId, firstName: string, lastName: string): Promise<User[]> {
+		const users: User[] = await this._em.find(User, { school: schoolId, firstName, lastName });
+
+		return users;
 	}
 }

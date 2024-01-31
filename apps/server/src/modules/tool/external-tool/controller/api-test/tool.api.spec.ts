@@ -3,17 +3,19 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { SchoolEntity } from '@shared/domain/entity';
+import { ColumnBoardNode, ExternalToolElementNodeEntity, SchoolEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	cleanupCollections,
+	columnBoardNodeFactory,
 	contextExternalToolEntityFactory,
+	externalToolElementNodeFactory,
 	externalToolEntityFactory,
 	externalToolFactory,
+	schoolEntityFactory,
 	schoolExternalToolEntityFactory,
-	schoolFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -26,7 +28,6 @@ import {
 } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
-import { ExternalToolMetadata } from '../../domain';
 import { ExternalToolEntity } from '../../entity';
 import {
 	ExternalToolCreateParams,
@@ -87,6 +88,7 @@ describe('ToolController (API)', () => {
 				baseUrl: 'https://link.to-my-tool.com/:key',
 			},
 			isHidden: false,
+			isDeactivated: false,
 			logoUrl: 'https://link.to-my-logo.com',
 			url: 'https://link.to-my-tool.com',
 			openNewTab: true,
@@ -151,6 +153,7 @@ describe('ToolController (API)', () => {
 						baseUrl: 'https://link.to-my-tool.com/:key',
 					},
 					isHidden: false,
+					isDeactivated: false,
 					logoUrl: 'https://link.to-my-logo.com',
 					url: 'https://link.to-my-tool.com',
 					openNewTab: true,
@@ -382,6 +385,7 @@ describe('ToolController (API)', () => {
 				baseUrl: 'https://link.to-my-tool.com/:key',
 			},
 			isHidden: false,
+			isDeactivated: false,
 			logoUrl: 'https://link.to-my-logo.com',
 			url: 'https://link.to-my-tool.com',
 			openNewTab: true,
@@ -449,6 +453,7 @@ describe('ToolController (API)', () => {
 						baseUrl: 'https://link.to-my-tool.com/:key',
 					},
 					isHidden: false,
+					isDeactivated: false,
 					logoUrl: 'https://link.to-my-logo.com',
 					url: 'https://link.to-my-tool.com',
 					openNewTab: true,
@@ -656,7 +661,7 @@ describe('ToolController (API)', () => {
 				const toolId: string = new ObjectId().toHexString();
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
 
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				const schoolExternalToolEntitys: SchoolExternalToolEntity[] = schoolExternalToolEntityFactory.buildList(2, {
 					tool: externalToolEntity,
 					school,
@@ -665,6 +670,7 @@ describe('ToolController (API)', () => {
 				const courseTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildList(3, {
 					schoolTool: schoolExternalToolEntitys[0],
 					contextType: ContextExternalToolType.COURSE,
+					contextId: new ObjectId().toHexString(),
 				});
 
 				const boardTools: ContextExternalToolEntity[] = contextExternalToolEntityFactory.buildList(2, {
@@ -673,10 +679,14 @@ describe('ToolController (API)', () => {
 					contextId: new ObjectId().toHexString(),
 				});
 
-				const externalToolMetadata: ExternalToolMetadata = new ExternalToolMetadata({
-					schoolExternalToolCount: 2,
-					contextExternalToolCountPerContext: { course: 3, boardElement: 2 },
-				});
+				const board: ColumnBoardNode = columnBoardNodeFactory.buildWithId();
+				const externalToolElements: ExternalToolElementNodeEntity[] = externalToolElementNodeFactory.buildListWithId(
+					2,
+					{
+						contextExternalTool: boardTools[0],
+						parent: board,
+					}
+				);
 
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
 				await em.persistAndFlush([
@@ -687,12 +697,14 @@ describe('ToolController (API)', () => {
 					...schoolExternalToolEntitys,
 					...courseTools,
 					...boardTools,
+					board,
+					...externalToolElements,
 				]);
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
-				return { loggedInClient, toolId, externalToolEntity, externalToolMetadata };
+				return { loggedInClient, toolId, externalToolEntity };
 			};
 
 			it('should return the metadata of externalTool', async () => {
@@ -704,8 +716,8 @@ describe('ToolController (API)', () => {
 				expect(response.body).toEqual<ExternalToolMetadataResponse>({
 					schoolExternalToolCount: 2,
 					contextExternalToolCountPerContext: {
-						course: 3,
-						boardElement: 2,
+						course: 1,
+						boardElement: 1,
 					},
 				});
 			});

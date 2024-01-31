@@ -1,4 +1,4 @@
-import { DeletionDomainModel } from '../domain/types';
+import { DomainName } from '@shared/domain/types';
 import { DeletionTargetRefBuilder } from './index';
 
 describe(DeletionTargetRefBuilder.name, () => {
@@ -8,7 +8,7 @@ describe(DeletionTargetRefBuilder.name, () => {
 
 	it('should build generic deletionTargetRef with all attributes', () => {
 		// Arrange
-		const domain = DeletionDomainModel.PSEUDONYMS;
+		const domain = DomainName.PSEUDONYMS;
 		const refId = '653e4833cc39e5907a1e18d2';
 
 		const result = DeletionTargetRefBuilder.build(domain, refId);

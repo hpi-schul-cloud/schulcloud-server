@@ -2,6 +2,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CourseGroupRepo, UserRepo } from '@shared/repo';
 import { courseGroupFactory, setupEntities, userFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
+import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainName, OperationType } from '@shared/domain/types';
 import { CourseGroupService } from './coursegroup.service';
 
 describe('CourseGroupService', () => {
@@ -22,6 +25,10 @@ describe('CourseGroupService', () => {
 				{
 					provide: CourseGroupRepo,
 					useValue: createMock<CourseGroupRepo>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
@@ -81,7 +88,13 @@ describe('CourseGroupService', () => {
 			userRepo.findById.mockResolvedValue(user);
 			courseGroupRepo.findByUserId.mockResolvedValue([[courseGroup1, courseGroup2], 2]);
 
+			const expectedResult = DomainOperationBuilder.build(DomainName.COURSEGROUP, OperationType.UPDATE, 2, [
+				courseGroup1.id,
+				courseGroup2.id,
+			]);
+
 			return {
+				expectedResult,
 				user,
 			};
 		};
@@ -95,11 +108,11 @@ describe('CourseGroupService', () => {
 		});
 
 		it('should update courses without deleted user', async () => {
-			const { user } = setup();
+			const { expectedResult, user } = setup();
 
 			const result = await courseGroupService.deleteUserDataFromCourseGroup(user.id);
 
-			expect(result).toEqual(2);
+			expect(result).toEqual(expectedResult);
 		});
 	});
 });

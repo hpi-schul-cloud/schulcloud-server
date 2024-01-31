@@ -3,9 +3,11 @@ import { Action, AuthorizationService } from '@modules/authorization';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable } from '@shared/domain/domainobject';
+import { BoardDoAuthorizable, BoardRoles, UserRoleEnum } from '@shared/domain/domainobject';
 import { InputFormat } from '@shared/domain/types';
 import {
+	cardFactory,
+	columnBoardFactory,
 	drawingElementFactory,
 	fileElementFactory,
 	richTextElementFactory,
@@ -79,7 +81,7 @@ describe(ElementUc.name, () => {
 				const richTextElement = richTextElementFactory.build();
 				const content = { text: 'this has been updated', inputFormat: InputFormat.RICH_TEXT_CK5 };
 
-				const elementSpy = elementService.findById.mockResolvedValue(richTextElement);
+				const elementSpy = elementService.findById.mockResolvedValueOnce(richTextElement);
 
 				return { richTextElement, user, content, elementSpy };
 			};
@@ -107,7 +109,7 @@ describe(ElementUc.name, () => {
 				const fileElement = fileElementFactory.build();
 				const content = { caption: 'this has been updated', alternativeText: 'this altText has been updated' };
 
-				const elementSpy = elementService.findById.mockResolvedValue(fileElement);
+				const elementSpy = elementService.findById.mockResolvedValueOnce(fileElement);
 
 				return { fileElement, user, content, elementSpy };
 			};
@@ -187,6 +189,30 @@ describe(ElementUc.name, () => {
 			});
 		});
 
+		describe('when deleting an element which is of DrawingElement type', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const element = drawingElementFactory.build();
+
+				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
+					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
+				);
+
+				elementService.findById.mockResolvedValueOnce(element);
+				return { element, user };
+			};
+
+			it('should authorize the user to delete the element', async () => {
+				const { element, user } = setup();
+
+				const boardDoAuthorizable = await boardDoAuthorizableService.getBoardAuthorizable(element);
+				const context = { action: Action.write, requiredPermissions: [] };
+				await uc.deleteElement(user.id, element.id);
+
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, boardDoAuthorizable, context);
+			});
+		});
+
 		describe('when deleting a content element', () => {
 			const setup = () => {
 				const user = userFactory.build();
@@ -225,7 +251,7 @@ describe(ElementUc.name, () => {
 				const user = userFactory.build();
 				const fileElement = fileElementFactory.build();
 
-				elementService.findById.mockResolvedValue(fileElement);
+				elementService.findById.mockResolvedValueOnce(fileElement);
 
 				return { fileElement, user };
 			};
@@ -246,7 +272,7 @@ describe(ElementUc.name, () => {
 
 				const submissionContainer = submissionContainerElementFactory.build({ children: [fileElement] });
 
-				elementService.findById.mockResolvedValue(submissionContainer);
+				elementService.findById.mockResolvedValueOnce(submissionContainer);
 
 				return { submissionContainer, fileElement, user };
 			};
@@ -267,7 +293,7 @@ describe(ElementUc.name, () => {
 				const submissionItem = submissionItemFactory.build({ userId: user.id });
 				const submissionContainer = submissionContainerElementFactory.build({ children: [submissionItem] });
 
-				elementService.findById.mockResolvedValue(submissionContainer);
+				elementService.findById.mockResolvedValueOnce(submissionContainer);
 
 				return { submissionContainer, submissionItem, user };
 			};
@@ -279,6 +305,58 @@ describe(ElementUc.name, () => {
 					'User is not allowed to have multiple submission-items per submission-container-element'
 				);
 			});
+		});
+	});
+
+	describe('checkElementReadPermission', () => {
+		const setup = () => {
+			const user = userFactory.build();
+			const drawingElement = drawingElementFactory.build();
+			const card = cardFactory.build({ children: [drawingElement] });
+			const columnBoard = columnBoardFactory.build({ children: [card] });
+			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
+				users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
+				id: columnBoard.id,
+			});
+
+			boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
+
+			return { drawingElement, user };
+		};
+
+		it('should properly find the element', async () => {
+			const { drawingElement, user } = setup();
+			elementService.findById.mockResolvedValueOnce(drawingElement);
+
+			await uc.checkElementReadPermission(user.id, drawingElement.id);
+
+			expect(elementService.findById).toHaveBeenCalledWith(drawingElement.id);
+		});
+
+		it('should properly check element permission and not throw', async () => {
+			const { drawingElement, user } = setup();
+			elementService.findById.mockResolvedValueOnce(drawingElement);
+
+			await expect(uc.checkElementReadPermission(user.id, drawingElement.id)).resolves.not.toThrow();
+		});
+
+		it('should throw at find element by Id', async () => {
+			const { drawingElement, user } = setup();
+			elementService.findById.mockRejectedValueOnce(new Error());
+
+			await expect(uc.checkElementReadPermission(user.id, drawingElement.id)).rejects.toThrow();
+		});
+
+		it('should throw at check permission', async () => {
+			const { user } = setup();
+			const testElementId = 'wrongTestId123';
+			authorizationService.checkPermission.mockImplementationOnce(() => {
+				throw new Error();
+			});
+
+			await expect(uc.checkElementReadPermission(user.id, testElementId)).rejects.toThrow();
 		});
 	});
 });

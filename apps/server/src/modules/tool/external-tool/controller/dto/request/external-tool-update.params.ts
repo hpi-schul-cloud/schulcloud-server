@@ -63,6 +63,13 @@ export class ExternalToolUpdateParams {
 	isHidden!: boolean;
 
 	@IsBoolean()
+	@ApiProperty({
+		type: Boolean,
+		default: false,
+	})
+	isDeactivated!: boolean;
+
+	@IsBoolean()
 	@ApiProperty()
 	openNewTab!: boolean;
 

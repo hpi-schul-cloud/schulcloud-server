@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountDto, AccountService } from '@modules/account';
 import { OauthCurrentUser } from '@modules/authentication/interface';
 import { RoleService } from '@modules/role';
@@ -8,11 +9,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { LanguageType, Role, User } from '@shared/domain/entity';
 import { IFindOptions, Permission, RoleName, SortOrder } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { Logger } from '@src/core/logger';
+import { DomainOperationBuilder } from '@shared/domain/builder';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
 import { UserService } from './user.service';
@@ -54,6 +56,10 @@ describe('UserService', () => {
 				{
 					provide: AccountService,
 					useValue: createMock<AccountService>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
@@ -346,11 +352,11 @@ describe('UserService', () => {
 	describe('findByEmail is called', () => {
 		describe('when a user with this email exists', () => {
 			it('should return the user', async () => {
-				const user: User = userFactory.buildWithId();
+				const user: UserDO = userDoFactory.buildWithId();
 
-				userRepo.findByEmail.mockResolvedValue([user]);
+				userDORepo.findByEmail.mockResolvedValue([user]);
 
-				const result: User[] = await service.findByEmail(user.email);
+				const result: UserDO[] = await service.findByEmail(user.email);
 
 				expect(result).toEqual([user]);
 			});
@@ -387,41 +393,54 @@ describe('UserService', () => {
 				const user: UserDO = userDoFactory.build({ id: undefined });
 				const userId: EntityId = user.id as EntityId;
 
-				userRepo.deleteUser.mockResolvedValue(0);
+				userRepo.deleteUser.mockResolvedValue(null);
+
+				const expectedResult = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 0, []);
 
 				return {
+					expectedResult,
 					userId,
 				};
 			};
 
-			it('should return 0', async () => {
-				const { userId } = setup();
+			it('should return null', async () => {
+				const { expectedResult, userId } = setup();
 
 				const result = await service.deleteUser(userId);
 
-				expect(result).toEqual(0);
+				expect(result).toEqual(expectedResult);
 			});
 		});
 
-		describe('when deleting by userId', () => {
+		describe('when user exists', () => {
 			const setup = () => {
 				const user1: User = userFactory.asStudent().buildWithId();
 
+				const expectedResult = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 1, [user1.id]);
+
 				userRepo.findById.mockResolvedValue(user1);
-				userRepo.deleteUser.mockResolvedValue(1);
+				userRepo.deleteUser.mockResolvedValue(user1.id);
 
 				return {
+					expectedResult,
 					user1,
 				};
 			};
 
-			it('should delete user by userId', async () => {
+			it('should call userRepo.deleteUser with userId', async () => {
 				const { user1 } = setup();
+
+				await service.deleteUser(user1.id);
+
+				expect(userRepo.deleteUser).toHaveBeenCalledWith(user1.id);
+			});
+
+			it('should return domainOperation object with information about deleted user', async () => {
+				const { expectedResult, user1 } = setup();
 
 				const result = await service.deleteUser(user1.id);
 
-				expect(userRepo.deleteUser).toHaveBeenCalledWith(user1.id);
-				expect(result).toEqual(1);
+				expect(result).toEqual(expectedResult);
 			});
 		});
 	});
@@ -452,6 +471,32 @@ describe('UserService', () => {
 
 			const result = await service.getParentEmailsFromUser(user.id);
 			expect(result).toEqual(parentEmail);
+		});
+	});
+
+	describe('findUserBySchoolAndName', () => {
+		describe('when searching for users by school and name', () => {
+			const setup = () => {
+				const firstName = 'Frist';
+				const lastName = 'Last';
+				const users: User[] = userFactory.buildListWithId(2, { firstName, lastName });
+
+				userRepo.findUserBySchoolAndName.mockResolvedValue(users);
+
+				return {
+					firstName,
+					lastName,
+					users,
+				};
+			};
+
+			it('should return a list of users', async () => {
+				const { firstName, lastName, users } = setup();
+
+				const result: User[] = await service.findUserBySchoolAndName(new ObjectId().toHexString(), firstName, lastName);
+
+				expect(result).toEqual(users);
+			});
 		});
 	});
 });

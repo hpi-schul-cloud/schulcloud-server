@@ -1,6 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { DomainName } from '@shared/domain/types';
 import { DeletionRequest } from './deletion-request.do';
-import { DeletionDomainModel, DeletionStatusModel } from './types';
+import { DeletionStatusModel } from './types';
 import { deletionRequestFactory } from './testing/factory/deletion-request.factory';
 
 describe(DeletionRequest.name, () => {
@@ -35,7 +36,7 @@ describe(DeletionRequest.name, () => {
 			const setup = () => {
 				const props = {
 					id: new ObjectId().toHexString(),
-					targetRefDomain: DeletionDomainModel.USER,
+					targetRefDomain: DomainName.USER,
 					deleteAfter: new Date(),
 					targetRefId: new ObjectId().toHexString(),
 					status: DeletionStatusModel.REGISTERED,

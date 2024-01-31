@@ -1,8 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userDoFactory } from '@shared/testing';
-import { RegistrationPinService } from '.';
+import { Logger } from '@src/core/logger';
+import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainName, OperationType } from '@shared/domain/types';
+import { ObjectId } from 'bson';
 import { RegistrationPinRepo } from '../repo';
+import { RegistrationPinService } from '.';
 
 describe(RegistrationPinService.name, () => {
 	let module: TestingModule;
@@ -16,6 +20,10 @@ describe(RegistrationPinService.name, () => {
 				{
 					provide: RegistrationPinRepo,
 					useValue: createMock<RegistrationPinRepo>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
@@ -35,13 +43,42 @@ describe(RegistrationPinService.name, () => {
 	});
 
 	describe('deleteRegistrationPinByEmail', () => {
-		describe('when deleting registrationPin', () => {
+		describe('when there is no registrationPin', () => {
 			const setup = () => {
 				const user = userDoFactory.buildWithId();
 
-				registrationPinRepo.deleteRegistrationPinByEmail.mockResolvedValueOnce(1);
+				registrationPinRepo.deleteRegistrationPinByEmail.mockResolvedValueOnce(null);
+
+				const expectedResult = DomainOperationBuilder.build(DomainName.REGISTRATIONPIN, OperationType.DELETE, 0, []);
 
 				return {
+					expectedResult,
+					user,
+				};
+			};
+
+			it('should return domainOperation object with proper values', async () => {
+				const { expectedResult, user } = setup();
+
+				const result = await service.deleteRegistrationPinByEmail(user.email);
+
+				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when deleting existing registrationPin', () => {
+			const setup = () => {
+				const user = userDoFactory.buildWithId();
+				const registrationPinId = new ObjectId().toHexString();
+
+				registrationPinRepo.deleteRegistrationPinByEmail.mockResolvedValueOnce(registrationPinId);
+
+				const expectedResult = DomainOperationBuilder.build(DomainName.REGISTRATIONPIN, OperationType.DELETE, 1, [
+					registrationPinId,
+				]);
+
+				return {
+					expectedResult,
 					user,
 				};
 			};
@@ -55,11 +92,11 @@ describe(RegistrationPinService.name, () => {
 			});
 
 			it('should delete registrationPin by email', async () => {
-				const { user } = setup();
+				const { expectedResult, user } = setup();
 
-				const result: number = await service.deleteRegistrationPinByEmail(user.email);
+				const result = await service.deleteRegistrationPinByEmail(user.email);
 
-				expect(result).toEqual(1);
+				expect(result).toEqual(expectedResult);
 			});
 		});
 	});

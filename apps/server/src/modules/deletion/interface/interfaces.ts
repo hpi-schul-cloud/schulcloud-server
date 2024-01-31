@@ -1,13 +1,6 @@
-import { EntityId } from '@shared/domain/types';
-import { DeletionDomainModel } from '../domain/types';
+import { DomainName, EntityId } from '@shared/domain/types';
 
 export interface DeletionTargetRef {
-	domain: DeletionDomainModel;
+	domain: DomainName;
 	id: EntityId;
-}
-
-export interface DeletionLogStatistic {
-	domain: DeletionDomainModel;
-	modifiedCount?: number;
-	deletedCount?: number;
 }

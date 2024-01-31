@@ -10,8 +10,8 @@ export class DeletionLogMapper {
 			updatedAt: entity.updatedAt,
 			domain: entity.domain,
 			operation: entity.operation,
-			modifiedCount: entity.modifiedCount,
-			deletedCount: entity.deletedCount,
+			count: entity.count,
+			refs: entity.refs,
 			deletionRequestId: entity.deletionRequestId?.toHexString(),
 			performedAt: entity.performedAt,
 		});
@@ -24,8 +24,8 @@ export class DeletionLogMapper {
 			updatedAt: domainObject.updatedAt,
 			domain: domainObject.domain,
 			operation: domainObject.operation,
-			modifiedCount: domainObject.modifiedCount,
-			deletedCount: domainObject.deletedCount,
+			count: domainObject.count,
+			refs: domainObject.refs,
 			deletionRequestId: new ObjectId(domainObject.deletionRequestId),
 			performedAt: domainObject.performedAt,
 		});

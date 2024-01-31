@@ -7,7 +7,8 @@ export class ToolStatusOutdatedLoggableException extends BadRequestException imp
 		private readonly userId: EntityId,
 		private readonly toolId: EntityId,
 		private readonly isOutdatedOnScopeSchool: boolean,
-		private readonly isOutdatedOnScopeContext: boolean
+		private readonly isOutdatedOnScopeContext: boolean,
+		private readonly isDeactivated: boolean
 	) {
 		super();
 	}
@@ -22,6 +23,7 @@ export class ToolStatusOutdatedLoggableException extends BadRequestException imp
 				toolId: this.toolId,
 				isOutdatedOnScopeSchool: this.isOutdatedOnScopeSchool,
 				isOutdatedOnScopeContext: this.isOutdatedOnScopeContext,
+				isDeactivated: this.isDeactivated,
 			},
 		};
 	}
