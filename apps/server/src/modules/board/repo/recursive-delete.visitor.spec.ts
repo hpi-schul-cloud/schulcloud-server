@@ -16,7 +16,7 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
-import { DrawingElementAdapterService } from '@modules/tldraw-client/service';
+import { DrawingElementAdapterService } from '@modules/tldraw-client';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
 
 describe(RecursiveDeleteVisitor.name, () => {

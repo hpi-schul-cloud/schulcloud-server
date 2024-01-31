@@ -18,7 +18,7 @@ import {
 import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { BoardNode } from '@shared/domain/entity';
-import { DrawingElementAdapterService } from '@modules/tldraw-client/service';
+import { DrawingElementAdapterService } from '@modules/tldraw-client';
 
 @Injectable()
 export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
