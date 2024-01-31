@@ -6,6 +6,7 @@ import { AxiosResponse } from 'axios';
 import crypto from 'crypto';
 import { lastValueFrom, Observable } from 'rxjs';
 import { ArisOkResponse } from './response/aris-ok-response';
+import { ArixLinkResponse } from './response/arix-link-response';
 import { ArixRecordResponse } from './response/arix-record-response';
 import { ArixSearchResponse } from './response/arix-search-response';
 import { ArixUuidResponse } from './response/arix-uuid-response';
@@ -17,6 +18,7 @@ import { ArixUuidResponse } from './response/arix-uuid-response';
  */
 @Injectable()
 export class ArixTestClient {
+	// TODO: move url to options and think about setting the context e.g. NDS/H/30167
 	private readonly endpoint = 'https://arix.datenbank-bildungsmedien.net/NDS';
 
 	private arixUser: string;
@@ -101,7 +103,13 @@ export class ArixTestClient {
 		}
 	}
 
+	// eslint-disable-next-line @typescript-eslint/require-await
 	public async doSearch(): Promise<ArixSearchResponse> {
 		return {} as ArixSearchResponse;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/require-await
+	public async getLink(): Promise<ArixLinkResponse> {
+		return {} as ArixLinkResponse;
 	}
 }
