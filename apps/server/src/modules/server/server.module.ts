@@ -1,4 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { ArixClientModule } from '@infra/arix-client/arix-client.module';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
 import { MailModule } from '@infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
@@ -85,6 +86,12 @@ const serverModules = [
 	PseudonymApiModule,
 	SchoolApiModule,
 	LegacySchoolApiModule,
+	ArixClientModule.register({
+		withController: Configuration.get('ARIX_CLIENT__WITH_CONTROLLER') as boolean,
+		apiUrl: Configuration.get('ARIX_CLIENT__API_URL') as string,
+		user: Configuration.get('ARIX_CLIENT__USER') as string,
+		password: Configuration.get('ARIX_CLIENT__PASSWORD') as string,
+	}),
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

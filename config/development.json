@@ -82,5 +82,11 @@
 		"TOKEN_ENDPOINT": "http://localhost:8888/realms/SANIS/protocol/openid-connect/token",
 		"CLIENT_ID": "schulcloud",
 		"CLIENT_SECRET": "secret"
+	},
+	"ARIX_CLIENT": {
+		"API_URL": "http://localhost:9191",
+		"USER": "schulcloud",
+		"PASSWORD": "schulcloud",
+		"WITH_CONTROLLER": true
 	}
 }
