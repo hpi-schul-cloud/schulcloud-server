@@ -14,11 +14,11 @@ export class CommonCartridgeMetadataElementV130 extends CommonCartridgeElement {
 		super(props);
 	}
 
-	public override getSupportedVersion(): CommonCartridgeVersion {
+	public getSupportedVersion(): CommonCartridgeVersion {
 		return CommonCartridgeVersion.V_1_3_0;
 	}
 
-	public override getManifestXmlObject(): Record<string, unknown> {
+	public getManifestXmlObject(): Record<string, unknown> {
 		return {
 			schema: 'IMS Common Cartridge',
 			schemaversion: '1.3.0',

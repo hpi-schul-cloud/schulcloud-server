@@ -12,11 +12,11 @@ export class CommonCartridgeOrganizationsWrapperElementV110 extends CommonCartri
 		super(props);
 	}
 
-	public override getSupportedVersion(): CommonCartridgeVersion {
+	public getSupportedVersion(): CommonCartridgeVersion {
 		return CommonCartridgeVersion.V_1_1_0;
 	}
 
-	public override getManifestXmlObject(): Record<string, unknown> {
+	public getManifestXmlObject(): Record<string, unknown> {
 		return {
 			organization: [
 				{

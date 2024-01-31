@@ -28,23 +28,23 @@ export class CommonCartridgeWebContentResourceV110 extends CommonCartridgeResour
 		checkIntendedUse(props.intendedUse, CommonCartridgeWebContentResourceV110.SUPPORTED_INTENDED_USES);
 	}
 
-	public override canInline(): boolean {
+	public canInline(): boolean {
 		return false;
 	}
 
-	public override getFilePath(): string {
+	public getFilePath(): string {
 		return `${this.props.folder}/${this.props.identifier}.html`;
 	}
 
-	public override getFileContent(): string {
+	public getFileContent(): string {
 		return this.props.html;
 	}
 
-	public override getSupportedVersion(): CommonCartridgeVersion {
+	public getSupportedVersion(): CommonCartridgeVersion {
 		return CommonCartridgeVersion.V_1_1_0;
 	}
 
-	public override getManifestXmlObject(): Record<string, unknown> {
+	public getManifestXmlObject(): Record<string, unknown> {
 		return {
 			$: {
 				identifier: this.props.identifier,

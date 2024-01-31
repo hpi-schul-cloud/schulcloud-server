@@ -18,15 +18,15 @@ export class CommonCartridgeWebLinkResourceV130 extends CommonCartridgeResource 
 		super(props);
 	}
 
-	public override canInline(): boolean {
+	public canInline(): boolean {
 		return false;
 	}
 
-	public override getFilePath(): string {
+	public getFilePath(): string {
 		return `${this.props.folder}/${this.props.identifier}.xml`;
 	}
 
-	public override getFileContent(): string {
+	public getFileContent(): string {
 		return buildXmlString({
 			webLink: {
 				$: {
@@ -47,11 +47,11 @@ export class CommonCartridgeWebLinkResourceV130 extends CommonCartridgeResource 
 		});
 	}
 
-	public override getSupportedVersion(): CommonCartridgeVersion {
+	public getSupportedVersion(): CommonCartridgeVersion {
 		return CommonCartridgeVersion.V_1_3_0;
 	}
 
-	public override getManifestXmlObject(): Record<string, unknown> {
+	public getManifestXmlObject(): Record<string, unknown> {
 		return {
 			$: {
 				identifier: this.props.identifier,

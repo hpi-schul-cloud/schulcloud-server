@@ -22,23 +22,23 @@ export class CommonCartridgeManifestResourceV110 extends CommonCartridgeResource
 		super(props);
 	}
 
-	public override canInline(): boolean {
+	public canInline(): boolean {
 		return false;
 	}
 
-	public override getFilePath(): string {
+	public getFilePath(): string {
 		return 'imsmanifest.xml';
 	}
 
-	public override getFileContent(): string {
+	public getFileContent(): string {
 		return buildXmlString(this.getManifestXmlObject());
 	}
 
-	public override getSupportedVersion(): CommonCartridgeVersion {
+	public getSupportedVersion(): CommonCartridgeVersion {
 		return CommonCartridgeVersion.V_1_1_0;
 	}
 
-	public override getManifestXmlObject(): Record<string, unknown> {
+	public getManifestXmlObject(): Record<string, unknown> {
 		return {
 			manifest: {
 				$: {
