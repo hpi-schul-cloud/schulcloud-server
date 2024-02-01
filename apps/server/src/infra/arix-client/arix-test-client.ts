@@ -7,11 +7,13 @@ import crypto from 'crypto';
 import { lastValueFrom, Observable } from 'rxjs';
 import { ArixBaseRequest } from './request/arix-base-request';
 import { ArixLinkRequest } from './request/arix-link-request';
+import { ArixLogoRequest } from './request/arix-logo-request';
 import { ArixNotchRequest } from './request/arix-notch-request';
 import { ArixPassphraseActivateRequest } from './request/arix-passphrase-activate-request';
 import { ArixPassphraseRequest } from './request/arix-passphrase-request';
 import { ArixRecordRequest } from './request/arix-record-request';
 import { ArixSearchRequest } from './request/arix-search-request';
+import { ArixLogoResponse } from './response/arix-logo-response';
 import { ArixNotchResponse } from './response/arix-notch-response';
 import { ArixOkResponse } from './response/arix-ok-response';
 import { ArixLinkResponse } from './response/arix-link-response';
@@ -99,7 +101,6 @@ export class ArixTestClient {
 	private async getActiveUuid(): Promise<string> {
 		// Request 1: Fetch a UUID for the user.
 		const uuidResponse: ArixUuidResponse = await this.getUUID(this.arixUser);
-		console.log('Response from uuid request:', uuidResponse.uuid);
 
 		// Request 2: Activate the ID with a generated passphrase.
 		const arixOkResponse: ArixOkResponse = await this.activateID(uuidResponse.uuid, this.arixPassword);
@@ -200,6 +201,16 @@ export class ArixTestClient {
 		}
 	}
 
-	// TODO: implement
-	public async getLogo(): Promise<void> {}
+	public async getLogo(): Promise<ArixLogoResponse> {
+		try {
+			const uuid: string = await this.getActiveUuid();
+			// TODO: trial and error this request
+			return await this.postData<ArixLogoRequest, ArixLogoResponse>({
+				data: { logo: { user: uuid, identifier: 'XMEDIENLB-5552796' } },
+			});
+		} catch (error) {
+			console.error('Error:', error);
+			return Promise.reject(error);
+		}
+	}
 }

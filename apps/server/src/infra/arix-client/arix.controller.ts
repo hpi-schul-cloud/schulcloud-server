@@ -3,6 +3,7 @@ import { ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { ArixTestClient } from './arix-test-client';
 import { ArixLinkResponse } from './response/arix-link-response';
+import { ArixLogoResponse } from './response/arix-logo-response';
 import { ArixRecordResponse } from './response/arix-record-response';
 import { ArixSearchResponse } from './response/arix-search-response';
 
@@ -42,6 +43,17 @@ export class ArixController {
 		this.setPerformanceHeader(res, startTime);
 
 		return arixLinkResponse;
+	}
+
+	@Get('/logo')
+	public async logo(@Res({ passthrough: true }) res: Response): Promise<ArixLogoResponse> {
+		const startTime: number = performance.now();
+
+		const arixLogoResponse: ArixLogoResponse = await this.arixRestClient.getLogo();
+
+		this.setPerformanceHeader(res, startTime);
+
+		return arixLogoResponse;
 	}
 
 	private setPerformanceHeader(res: Response, startTime: number): void {
