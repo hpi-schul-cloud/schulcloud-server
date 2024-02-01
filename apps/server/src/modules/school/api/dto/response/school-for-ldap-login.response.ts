@@ -8,7 +8,7 @@ export class SchoolForLdapLoginResponse {
 	@ApiProperty()
 	name: string;
 
-	@ApiProperty()
+	@ApiProperty({ type: [SystemForLdapLoginResponse] })
 	systems: SystemForLdapLoginResponse[];
 
 	constructor(props: SchoolForLdapLoginResponse) {
