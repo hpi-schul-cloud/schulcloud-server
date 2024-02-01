@@ -1,3 +1,6 @@
 export interface ArixNotchRequest {
-	identifier: string;
+	notch: {
+		user: string; // uuid
+		identifier: string;
+	};
 }

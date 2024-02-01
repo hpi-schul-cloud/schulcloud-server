@@ -6,10 +6,13 @@ import { AxiosResponse } from 'axios';
 import crypto from 'crypto';
 import { lastValueFrom, Observable } from 'rxjs';
 import { ArixBaseRequest } from './request/arix-base-request';
+import { ArixLinkRequest } from './request/arix-link-request';
+import { ArixNotchRequest } from './request/arix-notch-request';
 import { ArixPassphraseActivateRequest } from './request/arix-passphrase-activate-request';
 import { ArixPassphraseRequest } from './request/arix-passphrase-request';
 import { ArixRecordRequest } from './request/arix-record-request';
 import { ArixSearchRequest } from './request/arix-search-request';
+import { ArixNotchResponse } from './response/arix-notch-response';
 import { ArixOkResponse } from './response/arix-ok-response';
 import { ArixLinkResponse } from './response/arix-link-response';
 import { ArixRecordResponse } from './response/arix-record-response';
@@ -92,7 +95,8 @@ export class ArixTestClient {
 		}
 	}
 
-	private async login(): Promise<string> {
+	// TODO: do this only when the uuid is expired
+	private async getActiveUuid(): Promise<string> {
 		// Request 1: Fetch a UUID for the user.
 		const uuidResponse: ArixUuidResponse = await this.getUUID(this.arixUser);
 		console.log('Response from uuid request:', uuidResponse.uuid);
@@ -128,9 +132,44 @@ export class ArixTestClient {
 		}
 	}
 
+	private async getNotch(uuid: string): Promise<ArixNotchResponse> {
+		try {
+			const response: ArixNotchResponse = await this.postData<ArixNotchRequest, ArixNotchResponse>({
+				data: {
+					notch: {
+						user: uuid,
+						identifier: 'XMEDIENLB-5552796',
+					},
+				},
+			});
+			return response;
+		} catch (error) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/restrict-template-expressions
+			throw new Error(`Error in search: ${error.message}`);
+		}
+	}
+
+	private async getLink(notch: ArixNotchResponse, uuid: string): Promise<ArixLinkResponse> {
+		try {
+			const response: ArixLinkResponse = await this.postData<ArixLinkRequest, ArixLinkResponse>({
+				data: {
+					link: {
+						user: uuid,
+						id: notch.notch.id,
+						value: this.generatePhrase(notch.notch.value, this.arixPassword),
+					},
+				},
+			});
+			return response;
+		} catch (error) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/restrict-template-expressions
+			throw new Error(`Error in search: ${error.message}`);
+		}
+	}
+
 	public async getMediaRecord(): Promise<ArixRecordResponse> {
 		try {
-			const uuid: string = await this.login();
+			const uuid: string = await this.getActiveUuid();
 			return await this.getRecord(uuid);
 		} catch (error) {
 			console.error('Error:', error);
@@ -140,7 +179,7 @@ export class ArixTestClient {
 
 	public async doSearch(): Promise<ArixSearchResponse> {
 		try {
-			const uuid: string = await this.login();
+			const uuid: string = await this.getActiveUuid();
 			return await this.search(uuid);
 		} catch (error) {
 			console.error('Error:', error);
@@ -148,8 +187,19 @@ export class ArixTestClient {
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
-	public async getLink(): Promise<ArixLinkResponse> {
-		return {} as ArixLinkResponse;
+	public async getMediaLink(): Promise<ArixLinkResponse> {
+		try {
+			const uuid: string = await this.getActiveUuid();
+
+			const notchResponse: ArixNotchResponse = await this.getNotch(uuid);
+
+			return await this.getLink(notchResponse, uuid);
+		} catch (error) {
+			console.error('Error:', error);
+			return Promise.reject(error);
+		}
 	}
+
+	// TODO: implement
+	public async getLogo(): Promise<void> {}
 }

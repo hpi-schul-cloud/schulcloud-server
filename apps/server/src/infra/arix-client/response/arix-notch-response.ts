@@ -1,3 +1,6 @@
 export interface ArixNotchResponse {
-	id: string;
+	notch: {
+		id: string;
+		value: string;
+	};
 }

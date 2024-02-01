@@ -1,7 +1,8 @@
-import { ArixUrlArt } from './arix-url-art';
+import { ArixA } from '../type/arix-a';
 
 export interface ArixLinkResponse {
-	size: string;
-	href: string;
-	art: ArixUrlArt;
+	link: {
+		a: ArixA[];
+		size: string;
+	};
 }

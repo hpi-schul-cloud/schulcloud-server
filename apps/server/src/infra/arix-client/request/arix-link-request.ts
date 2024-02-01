@@ -1,6 +1,7 @@
 export interface ArixLinkRequest {
-	id: string;
-	tmpuser: string;
-	// PHRASE= md5-Hash von angefordeter Notch : Passwort
-	phrase: string;
+	link: {
+		user: string; // uuid
+		id: string; // id from notch
+		value: string; // PHRASE= md5-Hash von angeforderter Notch : Passwort
+	};
 }
