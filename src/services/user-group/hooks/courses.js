@@ -24,20 +24,22 @@ const splitClassIdsInGroupsAndClasses = async (hook) => {
 	const { app } = hook;
 	const requestBody = hook.data;
 
-	const groups = await Promise.allSettled(
-		requestBody.classIds.map((classId) => app.service('nest-group-service').findById(classId))
-	).then(async (promiseResults) => {
-		const successfullPromises = promiseResults.filter((result) => result.status === 'fulfilled');
-		const foundGroups = successfullPromises.map((result) => result.value);
+	if ((requestBody.classIds || []).length > 0) {
+		const groups = await Promise.allSettled(
+			requestBody.classIds.map((classId) => app.service('nest-group-service').findById(classId))
+		).then(async (promiseResults) => {
+			const successfullPromises = promiseResults.filter((result) => result.status === 'fulfilled');
+			const foundGroups = successfullPromises.map((result) => result.value);
 
-		return foundGroups;
-	});
+			return foundGroups;
+		});
 
-	let classes = await Promise.all(requestBody.classIds.map((classId) => ClassModel.findById(classId).exec()));
-	classes = classes.filter((clazz) => clazz !== null);
+		let classes = await Promise.all(requestBody.classIds.map((classId) => ClassModel.findById(classId).exec()));
+		classes = classes.filter((clazz) => clazz !== null);
 
-	requestBody.groupIds = groups.map((group) => group.id);
-	requestBody.classIds = classes.map((clazz) => clazz._id);
+		requestBody.groupIds = groups.map((group) => group.id);
+		requestBody.classIds = classes.map((clazz) => clazz._id);
+	}
 };
 
 const addWholeClassToCourse = async (hook) => {
