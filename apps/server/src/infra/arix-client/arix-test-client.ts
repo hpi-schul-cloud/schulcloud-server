@@ -6,7 +6,9 @@ import { AxiosResponse } from 'axios';
 import crypto from 'crypto';
 import { lastValueFrom, Observable } from 'rxjs';
 import { ArixBaseRequest } from './request/arix-base-request';
+import { ArixPassphraseActivateRequest } from './request/arix-passphrase-activate-request';
 import { ArixPassphraseRequest } from './request/arix-passphrase-request';
+import { ArixRecordRequest } from './request/arix-record-request';
 import { ArisOkResponse } from './response/aris-ok-response';
 import { ArixLinkResponse } from './response/arix-link-response';
 import { ArixRecordResponse } from './response/arix-record-response';
@@ -33,26 +35,8 @@ export class ArixTestClient {
 		this.arixPassword = Configuration.get('ARIX_CLIENT__PASSWORD') as string;
 	}
 
-	private async postData<T>(data: string): Promise<T> {
-		const observable: Observable<AxiosResponse<string>> = this.httpService.post(
-			this.endpoint,
-			{ xmlstatement: data },
-			{ headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
-		);
-
-		const axiosResponse: AxiosResponse<string> = await lastValueFrom(observable);
-
-		if (!axiosResponse) {
-			throw new Error('No data received from Arix.');
-		} else {
-			console.log('Raw XML Response:', axiosResponse.data);
-			const response: T = this.convertUtil.xml2object<T>(axiosResponse.data);
-			return response;
-		}
-	}
-
-	private async postData2<T, U>(data: ArixBaseRequest<T>): Promise<U> {
-		const xmlRequest: string = this.convertUtil.object2xml(data.xmlstatement);
+	private async postData<T, U>(request: ArixBaseRequest<T>): Promise<U> {
+		const xmlRequest: string = this.convertUtil.object2xml(request.data);
 
 		const observable: Observable<AxiosResponse<string>> = this.httpService.post(
 			this.endpoint,
@@ -78,8 +62,9 @@ export class ArixTestClient {
 
 	private async getUUID(arixUser: string): Promise<ArixUuidResponse> {
 		try {
-			const uuidResponse: ArixUuidResponse = await this.postData2<ArixPassphraseRequest, ArixUuidResponse>({
-				xmlstatement: { getpassphrase: { client: arixUser } },
+			const uuidResponse: ArixUuidResponse = await this.postData<ArixPassphraseRequest, ArixUuidResponse>({
+				// TODO: maybe use a builder
+				data: { getpassphrase: { client: arixUser } },
 			});
 			return uuidResponse;
 		} catch (error) {
@@ -89,16 +74,16 @@ export class ArixTestClient {
 	}
 
 	private async activateID(uuid: string, passphrase: string): Promise<ArisOkResponse> {
-		return this.postData<ArisOkResponse>(
-			`<getpassphrase uuid="${uuid}">${this.generatePhrase(uuid, passphrase)}</getpassphrase>`
-		);
+		return this.postData<ArixPassphraseActivateRequest, ArisOkResponse>({
+			data: { getpassphrase: { uuid, value: this.generatePhrase(uuid, passphrase) } },
+		});
 	}
 
 	private async performAuthenticatedAction(uuid: string): Promise<ArixRecordResponse> {
 		try {
-			const response: ArixRecordResponse = await this.postData(
-				`<record user="${uuid}" template="plain" identifier="XMEDIENLB-5552796"></record>`
-			);
+			const response: ArixRecordResponse = await this.postData<ArixRecordRequest, ArixRecordResponse>({
+				data: { record: { user: uuid, template: 'plain', identifier: 'XMEDIENLB-5552796' } },
+			});
 			return response;
 		} catch (error) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/restrict-template-expressions
