@@ -9,6 +9,7 @@ import { ArixBaseRequest } from './request/arix-base-request';
 import { ArixPassphraseActivateRequest } from './request/arix-passphrase-activate-request';
 import { ArixPassphraseRequest } from './request/arix-passphrase-request';
 import { ArixRecordRequest } from './request/arix-record-request';
+import { ArixSearchRequest } from './request/arix-search-request';
 import { ArisOkResponse } from './response/aris-ok-response';
 import { ArixLinkResponse } from './response/arix-link-response';
 import { ArixRecordResponse } from './response/arix-record-response';
@@ -114,7 +115,30 @@ export class ArixTestClient {
 
 	// eslint-disable-next-line @typescript-eslint/require-await
 	public async doSearch(): Promise<ArixSearchResponse> {
-		return {} as ArixSearchResponse;
+		// Request 1: Fetch a UUID for the user.
+		const resp1: ArixUuidResponse = await this.getUUID(this.arixUser);
+		console.log('Response from request 1:', resp1.uuid);
+
+		// Request 2: Activate the ID with a generated passphrase.
+		const resp2: ArisOkResponse = await this.activateID(resp1.uuid, this.arixPassword);
+		console.log('Response from request 2:', resp2);
+
+		const searchResponse: ArixSearchResponse = await this.postData<ArixSearchRequest, ArixSearchResponse>({
+			data: {
+				search: {
+					user: resp1.uuid,
+					fields: 'text,titel',
+					conditions: [
+						{
+							field: 'titel_fields',
+							value: 'watt',
+						},
+					],
+				},
+			},
+		});
+
+		return searchResponse;
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await
