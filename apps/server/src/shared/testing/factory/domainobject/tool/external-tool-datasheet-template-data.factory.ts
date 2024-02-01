@@ -1,9 +1,4 @@
-import {
-	CustomParameterLocation,
-	LtiMessageType,
-	LtiPrivacyPermission,
-	ToolConfigType,
-} from '@modules/tool/common/enum';
+import { CustomParameterLocation, LtiMessageType, LtiPrivacyPermission } from '@modules/tool/common/enum';
 import { DeepPartial, Factory } from 'fishery';
 import {
 	ExternalToolDatasheetTemplateData,
@@ -63,7 +58,7 @@ export const externalToolDatasheetTemplateDataFactory = ExternalToolDatasheetTem
 		return {
 			createdAt: new Date().toLocaleDateString('de-DE'),
 			creatorName: `John Doe ${sequence}`,
-			instance: 'Niedersächsische Bildungscloud',
+			instance: 'dBildungscloud',
 			toolName: `external-tool-${sequence}`,
 			toolUrl: 'https://www.basic-baseUrl.com/',
 			toolType: 'Basic',

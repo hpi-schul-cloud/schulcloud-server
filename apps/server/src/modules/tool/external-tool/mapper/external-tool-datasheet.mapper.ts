@@ -44,8 +44,8 @@ export class ExternalToolDatasheetMapper {
 	}
 
 	private static mapToInstanceName(): string {
-		const insatnce: string = Configuration.get('SC_THEME');
-		switch (insatnce) {
+		const instance: string = Configuration.get('SC_THEME') as string;
+		switch (instance) {
 			case 'n21':
 				return 'Niedersächsische Bildungscloud';
 			case 'brb':

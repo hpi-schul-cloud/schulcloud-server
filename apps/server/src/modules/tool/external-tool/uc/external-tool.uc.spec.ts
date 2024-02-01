@@ -16,9 +16,16 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
-import { ExternalTool, ExternalToolDatasheetTemplateData, ExternalToolMetadata, Oauth2ToolConfig } from '../domain';
+import {
+	ExternalTool,
+	ExternalToolDatasheetTemplateData,
+	ExternalToolMetadata,
+	ExternalToolParameterDatasheetTemplateProperty,
+	Oauth2ToolConfig,
+} from '../domain';
 import {
 	DatasheetPdfService,
 	ExternalToolLogoService,
@@ -28,7 +35,6 @@ import {
 import { ExternalToolUpdate } from './dto';
 import { ExternalToolUc } from './external-tool.uc';
 import { CustomParameter } from '../../common/domain';
-import setSystemTime = jest.setSystemTime;
 
 describe('ExternalToolUc', () => {
 	let module: TestingModule;
@@ -43,6 +49,8 @@ describe('ExternalToolUc', () => {
 
 	beforeAll(async () => {
 		await setupEntities();
+
+		Configuration.set('SC_THEME', 'default');
 
 		module = await Test.createTestingModule({
 			providers: [
@@ -437,7 +445,7 @@ describe('ExternalToolUc', () => {
 		});
 
 		describe('when fetching logo', () => {
-			const setup = () => {
+			const setupLogo = () => {
 				const user: User = userFactory.buildWithId();
 				const currentUser: ICurrentUser = { userId: user.id } as ICurrentUser;
 
@@ -452,7 +460,7 @@ describe('ExternalToolUc', () => {
 			};
 
 			it('should call ExternalToolLogoService', async () => {
-				const { currentUser, externalTool } = setup();
+				const { currentUser, externalTool } = setupLogo();
 
 				await uc.createExternalTool(currentUser.userId, externalTool);
 
@@ -631,7 +639,7 @@ describe('ExternalToolUc', () => {
 				const param: CustomParameter = customParameterFactory.build();
 				const externalTool: ExternalTool = externalToolFactory.build({ parameters: [param] });
 				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
-					.withParameters(1, { name: param.name })
+					.withParameters(1, { name: param.name, properties: ExternalToolParameterDatasheetTemplateProperty.MANDATORY })
 					.build({
 						toolName: externalTool.name,
 						instance: 'dBildungscloud',
@@ -701,7 +709,7 @@ describe('ExternalToolUc', () => {
 				const externalTool: ExternalTool = externalToolFactory.withCustomParameters(1).build();
 
 				const date = new Date();
-				setSystemTime(date);
+				jest.setSystemTime(date);
 				const year = date.getFullYear();
 				const month = date.getMonth() + 1;
 				const day = date.getDate();

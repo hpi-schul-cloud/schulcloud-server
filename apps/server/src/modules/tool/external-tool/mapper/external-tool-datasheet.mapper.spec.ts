@@ -17,6 +17,10 @@ import { CustomParameterScope, CustomParameterType, ToolContextType } from '../.
 import { CustomParameter } from '../../common/domain';
 
 describe(ExternalToolDatasheetMapper.name, () => {
+	beforeEach(() => {
+		Configuration.set('SC_THEME', 'default');
+	});
+
 	afterEach(() => {
 		jest.clearAllMocks();
 	});
