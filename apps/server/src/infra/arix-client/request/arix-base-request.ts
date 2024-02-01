@@ -1,4 +1,4 @@
 export interface ArixBaseRequest<T> {
-	context: 'NDS';
+	context?: 'NDS';
 	xmlstatement: T;
 }

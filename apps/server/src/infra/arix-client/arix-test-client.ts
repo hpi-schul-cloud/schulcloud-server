@@ -5,6 +5,8 @@ import { ConverterUtil } from '@shared/common';
 import { AxiosResponse } from 'axios';
 import crypto from 'crypto';
 import { lastValueFrom, Observable } from 'rxjs';
+import { ArixBaseRequest } from './request/arix-base-request';
+import { ArixPassphraseRequest } from './request/arix-passphrase-request';
 import { ArisOkResponse } from './response/aris-ok-response';
 import { ArixLinkResponse } from './response/arix-link-response';
 import { ArixRecordResponse } from './response/arix-record-response';
@@ -49,6 +51,26 @@ export class ArixTestClient {
 		}
 	}
 
+	private async postData2<T, U>(data: ArixBaseRequest<T>): Promise<U> {
+		const xmlRequest: string = this.convertUtil.object2xml(data.xmlstatement);
+
+		const observable: Observable<AxiosResponse<string>> = this.httpService.post(
+			this.endpoint,
+			{ xmlstatement: xmlRequest },
+			{
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+			}
+		);
+		const axiosResponse: AxiosResponse<string> = await lastValueFrom(observable);
+
+		if (!axiosResponse) {
+			throw new Error('No data received from Arix.');
+		} else {
+			const response: U = this.convertUtil.xml2object<U>(axiosResponse.data);
+			return response;
+		}
+	}
+
 	private generatePhrase(id: string, secret: string): string {
 		const hash: string = crypto.createHash('md5').update(`${id}:${secret}`).digest('hex');
 		return hash;
@@ -56,7 +78,9 @@ export class ArixTestClient {
 
 	private async getUUID(arixUser: string): Promise<ArixUuidResponse> {
 		try {
-			const uuidResponse: ArixUuidResponse = await this.postData(`<getpassphrase client="${arixUser}" />`);
+			const uuidResponse: ArixUuidResponse = await this.postData2<ArixPassphraseRequest, ArixUuidResponse>({
+				xmlstatement: { getpassphrase: { client: arixUser } },
+			});
 			return uuidResponse;
 		} catch (error) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/restrict-template-expressions
