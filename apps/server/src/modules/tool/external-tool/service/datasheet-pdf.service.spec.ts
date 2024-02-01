@@ -5,7 +5,11 @@ import {
 	externalToolFactory,
 	userDoFactory,
 } from '@shared/testing';
+import { createPdf } from 'pdfmake/build/pdfmake';
 import { UserDO } from '@shared/domain/domainobject';
+import { Array } from 'yjs';
+import { pdfMake } from 'pdfmake/build/vfs_fonts';
+import * as pdfkit from 'pdfkit';
 import { DatasheetPdfService } from './datasheet-pdf.service';
 import { ExternalTool, ExternalToolDatasheetTemplateData } from '../domain';
 import { CustomParameter } from '../../common/domain';
@@ -31,7 +35,7 @@ describe(DatasheetPdfService.name, () => {
 	});
 
 	describe('generatePdf', () => {
-		describe('when no error occurs', () => {
+		describe('when tool is oauth2 tool with optional properties and custom parameters', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.buildWithId();
 
@@ -39,6 +43,34 @@ describe(DatasheetPdfService.name, () => {
 				const externalTool: ExternalTool = externalToolFactory.build({ parameters: [param] });
 				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
 					.withParameters(1, { name: param.name })
+					.withOptionalProperties()
+					.asOauth2Tool()
+					.build({
+						toolName: externalTool.name,
+						instance: 'dBildungscloud',
+						creatorName: `${user.firstName} ${user.lastName}`,
+					});
+
+				return { datasheetData };
+			};
+
+			it('should return Buffer', async () => {
+				const { datasheetData } = setup();
+
+				const result = await service.generatePdf(datasheetData);
+
+				expect(result).toEqual(expect.any(Uint8Array));
+			});
+		});
+
+		describe('when tool is lti tool without custom parameters', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId();
+
+				const param: CustomParameter = customParameterFactory.build();
+				const externalTool: ExternalTool = externalToolFactory.build({ parameters: [param] });
+				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
+					.asLti11Tool()
 					.build({
 						toolName: externalTool.name,
 						instance: 'dBildungscloud',
