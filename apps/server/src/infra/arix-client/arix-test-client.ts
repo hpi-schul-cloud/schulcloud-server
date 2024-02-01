@@ -10,7 +10,7 @@ import { ArixPassphraseActivateRequest } from './request/arix-passphrase-activat
 import { ArixPassphraseRequest } from './request/arix-passphrase-request';
 import { ArixRecordRequest } from './request/arix-record-request';
 import { ArixSearchRequest } from './request/arix-search-request';
-import { ArisOkResponse } from './response/aris-ok-response';
+import { ArixOkResponse } from './response/arix-ok-response';
 import { ArixLinkResponse } from './response/arix-link-response';
 import { ArixRecordResponse } from './response/arix-record-response';
 import { ArixSearchResponse } from './response/arix-search-response';
@@ -74,13 +74,13 @@ export class ArixTestClient {
 		}
 	}
 
-	private async activateID(uuid: string, passphrase: string): Promise<ArisOkResponse> {
-		return this.postData<ArixPassphraseActivateRequest, ArisOkResponse>({
+	private async activateID(uuid: string, passphrase: string): Promise<ArixOkResponse> {
+		return this.postData<ArixPassphraseActivateRequest, ArixOkResponse>({
 			data: { getpassphrase: { uuid, value: this.generatePhrase(uuid, passphrase) } },
 		});
 	}
 
-	private async performAuthenticatedAction(uuid: string): Promise<ArixRecordResponse> {
+	private async getRecord(uuid: string): Promise<ArixRecordResponse> {
 		try {
 			const response: ArixRecordResponse = await this.postData<ArixRecordRequest, ArixRecordResponse>({
 				data: { record: { user: uuid, template: 'plain', identifier: 'XMEDIENLB-5552796' } },
@@ -92,54 +92,60 @@ export class ArixTestClient {
 		}
 	}
 
-	public async getMediaRecord(): Promise<void> {
+	private async login(): Promise<string> {
+		// Request 1: Fetch a UUID for the user.
+		const uuidResponse: ArixUuidResponse = await this.getUUID(this.arixUser);
+		console.log('Response from uuid request:', uuidResponse.uuid);
+
+		// Request 2: Activate the ID with a generated passphrase.
+		const arixOkResponse: ArixOkResponse = await this.activateID(uuidResponse.uuid, this.arixPassword);
+		console.log('Response from activate request:', arixOkResponse);
+
+		return uuidResponse.uuid;
+	}
+
+	private async search(uuid: string): Promise<ArixSearchResponse> {
 		try {
-			// Request 1: Fetch a UUID for the user.
-			const resp1: ArixUuidResponse = await this.getUUID(this.arixUser);
-			console.log('Response from request 1:', resp1.uuid);
+			const response: ArixSearchResponse = await this.postData<ArixSearchRequest, ArixSearchResponse>({
+				data: {
+					search: {
+						user: uuid,
+						fields: 'text,titel',
+						conditions: [
+							{
+								field: 'titel_fields',
+								value: 'watt',
+							},
+						],
+						limit: '1',
+					},
+				},
+			});
+			return response;
+		} catch (error) {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/restrict-template-expressions
+			throw new Error(`Error in search: ${error.message}`);
+		}
+	}
 
-			// Request 2: Activate the ID with a generated passphrase.
-			const resp2: ArisOkResponse = await this.activateID(resp1.uuid, this.arixPassword);
-			console.log('Response from request 2:', resp2);
-
-			// Request 3: Perform an authenticated action using the activated ID.
-			const resp3: ArixRecordResponse = await this.performAuthenticatedAction(resp1.uuid);
-			console.log('Response from request 3:', resp3);
-
-			return await Promise.resolve();
+	public async getMediaRecord(): Promise<ArixRecordResponse> {
+		try {
+			const uuid: string = await this.login();
+			return await this.getRecord(uuid);
 		} catch (error) {
 			console.error('Error:', error);
 			return Promise.reject(error);
 		}
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
 	public async doSearch(): Promise<ArixSearchResponse> {
-		// Request 1: Fetch a UUID for the user.
-		const resp1: ArixUuidResponse = await this.getUUID(this.arixUser);
-		console.log('Response from request 1:', resp1.uuid);
-
-		// Request 2: Activate the ID with a generated passphrase.
-		const resp2: ArisOkResponse = await this.activateID(resp1.uuid, this.arixPassword);
-		console.log('Response from request 2:', resp2);
-
-		const searchResponse: ArixSearchResponse = await this.postData<ArixSearchRequest, ArixSearchResponse>({
-			data: {
-				search: {
-					user: resp1.uuid,
-					fields: 'text,titel',
-					conditions: [
-						{
-							field: 'titel_fields',
-							value: 'watt',
-						},
-					],
-					limit: '1',
-				},
-			},
-		});
-
-		return searchResponse;
+		try {
+			const uuid: string = await this.login();
+			return await this.search(uuid);
+		} catch (error) {
+			console.error('Error:', error);
+			return Promise.reject(error);
+		}
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await
