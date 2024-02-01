@@ -1,4 +1,3 @@
-import { LtiMessageType, LtiPrivacyPermission } from '../../../common/enum';
 import { ExternalToolParameterDatasheetTemplateData } from './external-tool-parameter-datasheet-template-data';
 
 export class ExternalToolDatasheetTemplateData {
@@ -20,9 +19,9 @@ export class ExternalToolDatasheetTemplateData {
 
 	skipConsent?: string;
 
-	messageType?: LtiMessageType;
+	messageType?: string;
 
-	privacy?: LtiPrivacyPermission;
+	privacy?: string;
 
 	parameters?: ExternalToolParameterDatasheetTemplateData[];
 

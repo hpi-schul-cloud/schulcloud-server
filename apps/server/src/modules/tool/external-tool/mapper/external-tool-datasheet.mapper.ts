@@ -38,8 +38,8 @@ export class ExternalToolDatasheetMapper {
 		}
 
 		if (ExternalTool.isLti11Config(externalTool.config)) {
-			externalToolData.messageType = externalTool.config.lti_message_type;
-			externalToolData.privacy = externalTool.config.privacy_permission;
+			externalToolData.messageType = externalTool.config.lti_message_type.toString();
+			externalToolData.privacy = externalTool.config.privacy_permission.toString();
 		}
 
 		return externalToolData;

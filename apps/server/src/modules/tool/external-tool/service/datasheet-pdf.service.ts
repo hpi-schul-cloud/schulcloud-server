@@ -3,7 +3,6 @@ import { createPdf, TCreatedPdf } from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { StyleDictionary } from 'pdfmake/interfaces';
 import { ExternalToolDatasheetTemplateData, ExternalToolParameterDatasheetTemplateData } from '../domain';
-import { ToolConfigType } from '../../common/enum';
 
 @Injectable()
 export class DatasheetPdfService {
@@ -14,14 +13,14 @@ export class DatasheetPdfService {
 				? `Dieses Tool ist auf folgende Kontexte beschränkt:${templateData.restrictToContexts}`
 				: '';
 
-		const oauthParam: string = templateData.skipConsent ? `Zustimmung überspringen: ${templateData.skipConsent}` : '';
-		const ltiParam1 = `Message Type: ${templateData.messageType}`;
-		const ltiParam2 = `Privatsphäre: ${templateData.privacy}`;
 		const toolTypeParams = [''];
-		if (templateData.toolType === ToolConfigType.OAUTH2) {
+		if (templateData.toolType === 'OAuth 2.0') {
+			const oauthParam: string = templateData.skipConsent ? `Zustimmung überspringen: ${templateData.skipConsent}` : '';
 			toolTypeParams.push(oauthParam);
 		}
-		if (templateData.toolType === ToolConfigType.LTI11) {
+		if (templateData.toolType === 'LTI 1.1' && templateData.messageType && templateData.privacy) {
+			const ltiParam1 = `Message Type: ${templateData.messageType}`;
+			const ltiParam2 = `Privatsphäre: ${templateData.privacy}`;
 			toolTypeParams.push(ltiParam1, ltiParam2);
 		}
 
