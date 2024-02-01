@@ -25,8 +25,8 @@ module.exports = (app) => {
 	 * code is redeemed, with the keyword eMailAdress. In addition,
 	 * this service can be used to create an job to change the email/username.
 	 */
-	const EMailAddressActivationRoute = `/activation/${KEYWORDS.E_MAIL_ADDRESS}`;
-	app.use(EMailAddressActivationRoute, new EMailAddressActivation.Service());
-	const EMailAddressActivationService = app.service(EMailAddressActivationRoute);
-	EMailAddressActivationService.hooks(EMailAddressActivation.Hooks);
+	// const EMailAddressActivationRoute = `/activation/${KEYWORDS.E_MAIL_ADDRESS}`;
+	// app.use(EMailAddressActivationRoute, new EMailAddressActivation.Service());
+	// const EMailAddressActivationService = app.service(EMailAddressActivationRoute);
+	// EMailAddressActivationService.hooks(EMailAddressActivation.Hooks);
 };
