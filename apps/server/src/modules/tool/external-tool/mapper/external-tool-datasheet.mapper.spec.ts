@@ -6,7 +6,11 @@ import { customParameterFactory, externalToolFactory, userDoFactory } from '@sha
 import { UserDO } from '@shared/domain/domainobject';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ExternalToolDatasheetMapper } from './external-tool-datasheet.mapper';
-import { ExternalToolDatasheetTemplateData, ExternalToolParameterDatasheetTemplateData } from '../domain';
+import {
+	ExternalToolDatasheetTemplateData,
+	ExternalToolParameterDatasheetTemplateData,
+	ExternalToolParameterDatasheetTemplateProperty,
+} from '../domain';
 import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../common/enum';
 import { CustomParameter } from '../../common/domain';
 
@@ -201,14 +205,42 @@ describe(ExternalToolDatasheetMapper.name, () => {
 			const externalTool = externalToolFactory.build({ parameters: params });
 
 			const parameters: ExternalToolParameterDatasheetTemplateData[] = [
-				externalToolParameterDatasheetTemplateDataFactory.build({ type: 'Zeichenkette', scope: 'Kontext' }),
-				externalToolParameterDatasheetTemplateDataFactory.build({ type: 'Wahrheitswert', scope: 'Schule' }),
-				externalToolParameterDatasheetTemplateDataFactory.build({ type: 'Zahl', scope: 'Global' }),
-				externalToolParameterDatasheetTemplateDataFactory.build({ type: 'Auto Schulnummer' }),
-				externalToolParameterDatasheetTemplateDataFactory.build({ type: 'Auto Schul-ID' }),
-				externalToolParameterDatasheetTemplateDataFactory.build({ type: 'Auto Kontext-ID' }),
-				externalToolParameterDatasheetTemplateDataFactory.build({ type: 'Auto Kontext-Name' }),
-				externalToolParameterDatasheetTemplateDataFactory.build({ type: 'unbekannt', scope: 'unbekannt' }),
+				externalToolParameterDatasheetTemplateDataFactory.build({
+					type: 'Zeichenkette',
+					scope: 'Kontext',
+					properties: ExternalToolParameterDatasheetTemplateProperty.MANDATORY,
+				}),
+				externalToolParameterDatasheetTemplateDataFactory.build({
+					type: 'Wahrheitswert',
+					scope: 'Schule',
+					properties: ExternalToolParameterDatasheetTemplateProperty.MANDATORY,
+				}),
+				externalToolParameterDatasheetTemplateDataFactory.build({
+					type: 'Zahl',
+					scope: 'Global',
+					properties: ExternalToolParameterDatasheetTemplateProperty.MANDATORY,
+				}),
+				externalToolParameterDatasheetTemplateDataFactory.build({
+					type: 'Auto Schulnummer',
+					properties: ExternalToolParameterDatasheetTemplateProperty.MANDATORY,
+				}),
+				externalToolParameterDatasheetTemplateDataFactory.build({
+					type: 'Auto Schul-ID',
+					properties: ExternalToolParameterDatasheetTemplateProperty.MANDATORY,
+				}),
+				externalToolParameterDatasheetTemplateDataFactory.build({
+					type: 'Auto Kontext-ID',
+					properties: ExternalToolParameterDatasheetTemplateProperty.MANDATORY,
+				}),
+				externalToolParameterDatasheetTemplateDataFactory.build({
+					type: 'Auto Kontext-Name',
+					properties: ExternalToolParameterDatasheetTemplateProperty.MANDATORY,
+				}),
+				externalToolParameterDatasheetTemplateDataFactory.build({
+					type: 'unbekannt',
+					scope: 'unbekannt',
+					properties: ExternalToolParameterDatasheetTemplateProperty.MANDATORY,
+				}),
 			];
 			const datasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory.build({
 				parameters,
