@@ -115,19 +115,14 @@ export class ExternalToolUc {
 
 	public async createDatasheetFilename(externalToolId: EntityId): Promise<string> {
 		const externalTool: ExternalTool = await this.externalToolService.findById(externalToolId);
-		const filename: string = this.buildFilename(externalTool.name);
 
-		return filename;
-	}
-
-	private buildFilename(toolName: string): string {
 		const date = new Date();
 		const year = date.getFullYear();
 		const month = date.getMonth() + 1;
 		const day = date.getDate();
 		const dateString = `${year}-${month}-${day}`;
 
-		const fileName = `CTL-Datenblatt-${toolName}-${dateString}`;
+		const fileName = `CTL-Datenblatt-${externalTool.name}-${dateString}`;
 
 		return fileName;
 	}

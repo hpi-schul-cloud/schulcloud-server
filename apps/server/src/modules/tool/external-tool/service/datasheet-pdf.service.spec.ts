@@ -1,5 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { externalToolDatasheetTemplateDataFactory, externalToolFactory, userDoFactory } from '@shared/testing';
+import {
+	customParameterFactory,
+	externalToolDatasheetTemplateDataFactory,
+	externalToolFactory,
+	userDoFactory,
+} from '@shared/testing';
 import { UserDO } from '@shared/domain/domainobject';
 import { DatasheetPdfService } from './datasheet-pdf.service';
 import { ExternalTool, ExternalToolDatasheetTemplateData } from '../domain';
@@ -30,10 +35,10 @@ describe(DatasheetPdfService.name, () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.buildWithId();
 
-				const externalTool: ExternalTool = externalToolFactory.withCustomParameters(1).build();
-				const params = externalTool.parameters as CustomParameter[];
+				const param: CustomParameter = customParameterFactory.build();
+				const externalTool: ExternalTool = externalToolFactory.build({ parameters: [param] });
 				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
-					.withParameters(1, { name: params[0].name })
+					.withParameters(1, { name: param.name })
 					.build({
 						toolName: externalTool.name,
 						instance: 'dBildungscloud',
@@ -56,10 +61,10 @@ describe(DatasheetPdfService.name, () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.buildWithId();
 
-				const externalTool: ExternalTool = externalToolFactory.withCustomParameters(1).build();
-				const params = externalTool.parameters as CustomParameter[];
+				const param: CustomParameter = customParameterFactory.build();
+				const externalTool: ExternalTool = externalToolFactory.build({ parameters: [param] });
 				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
-					.withParameters(1, { name: params[0].name })
+					.withParameters(1, { name: param.name })
 					.build({
 						toolName: externalTool.name,
 						instance: 'dBildungscloud',

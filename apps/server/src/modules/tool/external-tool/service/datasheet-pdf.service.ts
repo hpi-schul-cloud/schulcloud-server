@@ -1,71 +1,69 @@
 import { Injectable } from '@nestjs/common';
 import { createPdf, TCreatedPdf } from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
-import { StyleDictionary } from 'pdfmake/interfaces';
+import { Content, TDocumentDefinitions } from 'pdfmake/interfaces';
 import { ExternalToolDatasheetTemplateData, ExternalToolParameterDatasheetTemplateData } from '../domain';
 
 @Injectable()
 export class DatasheetPdfService {
 	public generatePdf(templateData: ExternalToolDatasheetTemplateData): Promise<Buffer> {
-		const deactivated: string = templateData.isDeactivated ? 'Dieses Tool ist deaktivert.' : '';
-		const restricted: string =
-			templateData.restrictToContexts && templateData.restrictToContexts.length > 0
-				? `Dieses Tool ist auf folgende Kontexte beschränkt:${templateData.restrictToContexts}`
-				: '';
+		const content: Content = [];
 
-		const toolTypeParams = [''];
-		if (templateData.toolType === 'OAuth 2.0') {
-			const oauthParam: string = templateData.skipConsent ? `Zustimmung überspringen: ${templateData.skipConsent}` : '';
-			toolTypeParams.push(oauthParam);
+		content.push(
+			{ text: `Erstellt am ${templateData.createdAt} von ${templateData.creatorName}`, style: 'right-aligned' },
+			'\n',
+			{ text: templateData.instance, style: 'right-aligned' },
+			'\n',
+			{ text: 'Datenblatt', style: ['center-aligned', 'h1'] },
+			{ text: templateData.toolName, style: ['center-aligned', 'h2'] },
+			'\n',
+			{ text: templateData.toolUrl, style: ['center-aligned', 'link'], link: templateData.toolUrl },
+			'\n\n'
+		);
+
+		if (templateData.isDeactivated) {
+			content.push(templateData.isDeactivated);
 		}
+
+		if (templateData.restrictToContexts?.length) {
+			content.push(`Dieses Tool ist auf folgende Kontexte beschränkt:${templateData.restrictToContexts}`);
+		}
+
+		content.push('\n', `Typ des Tools: ${templateData.toolType}`);
+
+		if (templateData.toolType === 'OAuth 2.0' && templateData.skipConsent) {
+			content.push(templateData.skipConsent);
+		}
+
 		if (templateData.toolType === 'LTI 1.1' && templateData.messageType && templateData.privacy) {
-			const ltiParam1 = `Message Type: ${templateData.messageType}`;
-			const ltiParam2 = `Privatsphäre: ${templateData.privacy}`;
-			toolTypeParams.push(ltiParam1, ltiParam2);
+			content.push(`Message Type: ${templateData.messageType}`, `Privatsphäre: ${templateData.privacy}`);
+		}
+
+		if (templateData.parameters?.length) {
+			content.push({ text: 'An den Dienst übermittelte Parameter', style: 'h4' }, '\n', {
+				table: {
+					headerRows: 1,
+					widths: [200, 'auto', 'auto', 'auto', 'auto'],
+					body: [
+						['Name', 'Typ', 'Eigenschaften', 'Geltungsbereich', 'Ort '],
+						...templateData.parameters.map((param: ExternalToolParameterDatasheetTemplateData) => [
+							param.name,
+							param.type,
+							param.properties,
+							param.scope,
+							param.location,
+						]),
+					],
+				},
+			});
+		} else {
+			content.push('\n', 'Die Konfiguration dieses Tools enthält keine benutzerspezifischen Parameter.');
 		}
 
 		return new Promise<Buffer>((resolve, reject) => {
 			try {
-				const documentDefinition = {
-					content: [
-						{ text: `Erstellt am ${templateData.createdAt} von ${templateData.creatorName}`, style: 'right-aligned' },
-						'\n',
-						{ text: templateData.instance, style: 'right-aligned' },
-						'\n',
-						{ text: 'Datenblatt', style: ['center-aligned', 'h1'] },
-						{ text: templateData.toolName, style: ['center-aligned', 'h2'] },
-						'\n',
-						{ text: templateData.toolUrl, style: ['center-aligned', 'link'], link: templateData.toolUrl },
-						'\n\n',
-						deactivated,
-						restricted,
-						'\n',
-						`Typ des Tools: ${templateData.toolType}`,
-						toolTypeParams,
-
-						...(templateData?.parameters?.length
-							? [
-									{ text: 'An den Dienst übermittelte Parameter', style: 'h4' },
-									'\n',
-									{
-										table: {
-											headerRows: 1,
-											widths: [200, 'auto', 'auto', 'auto', 'auto'],
-											body: [
-												['Name', 'Typ', 'Eigenschaften', 'Geltungsbereich', 'Ort '],
-												...templateData.parameters.map((param: ExternalToolParameterDatasheetTemplateData) => [
-													param.name,
-													param.type,
-													param.properties,
-													param.scope,
-													param.location,
-												]),
-											],
-										},
-									},
-							  ]
-							: ['\n', 'Die Konfiguration dieses Tools enthält keine benutzerspezifischen Parameter.']),
-					],
+				const documentDefinition: TDocumentDefinitions = {
+					content,
 					styles: {
 						'right-aligned': { alignment: 'right' },
 						'center-aligned': { alignment: 'center' },
@@ -73,7 +71,7 @@ export class DatasheetPdfService {
 						h1: { fontSize: 22, bold: true, margin: [0, 10, 0, 5] },
 						h2: { fontSize: 18, bold: true, margin: [0, 10, 0, 5] },
 						link: { color: 'blue', decoration: 'underline' },
-					} as StyleDictionary,
+					},
 				};
 
 				const pdfDoc: TCreatedPdf = createPdf(documentDefinition, {}, undefined, pdfFonts.pdfMake.vfs);

@@ -1,8 +1,10 @@
 import {
+	customParameterFactory,
+	externalToolFactory,
+	userDoFactory,
 	externalToolDatasheetTemplateDataFactory,
 	externalToolParameterDatasheetTemplateDataFactory,
-} from '@shared/testing/factory/domainobject/tool/external-tool-datasheet-template-data.factory';
-import { customParameterFactory, externalToolFactory, userDoFactory } from '@shared/testing';
+} from '@shared/testing';
 import { UserDO } from '@shared/domain/domainobject';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ExternalToolDatasheetMapper } from './external-tool-datasheet.mapper';
@@ -16,7 +18,6 @@ import { CustomParameter } from '../../common/domain';
 
 describe(ExternalToolDatasheetMapper.name, () => {
 	afterEach(() => {
-		jest.resetAllMocks();
 		jest.clearAllMocks();
 	});
 
@@ -28,7 +29,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 				restrictToContexts: [ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT],
 			});
 			const datasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
-				.withOptionalParameters()
+				.withOptionalProperties()
 				.withParameters(1, { properties: 'optional, geschützt' })
 				.build({ instance: 'dBildungscloud' });
 

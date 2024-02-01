@@ -31,10 +31,8 @@ export class ExternalToolDatasheetMapper {
 			externalToolData.parameters = ExternalToolDatasheetMapper.mapToParameterDataList(externalTool);
 		}
 
-		if (ExternalTool.isOauth2Config(externalTool.config)) {
-			if (externalTool.config.skipConsent) {
-				externalToolData.skipConsent = 'ja';
-			}
+		if (ExternalTool.isOauth2Config(externalTool.config) && externalTool.config.skipConsent) {
+			externalToolData.skipConsent = 'Zustimmung überspringen: ja';
 		}
 
 		if (ExternalTool.isLti11Config(externalTool.config)) {
@@ -46,23 +44,19 @@ export class ExternalToolDatasheetMapper {
 	}
 
 	private static mapToInstanceName(): string {
-		if (Configuration.get('SC_THEME') === 'n21') {
-			return 'Niedersächsische Bildungscloud';
+		const insatnce: string = Configuration.get('SC_THEME');
+		switch (insatnce) {
+			case 'n21':
+				return 'Niedersächsische Bildungscloud';
+			case 'brb':
+				return 'Schul-Cloud Brandenburg';
+			case 'thr':
+				return 'Thüringer Schulcloud';
+			case 'default':
+				return 'dBildungscloud';
+			default:
+				return 'unbekannt';
 		}
-
-		if (Configuration.get('SC_THEME') === 'brb') {
-			return 'Schul-Cloud Brandenburg';
-		}
-
-		if (Configuration.get('SC_THEME') === 'thr') {
-			return 'Thüringer Schulcloud';
-		}
-
-		if (Configuration.get('SC_THEME') === 'default') {
-			return 'dBildungscloud';
-		}
-
-		return 'unbekannt';
 	}
 
 	private static mapToLimitedContexts(externalTool: ExternalTool): string {
@@ -80,15 +74,15 @@ export class ExternalToolDatasheetMapper {
 	}
 
 	private static mapToToolType(externalTool: ExternalTool): string {
-		let toolType: string = externalTool.config.type;
-		if (externalTool.config.type === ToolConfigType.OAUTH2) {
-			toolType = 'OAuth 2.0';
+		const toolType: string = externalTool.config.type;
+		switch (toolType) {
+			case ToolConfigType.OAUTH2:
+				return 'OAuth 2.0';
+			case ToolConfigType.LTI11:
+				return 'LTI 1.1';
+			default:
+				return 'Basic';
 		}
-		if (externalTool.config.type === ToolConfigType.LTI11) {
-			toolType = 'LTI 1.1';
-		}
-
-		return toolType;
 	}
 
 	private static mapToParameterDataList(

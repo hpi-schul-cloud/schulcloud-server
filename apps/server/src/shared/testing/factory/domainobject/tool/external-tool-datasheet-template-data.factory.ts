@@ -27,7 +27,7 @@ export class ExternalToolDatasheetTemplateDataFactory extends Factory<ExternalTo
 	asOauth2Tool(): this {
 		const params: DeepPartial<ExternalToolDatasheetTemplateData> = {
 			toolType: 'OAuth 2.0',
-			skipConsent: 'ja',
+			skipConsent: 'Zustimmung überspringen: ja',
 			toolUrl: 'https://www.oauth2-baseUrl.com/',
 		};
 		return this.params(params);
@@ -50,7 +50,7 @@ export class ExternalToolDatasheetTemplateDataFactory extends Factory<ExternalTo
 		return this.params(params);
 	}
 
-	withOptionalParameters(): this {
+	withOptionalProperties(): this {
 		const params: DeepPartial<ExternalToolDatasheetTemplateData> = {
 			isDeactivated: 'Das Tool ist deaktiviert',
 			restrictToContexts: 'Kurs, Kurs-Board',
@@ -66,7 +66,7 @@ export const externalToolDatasheetTemplateDataFactory = ExternalToolDatasheetTem
 			instance: 'Niedersächsische Bildungscloud',
 			toolName: `external-tool-${sequence}`,
 			toolUrl: 'https://www.basic-baseUrl.com/',
-			toolType: ToolConfigType.BASIC,
+			toolType: 'Basic',
 		};
 	}
 );

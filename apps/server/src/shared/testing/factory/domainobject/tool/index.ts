@@ -6,4 +6,5 @@ export * from './school-external-tool-configuration-status.factory';
 export {
 	externalToolDatasheetTemplateDataFactory,
 	ExternalToolDatasheetTemplateDataFactory,
+	externalToolParameterDatasheetTemplateDataFactory,
 } from './external-tool-datasheet-template-data.factory';

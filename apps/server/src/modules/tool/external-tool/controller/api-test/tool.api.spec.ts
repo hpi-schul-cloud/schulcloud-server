@@ -752,6 +752,7 @@ describe('ToolController (API)', () => {
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
 
+				// this date will only have a daily precision, which should not impact successful tests
 				const date = new Date();
 				const year = date.getFullYear();
 				const month = date.getMonth() + 1;
