@@ -1,7 +1,7 @@
 export interface ArixRecordRequest {
 	record: {
-		user: string; // uuid
+		user: string;
 		identifier: string;
-		template: 'plain' | string;
+		template?: string;
 	};
 }

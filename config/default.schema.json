@@ -1652,6 +1652,13 @@
 			"type": "object",
 			"description": "Configuration of the schulcloud's arix client.",
 			"properties": {
+				"API_URL": {
+					"type": "string",
+					"description": "Base URL of the arix API (from dof)",
+					"examples": [
+						"https://arix.datenbank-bildungsmedien.net/"
+					]
+				},
 				"USER": {
 					"type": "string",
 					"description": "User for accessing the arix API (from server vault)"

@@ -86,7 +86,11 @@ const serverModules = [
 	PseudonymApiModule,
 	SchoolApiModule,
 	LegacySchoolApiModule,
-	ArixClientModule,
+	ArixClientModule.register({
+		apiUrl: Configuration.get('ARIX_CLIENT__API_URL') as string,
+		user: Configuration.get('ARIX_CLIENT__USER') as string,
+		password: Configuration.get('ARIX_CLIENT__PASSWORD') as string,
+	}),
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

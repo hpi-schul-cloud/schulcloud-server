@@ -1,40 +1,55 @@
-import { Controller, Get, Res } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Get, Param, Post, Query, Res } from '@nestjs/common';
+import { ApiInternalServerErrorResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
-import { ArixTestClient } from './arix-test-client';
-import { ArixLinkResponse } from './response/arix-link-response';
-import { ArixLogoResponse } from './response/arix-logo-response';
-import { ArixRecordResponse } from './response/arix-record-response';
-import { ArixSearchResponse } from './response/arix-search-response';
+import { ArixRestClient } from './arix-rest-client';
+import { ArixRecordRequestQueryParams, ArixSearchRequestParams } from './request';
+import { ArixRecordRequestPathParams } from './request/arix-record-request-path-params';
+import { ArixLinkResponse, ArixLogoResponse, ArixRecordResponse, ArixSearchResponse } from './response';
 
 @ApiTags('Arix')
 @Controller('arix')
 export class ArixController {
-	constructor(private readonly arixRestClient: ArixTestClient) {}
+	constructor(private readonly arixRestClient: ArixRestClient) {}
 
-	@Get('records')
-	public async record(@Res({ passthrough: true }) res: Response): Promise<ArixRecordResponse> {
+	@Post('search')
+	@ApiOperation({ summary: 'Search for media records' })
+	@ApiOkResponse()
+	@ApiInternalServerErrorResponse()
+	public async search(
+		@Body() params: ArixSearchRequestParams,
+		@Res({ passthrough: true }) res: Response
+	): Promise<ArixSearchResponse> {
 		const startTime: number = performance.now();
 
-		const arixRecordResponse: ArixRecordResponse = await this.arixRestClient.getMediaRecord();
+		const arixSearchResponse: ArixSearchResponse = await this.arixRestClient.search(params);
+
+		this.setPerformanceHeader(res, startTime);
+
+		return arixSearchResponse;
+	}
+
+	@Get('records/:identifier')
+	@ApiOperation({ summary: 'Get a media record' })
+	@ApiOkResponse()
+	@ApiInternalServerErrorResponse()
+	public async record(
+		@Param() pathParams: ArixRecordRequestPathParams,
+		@Query() queryParams: ArixRecordRequestQueryParams,
+		@Res({ passthrough: true }) res: Response
+	): Promise<ArixRecordResponse> {
+		const startTime: number = performance.now();
+
+		const arixRecordResponse: ArixRecordResponse = await this.arixRestClient.getMediaRecord(
+			pathParams.identifier,
+			queryParams.template
+		);
 
 		this.setPerformanceHeader(res, startTime);
 
 		return arixRecordResponse;
 	}
 
-	@Get('search')
-	public async search(@Res({ passthrough: true }) res: Response): Promise<ArixSearchResponse> {
-		const startTime: number = performance.now();
-
-		const arixSearchResponsePromise: ArixSearchResponse = await this.arixRestClient.doSearch();
-
-		this.setPerformanceHeader(res, startTime);
-
-		return arixSearchResponsePromise;
-	}
-
-	@Get('/link')
+	@Get('link')
 	public async media(@Res({ passthrough: true }) res: Response): Promise<ArixLinkResponse> {
 		const startTime: number = performance.now();
 
@@ -45,11 +60,11 @@ export class ArixController {
 		return arixLinkResponse;
 	}
 
-	@Get('/logo')
+	@Get('logo')
 	public async logo(@Res({ passthrough: true }) res: Response): Promise<ArixLogoResponse> {
 		const startTime: number = performance.now();
 
-		const arixLogoResponse: ArixLogoResponse = await this.arixRestClient.getLogo();
+		const arixLogoResponse: ArixLogoResponse = await this.arixRestClient.getRecordLogo();
 
 		this.setPerformanceHeader(res, startTime);
 

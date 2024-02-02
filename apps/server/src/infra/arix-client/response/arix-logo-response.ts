@@ -1,3 +1,5 @@
 export interface ArixLogoResponse {
-	logo: string; // html-snippet
+	logo: {
+		value: string; // html-snippet
+	};
 }
