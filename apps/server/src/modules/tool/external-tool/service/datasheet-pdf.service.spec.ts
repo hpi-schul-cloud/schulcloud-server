@@ -1,18 +1,38 @@
 import { Test, TestingModule } from '@nestjs/testing';
+import { UserDO } from '@shared/domain/domainobject';
 import {
 	customParameterFactory,
 	externalToolDatasheetTemplateDataFactory,
 	externalToolFactory,
 	userDoFactory,
 } from '@shared/testing';
-import { UserDO } from '@shared/domain/domainobject';
 import { createPdf, TCreatedPdf } from 'pdfmake/build/pdfmake';
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
-import { DatasheetPdfService } from './datasheet-pdf.service';
-import { ExternalTool, ExternalToolDatasheetTemplateData } from '../domain';
 import { CustomParameter } from '../../common/domain';
+import { ExternalTool, ExternalToolDatasheetTemplateData } from '../domain';
+import { DatasheetPdfService } from './datasheet-pdf.service';
 
 jest.mock('pdfmake/build/pdfmake');
+
+const mockCreatePdf = createPdf as jest.MockedFunction<
+	(documentDefinitions: TDocumentDefinitions) => Partial<TCreatedPdf>
+>;
+
+const setupMockCreatePdf = (error?: boolean) => {
+	if (error) {
+		mockCreatePdf.mockImplementation(() => {
+			throw new Error('error from createPdf');
+		});
+	} else {
+		mockCreatePdf.mockImplementation((): Partial<TCreatedPdf> => {
+			return {
+				getBuffer: jest.fn().mockImplementation((callback: (buffer: Buffer) => void) => {
+					callback(Buffer.from('fake-pdf-content'));
+				}),
+			};
+		});
+	}
+};
 
 describe(DatasheetPdfService.name, () => {
 	let module: TestingModule;
@@ -51,6 +71,8 @@ describe(DatasheetPdfService.name, () => {
 						creatorName: `${user.firstName} ${user.lastName}`,
 					});
 
+				setupMockCreatePdf(false);
+
 				return { datasheetData };
 			};
 
@@ -76,6 +98,8 @@ describe(DatasheetPdfService.name, () => {
 						instance: 'dBildungscloud',
 						creatorName: `${user.firstName} ${user.lastName}`,
 					});
+
+				setupMockCreatePdf(false);
 
 				return { datasheetData };
 			};
@@ -103,11 +127,7 @@ describe(DatasheetPdfService.name, () => {
 						creatorName: `${user.firstName} ${user.lastName}`,
 					});
 
-				(
-					createPdf as jest.MockedFunction<(documentDefinitions: TDocumentDefinitions) => TCreatedPdf>
-				).mockImplementation(() => {
-					throw new Error('error from createPdf');
-				});
+				setupMockCreatePdf(true);
 
 				return { datasheetData };
 			};
