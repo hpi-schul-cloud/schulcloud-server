@@ -1,10 +1,10 @@
-export * from './learnroom.config';
+export { LearnroomConfig } from './learnroom.config';
 export * from './learnroom.module';
 export {
 	CommonCartridgeExportService,
 	CourseCopyService,
-	CourseService,
-	RoomsService,
 	CourseGroupService,
+	CourseService,
 	DashboardService,
+	RoomsService,
 } from './service';
