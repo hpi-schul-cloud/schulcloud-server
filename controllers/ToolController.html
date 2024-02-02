@@ -179,6 +179,14 @@
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getDatasheet" >getDatasheet</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#getExternalTool" >getExternalTool</a>
                             </li>
@@ -261,8 +269,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="69"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -354,8 +362,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="145"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:145</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="158"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:158</a></div>
                         </td>
                     </tr>
 
@@ -447,8 +455,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="76"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:76</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="89"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:89</a></div>
                         </td>
                     </tr>
 
@@ -534,6 +542,110 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getDatasheet"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getDatasheet</b></span>
+                        <a href="#getDatasheet"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getDatasheet(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/ExternalToolIdParams.html" target="_self">ExternalToolIdParams</a>, res: Response)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;:externalToolId/datasheet&#x27;)<br />@ApiOperation({summary: &#x27;Returns a pdf of the external tool information&#x27;})<br />@ApiUnauthorizedResponse({description: &#x27;User is not logged in.&#x27;})<br />@ApiNotFoundResponse({description: &#x27;The external tool has not been found&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="211"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:211</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>params</td>
+                                            <td>
+                                                            <code><a href="../classes/ExternalToolIdParams.html" target="_self" >ExternalToolIdParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>res</td>
+                                            <td>
+                                                        <code>Response</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;StreamableFile&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getExternalTool"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -561,8 +673,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="104"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:104</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="117"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:117</a></div>
                         </td>
                     </tr>
 
@@ -653,8 +765,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="163"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:163</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="176"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:176</a></div>
                         </td>
                     </tr>
 
@@ -745,8 +857,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="179"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:179</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="192"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:192</a></div>
                         </td>
                     </tr>
 
@@ -839,8 +951,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="123"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:123</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="136"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/controller/tool.controller.ts:136</a></div>
                         </td>
                     </tr>
 
@@ -915,11 +1027,24 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query, Res } from &#x27;@nestjs/common&#x27;;
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpCode,
+	HttpStatus,
+	Param,
+	Post,
+	Query,
+	Res,
+	StreamableFile,
+} from &#x27;@nestjs/common&#x27;;
 import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiFoundResponse,
+	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
 	ApiResponse,
@@ -1105,6 +1230,26 @@ export class ToolController {
 			ExternalToolMetadataMapper.mapToExternalToolMetadataResponse(externalToolMetadata);
 
 		return mapped;
+	}
+
+	@Get(&#x27;:externalToolId/datasheet&#x27;)
+	@ApiOperation({ summary: &#x27;Returns a pdf of the external tool information&#x27; })
+	@ApiUnauthorizedResponse({ description: &#x27;User is not logged in.&#x27; })
+	@ApiNotFoundResponse({ description: &#x27;The external tool has not been found&#x27; })
+	async getDatasheet(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ExternalToolIdParams,
+		@Res({ passthrough: true }) res: Response
+	): Promise&lt;StreamableFile&gt; {
+		const datasheetBuffer: Buffer &#x3D; await this.externalToolUc.getDatasheet(currentUser.userId, params.externalToolId);
+
+		const myFilename &#x3D; await this.externalToolUc.createDatasheetFilename(params.externalToolId);
+
+		res.setHeader(&#x27;Content-Type&#x27;, &#x27;application/pdf&#x27;);
+		res.setHeader(&#x27;Content-Disposition&#x27;, &#x60;inline; filename&#x3D;${myFilename}&#x60;);
+
+		const streamableFile: StreamableFile &#x3D; new StreamableFile(datasheetBuffer);
+		return streamableFile;
 	}
 }
 </code></pre>

@@ -416,6 +416,9 @@
                             <a href="#externalSchoolDtoFactory" title="apps/server/src/shared/testing/factory/external-school-dto.factory.ts" ><b>externalSchoolDtoFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../external-school-dto.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#externalToolDatasheetTemplateDataFactory" title="apps/server/src/shared/testing/factory/domainobject/tool/external-tool-datasheet-template-data.factory.ts" ><b>externalToolDatasheetTemplateDataFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool-datasheet-template-data.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#externalToolElementFactory" title="apps/server/src/shared/testing/factory/domainobject/board/external-tool-element.do.factory.ts" ><b>externalToolElementFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool-element.do.factory.ts)</a>
                         </li>
                         <li>
@@ -426,6 +429,9 @@
                         </li>
                         <li>
                             <a href="#externalToolFactory" title="apps/server/src/shared/testing/factory/domainobject/tool/external-tool.factory.ts" ><b>externalToolFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool.factory.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#externalToolParameterDatasheetTemplateDataFactory" title="apps/server/src/shared/testing/factory/domainobject/tool/external-tool-datasheet-template-data.factory.ts" ><b>externalToolParameterDatasheetTemplateDataFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool-datasheet-template-data.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#externalToolPseudonymEntityFactory" title="apps/server/src/shared/testing/factory/external-tool-pseudonym.factory.ts" ><b>externalToolPseudonymEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool-pseudonym.factory.ts)</a>
@@ -6314,6 +6320,71 @@ it should ensure an empty result</p>
 	return {
 		externalId: new ObjectId().toHexString(),
 		name: &#x60;External School ${sequence}&#x60;,
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/domainobject/tool/external-tool-datasheet-template-data.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="externalToolDatasheetTemplateDataFactory"></a>
+                    <span class="name">
+                        <span ><b>externalToolDatasheetTemplateDataFactory</b></span>
+                        <a href="#externalToolDatasheetTemplateDataFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>ExternalToolDatasheetTemplateDataFactory.define(
+	({ sequence }) &#x3D;&gt; {
+		return {
+			createdAt: new Date().toLocaleDateString(&#x27;de-DE&#x27;),
+			creatorName: &#x60;John Doe ${sequence}&#x60;,
+			instance: &#x27;dBildungscloud&#x27;,
+			toolName: &#x60;external-tool-${sequence}&#x60;,
+			toolUrl: &#x27;https://www.basic-baseUrl.com/&#x27;,
+			toolType: &#x27;Basic&#x27;,
+		};
+	}
+)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="externalToolParameterDatasheetTemplateDataFactory"></a>
+                    <span class="name">
+                        <span ><b>externalToolParameterDatasheetTemplateDataFactory</b></span>
+                        <a href="#externalToolParameterDatasheetTemplateDataFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Factory.define&lt;
+	ExternalToolParameterDatasheetTemplateData,
+	ExternalToolParameterDatasheetTemplateData
+&gt;(({ sequence }) &#x3D;&gt; {
+	return {
+		name: &#x60;custom-parameter-${sequence}&#x60;,
+		properties: &#x27;&#x27;,
+		type: &#x27;Zeichenkette&#x27;,
+		scope: &#x27;Schule&#x27;,
+		location: CustomParameterLocation.BODY,
 	};
 })</code>
                     </td>

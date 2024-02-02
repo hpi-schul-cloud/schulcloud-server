@@ -143,6 +143,11 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#createDatasheetFilename" >createDatasheetFilename</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#createExternalTool" >createExternalTool</a>
                             </li>
@@ -158,6 +163,11 @@
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#findExternalTool" >findExternalTool</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getDatasheet" >getDatasheet</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -189,12 +199,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, toolValidationService: <a href="../injectables/ExternalToolValidationService.html" target="_self">ExternalToolValidationService</a>, externalToolLogoService: <a href="../classes/ExternalToolLogoService.html" target="_self">ExternalToolLogoService</a>, commonToolMetadataService: <a href="../injectables/CommonToolMetadataService.html" target="_self">CommonToolMetadataService</a>)</code>
+<code>constructor(externalToolService: <a href="../injectables/ExternalToolService.html" target="_self">ExternalToolService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, toolValidationService: <a href="../injectables/ExternalToolValidationService.html" target="_self">ExternalToolValidationService</a>, externalToolLogoService: <a href="../classes/ExternalToolLogoService.html" target="_self">ExternalToolLogoService</a>, commonToolMetadataService: <a href="../injectables/CommonToolMetadataService.html" target="_self">CommonToolMetadataService</a>, datasheetPdfService: <a href="../injectables/DatasheetPdfService.html" target="_self">DatasheetPdfService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:20</a></div>
                             </td>
                         </tr>
 
@@ -271,6 +281,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>datasheetPdfService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/DatasheetPdfService.html" target="_self" >DatasheetPdfService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -285,6 +307,76 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createDatasheetFilename"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>createDatasheetFilename</b></span>
+                        <a href="#createDatasheetFilename"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createDatasheetFilename(externalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="116"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:116</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>externalToolId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;string&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -307,8 +399,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="30"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -388,8 +480,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="75"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:75</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:82</a></div>
                         </td>
                     </tr>
 
@@ -470,8 +562,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="91"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:91</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="98"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:98</a></div>
                         </td>
                     </tr>
 
@@ -519,7 +611,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -551,8 +643,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="57"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:57</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="64"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:64</a></div>
                         </td>
                     </tr>
 
@@ -626,6 +718,88 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getDatasheet"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getDatasheet</b></span>
+                        <a href="#getDatasheet"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getDatasheet(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, externalToolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="103"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:103</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>externalToolId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;Buffer&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getExternalTool"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -644,8 +818,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="68"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:68</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:75</a></div>
                         </td>
                     </tr>
 
@@ -725,8 +899,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="82"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:82</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="89"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:89</a></div>
                         </td>
                     </tr>
 
@@ -806,8 +980,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">apps/server/src/modules/tool/external-tool/uc/external-tool.uc.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -891,9 +1065,15 @@ import { IFindOptions, Permission } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ExternalToolSearchQuery } from &#x27;../../common/interface&#x27;;
 import { CommonToolMetadataService } from &#x27;../../common/service/common-tool-metadata.service&#x27;;
-import { ExternalTool, ExternalToolConfig, ExternalToolMetadata } from &#x27;../domain&#x27;;
-import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from &#x27;../service&#x27;;
+import { ExternalTool, ExternalToolConfig, ExternalToolDatasheetTemplateData, ExternalToolMetadata } from &#x27;../domain&#x27;;
+import {
+	ExternalToolLogoService,
+	ExternalToolService,
+	ExternalToolValidationService,
+	DatasheetPdfService,
+} from &#x27;../service&#x27;;
 import { ExternalToolCreate, ExternalToolUpdate } from &#x27;./dto&#x27;;
+import { ExternalToolDatasheetMapper } from &#x27;../mapper/external-tool-datasheet.mapper&#x27;;
 
 @Injectable()
 export class ExternalToolUc {
@@ -902,7 +1082,8 @@ export class ExternalToolUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly toolValidationService: ExternalToolValidationService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly commonToolMetadataService: CommonToolMetadataService
+		private readonly commonToolMetadataService: CommonToolMetadataService,
+		private readonly datasheetPdfService: DatasheetPdfService
 	) {}
 
 	async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise&lt;ExternalTool&gt; {
@@ -973,9 +1154,36 @@ export class ExternalToolUc {
 		return metadata;
 	}
 
-	private async ensurePermission(userId: EntityId, permission: Permission) {
+	private async ensurePermission(userId: EntityId, permission: Permission): Promise&lt;void&gt; {
 		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [permission]);
+	}
+
+	public async getDatasheet(userId: EntityId, externalToolId: EntityId): Promise&lt;Buffer&gt; {
+		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkOneOfPermissions(user, [Permission.TOOL_ADMIN, Permission.SCHOOL_TOOL_ADMIN]);
+
+		const externalTool: ExternalTool &#x3D; await this.externalToolService.findById(externalToolId);
+		const dataSheetData: ExternalToolDatasheetTemplateData &#x3D;
+			ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(externalTool, user.firstName, user.lastName);
+
+		const buffer: Buffer &#x3D; await this.datasheetPdfService.generatePdf(dataSheetData);
+
+		return buffer;
+	}
+
+	public async createDatasheetFilename(externalToolId: EntityId): Promise&lt;string&gt; {
+		const externalTool: ExternalTool &#x3D; await this.externalToolService.findById(externalToolId);
+
+		const date &#x3D; new Date();
+		const year &#x3D; date.getFullYear();
+		const month &#x3D; date.getMonth() + 1;
+		const day &#x3D; date.getDate();
+		const dateString &#x3D; &#x60;${year}-${month}-${day}&#x60;;
+
+		const fileName &#x3D; &#x60;CTL-Datenblatt-${externalTool.name}-${dateString}&#x60;;
+
+		return fileName;
 	}
 }
 </code></pre>
