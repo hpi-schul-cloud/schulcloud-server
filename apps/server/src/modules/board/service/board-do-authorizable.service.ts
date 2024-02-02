@@ -8,7 +8,6 @@ import {
 	ColumnBoard,
 	isDrawingElement,
 	UserBoardRoles,
-	UserRoleEnum,
 } from '@shared/domain/domainobject';
 import { Course } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
@@ -53,7 +52,6 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 					firstName: user.firstName,
 					lastName: user.lastName,
 					roles: [BoardRoles.EDITOR],
-					userRoleEnum: UserRoleEnum.TEACHER,
 				};
 			}),
 			...course.getSubstitutionTeachersList().map((user) => {
@@ -62,7 +60,6 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 					firstName: user.firstName,
 					lastName: user.lastName,
 					roles: [BoardRoles.EDITOR],
-					userRoleEnum: UserRoleEnum.SUBSTITUTION_TEACHER,
 				};
 			}),
 			...course.getStudentsList().map((user) => {
@@ -74,7 +71,6 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 					// linked with getElementWithWritePermission method in element.uc.ts
 					// this is needed to allow students to upload/delete files to/from the tldraw whiteboard (DrawingElement)
 					roles: isDrawing ? [BoardRoles.EDITOR] : [BoardRoles.READER],
-					userRoleEnum: UserRoleEnum.STUDENT,
 				};
 			}),
 		];

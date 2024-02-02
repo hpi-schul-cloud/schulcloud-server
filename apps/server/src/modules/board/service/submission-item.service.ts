@@ -60,9 +60,7 @@ export class SubmissionItemService {
 
 	private async getParent(submissionItem: SubmissionItem): Promise<SubmissionContainerElement> {
 		const submissionContainterElement = await this.boardDoRepo.findParentOfId(submissionItem.id);
-		if (!submissionContainterElement) {
-			throw new NotFoundException('Could not find a node with this id');
-		}
+
 		if (!isSubmissionContainerElement(submissionContainterElement)) {
 			throw new UnprocessableEntityException();
 		}

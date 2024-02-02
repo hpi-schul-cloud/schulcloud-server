@@ -25,10 +25,6 @@ export class BoardDoRule implements Rule {
 			return false;
 		}
 
-		if (boardDoAuthorizable.requiredUserRole && boardDoAuthorizable.requiredUserRole !== userBoardRoles.userRoleEnum) {
-			return false;
-		}
-
 		switch (context.action) {
 			case Action.write:
 				return this.hasWritePermission(userBoardRoles);

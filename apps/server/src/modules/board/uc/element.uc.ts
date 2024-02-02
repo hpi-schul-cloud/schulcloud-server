@@ -2,11 +2,9 @@ import { Action, AuthorizationService } from '@modules/authorization';
 import { ForbiddenException, forwardRef, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
 	AnyContentElementDo,
-	isDrawingElement,
 	isSubmissionContainerElement,
 	isSubmissionItem,
 	SubmissionItem,
-	UserRoleEnum,
 } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
@@ -59,15 +57,8 @@ export class ElementUc extends BaseUc {
 		const parent = await this.elementService.findParentOfId(elementId);
 
 		if (isSubmissionItem(parent)) {
-			this.checkCreator(userId, parent);
+			this.checkSubmissionItemCreator(userId, parent);
 			await this.checkPermission(userId, element, Action.read);
-		} else if (isDrawingElement(element)) {
-			// TODO: fix this temporary hack preventing students from deleting the DrawingElement
-			// linked with getBoardAuthorizable method in board-do-authorizable.service.ts
-			// the roles are hacked for the DrawingElement to allow students for file upload
-			// so because students have BoardRoles.EDITOR role, they can delete the DrawingElement by calling delete endpoint directly
-			// to prevent this, we add UserRoleEnum.TEACHER to the requiredUserRole
-			await this.checkPermission(userId, element, Action.write, UserRoleEnum.TEACHER);
 		} else {
 			await this.checkPermission(userId, element, Action.write);
 		}
@@ -104,7 +95,12 @@ export class ElementUc extends BaseUc {
 			);
 		}
 
-		await this.checkPermission(userId, submissionContainerElement, Action.read, UserRoleEnum.STUDENT);
+		await this.checkPermission(userId, submissionContainerElement, Action.read);
+
+		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(submissionContainerElement);
+		if (this.isUserBoardEditor(userId, boardDoAuthorizable.users)) {
+			throw new ForbiddenException();
+		}
 
 		const submissionItem = await this.submissionItemService.create(userId, submissionContainerElement, { completed });
 

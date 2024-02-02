@@ -5,39 +5,21 @@ export enum BoardRoles {
 	EDITOR = 'editor',
 	READER = 'reader',
 }
-/**
-	deprecated: This is a temporary solution. This will be replaced with a more proper permission system.
-*/
-export enum UserRoleEnum {
-	TEACHER = 'teacher',
-	STUDENT = 'student',
-	SUBSTITUTION_TEACHER = 'subsitution teacher',
-}
 
 export interface UserBoardRoles {
 	firstName?: string;
 	lastName?: string;
 	roles: BoardRoles[];
 	userId: EntityId;
-	userRoleEnum: UserRoleEnum;
 }
 
 export interface BoardDoAuthorizableProps extends AuthorizableObject {
 	id: EntityId;
 	users: UserBoardRoles[];
-	requiredUserRole?: UserRoleEnum;
 }
 
 export class BoardDoAuthorizable extends DomainObject<BoardDoAuthorizableProps> {
 	get users(): UserBoardRoles[] {
 		return this.props.users;
-	}
-
-	get requiredUserRole(): UserRoleEnum | undefined {
-		return this.props.requiredUserRole;
-	}
-
-	set requiredUserRole(userRoleEnum: UserRoleEnum | undefined) {
-		this.props.requiredUserRole = userRoleEnum;
 	}
 }

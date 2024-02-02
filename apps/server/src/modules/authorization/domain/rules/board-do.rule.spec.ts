@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { BoardDoAuthorizable, BoardRoles, UserRoleEnum } from '@shared/domain/domainobject';
+import { BoardDoAuthorizable, BoardRoles } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { Action } from '../type';
 import { AuthorizationHelper } from '../service/authorization.helper';
@@ -63,7 +63,7 @@ describe(BoardDoRule.name, () => {
 				const role = roleFactory.build({ permissions: [permissionA, permissionB] });
 				const user = userFactory.buildWithId({ roles: [role] });
 				const boardDoAuthorizable = new BoardDoAuthorizable({
-					users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
+					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 					id: new ObjectId().toHexString(),
 				});
 
@@ -93,7 +93,7 @@ describe(BoardDoRule.name, () => {
 				const permissionA = 'a' as Permission;
 				const user = userFactory.buildWithId();
 				const boardDoAuthorizable = new BoardDoAuthorizable({
-					users: [{ userId: user.id, roles: [BoardRoles.READER], userRoleEnum: UserRoleEnum.STUDENT }],
+					users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 					id: new ObjectId().toHexString(),
 				});
 
@@ -118,7 +118,7 @@ describe(BoardDoRule.name, () => {
 				const user = userFactory.buildWithId({ roles: [role] });
 				const userWithoutPermision = userFactory.buildWithId({ roles: [role] });
 				const boardDoAuthorizable = new BoardDoAuthorizable({
-					users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
+					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 					id: new ObjectId().toHexString(),
 				});
 
@@ -142,35 +142,9 @@ describe(BoardDoRule.name, () => {
 				const user = userFactory.buildWithId();
 
 				const boardDoAuthorizable = new BoardDoAuthorizable({
-					users: [{ userId: user.id, roles: [], userRoleEnum: UserRoleEnum.TEACHER }],
+					users: [{ userId: user.id, roles: [] }],
 					id: new ObjectId().toHexString(),
 				});
-
-				return { user, boardDoAuthorizable };
-			};
-
-			it('should return "false"', () => {
-				const { user, boardDoAuthorizable } = setup();
-
-				const res = service.hasPermission(user, boardDoAuthorizable, {
-					action: Action.read,
-					requiredPermissions: [],
-				});
-
-				expect(res).toBe(false);
-			});
-		});
-
-		describe('when user has not the required userRoleEnum', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId();
-
-				const boardDoAuthorizable = new BoardDoAuthorizable({
-					users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
-					id: new ObjectId().toHexString(),
-				});
-
-				boardDoAuthorizable.requiredUserRole = UserRoleEnum.STUDENT;
 
 				return { user, boardDoAuthorizable };
 			};

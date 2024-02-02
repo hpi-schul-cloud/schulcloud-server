@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, BoardRoles, UserRoleEnum } from '@shared/domain/domainobject';
+import { BoardExternalReferenceType, BoardRoles } from '@shared/domain/domainobject';
 import { CourseRepo } from '@shared/repo';
 import { courseFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
@@ -117,22 +117,12 @@ describe(BoardDoAuthorizableService.name, () => {
 					return map;
 				}, {});
 
-				const userRoleEnums = boardDoAuthorizable.users.reduce((map, user) => {
-					map[user.userId] = user.userRoleEnum;
-					return map;
-				}, {});
-
 				expect(boardDoAuthorizable.users).toHaveLength(5);
 				expect(userPermissions[teacherId]).toEqual([BoardRoles.EDITOR]);
-				expect(userRoleEnums[teacherId]).toEqual(UserRoleEnum.TEACHER);
 				expect(userPermissions[substitutionTeacherId]).toEqual([BoardRoles.EDITOR]);
-				expect(userRoleEnums[substitutionTeacherId]).toEqual(UserRoleEnum.SUBSTITUTION_TEACHER);
 				expect(userPermissions[studentIds[0]]).toEqual([BoardRoles.READER]);
-				expect(userRoleEnums[studentIds[0]]).toEqual(UserRoleEnum.STUDENT);
 				expect(userPermissions[studentIds[1]]).toEqual([BoardRoles.READER]);
-				expect(userRoleEnums[studentIds[1]]).toEqual(UserRoleEnum.STUDENT);
 				expect(userPermissions[studentIds[2]]).toEqual([BoardRoles.READER]);
-				expect(userRoleEnums[studentIds[2]]).toEqual(UserRoleEnum.STUDENT);
 			});
 
 			it('should return the users with their names', async () => {

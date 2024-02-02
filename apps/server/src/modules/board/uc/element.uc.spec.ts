@@ -3,7 +3,7 @@ import { Action, AuthorizationService } from '@modules/authorization';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, BoardRoles, UserRoleEnum } from '@shared/domain/domainobject';
+import { BoardDoAuthorizable, BoardRoles } from '@shared/domain/domainobject';
 import { InputFormat } from '@shared/domain/types';
 import {
 	cardFactory,
@@ -189,30 +189,6 @@ describe(ElementUc.name, () => {
 			});
 		});
 
-		describe('when deleting an element which is of DrawingElement type', () => {
-			const setup = () => {
-				const user = userFactory.build();
-				const element = drawingElementFactory.build();
-
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
-				);
-
-				elementService.findById.mockResolvedValueOnce(element);
-				return { element, user };
-			};
-
-			it('should authorize the user to delete the element', async () => {
-				const { element, user } = setup();
-
-				const boardDoAuthorizable = await boardDoAuthorizableService.getBoardAuthorizable(element);
-				const context = { action: Action.write, requiredPermissions: [] };
-				await uc.deleteElement(user.id, element.id);
-
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, boardDoAuthorizable, context);
-			});
-		});
-
 		describe('when deleting a content element', () => {
 			const setup = () => {
 				const user = userFactory.build();
@@ -317,7 +293,7 @@ describe(ElementUc.name, () => {
 			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
-				users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
+				users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 				id: columnBoard.id,
 			});
 
