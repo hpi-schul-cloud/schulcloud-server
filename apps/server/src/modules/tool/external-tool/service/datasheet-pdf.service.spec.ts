@@ -5,14 +5,14 @@ import {
 	externalToolFactory,
 	userDoFactory,
 } from '@shared/testing';
-import { createPdf } from 'pdfmake/build/pdfmake';
 import { UserDO } from '@shared/domain/domainobject';
-import { Array } from 'yjs';
-import { pdfMake } from 'pdfmake/build/vfs_fonts';
-import * as pdfkit from 'pdfkit';
+import { createPdf, TCreatedPdf } from 'pdfmake/build/pdfmake';
+import { TDocumentDefinitions } from 'pdfmake/interfaces';
 import { DatasheetPdfService } from './datasheet-pdf.service';
 import { ExternalTool, ExternalToolDatasheetTemplateData } from '../domain';
 import { CustomParameter } from '../../common/domain';
+
+jest.mock('pdfmake/build/pdfmake');
 
 describe(DatasheetPdfService.name, () => {
 	let module: TestingModule;
@@ -103,15 +103,19 @@ describe(DatasheetPdfService.name, () => {
 						creatorName: `${user.firstName} ${user.lastName}`,
 					});
 
-				jest.spyOn(service, 'generatePdf').mockRejectedValueOnce('error');
+				(
+					createPdf as jest.MockedFunction<(documentDefinitions: TDocumentDefinitions) => TCreatedPdf>
+				).mockImplementation(() => {
+					throw new Error('error from createPdf');
+				});
 
 				return { datasheetData };
 			};
 
-			it('should throw error', async () => {
+			it('should throw an error', async () => {
 				const { datasheetData } = setup();
 
-				await expect(service.generatePdf(datasheetData)).rejects.toEqual('error');
+				await expect(service.generatePdf(datasheetData)).rejects.toThrowError('error from createPdf');
 			});
 		});
 	});
