@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { BulkWriteResult, Collection, Sort } from 'mongodb';
 import { MikroORM } from '@mikro-orm/core';
 import { TldrawDrawing } from '../entities';
@@ -14,9 +14,6 @@ export class TldrawRepo {
 
 	public async findByDocName(docName: string): Promise<TldrawDrawing[]> {
 		const domainObject = await this.em.find(TldrawDrawing, { docName });
-		if (domainObject.length === 0) {
-			throw new NotFoundException(`There is no '${docName}' for this docName`);
-		}
 		return domainObject;
 	}
 
