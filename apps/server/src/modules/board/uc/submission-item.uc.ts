@@ -78,6 +78,14 @@ export class SubmissionItemUc extends BaseUc {
 		return submissionItem;
 	}
 
+	async deleteSubmissionItem(userId: EntityId, submissionItemId: EntityId): Promise<void> {
+		const submissionItem = await this.submissionItemService.findById(submissionItemId);
+		this.checkCreator(userId, submissionItem);
+		await this.checkPermission(userId, submissionItem, Action.read);
+
+		await this.submissionItemService.delete(submissionItem);
+	}
+
 	async createElement(
 		userId: EntityId,
 		submissionItemId: EntityId,
