@@ -27,7 +27,7 @@ import {
 } from './response';
 
 /**
- * This is a test client for the Arix API.
+ * This is a rest client for the Arix API.
  *
  * https://docs.dbildungscloud.de/display/N21P/EduPool+Overview
  */
@@ -104,41 +104,6 @@ export class ArixRestClient {
 		return uuidResponse.uuid;
 	}
 
-	private async doSearch(searchRequest: ArixSearchRequest): Promise<ArixSearchResponse> {
-		const response: Promise<ArixSearchResponse> = this.postData<ArixSearchRequest, ArixSearchResponse>({
-			data: searchRequest,
-		});
-
-		return response;
-	}
-
-	private async getNotch(uuid: string): Promise<ArixNotchResponse> {
-		const response: Promise<ArixNotchResponse> = this.postData<ArixNotchRequest, ArixNotchResponse>({
-			data: {
-				notch: {
-					user: uuid,
-					identifier: 'XMEDIENLB-5552796',
-				},
-			},
-		});
-
-		return response;
-	}
-
-	private async getLink(notch: ArixNotchResponse, uuid: string): Promise<ArixLinkResponse> {
-		const response: Promise<ArixLinkResponse> = this.postData<ArixLinkRequest, ArixLinkResponse>({
-			data: {
-				link: {
-					user: uuid,
-					id: notch.notch.id,
-					value: this.generatePhrase(notch.notch.value, this.options.password),
-				},
-			},
-		});
-
-		return response;
-	}
-
 	public async getMediaRecord(identifier: string, template?: string): Promise<ArixRecordResponse> {
 		const uuid: string = await this.getActiveUuid();
 
@@ -159,33 +124,54 @@ export class ArixRestClient {
 			fields = params.fields;
 		}
 
-		const searchResponsePromise: Promise<ArixSearchResponse> = this.doSearch({
-			search: {
-				user: uuid,
-				fields,
-				conditions: params.conditions ?? [],
-				limit: params.limit,
+		const searchResponsePromise: Promise<ArixSearchResponse> = this.postData<ArixSearchRequest, ArixSearchResponse>({
+			data: {
+				search: {
+					user: uuid,
+					fields,
+					conditions: params.conditions ?? [],
+					limit: params.limit,
+				},
 			},
 		});
 
 		return searchResponsePromise;
 	}
 
-	public async getMediaLink(): Promise<ArixLinkResponse> {
+	public async getMediaLink(identifier: string): Promise<ArixLinkResponse> {
 		const uuid: string = await this.getActiveUuid();
 
-		const notchResponse: ArixNotchResponse = await this.getNotch(uuid);
+		const arixNotchResponse: ArixNotchResponse | undefined = await this.postData<ArixNotchRequest, ArixNotchResponse>({
+			data: {
+				notch: {
+					user: uuid,
+					identifier,
+				},
+			},
+		});
 
-		const arixLinkResponsePromise: Promise<ArixLinkResponse> = this.getLink(notchResponse, uuid);
+		if (!arixNotchResponse.notch) {
+			throw new InternalServerErrorException('No notch found for the given identifier.');
+		}
+
+		const arixLinkResponsePromise: Promise<ArixLinkResponse> = this.postData<ArixLinkRequest, ArixLinkResponse>({
+			data: {
+				link: {
+					user: uuid,
+					id: arixNotchResponse.notch.id,
+					value: this.generatePhrase(arixNotchResponse.notch.value, this.options.password),
+				},
+			},
+		});
 
 		return arixLinkResponsePromise;
 	}
 
-	public async getRecordLogo(): Promise<ArixLogoResponse> {
+	public async getRecordLogo(identifier: string): Promise<ArixLogoResponse> {
 		const uuid: string = await this.getActiveUuid();
 
 		const arixLogoResponse: Promise<ArixLogoResponse> = this.postData<ArixLogoRequest, ArixLogoResponse>({
-			data: { logo: { user: uuid, identifier: 'XMEDIENLB-5552796' } },
+			data: { logo: { user: uuid, identifier } },
 		});
 
 		return arixLogoResponse;

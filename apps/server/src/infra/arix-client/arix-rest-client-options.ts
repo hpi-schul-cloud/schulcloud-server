@@ -6,4 +6,6 @@ export interface ArixRestClientOptions {
 	user: string;
 
 	password: string;
+
+	withController?: boolean;
 }

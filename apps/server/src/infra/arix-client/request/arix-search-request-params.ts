@@ -9,7 +9,12 @@ export class ArixSearchRequestParams {
 
 	@IsOptional()
 	@IsString()
-	@ApiPropertyOptional({ description: 'The limit of the search', default: '1', examples: ['1', '100,200'] })
+	@ApiPropertyOptional({
+		description:
+			'The limit of the search. limit="100" means that the first 100 records will be transmitted. limit="100,200" means that the next 100 records will be transmitted.',
+		default: '1',
+		examples: ['1', '100,200'],
+	})
 	limit?: string;
 
 	@IsOptional()

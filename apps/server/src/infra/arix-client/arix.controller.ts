@@ -1,4 +1,15 @@
-import { Body, Controller, Get, Param, Post, Query, Res } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Get,
+	HttpCode,
+	HttpStatus,
+	InternalServerErrorException,
+	Param,
+	Post,
+	Query,
+	Res,
+} from '@nestjs/common';
 import { ApiInternalServerErrorResponse, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
 import { ArixRestClient } from './arix-rest-client';
@@ -12,9 +23,10 @@ export class ArixController {
 	constructor(private readonly arixRestClient: ArixRestClient) {}
 
 	@Post('search')
+	@HttpCode(HttpStatus.OK)
 	@ApiOperation({ summary: 'Search for media records' })
-	@ApiOkResponse()
-	@ApiInternalServerErrorResponse()
+	@ApiOkResponse({ description: 'The search was successful' })
+	@ApiInternalServerErrorResponse({ description: 'An error occurred during the search' })
 	public async search(
 		@Body() params: ArixSearchRequestParams,
 		@Res({ passthrough: true }) res: Response
@@ -30,8 +42,8 @@ export class ArixController {
 
 	@Get('records/:identifier')
 	@ApiOperation({ summary: 'Get a media record' })
-	@ApiOkResponse()
-	@ApiInternalServerErrorResponse()
+	@ApiOkResponse({ description: 'The media record was found' })
+	@ApiInternalServerErrorResponse({ description: 'An error occurred during getting the media record' })
 	public async record(
 		@Param() pathParams: ArixRecordRequestPathParams,
 		@Query() queryParams: ArixRecordRequestQueryParams,
@@ -44,27 +56,43 @@ export class ArixController {
 			queryParams.template
 		);
 
+		if (arixRecordResponse.error) {
+			throw new InternalServerErrorException(arixRecordResponse.error);
+		}
+
 		this.setPerformanceHeader(res, startTime);
 
 		return arixRecordResponse;
 	}
 
-	@Get('link')
-	public async media(@Res({ passthrough: true }) res: Response): Promise<ArixLinkResponse> {
+	@Get('records/:identifier/link')
+	@ApiOperation({ summary: 'Get a media record link' })
+	@ApiOkResponse({ description: 'The media record link was found' })
+	@ApiInternalServerErrorResponse({ description: 'An error occurred during getting the media record link.' })
+	public async media(
+		@Param() pathParams: ArixRecordRequestPathParams,
+		@Res({ passthrough: true }) res: Response
+	): Promise<ArixLinkResponse> {
 		const startTime: number = performance.now();
 
-		const arixLinkResponse: ArixLinkResponse = await this.arixRestClient.getMediaLink();
+		const arixLinkResponse: ArixLinkResponse = await this.arixRestClient.getMediaLink(pathParams.identifier);
 
 		this.setPerformanceHeader(res, startTime);
 
 		return arixLinkResponse;
 	}
 
-	@Get('logo')
-	public async logo(@Res({ passthrough: true }) res: Response): Promise<ArixLogoResponse> {
+	@Get('records/:identifier/logo')
+	@ApiOperation({ summary: 'Get the logo of an media record' })
+	@ApiOkResponse({ description: 'The logo fetching was successful. It is empty when there is no logo available.' })
+	@ApiInternalServerErrorResponse({ description: 'An error occurred during getting the logo' })
+	public async logo(
+		@Param() pathParams: ArixRecordRequestPathParams,
+		@Res({ passthrough: true }) res: Response
+	): Promise<ArixLogoResponse> {
 		const startTime: number = performance.now();
 
-		const arixLogoResponse: ArixLogoResponse = await this.arixRestClient.getRecordLogo();
+		const arixLogoResponse: ArixLogoResponse = await this.arixRestClient.getRecordLogo(pathParams.identifier);
 
 		this.setPerformanceHeader(res, startTime);
 

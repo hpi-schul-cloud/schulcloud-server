@@ -1666,9 +1666,15 @@
 				"PASSWORD": {
 					"type": "string",
 					"description": "Password for accessing the arix API (from server vault)"
+				},
+				"WITH_CONTROLLER": {
+					"type": "boolean",
+					"description": "Flag to enable the arix controller",
+					"default": "false"
 				}
 			},
 			"default": {
+				"API_URL": "",
 				"USER": "",
 				"PASSWORD": ""
 			}

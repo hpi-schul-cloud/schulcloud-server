@@ -86,6 +86,7 @@
 	"ARIX_CLIENT": {
 		"API_URL": "http://localhost:9191",
 		"USER": "schulcloud",
-		"PASSWORD": "schulcloud"
+		"PASSWORD": "schulcloud",
+		"WITH_CONTROLLER": true
 	}
 }

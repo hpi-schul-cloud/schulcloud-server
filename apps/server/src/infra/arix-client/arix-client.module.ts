@@ -19,7 +19,7 @@ export class ArixClientModule {
 				ArixRestClient,
 				ConverterUtil,
 			],
-			controllers: [ArixController],
+			controllers: options.withController ? [ArixController] : [],
 			exports: [ArixRestClient],
 		};
 	}

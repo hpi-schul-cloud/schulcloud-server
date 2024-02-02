@@ -2,6 +2,7 @@ import { ArixRecordEntry } from './arix-record-entry';
 
 export interface ArixRecordResponse {
 	f: ArixRecordEntry;
+	error?: string;
 }
 
 /**
