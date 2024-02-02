@@ -4,7 +4,6 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { cleanupCollections } from '@shared/testing';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
-import { NotFoundException } from '@nestjs/common';
 import { TldrawDrawing } from '../entities';
 import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
 import { TldrawRepo } from '../repo/tldraw.repo';
@@ -45,11 +44,12 @@ describe('TldrawService', () => {
 				const drawing = tldrawEntityFactory.build();
 
 				await repo.create(drawing);
-				const result = await repo.findByDocName(drawing.docName);
+				let result = await repo.findByDocName(drawing.docName);
 				await service.deleteByDocName(drawing.docName);
 
 				expect(result.length).toEqual(1);
-				await expect(repo.findByDocName(drawing.docName)).rejects.toThrow(NotFoundException);
+				result = await repo.findByDocName(drawing.docName);
+				expect(result.length).toEqual(0);
 			});
 		});
 	});
