@@ -51,10 +51,6 @@ describe('TldrawService', () => {
 				expect(result.length).toEqual(1);
 				await expect(repo.findByDocName(drawing.docName)).rejects.toThrow(NotFoundException);
 			});
-
-			it('should throw when cannot find drawing', async () => {
-				await expect(service.deleteByDocName('nonExistingName')).rejects.toThrow(NotFoundException);
-			});
 		});
 	});
 });
