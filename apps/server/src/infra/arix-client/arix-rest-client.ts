@@ -129,7 +129,14 @@ export class ArixRestClient {
 				search: {
 					user: uuid,
 					fields,
-					conditions: params.conditions ?? [],
+					condition: params.condition
+						? {
+								field: params.condition.field,
+								value: params.condition.value,
+								operator: params.condition.operator,
+								option: params.condition.option,
+						  }
+						: undefined,
 					limit: params.limit,
 				},
 			},

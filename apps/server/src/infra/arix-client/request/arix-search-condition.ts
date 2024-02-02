@@ -13,10 +13,10 @@ export class ArixSearchCondition {
 	value!: string;
 
 	@IsOptional()
-	@ApiPropertyOptional({ description: 'The operator to use', examples: ['or', 'and'] })
-	operator?: 'or' | 'and';
+	@ApiPropertyOptional({ description: 'The operator to use', examples: ['OR', 'AND'] })
+	operator?: 'OR' | 'AND';
 
 	@IsOptional()
-	@ApiPropertyOptional({ description: 'The option to use', examples: ['begin', 'word'] })
-	option?: 'begin' | 'word';
+	@ApiPropertyOptional({ description: 'The option to use', examples: ['BEGIN', 'WORD'] })
+	option?: 'BEGIN' | 'WORD';
 }

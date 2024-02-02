@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { ArixFields } from '../type/arix-fields';
 import { ArixSearchCondition } from './arix-search-condition';
 
@@ -18,12 +18,11 @@ export class ArixSearchRequestParams {
 	limit?: string;
 
 	@IsOptional()
-	@ValidateNested({ each: true })
 	@ApiPropertyOptional({
 		description: 'The conditions of the search',
-		type: [ArixSearchCondition],
+		type: ArixSearchCondition,
 		default: [{ field: 'titel_fields', value: 'watt' }],
 		examples: [{ field: 'titel_fields', value: 'watt' }],
 	})
-	conditions?: ArixSearchCondition[];
+	condition?: ArixSearchCondition;
 }
