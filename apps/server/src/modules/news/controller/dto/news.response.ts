@@ -103,7 +103,7 @@ export class NewsResponse {
 	@ApiProperty({
 		description: 'Reference to the User that created the News entity',
 	})
-	creator: UserInfoResponse;
+	creator?: UserInfoResponse;
 
 	@ApiPropertyOptional({
 		description: 'Reference to the User that updated the News entity',
