@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
+import { DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
+import { FileDO } from '@src/infra/rabbitmq';
+import { DomainOperation } from '@shared/domain/interface';
+import { DomainOperationBuilder } from '@shared/domain/builder';
 import { CopyFileDto, FileDto } from '../dto';
 import { FileRequestInfo } from '../interfaces';
 import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
@@ -36,9 +39,20 @@ export class FilesStorageClientAdapterService {
 		return fileInfos;
 	}
 
-	async removeCreatorIdFromFileRecords(creatorId: EntityId): Promise<number> {
+	async removeCreatorIdFromFileRecords(creatorId: EntityId): Promise<DomainOperation> {
 		const response = await this.fileStorageMQProducer.removeCreatorIdFromFileRecords(creatorId);
 
-		return response.length;
+		const result = DomainOperationBuilder.build(
+			DomainName.FILERECORDS,
+			OperationType.UPDATE,
+			response.length,
+			this.getFileRecordsId(response)
+		);
+
+		return result;
+	}
+
+	private getFileRecordsId(files: FileDO[]): EntityId[] {
+		return files.map((file) => file.id);
 	}
 }

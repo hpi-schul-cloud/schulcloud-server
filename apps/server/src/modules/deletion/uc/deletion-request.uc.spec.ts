@@ -15,7 +15,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from 'bson';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { DomainModel } from '@shared/domain/types';
+import { DomainName, OperationType } from '@shared/domain/types';
 import { TaskService } from '@modules/task';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { DeletionStatusModel } from '../domain/types';
@@ -157,7 +157,7 @@ describe(DeletionRequestUc.name, () => {
 			const setup = () => {
 				const deletionRequestToCreate: DeletionRequestBodyProps = {
 					targetRef: {
-						domain: DomainModel.USER,
+						domain: DomainName.USER,
 						id: new ObjectId().toHexString(),
 					},
 					deleteInMinutes: 1440,
@@ -203,31 +203,109 @@ describe(DeletionRequestUc.name, () => {
 	describe('executeDeletionRequests', () => {
 		describe('when executing deletionRequests', () => {
 			const setup = () => {
+				const accountDeleted = DomainOperationBuilder.build(DomainName.ACCOUNT, OperationType.DELETE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const classesUpdated = DomainOperationBuilder.build(DomainName.CLASS, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const courseGroupUpdated = DomainOperationBuilder.build(DomainName.COURSEGROUP, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const courseUpdated = DomainOperationBuilder.build(DomainName.COURSE, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
 				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
-				const user = userDoFactory.buildWithId();
+
+				const dashboardDeleted = DomainOperationBuilder.build(DomainName.DASHBOARD, OperationType.DELETE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const filesDeleted = DomainOperationBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const filesUpdated = DomainOperationBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const fileRecordsUpdated = DomainOperationBuilder.build(DomainName.FILERECORDS, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const lessonsUpdated = DomainOperationBuilder.build(DomainName.LESSONS, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const parentEmail = 'parent@parent.eu';
+
+				const pseudonymsDeleted = DomainOperationBuilder.build(DomainName.PSEUDONYMS, OperationType.DELETE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const registrationPinDeleted = DomainOperationBuilder.build(
+					DomainName.REGISTRATIONPIN,
+					OperationType.DELETE,
+					1,
+					[new ObjectId().toHexString()]
+				);
+
 				const rocketChatUser: RocketChatUser = rocketChatUserFactory.build({
 					userId: deletionRequestToExecute.targetRefId,
 				});
-				const parentEmail = 'parent@parent.eu';
-				const tasksModifiedByRemoveCreatorId = DomainOperationBuilder.build(DomainModel.TASK, 1, 0);
-				const tasksModifiedByRemoveUserFromFinished = DomainOperationBuilder.build(DomainModel.TASK, 1, 0);
-				const tasksDeleted = DomainOperationBuilder.build(DomainModel.TASK, 0, 1);
 
-				registrationPinService.deleteRegistrationPinByEmail.mockResolvedValueOnce(2);
-				classService.deleteUserDataFromClasses.mockResolvedValueOnce(1);
-				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(2);
-				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(2);
-				filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(2);
-				filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles.mockResolvedValueOnce(2);
-				lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(2);
-				pseudonymService.deleteByUserId.mockResolvedValueOnce(2);
-				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(2);
-				userService.deleteUser.mockResolvedValueOnce(1);
-				rocketChatUserService.deleteByUserId.mockResolvedValueOnce(1);
-				filesStorageClientAdapterService.removeCreatorIdFromFileRecords.mockResolvedValueOnce(5);
-				dashboardService.deleteDashboardByUserId.mockResolvedValueOnce(1);
+				const rocketChatUserDeleted = DomainOperationBuilder.build(DomainName.ROCKETCHATUSER, OperationType.DELETE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const rocketChatServiceDeleted = { success: true };
+
+				const tasksModifiedByRemoveCreatorId = DomainOperationBuilder.build(DomainName.TASK, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const tasksModifiedByRemoveUserFromFinished = DomainOperationBuilder.build(
+					DomainName.TASK,
+					OperationType.UPDATE,
+					1,
+					[new ObjectId().toHexString()]
+				);
+
+				const tasksDeleted = DomainOperationBuilder.build(DomainName.TASK, OperationType.DELETE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const teamsUpdated = DomainOperationBuilder.build(DomainName.TEAMS, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const userDeleted = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const user = userDoFactory.buildWithId();
+
+				accountService.deleteAccountByUserId.mockResolvedValueOnce(accountDeleted);
+				registrationPinService.deleteRegistrationPinByEmail.mockResolvedValueOnce(registrationPinDeleted);
+				classService.deleteUserDataFromClasses.mockResolvedValueOnce(classesUpdated);
+				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(courseGroupUpdated);
+				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(courseUpdated);
+				filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(filesDeleted);
+				filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles.mockResolvedValueOnce(filesUpdated);
+				lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(lessonsUpdated);
+				pseudonymService.deleteByUserId.mockResolvedValueOnce(pseudonymsDeleted);
+				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(teamsUpdated);
+				userService.deleteUser.mockResolvedValueOnce(userDeleted);
+				rocketChatUserService.deleteByUserId.mockResolvedValueOnce(rocketChatUserDeleted);
+				rocketChatService.deleteUser.mockResolvedValueOnce(rocketChatServiceDeleted);
+				filesStorageClientAdapterService.removeCreatorIdFromFileRecords.mockResolvedValueOnce(fileRecordsUpdated);
+				dashboardService.deleteDashboardByUserId.mockResolvedValueOnce(dashboardDeleted);
 				taskService.removeCreatorIdFromTasks.mockResolvedValueOnce(tasksModifiedByRemoveCreatorId);
-				taskService.removeCreatorIdFromTasks.mockResolvedValueOnce(tasksModifiedByRemoveUserFromFinished);
+				taskService.removeUserFromFinished.mockResolvedValueOnce(tasksModifiedByRemoveUserFromFinished);
 				taskService.deleteTasksByOnlyCreator.mockResolvedValueOnce(tasksDeleted);
 
 				return {
@@ -254,14 +332,14 @@ describe(DeletionRequestUc.name, () => {
 				expect(deletionRequestService.markDeletionRequestAsExecuted).toHaveBeenCalledWith(deletionRequestToExecute.id);
 			});
 
-			it('should call accountService.deleteByUserId to delete user data in account module', async () => {
+			it('should call accountService.deleteAccountByUserId to delete user data in account module', async () => {
 				const { deletionRequestToExecute } = setup();
 
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
 
 				await uc.executeDeletionRequests();
 
-				expect(accountService.deleteByUserId).toHaveBeenCalled();
+				expect(accountService.deleteAccountByUserId).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call registrationPinService.deleteRegistrationPinByEmail to delete user data in registrationPin module', async () => {
@@ -274,16 +352,17 @@ describe(DeletionRequestUc.name, () => {
 				expect(registrationPinService.deleteRegistrationPinByEmail).toHaveBeenCalled();
 			});
 
-			it('should call userService.getParentEmailsFromUser to get parentEmails', async () => {
+			it('should call userService.findById and userService.getParentEmailsFromUser to get own email and parentEmails', async () => {
 				const { deletionRequestToExecute, user, parentEmail } = setup();
 
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
-				userService.findById.mockResolvedValueOnce(user);
+				userService.findByIdOrNull.mockResolvedValueOnce(user);
 				userService.getParentEmailsFromUser.mockRejectedValue([parentEmail]);
-				registrationPinService.deleteRegistrationPinByEmail.mockRejectedValueOnce(2);
+				registrationPinService.deleteRegistrationPinByEmail.mockRejectedValueOnce(3);
 
 				await uc.executeDeletionRequests();
 
+				expect(userService.findByIdOrNull).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 				expect(userService.getParentEmailsFromUser).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
@@ -470,14 +549,46 @@ describe(DeletionRequestUc.name, () => {
 			const setup = () => {
 				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
 
-				classService.deleteUserDataFromClasses.mockResolvedValueOnce(1);
-				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(2);
-				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(2);
-				filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(2);
-				filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles.mockResolvedValueOnce(2);
-				lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(2);
-				pseudonymService.deleteByUserId.mockResolvedValueOnce(2);
-				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(2);
+				const classesUpdated = DomainOperationBuilder.build(DomainName.CLASS, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const courseGroupUpdated = DomainOperationBuilder.build(DomainName.COURSEGROUP, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const courseUpdated = DomainOperationBuilder.build(DomainName.COURSE, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const filesDeleted = DomainOperationBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const filesUpdated = DomainOperationBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const lessonsUpdated = DomainOperationBuilder.build(DomainName.LESSONS, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const pseudonymsDeleted = DomainOperationBuilder.build(DomainName.PSEUDONYMS, OperationType.DELETE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const teamsUpdated = DomainOperationBuilder.build(DomainName.TEAMS, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				classService.deleteUserDataFromClasses.mockResolvedValueOnce(classesUpdated);
+				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(courseGroupUpdated);
+				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(courseUpdated);
+				filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(filesDeleted);
+				filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles.mockResolvedValueOnce(filesUpdated);
+				lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(lessonsUpdated);
+				pseudonymService.deleteByUserId.mockResolvedValueOnce(pseudonymsDeleted);
+				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(teamsUpdated);
 				userService.deleteUser.mockRejectedValueOnce(new Error());
 
 				return {
@@ -509,8 +620,9 @@ describe(DeletionRequestUc.name, () => {
 				);
 				const statistics = DomainOperationBuilder.build(
 					deletionLogExecuted.domain,
-					deletionLogExecuted.modifiedCount,
-					deletionLogExecuted.deletedCount
+					deletionLogExecuted.operation,
+					deletionLogExecuted.count,
+					deletionLogExecuted.refs
 				);
 
 				const executedDeletionRequestSummary = DeletionRequestLogResponseBuilder.build(
@@ -562,8 +674,9 @@ describe(DeletionRequestUc.name, () => {
 				);
 				const statistics = DeletionLogStatisticBuilder.build(
 					deletionLogExecuted.domain,
-					deletionLogExecuted.modifiedCount,
-					deletionLogExecuted.deletedCount
+					deletionLogExecuted.operation,
+					deletionLogExecuted.count,
+					deletionLogExecuted.refs
 				);
 
 				const executedDeletionRequestSummary = DeletionRequestLogResponseBuilder.build(

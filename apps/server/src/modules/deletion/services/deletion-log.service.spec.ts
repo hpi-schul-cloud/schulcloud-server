@@ -2,9 +2,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DomainModel } from '@shared/domain/types';
+import { DomainName, OperationType } from '@shared/domain/types';
 import { DeletionLogRepo } from '../repo';
-import { DeletionOperationModel } from '../domain/types';
 import { DeletionLogService } from './deletion-log.service';
 import { deletionLogFactory } from '../domain/testing/factory/deletion-log.factory';
 
@@ -48,18 +47,18 @@ describe(DeletionLogService.name, () => {
 		describe('when creating a deletionRequest', () => {
 			const setup = () => {
 				const deletionRequestId = '653e4833cc39e5907a1e18d2';
-				const domain = DomainModel.USER;
-				const operation = DeletionOperationModel.DELETE;
-				const modifiedCount = 0;
-				const deletedCount = 1;
+				const domain = DomainName.USER;
+				const operation = OperationType.DELETE;
+				const count = 1;
+				const refs = [new ObjectId().toHexString()];
 
-				return { deletionRequestId, domain, operation, modifiedCount, deletedCount };
+				return { deletionRequestId, domain, operation, count, refs };
 			};
 
 			it('should call deletionRequestRepo.create', async () => {
-				const { deletionRequestId, domain, operation, modifiedCount, deletedCount } = setup();
+				const { deletionRequestId, domain, operation, count, refs } = setup();
 
-				await service.createDeletionLog(deletionRequestId, domain, operation, modifiedCount, deletedCount);
+				await service.createDeletionLog(deletionRequestId, domain, operation, count, refs);
 
 				expect(deletionLogRepo.create).toHaveBeenCalledWith(
 					expect.objectContaining({
@@ -68,8 +67,8 @@ describe(DeletionLogService.name, () => {
 						deletionRequestId,
 						domain,
 						operation,
-						modifiedCount,
-						deletedCount,
+						count,
+						refs,
 					})
 				);
 			});
@@ -83,7 +82,7 @@ describe(DeletionLogService.name, () => {
 				const deletionLog1 = deletionLogFactory.build({ deletionRequestId });
 				const deletionLog2 = deletionLogFactory.build({
 					deletionRequestId,
-					domain: DomainModel.PSEUDONYMS,
+					domain: DomainName.PSEUDONYMS,
 				});
 				const deletionLogs = [deletionLog1, deletionLog2];
 
