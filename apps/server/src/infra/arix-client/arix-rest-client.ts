@@ -117,18 +117,11 @@ export class ArixRestClient {
 	public async search(params: ArixSearchRequestParams): Promise<ArixSearchResponse> {
 		const uuid: string = await this.getActiveUuid();
 
-		let fields = '*';
-		if (Array.isArray(params.fields)) {
-			fields = params.fields.join(',');
-		} else {
-			fields = params.fields;
-		}
-
 		const searchResponsePromise: Promise<ArixSearchResponse> = this.postData<ArixSearchRequest, ArixSearchResponse>({
 			data: {
 				search: {
 					user: uuid,
-					fields,
+					fields: params.fields,
 					condition: params.condition
 						? {
 								field: params.condition.field,
@@ -138,6 +131,7 @@ export class ArixRestClient {
 						  }
 						: undefined,
 					limit: params.limit,
+					eaf: params.eaf,
 				},
 			},
 		});

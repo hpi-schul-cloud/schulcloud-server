@@ -1,4 +1,3 @@
-export { ArixRecordEntry } from './arix-record-entry';
 export { ArixLinkResponse } from './arix-link-response';
 export { ArixLogoResponse } from './arix-logo-response';
 export { ArixUuidResponse } from './arix-uuid-response';

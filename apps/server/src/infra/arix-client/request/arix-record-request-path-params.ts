@@ -5,7 +5,7 @@ export class ArixRecordRequestPathParams {
 	@IsString()
 	@ApiProperty({
 		description: 'The identifier of the record',
-		default: 'XMEDIENLB-5552796',
+		default: 'sodix-SODIX_0001019990',
 	})
 	identifier!: string;
 }

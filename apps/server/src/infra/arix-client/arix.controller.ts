@@ -25,7 +25,7 @@ export class ArixController {
 	@Post('search')
 	@HttpCode(HttpStatus.OK)
 	@ApiOperation({ summary: 'Search for media records' })
-	@ApiOkResponse({ description: 'The search was successful' })
+	@ApiOkResponse({ description: 'The search was successful', type: ArixSearchResponse })
 	@ApiInternalServerErrorResponse({ description: 'An error occurred during the search' })
 	public async search(
 		@Body() params: ArixSearchRequestParams,
@@ -42,7 +42,7 @@ export class ArixController {
 
 	@Get('records/:identifier')
 	@ApiOperation({ summary: 'Get a media record' })
-	@ApiOkResponse({ description: 'The media record was found' })
+	@ApiOkResponse({ description: 'The media record was found', type: ArixRecordResponse })
 	@ApiInternalServerErrorResponse({ description: 'An error occurred during getting the media record' })
 	public async record(
 		@Param() pathParams: ArixRecordRequestPathParams,
@@ -67,7 +67,7 @@ export class ArixController {
 
 	@Get('records/:identifier/link')
 	@ApiOperation({ summary: 'Get a media record link' })
-	@ApiOkResponse({ description: 'The media record link was found' })
+	@ApiOkResponse({ description: 'The media record link was found', type: ArixLinkResponse })
 	@ApiInternalServerErrorResponse({ description: 'An error occurred during getting the media record link.' })
 	public async media(
 		@Param() pathParams: ArixRecordRequestPathParams,
@@ -84,7 +84,10 @@ export class ArixController {
 
 	@Get('records/:identifier/logo')
 	@ApiOperation({ summary: 'Get the logo of an media record' })
-	@ApiOkResponse({ description: 'The logo fetching was successful. It is empty when there is no logo available.' })
+	@ApiOkResponse({
+		description: 'The logo fetching was successful. It is empty when there is no logo available.',
+		type: ArixLogoResponse,
+	})
 	@ApiInternalServerErrorResponse({ description: 'An error occurred during getting the logo' })
 	public async logo(
 		@Param() pathParams: ArixRecordRequestPathParams,

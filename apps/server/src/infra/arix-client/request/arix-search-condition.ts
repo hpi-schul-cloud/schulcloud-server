@@ -2,7 +2,6 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
 
 export class ArixSearchCondition {
-	// TODO: add more fields
 	@ApiProperty({
 		description: 'The field to search for',
 		examples: ['text', 'titel', 'text_fields', 'titel_fields'],

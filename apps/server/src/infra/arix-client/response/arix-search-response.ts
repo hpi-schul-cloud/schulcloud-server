@@ -1,6 +1,7 @@
-import { ArixR } from '../type/arix-r';
+import { ApiProperty } from '@nestjs/swagger';
+import { ArixSearchResult } from '../type/arix-search-result';
 
-// TODO: doc
-export interface ArixSearchResponse {
-	r: ArixR[];
+export class ArixSearchResponse {
+	@ApiProperty({ description: 'The search result', type: ArixSearchResult })
+	result!: ArixSearchResult;
 }
