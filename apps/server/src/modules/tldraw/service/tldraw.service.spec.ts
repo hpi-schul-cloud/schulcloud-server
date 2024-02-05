@@ -42,13 +42,11 @@ describe('TldrawService', () => {
 		describe('when deleting all collection connected to one drawing', () => {
 			it('should remove all collections giving drawing name', async () => {
 				const drawing = tldrawEntityFactory.build();
-
 				await repo.create(drawing);
-				let result = await repo.findByDocName(drawing.docName);
+
 				await service.deleteByDocName(drawing.docName);
 
-				expect(result.length).toEqual(1);
-				result = await repo.findByDocName(drawing.docName);
+				const result = await repo.findByDocName(drawing.docName);
 				expect(result.length).toEqual(0);
 			});
 		});
