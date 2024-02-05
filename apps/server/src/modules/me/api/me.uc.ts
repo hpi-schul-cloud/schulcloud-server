@@ -11,7 +11,7 @@ export class MeUc {
 
 	// no authorization is required
 	public async getMe(userId: EntityId): Promise<MeResponse> {
-		const user = await this.userService.getUser2(userId);	// we need a user DO but nothing that is save to use exists, out of scope? Am besten neuer user Service, der aktuelle mixed sehr viel
+		const user = await this.userService.getUser2(userId); // we need a user DO but nothing that is save to use exists, out of scope? Am besten neuer user Service, der aktuelle mixed sehr viel
 		const school = await this.schoolService.getSchoolById(user.school.id); // In jwt we have the schoolId, but unsure if it is save to use must be checked, but then we can use promise all
 		const permissions = user.resolvePermissions(); // mapping to permission enum will better, but must be done into methode. Not scope of the ticket i think.
 		const roles = user.getRoles();

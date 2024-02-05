@@ -11,9 +11,7 @@ export class MeController {
 	constructor(private readonly meUc: MeUc) {}
 
 	@Get('/me')
-	public async me(
-		@CurrentUser() user: ICurrentUser
-	): Promise<MeResponse> {
+	public async me(@CurrentUser() user: ICurrentUser): Promise<MeResponse> {
 		const res = await this.meUc.getMe(user.userId);
 
 		return res;

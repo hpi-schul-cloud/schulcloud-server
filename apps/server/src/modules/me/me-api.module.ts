@@ -4,7 +4,6 @@ import { UserModule } from '@modules/user';
 import { AuthenticationModule } from '@modules/authentication';
 import { MeUc, MeController } from './api';
 
-
 @Module({
 	imports: [SchoolModule, UserModule, AuthenticationModule],
 	controllers: [MeController],
