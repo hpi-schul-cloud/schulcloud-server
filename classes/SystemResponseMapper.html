@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/system/controller/mapper/system-response.mapper.ts</code>
+            <code>apps/server/src/modules/school/api/mapper/system.response.mapper.ts</code>
         </p>
 
 
@@ -149,15 +149,11 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Static</span>
-                                <a href="#mapFromDtoToListResponse" >mapFromDtoToListResponse</a>
+                                <a href="#mapToLdapLoginResponse" >mapToLdapLoginResponse</a>
                             </li>
                             <li>
                                     <span class="modifier">Static</span>
-                                <a href="#mapFromDtoToResponse" >mapFromDtoToResponse</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Static</span>
-                                <a href="#mapFromOauthConfigDtoToResponse" >mapFromOauthConfigDtoToResponse</a>
+                                <a href="#mapToLdapLoginResponses" >mapToLdapLoginResponses</a>
                             </li>
                         </ul>
                     </td>
@@ -182,95 +178,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapFromDtoToListResponse"></a>
+                    <a name="mapToLdapLoginResponse"></a>
                     <span class="name">
                             <span class="modifier">Static</span>
-                        <span ><b>mapFromDtoToListResponse</b></span>
-                        <a href="#mapFromDtoToListResponse"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>mapToLdapLoginResponse</b></span>
+                        <a href="#mapToLdapLoginResponse"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapFromDtoToListResponse(systems: SystemDto[])</code>
+                    <code>mapToLdapLoginResponse(system: <a href="../classes/SystemForLdapLogin.html" target="_self">SystemForLdapLogin</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="8"
-                                    class="link-to-prism">apps/server/src/modules/system/controller/mapper/system-response.mapper.ts:8</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>systems</td>
-                                            <td>
-                                                        <code>SystemDto[]</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/PublicSystemListResponse.html" target="_self" >PublicSystemListResponse</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="mapFromDtoToResponse"></a>
-                    <span class="name">
-                            <span class="modifier">Static</span>
-                        <span ><b>mapFromDtoToResponse</b></span>
-                        <a href="#mapFromDtoToResponse"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapFromDtoToResponse(system: <a href="../classes/SystemDto.html" target="_self">SystemDto</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">apps/server/src/modules/system/controller/mapper/system-response.mapper.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="11"
+                                    class="link-to-prism">apps/server/src/modules/school/api/mapper/system.response.mapper.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -293,7 +220,7 @@
                                         <tr>
                                                 <td>system</td>
                                             <td>
-                                                            <code><a href="../classes/SystemDto.html" target="_self" >SystemDto</a></code>
+                                                            <code><a href="../classes/SystemForLdapLogin.html" target="_self" >SystemForLdapLogin</a></code>
                                             </td>
 
                                             <td>
@@ -306,7 +233,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/PublicSystemResponse.html" target="_self" >PublicSystemResponse</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/SystemForLdapLoginResponse.html" target="_self" >SystemForLdapLoginResponse</a></code>
 
                         </div>
                             <div class="io-description">
@@ -320,26 +247,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="mapFromOauthConfigDtoToResponse"></a>
+                    <a name="mapToLdapLoginResponses"></a>
                     <span class="name">
                             <span class="modifier">Static</span>
-                        <span ><b>mapFromOauthConfigDtoToResponse</b></span>
-                        <a href="#mapFromOauthConfigDtoToResponse"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>mapToLdapLoginResponses</b></span>
+                        <a href="#mapToLdapLoginResponses"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapFromOauthConfigDtoToResponse(oauthConfigDto: <a href="../classes/OauthConfigDto.html" target="_self">OauthConfigDto</a>)</code>
+                    <code>mapToLdapLoginResponses(systems: SystemForLdapLogin[])</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/modules/system/controller/mapper/system-response.mapper.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="5"
+                                    class="link-to-prism">apps/server/src/modules/school/api/mapper/system.response.mapper.ts:5</a></div>
                         </td>
                     </tr>
 
@@ -360,9 +287,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>oauthConfigDto</td>
+                                                <td>systems</td>
                                             <td>
-                                                            <code><a href="../classes/OauthConfigDto.html" target="_self" >OauthConfigDto</a></code>
+                                                        <code>SystemForLdapLogin[]</code>
                                             </td>
 
                                             <td>
@@ -375,7 +302,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/OauthConfigResponse.html" target="_self" >OauthConfigResponse</a></code>
+                            <b>Returns : </b>    <code>SystemForLdapLoginResponse[]</code>
 
                         </div>
                             <div class="io-description">
@@ -395,55 +322,26 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { OauthConfigResponse } from &#x27;@modules/system/controller/dto/oauth-config.response&#x27;;
-import { OauthConfigDto } from &#x27;@modules/system/service/dto/oauth-config.dto&#x27;;
-import { SystemDto } from &#x27;@modules/system/service/dto/system.dto&#x27;;
-import { PublicSystemListResponse } from &#x27;../dto/public-system-list.response&#x27;;
-import { PublicSystemResponse } from &#x27;../dto/public-system-response&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SystemForLdapLogin } from &#x27;../../domain&#x27;;
+import { SystemForLdapLoginResponse } from &#x27;../dto/response&#x27;;
 
 export class SystemResponseMapper {
-	static mapFromDtoToListResponse(systems: SystemDto[]): PublicSystemListResponse {
-		const systemResponses: PublicSystemResponse[] &#x3D; systems.map(
-			(system: SystemDto): PublicSystemResponse &#x3D;&gt; this.mapFromDtoToResponse(system)
-		);
+	public static mapToLdapLoginResponses(systems: SystemForLdapLogin[]): SystemForLdapLoginResponse[] {
+		const res &#x3D; systems.map((system) &#x3D;&gt; SystemResponseMapper.mapToLdapLoginResponse(system));
 
-		const systemListResponse: PublicSystemListResponse &#x3D; new PublicSystemListResponse(systemResponses);
-
-		return systemListResponse;
+		return res;
 	}
 
-	static mapFromDtoToResponse(system: SystemDto): PublicSystemResponse {
-		const systemResponse: PublicSystemResponse &#x3D; new PublicSystemResponse({
-			id: system.id || &#x27;&#x27;,
-			type: system.type,
-			alias: system.alias,
-			displayName: system.displayName,
-			oauthConfig: system.oauthConfig
-				? SystemResponseMapper.mapFromOauthConfigDtoToResponse(system.oauthConfig)
-				: undefined,
+	public static mapToLdapLoginResponse(system: SystemForLdapLogin): SystemForLdapLoginResponse {
+		const systemProps &#x3D; system.getProps();
+
+		const res &#x3D; new SystemForLdapLoginResponse({
+			id: system.id,
+			type: systemProps.type,
+			alias: systemProps.alias,
 		});
 
-		return systemResponse;
-	}
-
-	static mapFromOauthConfigDtoToResponse(oauthConfigDto: OauthConfigDto): OauthConfigResponse {
-		const oauthConfigResponse: OauthConfigResponse &#x3D; new OauthConfigResponse({
-			clientId: oauthConfigDto.clientId,
-			// clientSecret will not be mapped for security reasons,
-			idpHint: oauthConfigDto.idpHint,
-			redirectUri: oauthConfigDto.redirectUri,
-			grantType: oauthConfigDto.grantType,
-			tokenEndpoint: oauthConfigDto.tokenEndpoint,
-			authEndpoint: oauthConfigDto.authEndpoint,
-			responseType: oauthConfigDto.responseType,
-			scope: oauthConfigDto.scope,
-			provider: oauthConfigDto.provider,
-			logoutEndpoint: oauthConfigDto.logoutEndpoint,
-			issuer: oauthConfigDto.issuer,
-			jwksEndpoint: oauthConfigDto.jwksEndpoint,
-		});
-
-		return oauthConfigResponse;
+		return res;
 	}
 }
 </code></pre>

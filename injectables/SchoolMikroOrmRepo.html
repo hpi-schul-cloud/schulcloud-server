@@ -153,6 +153,11 @@
                                 <a href="#getSchools" >getSchools</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getSchoolsBySystemIds" >getSchoolsBySystemIds</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Private</span>
                                 <a href="#mapToMikroOrmOptions" >mapToMikroOrmOptions</a>
                             </li>
@@ -378,6 +383,76 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getSchoolsBySystemIds"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getSchoolsBySystemIds</b></span>
+                        <a href="#getSchoolsBySystemIds"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getSchoolsBySystemIds(systemIds: <a href="../undefineds/EntityId.html" target="_self">EntityId[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">apps/server/src/modules/school/repo/mikro-orm/school.repo.ts:42</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>systemIds</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/School.html" target="_self" >Promise&lt;School[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="mapToMikroOrmOptions"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -396,8 +471,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">apps/server/src/modules/school/repo/mikro-orm/school.repo.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/modules/school/repo/mikro-orm/school.repo.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -508,6 +583,18 @@ export class SchoolMikroOrmRepo implements SchoolRepo {
 		const school &#x3D; SchoolEntityMapper.mapToDo(entity);
 
 		return school;
+	}
+
+	public async getSchoolsBySystemIds(systemIds: EntityId[]): Promise&lt;School[]&gt; {
+		const entities &#x3D; await this.em.find(
+			SchoolEntity,
+			{ systems: { $in: systemIds } },
+			{ populate: [&#x27;federalState&#x27;, &#x27;currentYear&#x27;] }
+		);
+
+		const schools &#x3D; SchoolEntityMapper.mapToDos(entities);
+
+		return schools;
 	}
 
 	private mapToMikroOrmOptions&lt;P extends string &#x3D; never&gt;(

@@ -102,7 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >SchoolYearUtils</li>
+  <li class="breadcrumb-item" >SystemResponseMapper</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/school/domain/util/school-year.utils.ts</code>
+            <code>apps/server/src/modules/system/controller/mapper/system-response.mapper.ts</code>
         </p>
 
 
@@ -149,19 +149,15 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Static</span>
-                                <a href="#computeActiveAndLastAndNextYear" >computeActiveAndLastAndNextYear</a>
+                                <a href="#mapFromDtoToListResponse" >mapFromDtoToListResponse</a>
                             </li>
                             <li>
                                     <span class="modifier">Static</span>
-                                <a href="#computeActiveYear" >computeActiveYear</a>
+                                <a href="#mapFromDtoToResponse" >mapFromDtoToResponse</a>
                             </li>
                             <li>
                                     <span class="modifier">Static</span>
-                                <a href="#computeLastYear" >computeLastYear</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Static</span>
-                                <a href="#computeNextYear" >computeNextYear</a>
+                                <a href="#mapFromOauthConfigDtoToResponse" >mapFromOauthConfigDtoToResponse</a>
                             </li>
                         </ul>
                     </td>
@@ -186,26 +182,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="computeActiveAndLastAndNextYear"></a>
+                    <a name="mapFromDtoToListResponse"></a>
                     <span class="name">
                             <span class="modifier">Static</span>
-                        <span ><b>computeActiveAndLastAndNextYear</b></span>
-                        <a href="#computeActiveAndLastAndNextYear"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>mapFromDtoToListResponse</b></span>
+                        <a href="#mapFromDtoToListResponse"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>computeActiveAndLastAndNextYear(school: <a href="../classes/School.html" target="_self">School</a>, schoolYears: SchoolYear[])</code>
+                    <code>mapFromDtoToListResponse(systems: SystemDto[])</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="5"
-                                    class="link-to-prism">apps/server/src/modules/school/domain/util/school-year.utils.ts:5</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="8"
+                                    class="link-to-prism">apps/server/src/modules/system/controller/mapper/system-response.mapper.ts:8</a></div>
                         </td>
                     </tr>
 
@@ -226,21 +222,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>school</td>
+                                                <td>systems</td>
                                             <td>
-                                                            <code><a href="../classes/School.html" target="_self" >School</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>schoolYears</td>
-                                            <td>
-                                                        <code>SchoolYear[]</code>
+                                                        <code>SystemDto[]</code>
                                             </td>
 
                                             <td>
@@ -253,7 +237,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>literal type</code>
+                            <b>Returns : </b>        <code><a href="../classes/PublicSystemListResponse.html" target="_self" >PublicSystemListResponse</a></code>
 
                         </div>
                             <div class="io-description">
@@ -267,26 +251,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="computeActiveYear"></a>
+                    <a name="mapFromDtoToResponse"></a>
                     <span class="name">
                             <span class="modifier">Static</span>
-                        <span ><b>computeActiveYear</b></span>
-                        <a href="#computeActiveYear"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>mapFromDtoToResponse</b></span>
+                        <a href="#mapFromDtoToResponse"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>computeActiveYear(school: <a href="../classes/School.html" target="_self">School</a>, schoolYears: SchoolYear[])</code>
+                    <code>mapFromDtoToResponse(system: <a href="../classes/SystemDto.html" target="_self">SystemDto</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/modules/school/domain/util/school-year.utils.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">apps/server/src/modules/system/controller/mapper/system-response.mapper.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -307,21 +291,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>school</td>
+                                                <td>system</td>
                                             <td>
-                                                            <code><a href="../classes/School.html" target="_self" >School</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>schoolYears</td>
-                                            <td>
-                                                        <code>SchoolYear[]</code>
+                                                            <code><a href="../classes/SystemDto.html" target="_self" >SystemDto</a></code>
                                             </td>
 
                                             <td>
@@ -334,7 +306,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/SchoolYear.html" target="_self" >SchoolYear</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/PublicSystemResponse.html" target="_self" >PublicSystemResponse</a></code>
 
                         </div>
                             <div class="io-description">
@@ -348,26 +320,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="computeLastYear"></a>
+                    <a name="mapFromOauthConfigDtoToResponse"></a>
                     <span class="name">
                             <span class="modifier">Static</span>
-                        <span ><b>computeLastYear</b></span>
-                        <a href="#computeLastYear"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>mapFromOauthConfigDtoToResponse</b></span>
+                        <a href="#mapFromOauthConfigDtoToResponse"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>computeLastYear(schoolYears: SchoolYear[], activeYear: <a href="../classes/SchoolYear.html" target="_self">SchoolYear</a>)</code>
+                    <code>mapFromOauthConfigDtoToResponse(oauthConfigDto: <a href="../classes/OauthConfigDto.html" target="_self">OauthConfigDto</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">apps/server/src/modules/school/domain/util/school-year.utils.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/system/controller/mapper/system-response.mapper.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -388,21 +360,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>schoolYears</td>
+                                                <td>oauthConfigDto</td>
                                             <td>
-                                                        <code>SchoolYear[]</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>activeYear</td>
-                                            <td>
-                                                            <code><a href="../classes/SchoolYear.html" target="_self" >SchoolYear</a></code>
+                                                            <code><a href="../classes/OauthConfigDto.html" target="_self" >OauthConfigDto</a></code>
                                             </td>
 
                                             <td>
@@ -415,88 +375,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/SchoolYear.html" target="_self" >SchoolYear</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="computeNextYear"></a>
-                    <span class="name">
-                            <span class="modifier">Static</span>
-                        <span ><b>computeNextYear</b></span>
-                        <a href="#computeNextYear"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>computeNextYear(schoolYears: SchoolYear[], activeYear: <a href="../classes/SchoolYear.html" target="_self">SchoolYear</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="46"
-                                    class="link-to-prism">apps/server/src/modules/school/domain/util/school-year.utils.ts:46</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>schoolYears</td>
-                                            <td>
-                                                        <code>SchoolYear[]</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>activeYear</td>
-                                            <td>
-                                                            <code><a href="../classes/SchoolYear.html" target="_self" >SchoolYear</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/SchoolYear.html" target="_self" >SchoolYear</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/OauthConfigResponse.html" target="_self" >OauthConfigResponse</a></code>
 
                         </div>
                             <div class="io-description">
@@ -516,62 +395,55 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { School, SchoolYear } from &#x27;../do&#x27;;
-import { MissingYearsLoggableException } from &#x27;../error&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { OauthConfigResponse } from &#x27;@modules/system/controller/dto/oauth-config.response&#x27;;
+import { OauthConfigDto } from &#x27;@modules/system/service/dto/oauth-config.dto&#x27;;
+import { SystemDto } from &#x27;@modules/system/service/dto/system.dto&#x27;;
+import { PublicSystemListResponse } from &#x27;../dto/public-system-list.response&#x27;;
+import { PublicSystemResponse } from &#x27;../dto/public-system-response&#x27;;
 
-export class SchoolYearUtils {
-	public static computeActiveAndLastAndNextYear(
-		school: School,
-		schoolYears: SchoolYear[]
-	): { activeYear: SchoolYear; lastYear: SchoolYear; nextYear: SchoolYear } {
-		const activeYear &#x3D; SchoolYearUtils.computeActiveYear(school, schoolYears);
-		const nextYear &#x3D; SchoolYearUtils.computeNextYear(schoolYears, activeYear);
-		const lastYear &#x3D; SchoolYearUtils.computeLastYear(schoolYears, activeYear);
-
-		return { activeYear, lastYear, nextYear };
-	}
-
-	public static computeActiveYear(school: School, schoolYears: SchoolYear[]): SchoolYear {
-		let activeYear &#x3D; school.getProps().currentYear;
-
-		if (!activeYear) {
-			const now &#x3D; new Date();
-			activeYear &#x3D; schoolYears.find(
-				(schoolYear) &#x3D;&gt; schoolYear.getProps().startDate &lt;&#x3D; now &amp;&amp; schoolYear.getProps().endDate &gt;&#x3D; now
-			);
-		}
-
-		if (!activeYear) {
-			throw new MissingYearsLoggableException();
-		}
-
-		return activeYear;
-	}
-
-	public static computeLastYear(schoolYears: SchoolYear[], activeYear: SchoolYear): SchoolYear {
-		const yearOfLastStartDate &#x3D; activeYear.getProps().startDate.getFullYear() - 1;
-		const lastYear &#x3D; schoolYears.find(
-			(schoolYear) &#x3D;&gt; schoolYear.getProps().startDate.getFullYear() &#x3D;&#x3D;&#x3D; yearOfLastStartDate
+export class SystemResponseMapper {
+	static mapFromDtoToListResponse(systems: SystemDto[]): PublicSystemListResponse {
+		const systemResponses: PublicSystemResponse[] &#x3D; systems.map(
+			(system: SystemDto): PublicSystemResponse &#x3D;&gt; this.mapFromDtoToResponse(system)
 		);
 
-		if (!lastYear) {
-			throw new MissingYearsLoggableException();
-		}
+		const systemListResponse: PublicSystemListResponse &#x3D; new PublicSystemListResponse(systemResponses);
 
-		return lastYear;
+		return systemListResponse;
 	}
 
-	public static computeNextYear(schoolYears: SchoolYear[], activeYear: SchoolYear): SchoolYear {
-		const yearOfNextStartDate &#x3D; activeYear.getProps().startDate.getFullYear() + 1;
-		const nextYear &#x3D; schoolYears.find(
-			(schoolYear) &#x3D;&gt; schoolYear.getProps().startDate.getFullYear() &#x3D;&#x3D;&#x3D; yearOfNextStartDate
-		);
+	static mapFromDtoToResponse(system: SystemDto): PublicSystemResponse {
+		const systemResponse: PublicSystemResponse &#x3D; new PublicSystemResponse({
+			id: system.id || &#x27;&#x27;,
+			type: system.type,
+			alias: system.alias,
+			displayName: system.displayName,
+			oauthConfig: system.oauthConfig
+				? SystemResponseMapper.mapFromOauthConfigDtoToResponse(system.oauthConfig)
+				: undefined,
+		});
 
-		if (!nextYear) {
-			throw new MissingYearsLoggableException();
-		}
+		return systemResponse;
+	}
 
-		return nextYear;
+	static mapFromOauthConfigDtoToResponse(oauthConfigDto: OauthConfigDto): OauthConfigResponse {
+		const oauthConfigResponse: OauthConfigResponse &#x3D; new OauthConfigResponse({
+			clientId: oauthConfigDto.clientId,
+			// clientSecret will not be mapped for security reasons,
+			idpHint: oauthConfigDto.idpHint,
+			redirectUri: oauthConfigDto.redirectUri,
+			grantType: oauthConfigDto.grantType,
+			tokenEndpoint: oauthConfigDto.tokenEndpoint,
+			authEndpoint: oauthConfigDto.authEndpoint,
+			responseType: oauthConfigDto.responseType,
+			scope: oauthConfigDto.scope,
+			provider: oauthConfigDto.provider,
+			logoutEndpoint: oauthConfigDto.logoutEndpoint,
+			issuer: oauthConfigDto.issuer,
+			jwksEndpoint: oauthConfigDto.jwksEndpoint,
+		});
+
+		return oauthConfigResponse;
 	}
 }
 </code></pre>
@@ -612,7 +484,7 @@ export class SchoolYearUtils {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'SchoolYearUtils.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'SystemResponseMapper-1.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

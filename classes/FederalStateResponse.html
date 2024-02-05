@@ -292,7 +292,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({type: () &#x3D;&gt; })<br />
+                            @ApiProperty({type: undefined})<br />
                         </code>
                     </td>
                 </tr>
@@ -441,7 +441,7 @@ export class FederalStateResponse {
 	@ApiProperty()
 	logoUrl: string;
 
-	@ApiProperty({ type: () &#x3D;&gt; [CountyResponse] })
+	@ApiProperty({ type: [CountyResponse] })
 	counties: CountyResponse[];
 
 	constructor(props: FederalStateResponse) {

@@ -143,6 +143,15 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#addLdapLoginSystems" >addLdapLoginSystems</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#doesSchoolExist" >doesSchoolExist</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#getSchoolById" >getSchoolById</a>
@@ -156,6 +165,15 @@
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#getSchoolsForExternalInvite" >getSchoolsForExternalInvite</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getSchoolsForLdapLogin" >getSchoolsForLdapLogin</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#mapToSchoolForLdapLogin" >mapToSchoolForLdapLogin</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -179,12 +197,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(schoolRepo: <a href="../interfaces/SchoolRepo.html" target="_self">SchoolRepo</a>, configService: <a href="../interfaces/SchoolConfig.html" target="_self">ConfigService&lt;SchoolConfig | &gt;</a>)</code>
+<code>constructor(schoolRepo: <a href="../interfaces/SchoolRepo.html" target="_self">SchoolRepo</a>, systemService: <a href="../injectables/SystemService.html" target="_self">SystemService</a>, configService: <a href="../interfaces/SchoolConfig.html" target="_self">ConfigService&lt;SchoolConfig | &gt;</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -206,6 +224,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../interfaces/SchoolRepo.html" target="_self" >SchoolRepo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>systemService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SystemService.html" target="_self" >SystemService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -243,6 +273,169 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="addLdapLoginSystems"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>addLdapLoginSystems</b></span>
+                        <a href="#addLdapLoginSystems"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>addLdapLoginSystems(schoolProps: <a href="../interfaces/SchoolProps.html" target="_self">SchoolProps</a>, ldapLoginSystems: <a href="../classes/System.html" target="_self">System[]</a>, schoolForLdapLoginProps: <a href="../interfaces/SchoolForLdapLoginProps.html" target="_self">SchoolForLdapLoginProps</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="90"
+                                    class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:90</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>schoolProps</td>
+                                            <td>
+                                                            <code><a href="../interfaces/SchoolProps.html" target="_self" >SchoolProps</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>ldapLoginSystems</td>
+                                            <td>
+                                                            <code><a href="../classes/System.html" target="_self" >System[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>schoolForLdapLoginProps</td>
+                                            <td>
+                                                            <code><a href="../interfaces/SchoolForLdapLoginProps.html" target="_self" >SchoolForLdapLoginProps</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="doesSchoolExist"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>doesSchoolExist</b></span>
+                        <a href="#doesSchoolExist"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>doesSchoolExist(schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:49</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>schoolId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getSchoolById"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -262,8 +455,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="21"
+                                    class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:21</a></div>
                         </td>
                     </tr>
 
@@ -332,8 +525,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -420,8 +613,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:34</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -495,6 +688,127 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getSchoolsForLdapLogin"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getSchoolsForLdapLogin</b></span>
+                        <a href="#getSchoolsForLdapLogin"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getSchoolsForLdapLogin()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="63"
+                                    class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:63</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;SchoolForLdapLogin[]&gt;</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapToSchoolForLdapLogin"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>mapToSchoolForLdapLogin</b></span>
+                        <a href="#mapToSchoolForLdapLogin"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapToSchoolForLdapLogin(school: <a href="../classes/School.html" target="_self">School</a>, ldapLoginSystems: <a href="../classes/System.html" target="_self">System[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:76</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>school</td>
+                                            <td>
+                                                            <code><a href="../classes/School.html" target="_self" >School</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>ldapLoginSystems</td>
+                                            <td>
+                                                            <code><a href="../classes/System.html" target="_self" >System[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/SchoolForLdapLogin.html" target="_self" >SchoolForLdapLogin</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="setStudentTeamCreationFeature"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -513,8 +827,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="114"
+                                    class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:114</a></div>
                         </td>
                     </tr>
 
@@ -566,13 +880,15 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
-import { SchoolFeature } from &#x27;@shared/domain/types&#x27;;
 import { IFindOptions } from &#x27;@shared/domain/interface/find-options&#x27;;
+import { SchoolFeature } from &#x27;@shared/domain/types&#x27;;
 import { EntityId } from &#x27;@shared/domain/types/entity-id&#x27;;
+import { System, SystemService } from &#x27;@src/modules/system&#x27;;
 import { SchoolConfig } from &#x27;../../school.config&#x27;;
-import { School, SchoolProps } from &#x27;../do&#x27;;
+import { School, SchoolProps, SystemForLdapLogin } from &#x27;../do&#x27;;
+import { SchoolForLdapLogin, SchoolForLdapLoginProps } from &#x27;../do/school-for-ldap-login&#x27;;
 import { SchoolRepo, SCHOOL_REPO } from &#x27;../interface&#x27;;
 import { SchoolQuery } from &#x27;../query&#x27;;
 
@@ -580,6 +896,7 @@ import { SchoolQuery } from &#x27;../query&#x27;;
 export class SchoolService {
 	constructor(
 		@Inject(SCHOOL_REPO) private readonly schoolRepo: SchoolRepo,
+		private readonly systemService: SystemService,
 		private readonly configService: ConfigService&lt;SchoolConfig, true&gt;
 	) {}
 
@@ -609,6 +926,69 @@ export class SchoolService {
 		const schoolsForExternalInvite &#x3D; schools.filter((school) &#x3D;&gt; school.isEligibleForExternalInvite(ownSchoolId));
 
 		return schoolsForExternalInvite;
+	}
+
+	public async doesSchoolExist(schoolId: EntityId): Promise&lt;boolean&gt; {
+		try {
+			await this.schoolRepo.getSchoolById(schoolId);
+
+			return true;
+		} catch (error) {
+			if (error instanceof NotFoundException) {
+				return false;
+			}
+
+			throw error;
+		}
+	}
+
+	public async getSchoolsForLdapLogin(): Promise&lt;SchoolForLdapLogin[]&gt; {
+		const ldapLoginSystems &#x3D; await this.systemService.findAllForLdapLogin();
+		const ldapLoginSystemsIds &#x3D; ldapLoginSystems.map((system) &#x3D;&gt; system.id);
+
+		const schoolsWithLdapLoginSystems &#x3D; await this.schoolRepo.getSchoolsBySystemIds(ldapLoginSystemsIds);
+
+		const schoolsForLdapLogin &#x3D; schoolsWithLdapLoginSystems.map((school) &#x3D;&gt;
+			this.mapToSchoolForLdapLogin(school, ldapLoginSystems)
+		);
+
+		return schoolsForLdapLogin;
+	}
+
+	private mapToSchoolForLdapLogin(school: School, ldapLoginSystems: System[]): SchoolForLdapLogin {
+		const schoolProps &#x3D; school.getProps();
+
+		const schoolForLdapLoginProps: SchoolForLdapLoginProps &#x3D; {
+			id: school.id,
+			name: schoolProps.name,
+			systems: [],
+		};
+
+		this.addLdapLoginSystems(schoolProps, ldapLoginSystems, schoolForLdapLoginProps);
+
+		return new SchoolForLdapLogin(schoolForLdapLoginProps);
+	}
+
+	private addLdapLoginSystems(
+		schoolProps: SchoolProps,
+		ldapLoginSystems: System[],
+		schoolForLdapLoginProps: SchoolForLdapLoginProps
+	): void {
+		schoolProps.systemIds?.forEach((systemIdInSchool) &#x3D;&gt; {
+			const relatedSystem &#x3D; ldapLoginSystems.find((system) &#x3D;&gt; system.id &#x3D;&#x3D;&#x3D; systemIdInSchool);
+
+			if (relatedSystem) {
+				const relatedSystemProps &#x3D; relatedSystem.getProps();
+
+				const systemForLdapLogin &#x3D; new SystemForLdapLogin({
+					id: relatedSystemProps.id,
+					type: relatedSystemProps.type,
+					alias: relatedSystemProps.alias,
+				});
+
+				schoolForLdapLoginProps.systems.push(systemForLdapLogin);
+			}
+		});
 	}
 
 	// TODO: The logic for setting this feature should better be part of the creation of a school object.

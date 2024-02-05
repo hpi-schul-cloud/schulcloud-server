@@ -151,13 +151,27 @@
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#doesSchoolExist" >doesSchoolExist</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#getSchoolById" >getSchoolById</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getSchoolListForExternalInvite" >getSchoolListForExternalInvite</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#getSchoolListForExternalInvite" >getSchoolListForExternalInvite</a>
+                                <a href="#getSchoolListForLadpLogin" >getSchoolListForLadpLogin</a>
                             </li>
                         </ul>
                     </td>
@@ -180,8 +194,87 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="doesSchoolExist"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>doesSchoolExist</b></span>
+                        <a href="#doesSchoolExist"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>doesSchoolExist(urlParams: <a href="../classes/SchoolUrlParams.html" target="_self">SchoolUrlParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;/exists/id/:schoolId&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="38"
+                                    class="link-to-prism">apps/server/src/modules/school/api/school.controller.ts:38</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>urlParams</td>
+                                            <td>
+                                                            <code><a href="../classes/SchoolUrlParams.html" target="_self" >SchoolUrlParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;SchoolExistsResponse&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getSchoolById"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
@@ -201,14 +294,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;/id/:schoolId&#x27;)<br /></code>
+                    <code>@Get(&#x27;/id/:schoolId&#x27;)<br />@Authenticate(&#x27;jwt&#x27;)<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">apps/server/src/modules/school/api/school.controller.ts:15</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">apps/server/src/modules/school/api/school.controller.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -273,6 +366,7 @@
                     <a name="getSchoolListForExternalInvite"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>getSchoolListForExternalInvite</b></span>
@@ -291,14 +385,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;/list-for-external-invite&#x27;)<br /></code>
+                    <code>@Get(&#x27;/list-for-external-invite&#x27;)<br />@Authenticate(&#x27;jwt&#x27;)<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">apps/server/src/modules/school/api/school.controller.ts:25</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">apps/server/src/modules/school/api/school.controller.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -356,6 +450,54 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getSchoolListForLadpLogin"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getSchoolListForLadpLogin</b></span>
+                        <a href="#getSchoolListForLadpLogin"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getSchoolListForLadpLogin()</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;/list-for-ldap-login&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/school/api/school.controller.ts:45</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;SchoolForLdapLoginResponse[]&gt;</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
@@ -365,15 +507,17 @@ import { Controller, Get, Param, Query } from &#x27;@nestjs/common&#x27;;
 import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { SchoolQueryParams, SchoolUrlParams } from &#x27;./dto/param&#x27;;
 import { SchoolForExternalInviteResponse, SchoolResponse } from &#x27;./dto/response&#x27;;
+import { SchoolExistsResponse } from &#x27;./dto/response/school-exists.response&#x27;;
+import { SchoolForLdapLoginResponse } from &#x27;./dto/response/school-for-ldap-login.response&#x27;;
 import { SchoolUc } from &#x27;./school.uc&#x27;;
 
 @ApiTags(&#x27;School&#x27;)
-@Authenticate(&#x27;jwt&#x27;)
 @Controller(&#x27;school&#x27;)
 export class SchoolController {
 	constructor(private readonly schoolUc: SchoolUc) {}
 
 	@Get(&#x27;/id/:schoolId&#x27;)
+	@Authenticate(&#x27;jwt&#x27;)
 	public async getSchoolById(
 		@Param() urlParams: SchoolUrlParams,
 		@CurrentUser() user: ICurrentUser
@@ -384,11 +528,26 @@ export class SchoolController {
 	}
 
 	@Get(&#x27;/list-for-external-invite&#x27;)
+	@Authenticate(&#x27;jwt&#x27;)
 	public async getSchoolListForExternalInvite(
 		@Query() query: SchoolQueryParams,
 		@CurrentUser() user: ICurrentUser
 	): Promise&lt;SchoolForExternalInviteResponse[]&gt; {
 		const res &#x3D; await this.schoolUc.getSchoolListForExternalInvite(query, user.schoolId);
+
+		return res;
+	}
+
+	@Get(&#x27;/exists/id/:schoolId&#x27;)
+	public async doesSchoolExist(@Param() urlParams: SchoolUrlParams): Promise&lt;SchoolExistsResponse&gt; {
+		const res &#x3D; await this.schoolUc.doesSchoolExist(urlParams.schoolId);
+
+		return res;
+	}
+
+	@Get(&#x27;/list-for-ldap-login&#x27;)
+	public async getSchoolListForLadpLogin(): Promise&lt;SchoolForLdapLoginResponse[]&gt; {
+		const res &#x3D; await this.schoolUc.getSchoolListForLdapLogin();
 
 		return res;
 	}

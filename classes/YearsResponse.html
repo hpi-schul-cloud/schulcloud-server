@@ -360,7 +360,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({type: () &#x3D;&gt; })<br />
+                            @ApiProperty({type: undefined})<br />
                         </code>
                     </td>
                 </tr>
@@ -389,7 +389,7 @@
 import { SchoolYearResponse } from &#x27;./school-year.response&#x27;;
 
 export class YearsResponse {
-	@ApiProperty({ type: () &#x3D;&gt; [SchoolYearResponse] })
+	@ApiProperty({ type: [SchoolYearResponse] })
 	schoolYears: SchoolYearResponse[];
 
 	@ApiProperty()

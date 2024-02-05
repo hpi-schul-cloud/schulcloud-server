@@ -1377,8 +1377,16 @@ class SchoolYearFactory extends BaseFactory&lt;SchoolYear, SchoolYearProps, Scho
 export const schoolYearFactory &#x3D; SchoolYearFactory.define(SchoolYear, ({ transientParams, sequence }) &#x3D;&gt; {
 	const id &#x3D; new ObjectId().toHexString();
 
-	const startYearWithoutSequence &#x3D; transientParams?.startYear ?? new Date().getFullYear();
-	const startYear &#x3D; startYearWithoutSequence + sequence - 1;
+	const now &#x3D; new Date();
+	const startYearWithoutSequence &#x3D; transientParams?.startYear ?? now.getFullYear();
+	const sequenceStartingWithZero &#x3D; sequence - 1;
+	let correction &#x3D; 0;
+
+	if (now.getMonth() &lt; 7 &amp;&amp; !transientParams?.startYear) {
+		correction &#x3D; 1;
+	}
+
+	const startYear &#x3D; startYearWithoutSequence + sequenceStartingWithZero - correction;
 
 	const name &#x3D; &#x60;${startYear}/${(startYear + 1).toString().slice(-2)}&#x60;;
 	const startDate &#x3D; new Date(&#x60;${startYear}-08-01&#x60;);

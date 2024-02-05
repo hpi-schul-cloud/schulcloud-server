@@ -2288,13 +2288,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/SchoolModule.html" data-type="entity-link" >SchoolModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-SchoolModule-58d565def246c3c25ff0b83a0646c51457b4a645748f8f12210a14caff2d994985a216ec591a83e38fd9502924d96397e08459bdf7e0d122ac13c307a757a011"' : 'data-bs-target="#xs-injectables-links-module-SchoolModule-58d565def246c3c25ff0b83a0646c51457b4a645748f8f12210a14caff2d994985a216ec591a83e38fd9502924d96397e08459bdf7e0d122ac13c307a757a011"' }>
+                                        'data-bs-target="#injectables-links-module-SchoolModule-1f863a955da06574b94aeeddfa5c45f6179d0edf9e122b3e1923fe1f2d69810f797b281c42fd5f6f2965a26d03eab3e88f2dd02b5d9fb387f7183e4284e2d7be"' : 'data-bs-target="#xs-injectables-links-module-SchoolModule-1f863a955da06574b94aeeddfa5c45f6179d0edf9e122b3e1923fe1f2d69810f797b281c42fd5f6f2965a26d03eab3e88f2dd02b5d9fb387f7183e4284e2d7be"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-SchoolModule-58d565def246c3c25ff0b83a0646c51457b4a645748f8f12210a14caff2d994985a216ec591a83e38fd9502924d96397e08459bdf7e0d122ac13c307a757a011"' :
-                                        'id="xs-injectables-links-module-SchoolModule-58d565def246c3c25ff0b83a0646c51457b4a645748f8f12210a14caff2d994985a216ec591a83e38fd9502924d96397e08459bdf7e0d122ac13c307a757a011"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-SchoolModule-1f863a955da06574b94aeeddfa5c45f6179d0edf9e122b3e1923fe1f2d69810f797b281c42fd5f6f2965a26d03eab3e88f2dd02b5d9fb387f7183e4284e2d7be"' :
+                                        'id="xs-injectables-links-module-SchoolModule-1f863a955da06574b94aeeddfa5c45f6179d0edf9e122b3e1923fe1f2d69810f797b281c42fd5f6f2965a26d03eab3e88f2dd02b5d9fb387f7183e4284e2d7be"' }>
                                         <li class="link">
                                             <a href="injectables/SchoolService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchoolService</a>
                                         </li>
@@ -5066,6 +5066,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SchoolEntityMapper.html" data-type="entity-link" >SchoolEntityMapper</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SchoolExistsResponse.html" data-type="entity-link" >SchoolExistsResponse</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SchoolExternalTool.html" data-type="entity-link" >SchoolExternalTool</a>
                             </li>
                             <li class="link">
@@ -5124,6 +5127,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolForGroupNotFoundLoggable.html" data-type="entity-link" >SchoolForGroupNotFoundLoggable</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchoolForLdapLogin.html" data-type="entity-link" >SchoolForLdapLogin</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchoolForLdapLoginResponse.html" data-type="entity-link" >SchoolForLdapLoginResponse</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolIdDoesNotMatchWithUserSchoolId.html" data-type="entity-link" >SchoolIdDoesNotMatchWithUserSchoolId</a>
@@ -5225,13 +5234,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SchoolYearFactory-1.html" data-type="entity-link" >SchoolYearFactory</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SchoolYearHelper.html" data-type="entity-link" >SchoolYearHelper</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SchoolYearResponse.html" data-type="entity-link" >SchoolYearResponse</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolYearResponseMapper.html" data-type="entity-link" >SchoolYearResponseMapper</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/SchoolYearUtils.html" data-type="entity-link" >SchoolYearUtils</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SchulconnexConfigurationMissingLoggable.html" data-type="entity-link" >SchulconnexConfigurationMissingLoggable</a>
@@ -5402,6 +5411,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SystemFilterParams.html" data-type="entity-link" >SystemFilterParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SystemForLdapLogin.html" data-type="entity-link" >SystemForLdapLogin</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SystemForLdapLoginResponse.html" data-type="entity-link" >SystemForLdapLoginResponse</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SystemIdParams.html" data-type="entity-link" >SystemIdParams</a>
                             </li>
                             <li class="link">
@@ -5412,6 +5427,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/SystemResponseMapper.html" data-type="entity-link" >SystemResponseMapper</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SystemResponseMapper-1.html" data-type="entity-link" >SystemResponseMapper</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SystemScope.html" data-type="entity-link" >SystemScope</a>
@@ -7339,6 +7357,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/SchoolExternalToolProps.html" data-type="entity-link" >SchoolExternalToolProps</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/SchoolForLdapLoginProps.html" data-type="entity-link" >SchoolForLdapLoginProps</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/SchoolPermissions.html" data-type="entity-link" >SchoolPermissions</a>
                             </li>
                             <li class="link">
@@ -7415,6 +7436,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/SystemEntityProps.html" data-type="entity-link" >SystemEntityProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/SystemForLdapLoginProps.html" data-type="entity-link" >SystemForLdapLoginProps</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/SystemProps.html" data-type="entity-link" >SystemProps</a>

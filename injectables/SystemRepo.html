@@ -150,6 +150,11 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#findAllForLdapLogin" >findAllForLdapLogin</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#findById" >findById</a>
                             </li>
                         </ul>
@@ -241,8 +246,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">apps/server/src/modules/system/repo/system.repo.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/system/repo/system.repo.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -284,6 +289,46 @@
                             <div class="io-description">
                                 
                             </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findAllForLdapLogin"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>findAllForLdapLogin</b></span>
+                        <a href="#findAllForLdapLogin"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findAllForLdapLogin()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="26"
+                                    class="link-to-prism">apps/server/src/modules/system/repo/system.repo.ts:26</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/System.html" target="_self" >Promise&lt;System[]&gt;</a></code>
+
+                        </div>
                 </td>
             </tr>
         </tbody>
@@ -367,7 +412,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { SystemEntity } from &#x27;@shared/domain/entity&#x27;;
-import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { EntityId, SystemTypeEnum } from &#x27;@shared/domain/types&#x27;;
 import { System, SystemProps } from &#x27;../domain&#x27;;
 import { SystemDomainMapper } from &#x27;./system-domain.mapper&#x27;;
 
@@ -387,6 +432,25 @@ export class SystemRepo {
 		const domainObject: System &#x3D; new System(props);
 
 		return domainObject;
+	}
+
+	public async findAllForLdapLogin(): Promise&lt;System[]&gt; {
+		// Systems with an oauthConfig are filtered out here to exclude IServ. IServ is of type LDAP for syncing purposes, but the login is done via OAuth2.
+		const entities: SystemEntity[] &#x3D; await this.em.find(SystemEntity, {
+			type: SystemTypeEnum.LDAP,
+			ldapConfig: { active: true },
+			oauthConfig: undefined,
+		});
+
+		const domainObjects: System[] &#x3D; entities.map((entity) &#x3D;&gt; {
+			const props: SystemProps &#x3D; SystemDomainMapper.mapEntityToDomainObjectProperties(entity);
+
+			const domainObject: System &#x3D; new System(props);
+
+			return domainObject;
+		});
+
+		return domainObjects;
 	}
 
 	public async delete(domainObject: System): Promise&lt;boolean&gt; {

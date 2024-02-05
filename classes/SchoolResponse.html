@@ -405,7 +405,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiPropertyOptional({type: () &#x3D;&gt; SchoolYearResponse})<br />
+                            @ApiPropertyOptional({type: SchoolYearResponse})<br />
                         </code>
                     </td>
                 </tr>
@@ -477,7 +477,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({type: () &#x3D;&gt; FederalStateResponse})<br />
+                            @ApiProperty({type: FederalStateResponse})<br />
                         </code>
                     </td>
                 </tr>
@@ -1062,7 +1062,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({type: () &#x3D;&gt; YearsResponse})<br />
+                            @ApiProperty({type: YearsResponse})<br />
                         </code>
                     </td>
                 </tr>
@@ -1111,10 +1111,10 @@ export class SchoolResponse {
 	@ApiPropertyOptional()
 	officialSchoolNumber?: string;
 
-	@ApiPropertyOptional({ type: () &#x3D;&gt; SchoolYearResponse })
+	@ApiPropertyOptional({ type: SchoolYearResponse })
 	currentYear?: SchoolYearResponse;
 
-	@ApiProperty({ type: () &#x3D;&gt; FederalStateResponse })
+	@ApiProperty({ type: FederalStateResponse })
 	federalState: FederalStateResponse;
 
 	@ApiPropertyOptional()
@@ -1156,7 +1156,7 @@ export class SchoolResponse {
 	@ApiPropertyOptional()
 	permissions?: SchoolPermissions;
 
-	@ApiProperty({ type: () &#x3D;&gt; YearsResponse })
+	@ApiProperty({ type: YearsResponse })
 	years: YearsResponse;
 
 	constructor(props: SchoolResponse) {
