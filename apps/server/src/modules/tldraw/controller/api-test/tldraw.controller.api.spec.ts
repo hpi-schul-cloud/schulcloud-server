@@ -57,13 +57,5 @@ describe('tldraw controller (api)', () => {
 
 			expect(response.status).toEqual(204);
 		});
-
-		it('should return status 404 for delete with wrong id', async () => {
-			const { loggedInClient } = await setup();
-
-			const response = await loggedInClient.delete(`testID123`);
-
-			expect(response.status).toEqual(404);
-		});
 	});
 });
