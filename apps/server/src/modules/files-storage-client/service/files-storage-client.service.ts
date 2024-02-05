@@ -5,7 +5,6 @@ import { FileDO } from '@src/infra/rabbitmq';
 import { DomainOperation } from '@shared/domain/interface';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { CopyFileDto, FileDto } from '../dto';
-import { FileRequestInfo } from '../interfaces';
 import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
 import { FilesStorageClientMapper } from '../mapper';
 import { FilesStorageProducer } from './files-storage.producer';
