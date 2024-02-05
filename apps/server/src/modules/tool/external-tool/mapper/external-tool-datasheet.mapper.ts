@@ -1,16 +1,18 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { CustomParameter } from '../../common/domain';
+import { CustomParameterScope, CustomParameterType, ToolConfigType, ToolContextType } from '../../common/enum';
 import {
 	ExternalTool,
 	ExternalToolDatasheetTemplateData,
 	ExternalToolParameterDatasheetTemplateData,
 	ExternalToolParameterDatasheetTemplateProperty,
 } from '../domain';
-import { CustomParameterScope, CustomParameterType, ToolConfigType, ToolContextType } from '../../common/enum';
-import { CustomParameter } from '../../common/domain';
 
 export class ExternalToolDatasheetMapper {
 	public static mapToExternalToolDatasheetTemplateData(
 		externalTool: ExternalTool,
+		schoolExternalTool: SchoolExternalTool,
 		firstName: string,
 		lastname: string
 	): ExternalToolDatasheetTemplateData {
@@ -20,7 +22,7 @@ export class ExternalToolDatasheetMapper {
 			instance: ExternalToolDatasheetMapper.mapToInstanceName(),
 			toolName: externalTool.name,
 			toolUrl: externalTool.config.baseUrl,
-			isDeactivated: externalTool.isDeactivated ? 'Das Tool ist deaktiviert' : undefined,
+			isDeactivated: ExternalToolDatasheetMapper.mapToIsDeactivated(externalTool, schoolExternalTool),
 			restrictToContexts: externalTool.restrictToContexts
 				? ExternalToolDatasheetMapper.mapToLimitedContexts(externalTool)
 				: undefined,
@@ -59,16 +61,31 @@ export class ExternalToolDatasheetMapper {
 		}
 	}
 
+	private static mapToIsDeactivated(
+		externalTool: ExternalTool,
+		schoolExternalTool: SchoolExternalTool
+	): string | undefined {
+		if (externalTool.isDeactivated) {
+			return 'Das Tool ist instanzweit deaktiviert';
+		}
+
+		if (schoolExternalTool.status?.isDeactivated) {
+			return 'Das Tool ist in mindestens einer Schule deaktiviert';
+		}
+
+		return undefined;
+	}
+
 	private static mapToLimitedContexts(externalTool: ExternalTool): string {
 		const restrictToContexts: string[] = [];
 		if (externalTool.restrictToContexts?.includes(ToolContextType.COURSE)) {
-			restrictToContexts.push('Kurs');
+			restrictToContexts.push(' Kurs');
 		}
 		if (externalTool.restrictToContexts?.includes(ToolContextType.BOARD_ELEMENT)) {
-			restrictToContexts.push('Kurs-Board');
+			restrictToContexts.push(' Kurs-Board');
 		}
 
-		const restrictToContextsString = restrictToContexts.join(', ');
+		const restrictToContextsString = restrictToContexts.join(',');
 
 		return restrictToContextsString;
 	}

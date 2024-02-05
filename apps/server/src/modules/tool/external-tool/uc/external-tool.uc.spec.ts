@@ -1,7 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ICurrentUser } from '@modules/authentication';
 import { Action, AuthorizationService } from '@modules/authorization';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject/page';
@@ -13,10 +16,11 @@ import {
 	externalToolFactory,
 	oauth2ToolConfigFactory,
 	roleFactory,
+	schoolExternalToolFactory,
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { CustomParameter } from '../../common/domain';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
 import {
@@ -34,13 +38,13 @@ import {
 } from '../service';
 import { ExternalToolUpdate } from './dto';
 import { ExternalToolUc } from './external-tool.uc';
-import { CustomParameter } from '../../common/domain';
 
 describe('ExternalToolUc', () => {
 	let module: TestingModule;
 	let uc: ExternalToolUc;
 
 	let externalToolService: DeepMocked<ExternalToolService>;
+	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let toolValidationService: DeepMocked<ExternalToolValidationService>;
 	let logoService: DeepMocked<ExternalToolLogoService>;
@@ -58,6 +62,10 @@ describe('ExternalToolUc', () => {
 				{
 					provide: ExternalToolService,
 					useValue: createMock<ExternalToolService>(),
+				},
+				{
+					provide: SchoolExternalToolService,
+					useValue: createMock<SchoolExternalToolService>(),
 				},
 				{
 					provide: AuthorizationService,
@@ -84,6 +92,7 @@ describe('ExternalToolUc', () => {
 
 		uc = module.get(ExternalToolUc);
 		externalToolService = module.get(ExternalToolService);
+		schoolExternalToolService = module.get(SchoolExternalToolService);
 		authorizationService = module.get(AuthorizationService);
 		toolValidationService = module.get(ExternalToolValidationService);
 		logoService = module.get(ExternalToolLogoService);
@@ -638,6 +647,7 @@ describe('ExternalToolUc', () => {
 
 				const param: CustomParameter = customParameterFactory.build();
 				const externalTool: ExternalTool = externalToolFactory.build({ parameters: [param] });
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
 				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
 					.withParameters(1, { name: param.name, properties: ExternalToolParameterDatasheetTemplateProperty.MANDATORY })
 					.build({
@@ -648,6 +658,7 @@ describe('ExternalToolUc', () => {
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				externalToolService.findById.mockResolvedValue(externalTool);
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([schoolExternalTool]);
 				pdfService.generatePdf.mockResolvedValueOnce(Buffer.from('mockData'));
 
 				return {
@@ -684,6 +695,14 @@ describe('ExternalToolUc', () => {
 				expect(externalToolService.findById).toHaveBeenCalledWith(toolId);
 			});
 
+			it('should get school external tool', async () => {
+				const { toolId, user } = setup();
+
+				await uc.getDatasheet(user.id, toolId);
+
+				expect(schoolExternalToolService.findSchoolExternalTools).toHaveBeenCalledWith(user.school.id, toolId);
+			});
+
 			it('should create pdf buffer', async () => {
 				const { toolId, user, datasheetData } = setup();
 
@@ -715,7 +734,7 @@ describe('ExternalToolUc', () => {
 				const day = date.getDate();
 				const dateString = `${year}-${month}-${day}`;
 
-				const filename = `CTL-Datenblatt-${externalTool.name}-${dateString}`;
+				const filename = `CTL-Datenblatt-${externalTool.name}-${dateString}.pdf`;
 
 				externalToolService.findById.mockResolvedValue(externalTool);
 

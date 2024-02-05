@@ -1,20 +1,22 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { UserDO } from '@shared/domain/domainobject';
 import {
 	customParameterFactory,
-	externalToolFactory,
-	userDoFactory,
 	externalToolDatasheetTemplateDataFactory,
+	externalToolFactory,
 	externalToolParameterDatasheetTemplateDataFactory,
+	schoolExternalToolFactory,
+	userDoFactory,
 } from '@shared/testing';
-import { UserDO } from '@shared/domain/domainobject';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { ExternalToolDatasheetMapper } from './external-tool-datasheet.mapper';
+import { CustomParameter } from '../../common/domain';
+import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../common/enum';
 import {
 	ExternalToolDatasheetTemplateData,
 	ExternalToolParameterDatasheetTemplateData,
 	ExternalToolParameterDatasheetTemplateProperty,
 } from '../domain';
-import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../common/enum';
-import { CustomParameter } from '../../common/domain';
+import { ExternalToolDatasheetMapper } from './external-tool-datasheet.mapper';
 
 describe(ExternalToolDatasheetMapper.name, () => {
 	beforeEach(() => {
@@ -32,18 +34,57 @@ describe(ExternalToolDatasheetMapper.name, () => {
 				isDeactivated: true,
 				restrictToContexts: [ToolContextType.COURSE, ToolContextType.BOARD_ELEMENT],
 			});
+			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+				status: { isDeactivated: true },
+			});
 			const datasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
 				.withOptionalProperties()
 				.withParameters(1, { properties: 'optional, geschützt' })
 				.build({ instance: 'dBildungscloud' });
 
-			return { user, externalTool, datasheet };
+			return { user, externalTool, schoolExternalTool, datasheet };
 		};
+
 		it('should map all parameters correctly', () => {
-			const { user, externalTool, datasheet } = setup();
+			const { user, externalTool, schoolExternalTool, datasheet } = setup();
 
 			const mappedData: ExternalToolDatasheetTemplateData =
-				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(externalTool, user.firstName, user.lastName);
+				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(
+					externalTool,
+					schoolExternalTool,
+					user.firstName,
+					user.lastName
+				);
+
+			expect(mappedData).toEqual(datasheet);
+		});
+	});
+
+	describe('when tool is deactivated on school level', () => {
+		const setup = () => {
+			const user: UserDO = userDoFactory.build();
+			const externalTool = externalToolFactory.build();
+			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
+				status: { isDeactivated: true },
+			});
+			const datasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory.build({
+				instance: 'dBildungscloud',
+				isDeactivated: 'Das Tool ist in mindestens einer Schule deaktiviert',
+			});
+
+			return { user, externalTool, schoolExternalTool, datasheet };
+		};
+
+		it('should map all parameters correctly', () => {
+			const { user, externalTool, schoolExternalTool, datasheet } = setup();
+
+			const mappedData: ExternalToolDatasheetTemplateData =
+				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(
+					externalTool,
+					schoolExternalTool,
+					user.firstName,
+					user.lastName
+				);
 
 			expect(mappedData).toEqual(datasheet);
 		});
@@ -53,17 +94,23 @@ describe(ExternalToolDatasheetMapper.name, () => {
 		const setup = () => {
 			const user: UserDO = userDoFactory.build();
 			const externalTool = externalToolFactory.withOauth2Config({ skipConsent: true }).build();
+			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
 			const datasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
 				.asOauth2Tool()
 				.build({ instance: 'dBildungscloud' });
 
-			return { user, externalTool, datasheet };
+			return { user, externalTool, schoolExternalTool, datasheet };
 		};
 		it('should map oauth2 parameters', () => {
-			const { user, externalTool, datasheet } = setup();
+			const { user, externalTool, schoolExternalTool, datasheet } = setup();
 
 			const mappedData: ExternalToolDatasheetTemplateData =
-				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(externalTool, user.firstName, user.lastName);
+				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(
+					externalTool,
+					schoolExternalTool,
+					user.firstName,
+					user.lastName
+				);
 
 			expect(mappedData).toEqual(datasheet);
 		});
@@ -73,17 +120,23 @@ describe(ExternalToolDatasheetMapper.name, () => {
 		const setup = () => {
 			const user: UserDO = userDoFactory.build();
 			const externalTool = externalToolFactory.withLti11Config().build();
+			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
 			const datasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory
 				.asLti11Tool()
 				.build({ instance: 'dBildungscloud' });
 
-			return { user, externalTool, datasheet };
+			return { user, externalTool, schoolExternalTool, datasheet };
 		};
 		it('should map lti11 parameters', () => {
-			const { user, externalTool, datasheet } = setup();
+			const { user, externalTool, schoolExternalTool, datasheet } = setup();
 
 			const mappedData: ExternalToolDatasheetTemplateData =
-				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(externalTool, user.firstName, user.lastName);
+				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(
+					externalTool,
+					schoolExternalTool,
+					user.firstName,
+					user.lastName
+				);
 
 			expect(mappedData).toEqual(datasheet);
 		});
@@ -94,17 +147,23 @@ describe(ExternalToolDatasheetMapper.name, () => {
 			Configuration.set('SC_THEME', 'mockInstance');
 			const user: UserDO = userDoFactory.build();
 			const externalTool = externalToolFactory.build();
+			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
 			const datasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory.build({
 				instance: 'unbekannt',
 			});
 
-			return { user, externalTool, datasheet };
+			return { user, externalTool, schoolExternalTool, datasheet };
 		};
 		it('should map correct instance', () => {
-			const { user, externalTool, datasheet } = setup();
+			const { user, externalTool, schoolExternalTool, datasheet } = setup();
 
 			const mappedData: ExternalToolDatasheetTemplateData =
-				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(externalTool, user.firstName, user.lastName);
+				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(
+					externalTool,
+					schoolExternalTool,
+					user.firstName,
+					user.lastName
+				);
 
 			expect(mappedData).toEqual(datasheet);
 		});
@@ -115,17 +174,23 @@ describe(ExternalToolDatasheetMapper.name, () => {
 			Configuration.set('SC_THEME', 'brb');
 			const user: UserDO = userDoFactory.build();
 			const externalTool = externalToolFactory.build();
+			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
 			const datasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory.build({
 				instance: 'Schul-Cloud Brandenburg',
 			});
 
-			return { user, externalTool, datasheet };
+			return { user, externalTool, schoolExternalTool, datasheet };
 		};
 		it('should map correct instance', () => {
-			const { user, externalTool, datasheet } = setup();
+			const { user, externalTool, schoolExternalTool, datasheet } = setup();
 
 			const mappedData: ExternalToolDatasheetTemplateData =
-				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(externalTool, user.firstName, user.lastName);
+				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(
+					externalTool,
+					schoolExternalTool,
+					user.firstName,
+					user.lastName
+				);
 
 			expect(mappedData).toEqual(datasheet);
 		});
@@ -136,17 +201,23 @@ describe(ExternalToolDatasheetMapper.name, () => {
 			Configuration.set('SC_THEME', 'thr');
 			const user: UserDO = userDoFactory.build();
 			const externalTool = externalToolFactory.build();
+			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
 			const datasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory.build({
 				instance: 'Thüringer Schulcloud',
 			});
 
-			return { user, externalTool, datasheet };
+			return { user, externalTool, schoolExternalTool, datasheet };
 		};
 		it('should map correct instance', () => {
-			const { user, externalTool, datasheet } = setup();
+			const { user, externalTool, schoolExternalTool, datasheet } = setup();
 
 			const mappedData: ExternalToolDatasheetTemplateData =
-				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(externalTool, user.firstName, user.lastName);
+				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(
+					externalTool,
+					schoolExternalTool,
+					user.firstName,
+					user.lastName
+				);
 
 			expect(mappedData).toEqual(datasheet);
 		});
@@ -157,17 +228,23 @@ describe(ExternalToolDatasheetMapper.name, () => {
 			Configuration.set('SC_THEME', 'default');
 			const user: UserDO = userDoFactory.build();
 			const externalTool = externalToolFactory.build();
+			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
 			const datasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory.build({
 				instance: 'dBildungscloud',
 			});
 
-			return { user, externalTool, datasheet };
+			return { user, externalTool, schoolExternalTool, datasheet };
 		};
 		it('should map correct instance', () => {
-			const { user, externalTool, datasheet } = setup();
+			const { user, externalTool, schoolExternalTool, datasheet } = setup();
 
 			const mappedData: ExternalToolDatasheetTemplateData =
-				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(externalTool, user.firstName, user.lastName);
+				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(
+					externalTool,
+					schoolExternalTool,
+					user.firstName,
+					user.lastName
+				);
 
 			expect(mappedData).toEqual(datasheet);
 		});
@@ -178,17 +255,23 @@ describe(ExternalToolDatasheetMapper.name, () => {
 			Configuration.set('SC_THEME', 'n21');
 			const user: UserDO = userDoFactory.build();
 			const externalTool = externalToolFactory.build();
+			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
 			const datasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory.build({
 				instance: 'Niedersächsische Bildungscloud',
 			});
 
-			return { user, externalTool, datasheet };
+			return { user, externalTool, schoolExternalTool, datasheet };
 		};
 		it('should map correct instance', () => {
-			const { user, externalTool, datasheet } = setup();
+			const { user, externalTool, schoolExternalTool, datasheet } = setup();
 
 			const mappedData: ExternalToolDatasheetTemplateData =
-				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(externalTool, user.firstName, user.lastName);
+				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(
+					externalTool,
+					schoolExternalTool,
+					user.firstName,
+					user.lastName
+				);
 
 			expect(mappedData).toEqual(datasheet);
 		});
@@ -208,6 +291,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 				customParameterFactory.build({ type: undefined, scope: undefined }),
 			];
 			const externalTool = externalToolFactory.build({ parameters: params });
+			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build();
 
 			const parameters: ExternalToolParameterDatasheetTemplateData[] = [
 				externalToolParameterDatasheetTemplateDataFactory.build({
@@ -251,13 +335,18 @@ describe(ExternalToolDatasheetMapper.name, () => {
 				parameters,
 			});
 
-			return { user, externalTool, datasheet };
+			return { user, externalTool, schoolExternalTool, datasheet };
 		};
 		it('should map all parameters correctly', () => {
-			const { user, externalTool, datasheet } = setup();
+			const { user, externalTool, schoolExternalTool, datasheet } = setup();
 
 			const mappedData: ExternalToolDatasheetTemplateData =
-				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(externalTool, user.firstName, user.lastName);
+				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(
+					externalTool,
+					schoolExternalTool,
+					user.firstName,
+					user.lastName
+				);
 
 			expect(mappedData).toEqual(datasheet);
 		});

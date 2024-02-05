@@ -1,4 +1,6 @@
 import { AuthorizationService } from '@modules/authorization';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
@@ -7,19 +9,20 @@ import { EntityId } from '@shared/domain/types';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
 import { ExternalTool, ExternalToolConfig, ExternalToolDatasheetTemplateData, ExternalToolMetadata } from '../domain';
+import { ExternalToolDatasheetMapper } from '../mapper/external-tool-datasheet.mapper';
 import {
+	DatasheetPdfService,
 	ExternalToolLogoService,
 	ExternalToolService,
 	ExternalToolValidationService,
-	DatasheetPdfService,
 } from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
-import { ExternalToolDatasheetMapper } from '../mapper/external-tool-datasheet.mapper';
 
 @Injectable()
 export class ExternalToolUc {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
+		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly toolValidationService: ExternalToolValidationService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
@@ -104,9 +107,20 @@ export class ExternalToolUc {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkOneOfPermissions(user, [Permission.TOOL_ADMIN, Permission.SCHOOL_TOOL_ADMIN]);
 
+		const schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolService.findSchoolExternalTools({
+			schoolId: user.school.id,
+			toolId: externalToolId,
+		});
+		const schoolExternalTool = schoolExternalTools[0];
+
 		const externalTool: ExternalTool = await this.externalToolService.findById(externalToolId);
 		const dataSheetData: ExternalToolDatasheetTemplateData =
-			ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(externalTool, user.firstName, user.lastName);
+			ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(
+				externalTool,
+				schoolExternalTool,
+				user.firstName,
+				user.lastName
+			);
 
 		const buffer: Buffer = await this.datasheetPdfService.generatePdf(dataSheetData);
 
@@ -122,7 +136,7 @@ export class ExternalToolUc {
 		const day = date.getDate();
 		const dateString = `${year}-${month}-${day}`;
 
-		const fileName = `CTL-Datenblatt-${externalTool.name}-${dateString}`;
+		const fileName = `CTL-Datenblatt-${externalTool.name}-${dateString}.pdf`;
 
 		return fileName;
 	}
