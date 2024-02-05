@@ -6,6 +6,8 @@ import { LoggerModule } from '@src/core/logger';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { HttpModule } from '@nestjs/axios';
+import { FilesStorageClientModule } from '@modules/files-storage-client';
+import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { TldrawDrawing } from './entities';
 import { MetricsService } from './metrics';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
@@ -21,6 +23,8 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 };
 @Module({
 	imports: [
+		RabbitMQWrapperModule,
+		FilesStorageClientModule,
 		HttpModule,
 		LoggerModule,
 		CoreModule,

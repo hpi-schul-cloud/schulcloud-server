@@ -8,6 +8,8 @@ import { applyUpdate, encodeStateAsUpdate } from 'yjs';
 import { Buffer } from 'node:buffer';
 import { Redis } from 'ioredis';
 import { Logger } from '@src/core/logger';
+import { YMap } from 'yjs/dist/src/types/YMap';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { TldrawRedisFactory } from '../redis';
 import {
 	CloseConnectionLoggable,
@@ -17,7 +19,14 @@ import {
 	WsSharedDocErrorLoggable,
 } from '../loggable';
 import { TldrawConfig } from '../config';
-import { AwarenessConnectionsUpdate, RedisConnectionTypeEnum, WSConnectionState, WSMessageType } from '../types';
+import {
+	AwarenessConnectionsUpdate,
+	RedisConnectionTypeEnum,
+	TldrawAsset,
+	TldrawShape,
+	WSConnectionState,
+	WSMessageType,
+} from '../types';
 import { WsSharedDocDo } from '../domain';
 import { TldrawBoardRepo } from '../repo';
 import { MetricsService } from '../metrics';
@@ -39,7 +48,8 @@ export class TldrawWsService {
 		private readonly tldrawBoardRepo: TldrawBoardRepo,
 		private readonly logger: Logger,
 		private readonly metricsService: MetricsService,
-		private readonly tldrawRedisFactory: TldrawRedisFactory
+		private readonly tldrawRedisFactory: TldrawRedisFactory,
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
 	) {
 		this.logger.setContext(TldrawWsService.name);
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
@@ -268,8 +278,9 @@ export class TldrawWsService {
 
 	private async storeStateAndDestroyYDocIfPersisted(doc: WsSharedDocDo) {
 		if (doc.connections.size === 0) {
-			// if persisted, we store state and destroy ydocument
+			// if persisted, we store state and destroy yDoc
 			try {
+				await this.syncAssets(doc);
 				await this.tldrawBoardRepo.flushDocument(doc.name);
 				this.unsubscribeFromRedisChannels(doc);
 				doc.destroy();
@@ -280,6 +291,47 @@ export class TldrawWsService {
 
 			this.docs.delete(doc.name);
 			this.metricsService.decrementNumberOfBoardsOnServerCounter();
+		}
+	}
+
+	private async syncAssets(doc: WsSharedDocDo) {
+		// clean up assets that are not used as shapes anymore
+		// which can happen when users do undo/redo operations on assets
+		const assets: YMap<TldrawAsset> = doc.getMap('assets');
+		const shapes: YMap<TldrawShape> = doc.getMap('shapes');
+		const usedShapesAsAssets: TldrawShape[] = [];
+		const usedAssets: TldrawAsset[] = [];
+
+		shapes.forEach((shape) => {
+			if (shape.assetId) {
+				usedShapesAsAssets.push(shape);
+			}
+		});
+
+		doc.transact(() => {
+			assets.forEach((asset) => {
+				const foundAsset = usedShapesAsAssets.find((shape) => shape.assetId === asset.id);
+				if (!foundAsset) {
+					assets.delete(asset.id);
+				} else {
+					usedAssets.push(asset);
+				}
+			});
+		});
+
+		const files = await this.filesStorageClientAdapterService.listFilesOfParent(doc.name);
+		for (const file of files) {
+			const foundAsset = usedAssets.find((asset) => {
+				const srcArr = asset.src.split('/');
+				const fileRecordId = srcArr[srcArr.length - 2];
+
+				return fileRecordId === file.id;
+			});
+
+			if (!foundAsset) {
+				// eslint-disable-next-line no-await-in-loop
+				await this.filesStorageClientAdapterService.deleteOneFile(file.id);
+			}
 		}
 	}
 
