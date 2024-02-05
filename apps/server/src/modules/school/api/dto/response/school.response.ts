@@ -22,10 +22,10 @@ export class SchoolResponse {
 	@ApiPropertyOptional()
 	officialSchoolNumber?: string;
 
-	@ApiPropertyOptional({ type: () => SchoolYearResponse })
+	@ApiPropertyOptional({ type: SchoolYearResponse })
 	currentYear?: SchoolYearResponse;
 
-	@ApiProperty({ type: () => FederalStateResponse })
+	@ApiProperty({ type: FederalStateResponse })
 	federalState: FederalStateResponse;
 
 	@ApiPropertyOptional()
@@ -67,7 +67,7 @@ export class SchoolResponse {
 	@ApiPropertyOptional()
 	permissions?: SchoolPermissions;
 
-	@ApiProperty({ type: () => YearsResponse })
+	@ApiProperty({ type: YearsResponse })
 	years: YearsResponse;
 
 	constructor(props: SchoolResponse) {

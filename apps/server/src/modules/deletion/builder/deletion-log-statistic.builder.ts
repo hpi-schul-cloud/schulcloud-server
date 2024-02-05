@@ -1,15 +1,9 @@
 import { DomainOperation } from '@shared/domain/interface';
-import { DomainModel } from '@shared/domain/types';
+import { DomainName, EntityId, OperationType } from '@shared/domain/types';
 
 export class DeletionLogStatisticBuilder {
-	static build(
-		domain: DomainModel,
-		modifiedCount: number,
-		deletedCount: number,
-		modifiedRef?: string[],
-		deletedRef?: string[]
-	): DomainOperation {
-		const deletionLogStatistic = { domain, modifiedCount, deletedCount, modifiedRef, deletedRef };
+	static build(domain: DomainName, operation: OperationType, count: number, refs: EntityId[]): DomainOperation {
+		const deletionLogStatistic = { domain, operation, count, refs };
 
 		return deletionLogStatistic;
 	}

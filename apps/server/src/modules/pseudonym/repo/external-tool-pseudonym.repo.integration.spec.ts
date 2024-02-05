@@ -240,6 +240,24 @@ describe('ExternalToolPseudonymRepo', () => {
 	});
 
 	describe('deletePseudonymsByUserId', () => {
+		describe('when pseudonyms are not existing', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+
+				return {
+					user,
+				};
+			};
+
+			it('should return empty array', async () => {
+				const { user } = setup();
+
+				const result = await repo.deletePseudonymsByUserId(user.id);
+
+				expect(result).toEqual([]);
+			});
+		});
+
 		describe('when pseudonyms are existing', () => {
 			const setup = async () => {
 				const user1 = userFactory.buildWithId();
@@ -259,7 +277,10 @@ describe('ExternalToolPseudonymRepo', () => {
 
 				await em.persistAndFlush([pseudonym1, pseudonym2, pseudonym3, pseudonym4]);
 
+				const expectedResult = [pseudonym1.id, pseudonym2.id];
+
 				return {
+					expectedResult,
 					user1,
 					pseudonym1,
 					pseudonym2,
@@ -267,18 +288,11 @@ describe('ExternalToolPseudonymRepo', () => {
 			};
 
 			it('should delete all pseudonyms for userId', async () => {
-				const { user1 } = await setup();
+				const { expectedResult, user1 } = await setup();
 
-				const result: number = await repo.deletePseudonymsByUserId(user1.id);
+				const result = await repo.deletePseudonymsByUserId(user1.id);
 
-				expect(result).toEqual(2);
-			});
-		});
-
-		describe('should return empty array when there is no pseudonym', () => {
-			it('should return empty array', async () => {
-				const result: Pseudonym[] = await repo.findByUserId(new ObjectId().toHexString());
-				expect(result).toHaveLength(0);
+				expect(result).toEqual(expectedResult);
 			});
 		});
 	});

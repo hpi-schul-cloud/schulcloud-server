@@ -1,6 +1,6 @@
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME, TLDRAW_DB_URL } from '@src/config';
+import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
@@ -11,7 +11,7 @@ import { MetricsService } from './metrics';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
 import { TldrawWsService } from './service';
 import { TldrawWs } from './controller';
-import { config } from './config';
+import { config, TLDRAW_DB_URL } from './config';
 import { TldrawRedisFactory } from './redis';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

@@ -1,14 +1,14 @@
 import { School, SchoolYear } from '../do';
 import { MissingYearsLoggableException } from '../error';
 
-export class SchoolYearUtils {
+export class SchoolYearHelper {
 	public static computeActiveAndLastAndNextYear(
 		school: School,
 		schoolYears: SchoolYear[]
 	): { activeYear: SchoolYear; lastYear: SchoolYear; nextYear: SchoolYear } {
-		const activeYear = SchoolYearUtils.computeActiveYear(school, schoolYears);
-		const nextYear = SchoolYearUtils.computeNextYear(schoolYears, activeYear);
-		const lastYear = SchoolYearUtils.computeLastYear(schoolYears, activeYear);
+		const activeYear = SchoolYearHelper.computeActiveYear(school, schoolYears);
+		const nextYear = SchoolYearHelper.computeNextYear(schoolYears, activeYear);
+		const lastYear = SchoolYearHelper.computeLastYear(schoolYears, activeYear);
 
 		return { activeYear, lastYear, nextYear };
 	}

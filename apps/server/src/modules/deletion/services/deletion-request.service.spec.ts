@@ -2,7 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
-import { DomainModel } from '@shared/domain/types';
+import { DomainName } from '@shared/domain/types';
 import { DeletionRequestService } from './deletion-request.service';
 import { DeletionRequestRepo } from '../repo';
 import { deletionRequestFactory } from '../domain/testing/factory/deletion-request.factory';
@@ -48,7 +48,7 @@ describe(DeletionRequestService.name, () => {
 		describe('when creating a deletionRequest', () => {
 			const setup = () => {
 				const targetRefId = '653e4833cc39e5907a1e18d2';
-				const targetRefDomain = DomainModel.USER;
+				const targetRefDomain = DomainName.USER;
 
 				return { targetRefId, targetRefDomain };
 			};

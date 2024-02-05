@@ -3,6 +3,9 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { DomainName, OperationType } from '@shared/domain/types';
+import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainOperation } from '@shared/domain/interface';
 import { RocketChatUserService } from './rocket-chat-user.service';
 import { RocketChatUserRepo } from '../repo';
 import { rocketChatUserFactory } from '../domain/testing/rocket-chat-user.factory';
@@ -71,11 +74,18 @@ describe(RocketChatUserService.name, () => {
 		describe('when deleting rocketChatUser', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
+				const rocketChatUser: RocketChatUser = rocketChatUserFactory.build();
 
+				rocketChatUserRepo.findByUserId.mockResolvedValueOnce([rocketChatUser]);
 				rocketChatUserRepo.deleteByUserId.mockResolvedValueOnce(1);
+
+				const expectedResult = DomainOperationBuilder.build(DomainName.ROCKETCHATUSER, OperationType.DELETE, 1, [
+					rocketChatUser.id,
+				]);
 
 				return {
 					userId,
+					expectedResult,
 				};
 			};
 
@@ -84,15 +94,16 @@ describe(RocketChatUserService.name, () => {
 
 				await service.deleteByUserId(userId);
 
+				expect(rocketChatUserRepo.findByUserId).toBeCalledWith(userId);
 				expect(rocketChatUserRepo.deleteByUserId).toBeCalledWith(userId);
 			});
 
 			it('should delete rocketChatUser by userId', async () => {
-				const { userId } = setup();
+				const { userId, expectedResult } = setup();
 
-				const result: number = await service.deleteByUserId(userId);
+				const result: DomainOperation = await service.deleteByUserId(userId);
 
-				expect(result).toEqual(1);
+				expect(result).toEqual(expectedResult);
 			});
 		});
 	});
