@@ -123,7 +123,6 @@ describe('FilesStorageConsumer', () => {
 	});
 
 	describe('fileRecordsOfParent()', () => {
-		const schoolId: EntityId = new ObjectId().toHexString();
 		describe('WHEN valid file exists', () => {
 			it('should call filesStorageService.fileRecordsOfParent with params', async () => {
 				const parentId = new ObjectId().toHexString();
