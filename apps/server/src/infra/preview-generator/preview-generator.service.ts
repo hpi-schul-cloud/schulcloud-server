@@ -1,5 +1,5 @@
 import { GetFile, S3ClientAdapter } from '@infra/s3-client';
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, OnModuleInit, UnprocessableEntityException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import m, { subClass } from 'gm';
 import { PassThrough } from 'stream';
@@ -9,7 +9,11 @@ import { PreviewNotPossibleException } from './loggable/preview-exception';
 import { PreviewGeneratorBuilder } from './preview-generator.builder';
 
 @Injectable()
-export class PreviewGeneratorService {
+export class PreviewGeneratorService implements OnModuleInit {
+	onModuleInit() {
+		console.log('onModuleInit', PreviewGeneratorService.name);
+	}
+
 	private imageMagick = subClass({ imageMagick: '7+' });
 
 	constructor(private readonly storageClient: S3ClientAdapter, private logger: Logger) {
