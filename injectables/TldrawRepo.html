@@ -353,8 +353,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="38"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw.repo.ts:38</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="35"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw.repo.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -423,8 +423,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw.repo.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw.repo.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -493,8 +493,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="59"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw.repo.ts:59</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw.repo.ts:56</a></div>
                         </td>
                     </tr>
 
@@ -602,8 +602,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="27"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw.repo.ts:27</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw.repo.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -671,8 +671,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="55"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw.repo.ts:55</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw.repo.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -711,8 +711,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw.repo.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw.repo.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -792,8 +792,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw.repo.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw.repo.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -864,7 +864,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
-import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { BulkWriteResult, Collection, Sort } from &#x27;mongodb&#x27;;
 import { MikroORM } from &#x27;@mikro-orm/core&#x27;;
 import { TldrawDrawing } from &#x27;../entities&#x27;;
@@ -878,11 +878,8 @@ export class TldrawRepo {
 	}
 
 	public async findByDocName(docName: string): Promise&lt;TldrawDrawing[]&gt; {
-		const domainObject &#x3D; await this.em.find(TldrawDrawing, { docName });
-		if (domainObject.length &#x3D;&#x3D;&#x3D; 0) {
-			throw new NotFoundException(&#x60;There is no &#x27;${docName}&#x27; for this docName&#x60;);
-		}
-		return domainObject;
+		const drawings &#x3D; await this.em.find(TldrawDrawing, { docName });
+		return drawings;
 	}
 
 	public async delete(entity: TldrawDrawing | TldrawDrawing[]): Promise&lt;void&gt; {
