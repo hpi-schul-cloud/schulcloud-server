@@ -34,6 +34,12 @@ export class UserService {
 		this.logger.setContext(UserService.name);
 	}
 
+	async getUser2(userId: EntityId): Promise<User> {
+		const user = await this.userRepo.findById(userId, true);
+
+		return user;
+	}
+
 	async me(userId: EntityId): Promise<[User, string[]]> {
 		const user = await this.userRepo.findById(userId, true);
 		const permissions = user.resolvePermissions();

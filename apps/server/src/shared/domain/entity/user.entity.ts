@@ -132,7 +132,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 
 		let permissions: string[] = [];
 
-		const roles = this.roles.getItems();
+		const roles = this.getRoles();
 		roles.forEach((role) => {
 			const rolePermissions = role.resolvePermissions();
 			permissions = [...permissions, ...rolePermissions];
@@ -141,5 +141,11 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		const uniquePermissions = [...new Set(permissions)];
 
 		return uniquePermissions;
+	}
+
+	public getRoles(): Role[] {
+		const roles = this.roles.getItems();
+
+		return roles;
 	}
 }
