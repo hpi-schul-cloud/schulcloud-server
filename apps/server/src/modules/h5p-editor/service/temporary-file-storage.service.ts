@@ -93,24 +93,28 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		try {
 			tempFile = await this.repo.findByUserAndFilename(user.id, filename);
 			await this.s3Client.delete([path]);
-		} finally {
-			if (tempFile === undefined) {
-				tempFile = new H5pEditorTempFile({
-					filename,
-					ownedByUserId: user.id,
-					expiresAt: expirationTime,
-					birthtime: new Date(),
-					size: dataStream.bytesRead,
-				});
-			} else {
-				tempFile.expiresAt = expirationTime;
-				tempFile.size = dataStream.bytesRead;
-			}
+		} catch (err) {
+			/* empty */
 		}
+
 		await this.s3Client.create(
 			path,
 			new H5pFileDto({ name: path, mimeType: 'application/octet-stream', data: dataStream })
 		);
+
+		if (tempFile === undefined) {
+			tempFile = new H5pEditorTempFile({
+				filename,
+				ownedByUserId: user.id,
+				expiresAt: expirationTime,
+				birthtime: new Date(),
+				size: dataStream.bytesRead,
+			});
+		} else {
+			tempFile.expiresAt = expirationTime;
+			tempFile.size = dataStream.bytesRead;
+		}
+
 		await this.repo.save(tempFile);
 
 		return tempFile;
