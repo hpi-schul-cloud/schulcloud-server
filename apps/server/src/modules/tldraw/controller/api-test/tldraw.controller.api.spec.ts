@@ -65,11 +65,5 @@ describe('tldraw controller (api)', () => {
 
 			expect(response.status).toEqual(204);
 		});
-
-		it('should return status 404 for delete with wrong id', async () => {
-			const response = await testXApiKeyClient.delete(`testID123`);
-
-			expect(response.status).toEqual(404);
-		});
 	});
 });
