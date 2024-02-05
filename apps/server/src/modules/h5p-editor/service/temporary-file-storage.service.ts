@@ -51,12 +51,8 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		rangeEnd?: number | undefined
 	): Promise<Readable> {
 		this.checkFilename(filename);
-		const tempFile = await this.repo.findByUserAndFilename(user.id, filename);
 		const path = this.getFilePath(user.id, filename);
-		let rangeEndNew = 0;
-		if (rangeEnd === undefined) {
-			rangeEndNew = tempFile.size - 1;
-		}
+		let rangeEndNew = rangeEnd ?? '';
 		const response = await this.s3Client.get(path, `${rangeStart}-${rangeEndNew}`);
 
 		return response.data;

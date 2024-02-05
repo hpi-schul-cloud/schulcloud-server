@@ -8,7 +8,7 @@ export const h5pConfig = new H5PConfig(undefined, {
 
 	ajaxUrl: `${API_BASE}/ajax`,
 	contentFilesUrl: `${API_BASE}/content`,
-	contentFilesUrlPlayerOverride: `${API_BASE}/content/{{contentID}}`,
+	contentFilesUrlPlayerOverride: `${API_BASE}/content/{{contentId}}`,
 	contentUserDataUrl: `${API_BASE}/contentUserData`,
 	downloadUrl: undefined,
 	librariesUrl: `${API_BASE}/libraries`,
