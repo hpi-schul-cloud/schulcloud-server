@@ -13,6 +13,12 @@ export class SystemService {
 		return system;
 	}
 
+	public async findAllForLdapLogin(): Promise<System[]> {
+		const systems = await this.systemRepo.findAllForLdapLogin();
+
+		return systems;
+	}
+
 	public async delete(domainObject: System): Promise<boolean> {
 		const deleted: boolean = await this.systemRepo.delete(domainObject);
 
