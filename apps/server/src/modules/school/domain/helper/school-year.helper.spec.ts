@@ -1,8 +1,8 @@
 import { schoolFactory, schoolYearFactory } from '../../testing';
 import { MissingYearsLoggableException } from '../error';
-import { SchoolYearUtils } from './school-year.utils';
+import { SchoolYearHelper } from './school-year.helper';
 
-describe('SchoolYearUtils', () => {
+describe('SchoolYearHelper', () => {
 	beforeAll(() => {
 		jest.useFakeTimers();
 		jest.setSystemTime(new Date('2020-10-23'));
@@ -20,7 +20,7 @@ describe('SchoolYearUtils', () => {
 			it('should return all years', () => {
 				const { school, schoolYears } = setup();
 
-				const result = SchoolYearUtils.computeActiveAndLastAndNextYear(school, schoolYears);
+				const result = SchoolYearHelper.computeActiveAndLastAndNextYear(school, schoolYears);
 
 				expect(result).toStrictEqual({
 					activeYear: schoolYears[1],
@@ -41,7 +41,7 @@ describe('SchoolYearUtils', () => {
 			it('should throw error', () => {
 				const { school, schoolYears } = setup();
 
-				expect(() => SchoolYearUtils.computeActiveAndLastAndNextYear(school, schoolYears)).toThrow(
+				expect(() => SchoolYearHelper.computeActiveAndLastAndNextYear(school, schoolYears)).toThrow(
 					MissingYearsLoggableException
 				);
 			});
@@ -60,7 +60,7 @@ describe('SchoolYearUtils', () => {
 			it('should return this current year', () => {
 				const { school, schoolYears } = setup();
 
-				const result = SchoolYearUtils.computeActiveYear(school, schoolYears);
+				const result = SchoolYearHelper.computeActiveYear(school, schoolYears);
 
 				expect(result).toStrictEqual(schoolYears[1]);
 			});
@@ -78,7 +78,7 @@ describe('SchoolYearUtils', () => {
 				it('should return active year according to current date', () => {
 					const { school, schoolYears } = setup();
 
-					const result = SchoolYearUtils.computeActiveYear(school, schoolYears);
+					const result = SchoolYearHelper.computeActiveYear(school, schoolYears);
 
 					expect(result).toStrictEqual(schoolYears[1]);
 				});
@@ -95,7 +95,7 @@ describe('SchoolYearUtils', () => {
 				it('should throw error', () => {
 					const { school, schoolYears } = setup();
 
-					expect(() => SchoolYearUtils.computeActiveYear(school, schoolYears)).toThrow(MissingYearsLoggableException);
+					expect(() => SchoolYearHelper.computeActiveYear(school, schoolYears)).toThrow(MissingYearsLoggableException);
 				});
 			});
 		});
@@ -113,7 +113,7 @@ describe('SchoolYearUtils', () => {
 			it('should return last year', () => {
 				const { schoolYears, activeYear } = setup();
 
-				const result = SchoolYearUtils.computeLastYear(schoolYears, activeYear);
+				const result = SchoolYearHelper.computeLastYear(schoolYears, activeYear);
 
 				expect(result).toStrictEqual(schoolYears[0]);
 			});
@@ -130,7 +130,7 @@ describe('SchoolYearUtils', () => {
 			it('should throw error', () => {
 				const { schoolYears, activeYear } = setup();
 
-				expect(() => SchoolYearUtils.computeLastYear(schoolYears, activeYear)).toThrow(MissingYearsLoggableException);
+				expect(() => SchoolYearHelper.computeLastYear(schoolYears, activeYear)).toThrow(MissingYearsLoggableException);
 			});
 		});
 	});
@@ -147,7 +147,7 @@ describe('SchoolYearUtils', () => {
 			it('should return next year', () => {
 				const { schoolYears, activeYear } = setup();
 
-				const result = SchoolYearUtils.computeNextYear(schoolYears, activeYear);
+				const result = SchoolYearHelper.computeNextYear(schoolYears, activeYear);
 
 				expect(result).toStrictEqual(schoolYears[2]);
 			});
@@ -164,7 +164,7 @@ describe('SchoolYearUtils', () => {
 			it('should throw error', () => {
 				const { schoolYears, activeYear } = setup();
 
-				expect(() => SchoolYearUtils.computeNextYear(schoolYears, activeYear)).toThrow(MissingYearsLoggableException);
+				expect(() => SchoolYearHelper.computeNextYear(schoolYears, activeYear)).toThrow(MissingYearsLoggableException);
 			});
 		});
 	});
