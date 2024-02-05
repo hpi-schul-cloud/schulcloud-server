@@ -4,7 +4,6 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { cleanupCollections } from '@shared/testing';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
-import { NotFoundException } from '@nestjs/common';
 import { TldrawDrawing } from '../entities';
 import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
 import { TldrawRepo } from '../repo/tldraw.repo';
@@ -43,17 +42,12 @@ describe('TldrawService', () => {
 		describe('when deleting all collection connected to one drawing', () => {
 			it('should remove all collections giving drawing name', async () => {
 				const drawing = tldrawEntityFactory.build();
-
 				await repo.create(drawing);
-				const result = await repo.findByDocName(drawing.docName);
+
 				await service.deleteByDocName(drawing.docName);
 
-				expect(result.length).toEqual(1);
-				await expect(repo.findByDocName(drawing.docName)).rejects.toThrow(NotFoundException);
-			});
-
-			it('should throw when cannot find drawing', async () => {
-				await expect(service.deleteByDocName('nonExistingName')).rejects.toThrow(NotFoundException);
+				const result = await repo.findByDocName(drawing.docName);
+				expect(result.length).toEqual(0);
 			});
 		});
 	});
