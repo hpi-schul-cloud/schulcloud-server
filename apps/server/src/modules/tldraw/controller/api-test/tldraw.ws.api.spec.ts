@@ -12,6 +12,7 @@ import { ConfigModule } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { AxiosError, AxiosHeaders, AxiosResponse } from 'axios';
 import { axiosResponseFactory } from '@shared/testing';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { TldrawRedisFactory } from '../../redis';
 import { TldrawDrawing } from '../../entities';
 import { TldrawWsService } from '../../service';
@@ -58,6 +59,10 @@ describe('WebSocketController (WsAdapter)', () => {
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
+				},
+				{
+					provide: FilesStorageClientAdapterService,
+					useValue: createMock<FilesStorageClientAdapterService>(),
 				},
 			],
 		}).compile();

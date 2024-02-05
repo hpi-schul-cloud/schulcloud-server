@@ -8,6 +8,7 @@ import { createMock } from '@golevelup/ts-jest';
 import * as Yjs from 'yjs';
 import { createConfigModuleOptions } from '@src/config';
 import { HttpService } from '@nestjs/axios';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { TldrawRedisFactory } from '../redis';
 import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
@@ -53,6 +54,10 @@ describe('YMongoDb', () => {
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
+				},
+				{
+					provide: FilesStorageClientAdapterService,
+					useValue: createMock<FilesStorageClientAdapterService>(),
 				},
 			],
 		}).compile();

@@ -8,6 +8,7 @@ import { HttpService } from '@nestjs/axios';
 import { Logger } from '@src/core/logger';
 import { ConfigModule } from '@nestjs/config';
 import { MongoMemoryDatabaseModule } from '@infra/database';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { createConfigModuleOptions } from '@src/config';
 import * as YjsUtils from '../utils/ydoc-utils';
 import { TldrawBoardRepo } from './tldraw-board.repo';
@@ -54,6 +55,10 @@ describe('TldrawBoardRepo', () => {
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
+				},
+				{
+					provide: FilesStorageClientAdapterService,
+					useValue: createMock<FilesStorageClientAdapterService>(),
 				},
 			],
 		}).compile();

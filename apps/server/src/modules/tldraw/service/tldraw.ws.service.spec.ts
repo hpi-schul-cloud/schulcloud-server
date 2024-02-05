@@ -8,6 +8,7 @@ import * as SyncProtocols from 'y-protocols/sync';
 import * as AwarenessProtocol from 'y-protocols/awareness';
 import * as Ioredis from 'ioredis';
 import { encoding } from 'lib0';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { TldrawWsFactory } from '@shared/testing/factory/tldraw.ws.factory';
 import { HttpService } from '@nestjs/axios';
 import { WebSocketReadyStateEnum } from '@shared/testing';
@@ -86,6 +87,10 @@ describe('TldrawWSService', () => {
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
+				},
+				{
+					provide: FilesStorageClientAdapterService,
+					useValue: createMock<FilesStorageClientAdapterService>(),
 				},
 			],
 		}).compile();
