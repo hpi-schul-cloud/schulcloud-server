@@ -1,18 +1,15 @@
 import { AmqpConnection, RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
 import { AmqpConsumerHealthIndicator } from '@infra/healthcheck/indicators/amqp-consumer.indictor';
 import { FilesPreviewEvents, FilesPreviewExchange } from '@infra/rabbitmq';
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+import { Cron } from '@nestjs/schedule';
 import { Logger } from '@src/core/logger';
 import { PreviewFileOptions } from './interface';
 import { PreviewActionsLoggable } from './loggable/preview-actions.loggable';
 import { PreviewGeneratorService } from './preview-generator.service';
 
 @Injectable()
-export class PreviewGeneratorConsumer implements OnModuleInit {
-	onModuleInit() {
-		console.log('onModuleInit', PreviewGeneratorConsumer.name);
-	}
-
+export class PreviewGeneratorConsumer {
 	constructor(
 		private readonly previewGeneratorService: PreviewGeneratorService,
 		private logger: Logger,
@@ -23,7 +20,10 @@ export class PreviewGeneratorConsumer implements OnModuleInit {
 		health.setAmqpConnection(amqpConnection);
 	}
 
-	healty() {}
+	@Cron('5 * * * * *')
+	healty() {
+		console.log(this.health.isHealthy('preview-generator-consumer'));
+	}
 
 	@RabbitRPC({
 		exchange: FilesPreviewExchange,
@@ -33,7 +33,6 @@ export class PreviewGeneratorConsumer implements OnModuleInit {
 	public async generatePreview(@RabbitPayload() payload: PreviewFileOptions) {
 		this.logger.info(new PreviewActionsLoggable('PreviewGeneratorConsumer.generatePreview:start', payload));
 
-		console.log(this.health.isHealthy('preview-generator-consumer'));
 		const response = await this.previewGeneratorService.generatePreview(payload);
 
 		this.logger.info(new PreviewActionsLoggable('PreviewGeneratorConsumer.generatePreview:end', payload));

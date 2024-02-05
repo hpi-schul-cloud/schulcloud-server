@@ -1,5 +1,5 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { HealthCheckError, HealthIndicator, HealthIndicatorResult } from '@nestjs/terminus';
+import { HealthCheckError, HealthIndicator } from '@nestjs/terminus';
 
 export class AmqpConsumerHealthIndicator extends HealthIndicator {
 	private amqpConnection!: AmqpConnection;
@@ -8,9 +8,11 @@ export class AmqpConsumerHealthIndicator extends HealthIndicator {
 		this.amqpConnection = connection;
 	}
 
-	public isHealthy(key: string): HealthIndicatorResult {
-		const { consumerTags, channels } = this.amqpConnection;
-		console.log('CHANNELS', channels);
+	public async isHealthy(key: string) {
+		const { consumerTags, channel } = this.amqpConnection;
+		const res = await this.amqpConnection.channel.checkQueue(key);
+		console.log('CHECK_QUEUE', res);
+		console.log('CHANNEL', channel);
 		console.log('CONSUMER_TAGS', consumerTags);
 
 		const isHealthy = consumerTags.length > 0;
