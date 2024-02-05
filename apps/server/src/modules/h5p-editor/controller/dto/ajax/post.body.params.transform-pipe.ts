@@ -16,6 +16,8 @@ import {
 @Injectable()
 export class AjaxPostBodyParamsTransformPipe implements PipeTransform {
 	async transform(value: AjaxPostBodyParams): Promise<unknown> {
+		console.log("Value:");
+		console.log(value);
 		if (value === undefined) {
 			return undefined;
 		}
