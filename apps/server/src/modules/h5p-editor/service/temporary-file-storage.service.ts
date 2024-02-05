@@ -108,11 +108,11 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 				ownedByUserId: user.id,
 				expiresAt: expirationTime,
 				birthtime: new Date(),
-				size: dataStream.bytesRead,
+				size: dataStream.bytesRead ?? 0,
 			});
 		} else {
 			tempFile.expiresAt = expirationTime;
-			tempFile.size = dataStream.bytesRead;
+			tempFile.size = dataStream.bytesRead ?? 0;
 		}
 
 		await this.repo.save(tempFile);
