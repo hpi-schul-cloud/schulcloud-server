@@ -10,7 +10,6 @@ export class LibrariesBodyParams {
 
 export class ContentBodyParams {
 	@ApiProperty()
-	@IsMongoId()
 	contentId!: string;
 
 	@ApiProperty()
