@@ -211,8 +211,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.controller.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="21"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.controller.ts:21</a></div>
                         </td>
                     </tr>
 
@@ -263,12 +263,14 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
-import { Controller, Delete, ForbiddenException, HttpCode, NotFoundException, Param } from &#x27;@nestjs/common&#x27;;
+import { Controller, Delete, ForbiddenException, HttpCode, NotFoundException, Param, UseGuards } from &#x27;@nestjs/common&#x27;;
 import { ApiValidationError } from &#x27;@shared/common&#x27;;
+import { AuthGuard } from &#x27;@nestjs/passport&#x27;;
 import { TldrawService } from &#x27;../service&#x27;;
 import { TldrawDeleteParams } from &#x27;./tldraw.params&#x27;;
 
 @ApiTags(&#x27;Tldraw Document&#x27;)
+@UseGuards(AuthGuard(&#x27;api-key&#x27;))
 @Controller(&#x27;tldraw-document&#x27;)
 export class TldrawController {
 	constructor(private readonly tldrawService: TldrawService) {}

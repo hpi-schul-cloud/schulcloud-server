@@ -482,13 +482,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/BoardModule.html" data-type="entity-link" >BoardModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-BoardModule-a870dceab9adfd5e741c12ebeecbced08b4b149026923496d93cb0324b942adff9277ae111151d2990d88ae3759586b0081bff2901f896ca92438aedaf4113bc"' : 'data-bs-target="#xs-injectables-links-module-BoardModule-a870dceab9adfd5e741c12ebeecbced08b4b149026923496d93cb0324b942adff9277ae111151d2990d88ae3759586b0081bff2901f896ca92438aedaf4113bc"' }>
+                                        'data-bs-target="#injectables-links-module-BoardModule-80a7be8018c1707faf94782ecc07b25c2b35573ee646f728f5622eb96707969515dee6caa918e2a26f1457e682584252c4cd8147a0c5ef2ccf935630217f903e"' : 'data-bs-target="#xs-injectables-links-module-BoardModule-80a7be8018c1707faf94782ecc07b25c2b35573ee646f728f5622eb96707969515dee6caa918e2a26f1457e682584252c4cd8147a0c5ef2ccf935630217f903e"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-BoardModule-a870dceab9adfd5e741c12ebeecbced08b4b149026923496d93cb0324b942adff9277ae111151d2990d88ae3759586b0081bff2901f896ca92438aedaf4113bc"' :
-                                        'id="xs-injectables-links-module-BoardModule-a870dceab9adfd5e741c12ebeecbced08b4b149026923496d93cb0324b942adff9277ae111151d2990d88ae3759586b0081bff2901f896ca92438aedaf4113bc"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-BoardModule-80a7be8018c1707faf94782ecc07b25c2b35573ee646f728f5622eb96707969515dee6caa918e2a26f1457e682584252c4cd8147a0c5ef2ccf935630217f903e"' :
+                                        'id="xs-injectables-links-module-BoardModule-80a7be8018c1707faf94782ecc07b25c2b35573ee646f728f5622eb96707969515dee6caa918e2a26f1457e682584252c4cd8147a0c5ef2ccf935630217f903e"' }>
                                         <li class="link">
                                             <a href="injectables/BoardDoAuthorizableService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BoardDoAuthorizableService</a>
                                         </li>
@@ -524,9 +524,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </li>
                                         <li class="link">
                                             <a href="injectables/CourseRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >CourseRepo</a>
-                                        </li>
-                                        <li class="link">
-                                            <a href="injectables/DrawingElementAdapterService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >DrawingElementAdapterService</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/RecursiveDeleteVisitor.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >RecursiveDeleteVisitor</a>
@@ -2563,13 +2560,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/TldrawClientModule.html" data-type="entity-link" >TldrawClientModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-TldrawClientModule-6d72579835759c681efbf7ae25a5d88cb421eda37a30d4bb1c09c908e41618dd830ba79e087b0d2358e7f7316be0f9f7a55f7f0d1b921482c6ca56888c9904ee"' : 'data-bs-target="#xs-injectables-links-module-TldrawClientModule-6d72579835759c681efbf7ae25a5d88cb421eda37a30d4bb1c09c908e41618dd830ba79e087b0d2358e7f7316be0f9f7a55f7f0d1b921482c6ca56888c9904ee"' }>
+                                        'data-bs-target="#injectables-links-module-TldrawClientModule-bf6990a958e7b7f75b94b51f318f79c5c1887b918313844849e323ccd0d568a1c0645c24d6cc66582b9f01c2b3a9fa1f57e2e7dc4bbaf56e7b40eff0b80bc381"' : 'data-bs-target="#xs-injectables-links-module-TldrawClientModule-bf6990a958e7b7f75b94b51f318f79c5c1887b918313844849e323ccd0d568a1c0645c24d6cc66582b9f01c2b3a9fa1f57e2e7dc4bbaf56e7b40eff0b80bc381"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawClientModule-6d72579835759c681efbf7ae25a5d88cb421eda37a30d4bb1c09c908e41618dd830ba79e087b0d2358e7f7316be0f9f7a55f7f0d1b921482c6ca56888c9904ee"' :
-                                        'id="xs-injectables-links-module-TldrawClientModule-6d72579835759c681efbf7ae25a5d88cb421eda37a30d4bb1c09c908e41618dd830ba79e087b0d2358e7f7316be0f9f7a55f7f0d1b921482c6ca56888c9904ee"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawClientModule-bf6990a958e7b7f75b94b51f318f79c5c1887b918313844849e323ccd0d568a1c0645c24d6cc66582b9f01c2b3a9fa1f57e2e7dc4bbaf56e7b40eff0b80bc381"' :
+                                        'id="xs-injectables-links-module-TldrawClientModule-bf6990a958e7b7f75b94b51f318f79c5c1887b918313844849e323ccd0d568a1c0645c24d6cc66582b9f01c2b3a9fa1f57e2e7dc4bbaf56e7b40eff0b80bc381"' }>
                                         <li class="link">
                                             <a href="injectables/DrawingElementAdapterService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >DrawingElementAdapterService</a>
                                         </li>
@@ -6072,9 +6069,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/DeletionRequestUc.html" data-type="entity-link" >DeletionRequestUc</a>
                                 </li>
                                 <li class="link">
-                                    <a href="injectables/DrawingElementAdapterService.html" data-type="entity-link" >DrawingElementAdapterService</a>
-                                </li>
-                                <li class="link">
                                     <a href="injectables/DurationLoggingInterceptor.html" data-type="entity-link" >DurationLoggingInterceptor</a>
                                 </li>
                                 <li class="link">
@@ -7469,6 +7463,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/TemporaryFileProperties.html" data-type="entity-link" >TemporaryFileProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/TldrawClientConfig.html" data-type="entity-link" >TldrawClientConfig</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/TldrawConfig.html" data-type="entity-link" >TldrawConfig</a>

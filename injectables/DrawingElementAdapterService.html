@@ -133,6 +133,32 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#apiKey" >apiKey</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#baseUrl" >baseUrl</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Readonly</span>
+                                <a href="#tldrawDocumentEndpoint" >tldrawDocumentEndpoint</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -142,6 +168,14 @@
                 <tr>
                     <td class="col-md-4">
                         <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#apiKeyHeader" >apiKeyHeader</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#defaultHeaders" >defaultHeaders</a>
+                            </li>
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#deleteDrawingBinData" >deleteDrawingBinData</a>
@@ -164,12 +198,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, httpService: HttpService)</code>
+<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, httpService: HttpService, configService: <a href="../interfaces/TldrawClientConfig.html" target="_self">ConfigService&lt;TldrawClientConfig | &gt;</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/tldraw-client/service/drawing-element-adapter.service.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/tldraw-client/service/drawing-element-adapter.service.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -210,6 +244,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>configService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/TldrawClientConfig.html" target="_self" >ConfigService&lt;TldrawClientConfig | &gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -224,6 +270,84 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="apiKeyHeader"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>apiKeyHeader</b></span>
+                        <a href="#apiKeyHeader"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>apiKeyHeader()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">apps/server/src/modules/tldraw-client/service/drawing-element-adapter.service.ts:33</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>{ &#x27;X-Api-Key&#x27;: string; Accept: string; }</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="defaultHeaders"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>defaultHeaders</b></span>
+                        <a href="#defaultHeaders"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>defaultHeaders()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">apps/server/src/modules/tldraw-client/service/drawing-element-adapter.service.ts:37</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>{ headers: { &#x27;X-Api-Key&#x27;: string; Accept: string; }; }</code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -246,8 +370,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="13"
-                                    class="link-to-prism">apps/server/src/modules/tldraw-client/service/drawing-element-adapter.service.ts:13</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">apps/server/src/modules/tldraw-client/service/drawing-element-adapter.service.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -294,6 +418,96 @@
         </tbody>
     </table>
 </section>
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="apiKey"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>apiKey</b></span>
+                        <a href="#apiKey"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/tldraw-client/service/drawing-element-adapter.service.ts:12</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="baseUrl"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>baseUrl</b></span>
+                        <a href="#baseUrl"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/tldraw-client/service/drawing-element-adapter.service.ts:10</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="tldrawDocumentEndpoint"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>tldrawDocumentEndpoint</b></span>
+                        <a href="#tldrawDocumentEndpoint"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/tldraw-client/service/drawing-element-adapter.service.ts:14</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
 
     </div>
 
@@ -302,23 +516,43 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { firstValueFrom } from &#x27;rxjs&#x27;;
-import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
 import { HttpService } from &#x27;@nestjs/axios&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
+import { TldrawClientConfig } from &#x27;../interface&#x27;;
 
 @Injectable()
 export class DrawingElementAdapterService {
-	constructor(private logger: LegacyLogger, private readonly httpService: HttpService) {
+	private readonly baseUrl: string;
+
+	private readonly apiKey: string;
+
+	private readonly tldrawDocumentEndpoint: string;
+
+	constructor(
+		private logger: LegacyLogger,
+		private readonly httpService: HttpService,
+		private readonly configService: ConfigService&lt;TldrawClientConfig, true&gt;
+	) {
 		this.logger.setContext(DrawingElementAdapterService.name);
+
+		this.baseUrl &#x3D; this.configService.get&lt;string&gt;(&#x27;TLDRAW_ADMIN_API_CLIENT_BASE_URL&#x27;);
+		this.apiKey &#x3D; this.configService.get&lt;string&gt;(&#x27;TLDRAW_ADMIN_API_CLIENT_API_KEY&#x27;);
+
+		this.tldrawDocumentEndpoint &#x3D; new URL(&#x27;/api/v3/tldraw-document&#x27;, this.baseUrl).toString();
 	}
 
 	async deleteDrawingBinData(docName: string): Promise&lt;void&gt; {
-		await firstValueFrom(
-			this.httpService.delete(&#x60;${Configuration.get(&#x27;TLDRAW_URI&#x27;) as string}/api/v3/tldraw-document/${docName}&#x60;, {
-				headers: {
-					Accept: &#x27;Application/json&#x27;,
-				},
-			})
-		);
+		await firstValueFrom(this.httpService.delete(&#x60;${this.tldrawDocumentEndpoint}/${docName}&#x60;, this.defaultHeaders()));
+	}
+
+	private apiKeyHeader() {
+		return { &#x27;X-Api-Key&#x27;: this.apiKey, Accept: &#x27;Application/json&#x27; };
+	}
+
+	private defaultHeaders() {
+		return {
+			headers: this.apiKeyHeader(),
+		};
 	}
 }
 </code></pre>

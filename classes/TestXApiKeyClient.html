@@ -404,8 +404,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">apps/server/src/shared/testing/test-xApiKey-client.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/shared/testing/test-xApiKey-client.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -477,8 +477,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="58"
-                                    class="link-to-prism">apps/server/src/shared/testing/test-xApiKey-client.ts:58</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="64"
+                                    class="link-to-prism">apps/server/src/shared/testing/test-xApiKey-client.ts:64</a></div>
                         </td>
                     </tr>
 
@@ -546,8 +546,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="24"
-                                    class="link-to-prism">apps/server/src/shared/testing/test-xApiKey-client.ts:24</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/shared/testing/test-xApiKey-client.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -684,8 +684,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="67"
-                                    class="link-to-prism">apps/server/src/shared/testing/test-xApiKey-client.ts:67</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">apps/server/src/shared/testing/test-xApiKey-client.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -757,8 +757,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">apps/server/src/shared/testing/test-xApiKey-client.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="48"
+                                    class="link-to-prism">apps/server/src/shared/testing/test-xApiKey-client.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -838,8 +838,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">apps/server/src/shared/testing/test-xApiKey-client.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">apps/server/src/shared/testing/test-xApiKey-client.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -931,14 +931,20 @@ export class TestXApiKeyClient {
 
 	public get(subPath?: string): supertest.Test {
 		const path &#x3D; this.getPath(subPath);
-		const testRequestInstance &#x3D; supertest(this.app.getHttpServer()).get(path).set(&#x27;Accept&#x27;, &#x27;application/json&#x27;);
+		const testRequestInstance &#x3D; supertest(this.app.getHttpServer())
+			.get(path)
+			.set(&#x27;X-API-KEY&#x27;, this.API_KEY)
+			.set(&#x27;Accept&#x27;, &#x27;application/json&#x27;);
 
 		return testRequestInstance;
 	}
 
 	public delete(subPath?: string): supertest.Test {
 		const path &#x3D; this.getPath(subPath);
-		const testRequestInstance &#x3D; supertest(this.app.getHttpServer()).delete(path).set(&#x27;Accept&#x27;, &#x27;application/json&#x27;);
+		const testRequestInstance &#x3D; supertest(this.app.getHttpServer())
+			.delete(path)
+			.set(&#x27;X-API-KEY&#x27;, this.API_KEY)
+			.set(&#x27;Accept&#x27;, &#x27;application/json&#x27;);
 
 		return testRequestInstance;
 	}
