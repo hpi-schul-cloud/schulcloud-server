@@ -8,10 +8,9 @@ export class AmqpConsumerHealthIndicator extends HealthIndicator {
 		this.amqpConnection = connection;
 	}
 
-	public async isHealthy(key: string) {
+	public isHealthy(key: string) {
 		const { consumerTags, channel } = this.amqpConnection;
-		const res = await this.amqpConnection.channel.checkQueue(key);
-		console.log('CHECK_QUEUE', res);
+
 		console.log('CHANNEL', channel);
 		console.log('CONSUMER_TAGS', consumerTags);
 
