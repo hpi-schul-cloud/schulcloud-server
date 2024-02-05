@@ -1,7 +1,9 @@
-import { DynamicModule, Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
+import { HealthCheckModule } from '@infra/healthcheck/healthcheck.module';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { S3ClientAdapter, S3ClientModule } from '@infra/s3-client';
+import { DynamicModule, Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { createConfigModuleOptions } from '@src/config';
 import { Logger, LoggerModule } from '@src/core/logger';
 import { PreviewConfig } from './interface/preview-consumer-config';
@@ -25,6 +27,8 @@ export class PreviewGeneratorConsumerModule {
 		return {
 			module: PreviewGeneratorConsumerModule,
 			imports: [
+				HealthCheckModule.register(),
+				ScheduleModule.forRoot(),
 				LoggerModule,
 				S3ClientModule.register([storageConfig]),
 				RabbitMQWrapperModule,
