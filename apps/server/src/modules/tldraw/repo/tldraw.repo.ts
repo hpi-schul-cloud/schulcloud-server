@@ -13,8 +13,8 @@ export class TldrawRepo {
 	}
 
 	public async findByDocName(docName: string): Promise<TldrawDrawing[]> {
-		const domainObject = await this.em.find(TldrawDrawing, { docName });
-		return domainObject;
+		const drawings = await this.em.find(TldrawDrawing, { docName });
+		return drawings;
 	}
 
 	public async delete(entity: TldrawDrawing | TldrawDrawing[]): Promise<void> {
