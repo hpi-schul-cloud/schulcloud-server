@@ -180,7 +180,7 @@
 			"default": "",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
 		},
-		"BLOCKLIST_OF_EMAIL_DOMAINS":{
+		"BLOCKLIST_OF_EMAIL_DOMAINS": {
 			"type": "string",
 			"default": "",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
@@ -1034,6 +1034,11 @@
 			"description": "Nest Log level for api. The http flag is for request logging. The http flag do only work by api methods with added 'request logging interceptor'.",
 			"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 		},
+		"EXIT_ON_ERROR": {
+			"type": "boolean",
+			"default": false,
+			"description": "By default, the application is not terminated in our project after an uncaughtException has been logged. If this is not the desired behavior, set exitOnError to true."
+		},
 		"SYSTEM_LOG_LEVEL": {
 			"type": "string",
 			"default": "requestError",
@@ -1470,7 +1475,16 @@
 		"TLDRAW": {
 			"type": "object",
 			"description": "Configuration of tldraw related settings",
-			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_FLUSH_SIZE", "MAX_DOCUMENT_SIZE", "ASSETS_ENABLED", "ASSETS_MAX_SIZE", "ASSETS_ALLOWED_EXTENSIONS_LIST"],
+			"required": [
+				"PING_TIMEOUT",
+				"SOCKET_PORT",
+				"GC_ENABLED",
+				"DB_FLUSH_SIZE",
+				"MAX_DOCUMENT_SIZE",
+				"ASSETS_ENABLED",
+				"ASSETS_MAX_SIZE",
+				"ASSETS_ALLOWED_EXTENSIONS_LIST"
+			],
 			"properties": {
 				"SOCKET_PORT": {
 					"type": "number",
