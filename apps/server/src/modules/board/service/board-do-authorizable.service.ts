@@ -6,7 +6,6 @@ import {
 	BoardExternalReferenceType,
 	BoardRoles,
 	ColumnBoard,
-	isDrawingElement,
 	UserBoardRoles,
 } from '@shared/domain/domainobject';
 import { Course } from '@shared/domain/entity';
@@ -30,21 +29,20 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 
 	async getBoardAuthorizable(boardDo: AnyBoardDo): Promise<BoardDoAuthorizable> {
 		const rootBoardDo = await this.getRootBoardDo(boardDo);
+		const parentDo = await this.getParentDo(boardDo);
 		let users: UserBoardRoles[] = [];
 
 		if (rootBoardDo.context?.type === BoardExternalReferenceType.Course) {
 			const course = await this.courseRepo.findById(rootBoardDo.context.id);
-			// TODO find a better way to handle authorization depending on BoardDo type
-			const isDrawing = isDrawingElement(boardDo);
-			users = this.mapCourseUsersToUserBoardRoles(course, isDrawing);
+			users = this.mapCourseUsersToUserBoardRoles(course);
 		}
 
-		const boardDoAuthorizable = new BoardDoAuthorizable({ users, id: boardDo.id });
+		const boardDoAuthorizable = new BoardDoAuthorizable({ users, id: boardDo.id, boardDo, parentDo });
 
 		return boardDoAuthorizable;
 	}
 
-	private mapCourseUsersToUserBoardRoles(course: Course, isDrawing: boolean): UserBoardRoles[] {
+	private mapCourseUsersToUserBoardRoles(course: Course): UserBoardRoles[] {
 		const users = [
 			...course.getTeachersList().map((user) => {
 				return {
@@ -67,15 +65,17 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 					userId: user.id,
 					firstName: user.firstName,
 					lastName: user.lastName,
-					// TODO: fix this temporary hack allowing students to upload files to the DrawingElement
-					// linked with getElementWithWritePermission method in element.uc.ts
-					// this is needed to allow students to upload/delete files to/from the tldraw whiteboard (DrawingElement)
-					roles: isDrawing ? [BoardRoles.EDITOR] : [BoardRoles.READER],
+					roles: [BoardRoles.READER],
 				};
 			}),
 		];
 		// TODO check unique
 		return users;
+	}
+
+	private async getParentDo(boardDo: AnyBoardDo): Promise<Promise<AnyBoardDo> | undefined> {
+		const parentDo = await this.boardDoRepo.findParentOfId(boardDo.id);
+		return parentDo;
 	}
 
 	private async getRootBoardDo(boardDo: AnyBoardDo): Promise<ColumnBoard> {

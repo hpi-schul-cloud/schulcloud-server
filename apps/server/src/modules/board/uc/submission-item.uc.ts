@@ -70,8 +70,7 @@ export class SubmissionItemUc extends BaseUc {
 	): Promise<SubmissionItem> {
 		const submissionItem = await this.submissionItemService.findById(submissionItemId);
 
-		this.checkSubmissionItemCreator(userId, submissionItem);
-		await this.checkPermission(userId, submissionItem, Action.read);
+		await this.checkPermission(userId, submissionItem, Action.write);
 
 		await this.submissionItemService.update(submissionItem, completed);
 
@@ -80,8 +79,7 @@ export class SubmissionItemUc extends BaseUc {
 
 	async deleteSubmissionItem(userId: EntityId, submissionItemId: EntityId): Promise<void> {
 		const submissionItem = await this.submissionItemService.findById(submissionItemId);
-		this.checkSubmissionItemCreator(userId, submissionItem);
-		await this.checkPermission(userId, submissionItem, Action.read);
+		await this.checkPermission(userId, submissionItem, Action.write);
 
 		await this.submissionItemService.delete(submissionItem);
 	}
@@ -103,8 +101,7 @@ export class SubmissionItemUc extends BaseUc {
 			throw new ForbiddenException();
 		}
 
-		this.checkSubmissionItemCreator(userId, submissionItem);
-		await this.checkPermission(userId, submissionItem, Action.read);
+		await this.checkPermission(userId, submissionItem, Action.write);
 
 		const element = await this.elementService.create(submissionItem, type);
 

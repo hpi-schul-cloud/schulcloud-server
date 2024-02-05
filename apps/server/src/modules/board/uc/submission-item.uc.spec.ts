@@ -203,21 +203,14 @@ describe(SubmissionItemUc.name, () => {
 				new BoardDoAuthorizable({
 					users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 					id: submissionItem.id,
+					boardDo: submissionItem,
 				})
 			);
 			const boardDoAuthorizable = await boardDoAuthorizableService.getBoardAuthorizable(submissionItem);
 
 			await uc.updateSubmissionItem(user.id, submissionItem.id, false);
-			const context = { action: Action.read, requiredPermissions: [] };
+			const context = { action: Action.write, requiredPermissions: [] };
 			expect(authorizationService.checkPermission).toBeCalledWith(user, boardDoAuthorizable, context);
-		});
-		it('should throw if user is not creator of submission item', async () => {
-			const user2 = userFactory.buildWithId();
-			const { submissionItem } = setup();
-
-			await expect(uc.updateSubmissionItem(user2.id, submissionItem.id, false)).rejects.toThrow(
-				new ForbiddenException()
-			);
 		});
 		it('should call service to update submission item', async () => {
 			const { submissionItem, user } = setup();
@@ -263,7 +256,7 @@ describe(SubmissionItemUc.name, () => {
 				const boardDoAuthorizable = await boardDoAuthorizableService.getBoardAuthorizable(submissionItem);
 
 				await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
-				const context = { action: Action.read, requiredPermissions: [] };
+				const context = { action: Action.write, requiredPermissions: [] };
 				expect(authorizationService.checkPermission).toBeCalledWith(user, boardDoAuthorizable, context);
 			});
 

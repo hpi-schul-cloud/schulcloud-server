@@ -1,6 +1,5 @@
 import { Action, AuthorizationService } from '@modules/authorization';
-import { ForbiddenException } from '@nestjs/common';
-import { AnyBoardDo, BoardRoles, SubmissionItem, UserBoardRoles } from '@shared/domain/domainobject';
+import { AnyBoardDo, BoardRoles, UserBoardRoles } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { BoardDoAuthorizableService } from '../service';
 
@@ -17,12 +16,6 @@ export abstract class BaseUc {
 		const context = { action, requiredPermissions: [] };
 
 		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
-	}
-
-	protected checkSubmissionItemCreator(userId: EntityId, submissionItem: SubmissionItem): void {
-		if (submissionItem.userId !== userId) {
-			throw new ForbiddenException();
-		}
 	}
 
 	protected isUserBoardEditor(userId: EntityId, userBoardRoles: UserBoardRoles[]): boolean {

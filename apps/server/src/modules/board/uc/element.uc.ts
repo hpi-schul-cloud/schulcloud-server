@@ -32,36 +32,18 @@ export class ElementUc extends BaseUc {
 		elementId: EntityId,
 		content: AnyElementContentBody
 	): Promise<AnyContentElementDo> {
-		const element = await this.getElementWithWritePermission(userId, elementId);
+		const element = await this.elementService.findById(elementId);
+		await this.checkPermission(userId, element, Action.write);
 
 		await this.elementService.update(element, content);
 		return element;
 	}
 
 	async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {
-		const element = await this.getElementWithWritePermission(userId, elementId);
+		const element = await this.elementService.findById(elementId);
+		await this.checkPermission(userId, element, Action.write);
 
 		await this.elementService.delete(element);
-	}
-
-	private async getElementWithWritePermission(userId: EntityId, elementId: EntityId): Promise<AnyContentElementDo> {
-		const element = await this.elementService.findById(elementId);
-
-		await this.checkElementWritePermission(userId, elementId);
-
-		return element;
-	}
-
-	private async checkElementWritePermission(userId: EntityId, elementId: EntityId): Promise<void> {
-		const element = await this.elementService.findById(elementId);
-		const parent = await this.elementService.findParentOfId(elementId);
-
-		if (isSubmissionItem(parent)) {
-			this.checkSubmissionItemCreator(userId, parent);
-			await this.checkPermission(userId, element, Action.read);
-		} else {
-			await this.checkPermission(userId, element, Action.write);
-		}
 	}
 
 	async checkElementReadPermission(userId: EntityId, elementId: EntityId): Promise<void> {

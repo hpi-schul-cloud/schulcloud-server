@@ -1,5 +1,6 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
+import { AnyBoardDo } from './any-board-do';
 
 export enum BoardRoles {
 	EDITOR = 'editor',
@@ -16,10 +17,28 @@ export interface UserBoardRoles {
 export interface BoardDoAuthorizableProps extends AuthorizableObject {
 	id: EntityId;
 	users: UserBoardRoles[];
+	boardDo?: AnyBoardDo;
+	parentDo?: AnyBoardDo;
 }
 
 export class BoardDoAuthorizable extends DomainObject<BoardDoAuthorizableProps> {
 	get users(): UserBoardRoles[] {
 		return this.props.users;
+	}
+
+	get boardDo(): AnyBoardDo | undefined {
+		return this.props.boardDo;
+	}
+
+	set boardDo(value: AnyBoardDo | undefined) {
+		this.props.boardDo = value;
+	}
+
+	get parentDo(): AnyBoardDo | undefined {
+		return this.props.parentDo;
+	}
+
+	set parentDo(value: AnyBoardDo | undefined) {
+		this.props.parentDo = value;
 	}
 }
