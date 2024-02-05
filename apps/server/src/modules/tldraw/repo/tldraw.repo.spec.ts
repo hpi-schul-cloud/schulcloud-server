@@ -87,24 +87,22 @@ describe('TldrawRepo', () => {
 	});
 
 	describe('delete', () => {
-		describe('when finding by docName and deleting all records', () => {
+		describe('when drawings exist', () => {
 			const setup = async () => {
 				const drawing = tldrawEntityFactory.build();
 
 				await repo.create(drawing);
 
-				return {
-					drawing,
-				};
+				return { drawing };
 			};
 
-			it('should delete all records', async () => {
+			it('should delete the specified drawing', async () => {
 				const { drawing } = await setup();
 
-				const results = await repo.findByDocName(drawing.docName);
-				await repo.delete(results);
+				await repo.delete([drawing]);
 
-				expect(results.length).not.toEqual(0);
+				const results = await repo.findByDocName(drawing.docName);
+				expect(results.length).toEqual(0);
 			});
 		});
 	});
