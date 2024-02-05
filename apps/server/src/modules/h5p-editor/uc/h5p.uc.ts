@@ -164,7 +164,7 @@ export class H5PEditorUc {
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 			console.log(err)
-			return h5pErrorMapper.mapH5pError(err);
+			throw h5pErrorMapper.mapH5pError(err);
 		}
 	}
 
