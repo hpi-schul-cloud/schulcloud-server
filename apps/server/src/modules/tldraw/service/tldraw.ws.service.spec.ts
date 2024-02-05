@@ -17,6 +17,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { MongoMemoryDatabaseModule } from '@infra/database';
+import { YMap } from 'yjs/dist/src/types/YMap';
+import { FileRecordParentType } from '@infra/rabbitmq';
 import { TldrawRedisFactory } from '../redis';
 import { TldrawWs } from '../controller';
 import { TldrawDrawing } from '../entities';
@@ -25,6 +27,7 @@ import { TestConnection, tldrawTestConfig } from '../testing';
 import { WsSharedDocDo } from '../domain';
 import { TldrawWsService } from '.';
 import { MetricsService } from '../metrics';
+import { TldrawAsset, TldrawShape, TldrawShapeType } from '../types';
 
 jest.mock('yjs', () => {
 	const moduleMock: unknown = {
@@ -54,6 +57,7 @@ describe('TldrawWSService', () => {
 	let service: TldrawWsService;
 	let boardRepo: TldrawBoardRepo;
 	let logger: DeepMocked<Logger>;
+	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 
 	const gatewayPort = 3346;
 	const wsUrl = TestConnection.getWsUrl(gatewayPort);
@@ -98,6 +102,7 @@ describe('TldrawWSService', () => {
 		service = testingModule.get(TldrawWsService);
 		boardRepo = testingModule.get(TldrawBoardRepo);
 		logger = testingModule.get(Logger);
+		filesStorageClientAdapterService = testingModule.get(FilesStorageClientAdapterService);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
 		await app.init();
@@ -801,6 +806,54 @@ describe('TldrawWSService', () => {
 
 				expect(flushDocumentSpy).toHaveBeenCalled();
 				expect(errorLogSpy).toHaveBeenCalled();
+				ws.close();
+			});
+		});
+
+		describe('when synchronising assets', () => {
+			const setup = async () => {
+				ws = await TestConnection.setupWs(wsUrl, 'TEST');
+				const doc = new WsSharedDocDo('TEST');
+				doc.connections.set(ws, new Set<number>());
+				const shapes: YMap<TldrawShape> = doc.getMap('shapes');
+				const assets: YMap<TldrawAsset> = doc.getMap('assets');
+				shapes.set('shape1', { id: 'shape1', type: TldrawShapeType.Image, assetId: 'asset1' });
+				shapes.set('shape2', { id: 'shape2', type: TldrawShapeType.Draw });
+				assets.set('asset1', {
+					id: 'asset1',
+					type: TldrawShapeType.Image,
+					name: 'asset1.jpg',
+					src: '/filerecordid1/file1.jpg',
+				});
+				assets.set('asset2', {
+					id: 'asset2',
+					type: TldrawShapeType.Image,
+					name: 'asset2.jpg',
+					src: '/filerecordid2/file2.jpg',
+				});
+
+				const fileDtos = [
+					{ id: 'asset1', parentId: 'parentid', name: 'file', parentType: FileRecordParentType.BoardNode },
+				];
+
+				const listFilesOfParentSpy = jest
+					.spyOn(filesStorageClientAdapterService, 'listFilesOfParent')
+					.mockResolvedValueOnce(fileDtos);
+				const deleteOneFileSpy = jest.spyOn(filesStorageClientAdapterService, 'deleteOneFile');
+
+				return {
+					doc,
+					listFilesOfParentSpy,
+					deleteOneFileSpy,
+				};
+			};
+
+			it('should call deleteOneFile on filesStorageClientAdapterService', async () => {
+				const { doc, deleteOneFileSpy } = await setup();
+
+				await service.closeConn(doc, ws);
+
+				expect(deleteOneFileSpy).toHaveBeenCalled();
 				ws.close();
 			});
 		});
