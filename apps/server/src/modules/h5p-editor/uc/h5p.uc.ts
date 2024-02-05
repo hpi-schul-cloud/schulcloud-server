@@ -163,8 +163,8 @@ export class H5PEditorUc {
 			return result;
 		} catch (err) {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-			h5pErrorMapper.mapH5pError(err);
-			return undefined;
+			console.log(err)
+			return h5pErrorMapper.mapH5pError(err);
 		}
 	}
 
