@@ -14,4 +14,5 @@ export const enum DomainName {
 	TASK = 'task',
 	TEAMS = 'teams',
 	USER = 'user',
+	SUBMISSIONS = 'submissions',
 }

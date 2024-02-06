@@ -146,4 +146,16 @@ export class Submission extends BaseEntityWithTimestamps {
 
 		return isGradedForUser;
 	}
+
+	public removeStudentId(userId: EntityId): void {
+		if (userId === this.student?.id) {
+			this.student = undefined;
+		}
+	}
+
+	public removeUserFromTeamMembers(userId: EntityId): void {
+		const modifiedArray = this.teamMembers.getItems().filter((user) => user.id !== userId);
+
+		this.teamMembers.set(modifiedArray);
+	}
 }
