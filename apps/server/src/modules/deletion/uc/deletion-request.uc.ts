@@ -16,6 +16,7 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { TaskService } from '@modules/task';
 import { DomainOperation } from '@shared/domain/interface';
 import { DomainOperationBuilder } from '@shared/domain/builder/domain-operation.builder';
+import { NewsService } from '@src/modules/news/service/news.service';
 import { DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../builder';
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 import { DeletionRequest, DeletionLog } from '../domain';
@@ -41,7 +42,8 @@ export class DeletionRequestUc {
 		private readonly registrationPinService: RegistrationPinService,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly dashboardService: DashboardService,
-		private readonly taskService: TaskService
+		private readonly taskService: TaskService,
+		private readonly newsService: NewsService
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
 	}
@@ -111,6 +113,7 @@ export class DeletionRequestUc {
 				this.removeUserFromRocketChat(deletionRequest),
 				this.removeUsersDashboard(deletionRequest),
 				this.removeUserFromTasks(deletionRequest),
+				this.removeUsersDataFromNews(deletionRequest),
 			]);
 			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
 		} catch (error) {
@@ -368,6 +371,19 @@ export class DeletionRequestUc {
 			tasksModifiedByRemoveCreator.operation,
 			modifiedTasksCount,
 			modifiedTasksRef
+		);
+	}
+
+	private async removeUsersDataFromNews(deletionRequest: DeletionRequest) {
+		this.logger.debug({ action: 'removeUsersDataFromNews', deletionRequest });
+		const newsModified = await this.newsService.deleteCreatorOrUpdaterReference(deletionRequest.targetRefId);
+
+		await this.logDeletion(
+			deletionRequest,
+			newsModified.domain,
+			newsModified.operation,
+			newsModified.count,
+			newsModified.refs
 		);
 	}
 }
