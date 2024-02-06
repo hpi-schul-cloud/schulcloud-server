@@ -88,7 +88,7 @@ export class ContentStorage implements IContentStorage {
 		const file: H5pFileDto = {
 			name: filename,
 			data: stream,
-			mimeType: 'application/json',
+			mimeType: 'application/octet-stream',
 		};
 
 		await this.storageClient.create(fullPath, file);

@@ -276,7 +276,7 @@ describe('ContentStorage', () => {
 					expect.objectContaining({
 						name: filename,
 						data: stream,
-						mimeType: 'application/json',
+						mimeType: 'application/octet-stream',
 					})
 				);
 			});
