@@ -34,7 +34,7 @@ export class UserService {
 		this.logger.setContext(UserService.name);
 	}
 
-	async getUser2(userId: EntityId): Promise<User> {
+	async getUserEntity(userId: EntityId): Promise<User> {
 		const user = await this.userRepo.findById(userId, true);
 
 		return user;

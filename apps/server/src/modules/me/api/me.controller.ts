@@ -10,9 +10,9 @@ import { MeUc } from './me.uc';
 export class MeController {
 	constructor(private readonly meUc: MeUc) {}
 
-	@Get('/me')
-	public async me(@CurrentUser() user: ICurrentUser): Promise<MeResponse> {
-		const res = await this.meUc.getMe(user.userId);
+	@Get()
+	public async me(@CurrentUser() currentUser: ICurrentUser): Promise<MeResponse> {
+		const res = await this.meUc.getMe(currentUser.userId, currentUser.schoolId, currentUser.accountId);
 
 		return res;
 	}

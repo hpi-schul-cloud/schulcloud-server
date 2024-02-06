@@ -4,6 +4,7 @@ import { BaseEntityWithTimestamps } from './base.entity';
 import { Role } from './role.entity';
 import { SchoolEntity } from './school.entity';
 import { UserParentsEntity } from './user-parents.entity';
+import { EntityId } from '../types';
 
 export enum LanguageType {
 	DE = 'de',
@@ -28,7 +29,16 @@ export interface UserProperties {
 	outdatedSince?: Date;
 	previousExternalId?: string;
 	birthday?: Date;
+	customAvatarBackgroundColor?: string;
 	parents?: UserParentsEntity[];
+}
+
+interface UserInfo {
+	id: EntityId;
+	firstName: string;
+	lastName: string;
+	language?: string;
+	customAvatarBackgroundColor?: string;
 }
 
 @Entity({ tableName: 'users' })
@@ -102,6 +112,9 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property({ nullable: true })
 	birthday?: Date;
 
+	@Property()
+	customAvatarBackgroundColor?: string; // in legacy it is NOT optional, but all new users stored without default value
+
 	@Embedded(() => UserParentsEntity, { array: true, nullable: true })
 	parents?: UserParentsEntity[];
 
@@ -122,6 +135,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		this.outdatedSince = props.outdatedSince;
 		this.previousExternalId = props.previousExternalId;
 		this.birthday = props.birthday;
+		this.customAvatarBackgroundColor = props.customAvatarBackgroundColor;
 		this.parents = props.parents;
 	}
 
@@ -147,5 +161,16 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		const roles = this.roles.getItems();
 
 		return roles;
+	}
+
+	public getInfo(): UserInfo {
+		const userInfo = {
+			id: this.id,
+			firstName: this.firstName,
+			lastName: this.lastName,
+			customAvatarBackgroundColor: this.customAvatarBackgroundColor,
+		};
+
+		return userInfo;
 	}
 }
