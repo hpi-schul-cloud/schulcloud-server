@@ -11,7 +11,7 @@ import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { TldrawDrawing } from './entities';
 import { MetricsService } from './metrics';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
-import { TldrawWsService } from './service';
+import { TldrawFilesStorageAdapterService, TldrawWsService } from './service';
 import { TldrawWs } from './controller';
 import { config, TLDRAW_DB_URL } from './config';
 import { TldrawRedisFactory } from './redis';
@@ -38,6 +38,15 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		}),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 	],
-	providers: [TldrawWs, TldrawWsService, TldrawBoardRepo, TldrawRepo, YMongodb, MetricsService, TldrawRedisFactory],
+	providers: [
+		TldrawWs,
+		TldrawWsService,
+		TldrawBoardRepo,
+		TldrawRepo,
+		YMongodb,
+		MetricsService,
+		TldrawRedisFactory,
+		TldrawFilesStorageAdapterService,
+	],
 })
 export class TldrawWsModule {}
