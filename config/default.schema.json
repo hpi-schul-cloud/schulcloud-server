@@ -1575,8 +1575,7 @@
 	"required": [],
 	"allOf": [
 		{
-			"$ref": "#/definitions/FEATURE_ES_MERLIN_ENABLED",
-			"$ref": "#/definitions/ANTIVIRUS"
+			"$ref": "#/definitions/FEATURE_ES_MERLIN_ENABLED"
 		}
 	],
 	"definitions": {
