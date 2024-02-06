@@ -337,22 +337,22 @@
 				"S3_ACCESS_KEY_ID": {
 					"type": "string",
 					"default": "",
-					"description": "Access Key to S3_BUCKET_CONTENT with RW permissions"
+					"description": "Access Key to S3_BUCKET_CONTENT with RW and listing buckets permissions"
 				},
 				"S3_SECRET_ACCESS_KEY": {
 					"type": "string",
 					"default": "",
-					"description": "Secret key to to S3_BUCKET_CONTENT with RW permissions"
+					"description": "Secret key to to S3_BUCKET_CONTENT with RW and listing buckets permissions"
 				},
 				"LIBRARIES_S3_ACCESS_KEY_ID": {
 					"type": "string",
 					"default": "",
-					"description": "Access Key to S3_BUCKET_LIBRARIES (R permissions for editor, RW for library management)"
+					"description": "Access Key to S3_BUCKET_LIBRARIES (at least read and listing buckets permissions for editor, aditionally write permission for library management)"
 				},
 				"LIBRARIES_S3_SECRET_ACCESS_KEY": {
 					"type": "string",
 					"default": "",
-					"description": "Secret key to S3_BUCKET_LIBRARIES (R permissions for editor, RW for library management)"
+					"description": "Secret key to S3_BUCKET_LIBRARIES (at least read and listing buckets permissions for editor, aditionally write permission for library management)"
 				},
 				"S3_BUCKET_CONTENT": {
 					"type": "string",

@@ -34,13 +34,6 @@ spec:
         git.branch: {{ DOF_APP_DEPLOY_BRANCH_NAME }}
         git.repo: {{ DOF_APP_DEPLOY_REPO_NAME }}
     spec:
-      #securityContext:
-        #readOnlyRootFilesystem: true
-        # run as user node (uid 1000)
-        #runAsUser: 1000
-        #runAsGroup: 1000
-        #fsGroup: 1000
-        #runAsNonRoot: true
       containers:
       - name: h5p-proxy-nginx
         image: {{ H5P_PROXY_IMAGE_NAME }}:{{ H5P_PROXY_IMAGE_TAG }}
