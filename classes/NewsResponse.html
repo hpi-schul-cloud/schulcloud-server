@@ -156,6 +156,7 @@
                             </li>
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
                                 <a href="#creator" >creator</a>
                             </li>
                             <li>
@@ -354,6 +355,7 @@
                     <a name="creator"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
                         <span ><b>creator</b></span>
                         <a href="#creator"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -935,7 +937,7 @@ export class NewsResponse {
 	@ApiProperty({
 		description: &#x27;Reference to the User that created the News entity&#x27;,
 	})
-	creator: UserInfoResponse;
+	creator?: UserInfoResponse;
 
 	@ApiPropertyOptional({
 		description: &#x27;Reference to the User that updated the News entity&#x27;,

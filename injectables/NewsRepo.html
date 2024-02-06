@@ -171,6 +171,10 @@
                                 <a href="#findAllUnpublishedByUser" >findAllUnpublishedByUser</a>
                             </li>
                             <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findByCreatorOrUpdaterId" >findByCreatorOrUpdaterId</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#findNewsAndCount" >findNewsAndCount</a>
@@ -400,6 +404,75 @@
 
                                             <td>
                                             </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/News.html" target="_self" >Promise&lt;Counted&lt;News[]&gt;&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findByCreatorOrUpdaterId"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findByCreatorOrUpdaterId</b></span>
+                        <a href="#findByCreatorOrUpdaterId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findByCreatorOrUpdaterId(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="78"
+                                    class="link-to-prism">apps/server/src/shared/repo/news/news.repo.ts:78</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1013,6 +1086,15 @@ export class NewsRepo extends BaseRepo&lt;News&gt; {
 		const courseNews &#x3D; newsEntities.filter((news) &#x3D;&gt; news instanceof CourseNews);
 		await this._em.populate(courseNews, [discriminatorColumn]);
 		return [newsEntities, count];
+	}
+
+	async findByCreatorOrUpdaterId(userId: EntityId): Promise&lt;Counted&lt;News[]&gt;&gt; {
+		const scope &#x3D; new NewsScope(&#x27;$or&#x27;);
+		scope.byCreator(userId);
+		scope.byUpdater(userId);
+
+		const countedNewsList &#x3D; await this.findNewsAndCount(scope.query);
+		return countedNewsList;
 	}
 }
 </code></pre>

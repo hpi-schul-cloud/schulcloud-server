@@ -154,6 +154,7 @@
                                         </a>
                                 </li>
                                 <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#creator" 
 >
                                             creator
@@ -282,6 +283,11 @@
                                         </td>
                                     </tr>
 
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
 
 
 
@@ -591,7 +597,7 @@ export interface NewsProperties {
 	content: string;
 	displayAt: Date;
 	school: EntityId | SchoolEntity;
-	creator: EntityId | User;
+	creator?: EntityId | User;
 	target: EntityId | NewsTarget;
 
 	externalId?: string;
@@ -640,13 +646,25 @@ export abstract class News extends BaseEntityWithTimestamps {
 	@ManyToOne(() &#x3D;&gt; SchoolEntity, { fieldName: &#x27;schoolId&#x27; })
 	school!: SchoolEntity;
 
-	@ManyToOne(&#x27;User&#x27;, { fieldName: &#x27;creatorId&#x27; })
-	creator!: User;
+	@ManyToOne(&#x27;User&#x27;, { fieldName: &#x27;creatorId&#x27;, nullable: true })
+	creator?: User;
 
 	@ManyToOne(&#x27;User&#x27;, { fieldName: &#x27;updaterId&#x27;, nullable: true })
 	updater?: User;
 
 	permissions: string[] &#x3D; [];
+
+	public removeCreatorReference(creatorId: EntityId): void {
+		if (creatorId &#x3D;&#x3D;&#x3D; this.creator?.id) {
+			this.creator &#x3D; undefined;
+		}
+	}
+
+	public removeUpdaterReference(updaterId: EntityId): void {
+		if (updaterId &#x3D;&#x3D;&#x3D; this.updater?.id) {
+			this.updater &#x3D; undefined;
+		}
+	}
 
 	constructor(props: NewsProperties) {
 		super();

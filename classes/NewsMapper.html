@@ -208,8 +208,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="53"
-                                    class="link-to-prism">apps/server/src/modules/news/mapper/news.mapper.ts:53</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/modules/news/mapper/news.mapper.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -277,8 +277,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="39"
-                                    class="link-to-prism">apps/server/src/modules/news/mapper/news.mapper.ts:39</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">apps/server/src/modules/news/mapper/news.mapper.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -346,8 +346,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="75"
-                                    class="link-to-prism">apps/server/src/modules/news/mapper/news.mapper.ts:75</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">apps/server/src/modules/news/mapper/news.mapper.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -484,8 +484,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="66"
-                                    class="link-to-prism">apps/server/src/modules/news/mapper/news.mapper.ts:66</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="67"
+                                    class="link-to-prism">apps/server/src/modules/news/mapper/news.mapper.ts:67</a></div>
                         </td>
                     </tr>
 
@@ -553,7 +553,6 @@ export class NewsMapper {
 	static mapToResponse(news: News): NewsResponse {
 		const target &#x3D; TargetInfoMapper.mapToResponse(news.target);
 		const school &#x3D; SchoolInfoMapper.mapToResponse(news.school);
-		const creator &#x3D; UserInfoMapper.mapToResponse(news.creator);
 
 		const dto &#x3D; new NewsResponse({
 			id: news.id,
@@ -566,12 +565,14 @@ export class NewsMapper {
 			targetModel: news.targetModel,
 			target,
 			school,
-			creator,
 			createdAt: news.createdAt,
 			updatedAt: news.updatedAt,
 			permissions: news.permissions,
 		});
 
+		if (news.creator) {
+			dto.creator &#x3D; UserInfoMapper.mapToResponse(news.creator);
+		}
 		if (news.updater) {
 			dto.updater &#x3D; UserInfoMapper.mapToResponse(news.updater);
 		}

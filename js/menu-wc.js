@@ -782,13 +782,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/DeletionApiModule.html" data-type="entity-link" >DeletionApiModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-DeletionApiModule-8595d042257b4b880df0f0a7726374c3d8b021ef62d454086ae92fb3745b913ed57b6e89af9499c62b6fd8ddddbeb736c242f32b8bfa60d2b92f6ca6baa84750"' : 'data-bs-target="#xs-controllers-links-module-DeletionApiModule-8595d042257b4b880df0f0a7726374c3d8b021ef62d454086ae92fb3745b913ed57b6e89af9499c62b6fd8ddddbeb736c242f32b8bfa60d2b92f6ca6baa84750"' }>
+                                            'data-bs-target="#controllers-links-module-DeletionApiModule-26712b33aebfbd91be37be61c5d750569043a0a486593fe6f0467afe714742b20476c346f23347184d905c74b997b7c870ebd8bf09dea4536a96c67bc5ca966e"' : 'data-bs-target="#xs-controllers-links-module-DeletionApiModule-26712b33aebfbd91be37be61c5d750569043a0a486593fe6f0467afe714742b20476c346f23347184d905c74b997b7c870ebd8bf09dea4536a96c67bc5ca966e"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-DeletionApiModule-8595d042257b4b880df0f0a7726374c3d8b021ef62d454086ae92fb3745b913ed57b6e89af9499c62b6fd8ddddbeb736c242f32b8bfa60d2b92f6ca6baa84750"' :
-                                            'id="xs-controllers-links-module-DeletionApiModule-8595d042257b4b880df0f0a7726374c3d8b021ef62d454086ae92fb3745b913ed57b6e89af9499c62b6fd8ddddbeb736c242f32b8bfa60d2b92f6ca6baa84750"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-DeletionApiModule-26712b33aebfbd91be37be61c5d750569043a0a486593fe6f0467afe714742b20476c346f23347184d905c74b997b7c870ebd8bf09dea4536a96c67bc5ca966e"' :
+                                            'id="xs-controllers-links-module-DeletionApiModule-26712b33aebfbd91be37be61c5d750569043a0a486593fe6f0467afe714742b20476c346f23347184d905c74b997b7c870ebd8bf09dea4536a96c67bc5ca966e"' }>
                                             <li class="link">
                                                 <a href="controllers/DeletionExecutionsController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >DeletionExecutionsController</a>
                                             </li>
@@ -799,13 +799,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-DeletionApiModule-8595d042257b4b880df0f0a7726374c3d8b021ef62d454086ae92fb3745b913ed57b6e89af9499c62b6fd8ddddbeb736c242f32b8bfa60d2b92f6ca6baa84750"' : 'data-bs-target="#xs-injectables-links-module-DeletionApiModule-8595d042257b4b880df0f0a7726374c3d8b021ef62d454086ae92fb3745b913ed57b6e89af9499c62b6fd8ddddbeb736c242f32b8bfa60d2b92f6ca6baa84750"' }>
+                                        'data-bs-target="#injectables-links-module-DeletionApiModule-26712b33aebfbd91be37be61c5d750569043a0a486593fe6f0467afe714742b20476c346f23347184d905c74b997b7c870ebd8bf09dea4536a96c67bc5ca966e"' : 'data-bs-target="#xs-injectables-links-module-DeletionApiModule-26712b33aebfbd91be37be61c5d750569043a0a486593fe6f0467afe714742b20476c346f23347184d905c74b997b7c870ebd8bf09dea4536a96c67bc5ca966e"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-DeletionApiModule-8595d042257b4b880df0f0a7726374c3d8b021ef62d454086ae92fb3745b913ed57b6e89af9499c62b6fd8ddddbeb736c242f32b8bfa60d2b92f6ca6baa84750"' :
-                                        'id="xs-injectables-links-module-DeletionApiModule-8595d042257b4b880df0f0a7726374c3d8b021ef62d454086ae92fb3745b913ed57b6e89af9499c62b6fd8ddddbeb736c242f32b8bfa60d2b92f6ca6baa84750"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-DeletionApiModule-26712b33aebfbd91be37be61c5d750569043a0a486593fe6f0467afe714742b20476c346f23347184d905c74b997b7c870ebd8bf09dea4536a96c67bc5ca966e"' :
+                                        'id="xs-injectables-links-module-DeletionApiModule-26712b33aebfbd91be37be61c5d750569043a0a486593fe6f0467afe714742b20476c346f23347184d905c74b997b7c870ebd8bf09dea4536a96c67bc5ca966e"' }>
                                         <li class="link">
                                             <a href="injectables/DeletionRequestUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >DeletionRequestUc</a>
                                         </li>
@@ -1875,13 +1875,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/NewsModule.html" data-type="entity-link" >NewsModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-NewsModule-64b49b65436a6139679db4a8ec829bac441f3b3f394bc81a728383bad6797fc54b62196e197c6632390ef360748852a51d119fe3b0622f71f4272e7b5ed7dda3"' : 'data-bs-target="#xs-controllers-links-module-NewsModule-64b49b65436a6139679db4a8ec829bac441f3b3f394bc81a728383bad6797fc54b62196e197c6632390ef360748852a51d119fe3b0622f71f4272e7b5ed7dda3"' }>
+                                            'data-bs-target="#controllers-links-module-NewsModule-872f9ace687ad5437df9c1f40f8bf9f504c4c99909792100d50b7d4963dfbe42d37469280daa0d887cbc937f990d09c7776b9eef6665fae074a12e8bd9d6e965"' : 'data-bs-target="#xs-controllers-links-module-NewsModule-872f9ace687ad5437df9c1f40f8bf9f504c4c99909792100d50b7d4963dfbe42d37469280daa0d887cbc937f990d09c7776b9eef6665fae074a12e8bd9d6e965"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-NewsModule-64b49b65436a6139679db4a8ec829bac441f3b3f394bc81a728383bad6797fc54b62196e197c6632390ef360748852a51d119fe3b0622f71f4272e7b5ed7dda3"' :
-                                            'id="xs-controllers-links-module-NewsModule-64b49b65436a6139679db4a8ec829bac441f3b3f394bc81a728383bad6797fc54b62196e197c6632390ef360748852a51d119fe3b0622f71f4272e7b5ed7dda3"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-NewsModule-872f9ace687ad5437df9c1f40f8bf9f504c4c99909792100d50b7d4963dfbe42d37469280daa0d887cbc937f990d09c7776b9eef6665fae074a12e8bd9d6e965"' :
+                                            'id="xs-controllers-links-module-NewsModule-872f9ace687ad5437df9c1f40f8bf9f504c4c99909792100d50b7d4963dfbe42d37469280daa0d887cbc937f990d09c7776b9eef6665fae074a12e8bd9d6e965"' }>
                                             <li class="link">
                                                 <a href="controllers/NewsController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >NewsController</a>
                                             </li>
@@ -1892,15 +1892,18 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-NewsModule-64b49b65436a6139679db4a8ec829bac441f3b3f394bc81a728383bad6797fc54b62196e197c6632390ef360748852a51d119fe3b0622f71f4272e7b5ed7dda3"' : 'data-bs-target="#xs-injectables-links-module-NewsModule-64b49b65436a6139679db4a8ec829bac441f3b3f394bc81a728383bad6797fc54b62196e197c6632390ef360748852a51d119fe3b0622f71f4272e7b5ed7dda3"' }>
+                                        'data-bs-target="#injectables-links-module-NewsModule-872f9ace687ad5437df9c1f40f8bf9f504c4c99909792100d50b7d4963dfbe42d37469280daa0d887cbc937f990d09c7776b9eef6665fae074a12e8bd9d6e965"' : 'data-bs-target="#xs-injectables-links-module-NewsModule-872f9ace687ad5437df9c1f40f8bf9f504c4c99909792100d50b7d4963dfbe42d37469280daa0d887cbc937f990d09c7776b9eef6665fae074a12e8bd9d6e965"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-NewsModule-64b49b65436a6139679db4a8ec829bac441f3b3f394bc81a728383bad6797fc54b62196e197c6632390ef360748852a51d119fe3b0622f71f4272e7b5ed7dda3"' :
-                                        'id="xs-injectables-links-module-NewsModule-64b49b65436a6139679db4a8ec829bac441f3b3f394bc81a728383bad6797fc54b62196e197c6632390ef360748852a51d119fe3b0622f71f4272e7b5ed7dda3"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-NewsModule-872f9ace687ad5437df9c1f40f8bf9f504c4c99909792100d50b7d4963dfbe42d37469280daa0d887cbc937f990d09c7776b9eef6665fae074a12e8bd9d6e965"' :
+                                        'id="xs-injectables-links-module-NewsModule-872f9ace687ad5437df9c1f40f8bf9f504c4c99909792100d50b7d4963dfbe42d37469280daa0d887cbc937f990d09c7776b9eef6665fae074a12e8bd9d6e965"' }>
                                         <li class="link">
                                             <a href="injectables/NewsRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >NewsRepo</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/NewsService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >NewsService</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/NewsUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >NewsUc</a>
