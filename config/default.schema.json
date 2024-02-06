@@ -1592,23 +1592,6 @@
 				"required": ["FEATURE_USER_MIGRATION_SYSTEM_ID"]
 			}
 		},
-		"ANTIVIRUS": {
-			"if": {
-				"properties": {
-					"ENABLE_FILE_SECURITY_CHECK": {
-						"const": true
-					}
-				}
-			},
-			"then": {
-				"required": [
-					"FILE_SECURITY_CHECK_SERVICE_URI",
-					"FILE_SECURITY_SERVICE_USERNAME",
-					"FILE_SECURITY_SERVICE_PASSWORD",
-					"API_HOST"
-				]
-			}
-		},
 		"LERNSTORE_ENABLED": {
 			"if": {
 				"properties": {
