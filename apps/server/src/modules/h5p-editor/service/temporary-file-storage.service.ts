@@ -83,13 +83,13 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		const filePath = this.getFilePath(user.id, filename);
 
 		let range: string | undefined;
-		if (rangeStart !== undefined && rangeEnd !== undefined) {
+		if (rangeStart && rangeEnd) {
 			// Closed range
-			range = `${rangeStart}-${rangeEnd}`;
+			range = `bytes=${rangeStart}-${rangeEnd}`;
 		}
 
-		const fileResponse = await this.s3Client.get(filePath, range);
-		return fileResponse.data;
+		const { data } = await this.s3Client.get(filePath, range);
+		return data;
 	}
 
 	/**

@@ -273,7 +273,7 @@ describe('TemporaryFileStorage', () => {
 				[undefined, undefined, undefined],
 				[100, undefined, undefined],
 				[undefined, 100, undefined],
-				[100, 999, '100-999'],
+				[100, 999, 'bytes=100-999'],
 			] as const;
 
 			return { filename, userID, fileStream, fileResponse, testRanges, user, getError };
