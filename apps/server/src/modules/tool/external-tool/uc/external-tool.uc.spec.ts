@@ -700,7 +700,10 @@ describe('ExternalToolUc', () => {
 
 				await uc.getDatasheet(user.id, toolId);
 
-				expect(schoolExternalToolService.findSchoolExternalTools).toHaveBeenCalledWith(user.school.id, toolId);
+				expect(schoolExternalToolService.findSchoolExternalTools).toHaveBeenCalledWith({
+					schoolId: user.school.id,
+					toolId,
+				});
 			});
 
 			it('should create pdf buffer', async () => {
