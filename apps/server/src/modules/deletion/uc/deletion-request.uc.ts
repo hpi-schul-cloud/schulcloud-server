@@ -16,6 +16,7 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { SubmissionService, TaskService } from '@modules/task';
 import { DomainOperation } from '@shared/domain/interface';
 import { DomainOperationBuilder } from '@shared/domain/builder/domain-operation.builder';
+import { NewsService } from '@src/modules/news/service/news.service';
 import { DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../builder';
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 import { DeletionRequest, DeletionLog } from '../domain';
@@ -42,7 +43,8 @@ export class DeletionRequestUc {
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly dashboardService: DashboardService,
 		private readonly taskService: TaskService,
-		private readonly submissionService: SubmissionService
+		private readonly submissionService: SubmissionService,
+		private readonly newsService: NewsService
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
 	}
@@ -113,6 +115,7 @@ export class DeletionRequestUc {
 				this.removeUsersDashboard(deletionRequest),
 				this.removeUserFromTasks(deletionRequest),
 				this.removeUserFromSubmissions(deletionRequest),
+				this.removeUsersDataFromNews(deletionRequest),
 			]);
 			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
 		} catch (error) {
@@ -395,6 +398,19 @@ export class DeletionRequestUc {
 			submissionsModified.operation,
 			submissionsModified.count,
 			submissionsModified.refs
+		);
+	}
+
+	private async removeUsersDataFromNews(deletionRequest: DeletionRequest) {
+		this.logger.debug({ action: 'removeUsersDataFromNews', deletionRequest });
+		const newsModified = await this.newsService.deleteCreatorOrUpdaterReference(deletionRequest.targetRefId);
+
+		await this.logDeletion(
+			deletionRequest,
+			newsModified.domain,
+			newsModified.operation,
+			newsModified.count,
+			newsModified.refs
 		);
 	}
 }
