@@ -270,9 +270,9 @@ describe('TemporaryFileStorage', () => {
 
 			// [start, end, expected range]
 			const testRanges = [
-				[undefined, undefined, '0-'],
-				[100, undefined, '100-'],
-				[undefined, 100, '0-100'],
+				[undefined, undefined, undefined],
+				[100, undefined, undefined],
+				[undefined, 100, undefined],
 				[100, 999, '100-999'],
 			] as const;
 

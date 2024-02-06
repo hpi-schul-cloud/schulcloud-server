@@ -77,16 +77,13 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 	public async getFileStream(
 		filename: string,
 		user: IUser,
-		rangeStart = 0,
+		rangeStart?: number | undefined,
 		rangeEnd?: number | undefined
 	): Promise<Readable> {
 		const filePath = this.getFilePath(user.id, filename);
 
-		let range: string;
-		if (rangeEnd === undefined) {
-			// Open ended range
-			range = `${rangeStart}-`;
-		} else {
+		let range: string | undefined;
+		if (rangeStart !== undefined && rangeEnd !== undefined) {
 			// Closed range
 			range = `${rangeStart}-${rangeEnd}`;
 		}
