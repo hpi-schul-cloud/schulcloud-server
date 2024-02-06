@@ -1573,11 +1573,6 @@
 		}
 	},
 	"required": [],
-	"allOf": [
-		{
-			"$ref": "#/definitions/FEATURE_ES_MERLIN_ENABLED"
-		}
-	],
 	"definitions": {
 		"FEATURE_USER_MIGRATION_ENABLED": {
 			"if": {
@@ -1601,23 +1596,6 @@
 			},
 			"then": {
 				"required": ["ES_USER", "ES_PASSWORD"]
-			}
-		},
-		"FEATURE_ES_MERLIN_ENABLED": {
-			"if": {
-				"properties": {
-					"FEATURE_ES_MERLIN_ENABLED": {
-						"const": true
-					}
-				}
-			},
-			"then": {
-				"required": [
-					"SECRET_ES_MERLIN_USERNAME",
-					"SECRET_ES_MERLIN_PW",
-					"ES_MERLIN_AUTH_URL",
-					"SECRET_ES_MERLIN_COUNTIES_CREDENTIALS"
-				]
 			}
 		}
 	}
