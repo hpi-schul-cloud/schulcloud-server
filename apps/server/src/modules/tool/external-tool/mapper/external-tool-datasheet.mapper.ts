@@ -12,9 +12,9 @@ import {
 export class ExternalToolDatasheetMapper {
 	public static mapToExternalToolDatasheetTemplateData(
 		externalTool: ExternalTool,
-		schoolExternalTool: SchoolExternalTool,
 		firstName: string,
-		lastname: string
+		lastname: string,
+		schoolExternalTool?: SchoolExternalTool
 	): ExternalToolDatasheetTemplateData {
 		const externalToolData: ExternalToolDatasheetTemplateData = new ExternalToolDatasheetTemplateData({
 			createdAt: new Date().toLocaleDateString('de-DE'),
@@ -63,14 +63,14 @@ export class ExternalToolDatasheetMapper {
 
 	private static mapToIsDeactivated(
 		externalTool: ExternalTool,
-		schoolExternalTool: SchoolExternalTool
+		schoolExternalTool?: SchoolExternalTool
 	): string | undefined {
 		if (externalTool.isDeactivated) {
 			return 'Das Tool ist instanzweit deaktiviert';
 		}
 
-		if (schoolExternalTool.status?.isDeactivated) {
-			return 'Das Tool ist in mindestens einer Schule deaktiviert';
+		if (schoolExternalTool?.status?.isDeactivated) {
+			return 'Das Tool ist deaktiviert';
 		}
 
 		return undefined;
@@ -79,13 +79,13 @@ export class ExternalToolDatasheetMapper {
 	private static mapToLimitedContexts(externalTool: ExternalTool): string {
 		const restrictToContexts: string[] = [];
 		if (externalTool.restrictToContexts?.includes(ToolContextType.COURSE)) {
-			restrictToContexts.push(' Kurs');
+			restrictToContexts.push('Kurs');
 		}
 		if (externalTool.restrictToContexts?.includes(ToolContextType.BOARD_ELEMENT)) {
-			restrictToContexts.push(' Kurs-Board');
+			restrictToContexts.push('Kurs-Board');
 		}
 
-		const restrictToContextsString = restrictToContexts.join(',');
+		const restrictToContextsString = restrictToContexts.join(', ');
 
 		return restrictToContextsString;
 	}

@@ -719,6 +719,39 @@ describe('ExternalToolUc', () => {
 				expect(result).toEqual(expect.any(Buffer));
 			});
 		});
+
+		describe('when there are no schoolExternalTools', () => {
+			const setup = () => {
+				const toolId: string = new ObjectId().toHexString();
+				const user: User = userFactory.buildWithId();
+
+				const externalTool: ExternalTool = externalToolFactory.build();
+				const datasheetData: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory.build({
+					toolName: externalTool.name,
+					instance: 'dBildungscloud',
+					creatorName: `${user.firstName} ${user.lastName}`,
+				});
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				externalToolService.findById.mockResolvedValue(externalTool);
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([]);
+				pdfService.generatePdf.mockResolvedValueOnce(Buffer.from('mockData'));
+
+				return {
+					user,
+					toolId,
+					datasheetData,
+				};
+			};
+
+			it('should create pdf buffer', async () => {
+				const { toolId, user, datasheetData } = setup();
+
+				await uc.getDatasheet(user.id, toolId);
+
+				expect(pdfService.generatePdf).toHaveBeenCalledWith(datasheetData);
+			});
+		});
 	});
 
 	describe('createDatasheetFilename', () => {

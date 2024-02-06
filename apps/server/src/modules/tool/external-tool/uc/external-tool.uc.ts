@@ -111,15 +111,19 @@ export class ExternalToolUc {
 			schoolId: user.school.id,
 			toolId: externalToolId,
 		});
-		const schoolExternalTool = schoolExternalTools[0];
+
+		let schoolExternalTool: SchoolExternalTool | undefined;
+		if (schoolExternalTools.length) {
+			schoolExternalTool = schoolExternalTools[0];
+		}
 
 		const externalTool: ExternalTool = await this.externalToolService.findById(externalToolId);
 		const dataSheetData: ExternalToolDatasheetTemplateData =
 			ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(
 				externalTool,
-				schoolExternalTool,
 				user.firstName,
-				user.lastName
+				user.lastName,
+				schoolExternalTool
 			);
 
 		const buffer: Buffer = await this.datasheetPdfService.generatePdf(dataSheetData);
