@@ -92,9 +92,10 @@ export class ContentStorage implements IContentStorage {
 		};
 
 		console.log(`$$$$$$$ SAVING CONTENT FILE`);
-		console.log(stream);
 
 		await this.storageClient.create(fullPath, file);
+
+		console.log(`$$$$$$$ SAVING CONTENT FILE SUCCESSFULL`);
 	}
 
 	public async contentExists(contentId: string): Promise<boolean> {
@@ -171,8 +172,6 @@ export class ContentStorage implements IContentStorage {
 		const { data, contentLength } = await this.storageClient.get(filePath, range);
 
 		console.log(`Content Length: ${contentLength ?? 'undefined'}`);
-
-		console.log(data);
 
 		return data;
 	}

@@ -90,13 +90,18 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 
 		console.log(`$$$$$$$ Getting Temporary File "${filePath} with range "${range ?? 'undefined'}`);
 
-		const { data, contentLength } = await this.s3Client.get(filePath, range);
+		const { data } = await this.s3Client.get(filePath, range);
 
-		console.log(`Content Length: ${contentLength ?? 'undefined'}`);
-
-		console.log(data);
-
-		return data;
+		return new Promise((resolve, reject) => {
+			const chunks: Buffer[] = [];
+			data.on('data', (chunk: Buffer) => {
+				chunks.push(chunk);
+			});
+			data.on('end', () => {
+				resolve(Readable.from(Buffer.concat(chunks)));
+			});
+			data.on('error', reject);
+		});
 	}
 
 	/**
