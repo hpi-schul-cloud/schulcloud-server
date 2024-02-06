@@ -7,7 +7,6 @@ import { LanguageType } from '@shared/domain/entity';
 import { setupEntities } from '@shared/testing';
 import { AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { UserService } from '@src/modules/user';
-import { H5PErrorMapper } from '../mapper/h5p-error.mapper';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { H5PEditorUc } from './h5p.uc';
