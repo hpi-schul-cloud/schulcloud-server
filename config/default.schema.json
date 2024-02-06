@@ -1036,8 +1036,8 @@
 		},
 		"EXIT_ON_ERROR": {
 			"type": "boolean",
-			"default": false,
-			"description": "By default, the application is not terminated in our project after an uncaughtException has been logged. If this is not the desired behavior, set exitOnError to true."
+			"default": true,
+			"description": "By default, the application is terminated after an uncaughtException has been logged. If this is not the desired behavior, set exitOnError to false."
 		},
 		"SYSTEM_LOG_LEVEL": {
 			"type": "string",
