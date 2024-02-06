@@ -9,6 +9,7 @@ import { ToolContextMapper } from '../common/mapper/tool-context.mapper';
 import { ToolConfigModule } from '../tool-config.module';
 import { ExternalToolMetadataMapper } from './mapper';
 import {
+	DatasheetPdfService,
 	ExternalToolConfigurationService,
 	ExternalToolLogoService,
 	ExternalToolParameterValidationService,
@@ -31,6 +32,7 @@ import {
 		ExternalToolRepo,
 		ExternalToolMetadataMapper,
 		ToolContextMapper,
+		DatasheetPdfService,
 	],
 	exports: [
 		ExternalToolService,
@@ -38,6 +40,7 @@ import {
 		ExternalToolVersionIncrementService,
 		ExternalToolConfigurationService,
 		ExternalToolLogoService,
+		DatasheetPdfService,
 	],
 })
 export class ExternalToolModule {}
