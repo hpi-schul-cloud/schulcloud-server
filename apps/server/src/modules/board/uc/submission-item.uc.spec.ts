@@ -94,6 +94,7 @@ describe(SubmissionItemUc.name, () => {
 							{ userId: user2.id, roles: [BoardRoles.READER] },
 						],
 						id: submissionContainerEl.id,
+						boardDo: submissionContainerEl,
 					})
 				);
 
@@ -137,6 +138,7 @@ describe(SubmissionItemUc.name, () => {
 							{ userId: student2.id, roles: [BoardRoles.READER] },
 						],
 						id: submissionContainerEl.id,
+						boardDo: submissionContainerEl,
 					})
 				);
 
@@ -235,6 +237,7 @@ describe(SubmissionItemUc.name, () => {
 					new BoardDoAuthorizable({
 						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 						id: submissionItem.id,
+						boardDo: submissionItem,
 					})
 				);
 

@@ -33,7 +33,12 @@ describe(BoardDoRule.name, () => {
 		describe('when entity is applicable', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const boardDoAuthorizable = new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() });
+				const anyBoardDo = fileElementFactory.build();
+				const boardDoAuthorizable = new BoardDoAuthorizable({
+					users: [],
+					id: new ObjectId().toHexString(),
+					boardDo: anyBoardDo,
+				});
 				return { user, boardDoAuthorizable };
 			};
 
@@ -69,9 +74,11 @@ describe(BoardDoRule.name, () => {
 				const permissionB = 'b' as Permission;
 				const role = roleFactory.build({ permissions: [permissionA, permissionB] });
 				const user = userFactory.buildWithId({ roles: [role] });
+				const anyBoardDo = fileElementFactory.build();
 				const boardDoAuthorizable = new BoardDoAuthorizable({
 					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 					id: new ObjectId().toHexString(),
+					boardDo: anyBoardDo,
 				});
 
 				return { user, boardDoAuthorizable };
@@ -99,9 +106,11 @@ describe(BoardDoRule.name, () => {
 			const setup = () => {
 				const permissionA = 'a' as Permission;
 				const user = userFactory.buildWithId();
+				const anyBoardDo = fileElementFactory.build();
 				const boardDoAuthorizable = new BoardDoAuthorizable({
 					users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 					id: new ObjectId().toHexString(),
+					boardDo: anyBoardDo,
 				});
 
 				return { user, permissionA, boardDoAuthorizable };
@@ -124,9 +133,11 @@ describe(BoardDoRule.name, () => {
 				const role = roleFactory.build();
 				const user = userFactory.buildWithId({ roles: [role] });
 				const userWithoutPermision = userFactory.buildWithId({ roles: [role] });
+				const anyBoardDo = fileElementFactory.build();
 				const boardDoAuthorizable = new BoardDoAuthorizable({
 					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 					id: new ObjectId().toHexString(),
+					boardDo: anyBoardDo,
 				});
 
 				return { userWithoutPermision, boardDoAuthorizable };
@@ -147,10 +158,11 @@ describe(BoardDoRule.name, () => {
 		describe('when user does not have the desired role', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-
+				const anyBoardDo = fileElementFactory.build();
 				const boardDoAuthorizable = new BoardDoAuthorizable({
 					users: [{ userId: user.id, roles: [] }],
 					id: new ObjectId().toHexString(),
+					boardDo: anyBoardDo,
 				});
 
 				return { user, boardDoAuthorizable };
@@ -344,10 +356,12 @@ describe(BoardDoRule.name, () => {
 			describe('when user is Reader and not creator of the submissionItem', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
+					const anyBoardDo = fileElementFactory.build();
 					const submissionItem = submissionItemFactory.build({ userId: new ObjectId().toHexString() });
 					const boardDoAuthorizable = new BoardDoAuthorizable({
 						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 						id: new ObjectId().toHexString(),
+						boardDo: anyBoardDo,
 						parentDo: submissionItem,
 					});
 
@@ -384,9 +398,11 @@ describe(BoardDoRule.name, () => {
 				};
 				it('when boardDo is undefined, it should return false', () => {
 					const { user, submissionItem } = setup();
+					const anyBoardDo = fileElementFactory.build();
 					const boardDoAuthorizable = new BoardDoAuthorizable({
 						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 						id: new ObjectId().toHexString(),
+						boardDo: anyBoardDo,
 						parentDo: submissionItem,
 					});
 

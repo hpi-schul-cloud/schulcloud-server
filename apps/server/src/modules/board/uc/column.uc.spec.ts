@@ -75,6 +75,7 @@ describe(ColumnUc.name, () => {
 		const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
 			users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 			id: board.id,
+			boardDo: board,
 		});
 		const createCardBodyParams = {
 			requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],

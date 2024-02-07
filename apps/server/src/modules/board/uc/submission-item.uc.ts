@@ -18,7 +18,7 @@ import {
 	isSubmissionItem,
 	RichTextElement,
 	SubmissionItem,
-	UserBoardRoles,
+	UserWithBoardRoles,
 } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
@@ -39,7 +39,7 @@ export class SubmissionItemUc extends BaseUc {
 	async findSubmissionItems(
 		userId: EntityId,
 		submissionContainerId: EntityId
-	): Promise<{ submissionItems: SubmissionItem[]; users: UserBoardRoles[] }> {
+	): Promise<{ submissionItems: SubmissionItem[]; users: UserWithBoardRoles[] }> {
 		const submissionContainerElement = await this.elementService.findById(submissionContainerId);
 		if (!isSubmissionContainerElement(submissionContainerElement)) {
 			throw new NotFoundException('Could not find a submission container with this id');
@@ -51,7 +51,7 @@ export class SubmissionItemUc extends BaseUc {
 
 		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(submissionContainerElement);
 
-		// only board readers canto create submission items
+		// only board readers can create submission items
 		let users = boardDoAuthorizable.users.filter((user) => user.roles.includes(BoardRoles.READER));
 
 		// board readers can only see their own submission item

@@ -6,7 +6,7 @@ import {
 	BoardExternalReferenceType,
 	BoardRoles,
 	ColumnBoard,
-	UserBoardRoles,
+	UserWithBoardRoles,
 } from '@shared/domain/domainobject';
 import { Course } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
@@ -30,7 +30,7 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 	async getBoardAuthorizable(boardDo: AnyBoardDo): Promise<BoardDoAuthorizable> {
 		const rootBoardDo = await this.getRootBoardDo(boardDo);
 		const parentDo = await this.getParentDo(boardDo);
-		let users: UserBoardRoles[] = [];
+		let users: UserWithBoardRoles[] = [];
 
 		if (rootBoardDo.context?.type === BoardExternalReferenceType.Course) {
 			const course = await this.courseRepo.findById(rootBoardDo.context.id);
@@ -42,7 +42,7 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 		return boardDoAuthorizable;
 	}
 
-	private mapCourseUsersToUserBoardRoles(course: Course): UserBoardRoles[] {
+	private mapCourseUsersToUserBoardRoles(course: Course): UserWithBoardRoles[] {
 		const users = [
 			...course.getTeachersList().map((user) => {
 				return {

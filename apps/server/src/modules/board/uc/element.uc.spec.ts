@@ -17,6 +17,7 @@ import {
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from 'bson';
+import { boardDoAuthorizableFactory } from '@shared/testing/factory/domainobject/board/board-do-authorizable.factory';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { ElementUc } from './element.uc';
 
@@ -62,9 +63,7 @@ describe(ElementUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		authorizationService.checkPermission.mockImplementation(() => {});
 		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
-		boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-			new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
-		);
+		boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(boardDoAuthorizableFactory.build());
 		elementService = module.get(ContentElementService);
 		await setupEntities();
 	});
@@ -139,7 +138,7 @@ describe(ElementUc.name, () => {
 				const drawingElement = drawingElementFactory.build();
 
 				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
+					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString(), boardDo: element })
 				);
 
 				return { user, element, drawingElement };
@@ -238,6 +237,7 @@ describe(ElementUc.name, () => {
 			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
 				users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 				id: columnBoard.id,
+				boardDo: columnBoard,
 			});
 
 			boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);

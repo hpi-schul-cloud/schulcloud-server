@@ -7,7 +7,7 @@ export enum BoardRoles {
 	READER = 'reader',
 }
 
-export interface UserBoardRoles {
+export interface UserWithBoardRoles {
 	firstName?: string;
 	lastName?: string;
 	roles: BoardRoles[];
@@ -16,21 +16,21 @@ export interface UserBoardRoles {
 
 export interface BoardDoAuthorizableProps extends AuthorizableObject {
 	id: EntityId;
-	users: UserBoardRoles[];
-	boardDo?: AnyBoardDo;
+	users: UserWithBoardRoles[];
+	boardDo: AnyBoardDo;
 	parentDo?: AnyBoardDo;
 }
 
 export class BoardDoAuthorizable extends DomainObject<BoardDoAuthorizableProps> {
-	get users(): UserBoardRoles[] {
+	get users(): UserWithBoardRoles[] {
 		return this.props.users;
 	}
 
-	get boardDo(): AnyBoardDo | undefined {
+	get boardDo(): AnyBoardDo {
 		return this.props.boardDo;
 	}
 
-	set boardDo(value: AnyBoardDo | undefined) {
+	set boardDo(value: AnyBoardDo) {
 		this.props.boardDo = value;
 	}
 

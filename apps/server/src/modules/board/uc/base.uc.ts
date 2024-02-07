@@ -1,5 +1,5 @@
 import { Action, AuthorizationService } from '@modules/authorization';
-import { AnyBoardDo, BoardRoles, UserBoardRoles } from '@shared/domain/domainobject';
+import { AnyBoardDo, BoardRoles, UserWithBoardRoles } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { BoardDoAuthorizableService } from '../service';
 
@@ -18,19 +18,26 @@ export abstract class BaseUc {
 		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
 	}
 
-	protected isUserBoardEditor(userId: EntityId, userBoardRoles: UserBoardRoles[]): boolean {
-		const boardDoAuthorisedUser = userBoardRoles.filter((user) => user.userId === userId)[0];
+	protected isUserBoardEditor(userId: EntityId, userBoardRoles: UserWithBoardRoles[]): boolean {
+		const boardDoAuthorisedUser = userBoardRoles.find((user) => user.userId === userId);
 
-		return boardDoAuthorisedUser && boardDoAuthorisedUser.roles.includes(BoardRoles.EDITOR);
+		if (boardDoAuthorisedUser) {
+			return boardDoAuthorisedUser?.roles.includes(BoardRoles.EDITOR);
+		}
+
+		return false;
 	}
 
-	protected isUserBoardReader(userId: EntityId, userBoardRoles: UserBoardRoles[]): boolean {
-		const boardDoAuthorisedUser = userBoardRoles.filter((user) => user.userId === userId)[0];
+	protected isUserBoardReader(userId: EntityId, userBoardRoles: UserWithBoardRoles[]): boolean {
+		const boardDoAuthorisedUser = userBoardRoles.find((user) => user.userId === userId);
 
-		return (
-			boardDoAuthorisedUser &&
-			boardDoAuthorisedUser.roles.includes(BoardRoles.READER) &&
-			!boardDoAuthorisedUser.roles.includes(BoardRoles.EDITOR)
-		);
+		if (boardDoAuthorisedUser) {
+			return (
+				boardDoAuthorisedUser.roles.includes(BoardRoles.READER) &&
+				!boardDoAuthorisedUser.roles.includes(BoardRoles.EDITOR)
+			);
+		}
+
+		return false;
 	}
 }
