@@ -128,6 +128,51 @@ describe('user repo', () => {
 		});
 	});
 
+	describe('findByIdOrNull', () => {
+		describe('when user not found', () => {
+			const setup = () => {
+				const id = new ObjectId().toHexString();
+
+				return { id };
+			};
+
+			it('should return null', async () => {
+				const { id } = setup();
+
+				const result = await repo.findByIdOrNull(id);
+
+				expect(result).toBeNull();
+			});
+		});
+
+		describe('when user was found', () => {
+			const setup = async () => {
+				const role = roleFactory.build();
+
+				const user = userFactory.buildWithId({ roles: [role] });
+
+				await em.persistAndFlush([user, role]);
+				em.clear();
+
+				return { user, role };
+			};
+
+			it('should return user with role', async () => {
+				const { user, role } = await setup();
+
+				const result = await repo.findByIdOrNull(user.id, true);
+
+				expect(result?.id).toEqual(user.id);
+				expect(result?.roles).toEqual([
+					{
+						id: role.id,
+						name: role.name,
+					},
+				]);
+			});
+		});
+	});
+
 	describe('findByExternalIdorFail', () => {
 		let sys: SystemEntity;
 		let userA: User;
