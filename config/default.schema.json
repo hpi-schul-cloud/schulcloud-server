@@ -1572,31 +1572,5 @@
 			}
 		}
 	},
-	"required": [],
-	"definitions": {
-		"FEATURE_USER_MIGRATION_ENABLED": {
-			"if": {
-				"properties": {
-					"FEATURE_USER_MIGRATION_ENABLED": {
-						"const": true
-					}
-				}
-			},
-			"then": {
-				"required": ["FEATURE_USER_MIGRATION_SYSTEM_ID"]
-			}
-		},
-		"LERNSTORE_ENABLED": {
-			"if": {
-				"properties": {
-					"FEATURE_LERNSTORE_ENABLED": {
-						"const": true
-					}
-				}
-			},
-			"then": {
-				"required": ["ES_USER", "ES_PASSWORD"]
-			}
-		}
-	}
+	"required": []
 }
