@@ -155,15 +155,12 @@ export class UserRepo extends BaseRepo<User> {
 		return promise;
 	}
 
-	async deleteUser(userId: EntityId): Promise<EntityId | null> {
-		const user = await this._em.findOne(User, { id: userId });
-		if (user === null) {
-			return null;
-		}
+	async deleteUser(userId: EntityId): Promise<number> {
+		const deletedUserNumber = await this._em.nativeDelete(User, {
+			id: userId,
+		});
 
-		await this._em.removeAndFlush(user);
-
-		return user.id;
+		return deletedUserNumber;
 	}
 
 	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
