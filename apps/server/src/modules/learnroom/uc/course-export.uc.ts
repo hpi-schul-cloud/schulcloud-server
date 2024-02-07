@@ -17,10 +17,7 @@ export class CourseExportUc {
 	) {}
 
 	async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise<Buffer> {
-		if (!this.configService.get<boolean>('FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED')) {
-			throw new NotFoundException();
-		}
-
+		this.checkFeatureEnabled();
 		const context = AuthorizationContextBuilder.read([Permission.COURSE_EDIT]);
 		await this.authorizationService.checkPermissionByReferences(
 			userId,
@@ -30,5 +27,11 @@ export class CourseExportUc {
 		);
 
 		return this.courseExportService.exportCourse(courseId, userId, version);
+	}
+
+	private checkFeatureEnabled(): void | never {
+		if (!this.configService.get<boolean>('FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED')) {
+			throw new NotFoundException();
+		}
 	}
 }
