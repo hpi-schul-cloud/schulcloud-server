@@ -16,6 +16,7 @@ export class CommonCartridgeFileParser {
 	}
 
 	private getManifestFileAsString(archive: AdmZip): string | never {
+		// The manifest file can be named either 'imsmanifest.xml' or 'manifest.xml'
 		const manifest = archive.getEntry('imsmanifest.xml') ?? archive.getEntry('manifest.xml');
 
 		if (manifest) {
