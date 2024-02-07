@@ -26,7 +26,7 @@ export class DatasheetPdfService {
 		}
 
 		if (templateData.restrictToContexts?.length) {
-			content.push(`Dieses Tool ist auf folgende Kontexte beschränkt:${templateData.restrictToContexts}`);
+			content.push(`Dieses Tool ist auf folgende Kontexte beschränkt: ${templateData.restrictToContexts}`);
 		}
 
 		content.push('\n', `Typ des Tools: ${templateData.toolType}`);
