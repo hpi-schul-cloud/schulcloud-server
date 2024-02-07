@@ -1,31 +1,19 @@
-import { faker } from '@faker-js/faker';
 import { InternalServerErrorException } from '@nestjs/common';
+import { createCommonCartridgeWeblinkResourcePropsV110 } from '@shared/testing/factory/common-cartridge-resource-props.factory';
 import { readFile } from 'fs/promises';
-import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import {
-	CommonCartridgeWebLinkResourcePropsV110,
-	CommonCartridgeWebLinkResourceV110,
-} from './common-cartridge-web-link-resource';
+import { CommonCartridgeVersion } from '../../common-cartridge.enums';
+import { CommonCartridgeWebLinkResourceV110 } from './common-cartridge-web-link-resource';
 
 describe('CommonCartridgeWebLinkResourceV110', () => {
-	const setup = () => {
-		const props: CommonCartridgeWebLinkResourcePropsV110 = {
-			type: CommonCartridgeResourceType.WEB_LINK,
-			version: CommonCartridgeVersion.V_1_1_0,
-			identifier: faker.string.uuid(),
-			folder: faker.string.uuid(),
-			title: 'Title',
-			url: 'http://www.example.tld',
-			target: '_self',
-			windowFeatures: 'width=100;height=100;',
-		};
-		const sut = new CommonCartridgeWebLinkResourceV110(props);
-
-		return { sut, props };
-	};
-
 	describe('canInline', () => {
-		describe('when using Common Cartridge version 1.1.0', () => {
+		describe('when using Common Cartridge version 1.3.0', () => {
+			const setup = () => {
+				const props = createCommonCartridgeWeblinkResourcePropsV110();
+				const sut = new CommonCartridgeWebLinkResourceV110(props);
+
+				return { sut };
+			};
+
 			it('should return false', () => {
 				const { sut } = setup();
 				const result = sut.canInline();
@@ -37,6 +25,13 @@ describe('CommonCartridgeWebLinkResourceV110', () => {
 
 	describe('getFilePath', () => {
 		describe('when using Common Cartridge version 1.1.0', () => {
+			const setup = () => {
+				const props = createCommonCartridgeWeblinkResourcePropsV110();
+				const sut = new CommonCartridgeWebLinkResourceV110(props);
+
+				return { sut, props };
+			};
+
 			it('should return the constructed file path', () => {
 				const { sut, props } = setup();
 				const result = sut.getFilePath();
@@ -48,6 +43,17 @@ describe('CommonCartridgeWebLinkResourceV110', () => {
 
 	describe('getFileContent', () => {
 		describe('when using Common Cartridge version 1.1.0', () => {
+			const setup = () => {
+				const props = createCommonCartridgeWeblinkResourcePropsV110();
+				props.title = 'Title';
+				props.url = 'http://www.example.tld';
+				props.target = '_self';
+				props.windowFeatures = 'width=100;height=100;';
+
+				const sut = new CommonCartridgeWebLinkResourceV110(props);
+
+				return { sut };
+			};
 			it('should contain correct XML', async () => {
 				const { sut } = setup();
 				const expected = await readFile('./apps/server/test/assets/common-cartridge/v1.1.0/weblink.xml', 'utf8');
@@ -60,6 +66,13 @@ describe('CommonCartridgeWebLinkResourceV110', () => {
 
 	describe('getSupportedVersion', () => {
 		describe('when using Common Cartridge version 1.1.0', () => {
+			const setup = () => {
+				const props = createCommonCartridgeWeblinkResourcePropsV110();
+				const sut = new CommonCartridgeWebLinkResourceV110(props);
+
+				return { sut };
+			};
+
 			it('should return the supported version', () => {
 				const { sut } = setup();
 				const result = sut.getSupportedVersion();
@@ -69,20 +82,24 @@ describe('CommonCartridgeWebLinkResourceV110', () => {
 		});
 
 		describe('when using not supported Common Cartridge version', () => {
+			const notSupportedProps = createCommonCartridgeWeblinkResourcePropsV110();
+			notSupportedProps.version = CommonCartridgeVersion.V_1_3_0;
+
 			it('should throw error', () => {
-				expect(
-					() =>
-						new CommonCartridgeWebLinkResourceV110({
-							type: CommonCartridgeResourceType.WEB_LINK,
-							version: CommonCartridgeVersion.V_1_3_0,
-						} as CommonCartridgeWebLinkResourcePropsV110)
-				).toThrow(InternalServerErrorException);
+				expect(() => new CommonCartridgeWebLinkResourceV110(notSupportedProps)).toThrow(InternalServerErrorException);
 			});
 		});
 	});
 
 	describe('getManifestXmlObject', () => {
 		describe('when using Common Cartridge version 1.1.0', () => {
+			const setup = () => {
+				const props = createCommonCartridgeWeblinkResourcePropsV110();
+				const sut = new CommonCartridgeWebLinkResourceV110(props);
+
+				return { sut, props };
+			};
+
 			it('should return the manifest XML object', () => {
 				const { sut, props } = setup();
 				const result = sut.getManifestXmlObject();

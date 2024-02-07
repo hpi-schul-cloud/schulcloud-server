@@ -1,33 +1,18 @@
-import { faker } from '@faker-js/faker';
 import { InternalServerErrorException } from '@nestjs/common';
-import {
-	CommonCartridgeIntendedUseType,
-	CommonCartridgeResourceType,
-	CommonCartridgeVersion,
-} from '../../common-cartridge.enums';
-import {
-	CommonCartridgeWebContentResourcePropsV130,
-	CommonCartridgeWebContentResourceV130,
-} from './common-cartridge-web-content-resource';
+import { createCommonCartridgeWebContentResourcePropsV130 } from '@shared/testing/factory/common-cartridge-resource-props.factory';
+import { CommonCartridgeVersion } from '../../common-cartridge.enums';
+import { CommonCartridgeWebContentResourceV130 } from './common-cartridge-web-content-resource';
 
 describe('CommonCartridgeWebContentResourceV130', () => {
-	const setup = () => {
-		const props: CommonCartridgeWebContentResourcePropsV130 = {
-			type: CommonCartridgeResourceType.WEB_CONTENT,
-			version: CommonCartridgeVersion.V_1_3_0,
-			folder: faker.string.uuid(),
-			identifier: faker.string.uuid(),
-			title: faker.lorem.words(),
-			html: faker.lorem.words(),
-			intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
-		};
-		const sut = new CommonCartridgeWebContentResourceV130(props);
-
-		return { sut, props };
-	};
-
 	describe('canInline', () => {
 		describe('when using Common Cartridge version 1.3.0', () => {
+			const setup = () => {
+				const props = createCommonCartridgeWebContentResourcePropsV130();
+				const sut = new CommonCartridgeWebContentResourceV130(props);
+
+				return { sut };
+			};
+
 			it('should return false', () => {
 				const { sut } = setup();
 				const result = sut.canInline();
@@ -39,6 +24,13 @@ describe('CommonCartridgeWebContentResourceV130', () => {
 
 	describe('getFilePath', () => {
 		describe('when using Common Cartridge version 1.3.0', () => {
+			const setup = () => {
+				const props = createCommonCartridgeWebContentResourcePropsV130();
+				const sut = new CommonCartridgeWebContentResourceV130(props);
+
+				return { sut, props };
+			};
+
 			it('should return the constructed file path', () => {
 				const { sut, props } = setup();
 				const result = sut.getFilePath();
@@ -50,6 +42,13 @@ describe('CommonCartridgeWebContentResourceV130', () => {
 
 	describe('getFileContent', () => {
 		describe('when using Common Cartridge version 1.3.0', () => {
+			const setup = () => {
+				const props = createCommonCartridgeWebContentResourcePropsV130();
+				const sut = new CommonCartridgeWebContentResourceV130(props);
+
+				return { sut, props };
+			};
+
 			it('should return the HTML', () => {
 				const { sut, props } = setup();
 				const result = sut.getFileContent();
@@ -61,6 +60,13 @@ describe('CommonCartridgeWebContentResourceV130', () => {
 
 	describe('getSupportedVersion', () => {
 		describe('when using Common Cartridge version 1.3.0', () => {
+			const setup = () => {
+				const props = createCommonCartridgeWebContentResourcePropsV130();
+				const sut = new CommonCartridgeWebContentResourceV130(props);
+
+				return { sut };
+			};
+
 			it('should return the supported version', () => {
 				const { sut } = setup();
 				const result = sut.getSupportedVersion();
@@ -70,20 +76,26 @@ describe('CommonCartridgeWebContentResourceV130', () => {
 		});
 
 		describe('when using not supported Common Cartridge version', () => {
+			const notSupportedProps = createCommonCartridgeWebContentResourcePropsV130();
+			notSupportedProps.version = CommonCartridgeVersion.V_1_1_0;
+
 			it('should throw error', () => {
-				expect(
-					() =>
-						new CommonCartridgeWebContentResourceV130({
-							type: CommonCartridgeResourceType.WEB_CONTENT,
-							version: CommonCartridgeVersion.V_1_1_0,
-						} as CommonCartridgeWebContentResourcePropsV130)
-				).toThrow(InternalServerErrorException);
+				expect(() => new CommonCartridgeWebContentResourceV130(notSupportedProps)).toThrow(
+					InternalServerErrorException
+				);
 			});
 		});
 	});
 
 	describe('getManifestXmlObject', () => {
 		describe('when using Common Cartridge version 1.3.0', () => {
+			const setup = () => {
+				const props = createCommonCartridgeWebContentResourcePropsV130();
+				const sut = new CommonCartridgeWebContentResourceV130(props);
+
+				return { sut, props };
+			};
+
 			it('should return the manifest XML object', () => {
 				const { sut, props } = setup();
 				const result = sut.getManifestXmlObject();
