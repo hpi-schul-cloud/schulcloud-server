@@ -279,7 +279,6 @@ describe('TemporaryFileStorage', () => {
 			return { filename, userID, fileStream, fileResponse, testRanges, user, getError };
 		};
 
-		/*
 		describe('WHEN file exists', () => {
 			it('should S3ClientAdapter.get with range', async () => {
 				const { testRanges, filename, user, fileResponse } = setup();
@@ -303,7 +302,6 @@ describe('TemporaryFileStorage', () => {
 				expect(stream).toBe(fileStream);
 			});
 		});
-		*/
 
 		describe('WHEN S3ClientAdapter.get throws error', () => {
 			it('should throw the error', async () => {

@@ -91,11 +91,7 @@ export class ContentStorage implements IContentStorage {
 			mimeType: 'application/octet-stream',
 		};
 
-		console.log(`$$$$$$$ SAVING CONTENT FILE`);
-
 		await this.storageClient.create(fullPath, file);
-
-		console.log(`$$$$$$$ SAVING CONTENT FILE SUCCESSFULL`);
 	}
 
 	public async contentExists(contentId: string): Promise<boolean> {
@@ -167,11 +163,7 @@ export class ContentStorage implements IContentStorage {
 			range = `bytes=${rangeStart}-${rangeEnd}`;
 		}
 
-		console.log(`$$$$$$$ Getting CONTENT File "${filePath} with range "${range ?? 'undefined'}`);
-
-		const { data, contentLength } = await this.storageClient.get(filePath, range);
-
-		console.log(`Content Length: ${contentLength ?? 'undefined'}`);
+		const { data } = await this.storageClient.get(filePath, range);
 
 		return data;
 	}
