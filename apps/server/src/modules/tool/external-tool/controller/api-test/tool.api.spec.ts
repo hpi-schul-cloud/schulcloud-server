@@ -723,4 +723,81 @@ describe('ToolController (API)', () => {
 			});
 		});
 	});
+
+	describe('[GET] tools/external-tools/:externalToolId/datasheet', () => {
+		describe('when user is not authenticated', () => {
+			const setup = () => {
+				const toolId: string = new ObjectId().toHexString();
+
+				return { toolId };
+			};
+
+			it('should return unauthorized', async () => {
+				const { toolId } = setup();
+
+				const response: Response = await testApiClient.get(`${toolId}/datasheet`);
+
+				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when externalToolId is given', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId(undefined, toolId);
+
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
+				await em.persistAndFlush([adminAccount, adminUser, externalToolEntity]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
+
+				// this date will only have a daily precision, which should not impact successful tests
+				const date = new Date();
+				const year = date.getFullYear();
+				const month = date.getMonth() + 1;
+				const day = date.getDate();
+				const dateString = `${year}-${month}-${day}`;
+
+				return { loggedInClient, externalToolEntity, dateString };
+			};
+
+			it('should return the datasheet of the externalTool', async () => {
+				const { loggedInClient, externalToolEntity, dateString } = await setup();
+
+				const response: Response = await loggedInClient.get(`${externalToolEntity.id}/datasheet`);
+
+				expect(response.statusCode).toEqual(HttpStatus.OK);
+				expect(response.header).toEqual(
+					expect.objectContaining({
+						'content-type': 'application/pdf',
+						'content-disposition': `inline; filename=CTL-Datenblatt-${externalToolEntity.name}-${dateString}.pdf`,
+					})
+				);
+				expect(response.body).toEqual(expect.any(Buffer));
+			});
+		});
+
+		describe('when external tool cannot be found', () => {
+			const setup = async () => {
+				const toolId: string = new ObjectId().toHexString();
+
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({}, [Permission.TOOL_ADMIN]);
+				await em.persistAndFlush([adminAccount, adminUser]);
+				em.clear();
+
+				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
+
+				return { loggedInClient, toolId };
+			};
+
+			it('should return a not found exception', async () => {
+				const { loggedInClient, toolId } = await setup();
+
+				const response: Response = await loggedInClient.get(`${toolId}/datasheet`);
+
+				expect(response.statusCode).toEqual(HttpStatus.NOT_FOUND);
+			});
+		});
+	});
 });

@@ -14,7 +14,7 @@ export class FederalStateResponse {
 	@ApiProperty()
 	logoUrl: string;
 
-	@ApiProperty({ type: () => [CountyResponse] })
+	@ApiProperty({ type: [CountyResponse] })
 	counties: CountyResponse[];
 
 	constructor(props: FederalStateResponse) {

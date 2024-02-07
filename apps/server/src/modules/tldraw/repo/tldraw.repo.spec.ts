@@ -4,7 +4,6 @@ import { cleanupCollections } from '@shared/testing';
 import { MikroORM } from '@mikro-orm/core';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
-import { NotFoundException } from '@nestjs/common';
 import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { TldrawRepo } from './tldraw.repo';
@@ -84,33 +83,26 @@ describe('TldrawRepo', () => {
 				expect(result[0].docName).toEqual(drawing.docName);
 				expect(result[0]._id).toEqual(drawing._id);
 			});
-
-			it('should throw NotFoundException for wrong docName', async () => {
-				await expect(repo.findByDocName('invalid-name')).rejects.toThrow(NotFoundException);
-			});
 		});
 	});
 
 	describe('delete', () => {
-		describe('when finding by docName and deleting all records', () => {
+		describe('when drawings exist', () => {
 			const setup = async () => {
 				const drawing = tldrawEntityFactory.build();
 
 				await repo.create(drawing);
 
-				return {
-					drawing,
-				};
+				return { drawing };
 			};
 
-			it('should delete all records', async () => {
+			it('should delete the specified drawing', async () => {
 				const { drawing } = await setup();
 
-				const results = await repo.findByDocName(drawing.docName);
-				await repo.delete(results);
+				await repo.delete([drawing]);
 
-				expect(results.length).not.toEqual(0);
-				await expect(repo.findByDocName(drawing.docName)).rejects.toThrow(NotFoundException);
+				const results = await repo.findByDocName(drawing.docName);
+				expect(results.length).toEqual(0);
 			});
 		});
 	});
