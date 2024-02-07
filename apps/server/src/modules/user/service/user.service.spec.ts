@@ -445,7 +445,7 @@ describe('UserService', () => {
 			});
 		});
 
-		describe('when user is exists and failed to delete this user', () => {
+		describe('when user exists and failed to delete this user', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 

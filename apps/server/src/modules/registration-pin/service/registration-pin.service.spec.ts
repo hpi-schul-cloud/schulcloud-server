@@ -93,12 +93,35 @@ describe(RegistrationPinService.name, () => {
 				expect(registrationPinRepo.deleteRegistrationPinByEmail).toBeCalledWith(user.email);
 			});
 
-			it('should delete registrationPin by email', async () => {
+			it('should delete registrationPin by email and return domainOperation object with proper information', async () => {
 				const { expectedResult, user } = setup();
 
 				const result = await service.deleteRegistrationPinByEmail(user.email);
 
 				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when registrationPin exists and failed to delete it', () => {
+			const setup = () => {
+				const user = userDoFactory.buildWithId();
+				const registrationPin = registrationPinEntityFactory.buildWithId({ email: user.email });
+
+				registrationPinRepo.findAllByEmail.mockResolvedValueOnce([[registrationPin], 1]);
+				registrationPinRepo.deleteRegistrationPinByEmail.mockResolvedValueOnce(0);
+
+				const expectedError = new Error(`Failed to delete user data from RegistrationPin for '${user.email}'`);
+
+				return {
+					expectedError,
+					user,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { expectedError, user } = setup();
+
+				await expect(service.deleteRegistrationPinByEmail(user.email)).rejects.toThrowError(expectedError);
 			});
 		});
 	});
