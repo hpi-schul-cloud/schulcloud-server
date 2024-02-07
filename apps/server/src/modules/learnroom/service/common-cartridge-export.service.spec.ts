@@ -23,6 +23,56 @@ describe('CommonCartridgeExportService', () => {
 		`<${nodeName}>${value.toString()}</${nodeName}>`;
 	const getFileContent = (archive: AdmZip, filePath: string): string | undefined =>
 		archive.getEntry(filePath)?.getData().toString();
+	const setupParams = async (version: CommonCartridgeVersion) => {
+		const course = courseFactory.teachersWithId(2).buildWithId();
+		const tasks = taskFactory.buildListWithId(2);
+		const lessons = lessonFactory.buildListWithId(1, {
+			tasks,
+			contents: [
+				{
+					title: 'text-title',
+					hidden: false,
+					component: ComponentType.TEXT,
+					content: {
+						text: 'text',
+					},
+				},
+				{
+					title: 'lernstore-title',
+					hidden: false,
+					component: ComponentType.LERNSTORE,
+					content: {
+						resources: [
+							{
+								client: 'client-1',
+								description: 'description-1',
+								title: 'title-1',
+								url: 'url-1',
+							},
+							{
+								client: 'client-2',
+								description: 'description-2',
+								title: 'title-2',
+								url: 'url-2',
+							},
+						],
+					},
+				},
+			],
+		});
+		const [lesson] = lessons;
+
+		lessonServiceMock.findById.mockResolvedValue(lesson);
+		courseServiceMock.findById.mockResolvedValue(course);
+		lessonServiceMock.findByCourseIds.mockResolvedValue([lessons, lessons.length]);
+		taskServiceMock.findBySingleParent.mockResolvedValue([tasks, tasks.length]);
+		configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
+
+		const buffer = await sut.exportCourse(course.id, faker.string.uuid(), version);
+		const archive = new AdmZip(buffer);
+
+		return { archive, course, lessons, tasks };
+	};
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -60,71 +110,23 @@ describe('CommonCartridgeExportService', () => {
 	});
 
 	describe('exportCourse', () => {
-		const setup = async (version: CommonCartridgeVersion) => {
-			const course = courseFactory.teachersWithId(2).buildWithId();
-			const tasks = taskFactory.buildListWithId(2);
-			const lessons = lessonFactory.buildListWithId(1, {
-				tasks,
-				contents: [
-					{
-						title: 'text-title',
-						hidden: false,
-						component: ComponentType.TEXT,
-						content: {
-							text: 'text',
-						},
-					},
-					{
-						title: 'lernstore-title',
-						hidden: false,
-						component: ComponentType.LERNSTORE,
-						content: {
-							resources: [
-								{
-									client: 'client-1',
-									description: 'description-1',
-									title: 'title-1',
-									url: 'url-1',
-								},
-								{
-									client: 'client-2',
-									description: 'description-2',
-									title: 'title-2',
-									url: 'url-2',
-								},
-							],
-						},
-					},
-				],
-			});
-			const [lesson] = lessons;
-
-			lessonServiceMock.findById.mockResolvedValue(lesson);
-			courseServiceMock.findById.mockResolvedValue(course);
-			lessonServiceMock.findByCourseIds.mockResolvedValue([lessons, lessons.length]);
-			taskServiceMock.findBySingleParent.mockResolvedValue([tasks, tasks.length]);
-			configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
-
-			const archive = new AdmZip(await sut.exportCourse(course.id, faker.string.uuid(), version));
-
-			return { archive, course, lessons, tasks };
-		};
-
 		describe('when using version 1.1', () => {
+			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0);
+
 			it('should use schema version 1.1.0', async () => {
-				const { archive } = await setup(CommonCartridgeVersion.V_1_1_0);
+				const { archive } = await setup();
 
 				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(createXmlString('schemaversion', '1.1.0'));
 			});
 
 			it('should add course', async () => {
-				const { archive, course } = await setup(CommonCartridgeVersion.V_1_1_0);
+				const { archive, course } = await setup();
 
 				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(createXmlString('mnf:string', course.name));
 			});
 
 			it('should add lessons', async () => {
-				const { archive, lessons } = await setup(CommonCartridgeVersion.V_1_1_0);
+				const { archive, lessons } = await setup();
 
 				lessons.forEach((lesson) => {
 					expect(getFileContent(archive, 'imsmanifest.xml')).toContain(createXmlString('title', lesson.name));
@@ -132,7 +134,7 @@ describe('CommonCartridgeExportService', () => {
 			});
 
 			it('should add tasks', async () => {
-				const { archive, tasks } = await setup(CommonCartridgeVersion.V_1_1_0);
+				const { archive, tasks } = await setup();
 
 				tasks.forEach((task) => {
 					expect(getFileContent(archive, 'imsmanifest.xml')).toContain(`<resource identifier="i${task.id}"`);
@@ -140,7 +142,7 @@ describe('CommonCartridgeExportService', () => {
 			});
 
 			it('should add tasks of lesson to manifest file', async () => {
-				const { archive, lessons } = await setup(CommonCartridgeVersion.V_1_1_0);
+				const { archive, lessons } = await setup();
 				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
 
 				lessons[0].tasks.getItems().forEach((task) => {
@@ -151,20 +153,22 @@ describe('CommonCartridgeExportService', () => {
 		});
 
 		describe('when using version 1.3', () => {
+			const setup = async () => setupParams(CommonCartridgeVersion.V_1_3_0);
+
 			it('should use schema version 1.3.0', async () => {
-				const { archive } = await setup(CommonCartridgeVersion.V_1_3_0);
+				const { archive } = await setup();
 
 				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(createXmlString('schemaversion', '1.3.0'));
 			});
 
 			it('should add course', async () => {
-				const { archive, course } = await setup(CommonCartridgeVersion.V_1_3_0);
+				const { archive, course } = await setup();
 
 				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(createXmlString('mnf:string', course.name));
 			});
 
 			it('should add lessons', async () => {
-				const { archive, lessons } = await setup(CommonCartridgeVersion.V_1_3_0);
+				const { archive, lessons } = await setup();
 
 				lessons.forEach((lesson) => {
 					expect(getFileContent(archive, 'imsmanifest.xml')).toContain(createXmlString('title', lesson.name));
@@ -172,7 +176,7 @@ describe('CommonCartridgeExportService', () => {
 			});
 
 			it('should add tasks', async () => {
-				const { archive, tasks } = await setup(CommonCartridgeVersion.V_1_3_0);
+				const { archive, tasks } = await setup();
 
 				tasks.forEach((task) => {
 					expect(getFileContent(archive, 'imsmanifest.xml')).toContain(`<resource identifier="i${task.id}"`);
@@ -180,7 +184,7 @@ describe('CommonCartridgeExportService', () => {
 			});
 
 			it('should add tasks of lesson to manifest file', async () => {
-				const { archive, lessons } = await setup(CommonCartridgeVersion.V_1_3_0);
+				const { archive, lessons } = await setup();
 				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
 
 				lessons[0].tasks.getItems().forEach((task) => {
