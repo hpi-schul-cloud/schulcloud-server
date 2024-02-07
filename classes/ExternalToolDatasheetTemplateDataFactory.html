@@ -351,11 +351,11 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CustomParameterLocation, LtiMessageType, LtiPrivacyPermission } from &#x27;@modules/tool/common/enum&#x27;;
-import { DeepPartial, Factory } from &#x27;fishery&#x27;;
 import {
 	ExternalToolDatasheetTemplateData,
 	ExternalToolParameterDatasheetTemplateData,
 } from &#x27;@modules/tool/external-tool/domain&#x27;;
+import { DeepPartial, Factory } from &#x27;fishery&#x27;;
 
 export const externalToolParameterDatasheetTemplateDataFactory &#x3D; Factory.define&lt;
 	ExternalToolParameterDatasheetTemplateData,
@@ -399,7 +399,7 @@ export class ExternalToolDatasheetTemplateDataFactory extends Factory&lt;Externa
 
 	withOptionalProperties(): this {
 		const params: DeepPartial&lt;ExternalToolDatasheetTemplateData&gt; &#x3D; {
-			isDeactivated: &#x27;Das Tool ist deaktiviert&#x27;,
+			isDeactivated: &#x27;Das Tool ist instanzweit deaktiviert&#x27;,
 			restrictToContexts: &#x27;Kurs, Kurs-Board&#x27;,
 		};
 		return this.params(params);
