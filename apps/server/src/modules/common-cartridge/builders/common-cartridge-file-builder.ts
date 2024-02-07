@@ -7,7 +7,7 @@ import {
 import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.interface';
 import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
 import { CommonCartridgeResourceFactory } from '../resources/common-cartridge-resource-factory';
-import { OmitVersion, checkDefined } from '../utils';
+import { OmitVersion } from '../utils';
 import {
 	CommonCartridgeOrganizationBuilder,
 	CommonCartridgeOrganizationBuilderOptions,
@@ -52,13 +52,16 @@ export class CommonCartridgeFileBuilder {
 	}
 
 	public build(): Promise<Buffer> {
-		const metadata = checkDefined(this.metadata, 'metadata');
+		if (!this.metadata) {
+			throw new Error('Metadata is not defined');
+		}
+
 		const organizations = this.organizationBuilders.map((builder) => builder.build());
 		const manifest = CommonCartridgeResourceFactory.createResource({
 			type: CommonCartridgeResourceType.MANIFEST,
 			version: this.props.version,
 			identifier: this.props.identifier,
-			metadata,
+			metadata: this.metadata,
 			organizations,
 			resources: this.resources,
 		});
