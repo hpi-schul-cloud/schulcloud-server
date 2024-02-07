@@ -3,6 +3,45 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
+import type { Account, User } from '@shared/domain/entity';
+import { MeResponse } from '../dto';
+
+const mapToMeResponseObject = (user: User, account: Account): MeResponse => {
+	const permissions = user.resolvePermissions();
+	const roles = user.getRoles();
+	const role = roles[0];
+	const { school } = user;
+
+	const meResponseObject: MeResponse = {
+		school: {
+			id: school.id,
+			name: school.name,
+			logo: {
+				url: null,
+				name: null,
+			},
+		},
+		user: {
+			id: user.id,
+			firstName: user.firstName,
+			lastName: user.lastName,
+			language: null,
+			customAvatarBackgroundColor: null,
+		},
+		roles: [
+			{
+				id: role.id,
+				name: role.name,
+			},
+		],
+		permissions,
+		account: {
+			id: account.id,
+		},
+	};
+
+	return meResponseObject;
+};
 
 describe('Me Controller (API)', () => {
 	let app: INestApplication;
@@ -41,32 +80,15 @@ describe('Me Controller (API)', () => {
 
 		describe('when valid jwt is passed', () => {
 			const setup = async () => {
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				const { studentAccount: account, studentUser: user } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persistAndFlush([account, user]);
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await testApiClient.login(account);
+				const expectedResponse = mapToMeResponseObject(user, account);
 
-				const permissions = studentUser.resolvePermissions();
-				const roles = studentUser.getRoles();
-
-				const expectedResponse = {
-					school: {
-						id: studentUser.school.id,
-					},
-					user: {
-						id: studentUser.id,
-					},
-					roles: [
-						{
-							id: roles[0].id,
-						},
-					],
-					permissions,
-				};
-
-				return { loggedInClient, studentUser, expectedResponse };
+				return { loggedInClient, expectedResponse };
 			};
 
 			it('should response with "me" information and status code 200', async () => {

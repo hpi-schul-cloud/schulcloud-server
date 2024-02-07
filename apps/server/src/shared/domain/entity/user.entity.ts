@@ -112,7 +112,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property({ nullable: true })
 	birthday?: Date;
 
-	@Property()
+	@Property({ nullable: true })
 	customAvatarBackgroundColor?: string; // in legacy it is NOT optional, but all new users stored without default value
 
 	@Embedded(() => UserParentsEntity, { array: true, nullable: true })

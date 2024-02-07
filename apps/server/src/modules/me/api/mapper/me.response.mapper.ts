@@ -4,14 +4,10 @@ import { EntityId } from '@shared/domain/types';
 import { MeAccountResponse, MeResponse, MeRolesReponse, MeSchoolResponse, MeUserResponse } from '../dto';
 
 export class MeResponseMapper {
-	public static colors = ['#4a4e4d', '#0e9aa7', '#3da4ab', '#f6cd61', '#fe8a71']; // enum!
-
 	public static mapToResponse(school: School, user: User, accountId: EntityId): MeResponse {
-		const roles = user.getRoles();
-
 		const schoolResponse = MeResponseMapper.mapSchool(school);
 		const userResponse = MeResponseMapper.mapUser(user, school);
-		const rolesResponse = roles.map((role) => MeResponseMapper.mapRole(role));
+		const rolesResponse = MeResponseMapper.mapUserRoles(user);
 		const permissionsResponse = MeResponseMapper.mapPermissions(user);
 		const accountResponse = MeResponseMapper.mapAccount(accountId);
 
@@ -28,7 +24,8 @@ export class MeResponseMapper {
 
 	private static mapSchool(school: School): MeSchoolResponse {
 		const schoolInfoProps = school.getInfo();
-		// i missed the school logoName and url ..is used in frontend and should expose over me
+		// i missed the school logoName and url ..is used in frontend but unkown on which place but should expose over me
+		// please check vue header components with ticket BC-6371
 		const schoolResponse = {
 			id: schoolInfoProps.id,
 			name: schoolInfoProps.name,
@@ -41,6 +38,7 @@ export class MeResponseMapper {
 		return schoolResponse;
 	}
 
+	// comments inside the method are for connect it with vue, remove it with ticket BC-6371
 	private static mapUser(user: User, school: School): MeUserResponse {
 		const userInfo = user.getInfo();
 		const schoolInfoProps = school.getInfo();
@@ -85,6 +83,13 @@ export class MeResponseMapper {
 		return userResponse;
 	}
 
+	private static mapUserRoles(user: User): MeRolesReponse[] {
+		const roles = user.getRoles();
+		const rolesResponse = roles.map((role) => MeResponseMapper.mapRole(role));
+
+		return rolesResponse;
+	}
+
 	private static mapRole(role: Role): MeRolesReponse {
 		const roleResponse = {
 			id: role.id,
@@ -95,9 +100,9 @@ export class MeResponseMapper {
 	}
 
 	private static mapPermissions(user: User): string[] {
-		const permissions = user.resolvePermissions();
+		const permissionStrings = user.resolvePermissions();
 
-		return permissions;
+		return permissionStrings;
 	}
 
 	private static mapAccount(accountId: EntityId): MeAccountResponse {

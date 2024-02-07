@@ -15,6 +15,7 @@ import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { DomainOperationBuilder } from '@shared/domain/builder';
+import { NotFoundException } from '@nestjs/common';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
 import { UserService } from './user.service';
@@ -100,6 +101,45 @@ describe('UserService', () => {
 			expect(result[1]).toEqual([permission]);
 
 			userSpy.mockRestore();
+		});
+	});
+
+	describe('getUserEntityWithRoles', () => {
+		describe('when user with roles exists', () => {
+			const setup = () => {
+				const roles = roleFactory.buildListWithId(2);
+				const user = userFactory.buildWithId({ roles });
+
+				userRepo.findById.mockResolvedValueOnce(user);
+
+				return { user, userId: user.id };
+			};
+
+			it('should be return the user with included roles', async () => {
+				const { user, userId } = setup();
+
+				const result = await service.getUserEntityWithRoles(userId);
+
+				expect(result).toEqual(user);
+				expect(result.getRoles()).toHaveLength(2);
+			});
+		});
+
+		describe('when repo throw an error', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const error = new NotFoundException();
+
+				userRepo.findById.mockRejectedValueOnce(error);
+
+				return { userId, error };
+			};
+
+			it('should throw an error', async () => {
+				const { userId, error } = setup();
+
+				await expect(() => service.getUserEntityWithRoles(userId)).rejects.toThrowError(error);
+			});
 		});
 	});
 

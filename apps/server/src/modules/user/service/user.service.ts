@@ -1,6 +1,6 @@
 import { AccountService } from '@modules/account';
-import { AccountDto } from '@modules/account/services/dto';
 // invalid import
+import { AccountDto } from '@modules/account/services/dto';
 import { OauthCurrentUser } from '@modules/authentication/interface';
 import { CurrentUserMapper } from '@modules/authentication/mapper';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
@@ -34,10 +34,11 @@ export class UserService {
 		this.logger.setContext(UserService.name);
 	}
 
-	async getUserEntity(userId: EntityId): Promise<User> {
-		const user = await this.userRepo.findById(userId, true);
+	async getUserEntityWithRoles(userId: EntityId): Promise<User> {
+		// only roles required, no need for the other populates
+		const userWithRoles = await this.userRepo.findById(userId, true);
 
-		return user;
+		return userWithRoles;
 	}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
