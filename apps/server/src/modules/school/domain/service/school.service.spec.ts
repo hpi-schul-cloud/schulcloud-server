@@ -1,9 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
+import { systemFactory } from '@shared/testing';
+import { SystemService } from '@src/modules/system';
 import { schoolFactory } from '../../testing';
-import { SchoolProps } from '../do';
+import { SchoolForLdapLogin, SchoolProps, SystemForLdapLogin } from '../do';
 import { SchoolRepo } from '../interface';
 import { SchoolQuery } from '../query';
 import { SchoolService } from './school.service';
@@ -11,6 +14,7 @@ import { SchoolService } from './school.service';
 describe('SchoolService', () => {
 	let service: SchoolService;
 	let schoolRepo: DeepMocked<SchoolRepo>;
+	let systemService: DeepMocked<SystemService>;
 	let configService: DeepMocked<ConfigService>;
 
 	beforeAll(async () => {
@@ -25,11 +29,16 @@ describe('SchoolService', () => {
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
 				},
+				{
+					provide: SystemService,
+					useValue: createMock<SystemService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(SchoolService);
 		schoolRepo = module.get('SCHOOL_REPO');
+		systemService = module.get(SystemService);
 		configService = module.get(ConfigService);
 	});
 
@@ -321,6 +330,125 @@ describe('SchoolService', () => {
 				const result = await service.getSchoolsForExternalInvite(query, 'ownSchoolId');
 
 				expect(result).toEqual([schools[0]]);
+			});
+		});
+	});
+
+	describe('doesSchoolExist', () => {
+		describe('when school exists', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+
+				return { id: school.id };
+			};
+
+			it('should return true', async () => {
+				const { id } = setup();
+
+				const result = await service.doesSchoolExist(id);
+
+				expect(result).toEqual(true);
+			});
+		});
+
+		describe('when school does not exist', () => {
+			const setup = () => {
+				const id = '1';
+				schoolRepo.getSchoolById.mockRejectedValueOnce(new NotFoundException());
+
+				return { id };
+			};
+
+			it('should return false', async () => {
+				const { id } = setup();
+
+				const result = await service.doesSchoolExist(id);
+
+				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when school repo throws any other error than NotFoundException', () => {
+			const setup = () => {
+				const id = '1';
+				schoolRepo.getSchoolById.mockRejectedValueOnce(new Error());
+
+				return { id };
+			};
+
+			it('should throw this error', async () => {
+				const { id } = setup();
+
+				await expect(service.doesSchoolExist(id)).rejects.toThrowError();
+			});
+		});
+	});
+
+	describe('getSchoolsForLdapLogin', () => {
+		describe('when some schools exist that have ldap login systems', () => {
+			const setup = () => {
+				const ldapLoginSystem = systemFactory.build({ type: 'ldap', ldapConfig: { active: true } });
+				const otherSystem = systemFactory.build({ type: 'oauth2' });
+				const schoolWithLdapLoginSystem = schoolFactory.build({ systemIds: [ldapLoginSystem.id] });
+
+				systemService.findAllForLdapLogin.mockResolvedValueOnce([ldapLoginSystem, otherSystem]);
+				schoolRepo.getSchoolsBySystemIds.mockResolvedValueOnce([schoolWithLdapLoginSystem]);
+
+				const expected = new SchoolForLdapLogin({
+					id: schoolWithLdapLoginSystem.id,
+					name: schoolWithLdapLoginSystem.getProps().name,
+					systems: [
+						new SystemForLdapLogin({
+							id: ldapLoginSystem.id,
+							type: ldapLoginSystem.getProps().type,
+							alias: ldapLoginSystem.getProps().alias,
+						}),
+					],
+				});
+
+				return { expected };
+			};
+
+			it('should return these schools', async () => {
+				const { expected } = setup();
+
+				const result = await service.getSchoolsForLdapLogin();
+
+				expect(result).toEqual([expected]);
+			});
+		});
+
+		describe('when a school has several systems', () => {
+			const setup = () => {
+				const ldapLoginSystem = systemFactory.build({ type: 'ldap', ldapConfig: { active: true } });
+				const otherSystem = systemFactory.build({ type: 'oauth2' });
+				const school = schoolFactory.build({ systemIds: [ldapLoginSystem.id, otherSystem.id] });
+
+				systemService.findAllForLdapLogin.mockResolvedValueOnce([ldapLoginSystem]);
+				schoolRepo.getSchoolsBySystemIds.mockResolvedValueOnce([school]);
+
+				const expected = new SchoolForLdapLogin({
+					id: school.id,
+					name: school.getProps().name,
+					systems: [
+						new SystemForLdapLogin({
+							id: ldapLoginSystem.id,
+							type: ldapLoginSystem.getProps().type,
+							alias: ldapLoginSystem.getProps().alias,
+						}),
+					],
+				});
+
+				return { expected };
+			};
+
+			it('should return the school with only the LDAP login systems', async () => {
+				const { expected } = setup();
+
+				const result = await service.getSchoolsForLdapLogin();
+
+				expect(result).toEqual([expected]);
 			});
 		});
 	});
