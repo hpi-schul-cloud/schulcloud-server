@@ -428,7 +428,7 @@ describe('user repo', () => {
 
 				const result = await repo.deleteUser(user.id);
 
-				expect(result).toBeNull();
+				expect(result).toEqual(0);
 			});
 		});
 		describe('when user exists', () => {
@@ -454,7 +454,7 @@ describe('user repo', () => {
 					school: user3.school,
 				};
 
-				const expectedResult = user1.id;
+				const expectedResult = 1;
 
 				return {
 					expectedResult,

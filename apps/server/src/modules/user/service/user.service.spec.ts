@@ -390,10 +390,11 @@ describe('UserService', () => {
 	describe('deleteUser', () => {
 		describe('when user is missing', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.build({ id: undefined });
-				const userId: EntityId = user.id as EntityId;
+				const user: User = userFactory.build();
+				const userId: EntityId = user.id;
 
-				userRepo.deleteUser.mockResolvedValue(null);
+				userRepo.findByIdOrNull.mockResolvedValueOnce(null);
+				userRepo.deleteUser.mockResolvedValue(0);
 
 				const expectedResult = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 0, []);
 
@@ -414,12 +415,12 @@ describe('UserService', () => {
 
 		describe('when user exists', () => {
 			const setup = () => {
-				const user1: User = userFactory.asStudent().buildWithId();
+				const user1 = userFactory.buildWithId();
 
 				const expectedResult = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 1, [user1.id]);
 
-				userRepo.findById.mockResolvedValue(user1);
-				userRepo.deleteUser.mockResolvedValue(user1.id);
+				userRepo.findByIdOrNull.mockResolvedValueOnce(user1);
+				userRepo.deleteUser.mockResolvedValue(1);
 
 				return {
 					expectedResult,

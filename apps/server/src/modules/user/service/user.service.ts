@@ -134,14 +134,31 @@ export class UserService {
 			new DataDeletionDomainOperationLoggable('Deleting user', DomainName.USER, userId, StatusModel.PENDING)
 		);
 
-		const userToDelete = await this.findByIdOrNull(userId);
+		const userToDelete = await this.userRepo.findByIdOrNull(userId, true);
+
+		if (userToDelete === null) {
+			const result = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 0, []);
+
+			this.logger.info(
+				new DataDeletionDomainOperationLoggable(
+					'User already deleted',
+					DomainName.USER,
+					userId,
+					StatusModel.FINISHED,
+					0,
+					0
+				)
+			);
+
+			return result;
+		}
 
 		const numberOfDeletedUsers = await this.userRepo.deleteUser(userId);
 
-		if (userToDelete !== null && numberOfDeletedUsers === 0) {
+		if (numberOfDeletedUsers === 0) {
 			this.logger.info(
 				new DataDeletionDomainOperationLoggable(
-					'Successfully deleted user',
+					'Failed to delete user',
 					DomainName.USER,
 					userId,
 					StatusModel.FAILED,

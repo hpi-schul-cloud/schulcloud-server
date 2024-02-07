@@ -36,7 +36,7 @@ describe(RegistrationPinRepo.name, () => {
 
 			await em.persistAndFlush(registrationPinForUser);
 
-			const expectedResult = registrationPinForUser.id;
+			const expectedResult = 1;
 
 			return {
 				expectedResult,
@@ -60,7 +60,7 @@ describe(RegistrationPinRepo.name, () => {
 				const { userWithoutRegistrationPin } = await setup();
 
 				const result = await repo.deleteRegistrationPinByEmail(userWithoutRegistrationPin.email);
-				expect(result).toBeNull();
+				expect(result).toEqual(0);
 			});
 		});
 	});

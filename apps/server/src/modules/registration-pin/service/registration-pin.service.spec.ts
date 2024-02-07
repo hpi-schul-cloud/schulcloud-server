@@ -4,9 +4,9 @@ import { setupEntities, userDoFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { DomainName, OperationType } from '@shared/domain/types';
-import { ObjectId } from 'bson';
 import { RegistrationPinRepo } from '../repo';
 import { RegistrationPinService } from '.';
+import { registrationPinEntityFactory } from '../entity/testing';
 
 describe(RegistrationPinService.name, () => {
 	let module: TestingModule;
@@ -47,7 +47,8 @@ describe(RegistrationPinService.name, () => {
 			const setup = () => {
 				const user = userDoFactory.buildWithId();
 
-				registrationPinRepo.deleteRegistrationPinByEmail.mockResolvedValueOnce(null);
+				registrationPinRepo.findAllByEmail.mockResolvedValueOnce([[], 0]);
+				registrationPinRepo.deleteRegistrationPinByEmail.mockResolvedValueOnce(0);
 
 				const expectedResult = DomainOperationBuilder.build(DomainName.REGISTRATIONPIN, OperationType.DELETE, 0, []);
 
@@ -69,12 +70,13 @@ describe(RegistrationPinService.name, () => {
 		describe('when deleting existing registrationPin', () => {
 			const setup = () => {
 				const user = userDoFactory.buildWithId();
-				const registrationPinId = new ObjectId().toHexString();
+				const registrationPin = registrationPinEntityFactory.buildWithId({ email: user.email });
 
-				registrationPinRepo.deleteRegistrationPinByEmail.mockResolvedValueOnce(registrationPinId);
+				registrationPinRepo.findAllByEmail.mockResolvedValueOnce([[registrationPin], 1]);
+				registrationPinRepo.deleteRegistrationPinByEmail.mockResolvedValueOnce(1);
 
 				const expectedResult = DomainOperationBuilder.build(DomainName.REGISTRATIONPIN, OperationType.DELETE, 1, [
-					registrationPinId,
+					registrationPin.id,
 				]);
 
 				return {
