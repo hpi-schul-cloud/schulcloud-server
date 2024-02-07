@@ -404,7 +404,7 @@ describe('UserService', () => {
 				};
 			};
 
-			it('should return null', async () => {
+			it('should return domainOperation object with information about deleted user', async () => {
 				const { expectedResult, userId } = setup();
 
 				const result = await service.deleteUser(userId);
@@ -442,6 +442,28 @@ describe('UserService', () => {
 				const result = await service.deleteUser(user1.id);
 
 				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when user is exists and failed to delete this user', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+
+				const expectedError = new Error(`Failed to delete user '${user.id}' from User collection`);
+
+				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
+				userRepo.deleteUser.mockResolvedValueOnce(0);
+
+				return {
+					expectedError,
+					user,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { expectedError, user } = setup();
+
+				await expect(service.deleteUser(user.id)).rejects.toThrowError(expectedError);
 			});
 		});
 	});

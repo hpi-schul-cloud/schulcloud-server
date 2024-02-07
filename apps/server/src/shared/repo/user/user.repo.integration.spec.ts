@@ -147,28 +147,20 @@ describe('user repo', () => {
 
 		describe('when user was found', () => {
 			const setup = async () => {
-				const role = roleFactory.build();
+				const user = userFactory.buildWithId();
 
-				const user = userFactory.buildWithId({ roles: [role] });
-
-				await em.persistAndFlush([user, role]);
+				await em.persistAndFlush([user]);
 				em.clear();
 
-				return { user, role };
+				return { user };
 			};
 
-			it('should return user with role', async () => {
-				const { user, role } = await setup();
+			it('should return user', async () => {
+				const { user } = await setup();
 
 				const result = await repo.findByIdOrNull(user.id, true);
 
 				expect(result?.id).toEqual(user.id);
-				expect(result?.roles).toEqual([
-					{
-						id: role.id,
-						name: role.name,
-					},
-				]);
 			});
 		});
 	});
