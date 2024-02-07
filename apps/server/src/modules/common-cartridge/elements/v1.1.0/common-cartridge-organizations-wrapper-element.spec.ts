@@ -1,37 +1,22 @@
-import { faker } from '@faker-js/faker';
 import { InternalServerErrorException } from '@nestjs/common';
-import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import { CommonCartridgeElementFactory, CommonCartridgeElementProps } from '../common-cartridge-element-factory';
 import {
-	CommonCartridgeOrganizationsWrapperElementPropsV110,
-	CommonCartridgeOrganizationsWrapperElementV110,
-} from './common-cartridge-organizations-wrapper-element';
+	createCommonCartridgeOrganizationElementPropsV110,
+	createCommonCartridgeOrganizationsWrapperElementPropsV110,
+} from '@shared/testing/factory/common-cartridge-element-props.factory';
+import { CommonCartridgeVersion } from '../../common-cartridge.enums';
+import { CommonCartridgeElementFactory } from '../common-cartridge-element-factory';
+import { CommonCartridgeOrganizationsWrapperElementV110 } from './common-cartridge-organizations-wrapper-element';
 
 describe('CommonCartridgeOrganizationsWrapperElementV110', () => {
-	const setup = () => {
-		const organizationProps: CommonCartridgeElementProps = {
-			type: CommonCartridgeElementType.ORGANIZATION,
-			identifier: faker.string.uuid(),
-			title: faker.lorem.words(),
-			items: [],
-		};
-		const props: CommonCartridgeOrganizationsWrapperElementPropsV110 = {
-			type: CommonCartridgeElementType.ORGANIZATIONS_WRAPPER,
-			version: CommonCartridgeVersion.V_1_1_0,
-			items: [
-				CommonCartridgeElementFactory.createElement({
-					...organizationProps,
-					version: CommonCartridgeVersion.V_1_1_0,
-				}),
-			],
-		};
-		const sut = new CommonCartridgeOrganizationsWrapperElementV110(props);
-
-		return { sut, props, organizationProps };
-	};
-
 	describe('getSupportedVersion', () => {
 		describe('when using Common Cartridge version 1.1.0', () => {
+			const setup = () => {
+				const props = createCommonCartridgeOrganizationsWrapperElementPropsV110();
+				const sut = new CommonCartridgeOrganizationsWrapperElementV110(props);
+
+				return { sut, props };
+			};
+
 			it('should return correct version', () => {
 				const { sut } = setup();
 				const result = sut.getSupportedVersion();
@@ -41,20 +26,29 @@ describe('CommonCartridgeOrganizationsWrapperElementV110', () => {
 		});
 
 		describe('when using not supported Common Cartridge version', () => {
+			const notSupportedProps = createCommonCartridgeOrganizationsWrapperElementPropsV110();
+			notSupportedProps.version = CommonCartridgeVersion.V_1_3_0;
+
 			it('should throw error', () => {
-				expect(
-					() =>
-						new CommonCartridgeOrganizationsWrapperElementV110({
-							type: CommonCartridgeElementType.ORGANIZATIONS_WRAPPER,
-							version: CommonCartridgeVersion.V_1_3_0,
-						} as CommonCartridgeOrganizationsWrapperElementPropsV110)
-				).toThrowError(InternalServerErrorException);
+				expect(() => new CommonCartridgeOrganizationsWrapperElementV110(notSupportedProps)).toThrowError(
+					InternalServerErrorException
+				);
 			});
 		});
 	});
 
 	describe('getManifestXmlObject', () => {
 		describe('when using Common Cartridge version 1.1.0', () => {
+			const setup = () => {
+				const organizationProps = createCommonCartridgeOrganizationElementPropsV110();
+				const props = createCommonCartridgeOrganizationsWrapperElementPropsV110([
+					CommonCartridgeElementFactory.createElement(organizationProps),
+				]);
+				const sut = new CommonCartridgeOrganizationsWrapperElementV110(props);
+
+				return { sut, organizationProps };
+			};
+
 			it('should return correct manifest xml object', () => {
 				const { sut, organizationProps } = setup();
 				const result = sut.getManifestXmlObject();

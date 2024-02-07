@@ -1,73 +1,21 @@
-import { faker } from '@faker-js/faker';
 import { InternalServerErrorException } from '@nestjs/common';
-import {
-	CommonCartridgeElementType,
-	CommonCartridgeResourceType,
-	CommonCartridgeVersion,
-} from '../../common-cartridge.enums';
-import {
-	CommonCartridgeResourceFactory,
-	CommonCartridgeResourceProps,
-} from '../../resources/common-cartridge-resource-factory';
-import { CommonCartridgeElementFactory, CommonCartridgeElementProps } from '../common-cartridge-element-factory';
-import {
-	CommonCartridgeOrganizationElementPropsV110,
-	CommonCartridgeOrganizationElementV110,
-} from './common-cartridge-organization-element';
+import { createCommonCartridgeOrganizationElementPropsV110 } from '@shared/testing/factory/common-cartridge-element-props.factory';
+import { createCommonCartridgeWeblinkResourcePropsV110 } from '@shared/testing/factory/common-cartridge-resource-props.factory';
+import { CommonCartridgeVersion } from '../../common-cartridge.enums';
+import { CommonCartridgeResourceFactory } from '../../resources/common-cartridge-resource-factory';
+import { CommonCartridgeElementFactory } from '../common-cartridge-element-factory';
+import { CommonCartridgeOrganizationElementV110 } from './common-cartridge-organization-element';
 
 describe('CommonCartridgeOrganizationElementV110', () => {
-	const setup = () => {
-		const resourceProps: CommonCartridgeResourceProps = {
-			type: CommonCartridgeResourceType.WEB_LINK,
-			identifier: faker.string.uuid(),
-			title: faker.lorem.words(),
-			url: faker.internet.url(),
-		};
-		const subOrganization1Props: CommonCartridgeElementProps = {
-			type: CommonCartridgeElementType.ORGANIZATION,
-			identifier: faker.string.uuid(),
-			title: faker.lorem.words(),
-			items: CommonCartridgeResourceFactory.createResource({
-				...resourceProps,
-				version: CommonCartridgeVersion.V_1_1_0,
-				folder: faker.string.alphanumeric(10),
-			}),
-		};
-		const subOrganization2Props: CommonCartridgeElementProps = {
-			type: CommonCartridgeElementType.ORGANIZATION,
-			identifier: faker.string.uuid(),
-			title: faker.lorem.words(),
-			items: [
-				CommonCartridgeResourceFactory.createResource({
-					...resourceProps,
-					version: CommonCartridgeVersion.V_1_1_0,
-					folder: faker.string.alphanumeric(10),
-				}),
-			],
-		};
-		const organizationProps: CommonCartridgeOrganizationElementPropsV110 = {
-			type: CommonCartridgeElementType.ORGANIZATION,
-			version: CommonCartridgeVersion.V_1_1_0,
-			identifier: faker.string.uuid(),
-			title: faker.lorem.words(),
-			items: [
-				CommonCartridgeElementFactory.createElement({
-					...subOrganization1Props,
-					version: CommonCartridgeVersion.V_1_1_0,
-				}),
-				CommonCartridgeElementFactory.createElement({
-					...subOrganization2Props,
-					version: CommonCartridgeVersion.V_1_1_0,
-				}),
-			],
-		};
-		const sut = new CommonCartridgeOrganizationElementV110(organizationProps);
-
-		return { sut, organizationProps, subOrganization1Props, subOrganization2Props, resourceProps };
-	};
-
 	describe('getSupportedVersion', () => {
 		describe('when using Common Cartridge version 1.1.0', () => {
+			const setup = () => {
+				const props = createCommonCartridgeOrganizationElementPropsV110();
+				const sut = new CommonCartridgeOrganizationElementV110(props);
+
+				return { sut };
+			};
+
 			it('should return correct version', () => {
 				const { sut } = setup();
 				const result = sut.getSupportedVersion();
@@ -77,21 +25,40 @@ describe('CommonCartridgeOrganizationElementV110', () => {
 		});
 
 		describe('when using not supported Common Cartridge version', () => {
+			const notSupportedProps = createCommonCartridgeOrganizationElementPropsV110();
+			notSupportedProps.version = CommonCartridgeVersion.V_1_3_0;
+
 			it('should throw error', () => {
-				expect(
-					() =>
-						new CommonCartridgeOrganizationElementV110({
-							type: CommonCartridgeElementType.ORGANIZATION,
-							version: CommonCartridgeVersion.V_1_3_0,
-						} as CommonCartridgeOrganizationElementPropsV110)
-				).toThrowError(InternalServerErrorException);
+				expect(() => new CommonCartridgeOrganizationElementV110(notSupportedProps)).toThrowError(
+					InternalServerErrorException
+				);
 			});
 		});
 	});
 
 	describe('getManifestXmlObject', () => {
-		// AI next 12 lines
 		describe('when using Common Cartridge version 1.1.0', () => {
+			const setup = () => {
+				const resourceProps = createCommonCartridgeWeblinkResourcePropsV110();
+
+				const subOrganization1Props = createCommonCartridgeOrganizationElementPropsV110(
+					CommonCartridgeResourceFactory.createResource(resourceProps)
+				);
+
+				const subOrganization2Props = createCommonCartridgeOrganizationElementPropsV110([
+					CommonCartridgeResourceFactory.createResource(resourceProps),
+				]);
+
+				const organizationProps = createCommonCartridgeOrganizationElementPropsV110([
+					CommonCartridgeElementFactory.createElement(subOrganization1Props),
+					CommonCartridgeElementFactory.createElement(subOrganization2Props),
+				]);
+
+				const sut = new CommonCartridgeOrganizationElementV110(organizationProps);
+
+				return { sut, organizationProps, subOrganization1Props, subOrganization2Props, resourceProps };
+			};
+
 			it('should return correct manifest xml object', () => {
 				const { sut, organizationProps, subOrganization1Props, subOrganization2Props, resourceProps } = setup();
 				const result = sut.getManifestXmlObject();

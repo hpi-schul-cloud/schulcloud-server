@@ -43,12 +43,14 @@ export function createCommonCartridgeOrganizationElementPropsV110(
 	};
 }
 
-export function createCommonCartridgeOrganizationElementPropsV130(): CommonCartridgeOrganizationElementPropsV130 {
+export function createCommonCartridgeOrganizationElementPropsV130(
+	items?: CommonCartridgeResource | Array<CommonCartridgeElement | CommonCartridgeResource>
+): CommonCartridgeOrganizationElementPropsV130 {
 	return {
 		type: CommonCartridgeElementType.ORGANIZATION,
 		identifier: faker.string.uuid(),
 		title: faker.lorem.words(),
-		items: [],
+		items: items || [],
 		version: CommonCartridgeVersion.V_1_3_0,
 	};
 }

@@ -1,45 +1,20 @@
-import { faker } from '@faker-js/faker';
 import { InternalServerErrorException } from '@nestjs/common';
-import {
-	CommonCartridgeElementType,
-	CommonCartridgeResourceType,
-	CommonCartridgeVersion,
-} from '../../common-cartridge.enums';
-import {
-	CommonCartridgeResourceFactory,
-	CommonCartridgeResourceProps,
-} from '../../resources/common-cartridge-resource-factory';
-import {
-	CommonCartridgeResourcesWrapperElementPropsV110,
-	CommonCartridgeResourcesWrapperElementV110,
-} from './common-cartridge-resources-wrapper-element';
+import { createCommonCartridgeResourcesWrapperElementPropsV110 } from '@shared/testing/factory/common-cartridge-element-props.factory';
+import { createCommonCartridgeWeblinkResourcePropsV110 } from '@shared/testing/factory/common-cartridge-resource-props.factory';
+import { CommonCartridgeVersion } from '../../common-cartridge.enums';
+import { CommonCartridgeResourceFactory } from '../../resources/common-cartridge-resource-factory';
+import { CommonCartridgeResourcesWrapperElementV110 } from './common-cartridge-resources-wrapper-element';
 
 describe('CommonCartridgeResourcesWrapperElementV110', () => {
-	const setup = () => {
-		const resourceProps: CommonCartridgeResourceProps = {
-			type: CommonCartridgeResourceType.WEB_LINK,
-			identifier: faker.string.uuid(),
-			title: faker.lorem.words(),
-			url: faker.internet.url(),
-		};
-		const props: CommonCartridgeResourcesWrapperElementPropsV110 = {
-			type: CommonCartridgeElementType.RESOURCES_WRAPPER,
-			version: CommonCartridgeVersion.V_1_1_0,
-			items: [
-				CommonCartridgeResourceFactory.createResource({
-					...resourceProps,
-					version: CommonCartridgeVersion.V_1_1_0,
-					folder: faker.string.alphanumeric(10),
-				}),
-			],
-		};
-		const sut = new CommonCartridgeResourcesWrapperElementV110(props);
-
-		return { sut, props, resourceProps };
-	};
-
 	describe('getSupportedVersion', () => {
 		describe('when using common cartridge version 1.1.0', () => {
+			const setup = () => {
+				const props = createCommonCartridgeResourcesWrapperElementPropsV110();
+				const sut = new CommonCartridgeResourcesWrapperElementV110(props);
+
+				return { sut };
+			};
+
 			it('should return correct version', () => {
 				const { sut } = setup();
 				const result = sut.getSupportedVersion();
@@ -49,20 +24,29 @@ describe('CommonCartridgeResourcesWrapperElementV110', () => {
 		});
 
 		describe('when using not supported common cartridge version', () => {
+			const notSupportedProps = createCommonCartridgeResourcesWrapperElementPropsV110();
+			notSupportedProps.version = CommonCartridgeVersion.V_1_3_0;
+
 			it('should throw error', () => {
-				expect(
-					() =>
-						new CommonCartridgeResourcesWrapperElementV110({
-							type: CommonCartridgeElementType.RESOURCES_WRAPPER,
-							version: CommonCartridgeVersion.V_1_3_0,
-						} as CommonCartridgeResourcesWrapperElementPropsV110)
-				).toThrow(InternalServerErrorException);
+				expect(() => new CommonCartridgeResourcesWrapperElementV110(notSupportedProps)).toThrow(
+					InternalServerErrorException
+				);
 			});
 		});
 	});
 
 	describe('getManifestXmlObject', () => {
 		describe('when using common cartridge version 1.1.0', () => {
+			const setup = () => {
+				const resourceProps = createCommonCartridgeWeblinkResourcePropsV110();
+				const props = createCommonCartridgeResourcesWrapperElementPropsV110([
+					CommonCartridgeResourceFactory.createResource(resourceProps),
+				]);
+				const sut = new CommonCartridgeResourcesWrapperElementV110(props);
+
+				return { sut, resourceProps };
+			};
+
 			it('should return correct manifest xml object', () => {
 				const { sut, resourceProps } = setup();
 				const result = sut.getManifestXmlObject();
