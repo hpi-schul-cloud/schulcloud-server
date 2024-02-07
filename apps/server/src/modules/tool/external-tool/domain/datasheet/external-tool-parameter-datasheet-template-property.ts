@@ -4,5 +4,5 @@ export enum ExternalToolParameterDatasheetTemplateProperty {
 	OPTIONAL = 'optional',
 	PROTECTED = 'geschützt',
 	SKIP_CONSENT = 'Zustimmung überspringen',
-	MANDATORY = 'Pflicht',
+	MANDATORY = 'verpflichtend',
 }

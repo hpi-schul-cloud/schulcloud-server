@@ -1,9 +1,9 @@
 import { CustomParameterLocation, LtiMessageType, LtiPrivacyPermission } from '@modules/tool/common/enum';
-import { DeepPartial, Factory } from 'fishery';
 import {
 	ExternalToolDatasheetTemplateData,
 	ExternalToolParameterDatasheetTemplateData,
 } from '@modules/tool/external-tool/domain';
+import { DeepPartial, Factory } from 'fishery';
 
 export const externalToolParameterDatasheetTemplateDataFactory = Factory.define<
 	ExternalToolParameterDatasheetTemplateData,
@@ -47,7 +47,7 @@ export class ExternalToolDatasheetTemplateDataFactory extends Factory<ExternalTo
 
 	withOptionalProperties(): this {
 		const params: DeepPartial<ExternalToolDatasheetTemplateData> = {
-			isDeactivated: 'Das Tool ist deaktiviert',
+			isDeactivated: 'Das Tool ist instanzweit deaktiviert',
 			restrictToContexts: 'Kurs, Kurs-Board',
 		};
 		return this.params(params);
