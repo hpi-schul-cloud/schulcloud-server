@@ -11,8 +11,15 @@ import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@src/infra/rab
 import { DeletionApiModule } from '../deletion/deletion-api.module';
 import { serverConfig } from './server.config';
 import { defaultMikroOrmOptions } from './server.module';
+import { LegacySchoolAdminApiModule } from '../legacy-school/legacy-school-admin.api-module';
+import { UserAdminApiModule } from '../user/user-admin-api.module';
 
-const serverModules = [ConfigModule.forRoot(createConfigModuleOptions(serverConfig)), DeletionApiModule];
+const serverModules = [
+	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
+	DeletionApiModule,
+	LegacySchoolAdminApiModule,
+	UserAdminApiModule,
+];
 
 @Module({
 	imports: [
