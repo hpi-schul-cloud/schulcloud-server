@@ -320,13 +320,12 @@ data:
         if [ "$NS" = "main" ]; then
             BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_MAIN_CLIENT_SECRET
             BETTERMARKS_URL=$BETTERMARKS_MAIN_ENTRYPOINT
-        #elif [ "$NS" = "bettermarks-test" ]; then
-        else
+        elif [ "$NS" = "bettermarks-test" ]; then
             BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_BETTERMARKS_TEST_CLIENT_SECRET
             BETTERMARKS_URL=$BETTERMARKS_BETTERMARKS_TEST_ENTRYPOINT
-        #else
-        #    # Print some friendly message for any other namespace that's not supported.
-        #    echo "Sorry, Bettermarks cannot be configured on the '$NS' namespace, omitting the config data init."
+        else
+            # Print some friendly message for any other namespace that's not supported.
+            echo "Sorry, Bettermarks cannot be configured on the '$NS' namespace, omitting the config data init."
         fi
 
         # Perform the final Bettermarks config data init if client secret and URL has been properly set.
