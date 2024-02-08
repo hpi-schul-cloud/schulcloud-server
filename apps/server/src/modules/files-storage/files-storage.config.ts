@@ -12,7 +12,6 @@ export interface FileStorageConfig extends CoreModuleConfig {
 export const defaultConfig = {
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('FILES_STORAGE__INCOMING_REQUEST_TIMEOUT') as number,
-	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
 };
 
 const fileStorageConfig: FileStorageConfig = {

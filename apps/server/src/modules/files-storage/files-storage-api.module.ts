@@ -1,4 +1,4 @@
-import { AuthenticationModule } from '@modules/authentication/authentication.module';
+import { AuthenticationModule } from '@modules/authentication';
 import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
