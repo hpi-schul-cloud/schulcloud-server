@@ -91,7 +91,7 @@ describe('Me Controller (API)', () => {
 				return { loggedInClient, expectedResponse };
 			};
 
-			it('should response with "me" information and status code 200', async () => {
+			it('should respond with "me" information and status code 200', async () => {
 				const { loggedInClient, expectedResponse } = await setup();
 
 				const response = await loggedInClient.get();
