@@ -44,7 +44,7 @@ export class TldrawWsService {
 		this.logger.setContext(TldrawWsService.name);
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
 		this.gcEnabled = this.configService.get<boolean>('TLDRAW_GC_ENABLED');
-
+		console.log('TLDRAW_GC_ENABLED should boolean is ', typeof configService.get<boolean>('TLDRAW_GC_ENABLED'));
 		this.sub = this.tldrawRedisFactory.build(RedisConnectionTypeEnum.SUBSCRIBE);
 		this.pub = this.tldrawRedisFactory.build(RedisConnectionTypeEnum.PUBLISH);
 	}
