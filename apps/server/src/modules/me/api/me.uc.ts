@@ -9,7 +9,6 @@ import { MeResponse } from './dto';
 export class MeUc {
 	constructor(private readonly schoolService: SchoolService, private readonly userService: UserService) {}
 
-	// no authorization is required
 	public async getMe(userId: EntityId, schoolId: EntityId, accountId: EntityId): Promise<MeResponse> {
 		const [school, user] = await Promise.all([
 			this.schoolService.getSchoolById(schoolId),

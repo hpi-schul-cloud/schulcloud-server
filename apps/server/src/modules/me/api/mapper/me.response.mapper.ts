@@ -31,8 +31,7 @@ export class MeResponseMapper {
 
 	private static mapSchool(school: School): MeSchoolResponse {
 		const schoolInfoProps = school.getInfo();
-		// i missed the school logoName and url ..is used in frontend but unkown on which place but should expose over me
-		// please check vue header components with ticket BC-6371
+
 		const logo = new MeSchoolLogoResponse({
 			url: schoolInfoProps.logo_dataUrl || null,
 			name: schoolInfoProps.logo_name || null,
@@ -47,19 +46,9 @@ export class MeResponseMapper {
 		return schoolResponse;
 	}
 
-	// comments inside the method are for connect it with vue, remove it with ticket BC-6371
 	private static mapUser(user: User, school: School): MeUserResponse {
 		const userInfo = user.getInfo();
 		const schoolInfoProps = school.getInfo();
-		// v1 - user go out with all infos, for example
-		// - fullName | displayName -> why? -> frontend!
-		// - consent
-		// - birthday
-		// - preferences
-		// - externallyManaged -> store.userIsExternallyManaged ..not in use and solving externallyManaged is total wrong placed in me
-		// - avatarInitials -> First char of firstName and lastName -> frontend!
-		// - avatarBackgoundColor --> need to be checked, but look like frontend we should expose customAvatarBackgroundColor
-		// - age
 
 		const userResponse = new MeUserResponse({
 			id: userInfo.id,
@@ -68,26 +57,6 @@ export class MeResponseMapper {
 			language: userInfo.language || schoolInfoProps.language || null,
 			customAvatarBackgroundColor: userInfo.customAvatarBackgroundColor || null,
 		});
-
-		/* take from featherJS, must be moved to vue
-		const setAvatarData = (user) => {
-			if (user.firstName && user.lastName) {
-				user.avatarInitials = user.firstName.charAt(0) + user.lastName.charAt(0);
-			} else {
-				user.avatarInitials = '?';
-			}
-			// css readable value like "#ff0000" needed
-			const colors = ['#4a4e4d', '#0e9aa7', '#3da4ab', '#f6cd61', '#fe8a71'];
-			if (user.customAvatarBackgroundColor) {
-				user.avatarBackgroundColor = user.customAvatarBackgroundColor;
-			} else {
-				// choose colors based on initials
-				const index = (user.avatarInitials.charCodeAt(0) + user.avatarInitials.charCodeAt(1)) % colors.length;
-				user.avatarBackgroundColor = colors[index];
-			}
-			return user;
-		};
-		*/
 
 		return userResponse;
 	}
