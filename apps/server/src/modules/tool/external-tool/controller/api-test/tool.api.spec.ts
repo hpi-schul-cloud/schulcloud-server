@@ -771,7 +771,7 @@ describe('ToolController (API)', () => {
 				expect(response.header).toEqual(
 					expect.objectContaining({
 						'content-type': 'application/pdf',
-						'content-disposition': `inline; filename=CTL-Datenblatt-${externalToolEntity.name}-${dateString}`,
+						'content-disposition': `inline; filename=CTL-Datenblatt-${externalToolEntity.name}-${dateString}.pdf`,
 					})
 				);
 				expect(response.body).toEqual(expect.any(Buffer));

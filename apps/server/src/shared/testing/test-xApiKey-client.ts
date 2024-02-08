@@ -16,14 +16,20 @@ export class TestXApiKeyClient {
 
 	public get(subPath?: string): supertest.Test {
 		const path = this.getPath(subPath);
-		const testRequestInstance = supertest(this.app.getHttpServer()).get(path).set('Accept', 'application/json');
+		const testRequestInstance = supertest(this.app.getHttpServer())
+			.get(path)
+			.set('X-API-KEY', this.API_KEY)
+			.set('Accept', 'application/json');
 
 		return testRequestInstance;
 	}
 
 	public delete(subPath?: string): supertest.Test {
 		const path = this.getPath(subPath);
-		const testRequestInstance = supertest(this.app.getHttpServer()).delete(path).set('Accept', 'application/json');
+		const testRequestInstance = supertest(this.app.getHttpServer())
+			.delete(path)
+			.set('X-API-KEY', this.API_KEY)
+			.set('Accept', 'application/json');
 
 		return testRequestInstance;
 	}
