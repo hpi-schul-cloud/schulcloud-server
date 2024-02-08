@@ -115,7 +115,7 @@ describe('UserService', () => {
 				return { user, userId: user.id };
 			};
 
-			it('should be return the user with included roles', async () => {
+			it('should return the user with included roles', async () => {
 				const { user, userId } = setup();
 
 				const result = await service.getUserEntityWithRoles(userId);
@@ -125,7 +125,7 @@ describe('UserService', () => {
 			});
 		});
 
-		describe('when repo throw an error', () => {
+		describe('when repo throws an error', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
 				const error = new NotFoundException();
