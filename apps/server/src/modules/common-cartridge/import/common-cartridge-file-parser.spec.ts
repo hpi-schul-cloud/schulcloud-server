@@ -14,14 +14,14 @@ describe('CommonCartridgeFileParser', () => {
 				return { file };
 			};
 
-			it('should use imsmanfiest.xml as manifest', () => {
+			it('should use imsmanifest.xml as manifest', () => {
 				const { file } = setup('imsmanifest.xml');
 				const parser = new CommonCartridgeFileParser(file);
 
 				expect(parser.manifest).toBeDefined();
 			});
 
-			it('should use manfiest.xml as manifest', () => {
+			it('should use manifest.xml as manifest', () => {
 				const { file } = setup('manifest.xml');
 				const parser = new CommonCartridgeFileParser(file);
 
