@@ -136,11 +136,24 @@
       template: data-deletion-trigger-cronjob.yml.j2
     when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
 
-  - name: AMQPFileStorageDeployment
+  - name: amqp files storage Deployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: amqp-files-deployment.yml.j2
+
+  - name: amqp files storage configmap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: amqp-files-configmap.yml.j2
+
+  - name: amqp files storage Secret by 1Password
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: amqp-files-onepassword.yml.j2
+    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
 
   - name: Preview Generator Deployment
     kubernetes.core.k8s:
