@@ -94,12 +94,12 @@ describe('CommonCartridgeFileBuilder', () => {
 
 		describe('when metadata has not been provide', () => {
 			it('should throw an error', async () => {
-				const builder = new CommonCartridgeFileBuilder({
+				const sut = new CommonCartridgeFileBuilder({
 					version: CommonCartridgeVersion.V_1_1_0,
 					identifier: faker.string.uuid(),
 				});
 
-				await expect(builder.build()).rejects.toThrow('Metadata is not defined'); // TODO: does not matches the error
+				await expect(sut.build()).rejects.toThrow('Metadata is not defined');
 			});
 		});
 	});

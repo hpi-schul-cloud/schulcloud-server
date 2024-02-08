@@ -51,7 +51,7 @@ export class CommonCartridgeFileBuilder {
 		return builder;
 	}
 
-	public build(): Promise<Buffer> {
+	public async build(): Promise<Buffer> {
 		if (!this.metadata) {
 			throw new Error('Metadata is not defined');
 		}
@@ -74,7 +74,9 @@ export class CommonCartridgeFileBuilder {
 
 		this.archive.addFile(manifest.getFilePath(), Buffer.from(manifest.getFileContent()));
 
-		return this.archive.toBufferPromise();
+		const buffer = await this.archive.toBufferPromise();
+
+		return buffer;
 	}
 
 	private addResource(resource: CommonCartridgeResource): void {
