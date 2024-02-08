@@ -6,6 +6,7 @@ import { Submission } from '@shared/domain/entity';
 import { Counted } from '@shared/domain/types';
 import { SubmissionRepo } from '@shared/repo';
 import { setupEntities, submissionFactory, taskFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
 import { SubmissionService } from './submission.service';
 
 describe('Submission Service', () => {
@@ -28,6 +29,10 @@ describe('Submission Service', () => {
 				{
 					provide: FilesStorageClientAdapterService,
 					useValue: createMock<FilesStorageClientAdapterService>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
