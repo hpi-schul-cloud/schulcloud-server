@@ -125,7 +125,7 @@ describe('UserService', () => {
 			});
 		});
 
-		describe('when repo throw an error', () => {
+		describe('when repo throws an error', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
 				const error = new NotFoundException();
