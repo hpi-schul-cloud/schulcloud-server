@@ -1,7 +1,14 @@
 import { School } from '@src/modules/school';
 import { Role, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { MeAccountResponse, MeResponse, MeRolesReponse, MeSchoolResponse, MeUserResponse } from '../dto';
+import {
+	MeAccountResponse,
+	MeResponse,
+	MeRolesReponse,
+	MeSchoolLogoResponse,
+	MeSchoolResponse,
+	MeUserResponse,
+} from '../dto';
 
 export class MeResponseMapper {
 	public static mapToResponse(school: School, user: User, accountId: EntityId): MeResponse {
@@ -26,14 +33,16 @@ export class MeResponseMapper {
 		const schoolInfoProps = school.getInfo();
 		// i missed the school logoName and url ..is used in frontend but unkown on which place but should expose over me
 		// please check vue header components with ticket BC-6371
-		const schoolResponse = {
+		const logo = new MeSchoolLogoResponse({
+			url: schoolInfoProps.logo_dataUrl || null,
+			name: schoolInfoProps.logo_name || null,
+		});
+
+		const schoolResponse = new MeSchoolResponse({
 			id: schoolInfoProps.id,
 			name: schoolInfoProps.name,
-			logo: {
-				url: schoolInfoProps.logo_dataUrl || null,
-				name: schoolInfoProps.logo_name || null,
-			},
-		};
+			logo,
+		});
 
 		return schoolResponse;
 	}
@@ -52,13 +61,13 @@ export class MeResponseMapper {
 		// - avatarBackgoundColor --> need to be checked, but look like frontend we should expose customAvatarBackgroundColor
 		// - age
 
-		const userResponse = {
+		const userResponse = new MeUserResponse({
 			id: userInfo.id,
 			firstName: userInfo.firstName,
 			lastName: userInfo.lastName,
 			language: userInfo.language || schoolInfoProps.language || null,
 			customAvatarBackgroundColor: userInfo.customAvatarBackgroundColor || null,
-		};
+		});
 
 		/* take from featherJS, must be moved to vue
 		const setAvatarData = (user) => {
@@ -91,10 +100,10 @@ export class MeResponseMapper {
 	}
 
 	private static mapRole(role: Role): MeRolesReponse {
-		const roleResponse = {
+		const roleResponse = new MeRolesReponse({
 			id: role.id,
 			name: role.name,
-		};
+		});
 
 		return roleResponse;
 	}
@@ -106,9 +115,9 @@ export class MeResponseMapper {
 	}
 
 	private static mapAccount(accountId: EntityId): MeAccountResponse {
-		const accountResponse = {
+		const accountResponse = new MeAccountResponse({
 			id: accountId,
-		};
+		});
 
 		return accountResponse;
 	}

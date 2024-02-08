@@ -9,7 +9,7 @@ export class MeAccountResponse {
 	}
 }
 
-class MeSchoolLogoResponse {
+export class MeSchoolLogoResponse {
 	@ApiProperty({ type: String })
 	url: string | null;
 
