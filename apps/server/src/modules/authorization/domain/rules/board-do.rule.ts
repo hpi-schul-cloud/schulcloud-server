@@ -27,118 +27,110 @@ export class BoardDoRule implements Rule {
 			return false;
 		}
 
-		const userBoardRoles = boardDoAuthorizable.users.find(({ userId }) => userId === user.id);
-		if (!userBoardRoles) {
+		const userWithBoardRoles = boardDoAuthorizable.users.find(({ userId }) => userId === user.id);
+		if (!userWithBoardRoles) {
 			return false;
 		}
 
-		if (this.shouldProcessParentDo(boardDoAuthorizable)) {
-			const parentDoPermission = this.handlePermissionForParentDo(user, boardDoAuthorizable, context);
-			if (parentDoPermission !== undefined) {
-				return parentDoPermission;
-			}
+		if (this.shouldProcessSubmissionItem(boardDoAuthorizable)) {
+			return this.hasPermissionForSubmissionItem(user, userWithBoardRoles, boardDoAuthorizable, context);
 		}
 
-		if (isSubmissionItem(boardDoAuthorizable.boardDo)) {
-			return this.hasPermissionForSubmissionItem(userBoardRoles, boardDoAuthorizable, context);
+		if (this.shouldProcessDrawingElement(boardDoAuthorizable)) {
+			return this.hasPermissionForDrawingElement(userWithBoardRoles);
 		}
 
 		if (context.action === Action.write) {
-			return this.isBoardEditor(userBoardRoles);
+			return this.isBoardEditor(userWithBoardRoles);
 		}
 
-		return this.isBoardReader(userBoardRoles);
+		return this.isBoardReader(userWithBoardRoles);
 	}
 
-	private isBoardEditor(userBoardRole: UserWithBoardRoles): boolean {
-		return userBoardRole.roles.includes(BoardRoles.EDITOR);
+	private isBoardEditor(userWithBoardRoles: UserWithBoardRoles): boolean {
+		return userWithBoardRoles.roles.includes(BoardRoles.EDITOR);
 	}
 
-	private isBoardReader(userBoardRole: UserWithBoardRoles): boolean {
-		return userBoardRole.roles.includes(BoardRoles.READER) || userBoardRole.roles.includes(BoardRoles.EDITOR);
+	private isBoardReader(userWithBoardRoles: UserWithBoardRoles): boolean {
+		return userWithBoardRoles.roles.includes(BoardRoles.READER) || userWithBoardRoles.roles.includes(BoardRoles.EDITOR);
 	}
 
-	private shouldProcessParentDo(boardDoAuthorizable: BoardDoAuthorizable): boolean {
-		if (!boardDoAuthorizable.parentDo) {
-			return false;
-		}
-		if (isSubmissionItem(boardDoAuthorizable.parentDo)) {
-			return true;
-		}
-		if (isDrawingElement(boardDoAuthorizable.parentDo)) {
-			return true;
-		}
-		return false;
+	private shouldProcessDrawingElement(boardDoAuthorizable: BoardDoAuthorizable): boolean {
+		return isDrawingElement(boardDoAuthorizable.boardDo);
 	}
 
-	private handlePermissionForParentDo(
-		user: User,
-		boardDoAuthorizable: BoardDoAuthorizable,
-		context: AuthorizationContext
-	): boolean {
-		if (!boardDoAuthorizable.parentDo) {
-			/* istanbul ignore next */
-			throw new Error('BoardDoAuthorizable.parentDo is undefined');
-		}
+	private hasPermissionForDrawingElement(userWithBoardRoles: UserWithBoardRoles): boolean {
+		// TODO
+		// for now, board Readers have also write permission for DrawingElement.
+		// This is needed because files "attached" to drawing element ask permission for the drawing element itself
+		// this will be changed in the future, when there should be a separate permission for drawing element and
+		// separate permission for files attached to drawing element (when drawing element is parent)
+		return this.isBoardReader(userWithBoardRoles);
+	}
 
-		// permission< for elements under a submission item are handled by the parent submission item
-		if (isSubmissionItem(boardDoAuthorizable.parentDo)) {
-			if (!boardDoAuthorizable.boardDo || !isSubmissionItemContent(boardDoAuthorizable.boardDo)) {
-				return false;
-			}
-		}
-
-		// files from drawingElement
-		// no matter the action, as long as the user has read permission on the drawing element, he has write permission on the file
-		if (isDrawingElement(boardDoAuthorizable.parentDo)) {
-			context.action = Action.read;
-		}
-
-		boardDoAuthorizable.boardDo = boardDoAuthorizable.parentDo;
-		boardDoAuthorizable.parentDo = undefined;
-
-		return this.hasPermission(user, boardDoAuthorizable, context);
+	private shouldProcessSubmissionItem(boardDoAuthorizable: BoardDoAuthorizable): boolean {
+		return isSubmissionItem(boardDoAuthorizable.boardDo) || isSubmissionItem(boardDoAuthorizable.parentDo);
 	}
 
 	private hasPermissionForSubmissionItem(
-		userBoardRoles: UserWithBoardRoles,
+		user: User,
+		userWithBoardRoles: UserWithBoardRoles,
 		boardDoAuthorizable: BoardDoAuthorizable,
 		context: AuthorizationContext
 	): boolean {
+		// permission for elements under a submission item, are handled by the parent submission item
+		if (isSubmissionItem(boardDoAuthorizable.parentDo)) {
+			if (!isSubmissionItemContent(boardDoAuthorizable.boardDo)) {
+				return false;
+			}
+			boardDoAuthorizable.boardDo = boardDoAuthorizable.parentDo;
+			boardDoAuthorizable.parentDo = undefined;
+		}
+
 		if (!isSubmissionItem(boardDoAuthorizable.boardDo)) {
 			/* istanbul ignore next */
 			throw new Error('BoardDoAuthorizable.boardDo is not a submission item');
 		}
+
 		if (context.action === Action.write) {
-			return this.hasSubmissionItemWritePermission(userBoardRoles, boardDoAuthorizable.boardDo);
+			return this.hasSubmissionItemWritePermission(userWithBoardRoles, boardDoAuthorizable.boardDo);
 		}
 
-		return this.hasSubmissiontemReadPermission(userBoardRoles, boardDoAuthorizable.boardDo);
+		return this.hasSubmissionItemReadPermission(userWithBoardRoles, boardDoAuthorizable.boardDo);
 	}
 
 	private hasSubmissionItemWritePermission(
-		userBoardRoles: UserWithBoardRoles,
+		userWithBoardRoless: UserWithBoardRoles,
 		submissionItem: SubmissionItem
 	): boolean {
 		// teacher don't have write access
-		if (this.isBoardEditor(userBoardRoles)) {
+		if (this.isBoardEditor(userWithBoardRoless)) {
 			return false;
 		}
 
 		// student has write access only for his own submission item
-		if (this.isBoardReader(userBoardRoles) && this.isSubmissionItemCreator(userBoardRoles.userId, submissionItem)) {
+		if (
+			this.isBoardReader(userWithBoardRoless) &&
+			this.isSubmissionItemCreator(userWithBoardRoless.userId, submissionItem)
+		) {
 			return true;
 		}
 
 		return false;
 	}
 
-	private hasSubmissiontemReadPermission(userBoardRoles: UserWithBoardRoles, submissionItem: SubmissionItem): boolean {
-		if (this.isBoardEditor(userBoardRoles)) {
+	private hasSubmissionItemReadPermission(
+		userWithBoardRoless: UserWithBoardRoles,
+		submissionItem: SubmissionItem
+	): boolean {
+		if (this.isBoardEditor(userWithBoardRoless)) {
 			return true;
 		}
 
-		if (this.isBoardReader(userBoardRoles) && this.isSubmissionItemCreator(userBoardRoles.userId, submissionItem)) {
+		if (
+			this.isBoardReader(userWithBoardRoless) &&
+			this.isSubmissionItemCreator(userWithBoardRoless.userId, submissionItem)
+		) {
 			return true;
 		}
 

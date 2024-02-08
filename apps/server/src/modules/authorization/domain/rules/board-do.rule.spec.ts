@@ -433,36 +433,34 @@ describe(BoardDoRule.name, () => {
 			});
 		});
 
-		describe('when boardDoAuthorizable.parentDo is a drawingElement', () => {
+		describe('when boardDoAuthorizable.board is a drawingElement', () => {
 			describe('when user is Editor', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
 					const drawingElement = drawingElementFactory.build();
-					const fileElement = fileElementFactory.build();
 					const boardDoAuthorizable = new BoardDoAuthorizable({
 						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 						id: new ObjectId().toHexString(),
-						boardDo: fileElement,
-						parentDo: drawingElement,
+						boardDo: drawingElement,
 					});
 
 					return { user, boardDoAuthorizable };
 				};
-				it('should return true if trying to "write" ', () => {
-					const { user, boardDoAuthorizable } = setup();
-
-					const res = service.hasPermission(user, boardDoAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(true);
-				});
 				it('should return true if trying to "read"', () => {
 					const { user, boardDoAuthorizable } = setup();
 
 					const res = service.hasPermission(user, boardDoAuthorizable, {
 						action: Action.read,
+						requiredPermissions: [],
+					});
+
+					expect(res).toBe(true);
+				});
+				it('should return true if trying to "write" ', () => {
+					const { user, boardDoAuthorizable } = setup();
+
+					const res = service.hasPermission(user, boardDoAuthorizable, {
+						action: Action.write,
 						requiredPermissions: [],
 					});
 
@@ -473,31 +471,29 @@ describe(BoardDoRule.name, () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
 					const drawingElement = drawingElementFactory.build();
-					const fileElement = fileElementFactory.build();
 					const boardDoAuthorizable = new BoardDoAuthorizable({
 						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 						id: new ObjectId().toHexString(),
-						boardDo: fileElement,
-						parentDo: drawingElement,
+						boardDo: drawingElement,
 					});
 
 					return { user, boardDoAuthorizable };
 				};
-				it('should return true if trying to "write" ', () => {
-					const { user, boardDoAuthorizable } = setup();
-
-					const res = service.hasPermission(user, boardDoAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(true);
-				});
 				it('should return true if trying to "read"', () => {
 					const { user, boardDoAuthorizable } = setup();
 
 					const res = service.hasPermission(user, boardDoAuthorizable, {
 						action: Action.read,
+						requiredPermissions: [],
+					});
+
+					expect(res).toBe(true);
+				});
+				it('should ALSO return true if trying to "write" ', () => {
+					const { user, boardDoAuthorizable } = setup();
+
+					const res = service.hasPermission(user, boardDoAuthorizable, {
+						action: Action.write,
 						requiredPermissions: [],
 					});
 
