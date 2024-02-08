@@ -631,10 +631,10 @@ describe('ContentStorage', () => {
 
 			// [start, end, expected range]
 			const testRanges = [
-				[undefined, undefined, '0-'],
-				[100, undefined, '100-'],
-				[undefined, 100, '0-100'],
-				[100, 999, '100-999'],
+				[undefined, undefined, undefined],
+				[100, undefined, undefined],
+				[undefined, 100, undefined],
+				[100, 999, 'bytes=100-999'],
 			] as const;
 
 			return { filename, contentID, fileStream, fileResponse, testRanges, user, getError };
