@@ -10,10 +10,10 @@ export class MeAccountResponse {
 }
 
 class MeSchoolLogoResponse {
-	@ApiProperty()
+	@ApiProperty({ type: String })
 	url: string | null;
 
-	@ApiProperty()
+	@ApiProperty({ type: String })
 	name: string | null;
 
 	constructor(props: MeSchoolLogoResponse) {
@@ -49,11 +49,11 @@ export class MeUserResponse {
 	@ApiProperty()
 	lastName: string;
 
-	@ApiProperty()
+	@ApiProperty({ type: String })
 	language: string | null;
 
-	@ApiProperty()
-	customAvatarBackgroundColor?: string | null;
+	@ApiProperty({ type: String })
+	customAvatarBackgroundColor: string | null;
 
 	constructor(props: MeUserResponse) {
 		this.id = props.id;
@@ -84,7 +84,7 @@ export class MeResponse {
 	@ApiProperty()
 	user: MeUserResponse;
 
-	@ApiProperty()
+	@ApiProperty({ type: [MeRolesReponse] })
 	roles: MeRolesReponse[];
 
 	@ApiProperty()
