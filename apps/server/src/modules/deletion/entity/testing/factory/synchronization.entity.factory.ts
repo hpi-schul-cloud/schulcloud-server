@@ -1,0 +1,16 @@
+import { ObjectId } from '@mikro-orm/mongodb';
+import { BaseFactory } from '@shared/testing';
+import { SynchronizationEntity, SynchronizationEntityProps } from '../..';
+
+export const synchronizationEntityFactory = BaseFactory.define<SynchronizationEntity, SynchronizationEntityProps>(
+	SynchronizationEntity,
+	() => {
+		return {
+			id: new ObjectId().toHexString(),
+			count: 1,
+			failure: '',
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		};
+	}
+);
