@@ -1,12 +1,9 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import {
 	Controller,
-	FileTypeValidator,
 	Get,
-	MaxFileSizeValidator,
 	NotFoundException,
 	Param,
-	ParseFilePipe,
 	Post,
 	Query,
 	Res,
@@ -26,13 +23,12 @@ import {
 	ApiTags,
 } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
-import { config } from '@src/modules/files-storage/files-storage.config';
 import { Response } from 'express';
 import { CourseMapper } from '../mapper/course.mapper';
 import { CourseImportUc } from '../uc';
 import { CourseExportUc } from '../uc/course-export.uc';
 import { CourseUc } from '../uc/course.uc';
-import { CommonCartridgeFileValidator } from '../utils';
+import { CommonCartridgeFileValidatorPipe } from '../utils';
 import { CourseImportBodyParams, CourseMetadataListResponse, CourseQueryParams, CourseUrlParams } from './dto';
 
 @ApiTags('Courses')
@@ -85,15 +81,7 @@ export class CourseController {
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
 	public async importCourse(
 		@CurrentUser() currentUser: ICurrentUser,
-		@UploadedFile(
-			new ParseFilePipe({
-				validators: [
-					new MaxFileSizeValidator({ maxSize: config().MAX_FILE_SIZE }),
-					new FileTypeValidator({ fileType: /application\/(octet-stream|.*zip.*)/ }),
-					new CommonCartridgeFileValidator(),
-				],
-			})
-		)
+		@UploadedFile(CommonCartridgeFileValidatorPipe)
 		file: Express.Multer.File
 	): Promise<void> {
 		await this.courseImportUc.importFromCommonCartridge(currentUser.userId, file.buffer);

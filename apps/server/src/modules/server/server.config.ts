@@ -57,6 +57,9 @@ const config: ServerConfig = {
 	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED: Configuration.get(
 		'FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED'
 	) as boolean,
+	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE: Configuration.get(
+		'FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE'
+	) as number,
 };
 
 export const serverConfig = () => config;

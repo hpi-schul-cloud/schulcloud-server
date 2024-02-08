@@ -1177,7 +1177,12 @@
 		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED": {
 			"type": "boolean",
 			"default": false,
-			"description": "Toggle for the Common Cartridge course upload/import feature."
+			"description": "Toggle for the Common Cartridge course import feature."
+		},
+		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE": {
+			"type": "integer",
+			"default": 2000000000,
+			"description": "The maximum file upload size for the Common Cartridge file during import."
 		},
 		"GHOST_BASE_URL": {
 			"type": "string",
@@ -1457,7 +1462,16 @@
 		"TLDRAW": {
 			"type": "object",
 			"description": "Configuration of tldraw related settings",
-			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_FLUSH_SIZE", "MAX_DOCUMENT_SIZE", "ASSETS_ENABLED", "ASSETS_MAX_SIZE", "ASSETS_ALLOWED_EXTENSIONS_LIST"],
+			"required": [
+				"PING_TIMEOUT",
+				"SOCKET_PORT",
+				"GC_ENABLED",
+				"DB_FLUSH_SIZE",
+				"MAX_DOCUMENT_SIZE",
+				"ASSETS_ENABLED",
+				"ASSETS_MAX_SIZE",
+				"ASSETS_ALLOWED_EXTENSIONS_LIST"
+			],
 			"properties": {
 				"SOCKET_PORT": {
 					"type": "number",

@@ -1,1 +1,1 @@
-export * from './common-cartridge-file.validator';
+export * from './common-cartridge-file-validator.pipe';
