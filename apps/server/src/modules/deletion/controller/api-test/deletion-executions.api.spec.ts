@@ -10,7 +10,7 @@ const baseRouteName = '/deletionExecutions';
 describe(`deletionExecution (api)`, () => {
 	let app: INestApplication;
 	let testXApiKeyClient: TestXApiKeyClient;
-	const API_KEY = '1ab2c3d4e5f61ab2c3d4e5f6';
+	const API_KEY = '7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4';
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({

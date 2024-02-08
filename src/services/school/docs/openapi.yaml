@@ -110,48 +110,6 @@ components:
         skip:
           type: integer
 paths:
-  /schoolsList:
-    get:
-      parameters:
-        - description: Number of results to return
-          in: query
-          name: $limit
-          schema:
-            type: integer
-        - description: Number of results to skip
-          in: query
-          name: $skip
-          schema:
-            type: integer
-        - description: Property to sort results
-          in: query
-          name: $sort
-          style: deepObject
-          schema:
-            type: object
-        - description: Query parameters to filter
-          in: query
-          name: filter
-          style: form
-          explode: true
-          schema:
-            $ref: '#/components/schemas/schools'
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/schools_list'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Retrieves a list of all schools.
-      summary: ''
-      tags:
-        - schoolsList
-      security: [ ]
   /schools:
     get:
       parameters:
