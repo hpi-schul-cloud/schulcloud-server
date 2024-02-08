@@ -23,7 +23,6 @@ export const TLDRAW_SOCKET_PORT = Configuration.get('TLDRAW__SOCKET_PORT') as nu
 const tldrawConfig = {
 	TLDRAW_DB_URL,
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
-	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
 	TLDRAW_DB_FLUSH_SIZE: Configuration.get('TLDRAW__DB_FLUSH_SIZE') as number,
 	FEATURE_TLDRAW_ENABLED: Configuration.get('FEATURE_TLDRAW_ENABLED') as boolean,
