@@ -292,6 +292,7 @@ const config: ServerConfig &#x3D; {
 	INCOMING_REQUEST_TIMEOUT: Configuration.get(&#x27;INCOMING_REQUEST_TIMEOUT_API&#x27;) as number,
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get(&#x27;INCOMING_REQUEST_TIMEOUT_COPY_API&#x27;) as number,
 	NEST_LOG_LEVEL: Configuration.get(&#x27;NEST_LOG_LEVEL&#x27;) as string,
+	EXIT_ON_ERROR: Configuration.get(&#x27;EXIT_ON_ERROR&#x27;) as boolean,
 	AVAILABLE_LANGUAGES: (Configuration.get(&#x27;I18N__AVAILABLE_LANGUAGES&#x27;) as string).split(&#x27;,&#x27;),
 	NODE_ENV: Configuration.get(&#x27;NODE_ENV&#x27;) as NodeEnvType,
 	LOGIN_BLOCK_TIME: Configuration.get(&#x27;LOGIN_BLOCK_TIME&#x27;) as number,

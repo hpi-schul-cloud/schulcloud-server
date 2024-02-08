@@ -124,13 +124,13 @@
 <title>cluster_LoggerModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="48.5,-70 48.5,-268 447.5,-268 447.5,-70 48.5,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_LoggerModule_providers</title>
-<polygon fill="none" stroke="black" points="56.5,-78 56.5,-130 439.5,-130 439.5,-78 56.5,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_LoggerModule_exports</title>
 <polygon fill="none" stroke="black" points="90.5,-208 90.5,-260 393.5,-260 393.5,-208 90.5,-208"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_LoggerModule_providers</title>
+<polygon fill="none" stroke="black" points="56.5,-78 56.5,-130 439.5,-130 439.5,-78 56.5,-78"/>
 </g>
 <!-- ErrorLogger  -->
 <g id="node1" class="node">
@@ -310,7 +310,7 @@ import { Logger } from &#x27;./logger&#x27;;
 				return {
 					levels: winston.config.syslog.levels,
 					level: configService.get&lt;string&gt;(&#x27;NEST_LOG_LEVEL&#x27;),
-					exitOnError: false,
+					exitOnError: configService.get&lt;boolean&gt;(&#x27;EXIT_ON_ERROR&#x27;),
 					transports: [
 						new winston.transports.Console({
 							handleExceptions: true,

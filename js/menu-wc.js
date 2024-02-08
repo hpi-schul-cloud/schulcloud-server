@@ -1736,13 +1736,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/LoggerModule.html" data-type="entity-link" >LoggerModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-LoggerModule-4fff43d544c598e21bdf167cb3c5fda2aa0edf90aa62009cd91f814a09b8e197b94062fb3b4abe49e67085f743dc18787e464ce3dcf669e7f9c7c62f8ba31548"' : 'data-bs-target="#xs-injectables-links-module-LoggerModule-4fff43d544c598e21bdf167cb3c5fda2aa0edf90aa62009cd91f814a09b8e197b94062fb3b4abe49e67085f743dc18787e464ce3dcf669e7f9c7c62f8ba31548"' }>
+                                        'data-bs-target="#injectables-links-module-LoggerModule-b0148ca25c4f117a123468c0a9400e65dd8ecaa97ab38415a1948fe420b9fd8710e5488295943529a69043065d477faed8f09c9b0292338a3d07322d86a5f21b"' : 'data-bs-target="#xs-injectables-links-module-LoggerModule-b0148ca25c4f117a123468c0a9400e65dd8ecaa97ab38415a1948fe420b9fd8710e5488295943529a69043065d477faed8f09c9b0292338a3d07322d86a5f21b"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-LoggerModule-4fff43d544c598e21bdf167cb3c5fda2aa0edf90aa62009cd91f814a09b8e197b94062fb3b4abe49e67085f743dc18787e464ce3dcf669e7f9c7c62f8ba31548"' :
-                                        'id="xs-injectables-links-module-LoggerModule-4fff43d544c598e21bdf167cb3c5fda2aa0edf90aa62009cd91f814a09b8e197b94062fb3b4abe49e67085f743dc18787e464ce3dcf669e7f9c7c62f8ba31548"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-LoggerModule-b0148ca25c4f117a123468c0a9400e65dd8ecaa97ab38415a1948fe420b9fd8710e5488295943529a69043065d477faed8f09c9b0292338a3d07322d86a5f21b"' :
+                                        'id="xs-injectables-links-module-LoggerModule-b0148ca25c4f117a123468c0a9400e65dd8ecaa97ab38415a1948fe420b9fd8710e5488295943529a69043065d477faed8f09c9b0292338a3d07322d86a5f21b"' }>
                                         <li class="link">
                                             <a href="injectables/ErrorLogger.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ErrorLogger</a>
                                         </li>
