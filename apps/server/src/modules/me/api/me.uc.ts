@@ -12,7 +12,7 @@ export class MeUc {
 	public async getMe(userId: EntityId, schoolId: EntityId, accountId: EntityId): Promise<MeResponse> {
 		const [school, user] = await Promise.all([
 			this.schoolService.getSchoolById(schoolId),
-			this.userService.getUserEntityWithRoles(userId), // need to replace is valid user domain object avaible
+			this.userService.getUserEntityWithRoles(userId), // TODO: need to replace is valid user domain object avaible
 		]);
 
 		const dto = MeResponseMapper.mapToResponse(school, user, accountId);
