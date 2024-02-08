@@ -4,8 +4,11 @@ import {
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 } from '@src/modules/common-cartridge';
+import { CommonCartridgeElement } from '@src/modules/common-cartridge/interfaces/common-cartridge-element.interface';
+import { CommonCartridgeManifestResourcePropsV110 } from '@src/modules/common-cartridge/resources/v1.1.0/common-cartridge-manifest-resource';
 import { CommonCartridgeWebContentResourcePropsV110 } from '@src/modules/common-cartridge/resources/v1.1.0/common-cartridge-web-content-resource';
 import { CommonCartridgeWebLinkResourcePropsV110 } from '@src/modules/common-cartridge/resources/v1.1.0/common-cartridge-web-link-resource';
+import { CommonCartridgeManifestResourcePropsV130 } from '@src/modules/common-cartridge/resources/v1.3.0/common-cartridge-manifest-resource';
 import { CommonCartridgeWebContentResourcePropsV130 } from '@src/modules/common-cartridge/resources/v1.3.0/common-cartridge-web-content-resource';
 import { CommonCartridgeWebLinkResourcePropsV130 } from '@src/modules/common-cartridge/resources/v1.3.0/common-cartridge-web-link-resource';
 
@@ -52,5 +55,27 @@ export function createCommonCartridgeWebContentResourcePropsV130(): CommonCartri
 		title: faker.lorem.words(),
 		html: faker.lorem.paragraphs(),
 		intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
+	};
+}
+
+export function createCommonCartridgeManifestResourcePropsV110(): CommonCartridgeManifestResourcePropsV110 {
+	return {
+		type: CommonCartridgeResourceType.MANIFEST,
+		version: CommonCartridgeVersion.V_1_1_0,
+		identifier: faker.string.uuid(),
+		metadata: {} as CommonCartridgeElement,
+		organizations: [],
+		resources: [],
+	};
+}
+
+export function createCommonCartridgeManifestResourcePropsV130(): CommonCartridgeManifestResourcePropsV130 {
+	return {
+		type: CommonCartridgeResourceType.MANIFEST,
+		version: CommonCartridgeVersion.V_1_3_0,
+		identifier: faker.string.uuid(),
+		metadata: {} as CommonCartridgeElement,
+		organizations: [],
+		resources: [],
 	};
 }

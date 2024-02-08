@@ -1,4 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
+import { createCommonCartridgeManifestResourcePropsV110 } from '@shared/testing/factory/common-cartridge-resource-props.factory';
 import { readFile } from 'fs/promises';
 import {
 	CommonCartridgeElementType,
@@ -8,65 +9,18 @@ import {
 } from '../../common-cartridge.enums';
 import { CommonCartridgeElementFactory } from '../../elements/common-cartridge-element-factory';
 import { CommonCartridgeResourceFactory } from '../common-cartridge-resource-factory';
-import {
-	CommonCartridgeManifestResourcePropsV110,
-	CommonCartridgeManifestResourceV110,
-} from './common-cartridge-manifest-resource';
+import { CommonCartridgeManifestResourceV110 } from './common-cartridge-manifest-resource';
 
 describe('CommonCartridgeManifestResourceV110', () => {
-	const setup = () => {
-		const resource1 = CommonCartridgeResourceFactory.createResource({
-			type: CommonCartridgeResourceType.WEB_CONTENT,
-			version: CommonCartridgeVersion.V_1_1_0,
-			title: 'Title 1',
-			identifier: 'r1',
-			folder: 'o1',
-			html: '<p>HTML</p>',
-			intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
-		});
-		const resource2 = CommonCartridgeResourceFactory.createResource({
-			type: CommonCartridgeResourceType.WEB_LINK,
-			version: CommonCartridgeVersion.V_1_1_0,
-			title: 'Title 2',
-			identifier: 'r2',
-			folder: 'o2',
-			url: 'https://www.example.tld',
-		});
-		const organization1 = CommonCartridgeElementFactory.createElement({
-			type: CommonCartridgeElementType.ORGANIZATION,
-			version: CommonCartridgeVersion.V_1_1_0,
-			title: 'Title 1',
-			identifier: 'o1',
-			items: resource1,
-		});
-		const organization2 = CommonCartridgeElementFactory.createElement({
-			type: CommonCartridgeElementType.ORGANIZATION,
-			version: CommonCartridgeVersion.V_1_1_0,
-			title: 'Title 2',
-			identifier: 'o2',
-			items: resource2,
-		});
-		const metadata = CommonCartridgeElementFactory.createElement({
-			type: CommonCartridgeElementType.METADATA,
-			version: CommonCartridgeVersion.V_1_1_0,
-			title: 'Common Cartridge Manifest',
-			copyrightOwners: ['John Doe', 'Jane Doe'],
-			creationDate: new Date('2023-01-01'),
-		});
-		const sut = new CommonCartridgeManifestResourceV110({
-			type: CommonCartridgeResourceType.MANIFEST,
-			version: CommonCartridgeVersion.V_1_1_0,
-			identifier: 'm1',
-			metadata,
-			organizations: [organization1, organization2],
-			resources: [resource1, resource2],
-		});
-
-		return { sut };
-	};
-
 	describe('canInline', () => {
 		describe('when using Common Cartridge version 1.1.0', () => {
+			const setup = () => {
+				const props = createCommonCartridgeManifestResourcePropsV110();
+				const sut = new CommonCartridgeManifestResourceV110(props);
+
+				return { sut };
+			};
+
 			it('should return false', () => {
 				const { sut } = setup();
 				const result = sut.canInline();
@@ -78,6 +32,13 @@ describe('CommonCartridgeManifestResourceV110', () => {
 
 	describe('getFilePath', () => {
 		describe('when using Common Cartridge version 1.1.0', () => {
+			const setup = () => {
+				const props = createCommonCartridgeManifestResourcePropsV110();
+				const sut = new CommonCartridgeManifestResourceV110(props);
+
+				return { sut };
+			};
+
 			it('should return constructed file path', () => {
 				const { sut } = setup();
 				const result = sut.getFilePath();
@@ -89,6 +50,57 @@ describe('CommonCartridgeManifestResourceV110', () => {
 
 	describe('getFileContent', () => {
 		describe('when using Common Cartridge version 1.1.0', () => {
+			const setup = () => {
+				const resource1 = CommonCartridgeResourceFactory.createResource({
+					type: CommonCartridgeResourceType.WEB_CONTENT,
+					version: CommonCartridgeVersion.V_1_1_0,
+					title: 'Title 1',
+					identifier: 'r1',
+					folder: 'o1',
+					html: '<p>HTML</p>',
+					intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
+				});
+				const resource2 = CommonCartridgeResourceFactory.createResource({
+					type: CommonCartridgeResourceType.WEB_LINK,
+					version: CommonCartridgeVersion.V_1_1_0,
+					title: 'Title 2',
+					identifier: 'r2',
+					folder: 'o2',
+					url: 'https://www.example.tld',
+				});
+				const organization1 = CommonCartridgeElementFactory.createElement({
+					type: CommonCartridgeElementType.ORGANIZATION,
+					version: CommonCartridgeVersion.V_1_1_0,
+					title: 'Title 1',
+					identifier: 'o1',
+					items: resource1,
+				});
+				const organization2 = CommonCartridgeElementFactory.createElement({
+					type: CommonCartridgeElementType.ORGANIZATION,
+					version: CommonCartridgeVersion.V_1_1_0,
+					title: 'Title 2',
+					identifier: 'o2',
+					items: resource2,
+				});
+				const metadata = CommonCartridgeElementFactory.createElement({
+					type: CommonCartridgeElementType.METADATA,
+					version: CommonCartridgeVersion.V_1_1_0,
+					title: 'Common Cartridge Manifest',
+					copyrightOwners: ['John Doe', 'Jane Doe'],
+					creationDate: new Date('2023-01-01'),
+				});
+				const sut = new CommonCartridgeManifestResourceV110({
+					type: CommonCartridgeResourceType.MANIFEST,
+					version: CommonCartridgeVersion.V_1_1_0,
+					identifier: 'm1',
+					metadata,
+					organizations: [organization1, organization2],
+					resources: [resource1, resource2],
+				});
+
+				return { sut };
+			};
+
 			it('should return constructed file content', async () => {
 				const { sut } = setup();
 				const expected = await readFile('./apps/server/test/assets/common-cartridge/v1.1.0/manifest.xml', 'utf-8');
@@ -101,6 +113,13 @@ describe('CommonCartridgeManifestResourceV110', () => {
 
 	describe('getSupportedVersion', () => {
 		describe('when using Common Cartridge version 1.1.0', () => {
+			const setup = () => {
+				const props = createCommonCartridgeManifestResourcePropsV110();
+				const sut = new CommonCartridgeManifestResourceV110(props);
+
+				return { sut };
+			};
+
 			it('should return supported version', () => {
 				const { sut } = setup();
 				const result = sut.getSupportedVersion();
@@ -110,14 +129,11 @@ describe('CommonCartridgeManifestResourceV110', () => {
 		});
 
 		describe('when using not supported Common Cartridge version', () => {
+			const notSupportedProps = createCommonCartridgeManifestResourcePropsV110();
+			notSupportedProps.version = CommonCartridgeVersion.V_1_3_0;
+
 			it('should throw error', () => {
-				expect(
-					() =>
-						new CommonCartridgeManifestResourceV110({
-							type: CommonCartridgeResourceType.MANIFEST,
-							version: CommonCartridgeVersion.V_1_3_0,
-						} as CommonCartridgeManifestResourcePropsV110)
-				).toThrow(InternalServerErrorException);
+				expect(() => new CommonCartridgeManifestResourceV110(notSupportedProps)).toThrow(InternalServerErrorException);
 			});
 		});
 	});
