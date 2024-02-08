@@ -105,7 +105,7 @@ export class SubmissionService {
 		const submissionsToUpdateCount = submissionsToUpdate.length;
 		if (submissionsToUpdateCount > 0) {
 			submissionsToUpdate.forEach((submission) => {
-				submission.removeStudentId(userId);
+				submission.removeStudentById(userId);
 				submission.removeUserFromTeamMembers(userId);
 			});
 

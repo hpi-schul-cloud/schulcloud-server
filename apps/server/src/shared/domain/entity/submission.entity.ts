@@ -147,7 +147,7 @@ export class Submission extends BaseEntityWithTimestamps {
 		return isGradedForUser;
 	}
 
-	public removeStudentId(userId: EntityId): void {
+	public removeStudentById(userId: EntityId): void {
 		if (userId === this.student?.id) {
 			this.student = undefined;
 		}
