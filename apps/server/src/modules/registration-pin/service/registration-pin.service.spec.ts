@@ -4,6 +4,7 @@ import { setupEntities, userDoFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { DomainName, OperationType } from '@shared/domain/types';
+import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import { RegistrationPinRepo } from '../repo';
 import { RegistrationPinService } from '.';
 import { registrationPinEntityFactory } from '../entity/testing';
@@ -110,7 +111,9 @@ describe(RegistrationPinService.name, () => {
 				registrationPinRepo.findAllByEmail.mockResolvedValueOnce([[registrationPin], 1]);
 				registrationPinRepo.deleteRegistrationPinByEmail.mockResolvedValueOnce(0);
 
-				const expectedError = new Error(`Failed to delete user data from RegistrationPin for '${user.email}'`);
+				const expectedError = new DeletionErrorLoggableException(
+					`Failed to delete user data from RegistrationPin for '${user.email}'`
+				);
 
 				return {
 					expectedError,
