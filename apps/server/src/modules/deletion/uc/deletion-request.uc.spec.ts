@@ -16,7 +16,7 @@ import { ObjectId } from 'bson';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { DomainName, OperationType } from '@shared/domain/types';
-import { TaskService } from '@modules/task';
+import { SubmissionService, TaskService } from '@modules/task';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { NewsService } from '@src/modules/news/service/news.service';
 import { DeletionStatusModel } from '../domain/types';
@@ -49,6 +49,7 @@ describe(DeletionRequestUc.name, () => {
 	let dashboardService: DeepMocked<DashboardService>;
 	let taskService: DeepMocked<TaskService>;
 	let newsService: DeepMocked<NewsService>;
+	let submissionService: DeepMocked<SubmissionService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -127,6 +128,7 @@ describe(DeletionRequestUc.name, () => {
 					useValue: createMock<TaskService>(),
 				},
 				{ provide: NewsService, useValue: createMock<NewsService>() },
+				{ provide: SubmissionService, useValue: createMock<SubmissionService>() },
 			],
 		}).compile();
 
@@ -149,6 +151,7 @@ describe(DeletionRequestUc.name, () => {
 		dashboardService = module.get(DashboardService);
 		taskService = module.get(TaskService);
 		newsService = module.get(NewsService);
+		submissionService = module.get(SubmissionService);
 		await setupEntities();
 	});
 
@@ -295,6 +298,13 @@ describe(DeletionRequestUc.name, () => {
 					new ObjectId().toHexString(),
 				]);
 
+				const submissionsDeleted = DomainOperationBuilder.build(DomainName.SUBMISSIONS, OperationType.DELETE, 1, [
+					new ObjectId().toHexString(),
+				]);
+				const submissionsUpdated = DomainOperationBuilder.build(DomainName.SUBMISSIONS, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
 				const user = userDoFactory.buildWithId();
 
 				accountService.deleteAccountByUserId.mockResolvedValueOnce(accountDeleted);
@@ -316,6 +326,8 @@ describe(DeletionRequestUc.name, () => {
 				taskService.removeUserFromFinished.mockResolvedValueOnce(tasksModifiedByRemoveUserFromFinished);
 				taskService.deleteTasksByOnlyCreator.mockResolvedValueOnce(tasksDeleted);
 				newsService.deleteCreatorOrUpdaterReference.mockResolvedValueOnce(newsUpdated);
+				submissionService.deleteSubmissionsByUserId.mockResolvedValueOnce(submissionsDeleted);
+				submissionService.updateSubmissionByUserId.mockResolvedValueOnce(submissionsUpdated);
 
 				return {
 					deletionRequestToExecute,
@@ -553,6 +565,26 @@ describe(DeletionRequestUc.name, () => {
 				expect(newsService.deleteCreatorOrUpdaterReference).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
+			it('should call submissionService.deleteSubmissionsByUserId to delete submissions', async () => {
+				const { deletionRequestToExecute } = setup();
+
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+
+				await uc.executeDeletionRequests();
+
+				expect(submissionService.deleteSubmissionsByUserId).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+			});
+
+			it('should call submissionService.updateSubmissionByUserId to update submissions', async () => {
+				const { deletionRequestToExecute } = setup();
+
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+
+				await uc.executeDeletionRequests();
+
+				expect(submissionService.updateSubmissionByUserId).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+			});
+
 			it('should call deletionLogService.createDeletionLog to create logs for deletionRequest', async () => {
 				const { deletionRequestToExecute } = setup();
 
@@ -560,7 +592,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(13);
+				expect(deletionLogService.createDeletionLog).toHaveBeenCalledTimes(15);
 			});
 		});
 

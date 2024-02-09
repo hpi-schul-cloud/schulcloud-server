@@ -13,7 +13,7 @@ import { Injectable } from '@nestjs/common';
 import { DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { TaskService } from '@modules/task';
+import { SubmissionService, TaskService } from '@modules/task';
 import { DomainOperation } from '@shared/domain/interface';
 import { DomainOperationBuilder } from '@shared/domain/builder/domain-operation.builder';
 import { NewsService } from '@src/modules/news/service/news.service';
@@ -43,6 +43,7 @@ export class DeletionRequestUc {
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly dashboardService: DashboardService,
 		private readonly taskService: TaskService,
+		private readonly submissionService: SubmissionService,
 		private readonly newsService: NewsService
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
@@ -113,6 +114,7 @@ export class DeletionRequestUc {
 				this.removeUserFromRocketChat(deletionRequest),
 				this.removeUsersDashboard(deletionRequest),
 				this.removeUserFromTasks(deletionRequest),
+				this.removeUserFromSubmissions(deletionRequest),
 				this.removeUsersDataFromNews(deletionRequest),
 			]);
 			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
@@ -371,6 +373,31 @@ export class DeletionRequestUc {
 			tasksModifiedByRemoveCreator.operation,
 			modifiedTasksCount,
 			modifiedTasksRef
+		);
+	}
+
+	private async removeUserFromSubmissions(deletionRequest: DeletionRequest) {
+		this.logger.debug({ action: 'removeUserFromSubmissions', deletionRequest });
+
+		const [submissionsDeleted, submissionsModified] = await Promise.all([
+			this.submissionService.deleteSubmissionsByUserId(deletionRequest.targetRefId),
+			this.submissionService.updateSubmissionByUserId(deletionRequest.targetRefId),
+		]);
+
+		await this.logDeletion(
+			deletionRequest,
+			submissionsDeleted.domain,
+			submissionsDeleted.operation,
+			submissionsDeleted.count,
+			submissionsDeleted.refs
+		);
+
+		await this.logDeletion(
+			deletionRequest,
+			submissionsModified.domain,
+			submissionsModified.operation,
+			submissionsModified.count,
+			submissionsModified.refs
 		);
 	}
 
