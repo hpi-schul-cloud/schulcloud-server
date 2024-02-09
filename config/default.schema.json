@@ -180,7 +180,7 @@
 			"default": "",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
 		},
-		"BLOCKLIST_OF_EMAIL_DOMAINS":{
+		"BLOCKLIST_OF_EMAIL_DOMAINS": {
 			"type": "string",
 			"default": "",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
@@ -1034,6 +1034,11 @@
 			"description": "Nest Log level for api. The http flag is for request logging. The http flag do only work by api methods with added 'request logging interceptor'.",
 			"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 		},
+		"EXIT_ON_ERROR": {
+			"type": "boolean",
+			"default": true,
+			"description": "By default, the application is terminated after an uncaughtException has been logged. If this is not the desired behavior, set exitOnError to false."
+		},
 		"SYSTEM_LOG_LEVEL": {
 			"type": "string",
 			"default": "requestError",
@@ -1470,7 +1475,16 @@
 		"TLDRAW": {
 			"type": "object",
 			"description": "Configuration of tldraw related settings",
-			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_FLUSH_SIZE", "MAX_DOCUMENT_SIZE", "ASSETS_ENABLED", "ASSETS_MAX_SIZE", "ASSETS_ALLOWED_EXTENSIONS_LIST"],
+			"required": [
+				"PING_TIMEOUT",
+				"SOCKET_PORT",
+				"GC_ENABLED",
+				"DB_FLUSH_SIZE",
+				"MAX_DOCUMENT_SIZE",
+				"ASSETS_ENABLED",
+				"ASSETS_MAX_SIZE",
+				"ASSETS_ALLOWED_EXTENSIONS_LIST"
+			],
 			"properties": {
 				"SOCKET_PORT": {
 					"type": "number",
@@ -1558,71 +1572,5 @@
 			}
 		}
 	},
-	"required": [],
-	"allOf": [
-		{
-			"$ref": "#/definitions/FEATURE_ES_MERLIN_ENABLED",
-			"$ref": "#/definitions/ANTIVIRUS"
-		}
-	],
-	"definitions": {
-		"FEATURE_USER_MIGRATION_ENABLED": {
-			"if": {
-				"properties": {
-					"FEATURE_USER_MIGRATION_ENABLED": {
-						"const": true
-					}
-				}
-			},
-			"then": {
-				"required": ["FEATURE_USER_MIGRATION_SYSTEM_ID"]
-			}
-		},
-		"ANTIVIRUS": {
-			"if": {
-				"properties": {
-					"ENABLE_FILE_SECURITY_CHECK": {
-						"const": true
-					}
-				}
-			},
-			"then": {
-				"required": [
-					"FILE_SECURITY_CHECK_SERVICE_URI",
-					"FILE_SECURITY_SERVICE_USERNAME",
-					"FILE_SECURITY_SERVICE_PASSWORD",
-					"API_HOST"
-				]
-			}
-		},
-		"LERNSTORE_ENABLED": {
-			"if": {
-				"properties": {
-					"FEATURE_LERNSTORE_ENABLED": {
-						"const": true
-					}
-				}
-			},
-			"then": {
-				"required": ["ES_USER", "ES_PASSWORD"]
-			}
-		},
-		"FEATURE_ES_MERLIN_ENABLED": {
-			"if": {
-				"properties": {
-					"FEATURE_ES_MERLIN_ENABLED": {
-						"const": true
-					}
-				}
-			},
-			"then": {
-				"required": [
-					"SECRET_ES_MERLIN_USERNAME",
-					"SECRET_ES_MERLIN_PW",
-					"ES_MERLIN_AUTH_URL",
-					"SECRET_ES_MERLIN_COUNTIES_CREDENTIALS"
-				]
-			}
-		}
-	}
+	"required": []
 }

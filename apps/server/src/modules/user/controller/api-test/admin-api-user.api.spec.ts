@@ -4,9 +4,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Account, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { schoolEntityFactory, TestApiClient, TestXApiKeyClient } from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server';
+import { AdminApiServerTestModule } from '@src/modules/server/admin-api.server.module';
 import { nanoid } from 'nanoid';
-import supertest from 'supertest';
 import { AdminApiUserCreateResponse } from '../dto/admin-api-user-create.response.dto';
 
 const baseRouteName = '/admin/users';
@@ -19,7 +18,7 @@ describe('Admin API - Users (API)', () => {
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [ServerTestModule],
+			imports: [AdminApiServerTestModule],
 		}).compile();
 
 		app = module.createNestApplication();
@@ -97,20 +96,6 @@ describe('Admin API - Users (API)', () => {
 						username: body.email,
 					})
 				);
-			});
-
-			it('should be able to login with new account', async () => {
-				const { body } = await setup();
-				const response = await testXApiKeyClient.post('', body);
-
-				const { username, initialPassword: password } = response.body as AdminApiUserCreateResponse;
-
-				const loginResponse = await supertest(app.getHttpServer())
-					.post('/authentication/local')
-					.set('accept', 'application/json')
-					.send({ username, password });
-
-				expect(loginResponse.status).toEqual(200);
 			});
 		});
 	});
