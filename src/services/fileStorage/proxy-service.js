@@ -438,6 +438,7 @@ const signedUrlService = {
 					flatFileName: fileObject.storageFileName,
 					localFileName: query.name || fileObject.name,
 					download,
+					bucket: fileObject.bucket,
 				})
 			)
 			.then((res) => ({
