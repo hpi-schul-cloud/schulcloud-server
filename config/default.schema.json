@@ -1594,6 +1594,11 @@
 					"type": "boolean",
 					"description": "Flag to enable the arix controller",
 					"default": "false"
+				},
+				"LOG_REQUESTS": {
+					"type": "boolean",
+					"description": "Flag to enable logging of requests to the arix API",
+					"default": "false"
 				}
 			},
 			"default": {

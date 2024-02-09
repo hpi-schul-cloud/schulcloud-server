@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConverterUtil } from '@shared/common';
+import { Logger } from '@src/core/logger';
 import { AxiosResponse } from 'axios';
 import crypto from 'crypto';
 import { lastValueFrom, Observable } from 'rxjs';
@@ -36,12 +37,21 @@ export class ArixRestClient {
 	constructor(
 		@Inject(ARIX_REST_CLIENT_OPTIONS) private readonly options: ArixRestClientOptions,
 		private readonly httpService: HttpService,
-		private readonly convertUtil: ConverterUtil
+		private readonly convertUtil: ConverterUtil,
+		private readonly logger: Logger
 	) {}
 
 	private async postData<T, U>(request: ArixBaseRequest<T>): Promise<U> {
 		const xmlRequest: string = this.convertUtil.object2xml(request.data);
 
+		// TODO: create loggable
+		if (this.options.logRequests) {
+			this.logger.info({
+				getLogMessage: () => {
+					return { message: 'Sending request to Arix', data: xmlRequest };
+				},
+			});
+		}
 		const observable: Observable<AxiosResponse<string>> = this.httpService.post(
 			// TODO: handle context
 			this.options.apiUrl,

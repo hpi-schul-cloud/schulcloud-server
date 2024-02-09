@@ -8,4 +8,6 @@ export interface ArixRestClientOptions {
 	password: string;
 
 	withController?: boolean;
+
+	logRequests?: boolean;
 }

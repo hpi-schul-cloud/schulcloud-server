@@ -87,10 +87,11 @@ const serverModules = [
 	SchoolApiModule,
 	LegacySchoolApiModule,
 	ArixClientModule.register({
-		withController: Configuration.get('ARIX_CLIENT__WITH_CONTROLLER') as boolean,
 		apiUrl: Configuration.get('ARIX_CLIENT__API_URL') as string,
 		user: Configuration.get('ARIX_CLIENT__USER') as string,
 		password: Configuration.get('ARIX_CLIENT__PASSWORD') as string,
+		withController: Configuration.get('ARIX_CLIENT__WITH_CONTROLLER') as boolean,
+		logRequests: Configuration.get('ARIX_CLIENT__LOG_REQUESTS') as boolean,
 	}),
 ];
 
