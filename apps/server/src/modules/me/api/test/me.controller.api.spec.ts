@@ -16,17 +16,12 @@ const mapToMeResponseObject = (user: User, account: Account): MeResponse => {
 		school: {
 			id: school.id,
 			name: school.name,
-			logo: {
-				url: null,
-				name: null,
-			},
+			logo: {},
 		},
 		user: {
 			id: user.id,
 			firstName: user.firstName,
 			lastName: user.lastName,
-			language: null,
-			customAvatarBackgroundColor: null,
 		},
 		roles: [
 			{
