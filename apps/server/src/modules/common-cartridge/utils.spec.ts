@@ -3,6 +3,7 @@ import { ObjectID } from 'bson';
 import { CommonCartridgeVersion } from './common-cartridge.enums';
 import {
 	buildXmlString,
+	checkIntendedUse,
 	createElementTypeNotSupportedError,
 	createIdentifier,
 	createResourceTypeNotSupportedError,
@@ -63,6 +64,18 @@ describe('CommonCartridgeUtils', () => {
 
 				expect(error).toBeInstanceOf(InternalServerErrorException);
 				expect(error.message).toBe(`Common Cartridge element type ${elementType} is not supported`);
+			});
+		});
+	});
+
+	describe('checkIntendedUse', () => {
+		describe('when intended use is not supported', () => {
+			it('should throw error', () => {
+				const supportedIntendedUses = ['use1', 'use2'];
+
+				expect(() => checkIntendedUse('use3', supportedIntendedUses)).toThrowError(
+					'Intended use use3 is not supported'
+				);
 			});
 		});
 	});
