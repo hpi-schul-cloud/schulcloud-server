@@ -33,8 +33,8 @@ export class MeResponseMapper {
 		const schoolInfoProps = school.getInfo();
 
 		const logo = new MeSchoolLogoResponse({
-			url: schoolInfoProps.logo_dataUrl || null,
-			name: schoolInfoProps.logo_name || null,
+			url: schoolInfoProps.logo_dataUrl,
+			name: schoolInfoProps.logo_name,
 		});
 
 		const schoolResponse = new MeSchoolResponse({
@@ -54,8 +54,8 @@ export class MeResponseMapper {
 			id: userInfo.id,
 			firstName: userInfo.firstName,
 			lastName: userInfo.lastName,
-			language: userInfo.language || schoolInfoProps.language || null,
-			customAvatarBackgroundColor: userInfo.customAvatarBackgroundColor || null,
+			language: userInfo.language || schoolInfoProps.language,
+			customAvatarBackgroundColor: userInfo.customAvatarBackgroundColor,
 		});
 
 		return userResponse;

@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class MeAccountResponse {
 	@ApiProperty()
@@ -10,11 +10,11 @@ export class MeAccountResponse {
 }
 
 export class MeSchoolLogoResponse {
-	@ApiProperty({ type: String })
-	url: string | null;
+	@ApiPropertyOptional()
+	url?: string;
 
-	@ApiProperty({ type: String })
-	name: string | null;
+	@ApiPropertyOptional()
+	name?: string;
 
 	constructor(props: MeSchoolLogoResponse) {
 		this.url = props.url;
@@ -49,11 +49,11 @@ export class MeUserResponse {
 	@ApiProperty()
 	lastName: string;
 
-	@ApiProperty({ type: String })
-	language: string | null;
+	@ApiPropertyOptional()
+	language?: string;
 
-	@ApiProperty({ type: String })
-	customAvatarBackgroundColor: string | null;
+	@ApiPropertyOptional()
+	customAvatarBackgroundColor?: string;
 
 	constructor(props: MeUserResponse) {
 		this.id = props.id;
