@@ -18,7 +18,12 @@ export class UserRepo extends BaseRepo<User> {
 		const user = await super.findById(id);
 
 		if (populate) {
-			await this._em.populate(user, ['roles', 'school.systems', 'school.currentYear']);
+			try {
+				await this._em.populate(user, ['roles', 'school.systems', 'school.currentYear']);
+			} catch (error) {
+				console.error('Error populating user', error);
+			}
+
 			await this.populateRoles(user.roles.getItems());
 		}
 
@@ -142,7 +147,13 @@ export class UserRepo extends BaseRepo<User> {
 
 		const userDocuments = await this._em.aggregate(User, pipeline);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-		const users = userDocuments.map((userDocument) => this._em.map(User, userDocument));
+		const users = userDocuments.map((userDocument) => {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			const { createdAt, updatedAt, preferences, ...newUserDocument } = userDocument;
+
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			return this._em.map(User, newUserDocument);
+		});
 		await this._em.populate(users, ['roles']);
 		return [users, count];
 	}
