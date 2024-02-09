@@ -1597,7 +1597,7 @@
 				},
 				"LOG_REQUESTS": {
 					"type": "boolean",
-					"description": "Flag to enable logging of requests to the arix API",
+					"description": "Flag to enable logging of requests to the arix API. NEST_LOG_LEVEL must be set to see the logs.",
 					"default": "false"
 				}
 			},

@@ -62,6 +62,14 @@ export class ArixRestClient {
 			}
 		);
 		const axiosResponse: AxiosResponse<string> = await lastValueFrom(observable);
+		// TODO: create loggable
+		if (this.options.logRequests) {
+			this.logger.info({
+				getLogMessage: () => {
+					return { message: 'Received response from Arix', data: axiosResponse.data };
+				},
+			});
+		}
 
 		if (!axiosResponse) {
 			throw new InternalServerErrorException('No data received from Arix.');
