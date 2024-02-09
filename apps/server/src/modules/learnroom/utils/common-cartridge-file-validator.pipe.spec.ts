@@ -1,6 +1,7 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { readFile } from 'node:fs/promises';
 import { LearnroomConfigService } from '../service';
 import { CommonCartridgeFileValidatorPipe } from './common-cartridge-file-validator.pipe';
 
@@ -21,7 +22,7 @@ describe('CommonCartridgeFileValidatorPipe', () => {
 			],
 		}).compile();
 		sut = module.get(CommonCartridgeFileValidatorPipe);
-		configServiceMock = module.get(LearnroomConfigService);
+		configServiceMock = module.get(ConfigService);
 	});
 
 	afterAll(async () => {
@@ -88,6 +89,24 @@ describe('CommonCartridgeFileValidatorPipe', () => {
 				const { file } = setup();
 
 				expect(() => sut.transform(file)).toThrow('No manifest file found');
+			});
+		});
+
+		describe('when the file is valid', () => {
+			const setup = async () => {
+				const buffer = await readFile('./apps/server/test/assets/common-cartridge/us_history_since_1877.imscc');
+
+				configServiceMock.get.mockReturnValue(1000);
+
+				return {
+					file: { mimetype: 'application/zip', size: 1000, buffer } as unknown as Express.Multer.File,
+				};
+			};
+
+			it('should return the file', async () => {
+				const { file } = await setup();
+
+				expect(sut.transform(file)).toBe(file);
 			});
 		});
 	});

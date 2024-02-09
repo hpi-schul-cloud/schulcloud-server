@@ -17,7 +17,7 @@ describe('LearnroomConfigService', () => {
 			it('should return the value from the config', () => {
 				const { sut } = setup();
 
-				expect(sut.isCommonCartridgeCourseImportEnabled).toBe(true);
+				expect(sut.isCommonCartridgeImportEnabled).toBe(true);
 			});
 		});
 
@@ -27,7 +27,7 @@ describe('LearnroomConfigService', () => {
 			it('should return false by default', () => {
 				const { sut } = setup();
 
-				expect(sut.isCommonCartridgeCourseImportEnabled).toBe(false);
+				expect(sut.isCommonCartridgeImportEnabled).toBe(false);
 			});
 		});
 	});

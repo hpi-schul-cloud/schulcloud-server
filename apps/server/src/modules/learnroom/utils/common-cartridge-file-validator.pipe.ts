@@ -11,15 +11,15 @@ export class CommonCartridgeFileValidatorPipe implements PipeTransform<Express.M
 			throw new BadRequestException('No file uploaded');
 		}
 
-		if (!value?.mimetype.match(/application\/(octet-stream|.*zip.*)/)) {
+		if (!value.mimetype.match(/application\/(octet-stream|.*zip.*)/)) {
 			throw new BadRequestException('Invalid file type');
 		}
 
-		if (value?.size > this.configService.commonCartridgeImportMaxFileSize) {
+		if (value.size > this.configService.commonCartridgeImportMaxFileSize) {
 			throw new BadRequestException('File too big');
 		}
 
-		if (!this.hasManifestFile(value?.buffer)) {
+		if (!this.hasManifestFile(value.buffer)) {
 			throw new BadRequestException('No manifest file found');
 		}
 
