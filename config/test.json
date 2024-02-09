@@ -81,5 +81,11 @@
 		"CLIENT_ID": "schulcloud",
 		"CLIENT_SECRET": "secret"
 	},
-	"ADMIN_API": { "ALLOWED_API_KEYS": "thisistheadminapitokeninthetestconfig" }
+	"ADMIN_API": { "ALLOWED_API_KEYS": "thisistheadminapitokeninthetestconfig" },
+	"EXIT_ON_ERROR": false,
+	"TEACHER_STUDENT_VISIBILITY": {
+		"IS_CONFIGURABLE": false,
+		"IS_ENABLED_BY_DEFAULT": true,
+		"IS_VISIBLE": true
+	}
 }
