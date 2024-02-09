@@ -3,7 +3,6 @@ import {
 	CopyFileDO,
 	CopyFilesOfParentParams,
 	FileDO,
-	FileRecordParams,
 	FilesStorageEvents,
 	FilesStorageExchange,
 	RpcMessageProducer,
@@ -34,7 +33,7 @@ export class FilesStorageProducer extends RpcMessageProducer {
 		return response;
 	}
 
-	async listFilesOfParent(payload: FileRecordParams): Promise<FileDO[]> {
+	async listFilesOfParent(payload: EntityId): Promise<FileDO[]> {
 		this.logger.debug({ action: 'listFilesOfParent:started', payload });
 		const response = await this.request<FileDO[]>(FilesStorageEvents.LIST_FILES_OF_PARENT, payload);
 
@@ -48,6 +47,15 @@ export class FilesStorageProducer extends RpcMessageProducer {
 		const response = await this.request<FileDO[]>(FilesStorageEvents.DELETE_FILES_OF_PARENT, payload);
 
 		this.logger.debug({ action: 'deleteFilesOfParent:finished', payload });
+
+		return response;
+	}
+
+	async deleteOneFile(payload: EntityId): Promise<FileDO> {
+		this.logger.debug({ action: 'deleteOneFile:started', payload });
+		const response = await this.request<FileDO>(FilesStorageEvents.DELETE_ONE_FILE, payload);
+
+		this.logger.debug({ action: 'deleteOneFile:finished', payload });
 
 		return response;
 	}

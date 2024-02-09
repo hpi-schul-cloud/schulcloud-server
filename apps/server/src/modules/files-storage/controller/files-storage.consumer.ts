@@ -8,7 +8,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
-import { CopyFilesOfParentPayload, FileRecordParams } from './dto';
+import { CopyFilesOfParentPayload } from './dto';
 
 @Injectable()
 export class FilesStorageConsumer {
@@ -45,10 +45,10 @@ export class FilesStorageConsumer {
 		queue: FilesStorageEvents.LIST_FILES_OF_PARENT,
 	})
 	@UseRequestContext()
-	public async getFilesOfParent(@RabbitPayload() payload: FileRecordParams): Promise<RpcMessage<FileDO[]>> {
+	public async getFilesOfParent(@RabbitPayload() payload: EntityId): Promise<RpcMessage<FileDO[]>> {
 		this.logger.debug({ action: 'getFilesOfParent', payload });
 
-		const [fileRecords, total] = await this.filesStorageService.getFileRecordsOfParent(payload.parentId);
+		const [fileRecords, total] = await this.filesStorageService.getFileRecordsOfParent(payload);
 		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);
 
 		return { message: response.data };
@@ -71,6 +71,25 @@ export class FilesStorageConsumer {
 		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);
 
 		return { message: response.data };
+	}
+
+	@RabbitRPC({
+		exchange: FilesStorageExchange,
+		routingKey: FilesStorageEvents.DELETE_ONE_FILE,
+		queue: FilesStorageEvents.DELETE_ONE_FILE,
+	})
+	@UseRequestContext()
+	public async deleteOneFile(@RabbitPayload() payload: EntityId): Promise<RpcMessage<FileDO>> {
+		this.logger.debug({ action: 'deleteOneFile', payload });
+
+		const fileRecord = await this.filesStorageService.getFileRecord({ fileRecordId: payload });
+
+		await this.previewService.deletePreviews([fileRecord]);
+		await this.filesStorageService.deleteFilesOfParent([fileRecord]);
+
+		const response = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
+
+		return { message: response };
 	}
 
 	@RabbitRPC({
