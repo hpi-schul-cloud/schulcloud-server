@@ -46,7 +46,7 @@ export class SubmissionService {
 
 		if (submissions[1] > 0) {
 			submissions[0].forEach((submission) => {
-				if (submission.courseGroup === undefined && submission.teamMembers.length === 1) {
+				if (submission.courseGroup === null && submission.teamMembers.length === 1) {
 					submissionsToDelete.push(submission);
 				}
 			});
@@ -93,10 +93,7 @@ export class SubmissionService {
 
 		if (submissions[1] > 0) {
 			submissions[0].forEach((submission) => {
-				if (
-					submission.courseGroup !== undefined ||
-					(submission.courseGroup === undefined && submission.teamMembers.length > 1)
-				) {
+				if (submission.courseGroup !== null || (submission.courseGroup === null && submission.teamMembers.length > 1)) {
 					submissionsToUpdate.push(submission);
 				}
 			});
