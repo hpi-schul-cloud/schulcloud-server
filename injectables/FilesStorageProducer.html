@@ -158,6 +158,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#deleteOneFile" >deleteOneFile</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#listFilesOfParent" >listFilesOfParent</a>
                             </li>
                             <li>
@@ -200,7 +204,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:17</a></div>
                             </td>
                         </tr>
 
@@ -289,8 +293,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:28</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -358,8 +362,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="46"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:46</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -409,26 +413,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="listFilesOfParent"></a>
+                    <a name="deleteOneFile"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
-                        <span ><b>listFilesOfParent</b></span>
-                        <a href="#listFilesOfParent"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>deleteOneFile</b></span>
+                        <a href="#deleteOneFile"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>listFilesOfParent(payload: <a href="../interfaces/FileRecordParams.html" target="_self">FileRecordParams</a>)</code>
+                    <code>deleteOneFile(payload: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="37"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:37</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -451,7 +455,76 @@
                                         <tr>
                                                 <td>payload</td>
                                             <td>
-                                                            <code><a href="../interfaces/FileRecordParams.html" target="_self" >FileRecordParams</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;FileDO&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="listFilesOfParent"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>listFilesOfParent</b></span>
+                        <a href="#listFilesOfParent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>listFilesOfParent(payload: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="36"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:36</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>payload</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                             </td>
 
                                             <td>
@@ -496,8 +569,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="55"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:55</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="63"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:63</a></div>
                         </td>
                     </tr>
 
@@ -818,7 +891,6 @@ import {
 	CopyFileDO,
 	CopyFilesOfParentParams,
 	FileDO,
-	FileRecordParams,
 	FilesStorageEvents,
 	FilesStorageExchange,
 	RpcMessageProducer,
@@ -849,7 +921,7 @@ export class FilesStorageProducer extends RpcMessageProducer {
 		return response;
 	}
 
-	async listFilesOfParent(payload: FileRecordParams): Promise&lt;FileDO[]&gt; {
+	async listFilesOfParent(payload: EntityId): Promise&lt;FileDO[]&gt; {
 		this.logger.debug({ action: &#x27;listFilesOfParent:started&#x27;, payload });
 		const response &#x3D; await this.request&lt;FileDO[]&gt;(FilesStorageEvents.LIST_FILES_OF_PARENT, payload);
 
@@ -863,6 +935,15 @@ export class FilesStorageProducer extends RpcMessageProducer {
 		const response &#x3D; await this.request&lt;FileDO[]&gt;(FilesStorageEvents.DELETE_FILES_OF_PARENT, payload);
 
 		this.logger.debug({ action: &#x27;deleteFilesOfParent:finished&#x27;, payload });
+
+		return response;
+	}
+
+	async deleteOneFile(payload: EntityId): Promise&lt;FileDO&gt; {
+		this.logger.debug({ action: &#x27;deleteOneFile:started&#x27;, payload });
+		const response &#x3D; await this.request&lt;FileDO&gt;(FilesStorageEvents.DELETE_ONE_FILE, payload);
+
+		this.logger.debug({ action: &#x27;deleteOneFile:finished&#x27;, payload });
 
 		return response;
 	}

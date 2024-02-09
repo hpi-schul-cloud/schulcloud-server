@@ -196,8 +196,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="10"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/tldraw.ws.factory.ts:10</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="15"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/tldraw.ws.factory.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -298,7 +298,12 @@ import { WebSocketReadyStateEnum } from &#x27;@shared/testing&#x27;;
 
 export class TldrawWsFactory {
 	public static createWsSharedDocDo(): WsSharedDocDo {
-		return { connections: new Map(), destroy: () &#x3D;&gt; {} } as WsSharedDocDo;
+		return {
+			connections: new Map(),
+			getMap: () &#x3D;&gt; new Map(),
+			transact: () &#x3D;&gt; {},
+			destroy: () &#x3D;&gt; {},
+		} as unknown as WsSharedDocDo;
 	}
 
 	public static createWebsocket(readyState: WebSocketReadyStateEnum): WebSocket {

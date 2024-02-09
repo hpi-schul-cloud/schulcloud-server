@@ -265,6 +265,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
+                                <a href="#syncDocumentAssetsWithShapes" >syncDocumentAssetsWithShapes</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#unsubscribeFromRedisChannels" >unsubscribeFromRedisChannels</a>
                             </li>
                             <li>
@@ -294,12 +298,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(configService: <a href="../interfaces/TldrawConfig.html" target="_self">ConfigService&lt;TldrawConfig | &gt;</a>, tldrawBoardRepo: <a href="../injectables/TldrawBoardRepo.html" target="_self">TldrawBoardRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, metricsService: <a href="../injectables/MetricsService.html" target="_self">MetricsService</a>, tldrawRedisFactory: <a href="../injectables/TldrawRedisFactory.html" target="_self">TldrawRedisFactory</a>)</code>
+<code>constructor(configService: <a href="../interfaces/TldrawConfig.html" target="_self">ConfigService&lt;TldrawConfig | &gt;</a>, tldrawBoardRepo: <a href="../injectables/TldrawBoardRepo.html" target="_self">TldrawBoardRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, metricsService: <a href="../injectables/MetricsService.html" target="_self">MetricsService</a>, tldrawRedisFactory: <a href="../injectables/TldrawRedisFactory.html" target="_self">TldrawRedisFactory</a>, filesStorageTldrawAdapterService: <a href="../injectables/TldrawFilesStorageAdapterService.html" target="_self">TldrawFilesStorageAdapterService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:35</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:44</a></div>
                             </td>
                         </tr>
 
@@ -376,6 +380,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>filesStorageTldrawAdapterService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/TldrawFilesStorageAdapterService.html" target="_self" >TldrawFilesStorageAdapterService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -413,8 +429,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:62</a></div>
                         </td>
                     </tr>
 
@@ -495,8 +511,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="149"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:149</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="131"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:131</a></div>
                         </td>
                     </tr>
 
@@ -535,8 +551,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="107"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:107</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="99"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:99</a></div>
                         </td>
                     </tr>
 
@@ -617,16 +633,14 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="131"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:131</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="113"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:113</a></div>
                         </td>
                     </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                        <div class="io-description"><p>Gets a Y.Doc by name, whether in memory or on disk</p>
-</div>
 
                             <div class="io-description">
                                 <b>Parameters :</b>
@@ -637,7 +651,6 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
-                                                <td>Description</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -652,12 +665,6 @@
                                             </td>
 
 
-                                            <td>
-                                                    <ul>
-<li>the name of the Y.Doc to find or create</li>
-</ul>
-
-                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -695,8 +702,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="324"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:324</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="314"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:314</a></div>
                         </td>
                     </tr>
 
@@ -713,7 +720,6 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
-                                                <td>Description</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -728,8 +734,6 @@
                                             </td>
 
 
-                                            <td>
-                                            </td>
                                         </tr>
                                         <tr>
                                                 <td>wsConnection</td>
@@ -742,10 +746,6 @@
                                             </td>
 
 
-                                            <td>
-                                                    <p>Origin is the connection that made the change</p>
-
-                                            </td>
                                         </tr>
                                         <tr>
                                                 <td>doc</td>
@@ -758,8 +758,6 @@
                                             </td>
 
 
-                                            <td>
-                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -797,8 +795,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="153"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:153</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="135"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:135</a></div>
                         </td>
                     </tr>
 
@@ -890,8 +888,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="301"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:301</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="300"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:300</a></div>
                         </td>
                     </tr>
 
@@ -908,7 +906,6 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
-                                                <td>Description</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -923,10 +920,6 @@
                                             </td>
 
 
-                                            <td>
-                                                    <p>array of changed clients</p>
-
-                                            </td>
                                         </tr>
                                         <tr>
                                                 <td>doc</td>
@@ -939,8 +932,6 @@
                                             </td>
 
 
-                                            <td>
-                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -978,8 +969,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="286"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:286</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="289"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:289</a></div>
                         </td>
                     </tr>
 
@@ -1059,8 +1050,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="396"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:396</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="386"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:386</a></div>
                         </td>
                     </tr>
 
@@ -1152,8 +1143,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="344"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:344</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="334"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:334</a></div>
                         </td>
                     </tr>
 
@@ -1221,8 +1212,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="354"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:354</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="344"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:344</a></div>
                         </td>
                     </tr>
 
@@ -1290,8 +1281,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="350"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:350</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="340"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:340</a></div>
                         </td>
                     </tr>
 
@@ -1359,8 +1350,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="73"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:73</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="74"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:74</a></div>
                         </td>
                     </tr>
 
@@ -1452,8 +1443,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="313"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:313</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="308"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:308</a></div>
                         </td>
                     </tr>
 
@@ -1470,7 +1461,6 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
-                                                <td>Description</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -1485,10 +1475,6 @@
                                             </td>
 
 
-                                            <td>
-                                                    <p>encoded message about changes</p>
-
-                                            </td>
                                         </tr>
                                         <tr>
                                                 <td>doc</td>
@@ -1501,8 +1487,6 @@
                                             </td>
 
 
-                                            <td>
-                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1540,8 +1524,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="409"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:409</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="399"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:399</a></div>
                         </td>
                     </tr>
 
@@ -1622,8 +1606,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="205"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:205</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="178"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:178</a></div>
                         </td>
                     </tr>
 
@@ -1704,8 +1688,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="269"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:269</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="242"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:242</a></div>
                         </td>
                     </tr>
 
@@ -1773,8 +1757,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="358"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:358</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="348"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:348</a></div>
                         </td>
                     </tr>
 
@@ -1824,6 +1808,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="syncDocumentAssetsWithShapes"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>syncDocumentAssetsWithShapes</b></span>
+                        <a href="#syncDocumentAssetsWithShapes"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>syncDocumentAssetsWithShapes(doc: <a href="../classes/WsSharedDocDo.html" target="_self">WsSharedDocDo</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="261"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:261</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>doc</td>
+                                            <td>
+                                                            <code><a href="../classes/WsSharedDocDo.html" target="_self" >WsSharedDocDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#TldrawAsset" target="_self" >TldrawAsset[]</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="unsubscribeFromRedisChannels"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -1842,8 +1895,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="371"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:371</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="361"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:361</a></div>
                         </td>
                     </tr>
 
@@ -1912,8 +1965,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="387"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:387</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="377"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:377</a></div>
                         </td>
                     </tr>
 
@@ -1993,8 +2046,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="94"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:94</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="90"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:90</a></div>
                         </td>
                     </tr>
 
@@ -2088,45 +2141,11 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="116" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:116</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="103" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:103</a></div>
                         </td>
                     </tr>
 
 
-                <tr>
-                    <td class="col-md-4">
-                        <div class="io-description">
-                                <b>Parameters :</b>
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Description</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                            <tr>
-                                                    <td>connectionsUpdate</td>
-                                                    <td>
-                                                    </td>
-                                            </tr>
-                                            <tr>
-                                                    <td>wsConnection</td>
-                                                    <td>
-                                                            <code><p>Origin is the connection that made the change</p>
-</code>
-                                                    </td>
-                                            </tr>
-                                            <tr>
-                                                    <td>doc</td>
-                                                    <td>
-                                                    </td>
-                                            </tr>
-                                    </tbody>
-                                </table>
-                        </div>
-                    </td>
-                </tr>
         </tbody>
     </table>
     <table class="table table-sm table-bordered">
@@ -2148,7 +2167,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:27</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -2176,7 +2195,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="31" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:31</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -2204,7 +2223,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:29</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:38</a></div>
                         </td>
                     </tr>
 
@@ -2232,7 +2251,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="35" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:35</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -2258,49 +2277,11 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="189" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:189</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="166" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:166</a></div>
                         </td>
                     </tr>
 
 
-                <tr>
-                    <td class="col-md-4">
-                        <div class="io-description">
-                                <b>Parameters :</b>
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Description</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                            <tr>
-                                                    <td>channel</td>
-                                                    <td>
-                                                            <code><p>redis channel</p>
-</code>
-                                                    </td>
-                                            </tr>
-                                            <tr>
-                                                    <td>update</td>
-                                                    <td>
-                                                            <code><p>update message</p>
-</code>
-                                                    </td>
-                                            </tr>
-                                            <tr>
-                                                    <td>doc</td>
-                                                    <td>
-                                                            <code><p>ydoc</p>
-</code>
-                                                    </td>
-                                            </tr>
-                                    </tbody>
-                                </table>
-                        </div>
-                    </td>
-                </tr>
         </tbody>
     </table>
     <table class="table table-sm table-bordered">
@@ -2324,7 +2305,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:33</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -2347,6 +2328,7 @@ import { applyUpdate, encodeStateAsUpdate } from &#x27;yjs&#x27;;
 import { Buffer } from &#x27;node:buffer&#x27;;
 import { Redis } from &#x27;ioredis&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
+import { YMap } from &#x27;yjs/dist/src/types/YMap&#x27;;
 import { TldrawRedisFactory } from &#x27;../redis&#x27;;
 import {
 	CloseConnectionLoggable,
@@ -2356,10 +2338,18 @@ import {
 	WsSharedDocErrorLoggable,
 } from &#x27;../loggable&#x27;;
 import { TldrawConfig } from &#x27;../config&#x27;;
-import { AwarenessConnectionsUpdate, RedisConnectionTypeEnum, WSConnectionState, WSMessageType } from &#x27;../types&#x27;;
+import {
+	AwarenessConnectionsUpdate,
+	RedisConnectionTypeEnum,
+	TldrawAsset,
+	TldrawShape,
+	WSConnectionState,
+	WSMessageType,
+} from &#x27;../types&#x27;;
 import { WsSharedDocDo } from &#x27;../domain&#x27;;
 import { TldrawBoardRepo } from &#x27;../repo&#x27;;
 import { MetricsService } from &#x27;../metrics&#x27;;
+import { TldrawFilesStorageAdapterService } from &#x27;./tldraw-files-storage.service&#x27;;
 
 @Injectable()
 export class TldrawWsService {
@@ -2378,7 +2368,8 @@ export class TldrawWsService {
 		private readonly tldrawBoardRepo: TldrawBoardRepo,
 		private readonly logger: Logger,
 		private readonly metricsService: MetricsService,
-		private readonly tldrawRedisFactory: TldrawRedisFactory
+		private readonly tldrawRedisFactory: TldrawRedisFactory,
+		private readonly filesStorageTldrawAdapterService: TldrawFilesStorageAdapterService
 	) {
 		this.logger.setContext(TldrawWsService.name);
 		this.pingTimeout &#x3D; this.configService.get&lt;number&gt;(&#x27;TLDRAW_PING_TIMEOUT&#x27;);
@@ -2388,10 +2379,6 @@ export class TldrawWsService {
 		this.pub &#x3D; this.tldrawRedisFactory.build(RedisConnectionTypeEnum.PUBLISH);
 	}
 
-	/**
-	 * @param {WsSharedDocDo} doc
-	 * @param {WebSocket} ws
-	 */
 	public async closeConn(doc: WsSharedDocDo, ws: WebSocket): Promise&lt;void&gt; {
 		if (doc.connections.has(ws)) {
 			const controlledIds &#x3D; doc.connections.get(ws) as Set&lt;number&gt;;
@@ -2404,11 +2391,6 @@ export class TldrawWsService {
 		ws.close();
 	}
 
-	/**
-	 * @param {WsSharedDocDo} doc
-	 * @param {WebSocket} conn
-	 * @param {Uint8Array} message
-	 */
 	public send(doc: WsSharedDocDo, conn: WebSocket, message: Uint8Array): void {
 		if (conn.readyState !&#x3D;&#x3D; WSConnectionState.CONNECTING &amp;&amp; conn.readyState !&#x3D;&#x3D; WSConnectionState.OPEN) {
 			this.closeConn(doc, conn).catch((err) &#x3D;&gt; {
@@ -2425,11 +2407,6 @@ export class TldrawWsService {
 		});
 	}
 
-	/**
-	 * @param {Uint8Array} update
-	 * @param {any} origin
-	 * @param {WsSharedDocDo} doc
-	 */
 	public updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): void {
 		const isOriginWSConn &#x3D; doc.connections.has(origin as WebSocket);
 		if (isOriginWSConn) {
@@ -2439,19 +2416,10 @@ export class TldrawWsService {
 		this.propagateUpdate(update, doc);
 	}
 
-	/**
-	 * @param {string} docName
-	 * @param {Uint8Array} update
-	 */
 	public async databaseUpdateHandler(docName: string, update: Uint8Array) {
 		await this.tldrawBoardRepo.storeUpdate(docName, update);
 	}
 
-	/**
-	 * @param {AwarenessConnectionsUpdate} connectionsUpdate
-	 * @param {WebSocket | null} wsConnection Origin is the connection that made the change
-	 * @param {WsSharedDocDo} doc
-	 */
 	public awarenessUpdateHandler &#x3D; (
 		connectionsUpdate: AwarenessConnectionsUpdate,
 		wsConnection: WebSocket | null,
@@ -2462,11 +2430,6 @@ export class TldrawWsService {
 		this.sendAwarenessMessage(buff, doc);
 	};
 
-	/**
-	 * Gets a Y.Doc by name, whether in memory or on disk
-	 *
-	 * @param {string} docName - the name of the Y.Doc to find or create
-	 */
 	public async getYDoc(docName: string) {
 		const wsSharedDocDo &#x3D; await map.setIfUndefined(this.docs, docName, async () &#x3D;&gt; {
 			const doc &#x3D; new WsSharedDocDo(docName, this.gcEnabled);
@@ -2520,11 +2483,6 @@ export class TldrawWsService {
 		}
 	}
 
-	/**
-	 * @param {{ Buffer }} channel redis channel
-	 * @param {{ Buffer }} update update message
-	 * @param {{ WsSharedDocDo }} doc ydoc
-	 */
 	public redisMessageHandler &#x3D; (channel: Buffer, update: Buffer, doc: WsSharedDocDo): void &#x3D;&gt; {
 		const channelId &#x3D; channel.toString();
 
@@ -2537,10 +2495,6 @@ export class TldrawWsService {
 		}
 	};
 
-	/**
-	 * @param {WebSocket} ws
-	 * @param {string} docName
-	 */
 	public async setupWSConnection(ws: WebSocket, docName: string) {
 		ws.binaryType &#x3D; &#x27;arraybuffer&#x27;;
 
@@ -2607,8 +2561,10 @@ export class TldrawWsService {
 
 	private async storeStateAndDestroyYDocIfPersisted(doc: WsSharedDocDo) {
 		if (doc.connections.size &#x3D;&#x3D;&#x3D; 0) {
-			// if persisted, we store state and destroy ydocument
+			// if persisted, we store state and destroy yDoc
 			try {
+				const usedAssets &#x3D; this.syncDocumentAssetsWithShapes(doc);
+				await this.filesStorageTldrawAdapterService.deleteUnusedFilesForDocument(doc.name, usedAssets);
 				await this.tldrawBoardRepo.flushDocument(doc.name);
 				this.unsubscribeFromRedisChannels(doc);
 				doc.destroy();
@@ -2622,6 +2578,34 @@ export class TldrawWsService {
 		}
 	}
 
+	private syncDocumentAssetsWithShapes(doc: WsSharedDocDo): TldrawAsset[] {
+		// clean up assets that are not used as shapes anymore
+		// which can happen when users do undo/redo operations on assets
+		const assets: YMap&lt;TldrawAsset&gt; &#x3D; doc.getMap(&#x27;assets&#x27;);
+		const shapes: YMap&lt;TldrawShape&gt; &#x3D; doc.getMap(&#x27;shapes&#x27;);
+		const usedShapesAsAssets: TldrawShape[] &#x3D; [];
+		const usedAssets: TldrawAsset[] &#x3D; [];
+
+		shapes.forEach((shape) &#x3D;&gt; {
+			if (shape.assetId) {
+				usedShapesAsAssets.push(shape);
+			}
+		});
+
+		doc.transact(() &#x3D;&gt; {
+			assets.forEach((asset) &#x3D;&gt; {
+				const foundAsset &#x3D; usedShapesAsAssets.find((shape) &#x3D;&gt; shape.assetId &#x3D;&#x3D;&#x3D; asset.id);
+				if (!foundAsset) {
+					assets.delete(asset.id);
+				} else {
+					usedAssets.push(asset);
+				}
+			});
+		});
+
+		return usedAssets;
+	}
+
 	private propagateUpdate(update: Uint8Array, doc: WsSharedDocDo): void {
 		const encoder &#x3D; encoding.createEncoder();
 		encoding.writeVarUint(encoder, WSMessageType.SYNC);
@@ -2633,10 +2617,6 @@ export class TldrawWsService {
 		});
 	}
 
-	/**
-	 * @param changedClients array of changed clients
-	 * @param {WsSharedDocDo} doc
-	 */
 	private prepareAwarenessMessage(changedClients: number[], doc: WsSharedDocDo): Uint8Array {
 		const encoder &#x3D; encoding.createEncoder();
 		encoding.writeVarUint(encoder, WSMessageType.AWARENESS);
@@ -2645,21 +2625,12 @@ export class TldrawWsService {
 		return message;
 	}
 
-	/**
-	 * @param {{ Uint8Array }} buff encoded message about changes
-	 * @param {WsSharedDocDo} doc
-	 */
 	private sendAwarenessMessage(buff: Uint8Array, doc: WsSharedDocDo): void {
 		doc.connections.forEach((_, c) &#x3D;&gt; {
 			this.send(doc, c, buff);
 		});
 	}
 
-	/**
-	 * @param connectionsUpdate
-	 * @param {WebSocket | null} wsConnection Origin is the connection that made the change
-	 * @param {WsSharedDocDo} doc
-	 */
 	private manageClientsConnections(
 		connectionsUpdate: AwarenessConnectionsUpdate,
 		wsConnection: WebSocket | null,

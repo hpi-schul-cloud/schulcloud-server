@@ -161,6 +161,13 @@
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#deleteOneFile" >deleteOneFile</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#getFilesOfParent" >getFilesOfParent</a>
                             </li>
                             <li>
@@ -434,6 +441,85 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="deleteOneFile"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteOneFile</b></span>
+                        <a href="#deleteOneFile"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteOneFile(payload: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@RabbitRPC({exchange: FilesStorageExchange, routingKey: undefined, queue: undefined})<br />@UseRequestContext()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.consumer.ts:82</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>payload</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;RpcMessage&lt;FileDO&gt;&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getFilesOfParent"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -448,7 +534,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getFilesOfParent(payload: <a href="../interfaces/FileRecordParams.html" target="_self">FileRecordParams</a>)</code>
+                    <code>getFilesOfParent(payload: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
@@ -486,7 +572,7 @@
                                         <tr>
                                                 <td>payload</td>
                                             <td>
-                                                            <code><a href="../interfaces/FileRecordParams.html" target="_self" >FileRecordParams</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                             </td>
 
                                             <td>
@@ -541,8 +627,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="82"
-                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.consumer.ts:82</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="101"
+                                    class="link-to-prism">apps/server/src/modules/files-storage/controller/files-storage.consumer.ts:101</a></div>
                         </td>
                     </tr>
 
@@ -604,7 +690,7 @@ import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { FilesStorageMapper } from &#x27;../mapper&#x27;;
 import { FilesStorageService } from &#x27;../service/files-storage.service&#x27;;
 import { PreviewService } from &#x27;../service/preview.service&#x27;;
-import { CopyFilesOfParentPayload, FileRecordParams } from &#x27;./dto&#x27;;
+import { CopyFilesOfParentPayload } from &#x27;./dto&#x27;;
 
 @Injectable()
 export class FilesStorageConsumer {
@@ -641,10 +727,10 @@ export class FilesStorageConsumer {
 		queue: FilesStorageEvents.LIST_FILES_OF_PARENT,
 	})
 	@UseRequestContext()
-	public async getFilesOfParent(@RabbitPayload() payload: FileRecordParams): Promise&lt;RpcMessage&lt;FileDO[]&gt;&gt; {
+	public async getFilesOfParent(@RabbitPayload() payload: EntityId): Promise&lt;RpcMessage&lt;FileDO[]&gt;&gt; {
 		this.logger.debug({ action: &#x27;getFilesOfParent&#x27;, payload });
 
-		const [fileRecords, total] &#x3D; await this.filesStorageService.getFileRecordsOfParent(payload.parentId);
+		const [fileRecords, total] &#x3D; await this.filesStorageService.getFileRecordsOfParent(payload);
 		const response &#x3D; FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);
 
 		return { message: response.data };
@@ -667,6 +753,25 @@ export class FilesStorageConsumer {
 		const response &#x3D; FilesStorageMapper.mapToFileRecordListResponse(fileRecords, total);
 
 		return { message: response.data };
+	}
+
+	@RabbitRPC({
+		exchange: FilesStorageExchange,
+		routingKey: FilesStorageEvents.DELETE_ONE_FILE,
+		queue: FilesStorageEvents.DELETE_ONE_FILE,
+	})
+	@UseRequestContext()
+	public async deleteOneFile(@RabbitPayload() payload: EntityId): Promise&lt;RpcMessage&lt;FileDO&gt;&gt; {
+		this.logger.debug({ action: &#x27;deleteOneFile&#x27;, payload });
+
+		const fileRecord &#x3D; await this.filesStorageService.getFileRecord({ fileRecordId: payload });
+
+		await this.previewService.deletePreviews([fileRecord]);
+		await this.filesStorageService.deleteFilesOfParent([fileRecord]);
+
+		const response &#x3D; FilesStorageMapper.mapToFileRecordResponse(fileRecord);
+
+		return { message: response };
 	}
 
 	@RabbitRPC({
