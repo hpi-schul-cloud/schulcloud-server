@@ -122,12 +122,6 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 
 		const path = this.getFilePath(user.id, filename);
 
-		try {
-			await this.s3Client.delete([path]);
-		} catch (err) {
-			/* file did not exist, just continue */
-		}
-
 		const file: H5pFileDto = {
 			name: filename,
 			data: dataStream,

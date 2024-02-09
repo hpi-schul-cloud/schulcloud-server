@@ -369,14 +369,6 @@ describe('TemporaryFileStorage', () => {
 		};
 
 		describe('WHEN saving a valid files', () => {
-			it('should try to delete possibly existing file', async () => {
-				const { filename, stream, user, soonDate } = setup();
-
-				await storage.saveFile(filename, stream, user, soonDate);
-
-				expect(s3clientAdapter.delete).toHaveBeenCalledTimes(1);
-			});
-
 			it('should call s3client.create', async () => {
 				const { filename, stream, user, soonDate } = setup();
 
@@ -422,17 +414,6 @@ describe('TemporaryFileStorage', () => {
 				const savePromise = storage.saveFile(filename, stream, user, recentDate);
 
 				await expect(savePromise).rejects.toThrow(NotAcceptableException);
-			});
-		});
-
-		describe('WHEN s3client.delete throws an error', () => {
-			it('should ignore the error', async () => {
-				const { filename, stream, user, soonDate, fileDeleteError } = setup();
-				s3clientAdapter.delete.mockRejectedValueOnce(fileDeleteError);
-
-				const savePromise = storage.saveFile(filename, stream, user, soonDate);
-
-				await expect(savePromise).resolves.not.toThrow();
 			});
 		});
 
