@@ -1,11 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { ImportUser, MatchCreator, SystemEntity, User } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo } from '@shared/repo';
 import { UserService } from '@modules/user';
+import { Logger } from '@src/core/logger';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
-import { UserMigrationIsNotEnabledLoggableException } from '../loggable';
+import { UserMigrationIsNotEnabled } from '../loggable';
 
 @Injectable()
 export class UserImportService {
@@ -13,7 +14,8 @@ export class UserImportService {
 		private readonly userImportRepo: ImportUserRepo,
 		private readonly systemRepo: LegacySystemRepo,
 		private readonly userService: UserService,
-		@Inject(UserImportFeatures) private readonly userImportFeatures: IUserImportFeatures
+		@Inject(UserImportFeatures) private readonly userImportFeatures: IUserImportFeatures,
+		private readonly logger: Logger
 	) {}
 
 	public async saveImportUsers(importUsers: ImportUser[]): Promise<void> {
@@ -29,12 +31,12 @@ export class UserImportService {
 	}
 
 	public checkFeatureEnabled(school: LegacySchoolDo): void {
-		const enabled: boolean = this.userImportFeatures.userMigrationEnabled;
-		const isLdapPilotSchool: boolean =
-			!!school.features && school.features.includes(SchoolFeature.LDAP_UNIVENTION_MIGRATION);
+		const enabled = this.userImportFeatures.userMigrationEnabled;
+		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeature.LDAP_UNIVENTION_MIGRATION);
 
 		if (!enabled && !isLdapPilotSchool) {
-			throw new UserMigrationIsNotEnabledLoggableException(school.id);
+			this.logger.warning(new UserMigrationIsNotEnabled());
+			throw new InternalServerErrorException('User Migration not enabled');
 		}
 	}
 

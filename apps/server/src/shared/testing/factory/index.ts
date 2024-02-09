@@ -44,3 +44,4 @@ export { externalSchoolDtoFactory } from './external-school-dto.factory';
 export * from './context-external-tool-configuration-status-response.factory';
 export * from './school-tool-configuration-status-response.factory';
 export { schoolSystemOptionsEntityFactory } from './school-system-options-entity.factory';
+export { countyEmbeddableFactory } from './county.embeddable.factory';

@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
+import { DomainOperationBuilder } from '@shared/domain/builder';
 import { CourseGroup } from '@shared/domain/entity';
-import { Counted, DomainModel, EntityId, StatusModel } from '@shared/domain/types';
+import { DomainOperation } from '@shared/domain/interface';
+import { Counted, DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { CourseGroupRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 
@@ -17,11 +19,11 @@ export class CourseGroupService {
 		return [courseGroups, count];
 	}
 
-	public async deleteUserDataFromCourseGroup(userId: EntityId): Promise<number> {
+	public async deleteUserDataFromCourseGroup(userId: EntityId): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from CourseGroup',
-				DomainModel.COURSEGROUP,
+				DomainName.COURSEGROUP,
 				userId,
 				StatusModel.PENDING
 			)
@@ -31,10 +33,18 @@ export class CourseGroupService {
 		courseGroups.forEach((courseGroup) => courseGroup.removeStudent(userId));
 
 		await this.repo.save(courseGroups);
+
+		const result = DomainOperationBuilder.build(
+			DomainName.COURSEGROUP,
+			OperationType.UPDATE,
+			count,
+			this.getCourseGroupsId(courseGroups)
+		);
+
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully deleted user data from CourseGroup',
-				DomainModel.COURSEGROUP,
+				DomainName.COURSEGROUP,
 				userId,
 				StatusModel.FINISHED,
 				count,
@@ -42,6 +52,10 @@ export class CourseGroupService {
 			)
 		);
 
-		return count;
+		return result;
+	}
+
+	private getCourseGroupsId(courseGroups: CourseGroup[]): EntityId[] {
+		return courseGroups.map((courseGroup) => courseGroup.id);
 	}
 }

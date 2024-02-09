@@ -1,8 +1,8 @@
 import { EntityId } from '@shared/domain/types';
-import { DomainModel } from '@shared/domain/types/domain';
+import { DomainName } from '@shared/domain/types/domain-name.enum';
 
 export interface DeletionTargetRef {
-	targetRefDomain: DomainModel;
+	targetRefDomain: DomainName;
 	targetRefId: EntityId;
 }
 
@@ -13,13 +13,13 @@ export interface DeletionRequestLog {
 }
 
 export interface DeletionLogStatistic {
-	domain: DomainModel;
+	domain: DomainName;
 	modifiedCount?: number;
 	deletedCount?: number;
 }
 
 export interface DeletionRequestProps {
-	targetRef: { targetRefDoamin: DomainModel; targetRefId: EntityId };
+	targetRef: { targetRefDoamin: DomainName; targetRefId: EntityId };
 	deleteInMinutes?: number;
 }
 

@@ -180,7 +180,7 @@
 			"default": "",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
 		},
-		"BLOCKLIST_OF_EMAIL_DOMAINS":{
+		"BLOCKLIST_OF_EMAIL_DOMAINS": {
 			"type": "string",
 			"default": "",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
@@ -729,7 +729,7 @@
 		},
 		"FEATURE_SCHOOL_TERMS_OF_USE_ENABLED": {
 			"type": "boolean",
-			"default": true,
+			"default": false,
 			"description": "Enables uploading of school specific Terms of Use on new admin page."
 		},
 		"ROCKETCHAT_SERVICE_ENABLED": {
@@ -1034,6 +1034,11 @@
 			"description": "Nest Log level for api. The http flag is for request logging. The http flag do only work by api methods with added 'request logging interceptor'.",
 			"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 		},
+		"EXIT_ON_ERROR": {
+			"type": "boolean",
+			"default": true,
+			"description": "By default, the application is terminated after an uncaughtException has been logged. If this is not the desired behavior, set exitOnError to false."
+		},
 		"SYSTEM_LOG_LEVEL": {
 			"type": "string",
 			"default": "requestError",
@@ -1335,6 +1340,11 @@
 				"ALLOWED_API_KEYS": ""
 			}
 		},
+		"FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Makes the new school administration page the default page"
+		},
 		"FEATURE_CTL_TOOLS_TAB_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1396,6 +1406,15 @@
 			"default": false,
 			"description": "Enables the copying of ctl tools when copying a course."
 		},
+		"FEATURE_SHOW_MIGRATION_WIZARD": {
+			"type": "boolean",
+			"default": false,
+			"description": "Enables the migration wizard on the school administration page in the migration section."
+		},
+		"MIGRATION_WIZARD_DOCUMENTATION_LINK": {
+			"type": "string",
+			"description": "The documentation page that gets rendered in the migration wizard tool."
+		},
 		"TSP_SCHOOL_SYNCER": {
 			"type": "object",
 			"description": "TSP School Syncer properties",
@@ -1430,10 +1449,42 @@
 				"API_KEY": ""
 			}
 		},
+		"FEATURE_TLDRAW_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enables tldraw feature"
+		},
+		"TLDRAW_ADMIN_API_CLIENT": {
+			"type": "object",
+			"description": "Configuration of the Tldraw's Admin API client.",
+			"properties": {
+				"BASE_URL": {
+					"type": "string",
+					"description": "Base URL of the Tldraw's Admin API."
+				},
+				"API_KEY": {
+					"type": "string",
+					"description": "API key for accessing the Tldraw's Admin API."
+				}
+			},
+			"default": {
+				"BASE_URL": "http://localhost:3349",
+				"API_KEY": ""
+			}
+		},
 		"TLDRAW": {
 			"type": "object",
-			"description": "Tldraw managing variables.",
-			"required": ["PING_TIMEOUT", "SOCKET_PORT","GC_ENABLED", "DB_COLLECTION_NAME", "DB_FLUSH_SIZE", "DB_MULTIPLE_COLLECTIONS"],
+			"description": "Configuration of tldraw related settings",
+			"required": [
+				"PING_TIMEOUT",
+				"SOCKET_PORT",
+				"GC_ENABLED",
+				"DB_FLUSH_SIZE",
+				"MAX_DOCUMENT_SIZE",
+				"ASSETS_ENABLED",
+				"ASSETS_MAX_SIZE",
+				"ASSETS_ALLOWED_EXTENSIONS_LIST"
+			],
 			"properties": {
 				"SOCKET_PORT": {
 					"type": "number",
@@ -1447,37 +1498,43 @@
 					"type": "boolean",
 					"description": "If tldraw garbage collector should be enabled"
 				},
-				"DB_COLLECTION_NAME": {
-					"type": "string",
-					"description": "Collection name in which tldraw drawing are stored"
-				},
 				"DB_FLUSH_SIZE": {
 					"type": "integer",
 					"description": "DB collection flushing size"
 				},
-				"DB_MULTIPLE_COLLECTIONS": {
+				"MAX_DOCUMENT_SIZE": {
+					"type": "number",
+					"description": "Maximum size of a single tldraw document in mongo"
+				},
+				"ASSETS_ENABLED": {
 					"type": "boolean",
-					"description": "DB collection allowing multiple collections for drawing"
+					"description": "Enables uploading assets to tldraw board"
+				},
+				"ASSETS_MAX_SIZE": {
+					"type": "integer",
+					"description": "Maximum asset size in bytes"
+				},
+				"ASSETS_ALLOWED_EXTENSIONS_LIST": {
+					"type": "string",
+					"description": "List with allowed assets extensions, comma separated, empty if all extensions should be allowed",
+					"examples": ["png,jpg,jpeg,svg,webp"]
 				}
 			},
 			"default": {
 				"SOCKET_PORT": 3345,
-				"PING_TIMEOUT": 10000,
+				"PING_TIMEOUT": 30000,
 				"GC_ENABLED": true,
-				"DB_COLLECTION_NAME": "drawings",
 				"DB_FLUSH_SIZE": 400,
-				"DB_MULTIPLE_COLLECTIONS": false
+				"MAX_DOCUMENT_SIZE": 15000000,
+				"ASSETS_ENABLED": true,
+				"ASSETS_MAX_SIZE": 25000000,
+				"ASSETS_ALLOWED_EXTENSIONS_LIST": ""
 			}
 		},
 		"TLDRAW_DB_URL": {
 			"type": "string",
 			"default": "mongodb://127.0.0.1:27017/tldraw",
 			"description": "DB connection url"
-		},
-		"FEATURE_TLDRAW_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Tldraw feature enabled"
 		},
 		"TLDRAW_URI": {
 			"type": "string",
@@ -1515,71 +1572,5 @@
 			}
 		}
 	},
-	"required": [],
-	"allOf": [
-		{
-			"$ref": "#/definitions/FEATURE_ES_MERLIN_ENABLED",
-			"$ref": "#/definitions/ANTIVIRUS"
-		}
-	],
-	"definitions": {
-		"FEATURE_USER_MIGRATION_ENABLED": {
-			"if": {
-				"properties": {
-					"FEATURE_USER_MIGRATION_ENABLED": {
-						"const": true
-					}
-				}
-			},
-			"then": {
-				"required": ["FEATURE_USER_MIGRATION_SYSTEM_ID"]
-			}
-		},
-		"ANTIVIRUS": {
-			"if": {
-				"properties": {
-					"ENABLE_FILE_SECURITY_CHECK": {
-						"const": true
-					}
-				}
-			},
-			"then": {
-				"required": [
-					"FILE_SECURITY_CHECK_SERVICE_URI",
-					"FILE_SECURITY_SERVICE_USERNAME",
-					"FILE_SECURITY_SERVICE_PASSWORD",
-					"API_HOST"
-				]
-			}
-		},
-		"LERNSTORE_ENABLED": {
-			"if": {
-				"properties": {
-					"FEATURE_LERNSTORE_ENABLED": {
-						"const": true
-					}
-				}
-			},
-			"then": {
-				"required": ["ES_USER", "ES_PASSWORD"]
-			}
-		},
-		"FEATURE_ES_MERLIN_ENABLED": {
-			"if": {
-				"properties": {
-					"FEATURE_ES_MERLIN_ENABLED": {
-						"const": true
-					}
-				}
-			},
-			"then": {
-				"required": [
-					"SECRET_ES_MERLIN_USERNAME",
-					"SECRET_ES_MERLIN_PW",
-					"ES_MERLIN_AUTH_URL",
-					"SECRET_ES_MERLIN_COUNTIES_CREDENTIALS"
-				]
-			}
-		}
-	}
+	"required": []
 }

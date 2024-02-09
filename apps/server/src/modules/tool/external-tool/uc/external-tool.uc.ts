@@ -1,4 +1,6 @@
 import { AuthorizationService } from '@modules/authorization';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { User } from '@shared/domain/entity';
@@ -6,18 +8,26 @@ import { IFindOptions, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ExternalToolSearchQuery } from '../../common/interface';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
-import { ExternalTool, ExternalToolConfig, ExternalToolMetadata } from '../domain';
-import { ExternalToolLogoService, ExternalToolService, ExternalToolValidationService } from '../service';
+import { ExternalTool, ExternalToolConfig, ExternalToolDatasheetTemplateData, ExternalToolMetadata } from '../domain';
+import { ExternalToolDatasheetMapper } from '../mapper/external-tool-datasheet.mapper';
+import {
+	DatasheetPdfService,
+	ExternalToolLogoService,
+	ExternalToolService,
+	ExternalToolValidationService,
+} from '../service';
 import { ExternalToolCreate, ExternalToolUpdate } from './dto';
 
 @Injectable()
 export class ExternalToolUc {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
+		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly toolValidationService: ExternalToolValidationService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
-		private readonly commonToolMetadataService: CommonToolMetadataService
+		private readonly commonToolMetadataService: CommonToolMetadataService,
+		private readonly datasheetPdfService: DatasheetPdfService
 	) {}
 
 	async createExternalTool(userId: EntityId, externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
@@ -88,8 +98,50 @@ export class ExternalToolUc {
 		return metadata;
 	}
 
-	private async ensurePermission(userId: EntityId, permission: Permission) {
+	private async ensurePermission(userId: EntityId, permission: Permission): Promise<void> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [permission]);
+	}
+
+	public async getDatasheet(userId: EntityId, externalToolId: EntityId): Promise<Buffer> {
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkOneOfPermissions(user, [Permission.TOOL_ADMIN, Permission.SCHOOL_TOOL_ADMIN]);
+
+		const schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolService.findSchoolExternalTools({
+			schoolId: user.school.id,
+			toolId: externalToolId,
+		});
+
+		let schoolExternalTool: SchoolExternalTool | undefined;
+		if (schoolExternalTools.length) {
+			schoolExternalTool = schoolExternalTools[0];
+		}
+
+		const externalTool: ExternalTool = await this.externalToolService.findById(externalToolId);
+		const dataSheetData: ExternalToolDatasheetTemplateData =
+			ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(
+				externalTool,
+				user.firstName,
+				user.lastName,
+				schoolExternalTool
+			);
+
+		const buffer: Buffer = await this.datasheetPdfService.generatePdf(dataSheetData);
+
+		return buffer;
+	}
+
+	public async createDatasheetFilename(externalToolId: EntityId): Promise<string> {
+		const externalTool: ExternalTool = await this.externalToolService.findById(externalToolId);
+
+		const date = new Date();
+		const year = date.getFullYear();
+		const month = date.getMonth() + 1;
+		const day = date.getDate();
+		const dateString = `${year}-${month}-${day}`;
+
+		const fileName = `CTL-Datenblatt-${externalTool.name}-${dateString}.pdf`;
+
+		return fileName;
 	}
 }

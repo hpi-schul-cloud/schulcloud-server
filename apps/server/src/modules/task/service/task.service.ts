@@ -2,7 +2,7 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { Injectable } from '@nestjs/common';
 import { Task } from '@shared/domain/entity';
 import { DomainOperation, IFindOptions } from '@shared/domain/interface';
-import { Counted, DomainModel, EntityId, StatusModel } from '@shared/domain/types';
+import { Counted, DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { TaskRepo } from '@shared/repo';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { Logger } from '@src/core/logger';
@@ -52,7 +52,7 @@ export class TaskService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting data from Task',
-				DomainModel.TASK,
+				DomainName.TASK,
 				creatorId,
 				StatusModel.PENDING
 			)
@@ -65,11 +65,16 @@ export class TaskService {
 			await Promise.all(promiseDeletedTasks);
 		}
 
-		const result = DomainOperationBuilder.build(DomainModel.TASK, 0, counterOfTasksOnlyWithCreatorId);
+		const result = DomainOperationBuilder.build(
+			DomainName.TASK,
+			OperationType.DELETE,
+			counterOfTasksOnlyWithCreatorId,
+			this.getTasksId(tasksByOnlyCreatorId)
+		);
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully deleted data from Task',
-				DomainModel.TASK,
+				DomainName.TASK,
 				creatorId,
 				StatusModel.FINISHED,
 				counterOfTasksOnlyWithCreatorId,
@@ -84,7 +89,7 @@ export class TaskService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Task',
-				DomainModel.TASK,
+				DomainName.TASK,
 				creatorId,
 				StatusModel.PENDING
 			)
@@ -97,11 +102,16 @@ export class TaskService {
 			await this.taskRepo.save(tasksByCreatorIdWithCoursesAndLessons);
 		}
 
-		const result = DomainOperationBuilder.build(DomainModel.TASK, counterOfTasksWithCoursesorLessons, 0);
+		const result = DomainOperationBuilder.build(
+			DomainName.TASK,
+			OperationType.UPDATE,
+			counterOfTasksWithCoursesorLessons,
+			this.getTasksId(tasksByCreatorIdWithCoursesAndLessons)
+		);
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully deleted user data from Task',
-				DomainModel.TASK,
+				DomainName.TASK,
 				creatorId,
 				StatusModel.FINISHED,
 				counterOfTasksWithCoursesorLessons,
@@ -115,7 +125,7 @@ export class TaskService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Task archive collection',
-				DomainModel.TASK,
+				DomainName.TASK,
 				userId,
 				StatusModel.PENDING
 			)
@@ -130,11 +140,16 @@ export class TaskService {
 			await this.taskRepo.save(tasksWithUserInFinished);
 		}
 
-		const result = DomainOperationBuilder.build(DomainModel.TASK, counterOfTasksWithUserInFinished, 0);
+		const result = DomainOperationBuilder.build(
+			DomainName.TASK,
+			OperationType.UPDATE,
+			counterOfTasksWithUserInFinished,
+			this.getTasksId(tasksWithUserInFinished)
+		);
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Successfully deleted user data from Task archive collection',
-				DomainModel.TASK,
+				DomainName.TASK,
 				userId,
 				StatusModel.FINISHED,
 				counterOfTasksWithUserInFinished,
@@ -143,5 +158,9 @@ export class TaskService {
 		);
 
 		return result;
+	}
+
+	private getTasksId(tasks: Task[]): EntityId[] {
+		return tasks.map((task) => task.id);
 	}
 }
