@@ -39,10 +39,10 @@ export class FileEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	deletedAt?: Date;
 
-	@Property()
+	@Property({ type: 'boolean' })
 	deleted = false;
 
-	@Property()
+	@Property({ type: 'boolean' })
 	isDirectory = false;
 
 	@Property()

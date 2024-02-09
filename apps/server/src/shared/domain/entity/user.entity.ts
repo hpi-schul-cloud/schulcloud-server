@@ -93,13 +93,13 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Index()
 	deletedAt?: Date;
 
-	@Property({ nullable: true })
+	@Property({ type: 'date', nullable: true })
 	lastLoginSystemChange?: Date;
 
-	@Property({ nullable: true })
+	@Property({ type: 'date', nullable: true })
 	outdatedSince?: Date;
 
-	@Property({ nullable: true })
+	@Property({ type: 'date', nullable: true })
 	birthday?: Date;
 
 	@Embedded(() => UserParentsEntity, { array: true, nullable: true })
