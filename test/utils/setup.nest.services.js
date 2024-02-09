@@ -17,6 +17,8 @@ const { TeamService } = require('../../dist/apps/server/modules/teams/service/te
 const { TeamsApiModule } = require('../../dist/apps/server/modules/teams/teams-api.module');
 const { AuthorizationModule } = require('../../dist/apps/server/modules/authorization');
 const { SystemRule } = require('../../dist/apps/server/modules/authorization');
+const { createConfigModuleOptions } = require('../../dist/apps/server/config/config-module-options');
+const { serverConfig } = require('../../dist/apps/server/modules/server/server.config');
 
 const setupNestServices = async (app) => {
 	const module = await Test.createTestingModule({
@@ -30,7 +32,7 @@ const setupNestServices = async (app) => {
 				allowGlobalContext: true,
 				// debug: true, // use it for locally debugging of querys
 			}),
-			ConfigModule.forRoot({ ignoreEnvFile: true, ignoreEnvVars: true, isGlobal: true }),
+			ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 			AccountApiModule,
 			TeamsApiModule,
 			AuthorizationModule,
