@@ -86,7 +86,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property({ nullable: true })
 	forcePasswordChange?: boolean;
 
-	@Property({ nullable: true })
+	@Property({ type: 'object', nullable: true })
 	preferences?: Record<string, unknown>;
 
 	@Property({ nullable: true })
