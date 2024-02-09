@@ -124,13 +124,13 @@
 <title>cluster_FilesStorageModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 737,-268 737,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_FilesStorageModule_exports</title>
-<polygon fill="none" stroke="black" points="246,-208 246,-260 519,-260 519,-208 246,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_FilesStorageModule_providers</title>
 <polygon fill="none" stroke="black" points="208,-78 208,-130 729,-130 729,-78 208,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_FilesStorageModule_exports</title>
+<polygon fill="none" stroke="black" points="246,-208 246,-260 519,-260 519,-208 246,-208"/>
 </g>
 <g id="clust3" class="cluster">
 <title>cluster_FilesStorageModule_imports</title>
@@ -313,18 +313,16 @@ import { S3ClientModule } from &#x27;@infra/s3-client&#x27;;
 import { Dictionary, IPrimaryKey } from &#x27;@mikro-orm/core&#x27;;
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from &#x27;@mikro-orm/nestjs&#x27;;
 import { Module, NotFoundException } from &#x27;@nestjs/common&#x27;;
-import { ConfigModule } from &#x27;@nestjs/config&#x27;;
 import { ALL_ENTITIES } from &#x27;@shared/domain/entity&#x27;;
-import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from &#x27;@src/config&#x27;;
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from &#x27;@src/config&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { FileRecord, FileRecordSecurityCheck } from &#x27;./entity&#x27;;
-import { config, s3Config } from &#x27;./files-storage.config&#x27;;
+import { s3Config } from &#x27;./files-storage.config&#x27;;
 import { FileRecordRepo } from &#x27;./repo&#x27;;
 import { FilesStorageService, PreviewService } from &#x27;./service&#x27;;
 
 const imports &#x3D; [
 	LoggerModule,
-	ConfigModule.forRoot(createConfigModuleOptions(config)),
 	AntivirusModule.forRoot({
 		enabled: Configuration.get(&#x27;ENABLE_FILE_SECURITY_CHECK&#x27;) as boolean,
 		filesServiceBaseUrl: Configuration.get(&#x27;FILES_STORAGE__SERVICE_BASE_URL&#x27;) as string,

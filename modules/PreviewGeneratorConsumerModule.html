@@ -158,8 +158,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="13"
-                                    class="link-to-prism">apps/server/src/infra/preview-generator/preview-generator-consumer.module.ts:13</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="12"
+                                    class="link-to-prism">apps/server/src/infra/preview-generator/preview-generator-consumer.module.ts:12</a></div>
                         </td>
                     </tr>
 
@@ -210,11 +210,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DynamicModule, Module } from &#x27;@nestjs/common&#x27;;
-import { ConfigModule } from &#x27;@nestjs/config&#x27;;
-import { RabbitMQWrapperModule } from &#x27;@infra/rabbitmq&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { RabbitMQWrapperModule } from &#x27;@infra/rabbitmq&#x27;;
 import { S3ClientAdapter, S3ClientModule } from &#x27;@infra/s3-client&#x27;;
-import { createConfigModuleOptions } from &#x27;@src/config&#x27;;
+import { DynamicModule, Module } from &#x27;@nestjs/common&#x27;;
+import { ConfigModule } from &#x27;@nestjs/config&#x27;;
 import { Logger, LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { PreviewConfig } from &#x27;./interface/preview-consumer-config&#x27;;
 import { PreviewGeneratorConsumer } from &#x27;./preview-generator.consumer&#x27;;
@@ -240,7 +239,7 @@ export class PreviewGeneratorConsumerModule {
 				LoggerModule,
 				S3ClientModule.register([storageConfig]),
 				RabbitMQWrapperModule,
-				ConfigModule.forRoot(createConfigModuleOptions(() &#x3D;&gt; serverConfig)),
+				ConfigModule.forFeature(() &#x3D;&gt; serverConfig),
 			],
 			providers,
 		};

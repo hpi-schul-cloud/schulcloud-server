@@ -226,11 +226,14 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { PreviewGeneratorConsumerModule } from &#x27;@infra/preview-generator&#x27;;
 import { Module } from &#x27;@nestjs/common&#x27;;
+import { ConfigModule } from &#x27;@nestjs/config&#x27;;
+import { createConfigModuleOptions } from &#x27;@src/config&#x27;;
 import { CoreModule } from &#x27;@src/core&#x27;;
-import { defaultConfig, s3Config } from &#x27;./files-storage.config&#x27;;
+import { config, defaultConfig, s3Config } from &#x27;./files-storage.config&#x27;;
 
 @Module({
 	imports: [
+		ConfigModule.forRoot(createConfigModuleOptions(config)),
 		PreviewGeneratorConsumerModule.register({ storageConfig: s3Config, serverConfig: defaultConfig }),
 		CoreModule,
 	],

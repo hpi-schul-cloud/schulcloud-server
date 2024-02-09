@@ -124,13 +124,13 @@
 <title>cluster_TldrawClientModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="33,-70 33,-268 463,-268 463,-70 33,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_TldrawClientModule_exports</title>
-<polygon fill="none" stroke="black" points="121,-208 121,-260 339,-260 339,-208 121,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_TldrawClientModule_providers</title>
 <polygon fill="none" stroke="black" points="165,-78 165,-130 455,-130 455,-78 165,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_TldrawClientModule_exports</title>
+<polygon fill="none" stroke="black" points="121,-208 121,-260 339,-260 339,-208 121,-208"/>
 </g>
 <g id="clust3" class="cluster">
 <title>cluster_TldrawClientModule_imports</title>
@@ -260,16 +260,15 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module } from &#x27;@nestjs/common&#x27;;
-import { LoggerModule } from &#x27;@src/core/logger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpModule } from &#x27;@nestjs/axios&#x27;;
+import { Module } from &#x27;@nestjs/common&#x27;;
 import { ConfigModule } from &#x27;@nestjs/config&#x27;;
-import { createConfigModuleOptions } from &#x27;@src/config&#x27;;
-import { HttpModule } from &#x27;@nestjs/axios&#x27;;
-import { getTldrawClientConfig } from &#x27;./tldraw-client.config&#x27;;
+import { LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { DrawingElementAdapterService } from &#x27;./service/drawing-element-adapter.service&#x27;;
+import { getTldrawClientConfig } from &#x27;./tldraw-client.config&#x27;;
 
 @Module({
-	imports: [LoggerModule, ConfigModule.forRoot(createConfigModuleOptions(getTldrawClientConfig)), HttpModule],
+	imports: [LoggerModule, ConfigModule.forFeature(getTldrawClientConfig), HttpModule],
 	providers: [DrawingElementAdapterService],
 	exports: [DrawingElementAdapterService],
 })

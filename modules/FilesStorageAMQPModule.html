@@ -265,13 +265,16 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module } from &#x27;@nestjs/common&#x27;;
+import { ConfigModule } from &#x27;@nestjs/config&#x27;;
+import { createConfigModuleOptions } from &#x27;@src/config&#x27;;
 import { CoreModule } from &#x27;@src/core&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { FilesStorageConsumer } from &#x27;./controller&#x27;;
+import { config } from &#x27;./files-storage.config&#x27;;
 import { FilesStorageModule } from &#x27;./files-storage.module&#x27;;
 
 @Module({
-	imports: [FilesStorageModule, CoreModule, LoggerModule],
+	imports: [FilesStorageModule, CoreModule, LoggerModule, ConfigModule.forRoot(createConfigModuleOptions(config))],
 	providers: [FilesStorageConsumer],
 })
 export class FilesStorageAMQPModule {}

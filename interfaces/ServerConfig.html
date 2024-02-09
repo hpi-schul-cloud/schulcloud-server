@@ -147,6 +147,7 @@
                             <code><a href="../interfaces/SchoolConfig.html" target="_self" >SchoolConfig</a></code>
                             <code><a href="../interfaces/MailConfig.html" target="_self" >MailConfig</a></code>
                             <code><a href="../interfaces/XApiKeyConfig.html" target="_self" >XApiKeyConfig</a></code>
+                            <code><a href="../interfaces/AuthenticationConfig.html" target="_self" >AuthenticationConfig</a></code>
             </p>
 
         <section data-compodoc="block-index">
@@ -258,7 +259,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons&#x27;;
 import type { IdentityManagementConfig } from &#x27;@infra/identity-management&#x27;;
 import type { AccountConfig } from &#x27;@modules/account&#x27;;
-import type { XApiKeyConfig } from &#x27;@modules/authentication&#x27;;
+import type { AuthenticationConfig, XApiKeyConfig } from &#x27;@modules/authentication&#x27;;
 import type { FilesStorageClientConfig } from &#x27;@modules/files-storage-client&#x27;;
 import type { CommonCartridgeConfig } from &#x27;@modules/learnroom/common-cartridge&#x27;;
 import type { SchoolConfig } from &#x27;@modules/school&#x27;;
@@ -282,7 +283,8 @@ export interface ServerConfig
 		CommonCartridgeConfig,
 		SchoolConfig,
 		MailConfig,
-		XApiKeyConfig {
+		XApiKeyConfig,
+		AuthenticationConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 }
