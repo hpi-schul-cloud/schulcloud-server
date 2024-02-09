@@ -1,10 +1,9 @@
 import { AccountService } from '@modules/account';
-import { AccountDto } from '@modules/account/services/dto';
 // invalid import
+import { AccountDto } from '@modules/account/services/dto';
 import { OauthCurrentUser } from '@modules/authentication/interface';
 import { CurrentUserMapper } from '@modules/authentication/mapper';
-import { RoleDto } from '@modules/role/service/dto/role.dto';
-import { RoleService } from '@modules/role/service/role.service';
+import { RoleService, RoleDto } from '@modules/role';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
@@ -33,6 +32,13 @@ export class UserService {
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(UserService.name);
+	}
+
+	async getUserEntityWithRoles(userId: EntityId): Promise<User> {
+		// only roles required, no need for the other populates
+		const userWithRoles = await this.userRepo.findById(userId, true);
+
+		return userWithRoles;
 	}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {

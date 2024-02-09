@@ -29,6 +29,7 @@ import { ToolApiModule } from '@modules/tool/tool-api.module';
 import { ImportUserModule, UserImportConfigModule } from '@modules/user-import';
 import { UserLoginMigrationApiModule } from '@modules/user-login-migration/user-login-migration-api.module';
 import { UserApiModule } from '@modules/user/user-api.module';
+import { MeApiModule } from '@modules/me/me-api.module';
 import { VideoConferenceApiModule } from '@modules/video-conference/video-conference-api.module';
 import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -85,6 +86,7 @@ const serverModules = [
 	PseudonymApiModule,
 	SchoolApiModule,
 	LegacySchoolApiModule,
+	MeApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

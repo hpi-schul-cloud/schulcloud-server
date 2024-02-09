@@ -4,7 +4,12 @@ import { WebSocketReadyStateEnum } from '@shared/testing';
 
 export class TldrawWsFactory {
 	public static createWsSharedDocDo(): WsSharedDocDo {
-		return { connections: new Map(), destroy: () => {} } as WsSharedDocDo;
+		return {
+			connections: new Map(),
+			getMap: () => new Map(),
+			transact: () => {},
+			destroy: () => {},
+		} as unknown as WsSharedDocDo;
 	}
 
 	public static createWebsocket(readyState: WebSocketReadyStateEnum): WebSocket {

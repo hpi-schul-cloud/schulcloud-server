@@ -16,14 +16,16 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { MongoMemoryDatabaseModule } from '@infra/database';
+import { YMap } from 'yjs/dist/src/types/YMap';
 import { TldrawRedisFactory } from '../redis';
 import { TldrawWs } from '../controller';
 import { TldrawDrawing } from '../entities';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../repo';
 import { TestConnection, tldrawTestConfig } from '../testing';
 import { WsSharedDocDo } from '../domain';
-import { TldrawWsService } from '.';
 import { MetricsService } from '../metrics';
+import { TldrawFilesStorageAdapterService, TldrawWsService } from '.';
+import { TldrawAsset, TldrawShape, TldrawShapeType } from '../types';
 
 jest.mock('yjs', () => {
 	const moduleMock: unknown = {
@@ -86,6 +88,10 @@ describe('TldrawWSService', () => {
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
+				},
+				{
+					provide: TldrawFilesStorageAdapterService,
+					useValue: createMock<TldrawFilesStorageAdapterService>(),
 				},
 			],
 		}).compile();
@@ -769,6 +775,47 @@ describe('TldrawWSService', () => {
 				closeConnSpy.mockRestore();
 				sendSpy.mockRestore();
 				clearIntervalSpy.mockRestore();
+			});
+		});
+
+		describe('when synchronising assets', () => {
+			const setup = async () => {
+				ws = await TestConnection.setupWs(wsUrl, 'TEST');
+				const doc = new WsSharedDocDo('TEST');
+				doc.connections.set(ws, new Set<number>());
+				const shapes: YMap<TldrawShape> = doc.getMap('shapes');
+				const assets: YMap<TldrawAsset> = doc.getMap('assets');
+				shapes.set('shape1', { id: 'shape1', type: TldrawShapeType.Image, assetId: 'asset1' });
+				shapes.set('shape2', { id: 'shape2', type: TldrawShapeType.Draw });
+				assets.set('asset1', {
+					id: 'asset1',
+					type: TldrawShapeType.Image,
+					name: 'asset1.jpg',
+					src: '/filerecordid1/file1.jpg',
+				});
+				assets.set('asset2', {
+					id: 'asset2',
+					type: TldrawShapeType.Image,
+					name: 'asset2.jpg',
+					src: '/filerecordid2/file2.jpg',
+				});
+
+				return {
+					doc,
+					assets,
+				};
+			};
+
+			it('should remove unused assets from document', async () => {
+				const { doc, assets } = await setup();
+
+				const initialSize = assets.size;
+				await service.closeConn(doc, ws);
+				const finalSize = assets.size;
+
+				expect(initialSize).toBe(2);
+				expect(finalSize).toBe(1);
+				ws.close();
 			});
 		});
 
