@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { AccountConfig } from '@modules/account';
-import type { XApiKeyConfig } from '@modules/authentication';
+import type { AuthenticationConfig, XApiKeyConfig } from '@modules/authentication';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
 import type { CommonCartridgeConfig } from '@modules/learnroom/common-cartridge';
 import type { SchoolConfig } from '@modules/school';
@@ -25,7 +25,8 @@ export interface ServerConfig
 		CommonCartridgeConfig,
 		SchoolConfig,
 		MailConfig,
-		XApiKeyConfig {
+		XApiKeyConfig,
+		AuthenticationConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 }
