@@ -390,7 +390,7 @@ describe('UserService', () => {
 	describe('deleteUser', () => {
 		describe('when user is missing', () => {
 			const setup = () => {
-				const user: User = userFactory.build();
+				const user: User = userFactory.buildWithId();
 				const userId: EntityId = user.id;
 
 				userRepo.findByIdOrNull.mockResolvedValueOnce(null);
@@ -404,6 +404,14 @@ describe('UserService', () => {
 				};
 			};
 
+			it('should call userRepo.findByIdOrNull with userId', async () => {
+				const { userId } = setup();
+
+				await service.deleteUser(userId);
+
+				expect(userRepo.findByIdOrNull).toHaveBeenCalledWith(userId, true);
+			});
+
 			it('should return domainOperation object with information about deleted user', async () => {
 				const { expectedResult, userId } = setup();
 
@@ -411,35 +419,51 @@ describe('UserService', () => {
 
 				expect(result).toEqual(expectedResult);
 			});
+
+			it('should Not call userRepo.deleteUser with userId', async () => {
+				const { userId } = setup();
+
+				await service.deleteUser(userId);
+
+				expect(userRepo.deleteUser).not.toHaveBeenCalled();
+			});
 		});
 
 		describe('when user exists', () => {
 			const setup = () => {
-				const user1 = userFactory.buildWithId();
+				const user = userFactory.buildWithId();
 
-				const expectedResult = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 1, [user1.id]);
+				const expectedResult = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 1, [user.id]);
 
-				userRepo.findByIdOrNull.mockResolvedValueOnce(user1);
+				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
 				userRepo.deleteUser.mockResolvedValue(1);
 
 				return {
 					expectedResult,
-					user1,
+					user,
 				};
 			};
 
+			it('should call userRepo.findByIdOrNull with userId', async () => {
+				const { user } = setup();
+
+				await service.deleteUser(user.id);
+
+				expect(userRepo.findByIdOrNull).toHaveBeenCalledWith(user.id, true);
+			});
+
 			it('should call userRepo.deleteUser with userId', async () => {
-				const { user1 } = setup();
+				const { user } = setup();
 
-				await service.deleteUser(user1.id);
+				await service.deleteUser(user.id);
 
-				expect(userRepo.deleteUser).toHaveBeenCalledWith(user1.id);
+				expect(userRepo.deleteUser).toHaveBeenCalledWith(user.id);
 			});
 
 			it('should return domainOperation object with information about deleted user', async () => {
-				const { expectedResult, user1 } = setup();
+				const { expectedResult, user } = setup();
 
-				const result = await service.deleteUser(user1.id);
+				const result = await service.deleteUser(user.id);
 
 				expect(result).toEqual(expectedResult);
 			});
@@ -459,6 +483,22 @@ describe('UserService', () => {
 					user,
 				};
 			};
+
+			it('should call userRepo.findByIdOrNull with userId', async () => {
+				const { user } = setup();
+
+				await service.deleteUser(user.id);
+
+				expect(userRepo.findByIdOrNull).toHaveBeenCalledWith(user.id, true);
+			});
+
+			it('should call userRepo.deleteUser with userId', async () => {
+				const { user } = setup();
+
+				await service.deleteUser(user.id);
+
+				expect(userRepo.deleteUser).toHaveBeenCalledWith(user.id);
+			});
 
 			it('should throw an error', async () => {
 				const { expectedError, user } = setup();

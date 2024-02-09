@@ -62,6 +62,7 @@ describe(RegistrationPinRepo.name, () => {
 				const { expectedResultForNoRegistrationPin, userWithoutRegistrationPin } = await setup();
 
 				const result = await repo.findAllByEmail(userWithoutRegistrationPin.email);
+
 				expect(result).toEqual(expectedResultForNoRegistrationPin);
 			});
 		});
@@ -99,6 +100,7 @@ describe(RegistrationPinRepo.name, () => {
 				const { userWithoutRegistrationPin } = await setup();
 
 				const result = await repo.deleteRegistrationPinByEmail(userWithoutRegistrationPin.email);
+
 				expect(result).toEqual(0);
 			});
 		});
