@@ -14,7 +14,7 @@ import { AxiosError, AxiosHeaders, AxiosResponse } from 'axios';
 import { axiosResponseFactory } from '@shared/testing';
 import { TldrawRedisFactory } from '../../redis';
 import { TldrawDrawing } from '../../entities';
-import { TldrawWsService } from '../../service';
+import { TldrawFilesStorageAdapterService, TldrawWsService } from '../../service';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../../repo';
 import { TestConnection, tldrawTestConfig } from '../../testing';
 import { MetricsService } from '../../metrics';
@@ -58,6 +58,10 @@ describe('WebSocketController (WsAdapter)', () => {
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
+				},
+				{
+					provide: TldrawFilesStorageAdapterService,
+					useValue: createMock<TldrawFilesStorageAdapterService>(),
 				},
 			],
 		}).compile();

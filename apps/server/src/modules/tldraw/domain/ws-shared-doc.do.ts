@@ -11,10 +11,6 @@ export class WsSharedDocDo extends Doc {
 
 	public awarenessChannel: string;
 
-	/**
-	 * @param {string} name
-	 * @param {boolean} gcEnabled
-	 */
 	constructor(name: string, gcEnabled = true) {
 		super({ gc: gcEnabled });
 		this.name = name;
