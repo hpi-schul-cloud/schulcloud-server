@@ -317,6 +317,7 @@ import { ToolApiModule } from &#x27;@modules/tool/tool-api.module&#x27;;
 import { ImportUserModule, UserImportConfigModule } from &#x27;@modules/user-import&#x27;;
 import { UserLoginMigrationApiModule } from &#x27;@modules/user-login-migration/user-login-migration-api.module&#x27;;
 import { UserApiModule } from &#x27;@modules/user/user-api.module&#x27;;
+import { MeApiModule } from &#x27;@modules/me/me-api.module&#x27;;
 import { VideoConferenceApiModule } from &#x27;@modules/video-conference/video-conference-api.module&#x27;;
 import { DynamicModule, Module, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import { ConfigModule } from &#x27;@nestjs/config&#x27;;
@@ -373,6 +374,7 @@ const serverModules &#x3D; [
 	PseudonymApiModule,
 	SchoolApiModule,
 	LegacySchoolApiModule,
+	MeApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions &#x3D; {

@@ -1091,7 +1091,27 @@ import { County } from &#x27;./county&#x27;;
 import { FederalState } from &#x27;./federal-state&#x27;;
 import { SchoolYear } from &#x27;./school-year&#x27;;
 
+interface SchoolInfo {
+	id: EntityId;
+	name: string;
+	language?: string;
+	logo_dataUrl?: string;
+	logo_name?: string;
+}
+
 export class School extends DomainObject&lt;SchoolProps&gt; {
+	public getInfo(): SchoolInfo {
+		const info &#x3D; {
+			id: this.props.id,
+			name: this.props.name,
+			language: this.props.language,
+			logo_dataUrl: this.props.logo_dataUrl,
+			logo_name: this.props.logo_name,
+		};
+
+		return info;
+	}
+
 	public addFeature(feature: SchoolFeature): void {
 		this.props.features.add(feature);
 	}
