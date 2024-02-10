@@ -36,7 +36,7 @@ export interface FileEntityProps {
 @Entity({ collection: 'files' })
 @Index({ options: { 'permissions.refId': 1 } })
 export class FileEntity extends BaseEntityWithTimestamps {
-	@Property({ nullable: true })
+	@Property({ type: 'date', nullable: true })
 	deletedAt?: Date;
 
 	@Property({ type: 'boolean' })
