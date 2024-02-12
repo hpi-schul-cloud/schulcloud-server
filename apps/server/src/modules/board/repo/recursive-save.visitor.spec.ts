@@ -270,8 +270,7 @@ describe(RecursiveSaveVisitor.name, () => {
 
 				visitor.visitColumnBoard(board);
 
-				// TODO: fix this test, replace Object with Partial<ColumnBoardNode>
-				expect(em.assign).toHaveBeenCalledWith(boardNode, expect.any(Object));
+				expect(em.assign).toHaveBeenCalledWith(boardNode, expect.any(ColumnBoardNode));
 			});
 		});
 	});
