@@ -5,6 +5,7 @@ import { axiosResponseFactory, setupEntities } from '@shared/testing';
 import { HttpService } from '@nestjs/axios';
 import { of } from 'rxjs';
 import { LegacyLogger } from '@src/core/logger';
+import { ConfigService } from '@nestjs/config';
 import { DrawingElementAdapterService } from './drawing-element-adapter.service';
 
 describe(DrawingElementAdapterService.name, () => {
@@ -23,6 +24,19 @@ describe(DrawingElementAdapterService.name, () => {
 				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
+				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>({
+						get: jest.fn((key: string) => {
+							if (key === 'TLDRAW_ADMIN_API_CLIENT_BASE_URL') {
+								return 'http://localhost:3349';
+							}
+
+							// Default is for the Tldraw API Key.
+							return 'a4a20e6a-8036-4603-aba6-378006fedce2';
+						}),
+					}),
 				},
 			],
 		}).compile();

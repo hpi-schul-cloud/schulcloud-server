@@ -39,6 +39,18 @@ export class SchoolMikroOrmRepo implements SchoolRepo {
 		return school;
 	}
 
+	public async getSchoolsBySystemIds(systemIds: EntityId[]): Promise<School[]> {
+		const entities = await this.em.find(
+			SchoolEntity,
+			{ systems: { $in: systemIds } },
+			{ populate: ['federalState', 'currentYear'] }
+		);
+
+		const schools = SchoolEntityMapper.mapToDos(entities);
+
+		return schools;
+	}
+
 	private mapToMikroOrmOptions<P extends string = never>(
 		options?: IFindOptions<SchoolProps>,
 		populate?: AutoPath<SchoolEntity, P>[]

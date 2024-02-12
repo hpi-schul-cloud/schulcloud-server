@@ -6,18 +6,16 @@ import { S3ClientModule } from '@infra/s3-client';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Module, NotFoundException } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain/entity';
-import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@src/config';
+import { DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
 import { FileRecord, FileRecordSecurityCheck } from './entity';
-import { config, s3Config } from './files-storage.config';
+import { s3Config } from './files-storage.config';
 import { FileRecordRepo } from './repo';
 import { FilesStorageService, PreviewService } from './service';
 
 const imports = [
 	LoggerModule,
-	ConfigModule.forRoot(createConfigModuleOptions(config)),
 	AntivirusModule.forRoot({
 		enabled: Configuration.get('ENABLE_FILE_SECURITY_CHECK') as boolean,
 		filesServiceBaseUrl: Configuration.get('FILES_STORAGE__SERVICE_BASE_URL') as string,
