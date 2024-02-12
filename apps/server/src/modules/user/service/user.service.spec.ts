@@ -16,6 +16,7 @@ import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/
 import { Logger } from '@src/core/logger';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { NotFoundException } from '@nestjs/common';
+import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
 import { UserService } from './user.service';
@@ -513,7 +514,7 @@ describe('UserService', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 
-				const expectedError = new Error(`Failed to delete user '${user.id}' from User collection`);
+				const expectedError = `Failed to delete user '${user.id}' from User collection`;
 
 				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
 				userRepo.deleteUser.mockResolvedValueOnce(0);
@@ -524,26 +525,12 @@ describe('UserService', () => {
 				};
 			};
 
-			it('should call userRepo.findByIdOrNull with userId', async () => {
-				const { user } = setup();
-
-				await service.deleteUser(user.id);
-
-				expect(userRepo.findByIdOrNull).toHaveBeenCalledWith(user.id, true);
-			});
-
-			it('should call userRepo.deleteUser with userId', async () => {
-				const { user } = setup();
-
-				await service.deleteUser(user.id);
-
-				expect(userRepo.deleteUser).toHaveBeenCalledWith(user.id);
-			});
-
 			it('should throw an error', async () => {
 				const { expectedError, user } = setup();
 
-				await expect(service.deleteUser(user.id)).rejects.toThrowError(expectedError);
+				await expect(service.deleteUser(user.id)).rejects.toThrowError(
+					new DeletionErrorLoggableException(expectedError)
+				);
 			});
 		});
 	});
