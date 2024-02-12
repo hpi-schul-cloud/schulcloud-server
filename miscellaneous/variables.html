@@ -548,9 +548,6 @@
                             <a href="#H5PPlayerProvider" title="apps/server/src/modules/h5p-editor/provider/h5p-player.provider.ts" ><b>H5PPlayerProvider</b>&nbsp;&nbsp;&nbsp;(apps/.../h5p-player.provider.ts)</a>
                         </li>
                         <li>
-                            <a href="#h5pTemporaryFileFactory" title="apps/server/src/shared/testing/factory/h5p-temporary-file.factory.ts" ><b>h5pTemporaryFileFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../h5p-temporary-file.factory.ts)</a>
-                        </li>
-                        <li>
                             <a href="#h5pUrlGenerator" title="apps/server/src/modules/h5p-editor/service/config/h5p-service-config.ts" ><b>h5pUrlGenerator</b>&nbsp;&nbsp;&nbsp;(apps/.../h5p-service-config.ts)</a>
                         </li>
                         <li>
@@ -696,9 +693,6 @@
                         </li>
                         <li>
                             <a href="#oneDay" title="apps/server/src/shared/testing/factory/course.factory.ts" ><b>oneDay</b>&nbsp;&nbsp;&nbsp;(apps/.../course.factory.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#oneDay" title="apps/server/src/shared/testing/factory/h5p-temporary-file.factory.ts" ><b>oneDay</b>&nbsp;&nbsp;&nbsp;(apps/.../h5p-temporary-file.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#passwordPattern" title="apps/server/src/modules/account/controller/dto/password-pattern.ts" ><b>passwordPattern</b>&nbsp;&nbsp;&nbsp;(apps/.../password-pattern.ts)</a>
@@ -1796,26 +1790,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>new H5PConfig(undefined, {
-	baseUrl: &#x27;&#x27;,
-
-	ajaxUrl: &#x60;${API_BASE}/ajax&#x60;,
-	contentFilesUrl: &#x60;${API_BASE}/content&#x60;,
-	contentFilesUrlPlayerOverride: undefined,
-	contentUserDataUrl: &#x60;${API_BASE}/contentUserData&#x60;,
-	downloadUrl: undefined,
-	librariesUrl: &#x60;${API_BASE}/libraries&#x60;,
-	paramsUrl: &#x60;${API_BASE}/params&#x60;,
-	playUrl: &#x60;${API_BASE}/play&#x60;,
-	setFinishedUrl: &#x60;${API_BASE}/finishedData&#x60;,
-	temporaryFilesUrl: &#x60;${API_BASE}/temp-files&#x60;,
-
-	coreUrl: &#x60;${STATIC_FILES_BASE}/core&#x60;,
-	editorLibraryUrl: &#x60;${STATIC_FILES_BASE}/editor&#x60;,
-
-	contentUserStateSaveInterval: false,
-	setFinishedEnabled: false,
-})</code>
+                        <i>Default value : </i><code>new H5PConfig(undefined)</code>
                     </td>
                 </tr>
 
@@ -4397,7 +4372,6 @@ must use</p>
 	H5PAjaxEndpointProvider,
 	H5PContentRepo,
 	LibraryRepo,
-	TemporaryFileRepo,
 	ContentStorage,
 	LibraryStorage,
 	TemporaryFileStorage,
@@ -4501,7 +4475,7 @@ must use</p>
 		user: DB_USERNAME,
 		// Needs ALL_ENTITIES for authorization
 		allowGlobalContext: true,
-		entities: [...ALL_ENTITIES, H5PContent, H5pEditorTempFile, InstalledLibrary],
+		entities: [...ALL_ENTITIES, H5PContent, InstalledLibrary],
 	}),
 	ConfigModule.forRoot(createConfigModuleOptions(config)),
 	S3ClientModule.register([s3ConfigContent, s3ConfigLibraries]),
@@ -4536,7 +4510,6 @@ must use</p>
 	H5PEditorUc,
 	H5PContentRepo,
 	LibraryRepo,
-	TemporaryFileRepo,
 	H5PEditorProvider,
 	H5PPlayerProvider,
 	H5PAjaxEndpointProvider,
@@ -7600,57 +7573,6 @@ it should ensure an empty result</p>
 		return h5pPlayer;
 	},
 }</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
-    <h3>apps/server/src/shared/testing/factory/h5p-temporary-file.factory.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="h5pTemporaryFileFactory"></a>
-                    <span class="name">
-                        <span ><b>h5pTemporaryFileFactory</b></span>
-                        <a href="#h5pTemporaryFileFactory"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>H5PTemporaryFileFactory.define(H5pEditorTempFile, ({ sequence }) &#x3D;&gt; {
-	return {
-		filename: &#x60;File-${sequence}.txt&#x60;,
-		ownedByUserId: &#x60;user-${sequence}&#x60;,
-		birthtime: new Date(Date.now() - oneDay), // Yesterday
-		expiresAt: new Date(Date.now() + oneDay), // Tomorrow
-		size: sequence,
-	};
-})</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="oneDay"></a>
-                    <span class="name">
-                        <span ><b>oneDay</b></span>
-                        <a href="#oneDay"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>24 * 60 * 60 * 1000</code>
                     </td>
                 </tr>
 

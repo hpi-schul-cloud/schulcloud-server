@@ -1182,13 +1182,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/H5PEditorModule.html" data-type="entity-link" >H5PEditorModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-H5PEditorModule-9ffdf29a2f94d3fb8d5e37b60ef264d9ac0beff9f6ffc52ffd79adfbdf45cbf790402966c7340334189defa66cc93f34de6b5e519e4de3cdec8337461a4b25d4"' : 'data-bs-target="#xs-controllers-links-module-H5PEditorModule-9ffdf29a2f94d3fb8d5e37b60ef264d9ac0beff9f6ffc52ffd79adfbdf45cbf790402966c7340334189defa66cc93f34de6b5e519e4de3cdec8337461a4b25d4"' }>
+                                            'data-bs-target="#controllers-links-module-H5PEditorModule-91315353f06358db1350a17721ba719407d1edec9974f89f6d6480b0376db6ea3f01d5be17613933c80d13b3690d153d0335e1ae11592a19e46460c1e83cae36"' : 'data-bs-target="#xs-controllers-links-module-H5PEditorModule-91315353f06358db1350a17721ba719407d1edec9974f89f6d6480b0376db6ea3f01d5be17613933c80d13b3690d153d0335e1ae11592a19e46460c1e83cae36"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-H5PEditorModule-9ffdf29a2f94d3fb8d5e37b60ef264d9ac0beff9f6ffc52ffd79adfbdf45cbf790402966c7340334189defa66cc93f34de6b5e519e4de3cdec8337461a4b25d4"' :
-                                            'id="xs-controllers-links-module-H5PEditorModule-9ffdf29a2f94d3fb8d5e37b60ef264d9ac0beff9f6ffc52ffd79adfbdf45cbf790402966c7340334189defa66cc93f34de6b5e519e4de3cdec8337461a4b25d4"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-H5PEditorModule-91315353f06358db1350a17721ba719407d1edec9974f89f6d6480b0376db6ea3f01d5be17613933c80d13b3690d153d0335e1ae11592a19e46460c1e83cae36"' :
+                                            'id="xs-controllers-links-module-H5PEditorModule-91315353f06358db1350a17721ba719407d1edec9974f89f6d6480b0376db6ea3f01d5be17613933c80d13b3690d153d0335e1ae11592a19e46460c1e83cae36"' }>
                                             <li class="link">
                                                 <a href="controllers/H5PEditorController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >H5PEditorController</a>
                                             </li>
@@ -1196,13 +1196,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-H5PEditorModule-9ffdf29a2f94d3fb8d5e37b60ef264d9ac0beff9f6ffc52ffd79adfbdf45cbf790402966c7340334189defa66cc93f34de6b5e519e4de3cdec8337461a4b25d4"' : 'data-bs-target="#xs-injectables-links-module-H5PEditorModule-9ffdf29a2f94d3fb8d5e37b60ef264d9ac0beff9f6ffc52ffd79adfbdf45cbf790402966c7340334189defa66cc93f34de6b5e519e4de3cdec8337461a4b25d4"' }>
+                                        'data-bs-target="#injectables-links-module-H5PEditorModule-91315353f06358db1350a17721ba719407d1edec9974f89f6d6480b0376db6ea3f01d5be17613933c80d13b3690d153d0335e1ae11592a19e46460c1e83cae36"' : 'data-bs-target="#xs-injectables-links-module-H5PEditorModule-91315353f06358db1350a17721ba719407d1edec9974f89f6d6480b0376db6ea3f01d5be17613933c80d13b3690d153d0335e1ae11592a19e46460c1e83cae36"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-H5PEditorModule-9ffdf29a2f94d3fb8d5e37b60ef264d9ac0beff9f6ffc52ffd79adfbdf45cbf790402966c7340334189defa66cc93f34de6b5e519e4de3cdec8337461a4b25d4"' :
-                                        'id="xs-injectables-links-module-H5PEditorModule-9ffdf29a2f94d3fb8d5e37b60ef264d9ac0beff9f6ffc52ffd79adfbdf45cbf790402966c7340334189defa66cc93f34de6b5e519e4de3cdec8337461a4b25d4"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-H5PEditorModule-91315353f06358db1350a17721ba719407d1edec9974f89f6d6480b0376db6ea3f01d5be17613933c80d13b3690d153d0335e1ae11592a19e46460c1e83cae36"' :
+                                        'id="xs-injectables-links-module-H5PEditorModule-91315353f06358db1350a17721ba719407d1edec9974f89f6d6480b0376db6ea3f01d5be17613933c80d13b3690d153d0335e1ae11592a19e46460c1e83cae36"' }>
                                         <li class="link">
                                             <a href="injectables/ContentStorage.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ContentStorage</a>
                                         </li>
@@ -1222,9 +1222,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                             <a href="injectables/Logger.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >Logger</a>
                                         </li>
                                         <li class="link">
-                                            <a href="injectables/TemporaryFileRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TemporaryFileRepo</a>
-                                        </li>
-                                        <li class="link">
                                             <a href="injectables/TemporaryFileStorage.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TemporaryFileStorage</a>
                                         </li>
                                     </ul>
@@ -1234,13 +1231,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/H5PEditorTestModule.html" data-type="entity-link" >H5PEditorTestModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-H5PEditorTestModule-f7ccc758f82b634f0c621f867e11a6b59c4f1d304898cb53168ebe61b8bfffdb99625e514bc859a7822dad180828d5d5e82fd296eb521c3d49eef8c29952cdbc"' : 'data-bs-target="#xs-controllers-links-module-H5PEditorTestModule-f7ccc758f82b634f0c621f867e11a6b59c4f1d304898cb53168ebe61b8bfffdb99625e514bc859a7822dad180828d5d5e82fd296eb521c3d49eef8c29952cdbc"' }>
+                                            'data-bs-target="#controllers-links-module-H5PEditorTestModule-27b84bffe1d4e17754fa507186cc90db94519e6e1aa997bb5debdcc91496ceab6aa2a058ec6dc9984213da2c3642b92b60f5a64476984fd81482048d87f4912d"' : 'data-bs-target="#xs-controllers-links-module-H5PEditorTestModule-27b84bffe1d4e17754fa507186cc90db94519e6e1aa997bb5debdcc91496ceab6aa2a058ec6dc9984213da2c3642b92b60f5a64476984fd81482048d87f4912d"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-H5PEditorTestModule-f7ccc758f82b634f0c621f867e11a6b59c4f1d304898cb53168ebe61b8bfffdb99625e514bc859a7822dad180828d5d5e82fd296eb521c3d49eef8c29952cdbc"' :
-                                            'id="xs-controllers-links-module-H5PEditorTestModule-f7ccc758f82b634f0c621f867e11a6b59c4f1d304898cb53168ebe61b8bfffdb99625e514bc859a7822dad180828d5d5e82fd296eb521c3d49eef8c29952cdbc"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-H5PEditorTestModule-27b84bffe1d4e17754fa507186cc90db94519e6e1aa997bb5debdcc91496ceab6aa2a058ec6dc9984213da2c3642b92b60f5a64476984fd81482048d87f4912d"' :
+                                            'id="xs-controllers-links-module-H5PEditorTestModule-27b84bffe1d4e17754fa507186cc90db94519e6e1aa997bb5debdcc91496ceab6aa2a058ec6dc9984213da2c3642b92b60f5a64476984fd81482048d87f4912d"' }>
                                             <li class="link">
                                                 <a href="controllers/H5PEditorController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >H5PEditorController</a>
                                             </li>
@@ -1248,13 +1245,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-H5PEditorTestModule-f7ccc758f82b634f0c621f867e11a6b59c4f1d304898cb53168ebe61b8bfffdb99625e514bc859a7822dad180828d5d5e82fd296eb521c3d49eef8c29952cdbc"' : 'data-bs-target="#xs-injectables-links-module-H5PEditorTestModule-f7ccc758f82b634f0c621f867e11a6b59c4f1d304898cb53168ebe61b8bfffdb99625e514bc859a7822dad180828d5d5e82fd296eb521c3d49eef8c29952cdbc"' }>
+                                        'data-bs-target="#injectables-links-module-H5PEditorTestModule-27b84bffe1d4e17754fa507186cc90db94519e6e1aa997bb5debdcc91496ceab6aa2a058ec6dc9984213da2c3642b92b60f5a64476984fd81482048d87f4912d"' : 'data-bs-target="#xs-injectables-links-module-H5PEditorTestModule-27b84bffe1d4e17754fa507186cc90db94519e6e1aa997bb5debdcc91496ceab6aa2a058ec6dc9984213da2c3642b92b60f5a64476984fd81482048d87f4912d"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-H5PEditorTestModule-f7ccc758f82b634f0c621f867e11a6b59c4f1d304898cb53168ebe61b8bfffdb99625e514bc859a7822dad180828d5d5e82fd296eb521c3d49eef8c29952cdbc"' :
-                                        'id="xs-injectables-links-module-H5PEditorTestModule-f7ccc758f82b634f0c621f867e11a6b59c4f1d304898cb53168ebe61b8bfffdb99625e514bc859a7822dad180828d5d5e82fd296eb521c3d49eef8c29952cdbc"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-H5PEditorTestModule-27b84bffe1d4e17754fa507186cc90db94519e6e1aa997bb5debdcc91496ceab6aa2a058ec6dc9984213da2c3642b92b60f5a64476984fd81482048d87f4912d"' :
+                                        'id="xs-injectables-links-module-H5PEditorTestModule-27b84bffe1d4e17754fa507186cc90db94519e6e1aa997bb5debdcc91496ceab6aa2a058ec6dc9984213da2c3642b92b60f5a64476984fd81482048d87f4912d"' }>
                                         <li class="link">
                                             <a href="injectables/ContentStorage.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ContentStorage</a>
                                         </li>
@@ -1269,9 +1266,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </li>
                                         <li class="link">
                                             <a href="injectables/LibraryStorage.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >LibraryStorage</a>
-                                        </li>
-                                        <li class="link">
-                                            <a href="injectables/TemporaryFileRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TemporaryFileRepo</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/TemporaryFileStorage.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TemporaryFileStorage</a>
@@ -3349,9 +3343,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="entities/H5PContent.html" data-type="entity-link" >H5PContent</a>
                                 </li>
                                 <li class="link">
-                                    <a href="entities/H5pEditorTempFile.html" data-type="entity-link" >H5pEditorTempFile</a>
-                                </li>
-                                <li class="link">
                                     <a href="entities/ImportUser.html" data-type="entity-link" >ImportUser</a>
                                 </li>
                                 <li class="link">
@@ -4476,9 +4467,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/H5PSaveResponse.html" data-type="entity-link" >H5PSaveResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/H5PTemporaryFileFactory.html" data-type="entity-link" >H5PTemporaryFileFactory</a>
                             </li>
                             <li class="link">
                                 <a href="classes/HydraOauthFailedLoggableException.html" data-type="entity-link" >HydraOauthFailedLoggableException</a>
@@ -6639,9 +6627,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/TeamsRepo.html" data-type="entity-link" >TeamsRepo</a>
                                 </li>
                                 <li class="link">
-                                    <a href="injectables/TemporaryFileRepo.html" data-type="entity-link" >TemporaryFileRepo</a>
-                                </li>
-                                <li class="link">
                                     <a href="injectables/TemporaryFileStorage.html" data-type="entity-link" >TemporaryFileStorage</a>
                                 </li>
                                 <li class="link">
@@ -7586,9 +7571,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/TeamUserProperties.html" data-type="entity-link" >TeamUserProperties</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/TemporaryFileProperties.html" data-type="entity-link" >TemporaryFileProperties</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/TldrawClientConfig.html" data-type="entity-link" >TldrawClientConfig</a>

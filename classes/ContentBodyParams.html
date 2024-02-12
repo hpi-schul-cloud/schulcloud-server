@@ -148,7 +148,6 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
-                                    <span class="modifier"></span>
                                 <a href="#contentId" >contentId</a>
                             </li>
                             <li>
@@ -183,7 +182,6 @@
                     <a name="contentId"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                            <span class="modifier"></span>
                         <span ><b>contentId</b></span>
                         <a href="#contentId"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -200,13 +198,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty()<br />@IsMongoId()<br />
+                            @ApiProperty()<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/h5p-editor/controller/dto/ajax/post.body.params.ts:14</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/h5p-editor/controller/dto/ajax/post.body.params.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -244,7 +242,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/h5p-editor/controller/dto/ajax/post.body.params.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/h5p-editor/controller/dto/ajax/post.body.params.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -264,7 +262,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
-import { IsArray, IsMongoId, IsOptional, IsString } from &#x27;class-validator&#x27;;
+import { IsArray, IsOptional, IsString } from &#x27;class-validator&#x27;;
 
 export class LibrariesBodyParams {
 	@ApiProperty()
@@ -275,7 +273,6 @@ export class LibrariesBodyParams {
 
 export class ContentBodyParams {
 	@ApiProperty()
-	@IsMongoId()
 	contentId!: string;
 
 	@ApiProperty()

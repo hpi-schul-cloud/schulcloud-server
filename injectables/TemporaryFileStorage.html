@@ -158,10 +158,6 @@
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
-                                <a href="#getFileInfo" >getFileInfo</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
                                 <a href="#getFilePath" >getFilePath</a>
                             </li>
                             <li>
@@ -175,9 +171,13 @@
                                 <a href="#getFileStream" >getFileStream</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getUserPath" >getUserPath</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#listFiles" >listFiles</a>
+                                <a href="#listFiles" class="deprecated-name">listFiles</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -202,12 +202,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(repo: <a href="../injectables/TemporaryFileRepo.html" target="_self">TemporaryFileRepo</a>, s3Client: <a href="../injectables/S3ClientAdapter.html" target="_self">S3ClientAdapter</a>)</code>
+<code>constructor(s3Client: <a href="../injectables/S3ClientAdapter.html" target="_self">S3ClientAdapter</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/h5p-editor/service/temporary-file-storage.service.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/h5p-editor/service/temporary-file-storage.service.ts:18</a></div>
                             </td>
                         </tr>
 
@@ -224,18 +224,6 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                                <tr>
-                                                        <td>repo</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/TemporaryFileRepo.html" target="_self" >TemporaryFileRepo</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
                                                 <tr>
                                                         <td>s3Client</td>
                                                   
@@ -284,8 +272,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/temporary-file-storage.service.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="21"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/temporary-file-storage.service.ts:21</a></div>
                         </td>
                     </tr>
 
@@ -354,8 +342,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="29"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/temporary-file-storage.service.ts:29</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/temporary-file-storage.service.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -436,8 +424,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/temporary-file-storage.service.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/temporary-file-storage.service.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -499,87 +487,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getFileInfo"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>getFileInfo</b></span>
-                        <a href="#getFileInfo"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getFileInfo(filename: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="24"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/temporary-file-storage.service.ts:24</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>filename</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;H5pEditorTempFile&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="getFilePath"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -598,8 +505,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="119"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/temporary-file-storage.service.ts:119</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="146"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/temporary-file-storage.service.ts:146</a></div>
                         </td>
                     </tr>
 
@@ -680,8 +587,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="43"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/temporary-file-storage.service.ts:43</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="58"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/temporary-file-storage.service.ts:58</a></div>
                         </td>
                     </tr>
 
@@ -729,7 +636,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;H5pEditorTempFile&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;IFileStats&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -755,15 +662,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getFileStream(filename: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, user: <a href="../interfaces/User.html" target="_self">IUser</a>, rangeStart: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, rangeEnd?: number | undefined)</code>
+                    <code>getFileStream(filename: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, user: <a href="../interfaces/User.html" target="_self">IUser</a>, rangeStart?: number | undefined, rangeEnd?: number | undefined)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/temporary-file-storage.service.ts:47</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="77"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/temporary-file-storage.service.ts:77</a></div>
                         </td>
                     </tr>
 
@@ -780,7 +687,6 @@
                                             <td>Name</td>
                                                 <td>Type</td>
                                             <td>Optional</td>
-                                                <td>Default value</td>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -794,8 +700,6 @@
                                                     No
                                             </td>
 
-                                            <td>
-                                            </td>
 
                                         </tr>
                                         <tr>
@@ -808,23 +712,18 @@
                                                     No
                                             </td>
 
-                                            <td>
-                                            </td>
 
                                         </tr>
                                         <tr>
                                                 <td>rangeStart</td>
                                             <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                                        <code>number | undefined</code>
                                             </td>
 
                                             <td>
-                                                    No
+                                                    Yes
                                             </td>
 
-                                            <td>
-                                                    <code>0</code>
-                                            </td>
 
                                         </tr>
                                         <tr>
@@ -837,8 +736,6 @@
                                                     Yes
                                             </td>
 
-                                            <td>
-                                            </td>
 
                                         </tr>
                                     </tbody>
@@ -859,27 +756,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="listFiles"></a>
+                    <a name="getUserPath"></a>
                     <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>listFiles</b></span>
-                        <a href="#listFiles"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Private</span>
+                        <span ><b>getUserPath</b></span>
+                        <a href="#getUserPath"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>listFiles(user?: <a href="../interfaces/User.html" target="_self">IUser</a>)</code>
+                    <code>getUserPath(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="65"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/temporary-file-storage.service.ts:65</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="141"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/temporary-file-storage.service.ts:141</a></div>
                         </td>
                     </tr>
 
@@ -900,7 +796,82 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>user</td>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="listFiles"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span class="deprecated-name"><b>listFiles</b></span>
+                        <a href="#listFiles"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4 deprecated">
+                    do not use this function
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>listFiles(_user?: <a href="../interfaces/User.html" target="_self">IUser</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/temporary-file-storage.service.ts:102</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>_user</td>
                                             <td>
                                                             <code><a href="../interfaces/User.html" target="_self" >IUser</a></code>
                                             </td>
@@ -948,8 +919,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="79"
-                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/temporary-file-storage.service.ts:79</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="110"
+                                    class="link-to-prism">apps/server/src/modules/h5p-editor/service/temporary-file-storage.service.ts:110</a></div>
                         </td>
                     </tr>
 
@@ -1037,82 +1008,113 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ITemporaryFile, ITemporaryFileStorage, IUser } from &#x27;@lumieducation/h5p-server&#x27;;
-import { Inject, Injectable, NotAcceptableException } from &#x27;@nestjs/common&#x27;;
-import { S3ClientAdapter } from &#x27;@infra/s3-client&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { S3ClientAdapter } from &#x27;@infra/s3-client&#x27;;
+import { IFileStats, ITemporaryFile, ITemporaryFileStorage, IUser } from &#x27;@lumieducation/h5p-server&#x27;;
+import {
+	HttpException,
+	Inject,
+	Injectable,
+	InternalServerErrorException,
+	NotAcceptableException,
+	NotFoundException,
+} from &#x27;@nestjs/common&#x27;;
+import { ErrorUtils } from &#x27;@src/core/error/utils&#x27;;
 import { ReadStream } from &#x27;fs&#x27;;
 import { Readable } from &#x27;stream&#x27;;
 import { H5pFileDto } from &#x27;../controller/dto/h5p-file.dto&#x27;;
-import { H5pEditorTempFile } from &#x27;../entity/h5p-editor-tempfile.entity&#x27;;
 import { H5P_CONTENT_S3_CONNECTION } from &#x27;../h5p-editor.config&#x27;;
-import { TemporaryFileRepo } from &#x27;../repo/temporary-file.repo&#x27;;
 
 @Injectable()
 export class TemporaryFileStorage implements ITemporaryFileStorage {
-	constructor(
-		private readonly repo: TemporaryFileRepo,
-		@Inject(H5P_CONTENT_S3_CONNECTION) private readonly s3Client: S3ClientAdapter
-	) {}
+	constructor(@Inject(H5P_CONTENT_S3_CONNECTION) private readonly s3Client: S3ClientAdapter) {}
 
 	private checkFilename(filename: string): void {
-		if (!/^[a-zA-Z0-9/._-]+$/g.test(filename) &amp;&amp; filename.includes(&#x27;..&#x27;) &amp;&amp; filename.startsWith(&#x27;/&#x27;)) {
-			throw new NotAcceptableException(&#x60;Filename contains forbidden characters or is empty: &#x27;${filename}&#x27;&#x60;);
+		filename &#x3D; filename.split(&#x27;.&#x27;).slice(0, -1).join(&#x27;.&#x27;);
+		if (/^[a-zA-Z0-9/._-]*$/.test(filename) &amp;&amp; !filename.includes(&#x27;..&#x27;) &amp;&amp; !filename.startsWith(&#x27;/&#x27;)) {
+			return;
 		}
-	}
-
-	private getFileInfo(filename: string, userId: string): Promise&lt;H5pEditorTempFile&gt; {
-		this.checkFilename(filename);
-		return this.repo.findByUserAndFilename(userId, filename);
+		throw new HttpException(&#x27;message&#x27;, 406, {
+			cause: new NotAcceptableException(&#x60;Filename contains forbidden characters ${filename}&#x60;),
+		});
 	}
 
 	public async deleteFile(filename: string, userId: string): Promise&lt;void&gt; {
 		this.checkFilename(filename);
-		const meta &#x3D; await this.repo.findByUserAndFilename(userId, filename);
-		await this.s3Client.delete([this.getFilePath(userId, filename)]);
-		await this.repo.delete(meta);
+		const filePath &#x3D; this.getFilePath(userId, filename);
+		await this.s3Client.delete([filePath]);
 	}
 
 	public async fileExists(filename: string, user: IUser): Promise&lt;boolean&gt; {
 		this.checkFilename(filename);
-		const files &#x3D; await this.repo.findAllByUserAndFilename(user.id, filename);
-		const exists &#x3D; files.length !&#x3D;&#x3D; 0;
-		return exists;
+
+		const filePath &#x3D; this.getFilePath(user.id, filename);
+
+		try {
+			await this.s3Client.get(filePath);
+		} catch (err) {
+			if (err instanceof NotFoundException) {
+				return false;
+			}
+
+			throw new InternalServerErrorException(
+				null,
+				ErrorUtils.createHttpExceptionOptions(err, &#x27;TemporaryFileStorage:fileExists&#x27;)
+			);
+		}
+
+		return true;
 	}
 
-	public async getFileStats(filename: string, user: IUser): Promise&lt;H5pEditorTempFile&gt; {
-		return this.getFileInfo(filename, user.id);
+	public async getFileStats(filename: string, user: IUser): Promise&lt;IFileStats&gt; {
+		const filePath &#x3D; this.getFilePath(user.id, filename);
+		const { ContentLength, LastModified } &#x3D; await this.s3Client.head(filePath);
+
+		if (ContentLength &#x3D;&#x3D;&#x3D; undefined || LastModified &#x3D;&#x3D;&#x3D; undefined) {
+			throw new InternalServerErrorException(
+				{ ContentLength, LastModified },
+				&#x27;TemporaryFileStorage:getFileStats ContentLength or LastModified are undefined&#x27;
+			);
+		}
+
+		const fileStats: IFileStats &#x3D; {
+			birthtime: LastModified,
+			size: ContentLength,
+		};
+
+		return fileStats;
 	}
 
 	public async getFileStream(
 		filename: string,
 		user: IUser,
-		rangeStart &#x3D; 0,
+		rangeStart?: number | undefined,
 		rangeEnd?: number | undefined
 	): Promise&lt;Readable&gt; {
-		this.checkFilename(filename);
-		const tempFile &#x3D; await this.repo.findByUserAndFilename(user.id, filename);
-		const path &#x3D; this.getFilePath(user.id, filename);
-		let rangeEndNew &#x3D; 0;
-		if (rangeEnd &#x3D;&#x3D;&#x3D; undefined) {
-			rangeEndNew &#x3D; tempFile.size - 1;
-		}
-		const response &#x3D; await this.s3Client.get(path, &#x60;${rangeStart}-${rangeEndNew}&#x60;);
+		const filePath &#x3D; this.getFilePath(user.id, filename);
 
-		return response.data;
+		let range: string | undefined;
+		if (rangeStart &amp;&amp; rangeEnd) {
+			// Closed range
+			range &#x3D; &#x60;bytes&#x3D;${rangeStart}-${rangeEnd}&#x60;;
+		}
+
+		const { data } &#x3D; await this.s3Client.get(filePath, range);
+
+		data.pause();
+
+		return data;
 	}
 
-	public async listFiles(user?: IUser): Promise&lt;ITemporaryFile[]&gt; {
-		// method is expected to support listing all files in database
-		// Lumi uses the variant without a user to search for expired files, so we only return those
+	/**
+	 * @deprecated do not use this function
+	 */
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	public async listFiles(_user?: IUser): Promise&lt;ITemporaryFile[]&gt; {
+		// Lumi uses this method to find expired files that should be deleted.
+		// Since we use S3 to delete expired files, we just use a barebones implementation
+		// Lumi&#x27;s reference implementation does it the same way
 
-		let files: ITemporaryFile[];
-		if (user) {
-			files &#x3D; await this.repo.findByUser(user.id);
-		} else {
-			files &#x3D; await this.repo.findExpired();
-		}
-
-		return files;
+		return Promise.resolve([]);
 	}
 
 	public async saveFile(
@@ -1122,42 +1124,37 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		expirationTime: Date
 	): Promise&lt;ITemporaryFile&gt; {
 		this.checkFilename(filename);
+
 		const now &#x3D; new Date();
 		if (expirationTime &lt; now) {
 			throw new NotAcceptableException(&#x27;expirationTime must be in the future&#x27;);
 		}
 
 		const path &#x3D; this.getFilePath(user.id, filename);
-		let tempFile: H5pEditorTempFile | undefined;
-		try {
-			tempFile &#x3D; await this.repo.findByUserAndFilename(user.id, filename);
-			await this.s3Client.delete([path]);
-		} finally {
-			if (tempFile &#x3D;&#x3D;&#x3D; undefined) {
-				tempFile &#x3D; new H5pEditorTempFile({
-					filename,
-					ownedByUserId: user.id,
-					expiresAt: expirationTime,
-					birthtime: new Date(),
-					size: dataStream.bytesRead,
-				});
-			} else {
-				tempFile.expiresAt &#x3D; expirationTime;
-				tempFile.size &#x3D; dataStream.bytesRead;
-			}
-		}
-		await this.s3Client.create(
-			path,
-			new H5pFileDto({ name: path, mimeType: &#x27;application/octet-stream&#x27;, data: dataStream })
-		);
-		await this.repo.save(tempFile);
 
-		return tempFile;
+		const file: H5pFileDto &#x3D; {
+			name: filename,
+			data: dataStream,
+			mimeType: &#x27;application/octet-stream&#x27;,
+		};
+		await this.s3Client.create(path, file);
+
+		const temporaryFile: ITemporaryFile &#x3D; {
+			filename,
+			ownedByUserId: user.id,
+			expiresAt: expirationTime,
+		};
+
+		return temporaryFile;
+	}
+
+	private getUserPath(userId: string): string {
+		const path &#x3D; &#x60;h5p-tempfiles/${userId}/&#x60;;
+		return path;
 	}
 
 	private getFilePath(userId: string, filename: string): string {
-		const path &#x3D; &#x60;h5p-tempfiles/${userId}/${filename}&#x60;;
-
+		const path &#x3D; &#x60;${this.getUserPath(userId)}${filename}&#x60;;
 		return path;
 	}
 }
