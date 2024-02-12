@@ -1,4 +1,5 @@
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
+import { ObjectId } from 'bson';
 import { schoolFactory } from '../../testing';
 
 describe('School', () => {
@@ -245,6 +246,53 @@ describe('School', () => {
 				const result = school.isEligibleForExternalInvite(school.id);
 
 				expect(result).toBe(false);
+			});
+		});
+	});
+
+	describe('getInfo', () => {
+		describe('when in school logo informations and language are NOT set', () => {
+			const setup = () => {
+				const expectedResult = {
+					id: new ObjectId().toHexString(),
+					name: 'abc',
+				};
+
+				const school = schoolFactory.build(expectedResult);
+
+				return { school, expectedResult };
+			};
+
+			it('should return an object with id and name', () => {
+				const { school, expectedResult } = setup();
+
+				const result = school.getInfo();
+
+				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when in school logo informations and language are set', () => {
+			const setup = () => {
+				const expectedResult = {
+					id: new ObjectId().toHexString(),
+					name: 'abc',
+					language: 'de',
+					logo_dataUrl: 'adsbasdh',
+					logo_name: 'logoA',
+				};
+
+				const school = schoolFactory.build(expectedResult);
+
+				return { school, expectedResult };
+			};
+
+			it('should return an object with all expected keys', () => {
+				const { school, expectedResult } = setup();
+
+				const result = school.getInfo();
+
+				expect(result).toEqual(expectedResult);
 			});
 		});
 	});

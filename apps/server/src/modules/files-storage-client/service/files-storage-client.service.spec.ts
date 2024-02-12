@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { schoolEntityFactory, setupEntities, taskFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
+import { FileRecordParentType } from '@infra/rabbitmq';
 import { FileParamBuilder, FilesStorageClientMapper } from '../mapper';
 import { CopyFilesOfParentParamBuilder } from '../mapper/copy-files-of-parent-param.builder';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
@@ -86,32 +87,26 @@ describe('FilesStorageClientAdapterService', () => {
 
 	describe('listFilesOfParent', () => {
 		it('Should call all steps.', async () => {
-			const schoolId = 'school123';
 			const task = taskFactory.buildWithId();
-
-			const param = FileParamBuilder.build(schoolId, task);
 
 			const spy = jest
 				.spyOn(FilesStorageClientMapper, 'mapfileRecordListResponseToDomainFilesDto')
 				.mockImplementation(() => []);
 
-			await service.listFilesOfParent(param);
+			await service.listFilesOfParent(task.id);
 
-			expect(client.listFilesOfParent).toHaveBeenCalledWith(param);
+			expect(client.listFilesOfParent).toHaveBeenCalledWith(task.id);
 			expect(spy).toBeCalled();
 
 			spy.mockRestore();
 		});
 
 		it('Should call error mapper if throw an error.', async () => {
-			const schoolId = 'school123';
 			const task = taskFactory.buildWithId();
-
-			const param = FileParamBuilder.build(schoolId, task);
 
 			client.listFilesOfParent.mockRejectedValue(new Error());
 
-			await expect(service.listFilesOfParent(param)).rejects.toThrowError();
+			await expect(service.listFilesOfParent(task.id)).rejects.toThrowError();
 		});
 	});
 
@@ -152,6 +147,52 @@ describe('FilesStorageClientAdapterService', () => {
 				const { parentId } = setup();
 
 				await expect(service.deleteFilesOfParent(parentId)).rejects.toThrowError();
+			});
+		});
+	});
+
+	describe('deleteOneFile', () => {
+		describe('when file is deleted successfully', () => {
+			const setup = () => {
+				const recordId = new ObjectId().toHexString();
+
+				const spy = jest.spyOn(FilesStorageClientMapper, 'mapFileRecordResponseToFileDto').mockImplementation(() => {
+					return {
+						id: recordId,
+						name: 'file',
+						parentId: 'parentId',
+						parentType: FileRecordParentType.BoardNode,
+					};
+				});
+
+				return { recordId, spy };
+			};
+
+			it('Should call all steps.', async () => {
+				const { recordId, spy } = setup();
+
+				await service.deleteOneFile(recordId);
+
+				expect(client.deleteOneFile).toHaveBeenCalledWith(recordId);
+				expect(spy).toBeCalled();
+
+				spy.mockRestore();
+			});
+		});
+
+		describe('when error is thrown', () => {
+			const setup = () => {
+				const recordId = new ObjectId().toHexString();
+
+				client.deleteOneFile.mockRejectedValue(new Error());
+
+				return { recordId };
+			};
+
+			it('Should call error mapper if throw an error.', async () => {
+				const { recordId } = setup();
+
+				await expect(service.deleteOneFile(recordId)).rejects.toThrowError();
 			});
 		});
 	});

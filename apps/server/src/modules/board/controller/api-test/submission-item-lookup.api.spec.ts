@@ -208,7 +208,7 @@ describe('submission item lookup (api)', () => {
 			expect(response.status).toEqual(200);
 		});
 
-		it('should return only submission item of student 1', async () => {
+		it('should return only own submission item', async () => {
 			const { loggedInClient, submissionContainerNode, item1 } = await setup();
 
 			const response = await loggedInClient.get(`${submissionContainerNode.id}`);
