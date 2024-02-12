@@ -147,6 +147,14 @@ export class Submission extends BaseEntityWithTimestamps {
 		return isGradedForUser;
 	}
 
+	public isGroupSubmission(): boolean {
+		return this.courseGroup !== null || (this.courseGroup === null && this.teamMembers.length > 1);
+	}
+
+	public isSingleSubmissionOwnedByUser(): boolean {
+		return this.courseGroup === null && this.teamMembers.length === 1;
+	}
+
 	public removeStudentById(userId: EntityId): void {
 		if (userId === this.student?.id) {
 			this.student = undefined;

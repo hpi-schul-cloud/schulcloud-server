@@ -32,45 +32,40 @@ export class SubmissionService {
 		await this.submissionRepo.delete(submission);
 	}
 
-	async deleteSubmissionsByUserId(userId: EntityId): Promise<DomainOperation> {
+	async deleteSingleSubmissionsOwnedByUser(userId: EntityId): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
-				'Deleting data from Submissions',
+				'Deleting single Submissions owned by user',
 				DomainName.SUBMISSIONS,
 				userId,
 				StatusModel.PENDING
 			)
 		);
-		const submissions = await this.submissionRepo.findAllByUserId(userId);
-		const submissionsToDelete: Submission[] = [];
+		let [submissionsEntities, submissionsCount] = await this.submissionRepo.findAllByUserId(userId);
 
-		if (submissions[1] > 0) {
-			submissions[0].forEach((submission) => {
-				if (submission.courseGroup === null && submission.teamMembers.length === 1) {
-					submissionsToDelete.push(submission);
-				}
-			});
+		if (submissionsCount > 0) {
+			submissionsEntities = submissionsEntities.filter((submission) => submission.isSingleSubmissionOwnedByUser());
+			submissionsCount = submissionsEntities.length;
 		}
 
-		const submissionsToDeleteCount = submissionsToDelete.length;
-		if (submissionsToDeleteCount > 0) {
-			await this.submissionRepo.delete(submissionsToDelete);
+		if (submissionsCount > 0) {
+			await this.submissionRepo.delete(submissionsEntities);
 		}
 
 		const result = DomainOperationBuilder.build(
 			DomainName.SUBMISSIONS,
 			OperationType.DELETE,
-			submissionsToDelete.length,
-			this.getSubmissionsId(submissionsToDelete)
+			submissionsCount,
+			this.getSubmissionsId(submissionsEntities)
 		);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
-				'Successfully deleted data from Submissions',
+				'Successfully deleted single Submissions owned by user',
 				DomainName.SUBMISSIONS,
 				userId,
 				StatusModel.FINISHED,
-				submissionsToDeleteCount,
+				submissionsCount,
 				0
 			)
 		);
@@ -78,50 +73,45 @@ export class SubmissionService {
 		return result;
 	}
 
-	async updateSubmissionByUserId(userId: EntityId): Promise<DomainOperation> {
+	async removeUserReferencesFromSubmissions(userId: EntityId): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
-				'Deleting user data from Submissions',
+				'Deleting user references from Submissions',
 				DomainName.SUBMISSIONS,
 				userId,
 				StatusModel.PENDING
 			)
 		);
 
-		const submissions = await this.submissionRepo.findAllByUserId(userId);
-		const submissionsToUpdate: Submission[] = [];
+		let [submissionsEntities, submissionsCount] = await this.submissionRepo.findAllByUserId(userId);
 
-		if (submissions[1] > 0) {
-			submissions[0].forEach((submission) => {
-				if (submission.courseGroup !== null || (submission.courseGroup === null && submission.teamMembers.length > 1)) {
-					submissionsToUpdate.push(submission);
-				}
-			});
+		if (submissionsCount > 0) {
+			submissionsEntities = submissionsEntities.filter((submission) => submission.isGroupSubmission());
+			submissionsCount = submissionsEntities.length;
 		}
 
-		const submissionsToUpdateCount = submissionsToUpdate.length;
-		if (submissionsToUpdateCount > 0) {
-			submissionsToUpdate.forEach((submission) => {
+		if (submissionsCount > 0) {
+			submissionsEntities.forEach((submission) => {
 				submission.removeStudentById(userId);
 				submission.removeUserFromTeamMembers(userId);
 			});
 
-			await this.submissionRepo.save(submissionsToUpdate);
+			await this.submissionRepo.save(submissionsEntities);
 		}
 		const result = DomainOperationBuilder.build(
 			DomainName.SUBMISSIONS,
 			OperationType.UPDATE,
-			submissionsToUpdateCount,
-			this.getSubmissionsId(submissionsToUpdate)
+			submissionsCount,
+			this.getSubmissionsId(submissionsEntities)
 		);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
-				'Successfully deleted user data from Submissions collection',
+				'Successfully deleted references from Submissions collection',
 				DomainName.SUBMISSIONS,
 				userId,
 				StatusModel.FINISHED,
-				submissionsToUpdateCount,
+				submissionsCount,
 				0
 			)
 		);
