@@ -7,6 +7,7 @@ import type { CourseGroup } from './coursegroup.entity';
 import { SchoolEntity } from './school.entity';
 import type { Task } from './task.entity';
 import type { User } from './user.entity';
+import { UndefinedAttributeTypeError } from 'ldapjs';
 
 export interface SubmissionProperties {
 	school: SchoolEntity;
@@ -148,11 +149,14 @@ export class Submission extends BaseEntityWithTimestamps {
 	}
 
 	public isGroupSubmission(): boolean {
-		return this.courseGroup !== null || (this.courseGroup === null && this.teamMembers.length > 1);
+		return (
+			(this.courseGroup !== null && this.courseGroup !== undefined) ||
+			((this.courseGroup === null || this.courseGroup === undefined) && this.teamMembers.length > 1)
+		);
 	}
 
 	public isSingleSubmissionOwnedByUser(): boolean {
-		return this.courseGroup === null && this.teamMembers.length === 1;
+		return (this.courseGroup === null || this.courseGroup === undefined) && this.teamMembers.length === 1;
 	}
 
 	public removeStudentById(userId: EntityId): void {

@@ -291,7 +291,10 @@ describe('Submission Service', () => {
 			const setup = () => {
 				const user1 = userFactory.buildWithId();
 				const user2 = userFactory.buildWithId();
-				const submission = submissionFactory.buildWithId({ student: user1, teamMembers: [user1, user2] });
+				const submission = submissionFactory.buildWithId({
+					student: user1,
+					teamMembers: [user1, user2],
+				});
 
 				submissionRepo.findAllByUserId.mockResolvedValueOnce([[submission], 1]);
 				submissionRepo.delete.mockResolvedValueOnce();
