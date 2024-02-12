@@ -150,4 +150,49 @@ describe(SubmissionItemService.name, () => {
 			await expect(service.update(submissionItem, true)).rejects.toThrowError(ValidationError);
 		});
 	});
+
+	describe('delete', () => {
+		const setup = () => {
+			const submissionContainer = submissionContainerElementFactory.build();
+			const submissionItem = submissionItemFactory.build();
+
+			boardDoRepo.findParentOfId.mockResolvedValueOnce(submissionContainer);
+
+			return { submissionContainer, submissionItem };
+		};
+
+		it('should fetch the parent', async () => {
+			const { submissionItem } = setup();
+
+			await service.delete(submissionItem);
+
+			expect(boardDoRepo.findParentOfId).toHaveBeenCalledWith(submissionItem.id);
+		});
+
+		it('should throw if parent is not SubmissionContainerElement', async () => {
+			const submissionItem = submissionItemFactory.build();
+			const richTextElement = richTextElementFactory.build();
+			boardDoRepo.findParentOfId.mockResolvedValueOnce(richTextElement);
+
+			await expect(service.update(submissionItem, true)).rejects.toThrow(UnprocessableEntityException);
+		});
+
+		it('should call bord repo to delete submission item', async () => {
+			const { submissionItem } = setup();
+
+			await service.delete(submissionItem);
+
+			expect(boardDoRepo.delete).toHaveBeenCalledWith(submissionItem);
+		});
+
+		it('should throw if parent SubmissionContainer dueDate is in the past', async () => {
+			const { submissionItem, submissionContainer } = setup();
+
+			const yesterday = new Date(Date.now() - 86400000);
+			submissionContainer.dueDate = yesterday;
+			boardDoRepo.findParentOfId.mockResolvedValue(submissionContainer);
+
+			await expect(service.delete(submissionItem)).rejects.toThrowError(ValidationError);
+		});
+	});
 });
