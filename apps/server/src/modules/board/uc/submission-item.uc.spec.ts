@@ -7,7 +7,7 @@ import {
 	UnprocessableEntityException,
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, BoardRoles, ContentElementType, UserRoleEnum } from '@shared/domain/domainobject';
+import { BoardDoAuthorizable, BoardRoles, ContentElementType } from '@shared/domain/domainobject';
 import {
 	fileElementFactory,
 	richTextElementFactory,
@@ -90,10 +90,11 @@ describe(SubmissionItemUc.name, () => {
 				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
 					new BoardDoAuthorizable({
 						users: [
-							{ userId: user1.id, roles: [BoardRoles.READER], userRoleEnum: UserRoleEnum.STUDENT },
-							{ userId: user2.id, roles: [BoardRoles.READER], userRoleEnum: UserRoleEnum.STUDENT },
+							{ userId: user1.id, roles: [BoardRoles.READER] },
+							{ userId: user2.id, roles: [BoardRoles.READER] },
 						],
 						id: submissionContainerEl.id,
+						boardDo: submissionContainerEl,
 					})
 				);
 
@@ -132,11 +133,12 @@ describe(SubmissionItemUc.name, () => {
 				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
 					new BoardDoAuthorizable({
 						users: [
-							{ userId: teacher.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER },
-							{ userId: student1.id, roles: [BoardRoles.READER], userRoleEnum: UserRoleEnum.STUDENT },
-							{ userId: student2.id, roles: [BoardRoles.READER], userRoleEnum: UserRoleEnum.STUDENT },
+							{ userId: teacher.id, roles: [BoardRoles.EDITOR] },
+							{ userId: student1.id, roles: [BoardRoles.READER] },
+							{ userId: student2.id, roles: [BoardRoles.READER] },
 						],
 						id: submissionContainerEl.id,
+						boardDo: submissionContainerEl,
 					})
 				);
 
@@ -156,36 +158,6 @@ describe(SubmissionItemUc.name, () => {
 				const { teacher, submissionContainerEl } = setup();
 				const { users } = await uc.findSubmissionItems(teacher.id, submissionContainerEl.id);
 				expect(users.length).toBe(2);
-			});
-		});
-		describe('when user has not an authorized role', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId();
-				const submissionItem = submissionItemFactory.build({
-					userId: user.id,
-				});
-				const submissionContainerEl = submissionContainerElementFactory.build({
-					children: [submissionItem],
-				});
-
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-					new BoardDoAuthorizable({
-						// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-						// @ts-ignore
-						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
-						id: submissionContainerEl.id,
-					})
-				);
-				elementService.findById.mockResolvedValueOnce(submissionContainerEl);
-
-				return { user, submissionContainerElement: submissionContainerEl };
-			};
-			it('should throw forbidden exception', async () => {
-				const { user, submissionContainerElement } = setup();
-
-				await expect(uc.findSubmissionItems(user.id, submissionContainerElement.id)).rejects.toThrow(
-					'User not part of this board'
-				);
 			});
 		});
 		describe('when called with wrong board node', () => {
@@ -231,23 +203,16 @@ describe(SubmissionItemUc.name, () => {
 
 			boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
 				new BoardDoAuthorizable({
-					users: [{ userId: user.id, roles: [BoardRoles.READER], userRoleEnum: UserRoleEnum.STUDENT }],
+					users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 					id: submissionItem.id,
+					boardDo: submissionItem,
 				})
 			);
 			const boardDoAuthorizable = await boardDoAuthorizableService.getBoardAuthorizable(submissionItem);
 
 			await uc.updateSubmissionItem(user.id, submissionItem.id, false);
-			const context = { action: Action.read, requiredPermissions: [] };
+			const context = { action: Action.write, requiredPermissions: [] };
 			expect(authorizationService.checkPermission).toBeCalledWith(user, boardDoAuthorizable, context);
-		});
-		it('should throw if user is not creator of submission item', async () => {
-			const user2 = userFactory.buildWithId();
-			const { submissionItem } = setup();
-
-			await expect(uc.updateSubmissionItem(user2.id, submissionItem.id, false)).rejects.toThrow(
-				new ForbiddenException()
-			);
 		});
 		it('should call service to update submission item', async () => {
 			const { submissionItem, user } = setup();
@@ -270,8 +235,9 @@ describe(SubmissionItemUc.name, () => {
 
 				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
 					new BoardDoAuthorizable({
-						users: [{ userId: user.id, roles: [BoardRoles.READER], userRoleEnum: UserRoleEnum.STUDENT }],
+						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 						id: submissionItem.id,
+						boardDo: submissionItem,
 					})
 				);
 
@@ -293,7 +259,7 @@ describe(SubmissionItemUc.name, () => {
 				const boardDoAuthorizable = await boardDoAuthorizableService.getBoardAuthorizable(submissionItem);
 
 				await uc.createElement(user.id, submissionItem.id, ContentElementType.RICH_TEXT);
-				const context = { action: Action.read, requiredPermissions: [] };
+				const context = { action: Action.write, requiredPermissions: [] };
 				expect(authorizationService.checkPermission).toBeCalledWith(user, boardDoAuthorizable, context);
 			});
 
