@@ -18,12 +18,7 @@ export class UserRepo extends BaseRepo<User> {
 		const user = await super.findById(id);
 
 		if (populate) {
-			try {
-				await this._em.populate(user, ['roles', 'school.systems', 'school.currentYear']);
-			} catch (error) {
-				console.error('Error populating user', error);
-			}
-
+			await this._em.populate(user, ['roles', 'school.systems', 'school.currentYear']);
 			await this.populateRoles(user.roles.getItems());
 		}
 
