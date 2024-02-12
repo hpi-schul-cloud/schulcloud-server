@@ -262,7 +262,7 @@ describe(RecursiveSaveVisitor.name, () => {
 		});
 
 		describe('when the board is already persisted', () => {
-			it.only('should persist the board node', () => {
+			it('should persist the board node', () => {
 				const board = columnBoardFactory.build();
 				const boardNode = columnBoardNodeFactory.build();
 
