@@ -439,6 +439,7 @@ describe('user repo', () => {
 				const user2: User = userFactory.buildWithId();
 				const user3: User = userFactory.buildWithId();
 				await em.persistAndFlush([user1, user2, user3]);
+				em.clear();
 
 				const expectedUser2 = {
 					firstName: user2.firstName,
@@ -479,6 +480,7 @@ describe('user repo', () => {
 				expect(result2).toMatchObject(expectedUser2);
 
 				const result3 = await repo.findById(user3.id);
+
 				expect(result3).toMatchObject(expectedUser3);
 			});
 		});

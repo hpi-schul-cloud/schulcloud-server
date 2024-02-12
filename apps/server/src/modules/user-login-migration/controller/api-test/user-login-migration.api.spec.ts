@@ -1181,7 +1181,7 @@ describe('UserLoginMigrationController (API)', () => {
 				};
 			};
 
-			it.only('should return status ok', async () => {
+			it('should return status ok', async () => {
 				const { loggedInClient } = await setup();
 
 				const response: Response = await loggedInClient.post('/close');
