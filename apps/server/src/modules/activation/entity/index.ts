@@ -1,1 +1,0 @@
-export * from './activation.entity';

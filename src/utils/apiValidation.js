@@ -12,8 +12,6 @@ const ignorePathsList = [
 	/|(.*\/activationModel\/[0-9a-f]{24}($|\/$))/,
 	/|(.*\/activation($|\/$))/,
 	/|(.*\/activation\/[0-9a-f]{24}($|\/$))/,
-	/|(.*\/activation\/eMailAddress($|\/$))/,
-	/|(.*\/activation\/eMailAddress\/[0-9a-f]{24}($|\/$))/,
 	/|(.*\/activation\/api($|\/$))/,
 	/|(.*\/alert($|\/$))/,
 	/|(.*\/alert\/api($|\/$))/,
