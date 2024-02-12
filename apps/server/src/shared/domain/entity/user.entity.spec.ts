@@ -91,4 +91,47 @@ describe('User Entity', () => {
 			expect(permissions.sort()).toEqual([permissionA, permissionB, permissionC].sort());
 		});
 	});
+
+	describe('getRoles', () => {
+		const setup = () => {
+			const roles = roleFactory.buildListWithId(2);
+			const user = userFactory.build({ roles });
+
+			return { user };
+		};
+
+		it('should return the roles as array', () => {
+			const { user } = setup();
+
+			const result = user.getRoles();
+
+			expect(Array.isArray(result)).toBe(true);
+			expect(result).toHaveLength(2);
+			expect(result[0]).toBeInstanceOf(Role);
+		});
+	});
+
+	describe('getInfo', () => {
+		const setup = () => {
+			const expectedResult = {
+				customAvatarBackgroundColor: '#fe8a71',
+				firstName: 'a',
+				lastName: 'b',
+				id: '',
+			};
+
+			const user = userFactory.buildWithId(expectedResult);
+			expectedResult.id = user.id;
+
+			return { user, expectedResult };
+		};
+
+		it('should return a less critical subset of informations about the user', () => {
+			const { user, expectedResult } = setup();
+
+			const result = user.getInfo();
+
+			expect(result).toEqual(expectedResult);
+		});
+	});
 });
