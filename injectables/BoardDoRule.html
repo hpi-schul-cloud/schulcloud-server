@@ -147,8 +147,44 @@
                                 <a href="#hasPermission" >hasPermission</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#hasPermissionForDrawingElement" >hasPermissionForDrawingElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#hasPermissionForSubmissionItem" >hasPermissionForSubmissionItem</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#hasSubmissionItemReadPermission" >hasSubmissionItemReadPermission</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#hasSubmissionItemWritePermission" >hasSubmissionItemWritePermission</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Public</span>
                                 <a href="#isApplicable" >isApplicable</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#isBoardEditor" >isBoardEditor</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#isBoardReader" >isBoardReader</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#isSubmissionItemCreator" >isSubmissionItemCreator</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#shouldProcessDrawingElement" >shouldProcessDrawingElement</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#shouldProcessSubmissionItem" >shouldProcessSubmissionItem</a>
                             </li>
                         </ul>
                     </td>
@@ -173,7 +209,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/authorization/domain/rules/board-do.rule.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/authorization/domain/rules/board-do.rule.ts:15</a></div>
                             </td>
                         </tr>
 
@@ -238,8 +274,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/board-do.rule.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/board-do.rule.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -313,6 +349,342 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="hasPermissionForDrawingElement"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>hasPermissionForDrawingElement</b></span>
+                        <a href="#hasPermissionForDrawingElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>hasPermissionForDrawingElement(userWithBoardRoles: <a href="../interfaces/UserWithBoardRoles.html" target="_self">UserWithBoardRoles</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/board-do.rule.ts:62</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userWithBoardRoles</td>
+                                            <td>
+                                                            <code><a href="../interfaces/UserWithBoardRoles.html" target="_self" >UserWithBoardRoles</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="hasPermissionForSubmissionItem"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>hasPermissionForSubmissionItem</b></span>
+                        <a href="#hasPermissionForSubmissionItem"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>hasPermissionForSubmissionItem(user: <a href="../interfaces/User.html" target="_self">User</a>, userWithBoardRoles: <a href="../interfaces/UserWithBoardRoles.html" target="_self">UserWithBoardRoles</a>, boardDoAuthorizable: <a href="../classes/BoardDoAuthorizable.html" target="_self">BoardDoAuthorizable</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/board-do.rule.ts:75</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>user</td>
+                                            <td>
+                                                            <code><a href="../interfaces/User.html" target="_self" >User</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>userWithBoardRoles</td>
+                                            <td>
+                                                            <code><a href="../interfaces/UserWithBoardRoles.html" target="_self" >UserWithBoardRoles</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>boardDoAuthorizable</td>
+                                            <td>
+                                                            <code><a href="../classes/BoardDoAuthorizable.html" target="_self" >BoardDoAuthorizable</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>context</td>
+                                            <td>
+                                                            <code><a href="../interfaces/AuthorizationContext.html" target="_self" >AuthorizationContext</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="hasSubmissionItemReadPermission"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>hasSubmissionItemReadPermission</b></span>
+                        <a href="#hasSubmissionItemReadPermission"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>hasSubmissionItemReadPermission(userWithBoardRoless: <a href="../interfaces/UserWithBoardRoles.html" target="_self">UserWithBoardRoles</a>, submissionItem: <a href="../classes/SubmissionItem.html" target="_self">SubmissionItem</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="122"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/board-do.rule.ts:122</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userWithBoardRoless</td>
+                                            <td>
+                                                            <code><a href="../interfaces/UserWithBoardRoles.html" target="_self" >UserWithBoardRoles</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>submissionItem</td>
+                                            <td>
+                                                            <code><a href="../classes/SubmissionItem.html" target="_self" >SubmissionItem</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="hasSubmissionItemWritePermission"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>hasSubmissionItemWritePermission</b></span>
+                        <a href="#hasSubmissionItemWritePermission"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>hasSubmissionItemWritePermission(userWithBoardRoless: <a href="../interfaces/UserWithBoardRoles.html" target="_self">UserWithBoardRoles</a>, submissionItem: <a href="../classes/SubmissionItem.html" target="_self">SubmissionItem</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/board-do.rule.ts:102</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userWithBoardRoless</td>
+                                            <td>
+                                                            <code><a href="../interfaces/UserWithBoardRoles.html" target="_self" >UserWithBoardRoles</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>submissionItem</td>
+                                            <td>
+                                                            <code><a href="../classes/SubmissionItem.html" target="_self" >SubmissionItem</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="isApplicable"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -331,8 +703,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="11"
-                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/board-do.rule.ts:11</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/board-do.rule.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -390,6 +762,363 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isBoardEditor"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>isBoardEditor</b></span>
+                        <a href="#isBoardEditor"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isBoardEditor(userWithBoardRoles: <a href="../interfaces/UserWithBoardRoles.html" target="_self">UserWithBoardRoles</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="50"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/board-do.rule.ts:50</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userWithBoardRoles</td>
+                                            <td>
+                                                            <code><a href="../interfaces/UserWithBoardRoles.html" target="_self" >UserWithBoardRoles</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isBoardReader"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>isBoardReader</b></span>
+                        <a href="#isBoardReader"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isBoardReader(userWithBoardRoles: <a href="../interfaces/UserWithBoardRoles.html" target="_self">UserWithBoardRoles</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/board-do.rule.ts:54</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userWithBoardRoles</td>
+                                            <td>
+                                                            <code><a href="../interfaces/UserWithBoardRoles.html" target="_self" >UserWithBoardRoles</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isSubmissionItemCreator"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>isSubmissionItemCreator</b></span>
+                        <a href="#isSubmissionItemCreator"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isSubmissionItemCreator(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, submissionItem: <a href="../classes/SubmissionItem.html" target="_self">SubmissionItem</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="140"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/board-do.rule.ts:140</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>submissionItem</td>
+                                            <td>
+                                                            <code><a href="../classes/SubmissionItem.html" target="_self" >SubmissionItem</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="shouldProcessDrawingElement"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>shouldProcessDrawingElement</b></span>
+                        <a href="#shouldProcessDrawingElement"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>shouldProcessDrawingElement(boardDoAuthorizable: <a href="../classes/BoardDoAuthorizable.html" target="_self">BoardDoAuthorizable</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="58"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/board-do.rule.ts:58</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardDoAuthorizable</td>
+                                            <td>
+                                                            <code><a href="../classes/BoardDoAuthorizable.html" target="_self" >BoardDoAuthorizable</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="shouldProcessSubmissionItem"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>shouldProcessSubmissionItem</b></span>
+                        <a href="#shouldProcessSubmissionItem"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>shouldProcessSubmissionItem(boardDoAuthorizable: <a href="../classes/BoardDoAuthorizable.html" target="_self">BoardDoAuthorizable</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="71"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/board-do.rule.ts:71</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>boardDoAuthorizable</td>
+                                            <td>
+                                                            <code><a href="../classes/BoardDoAuthorizable.html" target="_self" >BoardDoAuthorizable</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -397,8 +1126,15 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { BoardDoAuthorizable, BoardRoles } from &#x27;@shared/domain/domainobject/board/types&#x27;;
+import { BoardDoAuthorizable, BoardRoles, UserWithBoardRoles } from &#x27;@shared/domain/domainobject/board/types&#x27;;
 import { User } from &#x27;@shared/domain/entity/user.entity&#x27;;
+import {
+	isDrawingElement,
+	isSubmissionItem,
+	isSubmissionItemContent,
+	SubmissionItem,
+} from &#x27;@shared/domain/domainobject&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { Action, AuthorizationContext, Rule } from &#x27;../type&#x27;;
 import { AuthorizationHelper } from &#x27;../service/authorization.helper&#x27;;
 
@@ -414,31 +1150,122 @@ export class BoardDoRule implements Rule {
 
 	public hasPermission(user: User, boardDoAuthorizable: BoardDoAuthorizable, context: AuthorizationContext): boolean {
 		const hasPermission &#x3D; this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
-		if (hasPermission &#x3D;&#x3D;&#x3D; false) {
+		if (!hasPermission) {
 			return false;
 		}
 
-		const userBoardRole &#x3D; boardDoAuthorizable.users.find(({ userId }) &#x3D;&gt; userId &#x3D;&#x3D;&#x3D; user.id);
-		if (!userBoardRole) {
+		const userWithBoardRoles &#x3D; boardDoAuthorizable.users.find(({ userId }) &#x3D;&gt; userId &#x3D;&#x3D;&#x3D; user.id);
+		if (!userWithBoardRoles) {
 			return false;
 		}
 
-		if (boardDoAuthorizable.requiredUserRole &amp;&amp; boardDoAuthorizable.requiredUserRole !&#x3D;&#x3D; userBoardRole.userRoleEnum) {
+		if (this.shouldProcessSubmissionItem(boardDoAuthorizable)) {
+			return this.hasPermissionForSubmissionItem(user, userWithBoardRoles, boardDoAuthorizable, context);
+		}
+
+		if (this.shouldProcessDrawingElement(boardDoAuthorizable)) {
+			return this.hasPermissionForDrawingElement(userWithBoardRoles);
+		}
+
+		if (context.action &#x3D;&#x3D;&#x3D; Action.write) {
+			return this.isBoardEditor(userWithBoardRoles);
+		}
+
+		return this.isBoardReader(userWithBoardRoles);
+	}
+
+	private isBoardEditor(userWithBoardRoles: UserWithBoardRoles): boolean {
+		return userWithBoardRoles.roles.includes(BoardRoles.EDITOR);
+	}
+
+	private isBoardReader(userWithBoardRoles: UserWithBoardRoles): boolean {
+		return userWithBoardRoles.roles.includes(BoardRoles.READER) || userWithBoardRoles.roles.includes(BoardRoles.EDITOR);
+	}
+
+	private shouldProcessDrawingElement(boardDoAuthorizable: BoardDoAuthorizable): boolean {
+		return isDrawingElement(boardDoAuthorizable.boardDo);
+	}
+
+	private hasPermissionForDrawingElement(userWithBoardRoles: UserWithBoardRoles): boolean {
+		// TODO
+		// for now, board Readers have also write permission for DrawingElement.
+		// This is needed because files &quot;attached&quot; to drawing element ask permission for the drawing element itself
+		// this will be changed in the future, when there should be a separate permission for drawing element and
+		// separate permission for files attached to drawing element (when drawing element is parent)
+		return this.isBoardReader(userWithBoardRoles);
+	}
+
+	private shouldProcessSubmissionItem(boardDoAuthorizable: BoardDoAuthorizable): boolean {
+		return isSubmissionItem(boardDoAuthorizable.boardDo) || isSubmissionItem(boardDoAuthorizable.parentDo);
+	}
+
+	private hasPermissionForSubmissionItem(
+		user: User,
+		userWithBoardRoles: UserWithBoardRoles,
+		boardDoAuthorizable: BoardDoAuthorizable,
+		context: AuthorizationContext
+	): boolean {
+		// permission for elements under a submission item, are handled by the parent submission item
+		if (isSubmissionItem(boardDoAuthorizable.parentDo)) {
+			if (!isSubmissionItemContent(boardDoAuthorizable.boardDo)) {
+				return false;
+			}
+			boardDoAuthorizable.boardDo &#x3D; boardDoAuthorizable.parentDo;
+			boardDoAuthorizable.parentDo &#x3D; undefined;
+		}
+
+		if (!isSubmissionItem(boardDoAuthorizable.boardDo)) {
+			/* istanbul ignore next */
+			throw new Error(&#x27;BoardDoAuthorizable.boardDo is not a submission item&#x27;);
+		}
+
+		if (context.action &#x3D;&#x3D;&#x3D; Action.write) {
+			return this.hasSubmissionItemWritePermission(userWithBoardRoles, boardDoAuthorizable.boardDo);
+		}
+
+		return this.hasSubmissionItemReadPermission(userWithBoardRoles, boardDoAuthorizable.boardDo);
+	}
+
+	private hasSubmissionItemWritePermission(
+		userWithBoardRoless: UserWithBoardRoles,
+		submissionItem: SubmissionItem
+	): boolean {
+		// teacher don&#x27;t have write access
+		if (this.isBoardEditor(userWithBoardRoless)) {
 			return false;
 		}
 
-		if (context.action &#x3D;&#x3D;&#x3D; Action.write &amp;&amp; userBoardRole.roles.includes(BoardRoles.EDITOR)) {
-			return true;
-		}
-
+		// student has write access only for his own submission item
 		if (
-			context.action &#x3D;&#x3D;&#x3D; Action.read &amp;&amp;
-			(userBoardRole.roles.includes(BoardRoles.EDITOR) || userBoardRole.roles.includes(BoardRoles.READER))
+			this.isBoardReader(userWithBoardRoless) &amp;&amp;
+			this.isSubmissionItemCreator(userWithBoardRoless.userId, submissionItem)
 		) {
 			return true;
 		}
 
 		return false;
+	}
+
+	private hasSubmissionItemReadPermission(
+		userWithBoardRoless: UserWithBoardRoles,
+		submissionItem: SubmissionItem
+	): boolean {
+		if (this.isBoardEditor(userWithBoardRoless)) {
+			return true;
+		}
+
+		if (
+			this.isBoardReader(userWithBoardRoless) &amp;&amp;
+			this.isSubmissionItemCreator(userWithBoardRoless.userId, submissionItem)
+		) {
+			return true;
+		}
+
+		return false;
+	}
+
+	private isSubmissionItemCreator(userId: EntityId, submissionItem: SubmissionItem): boolean {
+		return submissionItem.userId &#x3D;&#x3D;&#x3D; userId;
 	}
 }
 </code></pre>

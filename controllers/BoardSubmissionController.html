@@ -164,6 +164,17 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteSubmissionItem" >deleteSubmissionItem</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Async</span>
                                 <a href="#getSubmissionItems" >getSubmissionItems</a>
                             </li>
@@ -231,8 +242,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="89"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/board-submission.controller.ts:89</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="101"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/board-submission.controller.ts:101</a></div>
                         </td>
                     </tr>
 
@@ -306,6 +317,101 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="deleteSubmissionItem"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteSubmissionItem</b></span>
+                        <a href="#deleteSubmissionItem"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteSubmissionItem(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, urlParams: <a href="../classes/SubmissionItemUrlParams.html" target="_self">SubmissionItemUrlParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@ApiOperation({summary: &#x27;Delete a single submission item.&#x27;})<br />@ApiResponse({status: 204})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@HttpCode(204)<br />@Delete(&#x27;:submissionItemId&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="85"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/board-submission.controller.ts:85</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>urlParams</td>
+                                            <td>
+                                                            <code><a href="../classes/SubmissionItemUrlParams.html" target="_self" >SubmissionItemUrlParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getSubmissionItems"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -336,8 +442,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/board-submission.controller.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/board-submission.controller.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -431,8 +537,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="65"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/board-submission.controller.ts:65</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="66"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/board-submission.controller.ts:66</a></div>
                         </td>
                     </tr>
 
@@ -510,6 +616,7 @@
 import {
 	Body,
 	Controller,
+	Delete,
 	ForbiddenException,
 	Get,
 	HttpCode,
@@ -580,6 +687,17 @@ export class BoardSubmissionController {
 			urlParams.submissionItemId,
 			bodyParams.completed
 		);
+	}
+
+	@ApiOperation({ summary: &#x27;Delete a single submission item.&#x27; })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Delete(&#x27;:submissionItemId&#x27;)
+	async deleteSubmissionItem(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: SubmissionItemUrlParams) {
+		await this.submissionItemUc.deleteSubmissionItem(currentUser.userId, urlParams.submissionItemId);
 	}
 
 	@ApiOperation({ summary: &#x27;Create a new element in a submission item.&#x27; })

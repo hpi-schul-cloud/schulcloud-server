@@ -7624,9 +7624,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/UserAndAccountParams.html" data-type="entity-link" >UserAndAccountParams</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/UserBoardRoles.html" data-type="entity-link" >UserBoardRoles</a>
-                            </li>
-                            <li class="link">
                                 <a href="interfaces/UserConfig.html" data-type="entity-link" >UserConfig</a>
                             </li>
                             <li class="link">
@@ -7655,6 +7652,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/UserProperties.html" data-type="entity-link" >UserProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/UserWithBoardRoles.html" data-type="entity-link" >UserWithBoardRoles</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/VideoConferenceOptions.html" data-type="entity-link" >VideoConferenceOptions</a>

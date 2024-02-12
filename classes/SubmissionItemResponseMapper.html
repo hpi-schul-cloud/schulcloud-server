@@ -355,7 +355,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToResponse(submissionItems: <a href="../entitys/Submission.html" target="_self">SubmissionItem[]</a>, users: <a href="../classes/User.html" target="_self">UserBoardRoles[]</a>)</code>
+                    <code>mapToResponse(submissionItems: <a href="../entitys/Submission.html" target="_self">SubmissionItem[]</a>, users: <a href="../classes/User.html" target="_self">UserWithBoardRoles[]</a>)</code>
                 </td>
             </tr>
 
@@ -398,7 +398,7 @@
                                         <tr>
                                                 <td>users</td>
                                             <td>
-                                                            <code><a href="../classes/User.html" target="_self" >UserBoardRoles[]</a></code>
+                                                            <code><a href="../classes/User.html" target="_self" >UserWithBoardRoles[]</a></code>
                                             </td>
 
                                             <td>
@@ -436,7 +436,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapUsersToResponse(user: <a href="../interfaces/UserBoardRoles.html" target="_self">UserBoardRoles</a>)</code>
+                    <code>mapUsersToResponse(user: <a href="../interfaces/UserWithBoardRoles.html" target="_self">UserWithBoardRoles</a>)</code>
                 </td>
             </tr>
 
@@ -467,7 +467,7 @@
                                         <tr>
                                                 <td>user</td>
                                             <td>
-                                                            <code><a href="../interfaces/UserBoardRoles.html" target="_self" >UserBoardRoles</a></code>
+                                                            <code><a href="../interfaces/UserWithBoardRoles.html" target="_self" >UserWithBoardRoles</a></code>
                                             </td>
 
                                             <td>
@@ -505,7 +505,7 @@
 	isSubmissionItemContent,
 	RichTextElement,
 	SubmissionItem,
-	UserBoardRoles,
+	UserWithBoardRoles,
 } from &#x27;@shared/domain/domainobject&#x27;;
 import { SubmissionItemResponse, SubmissionsResponse, TimestampsResponse, UserDataResponse } from &#x27;../dto&#x27;;
 import { ContentElementResponseFactory } from &#x27;./content-element-response.factory&#x27;;
@@ -521,7 +521,7 @@ export class SubmissionItemResponseMapper {
 		return SubmissionItemResponseMapper.instance;
 	}
 
-	public mapToResponse(submissionItems: SubmissionItem[], users: UserBoardRoles[]): SubmissionsResponse {
+	public mapToResponse(submissionItems: SubmissionItem[], users: UserWithBoardRoles[]): SubmissionsResponse {
 		const submissionItemsResponse: SubmissionItemResponse[] &#x3D; submissionItems.map((item) &#x3D;&gt;
 			this.mapSubmissionItemToResponse(item)
 		);
@@ -548,7 +548,7 @@ export class SubmissionItemResponseMapper {
 		return result;
 	}
 
-	private mapUsersToResponse(user: UserBoardRoles) {
+	private mapUsersToResponse(user: UserWithBoardRoles) {
 		const result &#x3D; new UserDataResponse({
 			userId: user.userId,
 			firstName: user.firstName || &#x27;&#x27;,

@@ -161,13 +161,8 @@
                                 <a href="#deleteElement" >deleteElement</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
-                                <a href="#getElementWithWritePermission" >getElementWithWritePermission</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#updateElementContent" >updateElementContent</a>
+                                <a href="#updateElement" >updateElement</a>
                             </li>
                             <li>
                                     <span class="modifier">Protected</span>
@@ -176,13 +171,11 @@
                             </li>
                             <li>
                                     <span class="modifier">Protected</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#checkSubmissionItemWritePermission" >checkSubmissionItemWritePermission</a>
+                                <a href="#isUserBoardEditor" >isUserBoardEditor</a>
                             </li>
                             <li>
                                     <span class="modifier">Protected</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#isAuthorizedStudent" >isAuthorizedStudent</a>
+                                <a href="#isUserBoardReader" >isUserBoardReader</a>
                             </li>
                         </ul>
                     </td>
@@ -207,7 +200,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:20</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:17</a></div>
                             </td>
                         </tr>
 
@@ -320,8 +313,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="71"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:71</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -401,8 +394,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="76"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:76</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -494,8 +487,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -557,108 +550,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getElementWithWritePermission"></a>
+                    <a name="updateElement"></a>
                     <span class="name">
-                            <span class="modifier">Private</span>
                             <span class="modifier">Async</span>
-                        <span ><b>getElementWithWritePermission</b></span>
-                        <a href="#getElementWithWritePermission"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>updateElement</b></span>
+                        <a href="#updateElement"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getElementWithWritePermission(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, elementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>updateElement(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, elementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, content: <a href="../undefineds/AnyElementContentBody.html" target="_self">AnyElementContentBody</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="50"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:50</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>elementId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#AnyContentElementDo" target="_self" >Promise&lt;AnyContentElementDo&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="updateElementContent"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>updateElementContent</b></span>
-                        <a href="#updateElementContent"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateElementContent(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, elementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, content: <a href="../undefineds/AnyElementContentBody.html" target="_self">AnyElementContentBody</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="30"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/element.uc.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -744,7 +655,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkPermission(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, anyBoardDo: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>, action: <a href="../undefineds/Action.html" target="_self">Action</a>, requiredUserRole?: <a href="../undefineds/UserRoleEnum.html" target="_self">UserRoleEnum</a>)</code>
+                    <code>checkPermission(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, anyBoardDo: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>, action: <a href="../undefineds/Action.html" target="_self">Action</a>)</code>
                 </td>
             </tr>
 
@@ -757,7 +668,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:13</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:12</a></code>
 </div>
                         </td>
                     </tr>
@@ -814,18 +725,6 @@
 
 
                                         </tr>
-                                        <tr>
-                                                <td>requiredUserRole</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#UserRoleEnum" target="_self" >UserRoleEnum</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -844,19 +743,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="checkSubmissionItemWritePermission"></a>
+                    <a name="isUserBoardEditor"></a>
                     <span class="name">
                             <span class="modifier">Protected</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>checkSubmissionItemWritePermission</b></span>
-                        <a href="#checkSubmissionItemWritePermission"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>isUserBoardEditor</b></span>
+                        <a href="#isUserBoardEditor"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkSubmissionItemWritePermission(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, submissionItem: <a href="../classes/SubmissionItem.html" target="_self">SubmissionItem</a>)</code>
+                    <code>isUserBoardEditor(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userBoardRoles: <a href="../classes/User.html" target="_self">UserWithBoardRoles[]</a>)</code>
                 </td>
             </tr>
 
@@ -869,7 +767,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:45</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:21</a></code>
 </div>
                         </td>
                     </tr>
@@ -903,9 +801,9 @@
 
                                         </tr>
                                         <tr>
-                                                <td>submissionItem</td>
+                                                <td>userBoardRoles</td>
                                             <td>
-                                                            <code><a href="../classes/SubmissionItem.html" target="_self" >SubmissionItem</a></code>
+                                                            <code><a href="../classes/User.html" target="_self" >UserWithBoardRoles[]</a></code>
                                             </td>
 
                                             <td>
@@ -918,7 +816,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
 
                         </div>
                             <div class="io-description">
@@ -932,19 +830,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="isAuthorizedStudent"></a>
+                    <a name="isUserBoardReader"></a>
                     <span class="name">
                             <span class="modifier">Protected</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>isAuthorizedStudent</b></span>
-                        <a href="#isAuthorizedStudent"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>isUserBoardReader</b></span>
+                        <a href="#isUserBoardReader"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isAuthorizedStudent(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, boardDo: <a href="../undefineds/AnyBoardDo.html" target="_self">AnyBoardDo</a>)</code>
+                    <code>isUserBoardReader(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userBoardRoles: <a href="../classes/User.html" target="_self">UserWithBoardRoles[]</a>)</code>
                 </td>
             </tr>
 
@@ -957,7 +854,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:29</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:31</a></code>
 </div>
                         </td>
                     </tr>
@@ -991,9 +888,9 @@
 
                                         </tr>
                                         <tr>
-                                                <td>boardDo</td>
+                                                <td>userBoardRoles</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#AnyBoardDo" target="_self" >AnyBoardDo</a></code>
+                                                            <code><a href="../classes/User.html" target="_self" >UserWithBoardRoles[]</a></code>
                                             </td>
 
                                             <td>
@@ -1006,7 +903,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1025,13 +922,10 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Action, AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { ForbiddenException, forwardRef, Inject, Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import {
-	AnyBoardDo,
 	AnyContentElementDo,
-	isDrawingElement,
 	isSubmissionContainerElement,
 	isSubmissionItem,
 	SubmissionItem,
-	UserRoleEnum,
 } from &#x27;@shared/domain/domainobject&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
@@ -1054,42 +948,23 @@ export class ElementUc extends BaseUc {
 		this.logger.setContext(ElementUc.name);
 	}
 
-	async updateElementContent(
+	async updateElement(
 		userId: EntityId,
 		elementId: EntityId,
 		content: AnyElementContentBody
 	): Promise&lt;AnyContentElementDo&gt; {
-		const element &#x3D; await this.getElementWithWritePermission(userId, elementId);
+		const element &#x3D; await this.elementService.findById(elementId);
+		await this.checkPermission(userId, element, Action.write);
 
 		await this.elementService.update(element, content);
 		return element;
 	}
 
 	async deleteElement(userId: EntityId, elementId: EntityId): Promise&lt;void&gt; {
-		const element &#x3D; await this.getElementWithWritePermission(userId, elementId);
+		const element &#x3D; await this.elementService.findById(elementId);
+		await this.checkPermission(userId, element, Action.write);
 
 		await this.elementService.delete(element);
-	}
-
-	private async getElementWithWritePermission(userId: EntityId, elementId: EntityId): Promise&lt;AnyContentElementDo&gt; {
-		const element &#x3D; await this.elementService.findById(elementId);
-
-		const parent: AnyBoardDo &#x3D; await this.elementService.findParentOfId(elementId);
-
-		if (isSubmissionItem(parent)) {
-			await this.checkSubmissionItemWritePermission(userId, parent);
-		} else if (isDrawingElement(element)) {
-			// TODO: fix this temporary hack preventing students from deleting the DrawingElement
-			// linked with getBoardAuthorizable method in board-do-authorizable.service.ts
-			// the roles are hacked for the DrawingElement to allow students for file upload
-			// so because students have BoardRoles.EDITOR role, they can delete the DrawingElement by calling delete endpoint directly
-			// to prevent this, we add UserRoleEnum.TEACHER to the requiredUserRole
-			await this.checkPermission(userId, element, Action.write, UserRoleEnum.TEACHER);
-		} else {
-			await this.checkPermission(userId, element, Action.write);
-		}
-
-		return element;
 	}
 
 	async checkElementReadPermission(userId: EntityId, elementId: EntityId): Promise&lt;void&gt; {
@@ -1123,7 +998,12 @@ export class ElementUc extends BaseUc {
 			);
 		}
 
-		await this.checkPermission(userId, submissionContainerElement, Action.read, UserRoleEnum.STUDENT);
+		await this.checkPermission(userId, submissionContainerElement, Action.read);
+
+		const boardDoAuthorizable &#x3D; await this.boardDoAuthorizableService.getBoardAuthorizable(submissionContainerElement);
+		if (this.isUserBoardEditor(userId, boardDoAuthorizable.users)) {
+			throw new ForbiddenException();
+		}
 
 		const submissionItem &#x3D; await this.submissionItemService.create(userId, submissionContainerElement, { completed });
 

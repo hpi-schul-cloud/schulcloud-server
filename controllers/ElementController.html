@@ -834,7 +834,7 @@ export class ElementController {
 		@Body() bodyParams: UpdateElementContentBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise&lt;AnyContentElementResponse&gt; {
-		const element &#x3D; await this.elementUc.updateElementContent(
+		const element &#x3D; await this.elementUc.updateElement(
 			currentUser.userId,
 			urlParams.contentElementId,
 			bodyParams.data.content

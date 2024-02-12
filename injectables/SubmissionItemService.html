@@ -143,12 +143,25 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#checkNotLocked" >checkNotLocked</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#create" >create</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#delete" >delete</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findById" >findById</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getParent" >getParent</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -232,6 +245,75 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkNotLocked"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>checkNotLocked</b></span>
+                        <a href="#checkNotLocked"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkNotLocked(submissionContainterElement: <a href="../classes/SubmissionContainerElement.html" target="_self">SubmissionContainerElement</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">apps/server/src/modules/board/service/submission-item.service.ts:73</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>submissionContainterElement</td>
+                                            <td>
+                                                            <code><a href="../classes/SubmissionContainerElement.html" target="_self" >SubmissionContainerElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -329,6 +411,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="delete"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>delete</b></span>
+                        <a href="#delete"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>delete(submissionItem: <a href="../classes/SubmissionItem.html" target="_self">SubmissionItem</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="55"
+                                    class="link-to-prism">apps/server/src/modules/board/service/submission-item.service.ts:55</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>submissionItem</td>
+                                            <td>
+                                                            <code><a href="../classes/SubmissionItem.html" target="_self" >SubmissionItem</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findById"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -398,6 +549,76 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getParent"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getParent</b></span>
+                        <a href="#getParent"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getParent(submissionItem: <a href="../classes/SubmissionItem.html" target="_self">SubmissionItem</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">apps/server/src/modules/board/service/submission-item.service.ts:61</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>submissionItem</td>
+                                            <td>
+                                                            <code><a href="../classes/SubmissionItem.html" target="_self" >SubmissionItem</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../entitys/Submission.html" target="_self" >Promise&lt;SubmissionContainerElement&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="update"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -416,8 +637,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/modules/board/service/submission-item.service.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">apps/server/src/modules/board/service/submission-item.service.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -510,6 +731,8 @@ export class SubmissionItemService {
 		submissionContainer: SubmissionContainerElement,
 		payload: { completed: boolean }
 	): Promise&lt;SubmissionItem&gt; {
+		this.checkNotLocked(submissionContainer);
+
 		const submissionItem &#x3D; new SubmissionItem({
 			id: new ObjectId().toHexString(),
 			createdAt: new Date(),
@@ -526,18 +749,36 @@ export class SubmissionItemService {
 	}
 
 	async update(submissionItem: SubmissionItem, completed: boolean): Promise&lt;void&gt; {
+		const parent &#x3D; await this.getParent(submissionItem);
+
+		submissionItem.completed &#x3D; completed;
+
+		await this.boardDoRepo.save(submissionItem, parent);
+	}
+
+	async delete(submissionItem: SubmissionItem): Promise&lt;void&gt; {
+		await this.getParent(submissionItem);
+
+		await this.boardDoRepo.delete(submissionItem);
+	}
+
+	private async getParent(submissionItem: SubmissionItem): Promise&lt;SubmissionContainerElement&gt; {
 		const submissionContainterElement &#x3D; await this.boardDoRepo.findParentOfId(submissionItem.id);
+
 		if (!isSubmissionContainerElement(submissionContainterElement)) {
 			throw new UnprocessableEntityException();
 		}
 
+		this.checkNotLocked(submissionContainterElement);
+
+		return submissionContainterElement;
+	}
+
+	private checkNotLocked(submissionContainterElement: SubmissionContainerElement): void {
 		const now &#x3D; new Date();
 		if (submissionContainterElement.dueDate &amp;&amp; submissionContainterElement.dueDate &lt; now) {
 			throw new ValidationError(&#x27;not allowed to save anymore&#x27;);
 		}
-		submissionItem.completed &#x3D; completed;
-
-		await this.boardDoRepo.save(submissionItem, submissionContainterElement);
 	}
 }
 </code></pre>

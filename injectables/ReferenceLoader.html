@@ -566,17 +566,17 @@ import {
 import { AuthorizableReferenceType } from &#x27;../type&#x27;;
 
 type RepoType &#x3D;
-	| TaskRepo
-	| CourseRepo
-	| UserRepo
-	| LegacySchoolRepo
-	| TeamsRepo
-	| CourseGroupRepo
-	| SubmissionRepo
-	| SchoolExternalToolRepo
 	| BoardDoAuthorizableService
 	| ContextExternalToolAuthorizableService
-	| LessonService;
+	| CourseGroupRepo
+	| CourseRepo
+	| LegacySchoolRepo
+	| LessonService
+	| SchoolExternalToolRepo
+	| SubmissionRepo
+	| TaskRepo
+	| TeamsRepo
+	| UserRepo;
 
 interface RepoLoader {
 	repo: RepoType;
