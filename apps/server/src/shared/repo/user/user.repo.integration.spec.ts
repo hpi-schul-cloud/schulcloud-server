@@ -129,6 +129,43 @@ describe('user repo', () => {
 		});
 	});
 
+	describe('findByIdOrNull', () => {
+		describe('when user not found', () => {
+			const setup = () => {
+				const id = new ObjectId().toHexString();
+
+				return { id };
+			};
+
+			it('should return null', async () => {
+				const { id } = setup();
+
+				const result = await repo.findByIdOrNull(id);
+
+				expect(result).toBeNull();
+			});
+		});
+
+		describe('when user was found', () => {
+			const setup = async () => {
+				const user = userFactory.buildWithId();
+
+				await em.persistAndFlush([user]);
+				em.clear();
+
+				return { user };
+			};
+
+			it('should return user', async () => {
+				const { user } = await setup();
+
+				const result = await repo.findByIdOrNull(user.id, true);
+
+				expect(result?.id).toEqual(user.id);
+			});
+		});
+	});
+
 	describe('findByExternalIdorFail', () => {
 		let sys: SystemEntity;
 		let userA: User;
@@ -430,7 +467,7 @@ describe('user repo', () => {
 
 				const result = await repo.deleteUser(user.id);
 
-				expect(result).toBeNull();
+				expect(result).toEqual(0);
 			});
 		});
 		describe('when user exists', () => {
@@ -456,7 +493,7 @@ describe('user repo', () => {
 					school: user3.school,
 				};
 
-				const expectedResult = user1.id;
+				const expectedResult = 1;
 
 				return {
 					expectedResult,
