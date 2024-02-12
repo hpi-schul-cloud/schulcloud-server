@@ -3,6 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LdapConfigEntity, OauthConfigEntity, SystemEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { SystemTypeEnum } from '@shared/domain/types';
 import { cleanupCollections, systemEntityFactory } from '@shared/testing';
 import { System, SystemProps } from '../domain';
 import { SystemDomainMapper } from './system-domain.mapper';
@@ -117,6 +118,55 @@ describe(SystemRepo.name, () => {
 				const result = await repo.findById(new ObjectId().toHexString());
 
 				expect(result).toBeNull();
+			});
+		});
+	});
+
+	describe('findAllForLdapLogin', () => {
+		describe('when no system exists', () => {
+			it('should return empty array', async () => {
+				const result = await repo.findAllForLdapLogin();
+
+				expect(result).toEqual([]);
+			});
+		});
+
+		describe('when different systems exist', () => {
+			const setup = async () => {
+				const activeLdapSystem: SystemEntity = systemEntityFactory.buildWithId({
+					type: SystemTypeEnum.LDAP,
+					ldapConfig: { active: true },
+				});
+				const inActiveLdapSystem: SystemEntity = systemEntityFactory.buildWithId({
+					type: SystemTypeEnum.LDAP,
+					ldapConfig: { active: false },
+				});
+				const activeLdapSystemWithOauthConfig = systemEntityFactory.buildWithId({
+					type: SystemTypeEnum.LDAP,
+					ldapConfig: {
+						active: true,
+					},
+					oauthConfig: {},
+				});
+				const otherSystem = systemEntityFactory.buildWithId({ type: SystemTypeEnum.OAUTH });
+
+				await em.persistAndFlush([activeLdapSystem, inActiveLdapSystem, activeLdapSystemWithOauthConfig, otherSystem]);
+				em.clear();
+
+				const activeLdapSystemProps = SystemDomainMapper.mapEntityToDomainObjectProperties(activeLdapSystem);
+				const activeLdapSystemDo = new System(activeLdapSystemProps);
+
+				const expectedSystems = [activeLdapSystemDo];
+
+				return { expectedSystems };
+			};
+
+			it('should return only the systems eligible for LDAP login', async () => {
+				const { expectedSystems } = await setup();
+
+				const result = await repo.findAllForLdapLogin();
+
+				expect(result).toEqual(expectedSystems);
 			});
 		});
 	});
