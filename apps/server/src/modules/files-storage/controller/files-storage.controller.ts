@@ -60,6 +60,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Post('/upload-from-url/:schoolId/:parentType/:parentId')
+	@RequestTimeout(config().INCOMING_REQUEST_TIMEOUT)
 	async uploadFromUrl(
 		@Body() body: FileUrlParams,
 		@Param() params: FileRecordParams,
@@ -80,6 +81,7 @@ export class FilesStorageController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiConsumes('multipart/form-data')
 	@Post('/upload/:schoolId/:parentType/:parentId')
+	@RequestTimeout(config().INCOMING_REQUEST_TIMEOUT)
 	async upload(
 		@Body() _: FileParams,
 		@Param() params: FileRecordParams,

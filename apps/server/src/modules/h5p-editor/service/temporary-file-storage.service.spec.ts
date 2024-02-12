@@ -1,39 +1,43 @@
-import { ServiceOutputTypes } from '@aws-sdk/client-s3';
+import { HeadObjectCommandOutput } from '@aws-sdk/client-s3';
+import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { IUser } from '@lumieducation/h5p-server';
+import { S3ClientAdapter } from '@infra/s3-client';
+import { HttpException, InternalServerErrorException, NotAcceptableException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { File, S3ClientAdapter } from '@infra/s3-client';
 import { ReadStream } from 'fs';
 import { Readable } from 'node:stream';
-import { GetH5pFileResponse } from '../controller/dto';
-import { H5pEditorTempFile } from '../entity/h5p-editor-tempfile.entity';
+import { GetH5PFileResponse } from '../controller/dto';
 import { H5P_CONTENT_S3_CONNECTION } from '../h5p-editor.config';
-import { TemporaryFileRepo } from '../repo/temporary-file.repo';
 import { TemporaryFileStorage } from './temporary-file-storage.service';
 
-const today = new Date();
-const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+const helpers = {
+	createUser() {
+		return {
+			canCreateRestricted: false,
+			canInstallRecommended: false,
+			canUpdateAndInstallLibraries: false,
+			email: 'example@schul-cloud.org',
+			id: '12345',
+			name: 'Example User',
+			type: 'user',
+		};
+	},
+};
 
 describe('TemporaryFileStorage', () => {
 	let module: TestingModule;
 	let storage: TemporaryFileStorage;
 	let s3clientAdapter: DeepMocked<S3ClientAdapter>;
-	let repo: DeepMocked<TemporaryFileRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				TemporaryFileStorage,
-				{
-					provide: TemporaryFileRepo,
-					useValue: createMock<TemporaryFileRepo>(),
-				},
 				{ provide: H5P_CONTENT_S3_CONNECTION, useValue: createMock<S3ClientAdapter>() },
 			],
 		}).compile();
 		storage = module.get(TemporaryFileStorage);
 		s3clientAdapter = module.get(H5P_CONTENT_S3_CONNECTION);
-		repo = module.get(TemporaryFileRepo);
 	});
 
 	afterAll(async () => {
@@ -44,265 +48,383 @@ describe('TemporaryFileStorage', () => {
 		jest.resetAllMocks();
 	});
 
-	const fileContent = (userId: string, filename: string) => `Test content of ${userId}'s ${filename}`;
-
-	const setup = () => {
-		const user1: Required<IUser> = {
-			email: 'user1@example.org',
-			id: '12345-12345',
-			name: 'Marla Mathe',
-			type: 'local',
-			canCreateRestricted: false,
-			canInstallRecommended: false,
-			canUpdateAndInstallLibraries: false,
-		};
-		const filename1 = 'abc/def.txt';
-		const file1 = new H5pEditorTempFile({
-			filename: filename1,
-			ownedByUserId: user1.id,
-			expiresAt: tomorrow,
-			birthtime: new Date(),
-			size: fileContent(user1.id, filename1).length,
-		});
-
-		const user2: Required<IUser> = {
-			email: 'user2@example.org',
-			id: '54321-54321',
-			name: 'Mirjam Mathe',
-			type: 'local',
-			canCreateRestricted: false,
-			canInstallRecommended: false,
-			canUpdateAndInstallLibraries: false,
-		};
-		const filename2 = 'uvw/xyz.txt';
-		const file2 = new H5pEditorTempFile({
-			filename: filename2,
-			ownedByUserId: user2.id,
-			expiresAt: tomorrow,
-			birthtime: new Date(),
-			size: fileContent(user2.id, filename2).length,
-		});
-
-		return {
-			user1,
-			user2,
-			file1,
-			file2,
-		};
-	};
-
 	it('service should be defined', () => {
 		expect(storage).toBeDefined();
 	});
 
 	describe('deleteFile is called', () => {
+		const setup = () => {
+			const filename = 'file.txt';
+			const invalidFilename = '..test.txt';
+
+			const user = helpers.createUser();
+			const userID = user.id;
+
+			const deleteError = new Error('Could not delete');
+
+			return {
+				deleteError,
+				filename,
+				invalidFilename,
+				user,
+				userID,
+			};
+		};
+
 		describe('WHEN file exists', () => {
 			it('should delete file', async () => {
-				const { user1, file1 } = setup();
-				const res = [`h5p-tempfiles/${user1.id}/${file1.filename}`];
-				repo.findByUserAndFilename.mockResolvedValueOnce(file1);
+				const { userID, filename } = setup();
+				const res = [`h5p-tempfiles/${userID}/${filename}`];
 
-				await storage.deleteFile(file1.filename, user1.id);
+				await storage.deleteFile(filename, userID);
 
-				expect(repo.delete).toHaveBeenCalled();
 				expect(s3clientAdapter.delete).toHaveBeenCalledTimes(1);
 				expect(s3clientAdapter.delete).toHaveBeenCalledWith(res);
 			});
 		});
-		describe('WHEN file does not exist', () => {
+
+		describe('WHEN filename is invalid', () => {
 			it('should throw error', async () => {
-				const { user1, file1 } = setup();
-				repo.findByUserAndFilename.mockImplementation(() => {
-					throw new Error('Not found');
-				});
+				const { userID, invalidFilename } = setup();
 
-				await expect(async () => {
-					await storage.deleteFile(file1.filename, user1.id);
-				}).rejects.toThrow();
+				const deletePromise = storage.deleteFile(invalidFilename, userID);
 
-				expect(repo.delete).not.toHaveBeenCalled();
-				expect(s3clientAdapter.delete).not.toHaveBeenCalled();
+				await expect(deletePromise).rejects.toThrow();
+			});
+		});
+
+		describe('WHEN S3ClientAdapter throws an error', () => {
+			it('should throw along the error', async () => {
+				const { userID, filename, deleteError } = setup();
+				s3clientAdapter.delete.mockRejectedValueOnce(deleteError);
+
+				const deletePromise = storage.deleteFile(userID, filename);
+
+				await expect(deletePromise).rejects.toBe(deleteError);
 			});
 		});
 	});
 
 	describe('fileExists is called', () => {
+		const setup = () => {
+			const filename = 'file.txt';
+			const invalidFilename = '..test.txt';
+
+			const user = helpers.createUser();
+			const userID = user.id;
+
+			const deleteError = new Error('Could not delete');
+
+			return {
+				deleteError,
+				filename,
+				invalidFilename,
+				user,
+				userID,
+			};
+		};
+
 		describe('WHEN file exists', () => {
 			it('should return true', async () => {
-				const { user1, file1 } = setup();
-				repo.findByUserAndFilename.mockResolvedValueOnce(file1);
+				const { user, filename } = setup();
+				s3clientAdapter.head.mockResolvedValueOnce(createMock());
 
-				const result = await storage.fileExists(file1.filename, user1);
+				const exists = await storage.fileExists(filename, user);
 
-				expect(result).toBe(true);
+				expect(exists).toBe(true);
 			});
 		});
+
 		describe('WHEN file does not exist', () => {
 			it('should return false', async () => {
-				const { user1 } = setup();
-				repo.findAllByUserAndFilename.mockResolvedValue([]);
+				const { user, filename } = setup();
+				s3clientAdapter.get.mockRejectedValue(new NotFoundException('NoSuchKey'));
 
-				const exists = await storage.fileExists('abc/nonexistingfile.txt', user1);
+				const exists = await storage.fileExists(filename, user);
 
 				expect(exists).toBe(false);
 			});
 		});
-	});
 
-	describe('getFileStats is called', () => {
-		describe('WHEN file exists', () => {
-			it('should return file stats', async () => {
-				const { user1, file1 } = setup();
-				repo.findByUserAndFilename.mockResolvedValueOnce(file1);
+		describe('WHEN S3ClientAdapter.head throws error', () => {
+			it('should throw HttpException', async () => {
+				const { user, filename } = setup();
+				s3clientAdapter.get.mockRejectedValueOnce(new Error());
 
-				const filestats = await storage.getFileStats(file1.filename, user1);
+				const existsPromise = storage.fileExists(filename, user);
 
-				expect(filestats.size).toBe(file1.size);
-				expect(filestats.birthtime).toBe(file1.birthtime);
+				await expect(existsPromise).rejects.toThrow(HttpException);
 			});
 		});
-		describe('WHEN file does not exist', () => {
-			it('should throw error', async () => {
-				const { user1 } = setup();
-				repo.findByUserAndFilename.mockImplementation(() => {
-					throw new Error('Not found');
-				});
 
-				const fileStatsPromise = storage.getFileStats('abc/nonexistingfile.txt', user1);
-
-				await expect(fileStatsPromise).rejects.toThrow();
-			});
-		});
 		describe('WHEN filename is invalid', () => {
 			it('should throw error', async () => {
-				const { user1 } = setup();
-				const fileStatsPromise = storage.getFileStats('/../&$!.txt', user1);
-				await expect(fileStatsPromise).rejects.toThrow();
+				const { user, invalidFilename } = setup();
+
+				const existsPromise = storage.fileExists(invalidFilename, user);
+
+				await expect(existsPromise).rejects.toThrow();
+			});
+		});
+	});
+
+	describe('getFileStats', () => {
+		const setup = () => {
+			const filename = 'file.txt';
+
+			const user = helpers.createUser();
+			const userID = user.id;
+
+			const birthtime = new Date();
+			const size = 100;
+
+			const headResponse = createMock<HeadObjectCommandOutput>({
+				ContentLength: size,
+				LastModified: birthtime,
+			});
+
+			const headResponseWithoutContentLength = createMock<HeadObjectCommandOutput>({
+				ContentLength: undefined,
+				LastModified: birthtime,
+			});
+
+			const headResponseWithoutLastModified = createMock<HeadObjectCommandOutput>({
+				ContentLength: size,
+				LastModified: undefined,
+			});
+
+			const headError = new Error('Head');
+
+			return {
+				size,
+				birthtime,
+				userID,
+				filename,
+				user,
+				headResponse,
+				headResponseWithoutContentLength,
+				headResponseWithoutLastModified,
+				headError,
+			};
+		};
+
+		describe('WHEN file exists', () => {
+			it('should return file stats', async () => {
+				const { filename, user, headResponse, size, birthtime } = setup();
+				s3clientAdapter.head.mockResolvedValueOnce(headResponse);
+
+				const stats = await storage.getFileStats(filename, user);
+
+				expect(stats).toEqual(
+					expect.objectContaining({
+						birthtime,
+						size,
+					})
+				);
+			});
+		});
+
+		describe('WHEN response from S3 is missing ContentLength field', () => {
+			it('should throw InternalServerError', async () => {
+				const { filename, user, headResponseWithoutContentLength } = setup();
+				s3clientAdapter.head.mockResolvedValueOnce(headResponseWithoutContentLength);
+
+				const statsPromise = storage.getFileStats(filename, user);
+
+				await expect(statsPromise).rejects.toThrow(InternalServerErrorException);
+			});
+		});
+
+		describe('WHEN response from S3 is missing LastModified field', () => {
+			it('should throw InternalServerError', async () => {
+				const { filename, user, headResponseWithoutLastModified } = setup();
+				s3clientAdapter.head.mockResolvedValueOnce(headResponseWithoutLastModified);
+
+				const statsPromise = storage.getFileStats(filename, user);
+
+				await expect(statsPromise).rejects.toThrow(InternalServerErrorException);
+			});
+		});
+
+		describe('WHEN S3ClientAdapter.head throws error', () => {
+			it('should throw the error', async () => {
+				const { filename, user, headError } = setup();
+				s3clientAdapter.head.mockRejectedValueOnce(headError);
+
+				const statsPromise = storage.getFileStats(filename, user);
+
+				await expect(statsPromise).rejects.toBe(headError);
 			});
 		});
 	});
 
 	describe('getFileStream is called', () => {
-		describe('WHEN file exists and no range is given', () => {
-			it('should return readable file stream', async () => {
-				const { user1, file1 } = setup();
-				const actualContent = fileContent(user1.id, file1.filename);
-				const response: Required<GetH5pFileResponse> = {
-					data: Readable.from(actualContent),
-					etag: '',
-					contentType: '',
-					contentLength: 0,
-					contentRange: '',
-					name: '',
-				};
+		const setup = () => {
+			const filename = 'testfile.txt';
+			const fileStream = Readable.from('content');
+			const fileResponse = createMock<GetH5PFileResponse>({ data: fileStream });
+			const user = helpers.createUser();
+			const userID = user.id;
 
-				repo.findByUserAndFilename.mockResolvedValueOnce(file1);
-				s3clientAdapter.get.mockResolvedValueOnce(response);
+			const getError = new Error('Could not get file');
 
-				const stream = await storage.getFileStream(file1.filename, user1);
+			// [start, end, expected range]
+			const testRanges = [
+				[undefined, undefined, undefined],
+				[100, undefined, undefined],
+				[undefined, 100, undefined],
+				[100, 999, 'bytes=100-999'],
+			] as const;
 
-				let content = Buffer.alloc(0);
-				await new Promise((resolve, reject) => {
-					stream.on('data', (chunk) => {
-						content += chunk;
-					});
-					stream.on('error', reject);
-					stream.on('end', resolve);
-				});
+			return { filename, userID, fileStream, fileResponse, testRanges, user, getError };
+		};
 
-				expect(content).not.toBe(null);
-				expect(content.toString()).toEqual(actualContent);
+		describe('WHEN file exists', () => {
+			it('should S3ClientAdapter.get with range', async () => {
+				const { testRanges, filename, user, fileResponse } = setup();
+
+				for (const range of testRanges) {
+					s3clientAdapter.get.mockResolvedValueOnce(fileResponse);
+
+					// eslint-disable-next-line no-await-in-loop
+					await storage.getFileStream(filename, user, range[0], range[1]);
+
+					expect(s3clientAdapter.get).toHaveBeenCalledWith(expect.stringContaining(filename), range[2]);
+				}
+			});
+
+			it('should return stream from S3ClientAdapter', async () => {
+				const { fileStream, filename, user, fileResponse } = setup();
+				s3clientAdapter.get.mockResolvedValueOnce(fileResponse);
+
+				const stream = await storage.getFileStream(filename, user);
+
+				expect(stream).toBe(fileStream);
 			});
 		});
-		describe('WHEN file does not exist', () => {
-			it('should throw error', async () => {
-				const { user1 } = setup();
-				repo.findByUserAndFilename.mockImplementation(() => {
-					throw new Error('Not found');
-				});
 
-				const fileStreamPromise = storage.getFileStream('abc/nonexistingfile.txt', user1);
+		describe('WHEN S3ClientAdapter.get throws error', () => {
+			it('should throw the error', async () => {
+				const { filename, user, getError } = setup();
+				s3clientAdapter.get.mockRejectedValueOnce(getError);
 
-				await expect(fileStreamPromise).rejects.toThrow();
+				const streamPromise = storage.getFileStream(filename, user);
+
+				await expect(streamPromise).rejects.toBe(getError);
 			});
 		});
 	});
 
 	describe('listFiles is called', () => {
-		describe('WHEN existing user is given', () => {
-			it('should return only users file', async () => {
-				const { user1, file1 } = setup();
-				repo.findByUser.mockResolvedValueOnce([file1]);
+		const setup = () => {
+			const user = helpers.createUser();
 
-				const files = await storage.listFiles(user1);
+			return { user };
+		};
 
-				expect(files.length).toBe(1);
-				expect(files[0].ownedByUserId).toBe(user1.id);
-				expect(files[0].filename).toBe(file1.filename);
+		describe('WHEN user is given', () => {
+			it('should return empty array', async () => {
+				const { user } = setup();
+				const files = await storage.listFiles(user);
+
+				expect(files).toHaveLength(0);
 			});
 		});
-		describe('WHEN no user is given', () => {
-			it('should return all expired files)', async () => {
-				const { user1, user2, file1, file2 } = setup();
-				repo.findExpired.mockResolvedValueOnce([file1, file2]);
 
+		describe('WHEN no user is given', () => {
+			it('should return empty array', async () => {
 				const files = await storage.listFiles();
 
-				expect(files.length).toBe(2);
-				expect(files[0].ownedByUserId).toBe(user1.id);
-				expect(files[1].ownedByUserId).toBe(user2.id);
+				expect(files).toHaveLength(0);
 			});
 		});
 	});
+
 	describe('saveFile is called', () => {
-		describe('WHEN file exists', () => {
-			it('should overwrite file', async () => {
-				const { user1, file1 } = setup();
-				const newData = 'This is new fake H5P content.';
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-				const readStream = Readable.from(newData) as ReadStream;
-				repo.findByUserAndFilename.mockResolvedValueOnce(file1);
-				let savedData = Buffer.alloc(0);
-				s3clientAdapter.create.mockImplementation(async (path: string, file: File) => {
-					savedData += file.data.read();
-					return Promise.resolve({} as ServiceOutputTypes);
+		const setup = () => {
+			const filename = 'filename.txt';
+			const invalidFilename = '..test.txt';
+			const stream = Readable.from('content') as ReadStream;
+
+			const user = helpers.createUser();
+			const userID = user.id;
+
+			const fileDeleteError = new Error('Could not delete file');
+			const fileCreateError = new Error('Could not create file');
+
+			const recentDate = faker.date.recent();
+			const soonDate = faker.date.soon();
+
+			return {
+				filename,
+				invalidFilename,
+				stream,
+				user,
+				userID,
+				fileDeleteError,
+				fileCreateError,
+				recentDate,
+				soonDate,
+			};
+		};
+
+		describe('WHEN saving a valid files', () => {
+			it('should call s3client.create', async () => {
+				const { filename, stream, user, soonDate } = setup();
+
+				await storage.saveFile(filename, stream, user, soonDate);
+
+				expect(s3clientAdapter.create).toHaveBeenCalledWith(
+					expect.stringContaining(filename),
+					expect.objectContaining({
+						name: filename,
+						data: stream,
+						mimeType: 'application/octet-stream',
+					})
+				);
+			});
+
+			it('should return ITemporaryFile', async () => {
+				const { filename, stream, user, soonDate } = setup();
+
+				const result = await storage.saveFile(filename, stream, user, soonDate);
+
+				expect(result).toEqual({
+					expiresAt: soonDate,
+					filename,
+					ownedByUserId: user.id,
 				});
-
-				await storage.saveFile(file1.filename, readStream, user1, tomorrow);
-
-				expect(s3clientAdapter.delete).toHaveBeenCalled();
-				expect(savedData.toString()).toBe(newData);
 			});
 		});
 
-		describe('WHEN file does not exist', () => {
-			it('should create and overwrite new file', async () => {
-				const { user1 } = setup();
-				const filename = 'newfile.txt';
-				const newData = 'This is new fake H5P content.';
-				const readStream = Readable.from(newData) as ReadStream;
-				let savedData = Buffer.alloc(0);
-				s3clientAdapter.create.mockImplementation(async (path: string, file: File) => {
-					savedData += file.data.read();
-					return Promise.resolve({} as ServiceOutputTypes);
-				});
-
-				await storage.saveFile(filename, readStream, user1, tomorrow);
-
-				expect(s3clientAdapter.delete).toHaveBeenCalled();
-				expect(savedData.toString()).toBe(newData);
-			});
-		});
-
-		describe('WHEN expirationTime is in the past', () => {
+		describe('WHEN filename is invalid', () => {
 			it('should throw error', async () => {
-				const { user1, file1 } = setup();
-				const newData = 'This is new fake H5P content.';
-				const readStream = Readable.from(newData) as ReadStream;
+				const { user, invalidFilename } = setup();
 
-				const saveFile = storage.saveFile(file1.filename, readStream, user1, new Date(2023, 0, 1));
+				const existsPromise = storage.fileExists(invalidFilename, user);
 
-				await expect(saveFile).rejects.toThrow();
+				await expect(existsPromise).rejects.toThrow();
+			});
+		});
+
+		describe('WHEN expiration is in the past', () => {
+			it('should throw NotAcceptableAcception', async () => {
+				const { filename, stream, user, recentDate } = setup();
+
+				const savePromise = storage.saveFile(filename, stream, user, recentDate);
+
+				await expect(savePromise).rejects.toThrow(NotAcceptableException);
+			});
+		});
+
+		describe('WHEN S3ClientAdapter throws error', () => {
+			it('should throw the error', async () => {
+				const { filename, stream, fileCreateError, user, soonDate } = setup();
+				s3clientAdapter.create.mockRejectedValueOnce(fileCreateError);
+
+				const addFilePromise = storage.saveFile(filename, stream, user, soonDate);
+
+				await expect(addFilePromise).rejects.toBe(fileCreateError);
 			});
 		});
 	});

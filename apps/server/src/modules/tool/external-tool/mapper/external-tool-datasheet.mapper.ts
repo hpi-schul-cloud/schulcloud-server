@@ -1,18 +1,20 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { CustomParameter } from '../../common/domain';
+import { CustomParameterScope, CustomParameterType, ToolConfigType, ToolContextType } from '../../common/enum';
 import {
 	ExternalTool,
 	ExternalToolDatasheetTemplateData,
 	ExternalToolParameterDatasheetTemplateData,
 	ExternalToolParameterDatasheetTemplateProperty,
 } from '../domain';
-import { CustomParameterScope, CustomParameterType, ToolConfigType, ToolContextType } from '../../common/enum';
-import { CustomParameter } from '../../common/domain';
 
 export class ExternalToolDatasheetMapper {
 	public static mapToExternalToolDatasheetTemplateData(
 		externalTool: ExternalTool,
 		firstName: string,
-		lastname: string
+		lastname: string,
+		schoolExternalTool?: SchoolExternalTool
 	): ExternalToolDatasheetTemplateData {
 		const externalToolData: ExternalToolDatasheetTemplateData = new ExternalToolDatasheetTemplateData({
 			createdAt: new Date().toLocaleDateString('de-DE'),
@@ -20,7 +22,7 @@ export class ExternalToolDatasheetMapper {
 			instance: ExternalToolDatasheetMapper.mapToInstanceName(),
 			toolName: externalTool.name,
 			toolUrl: externalTool.config.baseUrl,
-			isDeactivated: externalTool.isDeactivated ? 'Das Tool ist deaktiviert' : undefined,
+			isDeactivated: ExternalToolDatasheetMapper.mapToIsDeactivated(externalTool, schoolExternalTool),
 			restrictToContexts: externalTool.restrictToContexts
 				? ExternalToolDatasheetMapper.mapToLimitedContexts(externalTool)
 				: undefined,
@@ -57,6 +59,21 @@ export class ExternalToolDatasheetMapper {
 			default:
 				return 'unbekannt';
 		}
+	}
+
+	private static mapToIsDeactivated(
+		externalTool: ExternalTool,
+		schoolExternalTool?: SchoolExternalTool
+	): string | undefined {
+		if (externalTool.isDeactivated) {
+			return 'Das Tool ist instanzweit deaktiviert';
+		}
+
+		if (schoolExternalTool?.status?.isDeactivated) {
+			return 'Das Tool ist deaktiviert';
+		}
+
+		return undefined;
 	}
 
 	private static mapToLimitedContexts(externalTool: ExternalTool): string {

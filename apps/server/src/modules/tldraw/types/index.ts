@@ -1,3 +1,4 @@
+export * from './tldraw-types';
 export * from './connection-enum';
 export * from './y-transaction-type';
 export * from './ws-close-enum';

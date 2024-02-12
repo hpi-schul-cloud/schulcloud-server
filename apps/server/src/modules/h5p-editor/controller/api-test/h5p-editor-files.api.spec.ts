@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { S3ClientAdapter } from '@infra/s3-client';
-import { ILibraryName } from '@lumieducation/h5p-server';
+import { IFileStats, ILibraryName } from '@lumieducation/h5p-server';
 import { ContentMetadata } from '@lumieducation/h5p-server/build/src/ContentMetadata';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -14,7 +14,7 @@ import {
 } from '@shared/testing';
 import { ObjectID } from 'bson';
 import { Readable } from 'stream';
-import { H5PContent, H5PContentParentType, H5PContentProperties, H5pEditorTempFile } from '../../entity';
+import { H5PContent, H5PContentParentType, H5PContentProperties } from '../../entity';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
 import { H5P_CONTENT_S3_CONNECTION, H5P_LIBRARIES_S3_CONNECTION } from '../../h5p-editor.config';
 import { ContentStorage, LibraryStorage, TemporaryFileStorage } from '../../service';
@@ -270,34 +270,31 @@ describe('H5PEditor Controller (api)', () => {
 					content: 'File Content',
 				};
 
-				const mockTempFile = new H5pEditorTempFile({
-					filename: mockFile.name,
-					ownedByUserId: studentUser.id,
-					expiresAt: new Date(),
+				const mockFileStats: IFileStats = {
 					birthtime: new Date(),
 					size: mockFile.content.length,
-				});
+				};
 
-				return { loggedInClient, mockFile, mockTempFile };
+				return { loggedInClient, mockFile, mockFileStats };
 			};
 
 			it('should return the content file', async () => {
-				const { loggedInClient, mockFile, mockTempFile } = await setup();
+				const { loggedInClient, mockFile, mockFileStats } = await setup();
 
 				temporaryStorage.getFileStream.mockResolvedValueOnce(Readable.from(mockFile.content));
-				temporaryStorage.getFileStats.mockResolvedValueOnce(mockTempFile);
+				temporaryStorage.getFileStats.mockResolvedValueOnce(mockFileStats);
 
 				const response = await loggedInClient.get(`temp-files/${mockFile.name}`);
 
-				expect(response.statusCode).toEqual(HttpStatus.PARTIAL_CONTENT);
+				expect(response.statusCode).toEqual(HttpStatus.OK);
 				expect(response.text).toBe(mockFile.content);
 			});
 
 			it('should work with range requests', async () => {
-				const { loggedInClient, mockFile, mockTempFile } = await setup();
+				const { loggedInClient, mockFile, mockFileStats } = await setup();
 
 				temporaryStorage.getFileStream.mockResolvedValueOnce(Readable.from(mockFile.content));
-				temporaryStorage.getFileStats.mockResolvedValueOnce(mockTempFile);
+				temporaryStorage.getFileStats.mockResolvedValueOnce(mockFileStats);
 
 				const response = await loggedInClient.get(`temp-files/${mockFile.name}`).set('Range', 'bytes=2-4');
 

@@ -8,6 +8,7 @@ import { applyUpdate, encodeStateAsUpdate } from 'yjs';
 import { Buffer } from 'node:buffer';
 import { Redis } from 'ioredis';
 import { Logger } from '@src/core/logger';
+import { YMap } from 'yjs/dist/src/types/YMap';
 import { TldrawRedisFactory } from '../redis';
 import {
 	CloseConnectionLoggable,
@@ -17,10 +18,18 @@ import {
 	WsSharedDocErrorLoggable,
 } from '../loggable';
 import { TldrawConfig } from '../config';
-import { AwarenessConnectionsUpdate, RedisConnectionTypeEnum, WSConnectionState, WSMessageType } from '../types';
+import {
+	AwarenessConnectionsUpdate,
+	RedisConnectionTypeEnum,
+	TldrawAsset,
+	TldrawShape,
+	WSConnectionState,
+	WSMessageType,
+} from '../types';
 import { WsSharedDocDo } from '../domain';
 import { TldrawBoardRepo } from '../repo';
 import { MetricsService } from '../metrics';
+import { TldrawFilesStorageAdapterService } from './tldraw-files-storage.service';
 
 @Injectable()
 export class TldrawWsService {
@@ -39,7 +48,8 @@ export class TldrawWsService {
 		private readonly tldrawBoardRepo: TldrawBoardRepo,
 		private readonly logger: Logger,
 		private readonly metricsService: MetricsService,
-		private readonly tldrawRedisFactory: TldrawRedisFactory
+		private readonly tldrawRedisFactory: TldrawRedisFactory,
+		private readonly filesStorageTldrawAdapterService: TldrawFilesStorageAdapterService
 	) {
 		this.logger.setContext(TldrawWsService.name);
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
@@ -49,10 +59,6 @@ export class TldrawWsService {
 		this.pub = this.tldrawRedisFactory.build(RedisConnectionTypeEnum.PUBLISH);
 	}
 
-	/**
-	 * @param {WsSharedDocDo} doc
-	 * @param {WebSocket} ws
-	 */
 	public async closeConn(doc: WsSharedDocDo, ws: WebSocket): Promise<void> {
 		if (doc.connections.has(ws)) {
 			const controlledIds = doc.connections.get(ws) as Set<number>;
@@ -65,11 +71,6 @@ export class TldrawWsService {
 		ws.close();
 	}
 
-	/**
-	 * @param {WsSharedDocDo} doc
-	 * @param {WebSocket} conn
-	 * @param {Uint8Array} message
-	 */
 	public send(doc: WsSharedDocDo, conn: WebSocket, message: Uint8Array): void {
 		if (conn.readyState !== WSConnectionState.CONNECTING && conn.readyState !== WSConnectionState.OPEN) {
 			this.closeConn(doc, conn).catch((err) => {
@@ -86,11 +87,6 @@ export class TldrawWsService {
 		});
 	}
 
-	/**
-	 * @param {Uint8Array} update
-	 * @param {any} origin
-	 * @param {WsSharedDocDo} doc
-	 */
 	public updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): void {
 		const isOriginWSConn = doc.connections.has(origin as WebSocket);
 		if (isOriginWSConn) {
@@ -100,19 +96,10 @@ export class TldrawWsService {
 		this.propagateUpdate(update, doc);
 	}
 
-	/**
-	 * @param {string} docName
-	 * @param {Uint8Array} update
-	 */
 	public async databaseUpdateHandler(docName: string, update: Uint8Array) {
 		await this.tldrawBoardRepo.storeUpdate(docName, update);
 	}
 
-	/**
-	 * @param {AwarenessConnectionsUpdate} connectionsUpdate
-	 * @param {WebSocket | null} wsConnection Origin is the connection that made the change
-	 * @param {WsSharedDocDo} doc
-	 */
 	public awarenessUpdateHandler = (
 		connectionsUpdate: AwarenessConnectionsUpdate,
 		wsConnection: WebSocket | null,
@@ -123,11 +110,6 @@ export class TldrawWsService {
 		this.sendAwarenessMessage(buff, doc);
 	};
 
-	/**
-	 * Gets a Y.Doc by name, whether in memory or on disk
-	 *
-	 * @param {string} docName - the name of the Y.Doc to find or create
-	 */
 	public async getYDoc(docName: string) {
 		const wsSharedDocDo = await map.setIfUndefined(this.docs, docName, async () => {
 			const doc = new WsSharedDocDo(docName, this.gcEnabled);
@@ -181,11 +163,6 @@ export class TldrawWsService {
 		}
 	}
 
-	/**
-	 * @param {{ Buffer }} channel redis channel
-	 * @param {{ Buffer }} update update message
-	 * @param {{ WsSharedDocDo }} doc ydoc
-	 */
 	public redisMessageHandler = (channel: Buffer, update: Buffer, doc: WsSharedDocDo): void => {
 		const channelId = channel.toString();
 
@@ -198,10 +175,6 @@ export class TldrawWsService {
 		}
 	};
 
-	/**
-	 * @param {WebSocket} ws
-	 * @param {string} docName
-	 */
 	public async setupWSConnection(ws: WebSocket, docName: string) {
 		ws.binaryType = 'arraybuffer';
 
@@ -268,8 +241,10 @@ export class TldrawWsService {
 
 	private async storeStateAndDestroyYDocIfPersisted(doc: WsSharedDocDo) {
 		if (doc.connections.size === 0) {
-			// if persisted, we store state and destroy ydocument
+			// if persisted, we store state and destroy yDoc
 			try {
+				const usedAssets = this.syncDocumentAssetsWithShapes(doc);
+				await this.filesStorageTldrawAdapterService.deleteUnusedFilesForDocument(doc.name, usedAssets);
 				await this.tldrawBoardRepo.flushDocument(doc.name);
 				this.unsubscribeFromRedisChannels(doc);
 				doc.destroy();
@@ -283,6 +258,34 @@ export class TldrawWsService {
 		}
 	}
 
+	private syncDocumentAssetsWithShapes(doc: WsSharedDocDo): TldrawAsset[] {
+		// clean up assets that are not used as shapes anymore
+		// which can happen when users do undo/redo operations on assets
+		const assets: YMap<TldrawAsset> = doc.getMap('assets');
+		const shapes: YMap<TldrawShape> = doc.getMap('shapes');
+		const usedShapesAsAssets: TldrawShape[] = [];
+		const usedAssets: TldrawAsset[] = [];
+
+		shapes.forEach((shape) => {
+			if (shape.assetId) {
+				usedShapesAsAssets.push(shape);
+			}
+		});
+
+		doc.transact(() => {
+			assets.forEach((asset) => {
+				const foundAsset = usedShapesAsAssets.find((shape) => shape.assetId === asset.id);
+				if (!foundAsset) {
+					assets.delete(asset.id);
+				} else {
+					usedAssets.push(asset);
+				}
+			});
+		});
+
+		return usedAssets;
+	}
+
 	private propagateUpdate(update: Uint8Array, doc: WsSharedDocDo): void {
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, WSMessageType.SYNC);
@@ -294,10 +297,6 @@ export class TldrawWsService {
 		});
 	}
 
-	/**
-	 * @param changedClients array of changed clients
-	 * @param {WsSharedDocDo} doc
-	 */
 	private prepareAwarenessMessage(changedClients: number[], doc: WsSharedDocDo): Uint8Array {
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, WSMessageType.AWARENESS);
@@ -306,21 +305,12 @@ export class TldrawWsService {
 		return message;
 	}
 
-	/**
-	 * @param {{ Uint8Array }} buff encoded message about changes
-	 * @param {WsSharedDocDo} doc
-	 */
 	private sendAwarenessMessage(buff: Uint8Array, doc: WsSharedDocDo): void {
 		doc.connections.forEach((_, c) => {
 			this.send(doc, c, buff);
 		});
 	}
 
-	/**
-	 * @param connectionsUpdate
-	 * @param {WebSocket | null} wsConnection Origin is the connection that made the change
-	 * @param {WsSharedDocDo} doc
-	 */
 	private manageClientsConnections(
 		connectionsUpdate: AwarenessConnectionsUpdate,
 		wsConnection: WebSocket | null,
