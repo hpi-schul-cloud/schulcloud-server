@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, IsMongoId, IsOptional, IsString } from 'class-validator';
+import { IsArray, IsOptional, IsString } from 'class-validator';
 
 export class LibrariesBodyParams {
 	@ApiProperty()
@@ -10,7 +10,6 @@ export class LibrariesBodyParams {
 
 export class ContentBodyParams {
 	@ApiProperty()
-	@IsMongoId()
 	contentId!: string;
 
 	@ApiProperty()
