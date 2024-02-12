@@ -7,7 +7,6 @@ import type { CourseGroup } from './coursegroup.entity';
 import { SchoolEntity } from './school.entity';
 import type { Task } from './task.entity';
 import type { User } from './user.entity';
-import { UndefinedAttributeTypeError } from 'ldapjs';
 
 export interface SubmissionProperties {
 	school: SchoolEntity;
