@@ -3,7 +3,7 @@ import {
 	isSubmissionItemContent,
 	RichTextElement,
 	SubmissionItem,
-	UserBoardRoles,
+	UserWithBoardRoles,
 } from '@shared/domain/domainobject';
 import { SubmissionItemResponse, SubmissionsResponse, TimestampsResponse, UserDataResponse } from '../dto';
 import { ContentElementResponseFactory } from './content-element-response.factory';
@@ -19,7 +19,7 @@ export class SubmissionItemResponseMapper {
 		return SubmissionItemResponseMapper.instance;
 	}
 
-	public mapToResponse(submissionItems: SubmissionItem[], users: UserBoardRoles[]): SubmissionsResponse {
+	public mapToResponse(submissionItems: SubmissionItem[], users: UserWithBoardRoles[]): SubmissionsResponse {
 		const submissionItemsResponse: SubmissionItemResponse[] = submissionItems.map((item) =>
 			this.mapSubmissionItemToResponse(item)
 		);
@@ -46,7 +46,7 @@ export class SubmissionItemResponseMapper {
 		return result;
 	}
 
-	private mapUsersToResponse(user: UserBoardRoles) {
+	private mapUsersToResponse(user: UserWithBoardRoles) {
 		const result = new UserDataResponse({
 			userId: user.userId,
 			firstName: user.firstName || '',
