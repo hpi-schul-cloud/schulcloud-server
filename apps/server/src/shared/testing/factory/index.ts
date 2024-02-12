@@ -16,7 +16,6 @@ export * from './federal-state.factory';
 export * from './filerecord.factory';
 export * from './group-entity.factory';
 export * from './h5p-content.factory';
-export * from './h5p-temporary-file.factory';
 export * from './import-user.factory';
 export * from './lesson.factory';
 export * from './material.factory';
