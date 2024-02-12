@@ -4013,6 +4013,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/DeleteFilesConsole.html" data-type="entity-link" >DeleteFilesConsole</a>
                             </li>
                             <li class="link">
+                                <a href="classes/DeletionErrorLoggableException.html" data-type="entity-link" >DeletionErrorLoggableException</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/DeletionExecutionConsole.html" data-type="entity-link" >DeletionExecutionConsole</a>
                             </li>
                             <li class="link">
