@@ -541,7 +541,7 @@ describe('user repo', () => {
 				};
 			};
 
-			it.only('should return the user', async () => {
+			it('should return the user', async () => {
 				const { user } = await setup();
 
 				const result = await repo.findUserBySchoolAndName(user.school.id, user.firstName, user.lastName);
