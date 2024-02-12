@@ -1139,11 +1139,6 @@
 			"type": "string",
 			"description": "link to a page that gathers feedback about the column board feature"
 		},
-		"FEATURE_COURSE_SHARE": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for course sharing feature."
-		},
 		"FEATURE_COURSE_SHARE_NEW": {
 			"type": "boolean",
 			"default": false,
