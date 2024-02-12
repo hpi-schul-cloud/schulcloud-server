@@ -6,9 +6,7 @@ import {
 	BoardExternalReferenceType,
 	BoardRoles,
 	ColumnBoard,
-	isDrawingElement,
-	UserBoardRoles,
-	UserRoleEnum,
+	UserWithBoardRoles,
 } from '@shared/domain/domainobject';
 import { Course } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
@@ -24,33 +22,27 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 
 	async findById(id: EntityId): Promise<BoardDoAuthorizable> {
 		const boardDo = await this.boardDoRepo.findById(id, 1);
-		const { users } = await this.getBoardAuthorizable(boardDo);
-		const boardDoAuthorizable = new BoardDoAuthorizable({ users, id });
+		const boardDoAuthorizable = await this.getBoardAuthorizable(boardDo);
 
 		return boardDoAuthorizable;
 	}
 
 	async getBoardAuthorizable(boardDo: AnyBoardDo): Promise<BoardDoAuthorizable> {
-		const ancestorIds = await this.boardDoRepo.getAncestorIds(boardDo);
-		const ids = [...ancestorIds, boardDo.id];
-		const rootId = ids[0];
-		const rootBoardDo = await this.boardDoRepo.findById(rootId, 1);
-		const isDrawing = isDrawingElement(boardDo);
+		const rootBoardDo = await this.getRootBoardDo(boardDo);
+		const parentDo = await this.getParentDo(boardDo);
+		let users: UserWithBoardRoles[] = [];
 
-		if (rootBoardDo instanceof ColumnBoard) {
-			if (rootBoardDo.context?.type === BoardExternalReferenceType.Course) {
-				const course = await this.courseRepo.findById(rootBoardDo.context.id);
-				const users = this.mapCourseUsersToUsergroup(course, isDrawing);
-				return new BoardDoAuthorizable({ users, id: boardDo.id });
-			}
-		} else {
-			throw new Error('root boardnode was expected to be a ColumnBoard');
+		if (rootBoardDo.context?.type === BoardExternalReferenceType.Course) {
+			const course = await this.courseRepo.findById(rootBoardDo.context.id);
+			users = this.mapCourseUsersToUserBoardRoles(course);
 		}
 
-		return new BoardDoAuthorizable({ users: [], id: boardDo.id });
+		const boardDoAuthorizable = new BoardDoAuthorizable({ users, id: boardDo.id, boardDo, parentDo });
+
+		return boardDoAuthorizable;
 	}
 
-	private mapCourseUsersToUsergroup(course: Course, isDrawing: boolean): UserBoardRoles[] {
+	private mapCourseUsersToUserBoardRoles(course: Course): UserWithBoardRoles[] {
 		const users = [
 			...course.getTeachersList().map((user) => {
 				return {
@@ -58,7 +50,6 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 					firstName: user.firstName,
 					lastName: user.lastName,
 					roles: [BoardRoles.EDITOR],
-					userRoleEnum: UserRoleEnum.TEACHER,
 				};
 			}),
 			...course.getSubstitutionTeachersList().map((user) => {
@@ -67,7 +58,6 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 					firstName: user.firstName,
 					lastName: user.lastName,
 					roles: [BoardRoles.EDITOR],
-					userRoleEnum: UserRoleEnum.SUBSTITUTION_TEACHER,
 				};
 			}),
 			...course.getStudentsList().map((user) => {
@@ -75,14 +65,29 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 					userId: user.id,
 					firstName: user.firstName,
 					lastName: user.lastName,
-					// TODO: fix this temporary hack allowing students to upload files to the DrawingElement
-					// linked with getElementWithWritePermission method in element.uc.ts
-					// this is needed to allow students to upload/delete files to/from the tldraw whiteboard (DrawingElement)
-					roles: isDrawing ? [BoardRoles.EDITOR] : [BoardRoles.READER],
-					userRoleEnum: UserRoleEnum.STUDENT,
+					roles: [BoardRoles.READER],
 				};
 			}),
 		];
+		// TODO check unique
 		return users;
+	}
+
+	private async getParentDo(boardDo: AnyBoardDo): Promise<Promise<AnyBoardDo> | undefined> {
+		const parentDo = await this.boardDoRepo.findParentOfId(boardDo.id);
+		return parentDo;
+	}
+
+	private async getRootBoardDo(boardDo: AnyBoardDo): Promise<ColumnBoard> {
+		const ancestorIds = await this.boardDoRepo.getAncestorIds(boardDo);
+		const ids = [...ancestorIds, boardDo.id];
+		const rootId = ids[0];
+		const rootBoardDo = await this.boardDoRepo.findById(rootId, 1);
+
+		if (!(rootBoardDo instanceof ColumnBoard)) {
+			throw new Error('root boardnode was expected to be a ColumnBoard');
+		}
+
+		return rootBoardDo;
 	}
 }

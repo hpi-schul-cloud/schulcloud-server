@@ -2,6 +2,7 @@ import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication
 import {
 	Body,
 	Controller,
+	Delete,
 	ForbiddenException,
 	Get,
 	HttpCode,
@@ -72,6 +73,17 @@ export class BoardSubmissionController {
 			urlParams.submissionItemId,
 			bodyParams.completed
 		);
+	}
+
+	@ApiOperation({ summary: 'Delete a single submission item.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Delete(':submissionItemId')
+	async deleteSubmissionItem(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: SubmissionItemUrlParams) {
+		await this.submissionItemUc.deleteSubmissionItem(currentUser.userId, urlParams.submissionItemId);
 	}
 
 	@ApiOperation({ summary: 'Create a new element in a submission item.' })
