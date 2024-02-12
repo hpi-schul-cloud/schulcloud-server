@@ -89,7 +89,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property({ type: 'object', nullable: true })
 	preferences?: Record<string, unknown>;
 
-	@Property({ nullable: true })
+	@Property({ type: 'date', nullable: true })
 	@Index()
 	deletedAt?: Date;
 
