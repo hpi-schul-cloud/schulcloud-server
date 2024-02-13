@@ -14,7 +14,6 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { AntivirusModule } from '@src/infra/antivirus';
 import { ToolConfigModule } from '../tool/tool-config.module';
 import {
 	BoardCopyService,
@@ -39,7 +38,6 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		LoggerModule,
 		ContextExternalToolModule,
 		ToolConfigModule,
-		AntivirusModule,
 	],
 	providers: [
 		{

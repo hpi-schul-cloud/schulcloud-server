@@ -8,13 +8,13 @@ import { Permission } from '@shared/domain/interface';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
 import { LearnroomConfig } from '../learnroom.config';
-import { CommonCartridgeImportService, CourseService } from '../service';
+import { CommonCartridgeImportService, CourseService, LearnroomConfigService } from '../service';
 import { CourseImportUc } from './course-import.uc';
 
 describe('CourseImportUc', () => {
-	let orm: MikroORM;
-	let moduleRef: TestingModule;
+	let module: TestingModule;
 	let sut: CourseImportUc;
+	let orm: MikroORM;
 	let configServiceMock: DeepMocked<ConfigService<LearnroomConfig, true>>;
 	let authorizationServiceMock: DeepMocked<AuthorizationService>;
 	let courseServiceMock: DeepMocked<CourseService>;
@@ -22,9 +22,10 @@ describe('CourseImportUc', () => {
 
 	beforeAll(async () => {
 		orm = await setupEntities();
-		moduleRef = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [
 				CourseImportUc,
+				LearnroomConfigService,
 				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
@@ -44,15 +45,15 @@ describe('CourseImportUc', () => {
 			],
 		}).compile();
 
-		sut = moduleRef.get(CourseImportUc);
-		configServiceMock = moduleRef.get(ConfigService);
-		authorizationServiceMock = moduleRef.get(AuthorizationService);
-		courseServiceMock = moduleRef.get(CourseService);
-		courseImportServiceMock = moduleRef.get(CommonCartridgeImportService);
+		sut = module.get(CourseImportUc);
+		configServiceMock = module.get(ConfigService);
+		authorizationServiceMock = module.get(AuthorizationService);
+		courseServiceMock = module.get(CourseService);
+		courseImportServiceMock = module.get(CommonCartridgeImportService);
 	});
 
 	afterAll(async () => {
-		await moduleRef.close();
+		await module.close();
 		await orm.close();
 	});
 

@@ -46,10 +46,10 @@ describe('LearnroomConfigService', () => {
 		describe('when the value is not set', () => {
 			const setup = () => setupConfig({});
 
-			it('should return 1GB by default', () => {
+			it('should return 100MB by default', () => {
 				const { sut } = setup();
 
-				expect(sut.commonCartridgeImportMaxFileSize).toBe(1000 * 1000 * 1000);
+				expect(sut.commonCartridgeImportMaxFileSize).toBe(1000 * 1000 * 100);
 			});
 		});
 	});
