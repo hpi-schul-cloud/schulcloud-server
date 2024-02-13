@@ -25,6 +25,21 @@ export class UserRepo extends BaseRepo<User> {
 		return user;
 	}
 
+	async findByIdOrNull(id: EntityId, populate = false): Promise<User | null> {
+		const user: User | null = await this._em.findOne(User, { id });
+
+		if (!user) {
+			return null;
+		}
+
+		if (populate) {
+			await this._em.populate(user, ['roles', 'school.systems', 'school.currentYear']);
+			await this.populateRoles(user.roles.getItems());
+		}
+
+		return user;
+	}
+
 	async findByExternalIdOrFail(externalId: string, systemId: string): Promise<User> {
 		const [users] = await this._em.findAndCount(User, { externalId }, { populate: ['school.systems'] });
 		const resultUser = users.find((user) => {
@@ -161,15 +176,12 @@ export class UserRepo extends BaseRepo<User> {
 		return promise;
 	}
 
-	async deleteUser(userId: EntityId): Promise<EntityId | null> {
-		const user = await this._em.findOne(User, { id: userId });
-		if (user === null) {
-			return null;
-		}
+	async deleteUser(userId: EntityId): Promise<number> {
+		const deletedUserNumber = await this._em.nativeDelete(User, {
+			id: userId,
+		});
 
-		await this._em.removeAndFlush(user);
-
-		return user.id;
+		return deletedUserNumber;
 	}
 
 	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
