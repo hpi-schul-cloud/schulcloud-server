@@ -150,12 +150,16 @@ export class Submission extends BaseEntityWithTimestamps {
 	public isGroupSubmission(): boolean {
 		return (
 			(this.courseGroup !== null && this.courseGroup !== undefined) ||
-			((this.courseGroup === null || this.courseGroup === undefined) && this.teamMembers.length > 1)
+			(this.isNotHavingCourseGroup() && this.teamMembers.length > 1)
 		);
 	}
 
 	public isSingleSubmissionOwnedByUser(): boolean {
-		return (this.courseGroup === null || this.courseGroup === undefined) && this.teamMembers.length === 1;
+		return this.isNotHavingCourseGroup() && this.teamMembers.length === 1;
+	}
+
+	private isNotHavingCourseGroup(): boolean {
+		return this.courseGroup === null || this.courseGroup === undefined;
 	}
 
 	public removeStudentById(userId: EntityId): void {

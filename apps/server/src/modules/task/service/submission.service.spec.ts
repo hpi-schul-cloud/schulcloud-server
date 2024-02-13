@@ -218,7 +218,7 @@ describe('Submission Service', () => {
 		});
 	});
 
-	describe('deleteSubmissionsByUserId', () => {
+	describe('deleteSingleSubmissionsOwnedByUser', () => {
 		describe('when submission with specified userId was not found ', () => {
 			const setup = () => {
 				const submission = submissionFactory.buildWithId();
@@ -263,7 +263,7 @@ describe('Submission Service', () => {
 		});
 	});
 
-	describe('updateSubmissionByUserId', () => {
+	describe('removeUserReferencesFromSubmissions', () => {
 		describe('when submission with specified userId was not found ', () => {
 			const setup = () => {
 				const user1 = userFactory.buildWithId();
