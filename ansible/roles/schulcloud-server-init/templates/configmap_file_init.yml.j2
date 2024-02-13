@@ -8,9 +8,6 @@ metadata:
 data:
   update.sh: |
     #! /bin/bash
-    {% if KEDA_NAMESPACE_ACTIVATOR_ENABLED is defined %}
-    curl -XPUT -H 'Content-Type: application/json'  -L 'http://ns-activator-svc.sc-common.svc.cluster.local:8080/namespace' -d '{"name" : "{{ NAMESPACE }}"}'
-    {% endif %}
     # necessary for secret handling and legacy indexes
     git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
     cd /schulcloud-server
