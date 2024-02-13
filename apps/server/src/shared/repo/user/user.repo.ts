@@ -159,7 +159,7 @@ export class UserRepo extends BaseRepo<User> {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		const users = userDocuments.map((userDocument) => {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			const { createdAt, updatedAt, preferences, ...newUserDocument } = userDocument;
+			const { createdAt, updatedAt, ...newUserDocument } = userDocument;
 
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 			return this._em.map(User, newUserDocument);
