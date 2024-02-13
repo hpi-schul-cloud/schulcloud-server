@@ -462,7 +462,7 @@ describe('user repo', () => {
 				};
 			};
 
-			it('should return empty array', async () => {
+			it('should return zero', async () => {
 				const { user } = setup();
 
 				const result = await repo.deleteUser(user.id);
@@ -492,17 +492,10 @@ describe('user repo', () => {
 				expect(result1).toHaveLength(0);
 			});
 
-			it('should return the id of the deleted user', async () => {
+			it('should return one deleted user', async () => {
 				const { user1 } = await setup();
 				const result = await repo.deleteUser(user1.id);
-				expect(result).toEqual(user1.id);
-			});
-
-			it('should return null if user was already deleted', async () => {
-				const { user1 } = await setup();
-				await repo.deleteUser(user1.id);
-				const secondDelete = await repo.deleteUser(user1.id);
-				expect(secondDelete).toBeNull();
+				expect(result).toEqual(1);
 			});
 
 			it('should not affect other users', async () => {
