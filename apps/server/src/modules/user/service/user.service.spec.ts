@@ -16,6 +16,7 @@ import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/
 import { Logger } from '@src/core/logger';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { NotFoundException } from '@nestjs/common';
+import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
 import { UserService } from './user.service';
@@ -430,10 +431,11 @@ describe('UserService', () => {
 	describe('deleteUser', () => {
 		describe('when user is missing', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.build({ id: undefined });
-				const userId: EntityId = user.id as EntityId;
+				const user: User = userFactory.buildWithId();
+				const userId: EntityId = user.id;
 
-				userRepo.deleteUser.mockResolvedValue(null);
+				userRepo.findByIdOrNull.mockResolvedValueOnce(null);
+				userRepo.deleteUser.mockResolvedValue(0);
 
 				const expectedResult = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 0, []);
 
@@ -443,44 +445,92 @@ describe('UserService', () => {
 				};
 			};
 
-			it('should return null', async () => {
+			it('should call userRepo.findByIdOrNull with userId', async () => {
+				const { userId } = setup();
+
+				await service.deleteUser(userId);
+
+				expect(userRepo.findByIdOrNull).toHaveBeenCalledWith(userId, true);
+			});
+
+			it('should return domainOperation object with information about deleted user', async () => {
 				const { expectedResult, userId } = setup();
 
 				const result = await service.deleteUser(userId);
 
 				expect(result).toEqual(expectedResult);
 			});
+
+			it('should Not call userRepo.deleteUser with userId', async () => {
+				const { userId } = setup();
+
+				await service.deleteUser(userId);
+
+				expect(userRepo.deleteUser).not.toHaveBeenCalled();
+			});
 		});
 
 		describe('when user exists', () => {
 			const setup = () => {
-				const user1: User = userFactory.asStudent().buildWithId();
+				const user = userFactory.buildWithId();
 
-				const expectedResult = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 1, [user1.id]);
+				const expectedResult = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 1, [user.id]);
 
-				userRepo.findById.mockResolvedValue(user1);
-				userRepo.deleteUser.mockResolvedValue(user1.id);
+				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
+				userRepo.deleteUser.mockResolvedValue(1);
 
 				return {
 					expectedResult,
-					user1,
+					user,
 				};
 			};
 
+			it('should call userRepo.findByIdOrNull with userId', async () => {
+				const { user } = setup();
+
+				await service.deleteUser(user.id);
+
+				expect(userRepo.findByIdOrNull).toHaveBeenCalledWith(user.id, true);
+			});
+
 			it('should call userRepo.deleteUser with userId', async () => {
-				const { user1 } = setup();
+				const { user } = setup();
 
-				await service.deleteUser(user1.id);
+				await service.deleteUser(user.id);
 
-				expect(userRepo.deleteUser).toHaveBeenCalledWith(user1.id);
+				expect(userRepo.deleteUser).toHaveBeenCalledWith(user.id);
 			});
 
 			it('should return domainOperation object with information about deleted user', async () => {
-				const { expectedResult, user1 } = setup();
+				const { expectedResult, user } = setup();
 
-				const result = await service.deleteUser(user1.id);
+				const result = await service.deleteUser(user.id);
 
 				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when user exists and failed to delete this user', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+
+				const expectedError = `Failed to delete user '${user.id}' from User collection`;
+
+				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
+				userRepo.deleteUser.mockResolvedValueOnce(0);
+
+				return {
+					expectedError,
+					user,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { expectedError, user } = setup();
+
+				await expect(service.deleteUser(user.id)).rejects.toThrowError(
+					new DeletionErrorLoggableException(expectedError)
+				);
 			});
 		});
 	});

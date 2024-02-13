@@ -15,6 +15,7 @@ import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { Logger } from '@src/core/logger';
 import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import { UserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
@@ -139,18 +140,33 @@ export class UserService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable('Deleting user', DomainName.USER, userId, StatusModel.PENDING)
 		);
-		const response = await this.userRepo.deleteUser(userId);
 
-		const deletedUsers = response !== null ? [response] : [];
+		const userToDelete: User | null = await this.userRepo.findByIdOrNull(userId, true);
 
-		const numberOfDeletedUsers = deletedUsers.length;
+		if (userToDelete === null) {
+			const result = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 0, []);
 
-		const result = DomainOperationBuilder.build(
-			DomainName.USER,
-			OperationType.DELETE,
-			numberOfDeletedUsers,
-			deletedUsers
-		);
+			this.logger.info(
+				new DataDeletionDomainOperationLoggable(
+					'User already deleted',
+					DomainName.USER,
+					userId,
+					StatusModel.FINISHED,
+					0,
+					0
+				)
+			);
+
+			return result;
+		}
+
+		const numberOfDeletedUsers = await this.userRepo.deleteUser(userId);
+
+		if (numberOfDeletedUsers === 0) {
+			throw new DeletionErrorLoggableException(`Failed to delete user '${userId}' from User collection`);
+		}
+
+		const result = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, numberOfDeletedUsers, [userId]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
