@@ -5,7 +5,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { accountFactory, roleFactory, schoolFactory, systemEntityFactory, userFactory } from '@shared/testing';
+import { accountFactory, roleFactory, schoolEntityFactory, systemEntityFactory, userFactory } from '@shared/testing';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
@@ -96,7 +96,7 @@ describe('Login Controller (api)', () => {
 		let user: User;
 
 		beforeAll(async () => {
-			const school = schoolFactory.buildWithId();
+			const school = schoolEntityFactory.buildWithId();
 			const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 
 			user = userFactory.buildWithId({ school, roles: [studentRoles] });
@@ -151,7 +151,10 @@ describe('Login Controller (api)', () => {
 			const setup = async () => {
 				const schoolExternalId = 'mockSchoolExternalId';
 				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({});
-				const school: SchoolEntity = schoolFactory.buildWithId({ systems: [system], externalId: schoolExternalId });
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+					systems: [system],
+					externalId: schoolExternalId,
+				});
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 
 				const user: User = userFactory.buildWithId({ school, roles: [studentRoles], ldapDn: mockUserLdapDN });
@@ -202,7 +205,10 @@ describe('Login Controller (api)', () => {
 			const setup = async () => {
 				const schoolExternalId = 'mockSchoolExternalId';
 				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({});
-				const school: SchoolEntity = schoolFactory.buildWithId({ systems: [system], externalId: schoolExternalId });
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
+					systems: [system],
+					externalId: schoolExternalId,
+				});
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 
 				const user: User = userFactory.buildWithId({ school, roles: [studentRoles], ldapDn: mockUserLdapDN });
@@ -240,7 +246,7 @@ describe('Login Controller (api)', () => {
 			const setup = async () => {
 				const officialSchoolNumber = '01234';
 				const system: SystemEntity = systemEntityFactory.withLdapConfig().buildWithId({});
-				const school: SchoolEntity = schoolFactory.buildWithId({
+				const school: SchoolEntity = schoolEntityFactory.buildWithId({
 					systems: [system],
 					externalId: officialSchoolNumber,
 					officialSchoolNumber,
@@ -303,7 +309,7 @@ describe('Login Controller (api)', () => {
 				const userExternalId = 'userExternalId';
 
 				const system = systemEntityFactory.withOauthConfig().buildWithId({});
-				const school = schoolFactory.buildWithId({ systems: [system], externalId: schoolExternalId });
+				const school = schoolEntityFactory.buildWithId({ systems: [system], externalId: schoolExternalId });
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 				const user = userFactory.buildWithId({ school, roles: [studentRoles], externalId: userExternalId });
 				const account = accountFactory.buildWithId({
@@ -393,7 +399,7 @@ describe('Login Controller (api)', () => {
 				const userExternalId = 'userExternalId';
 
 				const system = systemEntityFactory.withOauthConfig().buildWithId({});
-				const school = schoolFactory.buildWithId({ systems: [system], externalId: schoolExternalId });
+				const school = schoolEntityFactory.buildWithId({ systems: [system], externalId: schoolExternalId });
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 				const user = userFactory.buildWithId({ school, roles: [studentRoles], externalId: userExternalId });
 				const account = accountFactory.buildWithId({

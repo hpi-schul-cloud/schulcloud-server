@@ -1,11 +1,17 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
+import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { Logger } from '@src/core/logger';
+import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
+import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainOperation } from '@shared/domain/interface';
 import { Class } from '../domain';
 import { ClassesRepo } from '../repo';
 
 @Injectable()
 export class ClassService {
-	constructor(private readonly classesRepo: ClassesRepo) {}
+	constructor(private readonly classesRepo: ClassesRepo, private readonly logger: Logger) {
+		this.logger.setContext(ClassService.name);
+	}
 
 	public async findClassesForSchool(schoolId: EntityId): Promise<Class[]> {
 		const classes: Class[] = await this.classesRepo.findAllBySchoolId(schoolId);
@@ -19,8 +25,16 @@ export class ClassService {
 		return classes;
 	}
 
-	// FIXME There is no usage of this method
-	public async deleteUserDataFromClasses(userId: EntityId): Promise<number> {
+	public async deleteUserDataFromClasses(userId: EntityId): Promise<DomainOperation> {
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Deleting data from Classes',
+				DomainName.CLASS,
+				userId,
+				StatusModel.PENDING
+			)
+		);
+
 		if (!userId) {
 			throw new InternalServerErrorException('User id is missing');
 		}
@@ -34,8 +48,32 @@ export class ClassService {
 			return domainObject;
 		});
 
+		const numberOfUpdatedClasses = updatedClasses.length;
+
 		await this.classesRepo.updateMany(updatedClasses);
 
-		return updatedClasses.length;
+		const result = DomainOperationBuilder.build(
+			DomainName.CLASS,
+			OperationType.UPDATE,
+			numberOfUpdatedClasses,
+			this.getClassesId(updatedClasses)
+		);
+
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully removed user data from Classes',
+				DomainName.CLASS,
+				userId,
+				StatusModel.FINISHED,
+				numberOfUpdatedClasses,
+				0
+			)
+		);
+
+		return result;
+	}
+
+	private getClassesId(classes: Class[]): EntityId[] {
+		return classes.map((item) => item.id);
 	}
 }

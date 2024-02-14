@@ -4,12 +4,13 @@ import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { ShareToken } from '@modules/sharing/entity/share-token.entity';
+import { TldrawDrawing } from '@modules/tldraw/entities';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { AccountEntity } from '@src/modules/account/entity/account.entity';
 import { DeletionLogEntity, DeletionRequestEntity } from '@src/modules/deletion/entity';
 import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
-import { AccountEntity } from '@src/modules/account/entity/account.entity';
 import {
 	BoardNode,
 	CardNode,
@@ -31,8 +32,8 @@ import { ImportUser } from './import-user.entity';
 import {
 	Board,
 	BoardElement,
-	ColumnboardBoardElement,
 	ColumnBoardTarget,
+	ColumnboardBoardElement,
 	LessonBoardElement,
 	TaskBoardElement,
 } from './legacy-board';
@@ -112,4 +113,5 @@ export const ALL_ENTITIES = [
 	VideoConference,
 	GroupEntity,
 	RegistrationPinEntity,
+	TldrawDrawing,
 ];

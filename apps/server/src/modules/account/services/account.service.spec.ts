@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 import { User } from '@shared/domain/entity';
 import { UserRepo } from '@shared/repo';
-import { accountFactory, schoolFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
+import { accountFactory, schoolEntityFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import 'reflect-metadata';
 import { LegacyLogger } from '../../../core/logger';
 import { AccountConfig } from '../account-config';
@@ -802,7 +802,7 @@ describe('AccountService', () => {
 	describe('updateMyAccount', () => {
 		describe('When account is external', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockExternalUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -833,7 +833,7 @@ describe('AccountService', () => {
 
 		describe('When password does not match', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -861,7 +861,7 @@ describe('AccountService', () => {
 
 		describe('When new password is given', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -890,7 +890,7 @@ describe('AccountService', () => {
 
 		describe('When no new password is given', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -928,7 +928,7 @@ describe('AccountService', () => {
 
 		describe('When a new email is given', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -959,7 +959,7 @@ describe('AccountService', () => {
 
 		describe('When email is not lowercase', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -995,7 +995,7 @@ describe('AccountService', () => {
 
 		describe('When email is not lowercase', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1029,7 +1029,7 @@ describe('AccountService', () => {
 		});
 		describe('When email is given', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1065,7 +1065,7 @@ describe('AccountService', () => {
 
 		describe('When email is already in use', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1094,7 +1094,7 @@ describe('AccountService', () => {
 
 		describe('When using teacher user', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockTeacherUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1129,7 +1129,7 @@ describe('AccountService', () => {
 
 		describe('When user can not be updated', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockTeacherUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1159,7 +1159,7 @@ describe('AccountService', () => {
 
 		describe('When account can not be updated', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1193,7 +1193,7 @@ describe('AccountService', () => {
 	describe('updateAccount', () => {
 		describe('When new password is given', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
 				});
@@ -1225,7 +1225,7 @@ describe('AccountService', () => {
 
 		describe('When username is given', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1258,7 +1258,7 @@ describe('AccountService', () => {
 
 		describe('When activated flag is given', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1288,7 +1288,7 @@ describe('AccountService', () => {
 
 		describe('When account can not be updated', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
 				});
@@ -1317,7 +1317,7 @@ describe('AccountService', () => {
 
 		describe('When user can not be updated', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
 				});
@@ -1345,7 +1345,7 @@ describe('AccountService', () => {
 
 		describe('When new username already in use', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockOtherTeacherUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1391,7 +1391,7 @@ describe('AccountService', () => {
 
 		describe('When account does not exists', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 				const mockUserWithoutAccount = userFactory.buildWithId({
 					school: mockSchool,
 				});
@@ -1425,7 +1425,7 @@ describe('AccountService', () => {
 
 		describe('When account is external', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockExternalUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1458,7 +1458,7 @@ describe('AccountService', () => {
 
 		describe('When not the users password is temporary', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1490,7 +1490,7 @@ describe('AccountService', () => {
 
 		describe('When old password is the same as new password', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1523,7 +1523,7 @@ describe('AccountService', () => {
 
 		describe('When old password is undefined', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1555,7 +1555,7 @@ describe('AccountService', () => {
 		});
 		describe('When the admin manipulate the users password', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1589,7 +1589,7 @@ describe('AccountService', () => {
 
 		describe('when a user logs in for the first time', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1623,7 +1623,7 @@ describe('AccountService', () => {
 
 		describe('when a user logs in for the first time (if undefined)', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1657,7 +1657,7 @@ describe('AccountService', () => {
 
 		describe('When user can not be updated', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1697,7 +1697,7 @@ describe('AccountService', () => {
 
 		describe('When account can not be updated', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,

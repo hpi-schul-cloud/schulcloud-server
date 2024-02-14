@@ -8,7 +8,7 @@ import {
 	accountFactory,
 	cleanupCollections,
 	roleFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	userFactory,
 } from '@shared/testing';
 import {
@@ -61,7 +61,7 @@ describe('Account Controller (API)', () => {
 	describe('[PATCH] me/password', () => {
 		describe('When patching with a valid password', () => {
 			const setup = async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
 				const studentAccount = mapUserToAccount(studentUser);
@@ -91,7 +91,7 @@ describe('Account Controller (API)', () => {
 
 		describe('When using a weak password', () => {
 			const setup = async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
 				const studentAccount = mapUserToAccount(studentUser);
@@ -120,7 +120,7 @@ describe('Account Controller (API)', () => {
 	describe('[PATCH] me', () => {
 		describe('When patching the account with account info', () => {
 			const setup = async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
 				const studentAccount = mapUserToAccount(studentUser);
@@ -150,7 +150,7 @@ describe('Account Controller (API)', () => {
 
 		describe('When patching with a not valid email', () => {
 			const setup = async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
 				const studentAccount = mapUserToAccount(studentUser);
@@ -180,7 +180,7 @@ describe('Account Controller (API)', () => {
 	describe('[GET]', () => {
 		describe('When searching with a superhero user', () => {
 			const setup = async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
@@ -220,7 +220,7 @@ describe('Account Controller (API)', () => {
 		// and for realistic behavior we need database.
 		describe('When searching with a superhero user with large skip', () => {
 			const setup = async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
@@ -257,7 +257,7 @@ describe('Account Controller (API)', () => {
 
 		describe('When searching with a superhero user', () => {
 			const setup = async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [Permission.ACCOUNT_VIEW] });
@@ -294,7 +294,7 @@ describe('Account Controller (API)', () => {
 
 		describe('When searching with a superhero user', () => {
 			const setup = async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
@@ -331,7 +331,7 @@ describe('Account Controller (API)', () => {
 		});
 		describe('When searching with an admin user (not authorized)', () => {
 			const setup = async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
 				const adminRoles = roleFactory.build({
 					name: RoleName.ADMINISTRATOR,
@@ -374,7 +374,7 @@ describe('Account Controller (API)', () => {
 	describe('[GET] :id', () => {
 		describe('When searching with a superhero user', () => {
 			const setup = async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [Permission.ACCOUNT_VIEW] });
@@ -403,7 +403,7 @@ describe('Account Controller (API)', () => {
 
 		describe('When searching with a not authorized user', () => {
 			const setup = async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
 				const adminRoles = roleFactory.build({
 					name: RoleName.ADMINISTRATOR,
@@ -435,7 +435,7 @@ describe('Account Controller (API)', () => {
 
 		describe('When searching with a superhero user', () => {
 			const setup = async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
 				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [Permission.ACCOUNT_VIEW] });
 				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
@@ -459,7 +459,7 @@ describe('Account Controller (API)', () => {
 	describe('[PATCH] :id', () => {
 		describe('When using a superhero user', () => {
 			const setup = async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
@@ -496,7 +496,7 @@ describe('Account Controller (API)', () => {
 
 		describe('When the user is not authorized', () => {
 			const setup = async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
 				const studentAccount = mapUserToAccount(studentUser);
@@ -523,7 +523,7 @@ describe('Account Controller (API)', () => {
 
 		describe('When updating with a superhero user', () => {
 			const setup = async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
@@ -560,7 +560,7 @@ describe('Account Controller (API)', () => {
 	describe('[DELETE] :id', () => {
 		describe('When using a superhero user', () => {
 			const setup = async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
 				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
 				const superheroRoles = roleFactory.build({
@@ -592,7 +592,7 @@ describe('Account Controller (API)', () => {
 
 		describe('When using a not authorized (admin) user', () => {
 			const setup = async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
 				const adminRoles = roleFactory.build({
 					name: RoleName.ADMINISTRATOR,
@@ -625,7 +625,7 @@ describe('Account Controller (API)', () => {
 
 		describe('When using a superhero user', () => {
 			const setup = async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const superheroRoles = roleFactory.build({
 					name: RoleName.SUPERHERO,
 					permissions: [Permission.ACCOUNT_DELETE],

@@ -2,7 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import {
 	courseGroupFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	setupEntities,
 	submissionFactory,
 	taskFactory,
@@ -21,7 +21,7 @@ describe('Submission entity', () => {
 
 	describe('constructor is called', () => {
 		const setup = () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const student = userFactory.build();
 			const task = taskFactory.buildWithId();
 			const teamMember = userFactory.build();

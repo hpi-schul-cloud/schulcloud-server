@@ -13,7 +13,7 @@ import {
 	courseFactory,
 	mapUserToCurrentUser,
 	roleFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	userFactory,
 } from '@shared/testing';
 import { Request } from 'express';
@@ -85,7 +85,7 @@ describe(`share token import (api)`, () => {
 
 	const setup = async (context?: ShareTokenContext) => {
 		await cleanupCollections(em);
-		const school = schoolFactory.build();
+		const school = schoolEntityFactory.build();
 		const roles = roleFactory.buildList(1, {
 			permissions: [Permission.COURSE_CREATE],
 		});
@@ -159,8 +159,8 @@ describe(`share token import (api)`, () => {
 
 	describe('with invalid context', () => {
 		const setup2 = async () => {
-			const school = schoolFactory.build();
-			const otherSchool = schoolFactory.build();
+			const school = schoolEntityFactory.build();
+			const otherSchool = schoolEntityFactory.build();
 			const roles = roleFactory.buildList(1, {
 				permissions: [Permission.COURSE_CREATE],
 			});

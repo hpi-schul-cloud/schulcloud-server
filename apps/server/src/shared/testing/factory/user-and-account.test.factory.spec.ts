@@ -2,7 +2,7 @@ import { User } from '@shared/domain/entity';
 import { ObjectId } from 'bson';
 import { AccountEntity } from '@src/modules/account/entity/account.entity';
 import { setupEntities } from '../setup-entities';
-import { schoolFactory } from './school.factory';
+import { schoolEntityFactory } from './school-entity.factory';
 import { UserAndAccountParams, UserAndAccountTestFactory } from './user-and-account.test.factory';
 
 describe('user-and-account.test.factory', () => {
@@ -11,7 +11,7 @@ describe('user-and-account.test.factory', () => {
 	});
 
 	const createParams = () => {
-		const school = schoolFactory.build();
+		const school = schoolEntityFactory.build();
 		const systemId = new ObjectId().toHexString();
 
 		const params: UserAndAccountParams = {

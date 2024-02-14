@@ -3,16 +3,19 @@ import { Account } from '@src/modules/account/domain';
 // invalid import
 import { OauthCurrentUser } from '@modules/authentication/interface';
 import { CurrentUserMapper } from '@modules/authentication/mapper';
-import { RoleDto } from '@modules/role/service/dto/role.dto';
-import { RoleService } from '@modules/role/service/role.service';
+import { RoleService, RoleDto } from '@modules/role';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { LanguageType, User } from '@shared/domain/entity';
-import { IFindOptions } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { DomainOperation, IFindOptions } from '@shared/domain/interface';
+import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
+import { Logger } from '@src/core/logger';
+import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import { UserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
@@ -25,8 +28,18 @@ export class UserService {
 		private readonly userDORepo: UserDORepo,
 		private readonly configService: ConfigService<UserConfig, true>,
 		private readonly roleService: RoleService,
-		private readonly accountService: AccountService
-	) {}
+		private readonly accountService: AccountService,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(UserService.name);
+	}
+
+	async getUserEntityWithRoles(userId: EntityId): Promise<User> {
+		// only roles required, no need for the other populates
+		const userWithRoles = await this.userRepo.findById(userId, true);
+
+		return userWithRoles;
+	}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
 		const user = await this.userRepo.findById(userId, true);
@@ -123,15 +136,61 @@ export class UserService {
 		}
 	}
 
-	async deleteUser(userId: EntityId): Promise<number> {
-		const deletedUserNumber: Promise<number> = this.userRepo.deleteUser(userId);
+	async deleteUser(userId: EntityId): Promise<DomainOperation> {
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable('Deleting user', DomainName.USER, userId, StatusModel.PENDING)
+		);
 
-		return deletedUserNumber;
+		const userToDelete: User | null = await this.userRepo.findByIdOrNull(userId, true);
+
+		if (userToDelete === null) {
+			const result = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 0, []);
+
+			this.logger.info(
+				new DataDeletionDomainOperationLoggable(
+					'User already deleted',
+					DomainName.USER,
+					userId,
+					StatusModel.FINISHED,
+					0,
+					0
+				)
+			);
+
+			return result;
+		}
+
+		const numberOfDeletedUsers = await this.userRepo.deleteUser(userId);
+
+		if (numberOfDeletedUsers === 0) {
+			throw new DeletionErrorLoggableException(`Failed to delete user '${userId}' from User collection`);
+		}
+
+		const result = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, numberOfDeletedUsers, [userId]);
+
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully deleted user',
+				DomainName.USER,
+				userId,
+				StatusModel.FINISHED,
+				0,
+				numberOfDeletedUsers
+			)
+		);
+
+		return result;
 	}
 
 	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
 		const parentEmails = this.userRepo.getParentEmailsFromUser(userId);
 
 		return parentEmails;
+	}
+
+	public async findUserBySchoolAndName(schoolId: EntityId, firstName: string, lastName: string): Promise<User[]> {
+		const users: User[] = await this.userRepo.findUserBySchoolAndName(schoolId, firstName, lastName);
+
+		return users;
 	}
 }

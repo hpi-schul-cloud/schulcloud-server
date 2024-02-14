@@ -2,6 +2,9 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TeamsRepo } from '@shared/repo';
 import { setupEntities, teamFactory, teamUserFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
+import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainName, OperationType } from '@shared/domain/types';
 import { TeamService } from './team.service';
 
 describe('TeamService', () => {
@@ -17,6 +20,10 @@ describe('TeamService', () => {
 				{
 					provide: TeamsRepo,
 					useValue: createMock<TeamsRepo>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
@@ -76,7 +83,13 @@ describe('TeamService', () => {
 
 				teamsRepo.findByUserId.mockResolvedValue([team1, team2]);
 
+				const expectedResult = DomainOperationBuilder.build(DomainName.TEAMS, OperationType.UPDATE, 2, [
+					team1.id,
+					team2.id,
+				]);
+
 				return {
+					expectedResult,
 					teamUser,
 				};
 			};
@@ -90,11 +103,11 @@ describe('TeamService', () => {
 			});
 
 			it('should update teams without deleted user', async () => {
-				const { teamUser } = setup();
+				const { expectedResult, teamUser } = setup();
 
 				const result = await service.deleteUserDataFromTeams(teamUser.user.id);
 
-				expect(result).toEqual(2);
+				expect(result).toEqual(expectedResult);
 			});
 		});
 	});

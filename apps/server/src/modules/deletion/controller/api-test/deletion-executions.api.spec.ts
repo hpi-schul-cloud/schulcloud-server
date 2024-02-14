@@ -1,16 +1,16 @@
-import { ExecutionContext, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Request } from 'express';
-import { AuthGuard } from '@nestjs/passport';
-import { TestXApiKeyClient } from '@shared/testing';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
+import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { Test, TestingModule } from '@nestjs/testing';
+import { TestXApiKeyClient } from '@shared/testing';
+import { Request } from 'express';
 
 const baseRouteName = '/deletionExecutions';
 
 describe(`deletionExecution (api)`, () => {
 	let app: INestApplication;
 	let testXApiKeyClient: TestXApiKeyClient;
-	const API_KEY = '1ab2c3d4e5f61ab2c3d4e5f6';
+	const API_KEY = '7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4';
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -28,7 +28,7 @@ describe(`deletionExecution (api)`, () => {
 
 		app = module.createNestApplication();
 		await app.init();
-		testXApiKeyClient = new TestXApiKeyClient(app, baseRouteName);
+		testXApiKeyClient = new TestXApiKeyClient(app, baseRouteName, API_KEY);
 	});
 
 	afterAll(async () => {

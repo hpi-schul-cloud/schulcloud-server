@@ -4,6 +4,7 @@ import {
 	Controller,
 	Delete,
 	ForbiddenException,
+	Get,
 	HttpCode,
 	NotFoundException,
 	Param,
@@ -95,7 +96,7 @@ export class ElementController {
 		@Body() bodyParams: UpdateElementContentBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<AnyContentElementResponse> {
-		const element = await this.elementUc.updateElementContent(
+		const element = await this.elementUc.updateElement(
 			currentUser.userId,
 			urlParams.contentElementId,
 			bodyParams.data.content
@@ -140,5 +141,18 @@ export class ElementController {
 		const response = mapper.mapSubmissionItemToResponse(submissionItem);
 
 		return response;
+	}
+
+	@ApiOperation({ summary: 'Check if user has read permission for any board element.' })
+	@ApiResponse({ status: 200 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Get(':contentElementId/permission')
+	async readPermission(
+		@Param() urlParams: ContentElementUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.elementUc.checkElementReadPermission(currentUser.userId, urlParams.contentElementId);
 	}
 }

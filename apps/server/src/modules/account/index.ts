@@ -1,3 +1,3 @@
 export * from './account.module';
-export * from './account-config';
+export { AccountConfig } from './account-config';
 export { AccountService } from './services';

@@ -28,6 +28,44 @@ describe(RocketChatUserMapper.name, () => {
 		});
 	});
 
+	describe('mapToDOs', () => {
+		describe('When empty entities array is mapped for an empty domainObjects array', () => {
+			it('should return empty domain objects array for an empty entities array', () => {
+				const domainObjects = RocketChatUserMapper.mapToDOs([]);
+
+				expect(domainObjects).toEqual([]);
+			});
+		});
+
+		describe('When entities array is mapped for domainObjects array', () => {
+			const setup = () => {
+				const entities = [rocketChatUserEntityFactory.build()];
+
+				const expectedDomainObjects = entities.map(
+					(entity) =>
+						new RocketChatUser({
+							id: entity.id,
+							userId: entity.userId.toHexString(),
+							username: entity.username,
+							rcId: entity.rcId,
+							authToken: entity.authToken,
+							createdAt: entity.createdAt,
+							updatedAt: entity.updatedAt,
+						})
+				);
+
+				return { entities, expectedDomainObjects };
+			};
+			it('should properly map the entities to the domain objects', () => {
+				const { entities, expectedDomainObjects } = setup();
+
+				const domainObjects = RocketChatUserMapper.mapToDOs(entities);
+
+				expect(domainObjects).toEqual(expectedDomainObjects);
+			});
+		});
+	});
+
 	describe('mapToEntity', () => {
 		describe('When domainObject is mapped for entity', () => {
 			beforeAll(() => {

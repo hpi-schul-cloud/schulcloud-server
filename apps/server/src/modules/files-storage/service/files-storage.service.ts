@@ -180,6 +180,9 @@ export class FilesStorageService {
 			// The actual file size is set here because it is known only after the whole file is streamed.
 			fileRecord.size = await fileSizePromise;
 			this.throwErrorIfFileIsTooBig(fileRecord.size);
+
+			fileRecord.markAsUploaded();
+
 			await this.fileRecordRepo.save(fileRecord);
 
 			if (!useStreamToAntivirus || !fileRecord.isPreviewPossible()) {

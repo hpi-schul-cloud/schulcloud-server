@@ -9,11 +9,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { LanguageType, Role, User } from '@shared/domain/entity';
 import { IFindOptions, Permission, RoleName, SortOrder } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { Account } from '@src/modules/account/domain';
+import { Logger } from '@src/core/logger';
+import { DomainOperationBuilder } from '@shared/domain/builder';
+import { NotFoundException } from '@nestjs/common';
+import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
 import { UserService } from './user.service';
@@ -56,6 +60,10 @@ describe('UserService', () => {
 					provide: AccountService,
 					useValue: createMock<AccountService>(),
 				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
 			],
 		}).compile();
 		service = module.get(UserService);
@@ -95,6 +103,45 @@ describe('UserService', () => {
 			expect(result[1]).toEqual([permission]);
 
 			userSpy.mockRestore();
+		});
+	});
+
+	describe('getUserEntityWithRoles', () => {
+		describe('when user with roles exists', () => {
+			const setup = () => {
+				const roles = roleFactory.buildListWithId(2);
+				const user = userFactory.buildWithId({ roles });
+
+				userRepo.findById.mockResolvedValueOnce(user);
+
+				return { user, userId: user.id };
+			};
+
+			it('should return the user with included roles', async () => {
+				const { user, userId } = setup();
+
+				const result = await service.getUserEntityWithRoles(userId);
+
+				expect(result).toEqual(user);
+				expect(result.getRoles()).toHaveLength(2);
+			});
+		});
+
+		describe('when repo throws an error', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const error = new NotFoundException();
+
+				userRepo.findById.mockRejectedValueOnce(error);
+
+				return { userId, error };
+			};
+
+			it('should throw an error', async () => {
+				const { userId, error } = setup();
+
+				await expect(() => service.getUserEntityWithRoles(userId)).rejects.toThrowError(error);
+			});
 		});
 	});
 
@@ -385,44 +432,106 @@ describe('UserService', () => {
 	describe('deleteUser', () => {
 		describe('when user is missing', () => {
 			const setup = () => {
-				const user: UserDO = userDoFactory.build({ id: undefined });
-				const userId: EntityId = user.id as EntityId;
+				const user: User = userFactory.buildWithId();
+				const userId: EntityId = user.id;
 
+				userRepo.findByIdOrNull.mockResolvedValueOnce(null);
 				userRepo.deleteUser.mockResolvedValue(0);
 
+				const expectedResult = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 0, []);
+
 				return {
+					expectedResult,
 					userId,
 				};
 			};
 
-			it('should return 0', async () => {
+			it('should call userRepo.findByIdOrNull with userId', async () => {
 				const { userId } = setup();
+
+				await service.deleteUser(userId);
+
+				expect(userRepo.findByIdOrNull).toHaveBeenCalledWith(userId, true);
+			});
+
+			it('should return domainOperation object with information about deleted user', async () => {
+				const { expectedResult, userId } = setup();
 
 				const result = await service.deleteUser(userId);
 
-				expect(result).toEqual(0);
+				expect(result).toEqual(expectedResult);
+			});
+
+			it('should Not call userRepo.deleteUser with userId', async () => {
+				const { userId } = setup();
+
+				await service.deleteUser(userId);
+
+				expect(userRepo.deleteUser).not.toHaveBeenCalled();
 			});
 		});
 
-		describe('when deleting by userId', () => {
+		describe('when user exists', () => {
 			const setup = () => {
-				const user1: User = userFactory.asStudent().buildWithId();
+				const user = userFactory.buildWithId();
 
-				userRepo.findById.mockResolvedValue(user1);
+				const expectedResult = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 1, [user.id]);
+
+				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
 				userRepo.deleteUser.mockResolvedValue(1);
 
 				return {
-					user1,
+					expectedResult,
+					user,
 				};
 			};
 
-			it('should delete user by userId', async () => {
-				const { user1 } = setup();
+			it('should call userRepo.findByIdOrNull with userId', async () => {
+				const { user } = setup();
 
-				const result = await service.deleteUser(user1.id);
+				await service.deleteUser(user.id);
 
-				expect(userRepo.deleteUser).toHaveBeenCalledWith(user1.id);
-				expect(result).toEqual(1);
+				expect(userRepo.findByIdOrNull).toHaveBeenCalledWith(user.id, true);
+			});
+
+			it('should call userRepo.deleteUser with userId', async () => {
+				const { user } = setup();
+
+				await service.deleteUser(user.id);
+
+				expect(userRepo.deleteUser).toHaveBeenCalledWith(user.id);
+			});
+
+			it('should return domainOperation object with information about deleted user', async () => {
+				const { expectedResult, user } = setup();
+
+				const result = await service.deleteUser(user.id);
+
+				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when user exists and failed to delete this user', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+
+				const expectedError = `Failed to delete user '${user.id}' from User collection`;
+
+				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
+				userRepo.deleteUser.mockResolvedValueOnce(0);
+
+				return {
+					expectedError,
+					user,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { expectedError, user } = setup();
+
+				await expect(service.deleteUser(user.id)).rejects.toThrowError(
+					new DeletionErrorLoggableException(expectedError)
+				);
 			});
 		});
 	});
@@ -453,6 +562,32 @@ describe('UserService', () => {
 
 			const result = await service.getParentEmailsFromUser(user.id);
 			expect(result).toEqual(parentEmail);
+		});
+	});
+
+	describe('findUserBySchoolAndName', () => {
+		describe('when searching for users by school and name', () => {
+			const setup = () => {
+				const firstName = 'Frist';
+				const lastName = 'Last';
+				const users: User[] = userFactory.buildListWithId(2, { firstName, lastName });
+
+				userRepo.findUserBySchoolAndName.mockResolvedValue(users);
+
+				return {
+					firstName,
+					lastName,
+					users,
+				};
+			};
+
+			it('should return a list of users', async () => {
+				const { firstName, lastName, users } = setup();
+
+				const result: User[] = await service.findUserBySchoolAndName(new ObjectId().toHexString(), firstName, lastName);
+
+				expect(result).toEqual(users);
+			});
 		});
 	});
 });

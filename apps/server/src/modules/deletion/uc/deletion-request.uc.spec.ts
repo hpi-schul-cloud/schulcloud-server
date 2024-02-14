@@ -15,9 +15,10 @@ import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from 'bson';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
-import { DomainModel } from '@shared/domain/types';
+import { DomainName, OperationType } from '@shared/domain/types';
 import { TaskService } from '@modules/task';
 import { DomainOperationBuilder } from '@shared/domain/builder';
+import { NewsService } from '@src/modules/news/service/news.service';
 import { DeletionStatusModel } from '../domain/types';
 import { DeletionLogService } from '../services/deletion-log.service';
 import { DeletionRequestService } from '../services';
@@ -25,7 +26,7 @@ import { DeletionRequestUc } from './deletion-request.uc';
 import { deletionRequestFactory } from '../domain/testing/factory/deletion-request.factory';
 import { deletionLogFactory } from '../domain/testing';
 import { DeletionRequestBodyProps } from '../controller/dto';
-import { DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../builder';
+import { DeletionLogStatisticBuilder, DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../builder';
 
 describe(DeletionRequestUc.name, () => {
 	let module: TestingModule;
@@ -47,6 +48,7 @@ describe(DeletionRequestUc.name, () => {
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 	let dashboardService: DeepMocked<DashboardService>;
 	let taskService: DeepMocked<TaskService>;
+	let newsService: DeepMocked<NewsService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -124,6 +126,7 @@ describe(DeletionRequestUc.name, () => {
 					provide: TaskService,
 					useValue: createMock<TaskService>(),
 				},
+				{ provide: NewsService, useValue: createMock<NewsService>() },
 			],
 		}).compile();
 
@@ -145,6 +148,7 @@ describe(DeletionRequestUc.name, () => {
 		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
 		dashboardService = module.get(DashboardService);
 		taskService = module.get(TaskService);
+		newsService = module.get(NewsService);
 		await setupEntities();
 	});
 
@@ -157,7 +161,7 @@ describe(DeletionRequestUc.name, () => {
 			const setup = () => {
 				const deletionRequestToCreate: DeletionRequestBodyProps = {
 					targetRef: {
-						domain: DomainModel.USER,
+						domain: DomainName.USER,
 						id: new ObjectId().toHexString(),
 					},
 					deleteInMinutes: 1440,
@@ -203,32 +207,115 @@ describe(DeletionRequestUc.name, () => {
 	describe('executeDeletionRequests', () => {
 		describe('when executing deletionRequests', () => {
 			const setup = () => {
+				const accountDeleted = DomainOperationBuilder.build(DomainName.ACCOUNT, OperationType.DELETE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const classesUpdated = DomainOperationBuilder.build(DomainName.CLASS, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const courseGroupUpdated = DomainOperationBuilder.build(DomainName.COURSEGROUP, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const courseUpdated = DomainOperationBuilder.build(DomainName.COURSE, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
 				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
-				const user = userDoFactory.buildWithId();
+
+				const dashboardDeleted = DomainOperationBuilder.build(DomainName.DASHBOARD, OperationType.DELETE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const filesDeleted = DomainOperationBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const filesUpdated = DomainOperationBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const fileRecordsUpdated = DomainOperationBuilder.build(DomainName.FILERECORDS, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const lessonsUpdated = DomainOperationBuilder.build(DomainName.LESSONS, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const newsUpdated = DomainOperationBuilder.build(DomainName.LESSONS, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const parentEmail = 'parent@parent.eu';
+
+				const pseudonymsDeleted = DomainOperationBuilder.build(DomainName.PSEUDONYMS, OperationType.DELETE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const registrationPinDeleted = DomainOperationBuilder.build(
+					DomainName.REGISTRATIONPIN,
+					OperationType.DELETE,
+					1,
+					[new ObjectId().toHexString()]
+				);
+
 				const rocketChatUser: RocketChatUser = rocketChatUserFactory.build({
 					userId: deletionRequestToExecute.targetRefId,
 				});
-				const parentEmail = 'parent@parent.eu';
-				const tasksModifiedByRemoveCreatorId = DomainOperationBuilder.build(DomainModel.TASK, 1, 0);
-				const tasksModifiedByRemoveUserFromFinished = DomainOperationBuilder.build(DomainModel.TASK, 1, 0);
-				const tasksDeleted = DomainOperationBuilder.build(DomainModel.TASK, 0, 1);
 
-				registrationPinService.deleteRegistrationPinByEmail.mockResolvedValueOnce(2);
-				classService.deleteUserDataFromClasses.mockResolvedValueOnce(1);
-				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(2);
-				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(2);
-				filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(2);
-				filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles.mockResolvedValueOnce(2);
-				lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(2);
-				pseudonymService.deleteByUserId.mockResolvedValueOnce(2);
-				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(2);
-				userService.deleteUser.mockResolvedValueOnce(1);
-				rocketChatUserService.deleteByUserId.mockResolvedValueOnce(1);
-				filesStorageClientAdapterService.removeCreatorIdFromFileRecords.mockResolvedValueOnce(5);
-				dashboardService.deleteDashboardByUserId.mockResolvedValueOnce(1);
+				const rocketChatUserDeleted = DomainOperationBuilder.build(DomainName.ROCKETCHATUSER, OperationType.DELETE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const rocketChatServiceDeleted = { success: true };
+
+				const tasksModifiedByRemoveCreatorId = DomainOperationBuilder.build(DomainName.TASK, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const tasksModifiedByRemoveUserFromFinished = DomainOperationBuilder.build(
+					DomainName.TASK,
+					OperationType.UPDATE,
+					1,
+					[new ObjectId().toHexString()]
+				);
+
+				const tasksDeleted = DomainOperationBuilder.build(DomainName.TASK, OperationType.DELETE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const teamsUpdated = DomainOperationBuilder.build(DomainName.TEAMS, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const userDeleted = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const user = userDoFactory.buildWithId();
+
+				accountService.deleteAccountByUserId.mockResolvedValueOnce(accountDeleted);
+				registrationPinService.deleteRegistrationPinByEmail.mockResolvedValueOnce(registrationPinDeleted);
+				classService.deleteUserDataFromClasses.mockResolvedValueOnce(classesUpdated);
+				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(courseGroupUpdated);
+				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(courseUpdated);
+				filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(filesDeleted);
+				filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles.mockResolvedValueOnce(filesUpdated);
+				lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(lessonsUpdated);
+				pseudonymService.deleteByUserId.mockResolvedValueOnce(pseudonymsDeleted);
+				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(teamsUpdated);
+				userService.deleteUser.mockResolvedValueOnce(userDeleted);
+				rocketChatUserService.deleteByUserId.mockResolvedValueOnce(rocketChatUserDeleted);
+				rocketChatService.deleteUser.mockResolvedValueOnce(rocketChatServiceDeleted);
+				filesStorageClientAdapterService.removeCreatorIdFromFileRecords.mockResolvedValueOnce(fileRecordsUpdated);
+				dashboardService.deleteDashboardByUserId.mockResolvedValueOnce(dashboardDeleted);
 				taskService.removeCreatorIdFromTasks.mockResolvedValueOnce(tasksModifiedByRemoveCreatorId);
-				taskService.removeCreatorIdFromTasks.mockResolvedValueOnce(tasksModifiedByRemoveUserFromFinished);
+				taskService.removeUserFromFinished.mockResolvedValueOnce(tasksModifiedByRemoveUserFromFinished);
 				taskService.deleteTasksByOnlyCreator.mockResolvedValueOnce(tasksDeleted);
+				newsService.deleteCreatorOrUpdaterReference.mockResolvedValueOnce(newsUpdated);
 
 				return {
 					deletionRequestToExecute,
@@ -254,14 +341,14 @@ describe(DeletionRequestUc.name, () => {
 				expect(deletionRequestService.markDeletionRequestAsExecuted).toHaveBeenCalledWith(deletionRequestToExecute.id);
 			});
 
-			it('should call accountService.deleteByUserId to delete user data in account module', async () => {
+			it('should call accountService.deleteAccountByUserId to delete user data in account module', async () => {
 				const { deletionRequestToExecute } = setup();
 
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
 
 				await uc.executeDeletionRequests();
 
-				expect(accountService.deleteByUserId).toHaveBeenCalled();
+				expect(accountService.deleteAccountByUserId).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call registrationPinService.deleteRegistrationPinByEmail to delete user data in registrationPin module', async () => {
@@ -274,16 +361,17 @@ describe(DeletionRequestUc.name, () => {
 				expect(registrationPinService.deleteRegistrationPinByEmail).toHaveBeenCalled();
 			});
 
-			it('should call userService.getParentEmailsFromUser to get parentEmails', async () => {
+			it('should call userService.findById and userService.getParentEmailsFromUser to get own email and parentEmails', async () => {
 				const { deletionRequestToExecute, user, parentEmail } = setup();
 
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
-				userService.findById.mockResolvedValueOnce(user);
+				userService.findByIdOrNull.mockResolvedValueOnce(user);
 				userService.getParentEmailsFromUser.mockRejectedValue([parentEmail]);
-				registrationPinService.deleteRegistrationPinByEmail.mockRejectedValueOnce(2);
+				registrationPinService.deleteRegistrationPinByEmail.mockRejectedValueOnce(3);
 
 				await uc.executeDeletionRequests();
 
+				expect(userService.findByIdOrNull).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 				expect(userService.getParentEmailsFromUser).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
@@ -383,16 +471,6 @@ describe(DeletionRequestUc.name, () => {
 				expect(teamService.deleteUserDataFromTeams).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
-			it('should call userService.deleteUsers to delete user in user module', async () => {
-				const { deletionRequestToExecute } = setup();
-
-				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
-
-				await uc.executeDeletionRequests();
-
-				expect(userService.deleteUser).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
-			});
-
 			it('should call rocketChatUserService.findByUserId to find rocketChatUser in rocketChatUser module', async () => {
 				const { deletionRequestToExecute } = setup();
 
@@ -407,7 +485,7 @@ describe(DeletionRequestUc.name, () => {
 				const { deletionRequestToExecute, rocketChatUser } = setup();
 
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
-				rocketChatUserService.findByUserId.mockResolvedValueOnce(rocketChatUser);
+				rocketChatUserService.findByUserId.mockResolvedValueOnce([rocketChatUser]);
 
 				await uc.executeDeletionRequests();
 
@@ -418,7 +496,7 @@ describe(DeletionRequestUc.name, () => {
 				const { deletionRequestToExecute, rocketChatUser } = setup();
 
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
-				rocketChatUserService.findByUserId.mockResolvedValueOnce(rocketChatUser);
+				rocketChatUserService.findByUserId.mockResolvedValueOnce([rocketChatUser]);
 
 				await uc.executeDeletionRequests();
 
@@ -465,6 +543,16 @@ describe(DeletionRequestUc.name, () => {
 				expect(taskService.removeUserFromFinished).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
+			it('should call newsService.deleteCreatorOrUpdaterReference to update News without creatorId', async () => {
+				const { deletionRequestToExecute } = setup();
+
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+
+				await uc.executeDeletionRequests();
+
+				expect(newsService.deleteCreatorOrUpdaterReference).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+			});
+
 			it('should call deletionLogService.createDeletionLog to create logs for deletionRequest', async () => {
 				const { deletionRequestToExecute } = setup();
 
@@ -480,14 +568,46 @@ describe(DeletionRequestUc.name, () => {
 			const setup = () => {
 				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
 
-				classService.deleteUserDataFromClasses.mockResolvedValueOnce(1);
-				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(2);
-				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(2);
-				filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(2);
-				filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles.mockResolvedValueOnce(2);
-				lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(2);
-				pseudonymService.deleteByUserId.mockResolvedValueOnce(2);
-				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(2);
+				const classesUpdated = DomainOperationBuilder.build(DomainName.CLASS, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const courseGroupUpdated = DomainOperationBuilder.build(DomainName.COURSEGROUP, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const courseUpdated = DomainOperationBuilder.build(DomainName.COURSE, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const filesDeleted = DomainOperationBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const filesUpdated = DomainOperationBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const lessonsUpdated = DomainOperationBuilder.build(DomainName.LESSONS, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const pseudonymsDeleted = DomainOperationBuilder.build(DomainName.PSEUDONYMS, OperationType.DELETE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				const teamsUpdated = DomainOperationBuilder.build(DomainName.TEAMS, OperationType.UPDATE, 1, [
+					new ObjectId().toHexString(),
+				]);
+
+				classService.deleteUserDataFromClasses.mockResolvedValueOnce(classesUpdated);
+				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(courseGroupUpdated);
+				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(courseUpdated);
+				filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(filesDeleted);
+				filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles.mockResolvedValueOnce(filesUpdated);
+				lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(lessonsUpdated);
+				pseudonymService.deleteByUserId.mockResolvedValueOnce(pseudonymsDeleted);
+				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(teamsUpdated);
 				userService.deleteUser.mockRejectedValueOnce(new Error());
 
 				return {
@@ -508,7 +628,7 @@ describe(DeletionRequestUc.name, () => {
 	});
 
 	describe('findById', () => {
-		describe('when searching for logs for deletionRequest which was executed', () => {
+		describe('when searching for logs for deletionRequest which was executed with success status', () => {
 			const setup = () => {
 				const deletionRequestExecuted = deletionRequestFactory.build({ status: DeletionStatusModel.SUCCESS });
 				const deletionLogExecuted = deletionLogFactory.build({ deletionRequestId: deletionRequestExecuted.id });
@@ -519,13 +639,15 @@ describe(DeletionRequestUc.name, () => {
 				);
 				const statistics = DomainOperationBuilder.build(
 					deletionLogExecuted.domain,
-					deletionLogExecuted.modifiedCount,
-					deletionLogExecuted.deletedCount
+					deletionLogExecuted.operation,
+					deletionLogExecuted.count,
+					deletionLogExecuted.refs
 				);
 
 				const executedDeletionRequestSummary = DeletionRequestLogResponseBuilder.build(
 					targetRef,
 					deletionRequestExecuted.deleteAfter,
+					DeletionStatusModel.SUCCESS,
 					[statistics]
 				);
 
@@ -556,6 +678,61 @@ describe(DeletionRequestUc.name, () => {
 				const result = await uc.findById(deletionRequestExecuted.id);
 
 				expect(result).toEqual(executedDeletionRequestSummary);
+				expect(result.status).toEqual(DeletionStatusModel.SUCCESS);
+			});
+		});
+
+		describe('when searching for logs for deletionRequest which was executed with failed status', () => {
+			const setup = () => {
+				const deletionRequestExecuted = deletionRequestFactory.build({ status: DeletionStatusModel.FAILED });
+				const deletionLogExecuted = deletionLogFactory.build({ deletionRequestId: deletionRequestExecuted.id });
+
+				const targetRef = DeletionTargetRefBuilder.build(
+					deletionRequestExecuted.targetRefDomain,
+					deletionRequestExecuted.targetRefId
+				);
+				const statistics = DeletionLogStatisticBuilder.build(
+					deletionLogExecuted.domain,
+					deletionLogExecuted.operation,
+					deletionLogExecuted.count,
+					deletionLogExecuted.refs
+				);
+
+				const executedDeletionRequestSummary = DeletionRequestLogResponseBuilder.build(
+					targetRef,
+					deletionRequestExecuted.deleteAfter,
+					DeletionStatusModel.FAILED,
+					[statistics]
+				);
+
+				return {
+					deletionRequestExecuted,
+					executedDeletionRequestSummary,
+					deletionLogExecuted,
+				};
+			};
+
+			it('should call to deletionRequestService and deletionLogService', async () => {
+				const { deletionRequestExecuted } = setup();
+
+				deletionRequestService.findById.mockResolvedValueOnce(deletionRequestExecuted);
+
+				await uc.findById(deletionRequestExecuted.id);
+
+				expect(deletionRequestService.findById).toHaveBeenCalledWith(deletionRequestExecuted.id);
+				expect(deletionLogService.findByDeletionRequestId).toHaveBeenCalledWith(deletionRequestExecuted.id);
+			});
+
+			it('should return object with summary of deletionRequest', async () => {
+				const { deletionRequestExecuted, deletionLogExecuted, executedDeletionRequestSummary } = setup();
+
+				deletionRequestService.findById.mockResolvedValueOnce(deletionRequestExecuted);
+				deletionLogService.findByDeletionRequestId.mockResolvedValueOnce([deletionLogExecuted]);
+
+				const result = await uc.findById(deletionRequestExecuted.id);
+
+				expect(result).toEqual(executedDeletionRequestSummary);
+				expect(result.status).toEqual(DeletionStatusModel.FAILED);
 			});
 		});
 
@@ -565,7 +742,9 @@ describe(DeletionRequestUc.name, () => {
 				const targetRef = DeletionTargetRefBuilder.build(deletionRequest.targetRefDomain, deletionRequest.targetRefId);
 				const notExecutedDeletionRequestSummary = DeletionRequestLogResponseBuilder.build(
 					targetRef,
-					deletionRequest.deleteAfter
+					deletionRequest.deleteAfter,
+					DeletionStatusModel.REGISTERED,
+					[]
 				);
 
 				return {
@@ -574,7 +753,7 @@ describe(DeletionRequestUc.name, () => {
 				};
 			};
 
-			it('should call to deletionRequestService', async () => {
+			it('should call to deletionRequestService and deletionLogService', async () => {
 				const { deletionRequest } = setup();
 
 				deletionRequestService.findById.mockResolvedValueOnce(deletionRequest);
@@ -582,7 +761,7 @@ describe(DeletionRequestUc.name, () => {
 				await uc.findById(deletionRequest.id);
 
 				expect(deletionRequestService.findById).toHaveBeenCalledWith(deletionRequest.id);
-				expect(deletionLogService.findByDeletionRequestId).not.toHaveBeenCalled();
+				expect(deletionLogService.findByDeletionRequestId).toHaveBeenCalledWith(deletionRequest.id);
 			});
 
 			it('should return object with summary of deletionRequest', async () => {
@@ -593,6 +772,7 @@ describe(DeletionRequestUc.name, () => {
 				const result = await uc.findById(deletionRequest.id);
 
 				expect(result).toEqual(notExecutedDeletionRequestSummary);
+				expect(result.status).toEqual(DeletionStatusModel.REGISTERED);
 			});
 		});
 	});

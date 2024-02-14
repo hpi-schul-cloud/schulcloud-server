@@ -6,10 +6,10 @@ import { EntityNotFoundError } from '@shared/common';
 
 import { faker } from '@faker-js/faker';
 import { UnauthorizedException } from '@nestjs/common/exceptions/unauthorized.exception';
-import { Role, SchoolRolePermission, SchoolRoles, User } from '@shared/domain/entity';
+import { Role, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { accountFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import { accountFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
 import { AccountService } from '..';
 import { AccountSearchType } from '../controller/dto';
@@ -91,7 +91,7 @@ describe('AccountUc', () => {
 
 		describe('When account does not exists', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockUserWithoutAccount = userFactory.buildWithId({
 					school: mockSchool,
@@ -122,7 +122,7 @@ describe('AccountUc', () => {
 
 		describe('When changing own name is not allowed', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -161,7 +161,7 @@ describe('AccountUc', () => {
 
 		describe('When using admin user', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockAdminUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -212,7 +212,7 @@ describe('AccountUc', () => {
 
 		describe('When using superhero user', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockSuperheroUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -265,11 +265,7 @@ describe('AccountUc', () => {
 	describe('searchAccounts', () => {
 		describe('When search type is userId', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
-				const mockSchoolWithStudentVisibility = schoolFactory.buildWithId();
-				mockSchoolWithStudentVisibility.permissions = new SchoolRoles();
-				mockSchoolWithStudentVisibility.permissions.teacher = new SchoolRolePermission();
-				mockSchoolWithStudentVisibility.permissions.teacher.STUDENT_LIST = true;
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockSuperheroUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -326,7 +322,7 @@ describe('AccountUc', () => {
 
 		describe('When account is not found', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockSuperheroUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -367,7 +363,7 @@ describe('AccountUc', () => {
 		});
 		describe('When search type is username', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockSuperheroUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -413,7 +409,7 @@ describe('AccountUc', () => {
 
 		describe('When user has not the right permissions', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockAdminUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -491,7 +487,7 @@ describe('AccountUc', () => {
 
 		describe('When search type is unknown', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockSuperheroUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -520,7 +516,7 @@ describe('AccountUc', () => {
 
 		describe('When user does not have view permission', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockTeacherUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -558,7 +554,7 @@ describe('AccountUc', () => {
 		describe('hasPermissionsToAccessAccount', () => {
 			describe('When using an admin', () => {
 				const setup = () => {
-					const mockSchool = schoolFactory.buildWithId();
+					const mockSchool = schoolEntityFactory.buildWithId();
 
 					const mockAdminUser = userFactory.buildWithId({
 						school: mockSchool,
@@ -606,7 +602,7 @@ describe('AccountUc', () => {
 
 			describe('When using an admin', () => {
 				const setup = () => {
-					const mockSchool = schoolFactory.buildWithId();
+					const mockSchool = schoolEntityFactory.buildWithId();
 
 					const mockAdminUser = userFactory.buildWithId({
 						school: mockSchool,
@@ -649,7 +645,7 @@ describe('AccountUc', () => {
 
 			describe('When using an admin', () => {
 				const setup = () => {
-					const mockSchool = schoolFactory.buildWithId();
+					const mockSchool = schoolEntityFactory.buildWithId();
 
 					const mockAdminUser = userFactory.buildWithId({
 						school: mockSchool,
@@ -688,8 +684,8 @@ describe('AccountUc', () => {
 
 			describe('When using an admin', () => {
 				const setup = () => {
-					const mockSchool = schoolFactory.buildWithId();
-					const mockOtherSchool = schoolFactory.buildWithId();
+					const mockSchool = schoolEntityFactory.buildWithId();
+					const mockOtherSchool = schoolEntityFactory.buildWithId();
 
 					const mockAdminUser = userFactory.buildWithId({
 						school: mockSchool,
@@ -751,7 +747,7 @@ describe('AccountUc', () => {
 
 			describe('When using a teacher', () => {
 				const setup = () => {
-					const mockSchool = schoolFactory.buildWithId();
+					const mockSchool = schoolEntityFactory.buildWithId();
 
 					const mockTeacherUser = userFactory.buildWithId({
 						school: mockSchool,
@@ -793,7 +789,7 @@ describe('AccountUc', () => {
 
 			describe('When using a teacher', () => {
 				const setup = () => {
-					const mockSchool = schoolFactory.buildWithId();
+					const mockSchool = schoolEntityFactory.buildWithId();
 
 					const mockTeacherUser = userFactory.buildWithId({
 						school: mockSchool,
@@ -827,7 +823,7 @@ describe('AccountUc', () => {
 
 			describe('When using a teacher', () => {
 				const setup = () => {
-					const mockSchool = schoolFactory.buildWithId();
+					const mockSchool = schoolEntityFactory.buildWithId();
 
 					const mockAdminUser = userFactory.buildWithId({
 						school: mockSchool,
@@ -874,8 +870,8 @@ describe('AccountUc', () => {
 
 			describe('When using a teacher', () => {
 				const setup = () => {
-					const mockSchool = schoolFactory.buildWithId();
-					const mockOtherSchool = schoolFactory.buildWithId();
+					const mockSchool = schoolEntityFactory.buildWithId();
+					const mockOtherSchool = schoolEntityFactory.buildWithId();
 
 					const mockTeacherUser = userFactory.buildWithId({
 						school: mockSchool,
@@ -918,10 +914,13 @@ describe('AccountUc', () => {
 			});
 			describe('When using a teacher', () => {
 				const setup = () => {
-					const mockSchoolWithStudentVisibility = schoolFactory.buildWithId();
-					mockSchoolWithStudentVisibility.permissions = new SchoolRoles();
-					mockSchoolWithStudentVisibility.permissions.teacher = new SchoolRolePermission();
-					mockSchoolWithStudentVisibility.permissions.teacher.STUDENT_LIST = true;
+					const mockSchoolWithStudentVisibility = schoolEntityFactory.buildWithId({
+						permissions: {
+							teacher: {
+								STUDENT_LIST: true,
+							},
+						},
+					});
 
 					const mockTeacherNoUserPermissionUser = userFactory.buildWithId({
 						school: mockSchoolWithStudentVisibility,
@@ -958,7 +957,7 @@ describe('AccountUc', () => {
 
 			describe('When using a teacher', () => {
 				const setup = () => {
-					const mockSchool = schoolFactory.buildWithId();
+					const mockSchool = schoolEntityFactory.buildWithId();
 
 					const mockTeacherNoUserNoSchoolPermissionUser = userFactory.buildWithId({
 						school: mockSchool,
@@ -992,10 +991,13 @@ describe('AccountUc', () => {
 
 			describe('When using a student', () => {
 				const setup = () => {
-					const mockSchoolWithStudentVisibility = schoolFactory.buildWithId();
-					mockSchoolWithStudentVisibility.permissions = new SchoolRoles();
-					mockSchoolWithStudentVisibility.permissions.teacher = new SchoolRolePermission();
-					mockSchoolWithStudentVisibility.permissions.teacher.STUDENT_LIST = true;
+					const mockSchoolWithStudentVisibility = schoolEntityFactory.buildWithId({
+						permissions: {
+							teacher: {
+								STUDENT_LIST: true,
+							},
+						},
+					});
 
 					const mockStudentSchoolPermissionUser = userFactory.buildWithId({
 						school: mockSchoolWithStudentVisibility,
@@ -1027,7 +1029,7 @@ describe('AccountUc', () => {
 
 			describe('When using a student', () => {
 				const setup = () => {
-					const mockSchool = schoolFactory.buildWithId();
+					const mockSchool = schoolEntityFactory.buildWithId();
 
 					const mockAdminUser = userFactory.buildWithId({
 						school: mockSchool,
@@ -1091,8 +1093,8 @@ describe('AccountUc', () => {
 
 			describe('When using a superhero', () => {
 				const setup = () => {
-					const mockSchool = schoolFactory.buildWithId();
-					const mockOtherSchool = schoolFactory.buildWithId();
+					const mockSchool = schoolEntityFactory.buildWithId();
+					const mockOtherSchool = schoolEntityFactory.buildWithId();
 
 					const mockSuperheroUser = userFactory.buildWithId({
 						school: mockSchool,
@@ -1237,7 +1239,7 @@ describe('AccountUc', () => {
 	describe('findAccountById', () => {
 		describe('When the current user is a superhero', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockSuperheroUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1281,7 +1283,7 @@ describe('AccountUc', () => {
 
 		describe('When the current user is no superhero', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockTeacherUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1318,7 +1320,7 @@ describe('AccountUc', () => {
 
 		describe('When no account matches the search term', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockSuperheroUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1347,7 +1349,7 @@ describe('AccountUc', () => {
 
 		describe('When target account has no user', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockSuperheroUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1403,7 +1405,7 @@ describe('AccountUc', () => {
 	describe('updateAccountById', () => {
 		describe('when updating a user that does not exist', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1432,7 +1434,7 @@ describe('AccountUc', () => {
 
 		describe('When target account does not exist', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockAdminUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1476,7 +1478,7 @@ describe('AccountUc', () => {
 
 		describe('if target account has no user', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockSuperheroUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1512,7 +1514,7 @@ describe('AccountUc', () => {
 		describe('hasPermissionsToUpdateAccount', () => {
 			describe('When using an admin user', () => {
 				const setup = () => {
-					const mockSchool = schoolFactory.buildWithId();
+					const mockSchool = schoolEntityFactory.buildWithId();
 
 					const mockAdminUser = userFactory.buildWithId({
 						school: mockSchool,
@@ -1565,7 +1567,7 @@ describe('AccountUc', () => {
 
 			describe('When using a teacher user', () => {
 				const setup = () => {
-					const mockSchool = schoolFactory.buildWithId();
+					const mockSchool = schoolEntityFactory.buildWithId();
 
 					const mockTeacherUser = userFactory.buildWithId({
 						school: mockSchool,
@@ -1603,7 +1605,7 @@ describe('AccountUc', () => {
 			});
 			describe('When using an admin user', () => {
 				const setup = () => {
-					const mockSchool = schoolFactory.buildWithId();
+					const mockSchool = schoolEntityFactory.buildWithId();
 
 					const mockAdminUser = userFactory.buildWithId({
 						school: mockSchool,
@@ -1651,7 +1653,7 @@ describe('AccountUc', () => {
 
 			describe('When using a teacher user to edit another teacher', () => {
 				const setup = () => {
-					const mockSchool = schoolFactory.buildWithId();
+					const mockSchool = schoolEntityFactory.buildWithId();
 
 					const mockTeacherUser = userFactory.buildWithId({
 						school: mockSchool,
@@ -1695,8 +1697,8 @@ describe('AccountUc', () => {
 
 			describe('When using an admin user of other school', () => {
 				const setup = () => {
-					const mockSchool = schoolFactory.buildWithId();
-					const mockOtherSchool = schoolFactory.buildWithId();
+					const mockSchool = schoolEntityFactory.buildWithId();
+					const mockOtherSchool = schoolEntityFactory.buildWithId();
 
 					const mockAdminUser = userFactory.buildWithId({
 						school: mockSchool,
@@ -1754,7 +1756,7 @@ describe('AccountUc', () => {
 
 			describe('When using a superhero user', () => {
 				const setup = () => {
-					const mockSchool = schoolFactory.buildWithId();
+					const mockSchool = schoolEntityFactory.buildWithId();
 
 					const mockSuperheroUser = userFactory.buildWithId({
 						school: mockSchool,
@@ -1807,7 +1809,7 @@ describe('AccountUc', () => {
 
 			describe('When using an user with undefined role', () => {
 				const setup = () => {
-					const mockSchool = schoolFactory.buildWithId();
+					const mockSchool = schoolEntityFactory.buildWithId();
 
 					const mockUserWithoutRole = userFactory.buildWithId({
 						school: mockSchool,
@@ -1841,7 +1843,7 @@ describe('AccountUc', () => {
 
 			describe('When editing an user without role', () => {
 				const setup = () => {
-					const mockSchool = schoolFactory.buildWithId();
+					const mockSchool = schoolEntityFactory.buildWithId();
 
 					const mockAdminUser = userFactory.buildWithId({
 						school: mockSchool,
@@ -1892,7 +1894,7 @@ describe('AccountUc', () => {
 	describe('deleteAccountById', () => {
 		describe('When current user has the delete permission', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockSuperheroUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1928,7 +1930,7 @@ describe('AccountUc', () => {
 
 		describe('When the current user does not have the delete permission', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockAdminUser = userFactory.buildWithId({
 					school: mockSchool,
@@ -1981,7 +1983,7 @@ describe('AccountUc', () => {
 
 		describe('When no account matches the search term', () => {
 			const setup = () => {
-				const mockSchool = schoolFactory.buildWithId();
+				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockSuperheroUser = userFactory.buildWithId({
 					school: mockSchool,

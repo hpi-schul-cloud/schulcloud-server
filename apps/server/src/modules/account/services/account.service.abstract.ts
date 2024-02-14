@@ -43,7 +43,7 @@ export abstract class AbstractAccountService {
 
 	abstract delete(id: EntityId): Promise<void>;
 
-	abstract deleteByUserId(userId: EntityId): Promise<void>;
+	abstract deleteByUserId(userId: EntityId): Promise<EntityId[]>;
 
 	abstract searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>>;
 }

@@ -13,6 +13,7 @@ const generateEmptyDashboard = (userId: EntityId) => {
 
 export interface IDashboardRepo {
 	getUsersDashboard(userId: EntityId): Promise<DashboardEntity>;
+	getUsersDashboardIfExist(userId: EntityId): Promise<DashboardEntity | null>;
 	getDashboardById(id: EntityId): Promise<DashboardEntity>;
 	persistAndFlush(entity: DashboardEntity): Promise<DashboardEntity>;
 	deleteDashboardByUserId(userId: EntityId): Promise<number>;
@@ -53,8 +54,17 @@ export class DashboardRepo implements IDashboardRepo {
 		return dashboard;
 	}
 
+	async getUsersDashboardIfExist(userId: EntityId): Promise<DashboardEntity | null> {
+		const dashboardModel = await this.em.findOne(DashboardModelEntity, { user: userId });
+		if (dashboardModel) {
+			return this.mapper.mapDashboardToEntity(dashboardModel);
+		}
+
+		return dashboardModel;
+	}
+
 	async deleteDashboardByUserId(userId: EntityId): Promise<number> {
-		const promise: Promise<number> = this.em.nativeDelete(DashboardModelEntity, { user: userId });
+		const promise = await this.em.nativeDelete(DashboardModelEntity, { user: userId });
 
 		return promise;
 	}

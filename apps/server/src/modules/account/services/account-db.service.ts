@@ -115,7 +115,7 @@ export class AccountServiceDb {
 		return this.accountRepo.deleteById(internalId);
 	}
 
-	async deleteByUserId(userId: EntityId): Promise<void> {
+	async deleteByUserId(userId: EntityId): Promise<EntityId[]> {
 		return this.accountRepo.deleteByUserId(userId);
 	}
 

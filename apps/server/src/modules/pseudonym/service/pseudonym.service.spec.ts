@@ -7,6 +7,10 @@ import { IFindOptions } from '@shared/domain/interface';
 
 import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { externalToolFactory, ltiToolDOFactory, pseudonymFactory, userDoFactory } from '@shared/testing/factory';
+import { Logger } from '@src/core/logger';
+import { ObjectId } from 'bson';
+import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainName, OperationType } from '@shared/domain/types';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 import { PseudonymService } from './pseudonym.service';
@@ -29,6 +33,10 @@ describe('PseudonymService', () => {
 				{
 					provide: ExternalToolPseudonymRepo,
 					useValue: createMock<ExternalToolPseudonymRepo>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
@@ -407,21 +415,35 @@ describe('PseudonymService', () => {
 		describe('when deleting by userId', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.buildWithId();
+				const pseudonymsDeleted = [new ObjectId().toHexString(), new ObjectId().toHexString()];
+				const externalPseudonymsDeleted = [
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString(),
+				];
 
-				pseudonymRepo.deletePseudonymsByUserId.mockResolvedValue(2);
-				externalToolPseudonymRepo.deletePseudonymsByUserId.mockResolvedValue(3);
+				const expectedResult = DomainOperationBuilder.build(
+					DomainName.PSEUDONYMS,
+					OperationType.DELETE,
+					pseudonymsDeleted.length + externalPseudonymsDeleted.length,
+					[...pseudonymsDeleted, ...externalPseudonymsDeleted]
+				);
+
+				pseudonymRepo.deletePseudonymsByUserId.mockResolvedValue(pseudonymsDeleted);
+				externalToolPseudonymRepo.deletePseudonymsByUserId.mockResolvedValue(externalPseudonymsDeleted);
 
 				return {
+					expectedResult,
 					user,
 				};
 			};
 
 			it('should delete pseudonyms by userId', async () => {
-				const { user } = setup();
+				const { expectedResult, user } = setup();
 
-				const result5 = await service.deleteByUserId(user.id as string);
+				const result = await service.deleteByUserId(user.id as string);
 
-				expect(result5).toEqual(5);
+				expect(result).toEqual(expectedResult);
 			});
 		});
 	});
