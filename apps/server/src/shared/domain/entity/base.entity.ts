@@ -29,11 +29,11 @@ export abstract class BaseEntityWithTimestamps<Optional = never> implements Auth
 	@SerializedPrimaryKey()
 	id!: string;
 
-	@Property()
-	createdAt: Date = new Date();
+	@Property({ type: Date })
+	createdAt = new Date();
 
-	@Property({ onUpdate: () => new Date() })
-	updatedAt: Date = new Date();
+	@Property({ type: Date, onUpdate: () => new Date() })
+	updatedAt = new Date();
 }
 
 // These fields are explicitly ignored when updating an entity. See base.do.repo.ts.

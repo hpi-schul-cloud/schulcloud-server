@@ -19,11 +19,11 @@ export class FileSecurityCheckEntity {
 	@Property()
 	requestToken?: string = uuid();
 
-	@Property()
-	createdAt: Date = new Date();
+	@Property({ type: Date })
+	createdAt = new Date();
 
-	@Property({ onUpdate: () => new Date() })
-	updatedAt: Date = new Date();
+	@Property({ type: Date, onUpdate: () => new Date() })
+	updatedAt = new Date();
 
 	constructor(props: FileSecurityCheckEntityProps) {
 		if (props.status !== undefined) {
