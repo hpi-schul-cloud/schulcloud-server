@@ -1,2 +1,2 @@
-export * from './role.module';
-export * from './service/role.service';
+export { RoleModule } from './role.module';
+export { RoleService, RoleDto } from './service';

@@ -5,7 +5,27 @@ import { County } from './county';
 import { FederalState } from './federal-state';
 import { SchoolYear } from './school-year';
 
+interface SchoolInfo {
+	id: EntityId;
+	name: string;
+	language?: string;
+	logo_dataUrl?: string;
+	logo_name?: string;
+}
+
 export class School extends DomainObject<SchoolProps> {
+	public getInfo(): SchoolInfo {
+		const info = {
+			id: this.props.id,
+			name: this.props.name,
+			language: this.props.language,
+			logo_dataUrl: this.props.logo_dataUrl,
+			logo_name: this.props.logo_name,
+		};
+
+		return info;
+	}
+
 	public addFeature(feature: SchoolFeature): void {
 		this.props.features.add(feature);
 	}

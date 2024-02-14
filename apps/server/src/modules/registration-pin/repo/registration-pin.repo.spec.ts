@@ -28,6 +28,46 @@ describe(RegistrationPinRepo.name, () => {
 		await cleanupCollections(em);
 	});
 
+	describe('findAllByEmail', () => {
+		const setup = async () => {
+			const user = userFactory.buildWithId();
+			const userWithoutRegistrationPin = userFactory.buildWithId();
+			const registrationPinForUser = registrationPinEntityFactory.buildWithId({ email: user.email });
+
+			await em.persistAndFlush(registrationPinForUser);
+
+			const expectedResult = [[registrationPinForUser], 1];
+			const expectedResultForNoRegistrationPin = [[], 0];
+
+			return {
+				expectedResult,
+				expectedResultForNoRegistrationPin,
+				user,
+				userWithoutRegistrationPin,
+			};
+		};
+
+		describe('when registrationPin exists', () => {
+			it('should delete registrationPins by email', async () => {
+				const { expectedResult, user } = await setup();
+
+				const result = await repo.findAllByEmail(user.email);
+
+				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when there is no registrationPin', () => {
+			it('should return count equal 0 and an empty array', async () => {
+				const { expectedResultForNoRegistrationPin, userWithoutRegistrationPin } = await setup();
+
+				const result = await repo.findAllByEmail(userWithoutRegistrationPin.email);
+
+				expect(result).toEqual(expectedResultForNoRegistrationPin);
+			});
+		});
+	});
+
 	describe('deleteRegistrationPinByEmail', () => {
 		const setup = async () => {
 			const user = userFactory.buildWithId();
@@ -36,7 +76,7 @@ describe(RegistrationPinRepo.name, () => {
 
 			await em.persistAndFlush(registrationPinForUser);
 
-			const expectedResult = registrationPinForUser.id;
+			const expectedResult = 1;
 
 			return {
 				expectedResult,
@@ -60,7 +100,8 @@ describe(RegistrationPinRepo.name, () => {
 				const { userWithoutRegistrationPin } = await setup();
 
 				const result = await repo.deleteRegistrationPinByEmail(userWithoutRegistrationPin.email);
-				expect(result).toBeNull();
+
+				expect(result).toEqual(0);
 			});
 		});
 	});
