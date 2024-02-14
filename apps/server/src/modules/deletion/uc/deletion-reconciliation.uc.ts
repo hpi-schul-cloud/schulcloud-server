@@ -18,7 +18,8 @@ export class DeletionReconciliationUc {
 	async findUsersToDelete(): Promise<void> {
 		this.logger.debug({ action: 'findUsersToDelete' });
 
-		await this.synchronizationService.createSynchronization();
+		const synchronizationId = await this.synchronizationService.createSynchronization();
+		console.log(synchronizationId);
 
 		const usersToCheck: SanisResponse[] = await this.schulconnexRestClient.getPersonenInfo({});
 

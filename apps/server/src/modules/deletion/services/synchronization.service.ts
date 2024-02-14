@@ -8,10 +8,12 @@ import { Synchronization } from '../domain';
 export class SynchronizationService {
 	constructor(private readonly synchronizationRepo: SynchronizationRepo) {}
 
-	async createSynchronization(): Promise<void> {
+	async createSynchronization(): Promise<EntityId> {
 		const newSynchronization = new Synchronization({ id: new ObjectId().toHexString() });
 
 		await this.synchronizationRepo.create(newSynchronization);
+
+		return newSynchronization.id;
 	}
 
 	async findById(synchronizationId: EntityId): Promise<Synchronization> {
