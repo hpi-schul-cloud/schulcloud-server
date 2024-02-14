@@ -1,10 +1,9 @@
 import { AccountService } from '@modules/account';
-import { AccountDto } from '@modules/account/services/dto';
 // invalid import
+import { AccountDto } from '@modules/account/services/dto';
 import { OauthCurrentUser } from '@modules/authentication/interface';
 import { CurrentUserMapper } from '@modules/authentication/mapper';
-import { RoleDto } from '@modules/role/service/dto/role.dto';
-import { RoleService } from '@modules/role/service/role.service';
+import { RoleService, RoleDto } from '@modules/role';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
@@ -16,6 +15,7 @@ import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { Logger } from '@src/core/logger';
 import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import { UserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
@@ -32,6 +32,13 @@ export class UserService {
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(UserService.name);
+	}
+
+	async getUserEntityWithRoles(userId: EntityId): Promise<User> {
+		// only roles required, no need for the other populates
+		const userWithRoles = await this.userRepo.findById(userId, true);
+
+		return userWithRoles;
 	}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
@@ -133,18 +140,33 @@ export class UserService {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable('Deleting user', DomainName.USER, userId, StatusModel.PENDING)
 		);
-		const response = await this.userRepo.deleteUser(userId);
 
-		const deletedUsers = response !== null ? [response] : [];
+		const userToDelete: User | null = await this.userRepo.findByIdOrNull(userId, true);
 
-		const numberOfDeletedUsers = deletedUsers.length;
+		if (userToDelete === null) {
+			const result = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 0, []);
 
-		const result = DomainOperationBuilder.build(
-			DomainName.USER,
-			OperationType.DELETE,
-			numberOfDeletedUsers,
-			deletedUsers
-		);
+			this.logger.info(
+				new DataDeletionDomainOperationLoggable(
+					'User already deleted',
+					DomainName.USER,
+					userId,
+					StatusModel.FINISHED,
+					0,
+					0
+				)
+			);
+
+			return result;
+		}
+
+		const numberOfDeletedUsers = await this.userRepo.deleteUser(userId);
+
+		if (numberOfDeletedUsers === 0) {
+			throw new DeletionErrorLoggableException(`Failed to delete user '${userId}' from User collection`);
+		}
+
+		const result = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, numberOfDeletedUsers, [userId]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(

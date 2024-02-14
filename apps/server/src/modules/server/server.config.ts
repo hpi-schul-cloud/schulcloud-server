@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { AccountConfig } from '@modules/account';
-import type { XApiKeyConfig } from '@modules/authentication';
+import type { AuthenticationConfig, XApiKeyConfig } from '@modules/authentication';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
 import type { CommonCartridgeConfig } from '@modules/learnroom/common-cartridge';
 import type { SchoolConfig } from '@modules/school';
@@ -27,7 +27,8 @@ export interface ServerConfig
 		SchoolConfig,
 		MailConfig,
 		XApiKeyConfig,
-		LearnroomConfig {
+		LearnroomConfig,
+		AuthenticationConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 }
@@ -37,6 +38,7 @@ const config: ServerConfig = {
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
+	EXIT_ON_ERROR: Configuration.get('EXIT_ON_ERROR') as boolean,
 	AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(','),
 	NODE_ENV: Configuration.get('NODE_ENV') as NodeEnvType,
 	LOGIN_BLOCK_TIME: Configuration.get('LOGIN_BLOCK_TIME') as number,
