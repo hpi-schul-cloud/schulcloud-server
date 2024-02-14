@@ -115,7 +115,7 @@ export class Submission extends BaseEntityWithTimestamps {
 	// Bad that the logic is needed to expose the userIds, but is used in task for now.
 	// Check later if it can be replaced and remove all related code.
 	public getSubmitterIds(): EntityId[] {
-		const creatorId = this.student?.id ?? undefined;
+		const creatorId = this.student?.id;
 		const teamMemberIds = this.getTeamMemberIds();
 		const courseGroupMemberIds = this.getCourseGroupStudentIds();
 		const memberIds =
