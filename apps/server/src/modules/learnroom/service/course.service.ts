@@ -68,4 +68,8 @@ export class CourseService {
 	private getCoursesId(courses: Course[]): EntityId[] {
 		return courses.map((course) => course.id);
 	}
+
+	async findOneForUser(courseId: EntityId, userId: EntityId): Promise<Course> {
+		return this.repo.findOne(courseId, userId);
+	}
 }
