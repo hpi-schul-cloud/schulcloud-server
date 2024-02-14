@@ -148,18 +148,15 @@ export class Submission extends BaseEntityWithTimestamps {
 	}
 
 	public isGroupSubmission(): boolean {
-		return (
-			(this.courseGroup !== null && this.courseGroup !== undefined) ||
-			(this.isNotHavingCourseGroup() && this.teamMembers.length > 1)
-		);
+		return this.hasCourseGroup() || (!this.hasCourseGroup() && this.teamMembers.length > 1);
 	}
 
 	public isSingleSubmissionOwnedByUser(): boolean {
-		return this.isNotHavingCourseGroup() && this.teamMembers.length === 1;
+		return !this.hasCourseGroup() && this.teamMembers.length === 1;
 	}
 
-	private isNotHavingCourseGroup(): boolean {
-		return this.courseGroup === null || this.courseGroup === undefined;
+	private hasCourseGroup(): boolean {
+		return !!this.courseGroup;
 	}
 
 	public removeStudentById(userId: EntityId): void {
