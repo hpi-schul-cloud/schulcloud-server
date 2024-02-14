@@ -36,7 +36,7 @@ export interface FileEntityProps {
 @Entity({ collection: 'files' })
 @Index({ options: { 'permissions.refId': 1 } })
 export class FileEntity extends BaseEntityWithTimestamps {
-	@Property({ type: 'date', nullable: true })
+	@Property({ nullable: true })
 	deletedAt?: Date;
 
 	// eslint-disable-next-line @typescript-eslint/no-inferrable-types
