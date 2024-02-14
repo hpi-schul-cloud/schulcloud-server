@@ -21,3 +21,5 @@
     when:
       - WITH_LDAP is defined and WITH_LDAP|bool
       - KEDA_ENABLED is defined and KEDA_ENABLED|bool
+      - SCALED_API_WORKER_ENABLED is defined and SCALED_API_WORKER_ENABLED|bool
+
