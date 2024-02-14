@@ -3,12 +3,12 @@ import { Test } from '@nestjs/testing';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { cleanupCollections } from '@shared/testing';
-import { SynchronizationMapper } from './mapper';
-import { SynchronizationEntity } from '../entity';
-import { SynchronizationRepo } from './synchronization.repo';
 import { Synchronization } from '../domain';
 import { synchronizationFactory } from '../domain/testing';
+import { SynchronizationEntity } from '../entity';
 import { synchronizationEntityFactory } from '../entity/testing';
+import { SynchronizationMapper } from './mapper';
+import { SynchronizationRepo } from './synchronization.repo';
 
 describe(SynchronizationRepo.name, () => {
 	let module: TestingModule;

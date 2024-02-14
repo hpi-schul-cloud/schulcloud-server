@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
-import { SynchronizationRepo } from '../repo';
 import { Synchronization } from '../domain';
+import { SynchronizationRepo } from '../repo';
 
 @Injectable()
 export class SynchronizationService {

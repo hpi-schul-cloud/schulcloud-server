@@ -1,5 +1,5 @@
 import { ObjectId } from 'bson';
-import { Synchronization } from '.';
+import { Synchronization } from './synchronization.do';
 import { synchronizationFactory } from './testing';
 
 describe(Synchronization.name, () => {

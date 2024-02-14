@@ -2,17 +2,17 @@ import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { LegacyLogger } from '@src/core/logger';
 import { SanisResponse, SchulconnexRestClient } from '@src/infra/schulconnex-client';
-import { SynchronizationService } from '..';
+import { SynchronizationService } from '../service';
 
 @Injectable()
-export class DeletionReconciliationUc {
+export class SynchronizationUc {
 	constructor(
 		private readonly schulconnexRestClient: SchulconnexRestClient,
 		private readonly synchronizationService: SynchronizationService,
 		private readonly userService: UserService,
 		private readonly logger: LegacyLogger
 	) {
-		this.logger.setContext(DeletionReconciliationUc.name);
+		this.logger.setContext(SynchronizationUc.name);
 	}
 
 	async findUsersToDelete(): Promise<void> {

@@ -2,9 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { SynchronizationRepo } from '../repo';
 import { SynchronizationService } from './synchronization.service';
 import { Synchronization } from '../domain';
+import { SynchronizationRepo } from '../repo';
 
 describe(SynchronizationService.name, () => {
 	let module: TestingModule;
@@ -77,6 +77,7 @@ describe(SynchronizationService.name, () => {
 			it('should return synchronization', async () => {
 				const { synchronizationId, synchronization } = setup();
 
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				const result = await service.findById(synchronizationId);
 
 				expect(result).toEqual(synchronization);

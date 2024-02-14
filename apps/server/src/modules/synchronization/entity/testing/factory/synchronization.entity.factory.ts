@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@shared/testing';
-import { SynchronizationEntity, SynchronizationEntityProps } from '../..';
+import { SynchronizationEntity, SynchronizationEntityProps } from '../../synchronization.entity';
 
 export const synchronizationEntityFactory = BaseFactory.define<SynchronizationEntity, SynchronizationEntityProps>(
 	SynchronizationEntity,
