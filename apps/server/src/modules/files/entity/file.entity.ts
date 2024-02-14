@@ -39,11 +39,13 @@ export class FileEntity extends BaseEntityWithTimestamps {
 	@Property({ type: 'date', nullable: true })
 	deletedAt?: Date;
 
-	@Property({ type: 'boolean' })
-	deleted = false;
+	// eslint-disable-next-line @typescript-eslint/no-inferrable-types
+	@Property()
+	deleted: boolean = false;
 
-	@Property({ type: 'boolean' })
-	isDirectory = false;
+	// eslint-disable-next-line @typescript-eslint/no-inferrable-types
+	@Property()
+	isDirectory: boolean = false;
 
 	@Property()
 	name: string;
