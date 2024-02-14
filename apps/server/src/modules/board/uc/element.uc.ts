@@ -1,12 +1,10 @@
 import { Action, AuthorizationService } from '@modules/authorization';
 import { ForbiddenException, forwardRef, Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import {
-	AnyBoardDo,
 	AnyContentElementDo,
 	isSubmissionContainerElement,
 	isSubmissionItem,
 	SubmissionItem,
-	UserRoleEnum,
 } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
@@ -29,35 +27,23 @@ export class ElementUc extends BaseUc {
 		this.logger.setContext(ElementUc.name);
 	}
 
-	async updateElementContent(
+	async updateElement(
 		userId: EntityId,
 		elementId: EntityId,
 		content: AnyElementContentBody
 	): Promise<AnyContentElementDo> {
-		const element = await this.getElementWithWritePermission(userId, elementId);
+		const element = await this.elementService.findById(elementId);
+		await this.checkPermission(userId, element, Action.write);
 
 		await this.elementService.update(element, content);
 		return element;
 	}
 
 	async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {
-		const element = await this.getElementWithWritePermission(userId, elementId);
+		const element = await this.elementService.findById(elementId);
+		await this.checkPermission(userId, element, Action.write);
 
 		await this.elementService.delete(element);
-	}
-
-	private async getElementWithWritePermission(userId: EntityId, elementId: EntityId): Promise<AnyContentElementDo> {
-		const element = await this.elementService.findById(elementId);
-
-		const parent: AnyBoardDo = await this.elementService.findParentOfId(elementId);
-
-		if (isSubmissionItem(parent)) {
-			await this.checkSubmissionItemWritePermission(userId, parent);
-		} else {
-			await this.checkPermission(userId, element, Action.write);
-		}
-
-		return element;
 	}
 
 	async checkElementReadPermission(userId: EntityId, elementId: EntityId): Promise<void> {
@@ -91,7 +77,12 @@ export class ElementUc extends BaseUc {
 			);
 		}
 
-		await this.checkPermission(userId, submissionContainerElement, Action.read, UserRoleEnum.STUDENT);
+		await this.checkPermission(userId, submissionContainerElement, Action.read);
+
+		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(submissionContainerElement);
+		if (this.isUserBoardEditor(userId, boardDoAuthorizable.users)) {
+			throw new ForbiddenException();
+		}
 
 		const submissionItem = await this.submissionItemService.create(userId, submissionContainerElement, { completed });
 

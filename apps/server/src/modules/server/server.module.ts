@@ -2,6 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@infra/database';
 import { MailModule } from '@infra/mail';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@infra/rabbitmq';
+import { SchulconnexClientModule } from '@infra/schulconnex-client';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { AccountApiModule } from '@modules/account/account-api.module';
@@ -25,9 +26,10 @@ import { SystemApiModule } from '@modules/system/system-api.module';
 import { TaskApiModule } from '@modules/task/task-api.module';
 import { TeamsApiModule } from '@modules/teams/teams-api.module';
 import { ToolApiModule } from '@modules/tool/tool-api.module';
-import { ImportUserModule } from '@modules/user-import';
+import { ImportUserModule, UserImportConfigModule } from '@modules/user-import';
 import { UserLoginMigrationApiModule } from '@modules/user-login-migration/user-login-migration-api.module';
 import { UserApiModule } from '@modules/user/user-api.module';
+import { MeApiModule } from '@modules/me/me-api.module';
 import { VideoConferenceApiModule } from '@modules/video-conference/video-conference-api.module';
 import { DynamicModule, Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -35,7 +37,7 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { ServerController } from './controller/server.controller';
+import { ServerController } from './controller';
 import { serverConfig } from './server.config';
 
 const serverModules = [
@@ -50,7 +52,14 @@ const serverModules = [
 	LessonApiModule,
 	NewsModule,
 	UserApiModule,
+	SchulconnexClientModule.register({
+		apiUrl: Configuration.get('SCHULCONNEX_CLIENT__API_URL') as string,
+		tokenEndpoint: Configuration.get('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT') as string,
+		clientId: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_ID') as string,
+		clientSecret: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_SECRET') as string,
+	}),
 	ImportUserModule,
+	UserImportConfigModule,
 	LearnroomApiModule,
 	FilesStorageClientModule,
 	SystemApiModule,
@@ -77,6 +86,7 @@ const serverModules = [
 	PseudonymApiModule,
 	SchoolApiModule,
 	LegacySchoolApiModule,
+	MeApiModule,
 ];
 
 export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {

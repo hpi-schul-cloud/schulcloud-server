@@ -3,7 +3,7 @@ kind: CronJob
 metadata:
   namespace: {{ NAMESPACE }}
   labels:
-    app: api
+    app: api-delete-s3-files-cronjob
     cronjob: delete-s3-files
     app.kubernetes.io/part-of: schulcloud-verbund
     app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
@@ -55,7 +55,7 @@ spec:
 {% endif %}
         metadata:
           labels:
-            app: api
+            app: api-delete-s3-files-cronjob
             cronjob: delete-s3-files
             app.kubernetes.io/part-of: schulcloud-verbund
             app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}

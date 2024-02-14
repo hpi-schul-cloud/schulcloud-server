@@ -4,7 +4,7 @@ info:
   title: HPI Schul-Cloud Activation Service API
   description:
     This is the API specification for the HPI Schul-Cloud Activation service.
-    
+
   contact:
     name: support
     email: info@dbildungscloud.de
@@ -315,31 +315,6 @@ paths:
       tags:
         - activation
       security: []
-  /activation/eMailAddress:
-    post:
-      parameters: []
-      responses:
-        '201':
-          description: created
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/eMailAddress'
-        '401':
-          description: not authenticated
-        '500':
-          description: general error
-      description: Creates a new resource with data.
-      summary: ''
-      tags:
-        - activation
-      security: []
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/eMailAddress'
   '/activation/eMailAddress/{id}':
     put:
       parameters:
@@ -373,7 +348,7 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/eMailAddress'
-  
+
 openapi: 3.0.2
 tags:
   - name: activation

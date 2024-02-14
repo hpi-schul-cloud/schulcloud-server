@@ -17,8 +17,8 @@ describe(DeletionLogMapper.name, () => {
 					operation: entity.operation,
 					deletionRequestId: entity.deletionRequestId?.toHexString(),
 					performedAt: entity.performedAt,
-					modifiedCount: entity.modifiedCount,
-					deletedCount: entity.deletedCount,
+					count: entity.count,
+					refs: entity.refs,
 					createdAt: entity.createdAt,
 					updatedAt: entity.updatedAt,
 				});
@@ -56,8 +56,8 @@ describe(DeletionLogMapper.name, () => {
 							operation: entity.operation,
 							deletionRequestId: entity.deletionRequestId?.toHexString(),
 							performedAt: entity.performedAt,
-							modifiedCount: entity.modifiedCount,
-							deletedCount: entity.deletedCount,
+							count: entity.count,
+							refs: entity.refs,
 							createdAt: entity.createdAt,
 							updatedAt: entity.updatedAt,
 						})
@@ -95,8 +95,8 @@ describe(DeletionLogMapper.name, () => {
 					operation: domainObject.operation,
 					deletionRequestId: new ObjectId(domainObject.deletionRequestId),
 					performedAt: domainObject.performedAt,
-					modifiedCount: domainObject.modifiedCount,
-					deletedCount: domainObject.deletedCount,
+					count: domainObject.count,
+					refs: domainObject.refs,
 					createdAt: domainObject.createdAt,
 					updatedAt: domainObject.updatedAt,
 				});
@@ -144,8 +144,8 @@ describe(DeletionLogMapper.name, () => {
 							operation: domainObject.operation,
 							deletionRequestId: new ObjectId(domainObject.deletionRequestId),
 							performedAt: domainObject.performedAt,
-							modifiedCount: domainObject.modifiedCount,
-							deletedCount: domainObject.deletedCount,
+							count: domainObject.count,
+							refs: domainObject.refs,
 							createdAt: domainObject.createdAt,
 							updatedAt: domainObject.updatedAt,
 						})

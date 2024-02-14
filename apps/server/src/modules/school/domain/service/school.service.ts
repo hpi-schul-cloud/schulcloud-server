@@ -1,10 +1,12 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SchoolFeature } from '@shared/domain/types';
 import { IFindOptions } from '@shared/domain/interface/find-options';
+import { SchoolFeature } from '@shared/domain/types';
 import { EntityId } from '@shared/domain/types/entity-id';
+import { System, SystemService } from '@src/modules/system';
 import { SchoolConfig } from '../../school.config';
-import { School, SchoolProps } from '../do';
+import { School, SchoolProps, SystemForLdapLogin } from '../do';
+import { SchoolForLdapLogin, SchoolForLdapLoginProps } from '../do/school-for-ldap-login';
 import { SchoolRepo, SCHOOL_REPO } from '../interface';
 import { SchoolQuery } from '../query';
 
@@ -12,6 +14,7 @@ import { SchoolQuery } from '../query';
 export class SchoolService {
 	constructor(
 		@Inject(SCHOOL_REPO) private readonly schoolRepo: SchoolRepo,
+		private readonly systemService: SystemService,
 		private readonly configService: ConfigService<SchoolConfig, true>
 	) {}
 
@@ -41,6 +44,69 @@ export class SchoolService {
 		const schoolsForExternalInvite = schools.filter((school) => school.isEligibleForExternalInvite(ownSchoolId));
 
 		return schoolsForExternalInvite;
+	}
+
+	public async doesSchoolExist(schoolId: EntityId): Promise<boolean> {
+		try {
+			await this.schoolRepo.getSchoolById(schoolId);
+
+			return true;
+		} catch (error) {
+			if (error instanceof NotFoundException) {
+				return false;
+			}
+
+			throw error;
+		}
+	}
+
+	public async getSchoolsForLdapLogin(): Promise<SchoolForLdapLogin[]> {
+		const ldapLoginSystems = await this.systemService.findAllForLdapLogin();
+		const ldapLoginSystemsIds = ldapLoginSystems.map((system) => system.id);
+
+		const schoolsWithLdapLoginSystems = await this.schoolRepo.getSchoolsBySystemIds(ldapLoginSystemsIds);
+
+		const schoolsForLdapLogin = schoolsWithLdapLoginSystems.map((school) =>
+			this.mapToSchoolForLdapLogin(school, ldapLoginSystems)
+		);
+
+		return schoolsForLdapLogin;
+	}
+
+	private mapToSchoolForLdapLogin(school: School, ldapLoginSystems: System[]): SchoolForLdapLogin {
+		const schoolProps = school.getProps();
+
+		const schoolForLdapLoginProps: SchoolForLdapLoginProps = {
+			id: school.id,
+			name: schoolProps.name,
+			systems: [],
+		};
+
+		this.addLdapLoginSystems(schoolProps, ldapLoginSystems, schoolForLdapLoginProps);
+
+		return new SchoolForLdapLogin(schoolForLdapLoginProps);
+	}
+
+	private addLdapLoginSystems(
+		schoolProps: SchoolProps,
+		ldapLoginSystems: System[],
+		schoolForLdapLoginProps: SchoolForLdapLoginProps
+	): void {
+		schoolProps.systemIds?.forEach((systemIdInSchool) => {
+			const relatedSystem = ldapLoginSystems.find((system) => system.id === systemIdInSchool);
+
+			if (relatedSystem) {
+				const relatedSystemProps = relatedSystem.getProps();
+
+				const systemForLdapLogin = new SystemForLdapLogin({
+					id: relatedSystemProps.id,
+					type: relatedSystemProps.type,
+					alias: relatedSystemProps.alias,
+				});
+
+				schoolForLdapLoginProps.systems.push(systemForLdapLogin);
+			}
+		});
 	}
 
 	// TODO: The logic for setting this feature should better be part of the creation of a school object.

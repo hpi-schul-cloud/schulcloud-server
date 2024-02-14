@@ -22,10 +22,10 @@ export class SchoolResponse {
 	@ApiPropertyOptional()
 	officialSchoolNumber?: string;
 
-	@ApiPropertyOptional({ type: () => SchoolYearResponse })
+	@ApiPropertyOptional({ type: SchoolYearResponse })
 	currentYear?: SchoolYearResponse;
 
-	@ApiProperty({ type: () => FederalStateResponse })
+	@ApiProperty({ type: FederalStateResponse })
 	federalState: FederalStateResponse;
 
 	@ApiPropertyOptional()
@@ -39,6 +39,9 @@ export class SchoolResponse {
 
 	@ApiProperty()
 	systemIds: string[];
+
+	@ApiPropertyOptional()
+	inUserMigration?: boolean;
 
 	@ApiProperty()
 	inMaintenance: boolean;
@@ -64,7 +67,7 @@ export class SchoolResponse {
 	@ApiPropertyOptional()
 	permissions?: SchoolPermissions;
 
-	@ApiProperty({ type: () => YearsResponse })
+	@ApiProperty({ type: YearsResponse })
 	years: YearsResponse;
 
 	constructor(props: SchoolResponse) {
@@ -79,6 +82,7 @@ export class SchoolResponse {
 		this.features = props.features;
 		this.county = props.county;
 		this.systemIds = props.systemIds;
+		this.inUserMigration = props.inUserMigration;
 		this.inMaintenance = props.inMaintenance;
 		this.isExternal = props.isExternal;
 		this.logo_dataUrl = props.logo_dataUrl;

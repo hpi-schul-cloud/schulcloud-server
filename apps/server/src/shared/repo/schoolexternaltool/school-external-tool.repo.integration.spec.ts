@@ -12,8 +12,8 @@ import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.
 import {
 	cleanupCollections,
 	externalToolEntityFactory,
+	schoolEntityFactory,
 	schoolExternalToolEntityFactory,
-	schoolFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { SchoolExternalToolRepo } from './school-external-tool.repo';
@@ -50,7 +50,7 @@ describe('SchoolExternalToolRepo', () => {
 
 	const createTools = () => {
 		const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
-		const school: SchoolEntity = schoolFactory.buildWithId();
+		const school: SchoolEntity = schoolEntityFactory.buildWithId();
 		const schoolExternalTool1: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 			tool: externalToolEntity,
 			school,

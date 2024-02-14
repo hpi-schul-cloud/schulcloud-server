@@ -8,6 +8,14 @@ interface Options {
 	onlyfactories?: boolean;
 }
 
+interface MigrationOptions {
+	up?: boolean;
+	down?: boolean;
+	from?: string;
+	to?: string;
+	only?: string;
+}
+
 @Console({ command: 'database', description: 'database setup console' })
 export class DatabaseManagementConsole {
 	constructor(private consoleWriter: ConsoleWriterService, private databaseManagementUc: DatabaseManagementUc) {}
@@ -72,6 +80,56 @@ export class DatabaseManagementConsole {
 	async syncIndexes(): Promise<string> {
 		await this.databaseManagementUc.syncIndexes();
 		const report = 'sync of indexes is completed';
+		this.consoleWriter.info(report);
+		return report;
+	}
+
+	@Command({
+		command: 'migration',
+		options: [
+			{
+				flags: '--up',
+				required: false,
+				description: 'execute migration up',
+			},
+			{
+				flags: '--down',
+				required: false,
+				description: 'rollback migration (down)',
+			},
+			{
+				flags: '-f, --from',
+				required: false,
+				description: 'run migration up/down from specified name',
+			},
+			{
+				flags: '-t, --to',
+				required: false,
+				description: 'run migration up/down to specified name',
+			},
+			{
+				flags: '-o, --only',
+				required: false,
+				description: 'run a single migration',
+			},
+		],
+		description: 'Execute MikroOrm migration up/down',
+	})
+	async migration(migrationOptions: MigrationOptions): Promise<string> {
+		let report = 'no migration option was given';
+		if (!migrationOptions.up && !migrationOptions.down) {
+			this.consoleWriter.error(report);
+			return report;
+		}
+		if (migrationOptions.up) {
+			await this.databaseManagementUc.migrationUp(migrationOptions.from, migrationOptions.to, migrationOptions.only);
+			report = 'migration up is completed';
+		}
+		if (migrationOptions.down) {
+			await this.databaseManagementUc.migrationDown(migrationOptions.from, migrationOptions.to, migrationOptions.only);
+			report = 'migration down is completed';
+		}
+
 		this.consoleWriter.info(report);
 		return report;
 	}

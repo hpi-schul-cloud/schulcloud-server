@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
+import { DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
+import { FileDO } from '@src/infra/rabbitmq';
+import { DomainOperation } from '@shared/domain/interface';
+import { DomainOperationBuilder } from '@shared/domain/builder';
 import { CopyFileDto, FileDto } from '../dto';
-import { FileRequestInfo } from '../interfaces';
 import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
 import { FilesStorageClientMapper } from '../mapper';
 import { FilesStorageProducer } from './files-storage.producer';
@@ -20,8 +22,8 @@ export class FilesStorageClientAdapterService {
 		return fileInfos;
 	}
 
-	async listFilesOfParent(param: FileRequestInfo): Promise<FileDto[]> {
-		const response = await this.fileStorageMQProducer.listFilesOfParent(param);
+	async listFilesOfParent(parentId: EntityId): Promise<FileDto[]> {
+		const response = await this.fileStorageMQProducer.listFilesOfParent(parentId);
 
 		const fileInfos = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response);
 
@@ -36,9 +38,28 @@ export class FilesStorageClientAdapterService {
 		return fileInfos;
 	}
 
-	async removeCreatorIdFromFileRecords(creatorId: EntityId): Promise<number> {
+	async deleteOneFile(fileRecordId: EntityId): Promise<FileDto> {
+		const response = await this.fileStorageMQProducer.deleteOneFile(fileRecordId);
+
+		const fileInfo = FilesStorageClientMapper.mapFileRecordResponseToFileDto(response);
+
+		return fileInfo;
+	}
+
+	async removeCreatorIdFromFileRecords(creatorId: EntityId): Promise<DomainOperation> {
 		const response = await this.fileStorageMQProducer.removeCreatorIdFromFileRecords(creatorId);
 
-		return response.length;
+		const result = DomainOperationBuilder.build(
+			DomainName.FILERECORDS,
+			OperationType.UPDATE,
+			response.length,
+			this.getFileRecordsId(response)
+		);
+
+		return result;
+	}
+
+	private getFileRecordsId(files: FileDO[]): EntityId[] {
+		return files.map((file) => file.id);
 	}
 }

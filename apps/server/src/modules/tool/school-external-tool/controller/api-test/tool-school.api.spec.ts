@@ -12,8 +12,8 @@ import {
 	customParameterEntityFactory,
 	externalToolElementNodeFactory,
 	externalToolEntityFactory,
+	schoolEntityFactory,
 	schoolExternalToolEntityFactory,
-	schoolFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 	userFactory,
@@ -61,7 +61,7 @@ describe('ToolSchoolController (API)', () => {
 
 	describe('[POST] tools/school-external-tools', () => {
 		const setup = async () => {
-			const school: SchoolEntity = schoolFactory.buildWithId();
+			const school: SchoolEntity = schoolEntityFactory.buildWithId();
 
 			const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 				Permission.SCHOOL_TOOL_ADMIN,
@@ -164,7 +164,7 @@ describe('ToolSchoolController (API)', () => {
 
 	describe('[DELETE] tools/school-external-tools/:schoolExternalToolId', () => {
 		const setup = async () => {
-			const school: SchoolEntity = schoolFactory.buildWithId();
+			const school: SchoolEntity = schoolEntityFactory.buildWithId();
 
 			const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 				Permission.SCHOOL_TOOL_ADMIN,
@@ -229,7 +229,7 @@ describe('ToolSchoolController (API)', () => {
 
 	describe('[GET] tools/school-external-tools/', () => {
 		const setup = async () => {
-			const school: SchoolEntity = schoolFactory.buildWithId();
+			const school: SchoolEntity = schoolEntityFactory.buildWithId();
 
 			const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 				Permission.SCHOOL_TOOL_ADMIN,
@@ -322,7 +322,7 @@ describe('ToolSchoolController (API)', () => {
 
 	describe('[GET] tools/school-external-tools/:schoolExternalToolId', () => {
 		const setup = async () => {
-			const school: SchoolEntity = schoolFactory.buildWithId();
+			const school: SchoolEntity = schoolEntityFactory.buildWithId();
 
 			const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 				Permission.SCHOOL_TOOL_ADMIN,
@@ -405,7 +405,7 @@ describe('ToolSchoolController (API)', () => {
 
 	describe('[PUT] tools/school-external-tools/:schoolExternalToolId', () => {
 		const setup = async () => {
-			const school: SchoolEntity = schoolFactory.buildWithId();
+			const school: SchoolEntity = schoolEntityFactory.buildWithId();
 
 			const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 				Permission.SCHOOL_TOOL_ADMIN,
@@ -545,7 +545,7 @@ describe('ToolSchoolController (API)', () => {
 
 		describe('when schoolExternalToolId is given ', () => {
 			const setup = async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const schoolToolId: string = new ObjectId().toHexString();
 				const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId(
 					{ school },

@@ -1,7 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { roleFactory, setupEntities, userFactory } from '@shared/testing';
+import {
+	drawingElementFactory,
+	fileElementFactory,
+	roleFactory,
+	setupEntities,
+	submissionItemFactory,
+	userFactory,
+} from '@shared/testing';
 import { ObjectId } from 'bson';
-import { BoardDoAuthorizable, BoardRoles, UserRoleEnum } from '@shared/domain/domainobject';
+import { BoardDoAuthorizable, BoardRoles } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { Action } from '../type';
 import { AuthorizationHelper } from '../service/authorization.helper';
@@ -26,7 +33,12 @@ describe(BoardDoRule.name, () => {
 		describe('when entity is applicable', () => {
 			const setup = () => {
 				const user = userFactory.build();
-				const boardDoAuthorizable = new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() });
+				const anyBoardDo = fileElementFactory.build();
+				const boardDoAuthorizable = new BoardDoAuthorizable({
+					users: [],
+					id: new ObjectId().toHexString(),
+					boardDo: anyBoardDo,
+				});
 				return { user, boardDoAuthorizable };
 			};
 
@@ -62,9 +74,11 @@ describe(BoardDoRule.name, () => {
 				const permissionB = 'b' as Permission;
 				const role = roleFactory.build({ permissions: [permissionA, permissionB] });
 				const user = userFactory.buildWithId({ roles: [role] });
+				const anyBoardDo = fileElementFactory.build();
 				const boardDoAuthorizable = new BoardDoAuthorizable({
-					users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
+					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 					id: new ObjectId().toHexString(),
+					boardDo: anyBoardDo,
 				});
 
 				return { user, boardDoAuthorizable };
@@ -92,9 +106,11 @@ describe(BoardDoRule.name, () => {
 			const setup = () => {
 				const permissionA = 'a' as Permission;
 				const user = userFactory.buildWithId();
+				const anyBoardDo = fileElementFactory.build();
 				const boardDoAuthorizable = new BoardDoAuthorizable({
-					users: [{ userId: user.id, roles: [BoardRoles.READER], userRoleEnum: UserRoleEnum.STUDENT }],
+					users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 					id: new ObjectId().toHexString(),
+					boardDo: anyBoardDo,
 				});
 
 				return { user, permissionA, boardDoAuthorizable };
@@ -117,9 +133,11 @@ describe(BoardDoRule.name, () => {
 				const role = roleFactory.build();
 				const user = userFactory.buildWithId({ roles: [role] });
 				const userWithoutPermision = userFactory.buildWithId({ roles: [role] });
+				const anyBoardDo = fileElementFactory.build();
 				const boardDoAuthorizable = new BoardDoAuthorizable({
-					users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
+					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 					id: new ObjectId().toHexString(),
+					boardDo: anyBoardDo,
 				});
 
 				return { userWithoutPermision, boardDoAuthorizable };
@@ -140,10 +158,11 @@ describe(BoardDoRule.name, () => {
 		describe('when user does not have the desired role', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
-
+				const anyBoardDo = fileElementFactory.build();
 				const boardDoAuthorizable = new BoardDoAuthorizable({
-					users: [{ userId: user.id, roles: [], userRoleEnum: UserRoleEnum.TEACHER }],
+					users: [{ userId: user.id, roles: [] }],
 					id: new ObjectId().toHexString(),
+					boardDo: anyBoardDo,
 				});
 
 				return { user, boardDoAuthorizable };
@@ -161,29 +180,325 @@ describe(BoardDoRule.name, () => {
 			});
 		});
 
-		describe('when user has not the required userRoleEnum', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId();
+		describe('when boardDoAuthorizable.boardDo is a submissionItem', () => {
+			describe('when user is Editor', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId();
+					const submissionItem = submissionItemFactory.build();
+					const boardDoAuthorizable = new BoardDoAuthorizable({
+						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+						id: new ObjectId().toHexString(),
+						boardDo: submissionItem,
+					});
 
-				const boardDoAuthorizable = new BoardDoAuthorizable({
-					users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
-					id: new ObjectId().toHexString(),
+					return { user, boardDoAuthorizable };
+				};
+				it('it should return false if trying to "write" ', () => {
+					const { user, boardDoAuthorizable } = setup();
+
+					const res = service.hasPermission(user, boardDoAuthorizable, {
+						action: Action.write,
+						requiredPermissions: [],
+					});
+
+					expect(res).toBe(false);
+				});
+				it('it should return true if trying to "read"', () => {
+					const { user, boardDoAuthorizable } = setup();
+
+					const res = service.hasPermission(user, boardDoAuthorizable, {
+						action: Action.read,
+						requiredPermissions: [],
+					});
+
+					expect(res).toBe(true);
+				});
+			});
+			describe('when user is Reader and creator of the submissionItem', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId();
+					const submissionItem = submissionItemFactory.build({ userId: user.id });
+					const boardDoAuthorizable = new BoardDoAuthorizable({
+						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
+						id: new ObjectId().toHexString(),
+						boardDo: submissionItem,
+					});
+
+					return { user, boardDoAuthorizable };
+				};
+				it('it should return "true" if trying to "write" ', () => {
+					const { user, boardDoAuthorizable } = setup();
+
+					const res = service.hasPermission(user, boardDoAuthorizable, {
+						action: Action.write,
+						requiredPermissions: [],
+					});
+
+					expect(res).toBe(true);
+				});
+				it('it should return "true" if trying to "read"', () => {
+					const { user, boardDoAuthorizable } = setup();
+
+					const res = service.hasPermission(user, boardDoAuthorizable, {
+						action: Action.read,
+						requiredPermissions: [],
+					});
+
+					expect(res).toBe(true);
+				});
+			});
+			describe('when user is Reader and not creator of the submissionItem', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId();
+					const submissionItem = submissionItemFactory.build({ userId: new ObjectId().toHexString() });
+					const boardDoAuthorizable = new BoardDoAuthorizable({
+						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
+						id: new ObjectId().toHexString(),
+						boardDo: submissionItem,
+					});
+
+					return { user, boardDoAuthorizable };
+				};
+				it('it should return "false" if trying to "write" ', () => {
+					const { user, boardDoAuthorizable } = setup();
+
+					const res = service.hasPermission(user, boardDoAuthorizable, {
+						action: Action.write,
+						requiredPermissions: [],
+					});
+
+					expect(res).toBe(false);
+				});
+				it('it should return "false" if trying to "read"', () => {
+					const { user, boardDoAuthorizable } = setup();
+
+					const res = service.hasPermission(user, boardDoAuthorizable, {
+						action: Action.read,
+						requiredPermissions: [],
+					});
+
+					expect(res).toBe(false);
+				});
+			});
+		});
+
+		describe('when boardDoAuthorizable.parentDo is a submissionItem', () => {
+			describe('when user is Editor', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId();
+					const submissionItem = submissionItemFactory.build();
+					const fileElement = fileElementFactory.build();
+					const boardDoAuthorizable = new BoardDoAuthorizable({
+						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+						id: new ObjectId().toHexString(),
+						boardDo: fileElement,
+						parentDo: submissionItem,
+					});
+
+					return { user, boardDoAuthorizable };
+				};
+				it('it should return false if trying to "write" ', () => {
+					const { user, boardDoAuthorizable } = setup();
+
+					const res = service.hasPermission(user, boardDoAuthorizable, {
+						action: Action.write,
+						requiredPermissions: [],
+					});
+
+					expect(res).toBe(false);
+				});
+				it('it should return true if trying to "read"', () => {
+					const { user, boardDoAuthorizable } = setup();
+
+					const res = service.hasPermission(user, boardDoAuthorizable, {
+						action: Action.read,
+						requiredPermissions: [],
+					});
+
+					expect(res).toBe(true);
+				});
+			});
+			describe('when user is Reader and creator of the submissionItem', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId();
+					const submissionItem = submissionItemFactory.build({ userId: user.id });
+					const fileElement = fileElementFactory.build();
+					const boardDoAuthorizable = new BoardDoAuthorizable({
+						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
+						id: new ObjectId().toHexString(),
+						boardDo: fileElement,
+						parentDo: submissionItem,
+					});
+
+					return { user, boardDoAuthorizable };
+				};
+				it('it should return "true" if trying to "write" ', () => {
+					const { user, boardDoAuthorizable } = setup();
+
+					const res = service.hasPermission(user, boardDoAuthorizable, {
+						action: Action.write,
+						requiredPermissions: [],
+					});
+
+					expect(res).toBe(true);
+				});
+				it('it should return "true" if trying to "read"', () => {
+					const { user, boardDoAuthorizable } = setup();
+
+					const res = service.hasPermission(user, boardDoAuthorizable, {
+						action: Action.read,
+						requiredPermissions: [],
+					});
+
+					expect(res).toBe(true);
+				});
+			});
+			describe('when user is Reader and not creator of the submissionItem', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId();
+					const anyBoardDo = fileElementFactory.build();
+					const submissionItem = submissionItemFactory.build({ userId: new ObjectId().toHexString() });
+					const boardDoAuthorizable = new BoardDoAuthorizable({
+						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
+						id: new ObjectId().toHexString(),
+						boardDo: anyBoardDo,
+						parentDo: submissionItem,
+					});
+
+					return { user, boardDoAuthorizable };
+				};
+				it('it should return "false" if trying to "write" ', () => {
+					const { user, boardDoAuthorizable } = setup();
+
+					const res = service.hasPermission(user, boardDoAuthorizable, {
+						action: Action.write,
+						requiredPermissions: [],
+					});
+
+					expect(res).toBe(false);
+				});
+				it('it should return "false" if trying to "read"', () => {
+					const { user, boardDoAuthorizable } = setup();
+
+					const res = service.hasPermission(user, boardDoAuthorizable, {
+						action: Action.read,
+						requiredPermissions: [],
+					});
+
+					expect(res).toBe(false);
+				});
+			});
+			describe('when bordDo is wrong type', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId();
+					const notAllowedChildElement = drawingElementFactory.build();
+					const submissionItem = submissionItemFactory.build();
+
+					return { user, notAllowedChildElement, submissionItem };
+				};
+				it('when boardDo is undefined, it should return false', () => {
+					const { user, submissionItem } = setup();
+					const anyBoardDo = fileElementFactory.build();
+					const boardDoAuthorizable = new BoardDoAuthorizable({
+						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+						id: new ObjectId().toHexString(),
+						boardDo: anyBoardDo,
+						parentDo: submissionItem,
+					});
+
+					const res = service.hasPermission(user, boardDoAuthorizable, {
+						action: Action.write,
+						requiredPermissions: [],
+					});
+
+					expect(res).toBe(false);
 				});
 
-				boardDoAuthorizable.requiredUserRole = UserRoleEnum.STUDENT;
+				it('when boardDo is not allowed type, it should return false', () => {
+					const { user, submissionItem, notAllowedChildElement } = setup();
+					const boardDoAuthorizable = new BoardDoAuthorizable({
+						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+						id: new ObjectId().toHexString(),
+						parentDo: submissionItem,
+						boardDo: notAllowedChildElement,
+					});
 
-				return { user, boardDoAuthorizable };
-			};
+					const res = service.hasPermission(user, boardDoAuthorizable, {
+						action: Action.write,
+						requiredPermissions: [],
+					});
 
-			it('should return "false"', () => {
-				const { user, boardDoAuthorizable } = setup();
-
-				const res = service.hasPermission(user, boardDoAuthorizable, {
-					action: Action.read,
-					requiredPermissions: [],
+					expect(res).toBe(false);
 				});
+			});
+		});
 
-				expect(res).toBe(false);
+		describe('when boardDoAuthorizable.board is a drawingElement', () => {
+			describe('when user is Editor', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId();
+					const drawingElement = drawingElementFactory.build();
+					const boardDoAuthorizable = new BoardDoAuthorizable({
+						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+						id: new ObjectId().toHexString(),
+						boardDo: drawingElement,
+					});
+
+					return { user, boardDoAuthorizable };
+				};
+				it('should return true if trying to "read"', () => {
+					const { user, boardDoAuthorizable } = setup();
+
+					const res = service.hasPermission(user, boardDoAuthorizable, {
+						action: Action.read,
+						requiredPermissions: [],
+					});
+
+					expect(res).toBe(true);
+				});
+				it('should return true if trying to "write" ', () => {
+					const { user, boardDoAuthorizable } = setup();
+
+					const res = service.hasPermission(user, boardDoAuthorizable, {
+						action: Action.write,
+						requiredPermissions: [],
+					});
+
+					expect(res).toBe(true);
+				});
+			});
+			describe('when user is Reader', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId();
+					const drawingElement = drawingElementFactory.build();
+					const boardDoAuthorizable = new BoardDoAuthorizable({
+						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
+						id: new ObjectId().toHexString(),
+						boardDo: drawingElement,
+					});
+
+					return { user, boardDoAuthorizable };
+				};
+				it('should return true if trying to "read"', () => {
+					const { user, boardDoAuthorizable } = setup();
+
+					const res = service.hasPermission(user, boardDoAuthorizable, {
+						action: Action.read,
+						requiredPermissions: [],
+					});
+
+					expect(res).toBe(true);
+				});
+				it('should ALSO return true if trying to "write" ', () => {
+					const { user, boardDoAuthorizable } = setup();
+
+					const res = service.hasPermission(user, boardDoAuthorizable, {
+						action: Action.write,
+						requiredPermissions: [],
+					});
+
+					expect(res).toBe(true);
+				});
 			});
 		});
 	});

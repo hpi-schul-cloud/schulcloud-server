@@ -41,4 +41,11 @@ export class NewsScope extends Scope<News> {
 		}
 		return this;
 	}
+
+	byUpdater(updaterId: EntityId): NewsScope {
+		if (updaterId !== undefined) {
+			this.addQuery({ updater: updaterId });
+		}
+		return this;
+	}
 }

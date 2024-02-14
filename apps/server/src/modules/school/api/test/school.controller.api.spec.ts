@@ -1,15 +1,16 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { cleanupCollections, TestApiClient } from '@shared/testing';
 import {
+	cleanupCollections,
+	countyEmbeddableFactory,
 	federalStateFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	schoolYearFactory,
 	systemEntityFactory,
+	TestApiClient,
 	UserAndAccountTestFactory,
-} from '@shared/testing/factory';
-import { countyEmbeddableFactory } from '@shared/testing/factory/county.embeddable.factory';
+} from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
 
 describe('School Controller (API)', () => {
@@ -96,7 +97,7 @@ describe('School Controller (API)', () => {
 
 		describe('when user is not in requested school', () => {
 			const setup = async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
 				await em.persistAndFlush([school, studentAccount, studentUser]);
@@ -123,7 +124,7 @@ describe('School Controller (API)', () => {
 				const federalState = federalStateFactory.build();
 				const county = countyEmbeddableFactory.build();
 				const systems = systemEntityFactory.buildList(3);
-				const school = schoolFactory.build({ currentYear, federalState, systems, county });
+				const school = schoolEntityFactory.build({ currentYear, federalState, systems, county });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 
 				await em.persistAndFlush([...schoolYears, federalState, school, studentAccount, studentUser]);
@@ -163,6 +164,7 @@ describe('School Controller (API)', () => {
 						countyId: county.countyId,
 						antaresKey: county.antaresKey,
 					},
+					inUserMigration: undefined,
 					inMaintenance: false,
 					isExternal: false,
 					currentYear: schoolYearResponses[1],
@@ -205,7 +207,7 @@ describe('School Controller (API)', () => {
 
 		describe('when a user is logged in', () => {
 			const setup = async () => {
-				const schools = schoolFactory.buildList(3);
+				const schools = schoolEntityFactory.buildList(3);
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				await em.persistAndFlush([...schools, studentAccount, studentUser]);
 
@@ -226,6 +228,111 @@ describe('School Controller (API)', () => {
 				const { loggedInClient, expectedResponse } = await setup();
 
 				const response = await loggedInClient.get('list-for-external-invite');
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual(expectedResponse);
+			});
+		});
+	});
+
+	describe('doesSchoolExist', () => {
+		describe('when id in params is not a mongo id', () => {
+			it('should return 400', async () => {
+				const response = await testApiClient.get(`exists/id/123`);
+
+				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				expect(response.body.validationErrors).toEqual([
+					{ errors: ['schoolId must be a mongodb id'], field: ['schoolId'] },
+				]);
+			});
+		});
+
+		describe('when id in params is a mongo id', () => {
+			it('should work unauthenticated', async () => {
+				const someId = new ObjectId().toHexString();
+
+				const response = await testApiClient.get(`exists/id/${someId}`);
+
+				expect(response.status).toEqual(HttpStatus.OK);
+			});
+		});
+
+		describe('when requested school is not found', () => {
+			it('should return false', async () => {
+				const someId = new ObjectId().toHexString();
+
+				const response = await testApiClient.get(`exists/id/${someId}`);
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual({ exists: false });
+			});
+		});
+
+		describe('when requested school is found', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.build();
+				await em.persistAndFlush(school);
+
+				return { schoolId: school.id };
+			};
+
+			it('should return true', async () => {
+				const { schoolId } = await setup();
+
+				const response = await testApiClient.get(`exists/id/${schoolId}`);
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual({ exists: true });
+			});
+		});
+	});
+
+	describe('getSchoolListForLadpLogin', () => {
+		it('should work unauthenticated', async () => {
+			const response = await testApiClient.get('list-for-ldap-login');
+
+			expect(response.status).toEqual(HttpStatus.OK);
+		});
+
+		describe('when no school has an LDAP login system', () => {
+			const setup = async () => {
+				const schools = schoolEntityFactory.buildList(3);
+				await em.persistAndFlush(schools);
+			};
+
+			it('should return empty list', async () => {
+				await setup();
+
+				const response = await testApiClient.get('list-for-ldap-login');
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual([]);
+			});
+		});
+
+		describe('when some schools have LDAP login systems', () => {
+			const setup = async () => {
+				const ldapLoginSystem = systemEntityFactory.build({ type: 'ldap', ldapConfig: { active: true } });
+				const schoolWithLdapLoginSystem = schoolEntityFactory.build({ systems: [ldapLoginSystem] });
+				const schoolWithoutLdapLoginSystem = schoolEntityFactory.build();
+				await em.persistAndFlush([schoolWithLdapLoginSystem, schoolWithoutLdapLoginSystem]);
+
+				const expectedResponse = [
+					{
+						id: schoolWithLdapLoginSystem.id,
+						name: schoolWithLdapLoginSystem.name,
+						systems: [{ id: ldapLoginSystem.id, type: ldapLoginSystem.type, alias: ldapLoginSystem.alias }],
+					},
+				];
+
+				return { expectedResponse };
+			};
+
+			it('should return list with these schools', async () => {
+				const { expectedResponse } = await setup();
+
+				const response = await testApiClient.get('list-for-ldap-login');
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual(expectedResponse);

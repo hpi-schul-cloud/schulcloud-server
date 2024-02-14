@@ -3,7 +3,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { SortOrder } from '@shared/domain/interface';
-import { cleanupCollections, federalStateFactory, schoolFactory, systemEntityFactory } from '@shared/testing';
+import { cleanupCollections, federalStateFactory, schoolEntityFactory, systemEntityFactory } from '@shared/testing';
 import { countyEmbeddableFactory } from '@shared/testing/factory/county.embeddable.factory';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
 import { SCHOOL_REPO } from '../../domain';
@@ -37,7 +37,7 @@ describe('SchoolMikroOrmRepo', () => {
 	describe('getSchools', () => {
 		describe('when no query and options are given', () => {
 			const setup = async () => {
-				const entities = schoolFactory.buildList(3);
+				const entities = schoolEntityFactory.buildList(3);
 				await em.persistAndFlush(entities);
 				em.clear();
 				const schools = entities.map((entity) => SchoolEntityMapper.mapToDo(entity));
@@ -57,8 +57,8 @@ describe('SchoolMikroOrmRepo', () => {
 		describe('when query is given', () => {
 			const setup = async () => {
 				const federalState = federalStateFactory.build();
-				const entity1 = schoolFactory.build({ federalState });
-				const entity2 = schoolFactory.build();
+				const entity1 = schoolEntityFactory.build({ federalState });
+				const entity2 = schoolEntityFactory.build();
 				await em.persistAndFlush([entity1, entity2]);
 				em.clear();
 				const schoolDo1 = SchoolEntityMapper.mapToDo(entity1);
@@ -81,7 +81,7 @@ describe('SchoolMikroOrmRepo', () => {
 
 		describe('when pagination option is given', () => {
 			const setup = async () => {
-				const entities = schoolFactory.buildList(3);
+				const entities = schoolEntityFactory.buildList(3);
 				await em.persistAndFlush(entities);
 				em.clear();
 				const schoolDos = entities.map((entity) => SchoolEntityMapper.mapToDo(entity));
@@ -107,8 +107,8 @@ describe('SchoolMikroOrmRepo', () => {
 
 		describe('when order option is given', () => {
 			const setup = async () => {
-				const entity1 = schoolFactory.build({ name: 'bbb' });
-				const entity2 = schoolFactory.build({ name: 'aaa' });
+				const entity1 = schoolEntityFactory.build({ name: 'bbb' });
+				const entity2 = schoolEntityFactory.build({ name: 'aaa' });
 				await em.persistAndFlush([entity1, entity2]);
 				em.clear();
 				const schoolDo1 = SchoolEntityMapper.mapToDo(entity1);
@@ -147,7 +147,7 @@ describe('SchoolMikroOrmRepo', () => {
 				const systems = systemEntityFactory.buildList(2);
 				const county = countyEmbeddableFactory.build();
 				const schoolId = new ObjectId().toHexString();
-				const entity = schoolFactory.buildWithId({ systems, county }, schoolId);
+				const entity = schoolEntityFactory.buildWithId({ systems, county }, schoolId);
 				await em.persistAndFlush([entity]);
 				em.clear();
 				const schoolDo = SchoolEntityMapper.mapToDo(entity);
@@ -161,6 +161,65 @@ describe('SchoolMikroOrmRepo', () => {
 				const result = await repo.getSchoolById(schoolId);
 
 				expect(result).toEqual(schoolDo);
+			});
+		});
+	});
+
+	describe('getSchoolsBySystemIds', () => {
+		describe('when no school has systems', () => {
+			const setup = async () => {
+				const entities = schoolEntityFactory.buildList(2);
+				await em.persistAndFlush(entities);
+				em.clear();
+
+				return { entities };
+			};
+
+			it('should return empty array', async () => {
+				await setup();
+
+				const result = await repo.getSchoolsBySystemIds([]);
+
+				expect(result).toEqual([]);
+			});
+		});
+
+		describe('when some schools have specified systems', () => {
+			const setup = async () => {
+				const specifiedSystem = systemEntityFactory.build();
+				const otherSystem = systemEntityFactory.build();
+				const schoolEntityWithSpecifiedSystem = schoolEntityFactory.build({ systems: [specifiedSystem] });
+				const schoolEntityWithSpecifiedSystemAndOtherSystem = schoolEntityFactory.build({
+					systems: [specifiedSystem, otherSystem],
+				});
+				const schoolEntityWithOtherSystem = schoolEntityFactory.build({ systems: [otherSystem] });
+				const schoolEntityWithEmptySystemsArray = schoolEntityFactory.build({ systems: [] });
+				const schoolEntityWithoutSystems = schoolEntityFactory.build();
+				await em.persistAndFlush([
+					specifiedSystem,
+					otherSystem,
+					schoolEntityWithSpecifiedSystem,
+					schoolEntityWithSpecifiedSystemAndOtherSystem,
+					schoolEntityWithOtherSystem,
+					schoolEntityWithEmptySystemsArray,
+					schoolEntityWithoutSystems,
+				]);
+				em.clear();
+
+				const expected = [
+					SchoolEntityMapper.mapToDo(schoolEntityWithSpecifiedSystem),
+					SchoolEntityMapper.mapToDo(schoolEntityWithSpecifiedSystemAndOtherSystem),
+				];
+
+				return { expected, specifiedSystem };
+			};
+
+			it('should return these schools', async () => {
+				const { expected, specifiedSystem } = await setup();
+
+				const result = await repo.getSchoolsBySystemIds([specifiedSystem.id]);
+
+				expect(result).toEqual(expected);
 			});
 		});
 	});
