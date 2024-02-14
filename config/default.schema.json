@@ -1512,7 +1512,7 @@
 				},
 				"ASSETS_ALLOWED_EXTENSIONS_LIST": {
 					"type": "string",
-					"description": "List with allowed assets extensions, comma separated, empty if all extensions should be allowed",
+					"description": "List with allowed assets extensions, comma separated, empty if all extensions supported by tldraw should be allowed",
 					"examples": ["png,jpg,jpeg,svg,webp"]
 				}
 			},
@@ -1523,7 +1523,7 @@
 				"DB_FLUSH_SIZE": 400,
 				"MAX_DOCUMENT_SIZE": 15000000,
 				"ASSETS_ENABLED": true,
-				"ASSETS_MAX_SIZE": 25000000,
+				"ASSETS_MAX_SIZE": 10485760,
 				"ASSETS_ALLOWED_EXTENSIONS_LIST": ""
 			}
 		},
