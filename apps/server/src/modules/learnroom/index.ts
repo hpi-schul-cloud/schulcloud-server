@@ -7,3 +7,4 @@ export {
 	CourseGroupService,
 	DashboardService,
 } from './service';
+export { CommonCartridgeConfig } from './common-cartridge';

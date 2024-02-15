@@ -37,8 +37,9 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { ServerController } from './controller';
-import { serverConfig } from './server.config';
+import { ServerController } from './api/server.controller';
+import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
+import { ServerUc } from './api/server.uc';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -95,6 +96,9 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		new NotFoundException(`The requested ${entityName}: ${where} has not been found.`),
 };
 
+const providers = [ServerUc, { provide: SERVER_CONFIG_TOKEN, useValue: serverConfig() }];
+const controllers = [ServerController];
+
 /**
  * Server Module used for production
  */
@@ -115,7 +119,8 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		}),
 		LoggerModule,
 	],
-	controllers: [ServerController],
+	providers,
+	controllers,
 })
 export class ServerModule {}
 
@@ -134,7 +139,7 @@ export class ServerModule {}
 		RabbitMQWrapperTestModule,
 		LoggerModule,
 	],
-	controllers: [ServerController],
+	controllers,
 })
 export class ServerTestModule {
 	static forRoot(options?: MongoDatabaseModuleOptions): DynamicModule {
@@ -145,7 +150,8 @@ export class ServerTestModule {
 				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, ...options }),
 				RabbitMQWrapperTestModule,
 			],
-			controllers: [ServerController],
+			providers,
+			controllers,
 		};
 	}
 }

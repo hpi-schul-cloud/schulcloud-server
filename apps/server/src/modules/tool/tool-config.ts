@@ -13,6 +13,18 @@ export interface IToolFeatures {
 	ctlToolsCopyEnabled: boolean;
 }
 
+// hint:  the modules that use tools, must know which configs must be set for the deployment, like the server
+export interface ToolConfig {
+	FEATURE_CTL_TOOLS_TAB_ENABLED: boolean;
+	FEATURE_LTI_TOOLS_TAB_ENABLED: boolean;
+	FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED: boolean;
+	// TODO N21-1337 refactor after feature flag is removed
+	FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED: boolean;
+	CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES: number;
+	PUBLIC_BACKEND_URL: string;
+	FEATURE_CTL_TOOLS_COPY_ENABLED: boolean;
+}
+
 export default class ToolConfiguration {
 	static toolFeatures: IToolFeatures = {
 		ctlToolsTabEnabled: Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED') as boolean,

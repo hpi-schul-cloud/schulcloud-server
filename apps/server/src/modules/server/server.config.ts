@@ -3,11 +3,14 @@ import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { AccountConfig } from '@modules/account';
 import type { AuthenticationConfig, XApiKeyConfig } from '@modules/authentication';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
-import type { CommonCartridgeConfig } from '@modules/learnroom/common-cartridge';
+import type { CommonCartridgeConfig } from '@modules/learnroom';
 import type { SchoolConfig } from '@modules/school';
 import type { UserConfig } from '@modules/user';
 import type { CoreModuleConfig } from '@src/core';
-import { MailConfig } from '@src/infra/mail/interfaces/mail-config';
+import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
+import type { ToolConfig } from '@modules/tool';
+import type { TldrawClientConfig } from '@modules/tldraw-client';
+import type { UserLoginMigrationConfig } from '../user-login-migration';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -26,9 +29,23 @@ export interface ServerConfig
 		SchoolConfig,
 		MailConfig,
 		XApiKeyConfig,
-		AuthenticationConfig {
+		AuthenticationConfig,
+		ToolConfig,
+		TldrawClientConfig,
+		UserLoginMigrationConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
+	FILES_STORAGE__MAX_FILE_SIZE: number; // TODO: Wrong placed it must be moved to files-storage! Also remove it from public config api response.
+	FEATURE_SHOW_OUTDATED_USERS: boolean;
+	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: boolean;
+	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: boolean;
+	FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED: boolean;
+	FEATURE_SHOW_MIGRATION_WIZARD: boolean;
+	MIGRATION_WIZARD_DOCUMENTATION_LINK: string | undefined; // is implemented in legacy in this way
+	FEATURE_TLDRAW_ENABLED: boolean;
+	TLDRAW__ASSETS_ENABLED: boolean;
+	TLDRAW__ASSETS_MAX_SIZE: number;
+	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST: string;
 }
 
 const config: ServerConfig = {
@@ -54,6 +71,37 @@ const config: ServerConfig = {
 	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)
 		.split(',')
 		.map((domain) => domain.trim()),
+	FEATURE_CTL_TOOLS_TAB_ENABLED: Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED') as boolean,
+	FEATURE_LTI_TOOLS_TAB_ENABLED: Configuration.get('FEATURE_LTI_TOOLS_TAB_ENABLED') as boolean,
+	FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED: Configuration.get('FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED') as boolean,
+	// TODO N21-1337 refactor after feature flag is removed
+	FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED: Configuration.get(
+		'FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED'
+	) as boolean,
+	CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES: Configuration.get(
+		'CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES'
+	) as number,
+	PUBLIC_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
+	FEATURE_CTL_TOOLS_COPY_ENABLED: Configuration.get('FEATURE_CTL_TOOLS_COPY_ENABLED') as boolean,
+	TLDRAW_ADMIN_API_CLIENT_BASE_URL: Configuration.get('TLDRAW_ADMIN_API_CLIENT__BASE_URL') as string,
+	TLDRAW_ADMIN_API_CLIENT_API_KEY: Configuration.get('TLDRAW_ADMIN_API_CLIENT__API_KEY') as string,
+	TLDRAW__ASSETS_ENABLED: Configuration.get('TLDRAW__ASSETS_ENABLED') as boolean,
+	TLDRAW__ASSETS_MAX_SIZE: Configuration.get('TLDRAW__ASSETS_MAX_SIZE') as number,
+	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST: Configuration.get('TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST') as string,
+	FEATURE_TLDRAW_ENABLED: Configuration.get('FEATURE_TLDRAW_ENABLED') as boolean,
+	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: Configuration.get(
+		'FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED'
+	) as boolean,
+	MIGRATION_END_GRACE_PERIOD_MS: Configuration.get('MIGRATION_END_GRACE_PERIOD_MS') as number,
+	FILES_STORAGE__MAX_FILE_SIZE: Configuration.get('FILES_STORAGE__MAX_FILE_SIZE') as number,
+	FEATURE_SHOW_OUTDATED_USERS: Configuration.get('FEATURE_SHOW_OUTDATED_USERS') as boolean,
+	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: Configuration.get('FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION') as boolean,
+	FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED: Configuration.get('FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED') as boolean,
+	FEATURE_SHOW_MIGRATION_WIZARD: Configuration.get('FEATURE_SHOW_MIGRATION_WIZARD') as boolean,
+	MIGRATION_WIZARD_DOCUMENTATION_LINK: Configuration.has('MIGRATION_WIZARD_DOCUMENTATION_LINK')
+		? (Configuration.get('MIGRATION_WIZARD_DOCUMENTATION_LINK') as string)
+		: undefined,
 };
 
 export const serverConfig = () => config;
+export const SERVER_CONFIG_TOKEN = 'SERVER_CONFIG_TOKEN';
