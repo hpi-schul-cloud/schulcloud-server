@@ -236,8 +236,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">apps/server/src/shared/repo/submission/submission.repo.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">apps/server/src/shared/repo/submission/submission.repo.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -374,8 +374,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">apps/server/src/shared/repo/submission/submission.repo.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/shared/repo/submission/submission.repo.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -519,8 +519,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">apps/server/src/shared/repo/submission/submission.repo.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">apps/server/src/shared/repo/submission/submission.repo.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -847,6 +847,7 @@ export class SubmissionRepo extends BaseRepo&lt;Submission&gt; {
 		const [submissions, count] &#x3D; await this._em.findAndCount(this.entityName, {
 			task: { $in: taskIds },
 		});
+
 		await this.populateReferences(submissions);
 
 		return [submissions, count];

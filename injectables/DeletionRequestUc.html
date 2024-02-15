@@ -210,6 +210,11 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
+                                <a href="#removeUserFromSubmissions" >removeUserFromSubmissions</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#removeUserFromTasks" >removeUserFromTasks</a>
                             </li>
                             <li>
@@ -265,7 +270,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(deletionRequestService: <a href="../injectables/DeletionRequestService.html" target="_self">DeletionRequestService</a>, deletionLogService: <a href="../injectables/DeletionLogService.html" target="_self">DeletionLogService</a>, accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, classService: <a href="../injectables/ClassService.html" target="_self">ClassService</a>, courseGroupService: <a href="../injectables/CourseGroupService.html" target="_self">CourseGroupService</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, filesService: <a href="../injectables/FilesService.html" target="_self">FilesService</a>, lessonService: <a href="../injectables/LessonService.html" target="_self">LessonService</a>, pseudonymService: <a href="../injectables/PseudonymService.html" target="_self">PseudonymService</a>, teamService: <a href="../injectables/TeamService.html" target="_self">TeamService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, rocketChatUserService: <a href="../injectables/RocketChatUserService.html" target="_self">RocketChatUserService</a>, rocketChatService: <a href="../injectables/RocketChatService.html" target="_self">RocketChatService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, registrationPinService: <a href="../injectables/RegistrationPinService.html" target="_self">RegistrationPinService</a>, filesStorageClientAdapterService: <a href="../injectables/FilesStorageClientAdapterService.html" target="_self">FilesStorageClientAdapterService</a>, dashboardService: <a href="../injectables/DashboardService.html" target="_self">DashboardService</a>, taskService: <a href="../injectables/TaskService.html" target="_self">TaskService</a>, newsService: <a href="../injectables/NewsService.html" target="_self">NewsService</a>)</code>
+<code>constructor(deletionRequestService: <a href="../injectables/DeletionRequestService.html" target="_self">DeletionRequestService</a>, deletionLogService: <a href="../injectables/DeletionLogService.html" target="_self">DeletionLogService</a>, accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, classService: <a href="../injectables/ClassService.html" target="_self">ClassService</a>, courseGroupService: <a href="../injectables/CourseGroupService.html" target="_self">CourseGroupService</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, filesService: <a href="../injectables/FilesService.html" target="_self">FilesService</a>, lessonService: <a href="../injectables/LessonService.html" target="_self">LessonService</a>, pseudonymService: <a href="../injectables/PseudonymService.html" target="_self">PseudonymService</a>, teamService: <a href="../injectables/TeamService.html" target="_self">TeamService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, rocketChatUserService: <a href="../injectables/RocketChatUserService.html" target="_self">RocketChatUserService</a>, rocketChatService: <a href="../injectables/RocketChatService.html" target="_self">RocketChatService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, registrationPinService: <a href="../injectables/RegistrationPinService.html" target="_self">RegistrationPinService</a>, filesStorageClientAdapterService: <a href="../injectables/FilesStorageClientAdapterService.html" target="_self">FilesStorageClientAdapterService</a>, dashboardService: <a href="../injectables/DashboardService.html" target="_self">DashboardService</a>, taskService: <a href="../injectables/TaskService.html" target="_self">TaskService</a>, submissionService: <a href="../injectables/SubmissionService.html" target="_self">SubmissionService</a>, newsService: <a href="../injectables/NewsService.html" target="_self">NewsService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -504,6 +509,18 @@
                                                     
                                                 </tr>
                                                 <tr>
+                                                        <td>submissionService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SubmissionService.html" target="_self" >SubmissionService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>newsService</td>
                                                   
                                                         <td>
@@ -551,8 +568,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="51"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:51</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -620,8 +637,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="94"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:94</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="95"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:95</a></div>
                         </td>
                     </tr>
 
@@ -690,8 +707,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="100"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:100</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="101"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:101</a></div>
                         </td>
                     </tr>
 
@@ -759,8 +776,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:62</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="63"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:63</a></div>
                         </td>
                     </tr>
 
@@ -828,8 +845,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="75"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:75</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -897,8 +914,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="167"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:167</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="169"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:169</a></div>
                         </td>
                     </tr>
 
@@ -967,8 +984,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="125"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:125</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="127"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:127</a></div>
                         </td>
                     </tr>
 
@@ -1085,8 +1102,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="135"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:135</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="137"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:137</a></div>
                         </td>
                     </tr>
 
@@ -1155,8 +1172,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="304"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:304</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="306"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:306</a></div>
                         </td>
                     </tr>
 
@@ -1225,8 +1242,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="184"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:184</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="186"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:186</a></div>
                         </td>
                     </tr>
 
@@ -1295,8 +1312,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="210"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:210</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="212"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:212</a></div>
                         </td>
                     </tr>
 
@@ -1365,8 +1382,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="197"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:197</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="199"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:199</a></div>
                         </td>
                     </tr>
 
@@ -1435,8 +1452,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="265"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:265</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="267"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:267</a></div>
                         </td>
                     </tr>
 
@@ -1505,8 +1522,78 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="321"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:321</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="323"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:323</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>deletionRequest</td>
+                                            <td>
+                                                            <code><a href="../classes/DeletionRequest.html" target="_self" >DeletionRequest</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="removeUserFromSubmissions"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>removeUserFromSubmissions</b></span>
+                        <a href="#removeUserFromSubmissions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>removeUserFromSubmissions(deletionRequest: <a href="../classes/DeletionRequest.html" target="_self">DeletionRequest</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="379"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:379</a></div>
                         </td>
                     </tr>
 
@@ -1575,8 +1662,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="348"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:348</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="350"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:350</a></div>
                         </td>
                     </tr>
 
@@ -1645,8 +1732,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="291"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:291</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="293"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:293</a></div>
                         </td>
                     </tr>
 
@@ -1715,8 +1802,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="148"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:148</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="150"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:150</a></div>
                         </td>
                     </tr>
 
@@ -1785,8 +1872,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="223"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:223</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="225"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:225</a></div>
                         </td>
                     </tr>
 
@@ -1855,8 +1942,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="249"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:249</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="251"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:251</a></div>
                         </td>
                     </tr>
 
@@ -1925,8 +2012,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="377"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:377</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="404"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:404</a></div>
                         </td>
                     </tr>
 
@@ -1995,8 +2082,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="236"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:236</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="238"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:238</a></div>
                         </td>
                     </tr>
 
@@ -2065,8 +2152,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="278"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:278</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="280"
+                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:280</a></div>
                         </td>
                     </tr>
 
@@ -2133,7 +2220,7 @@ import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { DomainName, EntityId, OperationType } from &#x27;@shared/domain/types&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { FilesStorageClientAdapterService } from &#x27;@modules/files-storage-client&#x27;;
-import { TaskService } from &#x27;@modules/task&#x27;;
+import { SubmissionService, TaskService } from &#x27;@modules/task&#x27;;
 import { DomainOperation } from &#x27;@shared/domain/interface&#x27;;
 import { DomainOperationBuilder } from &#x27;@shared/domain/builder/domain-operation.builder&#x27;;
 import { NewsService } from &#x27;@src/modules/news/service/news.service&#x27;;
@@ -2163,6 +2250,7 @@ export class DeletionRequestUc {
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly dashboardService: DashboardService,
 		private readonly taskService: TaskService,
+		private readonly submissionService: SubmissionService,
 		private readonly newsService: NewsService
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
@@ -2233,6 +2321,7 @@ export class DeletionRequestUc {
 				this.removeUserFromRocketChat(deletionRequest),
 				this.removeUsersDashboard(deletionRequest),
 				this.removeUserFromTasks(deletionRequest),
+				this.removeUserFromSubmissions(deletionRequest),
 				this.removeUsersDataFromNews(deletionRequest),
 			]);
 			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
@@ -2491,6 +2580,31 @@ export class DeletionRequestUc {
 			tasksModifiedByRemoveCreator.operation,
 			modifiedTasksCount,
 			modifiedTasksRef
+		);
+	}
+
+	private async removeUserFromSubmissions(deletionRequest: DeletionRequest) {
+		this.logger.debug({ action: &#x27;removeUserFromSubmissions&#x27;, deletionRequest });
+
+		const [submissionsDeleted, submissionsModified] &#x3D; await Promise.all([
+			this.submissionService.deleteSingleSubmissionsOwnedByUser(deletionRequest.targetRefId),
+			this.submissionService.removeUserReferencesFromSubmissions(deletionRequest.targetRefId),
+		]);
+
+		await this.logDeletion(
+			deletionRequest,
+			submissionsDeleted.domain,
+			submissionsDeleted.operation,
+			submissionsDeleted.count,
+			submissionsDeleted.refs
+		);
+
+		await this.logDeletion(
+			deletionRequest,
+			submissionsModified.domain,
+			submissionsModified.operation,
+			submissionsModified.count,
+			submissionsModified.refs
 		);
 	}
 

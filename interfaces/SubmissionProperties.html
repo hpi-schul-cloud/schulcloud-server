@@ -188,6 +188,7 @@
                                         </a>
                                 </li>
                                 <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#student" 
 >
                                             student
@@ -469,6 +470,11 @@
                                         </td>
                                     </tr>
 
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
 
 
 
@@ -602,7 +608,7 @@ import type { User } from &#x27;./user.entity&#x27;;
 export interface SubmissionProperties {
 	school: SchoolEntity;
 	task: Task;
-	student: User;
+	student?: User;
 	courseGroup?: CourseGroup;
 	teamMembers?: User[];
 	comment: string;
@@ -624,8 +630,8 @@ export class Submission extends BaseEntityWithTimestamps {
 	@Index()
 	task: Task;
 
-	@ManyToOne(&#x27;User&#x27;, { fieldName: &#x27;studentId&#x27; })
-	student: User;
+	@ManyToOne(&#x27;User&#x27;, { fieldName: &#x27;studentId&#x27;, nullable: true })
+	student?: User;
 
 	@ManyToOne(&#x27;CourseGroup&#x27;, { fieldName: &#x27;courseGroupId&#x27;, nullable: true })
 	courseGroup?: CourseGroup;
@@ -651,6 +657,9 @@ export class Submission extends BaseEntityWithTimestamps {
 	constructor(props: SubmissionProperties) {
 		super();
 		this.school &#x3D; props.school;
+		if (props.student !&#x3D;&#x3D; undefined) {
+			this.student &#x3D; props.student;
+		}
 		this.student &#x3D; props.student;
 		this.comment &#x3D; props.comment;
 		this.task &#x3D; props.task;
@@ -703,10 +712,13 @@ export class Submission extends BaseEntityWithTimestamps {
 	// Bad that the logic is needed to expose the userIds, but is used in task for now.
 	// Check later if it can be replaced and remove all related code.
 	public getSubmitterIds(): EntityId[] {
-		const creatorId &#x3D; this.student.id;
+		const creatorId &#x3D; this.student?.id;
 		const teamMemberIds &#x3D; this.getTeamMemberIds();
 		const courseGroupMemberIds &#x3D; this.getCourseGroupStudentIds();
-		const memberIds &#x3D; [creatorId, ...teamMemberIds, ...courseGroupMemberIds];
+		const memberIds &#x3D;
+			creatorId !&#x3D;&#x3D; undefined
+				? [creatorId, ...teamMemberIds, ...courseGroupMemberIds]
+				: [...teamMemberIds, ...courseGroupMemberIds];
 
 		const uniqueMemberIds &#x3D; [...new Set(memberIds)];
 
@@ -730,6 +742,30 @@ export class Submission extends BaseEntityWithTimestamps {
 		const isGradedForUser &#x3D; isMember &amp;&amp; isGraded;
 
 		return isGradedForUser;
+	}
+
+	public isGroupSubmission(): boolean {
+		return this.hasCourseGroup() || (!this.hasCourseGroup() &amp;&amp; this.teamMembers.length &gt; 1);
+	}
+
+	public isSingleSubmissionOwnedByUser(): boolean {
+		return !this.hasCourseGroup() &amp;&amp; this.teamMembers.length &#x3D;&#x3D;&#x3D; 1;
+	}
+
+	private hasCourseGroup(): boolean {
+		return !!this.courseGroup;
+	}
+
+	public removeStudentById(userId: EntityId): void {
+		if (userId &#x3D;&#x3D;&#x3D; this.student?.id) {
+			this.student &#x3D; undefined;
+		}
+	}
+
+	public removeUserFromTeamMembers(userId: EntityId): void {
+		const modifiedArray &#x3D; this.teamMembers.getItems().filter((user) &#x3D;&gt; user.id !&#x3D;&#x3D; userId);
+
+		this.teamMembers.set(modifiedArray);
 	}
 }
 </code></pre>

@@ -148,11 +148,23 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#deleteSingleSubmissionsOwnedByUser" >deleteSingleSubmissionsOwnedByUser</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#findAllByTask" >findAllByTask</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#findById" >findById</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#getSubmissionsId" >getSubmissionsId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#removeUserReferencesFromSubmissions" >removeUserReferencesFromSubmissions</a>
                             </li>
                         </ul>
                     </td>
@@ -172,12 +184,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(submissionRepo: <a href="../injectables/SubmissionRepo.html" target="_self">SubmissionRepo</a>, filesStorageClientAdapterService: <a href="../injectables/FilesStorageClientAdapterService.html" target="_self">FilesStorageClientAdapterService</a>)</code>
+<code>constructor(submissionRepo: <a href="../injectables/SubmissionRepo.html" target="_self">SubmissionRepo</a>, filesStorageClientAdapterService: <a href="../injectables/FilesStorageClientAdapterService.html" target="_self">FilesStorageClientAdapterService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/task/service/submission.service.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/task/service/submission.service.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -211,6 +223,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/FilesStorageClientAdapterService.html" target="_self" >FilesStorageClientAdapterService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>logger</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -254,8 +278,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="24"
-                                    class="link-to-prism">apps/server/src/modules/task/service/submission.service.ts:24</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">apps/server/src/modules/task/service/submission.service.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -305,6 +329,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="deleteSingleSubmissionsOwnedByUser"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteSingleSubmissionsOwnedByUser</b></span>
+                        <a href="#deleteSingleSubmissionsOwnedByUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteSingleSubmissionsOwnedByUser(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="35"
+                                    class="link-to-prism">apps/server/src/modules/task/service/submission.service.ts:35</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperation.html" target="_self" >Promise&lt;DomainOperation&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findAllByTask"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -323,8 +416,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">apps/server/src/modules/task/service/submission.service.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="23"
+                                    class="link-to-prism">apps/server/src/modules/task/service/submission.service.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -392,8 +485,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="14"
-                                    class="link-to-prism">apps/server/src/modules/task/service/submission.service.ts:14</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="19"
+                                    class="link-to-prism">apps/server/src/modules/task/service/submission.service.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -439,6 +532,144 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getSubmissionsId"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>getSubmissionsId</b></span>
+                        <a href="#getSubmissionsId"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getSubmissionsId(submissions: <a href="../classes/Submission.html" target="_self">Submission[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="121"
+                                    class="link-to-prism">apps/server/src/modules/task/service/submission.service.ts:121</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>submissions</td>
+                                            <td>
+                                                            <code><a href="../classes/Submission.html" target="_self" >Submission[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId[]</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="removeUserReferencesFromSubmissions"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>removeUserReferencesFromSubmissions</b></span>
+                        <a href="#removeUserReferencesFromSubmissions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>removeUserReferencesFromSubmissions(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">apps/server/src/modules/task/service/submission.service.ts:76</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperation.html" target="_self" >Promise&lt;DomainOperation&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -447,15 +678,20 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { FilesStorageClientAdapterService } from &#x27;@modules/files-storage-client&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { DataDeletionDomainOperationLoggable } from &#x27;@shared/common/loggable&#x27;;
+import { DomainOperationBuilder } from &#x27;@shared/domain/builder&#x27;;
 import { Submission } from &#x27;@shared/domain/entity&#x27;;
-import { Counted, EntityId } from &#x27;@shared/domain/types&#x27;;
+import { DomainOperation } from &#x27;@shared/domain/interface&#x27;;
+import { Counted, DomainName, EntityId, OperationType, StatusModel } from &#x27;@shared/domain/types&#x27;;
 import { SubmissionRepo } from &#x27;@shared/repo&#x27;;
+import { Logger } from &#x27;@src/core/logger&#x27;;
 
 @Injectable()
 export class SubmissionService {
 	constructor(
 		private readonly submissionRepo: SubmissionRepo,
-		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
+		private readonly logger: Logger
 	) {}
 
 	async findById(submissionId: EntityId): Promise&lt;Submission&gt; {
@@ -472,6 +708,96 @@ export class SubmissionService {
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(submission.id);
 
 		await this.submissionRepo.delete(submission);
+	}
+
+	async deleteSingleSubmissionsOwnedByUser(userId: EntityId): Promise&lt;DomainOperation&gt; {
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				&#x27;Deleting single Submissions owned by user&#x27;,
+				DomainName.SUBMISSIONS,
+				userId,
+				StatusModel.PENDING
+			)
+		);
+		let [submissionsEntities, submissionsCount] &#x3D; await this.submissionRepo.findAllByUserId(userId);
+
+		if (submissionsCount &gt; 0) {
+			submissionsEntities &#x3D; submissionsEntities.filter((submission) &#x3D;&gt; submission.isSingleSubmissionOwnedByUser());
+			submissionsCount &#x3D; submissionsEntities.length;
+		}
+
+		if (submissionsCount &gt; 0) {
+			await this.submissionRepo.delete(submissionsEntities);
+		}
+
+		const result &#x3D; DomainOperationBuilder.build(
+			DomainName.SUBMISSIONS,
+			OperationType.DELETE,
+			submissionsCount,
+			this.getSubmissionsId(submissionsEntities)
+		);
+
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				&#x27;Successfully deleted single Submissions owned by user&#x27;,
+				DomainName.SUBMISSIONS,
+				userId,
+				StatusModel.FINISHED,
+				submissionsCount,
+				0
+			)
+		);
+
+		return result;
+	}
+
+	async removeUserReferencesFromSubmissions(userId: EntityId): Promise&lt;DomainOperation&gt; {
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				&#x27;Deleting user references from Submissions&#x27;,
+				DomainName.SUBMISSIONS,
+				userId,
+				StatusModel.PENDING
+			)
+		);
+
+		let [submissionsEntities, submissionsCount] &#x3D; await this.submissionRepo.findAllByUserId(userId);
+
+		if (submissionsCount &gt; 0) {
+			submissionsEntities &#x3D; submissionsEntities.filter((submission) &#x3D;&gt; submission.isGroupSubmission());
+			submissionsCount &#x3D; submissionsEntities.length;
+		}
+
+		if (submissionsCount &gt; 0) {
+			submissionsEntities.forEach((submission) &#x3D;&gt; {
+				submission.removeStudentById(userId);
+				submission.removeUserFromTeamMembers(userId);
+			});
+
+			await this.submissionRepo.save(submissionsEntities);
+		}
+		const result &#x3D; DomainOperationBuilder.build(
+			DomainName.SUBMISSIONS,
+			OperationType.UPDATE,
+			submissionsCount,
+			this.getSubmissionsId(submissionsEntities)
+		);
+
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				&#x27;Successfully deleted references from Submissions collection&#x27;,
+				DomainName.SUBMISSIONS,
+				userId,
+				StatusModel.FINISHED,
+				submissionsCount,
+				0
+			)
+		);
+		return result;
+	}
+
+	private getSubmissionsId(submissions: Submission[]): EntityId[] {
+		return submissions.map((submission) &#x3D;&gt; submission.id);
 	}
 }
 </code></pre>
