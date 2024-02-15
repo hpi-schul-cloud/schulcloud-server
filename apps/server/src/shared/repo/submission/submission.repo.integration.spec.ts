@@ -107,7 +107,7 @@ describe('submission repo', () => {
 
 			expect(count).toEqual(1);
 			expect(result.length).toEqual(1);
-			expect(result[0].student.id).toEqual(student.id);
+			expect(result[0].student?.id).toEqual(student.id);
 		});
 
 		it('should return submissions when the user is a team member', async () => {
