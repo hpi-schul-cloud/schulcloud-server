@@ -1,5 +1,6 @@
 import { SanisResponse, schulconnexResponseFactory } from '@infra/schulconnex-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { ServerTestModule } from '@modules/server/server.module';
 import {
 	FilterImportUserParams,
@@ -36,7 +37,6 @@ import {
 } from '@shared/testing';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { IUserImportFeatures, UserImportFeatures } from '../../config';
 
 describe('ImportUser Controller (API)', () => {

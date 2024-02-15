@@ -28,7 +28,7 @@ export class ColumnBoardTarget extends BaseEntityWithTimestamps implements Learn
 		this.published = false;
 	}
 
-	@Property()
+	@Property({ type: 'boolean' })
 	published = false;
 
 	@Property({ fieldName: 'columnBoard' })
