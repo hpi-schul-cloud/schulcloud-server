@@ -561,7 +561,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 				};
 			};
 
-			it('should contain not contain user related information', async () => {
+			it('should not contain user related information', async () => {
 				const { data } = setup();
 
 				const result: PropertyData[] = await strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
