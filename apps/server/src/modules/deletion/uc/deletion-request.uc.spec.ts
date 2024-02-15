@@ -326,8 +326,8 @@ describe(DeletionRequestUc.name, () => {
 				taskService.removeUserFromFinished.mockResolvedValueOnce(tasksModifiedByRemoveUserFromFinished);
 				taskService.deleteTasksByOnlyCreator.mockResolvedValueOnce(tasksDeleted);
 				newsService.deleteCreatorOrUpdaterReference.mockResolvedValueOnce(newsUpdated);
-				submissionService.deleteSubmissionsByUserId.mockResolvedValueOnce(submissionsDeleted);
-				submissionService.updateSubmissionByUserId.mockResolvedValueOnce(submissionsUpdated);
+				submissionService.deleteSingleSubmissionsOwnedByUser.mockResolvedValueOnce(submissionsDeleted);
+				submissionService.removeUserReferencesFromSubmissions.mockResolvedValueOnce(submissionsUpdated);
 
 				return {
 					deletionRequestToExecute,
@@ -572,7 +572,9 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(submissionService.deleteSubmissionsByUserId).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+				expect(submissionService.deleteSingleSubmissionsOwnedByUser).toHaveBeenCalledWith(
+					deletionRequestToExecute.targetRefId
+				);
 			});
 
 			it('should call submissionService.updateSubmissionByUserId to update submissions', async () => {
@@ -582,7 +584,9 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(submissionService.updateSubmissionByUserId).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+				expect(submissionService.removeUserReferencesFromSubmissions).toHaveBeenCalledWith(
+					deletionRequestToExecute.targetRefId
+				);
 			});
 
 			it('should call deletionLogService.createDeletionLog to create logs for deletionRequest', async () => {

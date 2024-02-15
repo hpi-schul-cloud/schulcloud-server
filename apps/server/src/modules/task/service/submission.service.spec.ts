@@ -218,7 +218,7 @@ describe('Submission Service', () => {
 		});
 	});
 
-	describe('deleteSubmissionsByUserId', () => {
+	describe('deleteSingleSubmissionsOwnedByUser', () => {
 		describe('when submission with specified userId was not found ', () => {
 			const setup = () => {
 				const submission = submissionFactory.buildWithId();
@@ -231,7 +231,7 @@ describe('Submission Service', () => {
 			it('should return deletedSubmissions number of 0', async () => {
 				const { submission } = setup();
 
-				const result = await service.deleteSubmissionsByUserId(new ObjectId().toString());
+				const result = await service.deleteSingleSubmissionsOwnedByUser(new ObjectId().toString());
 
 				expect(result.count).toEqual(0);
 				expect(result.refs.length).toEqual(0);
@@ -253,7 +253,7 @@ describe('Submission Service', () => {
 			it('should return deletedSubmissions number of 1', async () => {
 				const { submission, user } = setup();
 
-				const result = await service.deleteSubmissionsByUserId(user.id);
+				const result = await service.deleteSingleSubmissionsOwnedByUser(user.id);
 
 				expect(result.count).toEqual(1);
 				expect(result.refs.length).toEqual(1);
@@ -263,7 +263,7 @@ describe('Submission Service', () => {
 		});
 	});
 
-	describe('updateSubmissionByUserId', () => {
+	describe('removeUserReferencesFromSubmissions', () => {
 		describe('when submission with specified userId was not found ', () => {
 			const setup = () => {
 				const user1 = userFactory.buildWithId();
@@ -278,7 +278,7 @@ describe('Submission Service', () => {
 			it('should return updated submission number of 0', async () => {
 				const { submission, user1 } = setup();
 
-				const result = await service.updateSubmissionByUserId(new ObjectId().toString());
+				const result = await service.removeUserReferencesFromSubmissions(new ObjectId().toString());
 
 				expect(result.count).toEqual(0);
 				expect(result.refs.length).toEqual(0);
@@ -291,7 +291,10 @@ describe('Submission Service', () => {
 			const setup = () => {
 				const user1 = userFactory.buildWithId();
 				const user2 = userFactory.buildWithId();
-				const submission = submissionFactory.buildWithId({ student: user1, teamMembers: [user1, user2] });
+				const submission = submissionFactory.buildWithId({
+					student: user1,
+					teamMembers: [user1, user2],
+				});
 
 				submissionRepo.findAllByUserId.mockResolvedValueOnce([[submission], 1]);
 				submissionRepo.delete.mockResolvedValueOnce();
@@ -302,7 +305,7 @@ describe('Submission Service', () => {
 			it('should return updated submission number of 1', async () => {
 				const { submission, user1, user2 } = setup();
 
-				const result = await service.updateSubmissionByUserId(user1.id);
+				const result = await service.removeUserReferencesFromSubmissions(user1.id);
 
 				expect(result.count).toEqual(1);
 				expect(result.refs.length).toEqual(1);

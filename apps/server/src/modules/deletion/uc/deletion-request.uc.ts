@@ -380,8 +380,8 @@ export class DeletionRequestUc {
 		this.logger.debug({ action: 'removeUserFromSubmissions', deletionRequest });
 
 		const [submissionsDeleted, submissionsModified] = await Promise.all([
-			this.submissionService.deleteSubmissionsByUserId(deletionRequest.targetRefId),
-			this.submissionService.updateSubmissionByUserId(deletionRequest.targetRefId),
+			this.submissionService.deleteSingleSubmissionsOwnedByUser(deletionRequest.targetRefId),
+			this.submissionService.removeUserReferencesFromSubmissions(deletionRequest.targetRefId),
 		]);
 
 		await this.logDeletion(

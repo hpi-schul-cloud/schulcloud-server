@@ -115,7 +115,7 @@ export class Submission extends BaseEntityWithTimestamps {
 	// Bad that the logic is needed to expose the userIds, but is used in task for now.
 	// Check later if it can be replaced and remove all related code.
 	public getSubmitterIds(): EntityId[] {
-		const creatorId = this.student?.id ?? undefined;
+		const creatorId = this.student?.id;
 		const teamMemberIds = this.getTeamMemberIds();
 		const courseGroupMemberIds = this.getCourseGroupStudentIds();
 		const memberIds =
@@ -145,6 +145,18 @@ export class Submission extends BaseEntityWithTimestamps {
 		const isGradedForUser = isMember && isGraded;
 
 		return isGradedForUser;
+	}
+
+	public isGroupSubmission(): boolean {
+		return this.hasCourseGroup() || (!this.hasCourseGroup() && this.teamMembers.length > 1);
+	}
+
+	public isSingleSubmissionOwnedByUser(): boolean {
+		return !this.hasCourseGroup() && this.teamMembers.length === 1;
+	}
+
+	private hasCourseGroup(): boolean {
+		return !!this.courseGroup;
 	}
 
 	public removeStudentById(userId: EntityId): void {
