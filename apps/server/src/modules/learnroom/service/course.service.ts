@@ -67,7 +67,7 @@ export class CourseService {
 
 	async create(course: Course): Promise<void> {
 		await this.repo.createCourse(course);
-  }
+	}
 
 	private getCoursesId(courses: Course[]): EntityId[] {
 		return courses.map((course) => course.id);
