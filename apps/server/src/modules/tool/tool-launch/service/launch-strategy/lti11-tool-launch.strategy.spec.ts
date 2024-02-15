@@ -178,11 +178,6 @@ describe('Lti11ToolLaunchStrategy', () => {
 							value: launchPresentationLocale,
 							location: PropertyLocation.BODY,
 						}),
-						new PropertyData({
-							name: 'roles',
-							value: `${LtiRole.INSTRUCTOR},${LtiRole.LEARNER}`,
-							location: PropertyLocation.BODY,
-						}),
 					])
 				);
 			});
@@ -239,6 +234,82 @@ describe('Lti11ToolLaunchStrategy', () => {
 			});
 		});
 
+		describe('when lti privacyPermission is public', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory
+					.withLti11Config({
+						key: 'mockKey',
+						secret: 'mockSecret',
+						lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
+						privacy_permission: LtiPrivacyPermission.PUBLIC,
+						resource_link_id: 'resourceLinkId',
+					})
+					.buildWithId();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
+
+				const data: ToolLaunchParams = {
+					contextExternalTool,
+					schoolExternalTool,
+					externalTool,
+				};
+
+				const userId: string = new ObjectId().toHexString();
+				const userEmail = 'user@email.com';
+				const user: UserDO = userDoFactory.buildWithId(
+					{
+						email: userEmail,
+						roles: [
+							{
+								id: 'roleId1',
+								name: RoleName.TEACHER,
+							},
+							{
+								id: 'roleId2',
+								name: RoleName.USER,
+							},
+						],
+					},
+					userId
+				);
+
+				const userDisplayName = 'Hans Peter Test';
+
+				userService.findById.mockResolvedValue(user);
+				userService.getDisplayName.mockResolvedValue(userDisplayName);
+
+				return {
+					data,
+					userId,
+					userDisplayName,
+					userEmail,
+				};
+			};
+
+			it('should contain the all user related attributes', async () => {
+				const { data, userId, userDisplayName, userEmail } = setup();
+
+				const result: PropertyData[] = await strategy.buildToolLaunchDataFromConcreteConfig(userId, data);
+
+				expect(result).toEqual(
+					expect.arrayContaining([
+						new PropertyData({
+							name: 'roles',
+							value: `${LtiRole.INSTRUCTOR},${LtiRole.LEARNER}`,
+							location: PropertyLocation.BODY,
+						}),
+						new PropertyData({ name: 'lis_person_name_full', value: userDisplayName, location: PropertyLocation.BODY }),
+						new PropertyData({
+							name: 'lis_person_contact_email_primary',
+							value: userEmail,
+							location: PropertyLocation.BODY,
+						}),
+						new PropertyData({ name: 'user_id', value: userId, location: PropertyLocation.BODY }),
+					])
+				);
+			});
+		});
+
 		describe('when lti privacyPermission is name', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory
@@ -260,7 +331,21 @@ describe('Lti11ToolLaunchStrategy', () => {
 				};
 
 				const userId: string = new ObjectId().toHexString();
-				const user: UserDO = userDoFactory.buildWithId(undefined, userId);
+				const user: UserDO = userDoFactory.buildWithId(
+					{
+						roles: [
+							{
+								id: 'roleId1',
+								name: RoleName.TEACHER,
+							},
+							{
+								id: 'roleId2',
+								name: RoleName.USER,
+							},
+						],
+					},
+					userId
+				);
 
 				const userDisplayName = 'Hans Peter Test';
 
@@ -281,9 +366,17 @@ describe('Lti11ToolLaunchStrategy', () => {
 
 				expect(result).toEqual(
 					expect.arrayContaining([
+						new PropertyData({
+							name: 'roles',
+							value: `${LtiRole.INSTRUCTOR},${LtiRole.LEARNER}`,
+							location: PropertyLocation.BODY,
+						}),
 						new PropertyData({ name: 'lis_person_name_full', value: userDisplayName, location: PropertyLocation.BODY }),
 						new PropertyData({ name: 'user_id', value: userId, location: PropertyLocation.BODY }),
 					])
+				);
+				expect(result).not.toEqual(
+					expect.arrayContaining([expect.objectContaining({ name: 'lis_person_contact_email_primary' })])
 				);
 			});
 		});
@@ -310,7 +403,22 @@ describe('Lti11ToolLaunchStrategy', () => {
 
 				const userId: string = new ObjectId().toHexString();
 				const userEmail = 'user@email.com';
-				const user: UserDO = userDoFactory.buildWithId({ email: userEmail }, userId);
+				const user: UserDO = userDoFactory.buildWithId(
+					{
+						email: userEmail,
+						roles: [
+							{
+								id: 'roleId1',
+								name: RoleName.TEACHER,
+							},
+							{
+								id: 'roleId2',
+								name: RoleName.USER,
+							},
+						],
+					},
+					userId
+				);
 
 				userService.findById.mockResolvedValue(user);
 
@@ -329,6 +437,11 @@ describe('Lti11ToolLaunchStrategy', () => {
 				expect(result).toEqual(
 					expect.arrayContaining([
 						new PropertyData({
+							name: 'roles',
+							value: `${LtiRole.INSTRUCTOR},${LtiRole.LEARNER}`,
+							location: PropertyLocation.BODY,
+						}),
+						new PropertyData({
 							name: 'lis_person_contact_email_primary',
 							value: userEmail,
 							location: PropertyLocation.BODY,
@@ -336,6 +449,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 						new PropertyData({ name: 'user_id', value: userId, location: PropertyLocation.BODY }),
 					])
 				);
+				expect(result).not.toEqual(expect.arrayContaining([expect.objectContaining({ name: 'lis_person_name_full' })]));
 			});
 		});
 
@@ -359,7 +473,18 @@ describe('Lti11ToolLaunchStrategy', () => {
 					externalTool,
 				};
 
-				const user: UserDO = userDoFactory.buildWithId();
+				const user: UserDO = userDoFactory.buildWithId({
+					roles: [
+						{
+							id: 'roleId1',
+							name: RoleName.TEACHER,
+						},
+						{
+							id: 'roleId2',
+							name: RoleName.USER,
+						},
+					],
+				});
 
 				const pseudonym: Pseudonym = pseudonymFactory.build();
 
@@ -379,7 +504,74 @@ describe('Lti11ToolLaunchStrategy', () => {
 
 				expect(result).toEqual(
 					expect.arrayContaining([
+						new PropertyData({
+							name: 'roles',
+							value: `${LtiRole.INSTRUCTOR},${LtiRole.LEARNER}`,
+							location: PropertyLocation.BODY,
+						}),
 						new PropertyData({ name: 'user_id', value: pseudonym.pseudonym, location: PropertyLocation.BODY }),
+					])
+				);
+				expect(result).not.toEqual(
+					expect.arrayContaining([
+						expect.objectContaining({ name: 'lis_person_name_full' }),
+						expect.objectContaining({ name: 'lis_person_contact_email_primary' }),
+					])
+				);
+			});
+		});
+
+		describe('when lti privacyPermission is anonymous', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory
+					.withLti11Config({
+						key: 'mockKey',
+						secret: 'mockSecret',
+						lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
+						privacy_permission: LtiPrivacyPermission.ANONYMOUS,
+						resource_link_id: 'resourceLinkId',
+					})
+					.buildWithId();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId();
+
+				const data: ToolLaunchParams = {
+					contextExternalTool,
+					schoolExternalTool,
+					externalTool,
+				};
+
+				const user: UserDO = userDoFactory.buildWithId({
+					roles: [
+						{
+							id: 'roleId1',
+							name: RoleName.TEACHER,
+						},
+						{
+							id: 'roleId2',
+							name: RoleName.USER,
+						},
+					],
+				});
+
+				userService.findById.mockResolvedValue(user);
+
+				return {
+					data,
+				};
+			};
+
+			it('should contain not contain user related information', async () => {
+				const { data } = setup();
+
+				const result: PropertyData[] = await strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
+
+				expect(result).not.toEqual(
+					expect.arrayContaining([
+						expect.objectContaining({ name: 'lis_person_name_full' }),
+						expect.objectContaining({ name: 'lis_person_contact_email_primary' }),
+						expect.objectContaining({ name: 'user_id' }),
+						expect.objectContaining({ name: 'roles' }),
 					])
 				);
 			});
