@@ -4,6 +4,7 @@ import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { DomainOperation } from '@shared/domain/interface';
 import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import { RegistrationPinRepo } from '../repo';
 import { RegistrationPinEntity } from '../entity';
 
@@ -26,18 +27,7 @@ export class RegistrationPinService {
 		const numberOfDeletedRegistrationPins = await this.registrationPinRepo.deleteRegistrationPinByEmail(email);
 
 		if (numberOfDeletedRegistrationPins !== count) {
-			this.logger.info(
-				new DataDeletionDomainOperationLoggable(
-					'Failed to delete user data from RegistrationPin',
-					DomainName.REGISTRATIONPIN,
-					email,
-					StatusModel.FAILED,
-					0,
-					numberOfDeletedRegistrationPins
-				)
-			);
-
-			throw new Error(`Failed to delete user data from RegistrationPin for '${email}'`);
+			throw new DeletionErrorLoggableException(`Failed to delete user data from RegistrationPin for '${email}'`);
 		}
 
 		const result = DomainOperationBuilder.build(

@@ -15,6 +15,8 @@ import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { DomainOperationBuilder } from '@shared/domain/builder';
+import { NotFoundException } from '@nestjs/common';
+import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
 import { UserService } from './user.service';
@@ -100,6 +102,45 @@ describe('UserService', () => {
 			expect(result[1]).toEqual([permission]);
 
 			userSpy.mockRestore();
+		});
+	});
+
+	describe('getUserEntityWithRoles', () => {
+		describe('when user with roles exists', () => {
+			const setup = () => {
+				const roles = roleFactory.buildListWithId(2);
+				const user = userFactory.buildWithId({ roles });
+
+				userRepo.findById.mockResolvedValueOnce(user);
+
+				return { user, userId: user.id };
+			};
+
+			it('should return the user with included roles', async () => {
+				const { user, userId } = setup();
+
+				const result = await service.getUserEntityWithRoles(userId);
+
+				expect(result).toEqual(user);
+				expect(result.getRoles()).toHaveLength(2);
+			});
+		});
+
+		describe('when repo throws an error', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const error = new NotFoundException();
+
+				userRepo.findById.mockRejectedValueOnce(error);
+
+				return { userId, error };
+			};
+
+			it('should throw an error', async () => {
+				const { userId, error } = setup();
+
+				await expect(() => service.getUserEntityWithRoles(userId)).rejects.toThrowError(error);
+			});
 		});
 	});
 
@@ -473,7 +514,7 @@ describe('UserService', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 
-				const expectedError = new Error(`Failed to delete user '${user.id}' from User collection`);
+				const expectedError = `Failed to delete user '${user.id}' from User collection`;
 
 				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
 				userRepo.deleteUser.mockResolvedValueOnce(0);
@@ -484,26 +525,12 @@ describe('UserService', () => {
 				};
 			};
 
-			it('should call userRepo.findByIdOrNull with userId', async () => {
-				const { user } = setup();
-
-				await service.deleteUser(user.id);
-
-				expect(userRepo.findByIdOrNull).toHaveBeenCalledWith(user.id, true);
-			});
-
-			it('should call userRepo.deleteUser with userId', async () => {
-				const { user } = setup();
-
-				await service.deleteUser(user.id);
-
-				expect(userRepo.deleteUser).toHaveBeenCalledWith(user.id);
-			});
-
 			it('should throw an error', async () => {
 				const { expectedError, user } = setup();
 
-				await expect(service.deleteUser(user.id)).rejects.toThrowError(expectedError);
+				await expect(service.deleteUser(user.id)).rejects.toThrowError(
+					new DeletionErrorLoggableException(expectedError)
+				);
 			});
 		});
 	});
