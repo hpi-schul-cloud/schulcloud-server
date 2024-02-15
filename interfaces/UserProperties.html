@@ -900,11 +900,11 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from &#x27;@mikro-orm/core&#x27;;
 import { EntityWithSchool } from &#x27;../interface&#x27;;
+import { EntityId } from &#x27;../types&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
 import { Role } from &#x27;./role.entity&#x27;;
 import { SchoolEntity } from &#x27;./school.entity&#x27;;
 import { UserParentsEntity } from &#x27;./user-parents.entity&#x27;;
-import { EntityId } from &#x27;../types&#x27;;
 
 export enum LanguageType {
 	DE &#x3D; &#x27;de&#x27;,
@@ -996,7 +996,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property({ nullable: true })
 	forcePasswordChange?: boolean;
 
-	@Property({ nullable: true })
+	@Property({ type: &#x27;object&#x27;, nullable: true })
 	preferences?: Record&lt;string, unknown&gt;;
 
 	@Property({ nullable: true })

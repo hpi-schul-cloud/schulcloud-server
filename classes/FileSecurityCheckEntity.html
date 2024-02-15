@@ -256,7 +256,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Property()<br />
+                            @Property({type: Date})<br />
                         </code>
                     </td>
                 </tr>
@@ -415,7 +415,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Property()<br />
+                            @Property({type: Date, onUpdate: () &#x3D;&gt; })<br />
                         </code>
                     </td>
                 </tr>
@@ -461,10 +461,10 @@ export class FileSecurityCheckEntity {
 	@Property()
 	requestToken?: string &#x3D; uuid();
 
-	@Property()
+	@Property({ type: Date })
 	createdAt &#x3D; new Date();
 
-	@Property()
+	@Property({ type: Date, onUpdate: () &#x3D;&gt; new Date() })
 	updatedAt &#x3D; new Date();
 
 	constructor(props: FileSecurityCheckEntityProps) {

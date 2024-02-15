@@ -580,7 +580,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Property()<br />
+                            @Property({type: &#x27;boolean&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -803,7 +803,7 @@ export class Task extends BaseEntityWithTimestamps implements LearnroomElement, 
 	@Index()
 	dueDate?: Date;
 
-	@Property()
+	@Property({ type: &#x27;boolean&#x27; })
 	private &#x3D; true;
 
 	@Property({ nullable: true })

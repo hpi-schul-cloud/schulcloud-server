@@ -319,10 +319,10 @@ export class FileSecurityCheckEntity {
 	@Property()
 	requestToken?: string &#x3D; uuid();
 
-	@Property()
+	@Property({ type: Date })
 	createdAt &#x3D; new Date();
 
-	@Property()
+	@Property({ type: Date, onUpdate: () &#x3D;&gt; new Date() })
 	updatedAt &#x3D; new Date();
 
 	constructor(props: FileSecurityCheckEntityProps) {

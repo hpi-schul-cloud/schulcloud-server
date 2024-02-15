@@ -258,8 +258,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="173"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:173</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="179"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:179</a></div>
                         </td>
                     </tr>
 
@@ -327,8 +327,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="165"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:165</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="171"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:171</a></div>
                         </td>
                     </tr>
 
@@ -656,8 +656,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="211"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:211</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="217"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:217</a></div>
                         </td>
                     </tr>
 
@@ -844,8 +844,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="207"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:207</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="213"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:213</a></div>
                         </td>
                     </tr>
 
@@ -883,8 +883,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="181"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:181</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="187"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:187</a></div>
                         </td>
                     </tr>
 
@@ -953,8 +953,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="191"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:191</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="197"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:197</a></div>
                         </td>
                     </tr>
 
@@ -1020,8 +1020,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="203"
-                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:203</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="209"
+                                    class="link-to-prism">apps/server/src/shared/repo/user/user.repo.ts:209</a></div>
                         </td>
                     </tr>
 
@@ -1482,7 +1482,13 @@ export class UserRepo extends BaseRepo&lt;User&gt; {
 
 		const userDocuments &#x3D; await this._em.aggregate(User, pipeline);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-		const users &#x3D; userDocuments.map((userDocument) &#x3D;&gt; this._em.map(User, userDocument));
+		const users &#x3D; userDocuments.map((userDocument) &#x3D;&gt; {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			const { createdAt, updatedAt, ...newUserDocument } &#x3D; userDocument;
+
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			return this._em.map(User, newUserDocument);
+		});
 		await this._em.populate(users, [&#x27;roles&#x27;]);
 		return [users, count];
 	}

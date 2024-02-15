@@ -295,10 +295,10 @@ export abstract class BaseEntityWithTimestamps&lt;Optional &#x3D; never&gt; impl
 	@SerializedPrimaryKey()
 	id!: string;
 
-	@Property()
+	@Property({ type: Date })
 	createdAt &#x3D; new Date();
 
-	@Property({ onUpdate: () &#x3D;&gt; new Date() })
+	@Property({ type: Date, onUpdate: () &#x3D;&gt; new Date() })
 	updatedAt &#x3D; new Date();
 }
 

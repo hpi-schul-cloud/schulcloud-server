@@ -249,7 +249,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Property()<br />
+                            @Property({type: Date})<br />
                         </code>
                     </td>
                 </tr>
@@ -347,7 +347,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Property({onUpdate: () &#x3D;&gt; })<br />
+                            @Property({type: Date, onUpdate: () &#x3D;&gt; })<br />
                         </code>
                     </td>
                 </tr>
@@ -403,10 +403,10 @@ export abstract class BaseEntityWithTimestamps&lt;Optional &#x3D; never&gt; impl
 	@SerializedPrimaryKey()
 	id!: string;
 
-	@Property()
+	@Property({ type: Date })
 	createdAt &#x3D; new Date();
 
-	@Property({ onUpdate: () &#x3D;&gt; new Date() })
+	@Property({ type: Date, onUpdate: () &#x3D;&gt; new Date() })
 	updatedAt &#x3D; new Date();
 }
 

@@ -324,7 +324,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Index()<br />@Property()<br />
+                            @Index()<br />@Property({type: &#x27;boolean&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -573,7 +573,7 @@ export class LessonEntity extends BaseEntityWithTimestamps implements LearnroomE
 	name: string;
 
 	@Index()
-	@Property()
+	@Property({ type: &#x27;boolean&#x27; })
 	hidden &#x3D; false;
 
 	@Index()

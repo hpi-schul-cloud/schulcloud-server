@@ -226,7 +226,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @Property()<br />
+                            @Property({type: &#x27;boolean&#x27;})<br />
                         </code>
                     </td>
                 </tr>
@@ -310,7 +310,7 @@ export class ColumnBoardTarget extends BaseEntityWithTimestamps implements Learn
 		this.published &#x3D; false;
 	}
 
-	@Property()
+	@Property({ type: &#x27;boolean&#x27; })
 	published &#x3D; false;
 
 	@Property({ fieldName: &#x27;columnBoard&#x27; })
