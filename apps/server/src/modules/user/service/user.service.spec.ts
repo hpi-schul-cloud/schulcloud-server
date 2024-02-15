@@ -8,13 +8,13 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { LanguageType, Role, User } from '@shared/domain/entity';
-import { IFindOptions, Permission, RoleName, SortOrder } from '@shared/domain/interface';
+import { IFindOptions, Permission, RoleName, SortOrder, UserIdAndExternalId } from '@shared/domain/interface';
 import { DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainOperationBuilder, UserIdAndExternalIdBuilder } from '@shared/domain/builder';
 import { NotFoundException } from '@nestjs/common';
 import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import { UserDto } from '../uc/dto/user.dto';
@@ -586,6 +586,69 @@ describe('UserService', () => {
 				const result: User[] = await service.findUserBySchoolAndName(new ObjectId().toHexString(), firstName, lastName);
 
 				expect(result).toEqual(users);
+			});
+		});
+	});
+
+	describe('findByExternalIds is called', () => {
+		describe('when a users with thess external id exist', () => {
+			const setup = () => {
+				const userA = userFactory.buildWithId({ externalId: '111' });
+				const userB = userFactory.buildWithId({ externalId: '222' });
+
+				const externalIds: string[] = ['111', '222'];
+				const expectedResult = [
+					UserIdAndExternalIdBuilder.build(userA.id, userA.externalId),
+					UserIdAndExternalIdBuilder.build(userB.id, userB.externalId),
+				];
+
+				userRepo.findByExternalIds.mockResolvedValue(expectedResult);
+
+				return {
+					expectedResult,
+					externalIds,
+				};
+			};
+
+			it('should call userRepo.findByExternalIds', async () => {
+				const { externalIds } = setup();
+
+				await service.findByExternalIds(externalIds);
+
+				expect(userRepo.findByExternalIds).toBeCalledWith(externalIds);
+			});
+
+			it('should return array with UserIdAndExternalId objects', async () => {
+				const { externalIds, expectedResult } = setup();
+
+				const result = await service.findByExternalIds(externalIds);
+				expect(result).toEqual(expectedResult);
+			});
+
+			it('should return the array with users', async () => {
+				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+					firstName: 'firstName',
+					lastName: 'lastName',
+					schoolId: 'schoolId',
+					email: 'email',
+					externalId: 'externalId',
+				});
+
+				userDORepo.findByExternalId.mockResolvedValue(user);
+
+				const result: UserDO | null = await service.findByExternalId('externalId', 'systemId');
+
+				expect(result).toEqual(user);
+			});
+		});
+
+		describe('when a user with this external id does not exist', () => {
+			it('should return empty array', async () => {
+				userRepo.findByExternalIds.mockResolvedValue([]);
+
+				const result: UserIdAndExternalId[] = await service.findByExternalIds(['externalId1', 'externalId2']);
+
+				expect(result).toHaveLength(0);
 			});
 		});
 	});

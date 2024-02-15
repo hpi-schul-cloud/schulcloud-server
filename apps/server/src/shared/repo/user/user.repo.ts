@@ -3,9 +3,10 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
 import { ImportUser, Role, SchoolEntity, User } from '@shared/domain/entity';
-import { IFindOptions, SortOrder } from '@shared/domain/interface';
+import { IFindOptions, SortOrder, UserIdAndExternalId } from '@shared/domain/interface';
 import { Counted, EntityId, NameMatch } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
+import { UserIdAndExternalIdBuilder } from '@shared/domain/builder';
 import { MongoPatterns } from '../mongo.patterns';
 
 @Injectable()
@@ -210,6 +211,18 @@ export class UserRepo extends BaseRepo<User> {
 
 	public async findUserBySchoolAndName(schoolId: EntityId, firstName: string, lastName: string): Promise<User[]> {
 		const users: User[] = await this._em.find(User, { school: schoolId, firstName, lastName });
+
+		return users;
+	}
+
+	public async findByExternalIds(externalIds: string[]): Promise<UserIdAndExternalId[]> {
+		const foundUsers = await this._em.find(
+			User,
+			{ externalId: { $in: externalIds } },
+			{ fields: ['id', 'externalId'] }
+		);
+
+		const users = foundUsers.map(({ id, externalId }) => UserIdAndExternalIdBuilder.build(id, externalId));
 
 		return users;
 	}

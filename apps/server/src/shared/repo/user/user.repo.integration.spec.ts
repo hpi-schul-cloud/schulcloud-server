@@ -608,4 +608,95 @@ describe('user repo', () => {
 			});
 		});
 	});
+
+	describe('findByExternalIds', () => {
+		// let sys: SystemEntity;
+		// let userA: User;
+		// let userB: User;
+		// beforeEach(async () => {
+		// 	sys = systemEntityFactory.build();
+		// 	await em.persistAndFlush([sys]);
+		// 	const school = schoolEntityFactory.build({ systems: [sys] });
+		// 	// const school = schoolFactory.withSystem().build();
+
+		// 	userA = userFactory.build({ school, externalId: '111' });
+		// 	userB = userFactory.build({ externalId: '111' });
+		// 	await em.persistAndFlush([userA, userB]);
+		// 	em.clear();
+		// });
+		describe('when users exist', () => {
+			const setup = async () => {
+				const userA = userFactory.buildWithId({ externalId: '111' });
+				const userB = userFactory.buildWithId({ externalId: '222' });
+				const userC = userFactory.buildWithId({ externalId: '333' });
+
+				await em.persistAndFlush([userA, userB, userC]);
+				em.clear();
+
+				const externalIds: string[] = ['111', '222'];
+
+				return {
+					externalIds,
+					userA,
+					userB,
+					userC,
+				};
+			};
+
+			it('should return array with ', async () => {
+				const { externalIds, userA } = await setup();
+
+				const result = await repo.findByExternalIds(externalIds);
+				expect(result[0]).toEqual(userA);
+			});
+
+			// it('should return right keys', async () => {
+			// 	const result = await repo.findByExternalIdOrFail(userA.externalId as string, sys.id);
+			// 	expect(Object.keys(result).sort()).toEqual(
+			// 		[
+			// 			'createdAt',
+			// 			'updatedAt',
+			// 			'roles',
+			// 			'firstName',
+			// 			'firstNameSearchValues',
+			// 			'lastName',
+			// 			'lastNameSearchValues',
+			// 			'email',
+			// 			'emailSearchValues',
+			// 			'customAvatarBackgroundColor',
+			// 			'school',
+			// 			'_id',
+			// 			'ldapDn',
+			// 			'externalId',
+			// 			'forcePasswordChange',
+			// 			'importHash',
+			// 			'parents',
+			// 			'preferences',
+			// 			'language',
+			// 			'deletedAt',
+			// 			'lastLoginSystemChange',
+			// 			'outdatedSince',
+			// 			'previousExternalId',
+			// 			'birthday',
+			// 		].sort()
+			// 	);
+			// });
+
+			// it('should return user matched by id', async () => {
+			// 	const result = await repo.findByExternalIdOrFail(userA.externalId as string, sys.id);
+			// 	expect(result).toMatchObject({
+			// 		id: userA.id,
+			// 		firstName: userA.firstName,
+			// 		lastName: userA.lastName,
+			// 		email: userA.email,
+			// 	});
+			// });
+
+			// it('should throw an error if user by externalid doesnt exist', async () => {
+			// 	const idA = new ObjectId().toHexString();
+			// 	const idB = new ObjectId().toHexString();
+			// 	await expect(repo.findByExternalIdOrFail(idA, idB)).rejects.toEqual(undefined);
+			// });
+		});
+	});
 });

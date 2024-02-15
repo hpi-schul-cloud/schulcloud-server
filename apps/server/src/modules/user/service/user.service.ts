@@ -9,7 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { LanguageType, User } from '@shared/domain/entity';
-import { DomainOperation, IFindOptions } from '@shared/domain/interface';
+import { DomainOperation, IFindOptions, UserIdAndExternalId } from '@shared/domain/interface';
 import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
@@ -192,5 +192,9 @@ export class UserService {
 		const users: User[] = await this.userRepo.findUserBySchoolAndName(schoolId, firstName, lastName);
 
 		return users;
+	}
+
+	public async findByExternalIds(externalIds: string[]): Promise<UserIdAndExternalId[]> {
+		return this.userRepo.findByExternalIds(externalIds);
 	}
 }

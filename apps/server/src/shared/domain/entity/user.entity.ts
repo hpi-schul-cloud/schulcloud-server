@@ -32,7 +32,6 @@ export interface UserProperties {
 	customAvatarBackgroundColor?: string;
 	parents?: UserParentsEntity[];
 	lastSyncedAt?: Date;
-
 }
 
 interface UserInfo {
@@ -142,6 +141,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		this.birthday = props.birthday;
 		this.customAvatarBackgroundColor = props.customAvatarBackgroundColor;
 		this.parents = props.parents;
+		this.lastSyncedAt = props.lastSyncedAt;
 	}
 
 	public resolvePermissions(): string[] {
