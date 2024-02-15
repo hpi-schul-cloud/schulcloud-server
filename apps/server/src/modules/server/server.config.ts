@@ -8,9 +8,9 @@ import type { SchoolConfig } from '@modules/school';
 import type { UserConfig } from '@modules/user';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
-import type { ToolConfig } from '@modules/tool';
-import type { TldrawClientConfig } from '@modules/tldraw-client';
-import type { UserLoginMigrationConfig } from '../user-login-migration';
+import { ToolConfiguration, type IToolFeatures } from '@modules/tool';
+import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
+import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -30,7 +30,7 @@ export interface ServerConfig
 		MailConfig,
 		XApiKeyConfig,
 		AuthenticationConfig,
-		ToolConfig,
+		IToolFeatures,
 		TldrawClientConfig,
 		UserLoginMigrationConfig {
 	NODE_ENV: string;
@@ -71,20 +71,6 @@ const config: ServerConfig = {
 	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)
 		.split(',')
 		.map((domain) => domain.trim()),
-	FEATURE_CTL_TOOLS_TAB_ENABLED: Configuration.get('FEATURE_CTL_TOOLS_TAB_ENABLED') as boolean,
-	FEATURE_LTI_TOOLS_TAB_ENABLED: Configuration.get('FEATURE_LTI_TOOLS_TAB_ENABLED') as boolean,
-	FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED: Configuration.get('FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED') as boolean,
-	// TODO N21-1337 refactor after feature flag is removed
-	FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED: Configuration.get(
-		'FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED'
-	) as boolean,
-	CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES: Configuration.get(
-		'CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES'
-	) as number,
-	PUBLIC_BACKEND_URL: Configuration.get('PUBLIC_BACKEND_URL') as string,
-	FEATURE_CTL_TOOLS_COPY_ENABLED: Configuration.get('FEATURE_CTL_TOOLS_COPY_ENABLED') as boolean,
-	TLDRAW_ADMIN_API_CLIENT_BASE_URL: Configuration.get('TLDRAW_ADMIN_API_CLIENT__BASE_URL') as string,
-	TLDRAW_ADMIN_API_CLIENT_API_KEY: Configuration.get('TLDRAW_ADMIN_API_CLIENT__API_KEY') as string,
 	TLDRAW__ASSETS_ENABLED: Configuration.get('TLDRAW__ASSETS_ENABLED') as boolean,
 	TLDRAW__ASSETS_MAX_SIZE: Configuration.get('TLDRAW__ASSETS_MAX_SIZE') as number,
 	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST: Configuration.get('TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST') as string,
@@ -101,6 +87,8 @@ const config: ServerConfig = {
 	MIGRATION_WIZARD_DOCUMENTATION_LINK: Configuration.has('MIGRATION_WIZARD_DOCUMENTATION_LINK')
 		? (Configuration.get('MIGRATION_WIZARD_DOCUMENTATION_LINK') as string)
 		: undefined,
+	...getTldrawClientConfig(),
+	...ToolConfiguration.toolFeatures,
 };
 
 export const serverConfig = () => config;
