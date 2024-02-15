@@ -70,6 +70,7 @@ export class CourseService {
 	}
 
 	async findOneForUser(courseId: EntityId, userId: EntityId): Promise<Course> {
-		return this.repo.findOne(courseId, userId);
+		const course = await this.repo.findOne(courseId, userId);
+		return course;
 	}
 }
