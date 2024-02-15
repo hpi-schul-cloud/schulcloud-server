@@ -12,7 +12,7 @@ export interface TldrawConfig {
 	REDIS_URI: string;
 	TLDRAW_ASSETS_ENABLED: boolean;
 	TLDRAW_ASSETS_MAX_SIZE: number;
-	TLDRAW_ASSETS_ALLOWED_EXTENSIONS_LIST: string;
+	ASSETS_ALLOWED_MIME_TYPES_LIST: string;
 	API_HOST: number;
 	TLDRAW_MAX_DOCUMENT_SIZE: number;
 }
@@ -32,7 +32,7 @@ const tldrawConfig = {
 	REDIS_URI: Configuration.has('REDIS_URI') ? (Configuration.get('REDIS_URI') as string) : null,
 	TLDRAW_ASSETS_ENABLED: Configuration.get('TLDRAW__ASSETS_ENABLED') as boolean,
 	TLDRAW_ASSETS_MAX_SIZE: Configuration.get('TLDRAW__ASSETS_MAX_SIZE') as number,
-	TLDRAW_ASSETS_ALLOWED_EXTENSIONS_LIST: Configuration.get('TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST') as string,
+	ASSETS_ALLOWED_MIME_TYPES_LIST: Configuration.get('TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST') as string,
 	API_HOST: Configuration.get('API_HOST') as string,
 	TLDRAW_MAX_DOCUMENT_SIZE: Configuration.get('TLDRAW__MAX_DOCUMENT_SIZE') as number,
 };
