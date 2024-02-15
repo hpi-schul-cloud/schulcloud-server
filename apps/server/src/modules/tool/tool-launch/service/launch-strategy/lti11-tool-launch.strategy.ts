@@ -131,6 +131,8 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 					location: PropertyLocation.BODY,
 				})
 			);
+		} else {
+			// Don't add a user_id, when the privacy is anonymous
 		}
 
 		return additionalProperties;
