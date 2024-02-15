@@ -1,11 +1,12 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Collection } from '@mikro-orm/core';
 import { CommonCartridgeExportService, CourseService, LearnroomConfig } from '@modules/learnroom';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ComponentType } from '@shared/domain/entity';
+import { ComponentType, Task } from '@shared/domain/entity';
 import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import AdmZip from 'adm-zip';
 import { CommonCartridgeVersion } from '../../common-cartridge';
@@ -27,7 +28,7 @@ describe('CommonCartridgeExportService', () => {
 		const course = courseFactory.teachersWithId(2).buildWithId();
 		const tasks = taskFactory.buildListWithId(2);
 		const lessons = lessonFactory.buildListWithId(1, {
-			tasks,
+			// tasks,
 			contents: [
 				{
 					title: 'text-title',
@@ -61,6 +62,8 @@ describe('CommonCartridgeExportService', () => {
 			],
 		});
 		const [lesson] = lessons;
+		const taskFromLesson = taskFactory.buildWithId();
+		lesson.tasks = new Collection<Task>([taskFromLesson]);
 
 		lessonServiceMock.findById.mockResolvedValue(lesson);
 		courseServiceMock.findById.mockResolvedValue(course);
@@ -71,7 +74,7 @@ describe('CommonCartridgeExportService', () => {
 		const buffer = await sut.exportCourse(course.id, faker.string.uuid(), version);
 		const archive = new AdmZip(buffer);
 
-		return { archive, course, lessons, tasks };
+		return { archive, course, lessons, tasks, taskFromLesson };
 	};
 
 	beforeAll(async () => {
