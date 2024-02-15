@@ -1562,7 +1562,7 @@
 				"PERSONEN_INFO_TIMEOUT_IN_MS": {
 					"type": "integer",
 					"description": "Timeout in milliseconds for fetching personen info from schulconnex",
-					"default": 30000
+					"default": 120000
 				}
 			},
 			"default": {
