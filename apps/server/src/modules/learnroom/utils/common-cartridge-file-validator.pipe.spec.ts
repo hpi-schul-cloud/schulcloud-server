@@ -50,23 +50,11 @@ describe('CommonCartridgeFileValidatorPipe', () => {
 			});
 		});
 
-		describe('when an invalid file type is provided', () => {
-			const setup = () => {
-				return { file: { mimetype: 'invalid' } as unknown as Express.Multer.File };
-			};
-
-			it('should throw', () => {
-				const { file } = setup();
-
-				expect(() => sut.transform(file)).toThrow('Invalid file type');
-			});
-		});
-
 		describe('when the file is too big', () => {
 			const setup = () => {
 				configServiceMock.get.mockReturnValue(1000);
 
-				return { file: { mimetype: 'application/zip', size: 1001 } as unknown as Express.Multer.File };
+				return { file: { size: 1001 } as unknown as Express.Multer.File };
 			};
 
 			it('should throw', () => {
@@ -81,14 +69,14 @@ describe('CommonCartridgeFileValidatorPipe', () => {
 				configServiceMock.get.mockReturnValue(1000);
 
 				return {
-					file: { mimetype: 'application/zip', size: 1000, buffer: Buffer.from('') } as unknown as Express.Multer.File,
+					file: { size: 1000, buffer: Buffer.from('') } as unknown as Express.Multer.File,
 				};
 			};
 
 			it('should throw', () => {
 				const { file } = setup();
 
-				expect(() => sut.transform(file)).toThrow('No manifest file found');
+				expect(() => sut.transform(file)).toThrow('Invalid file type');
 			});
 		});
 
@@ -99,7 +87,7 @@ describe('CommonCartridgeFileValidatorPipe', () => {
 				configServiceMock.get.mockReturnValue(1000);
 
 				return {
-					file: { mimetype: 'application/zip', size: 1000, buffer } as unknown as Express.Multer.File,
+					file: { size: 1000, buffer } as unknown as Express.Multer.File,
 				};
 			};
 
