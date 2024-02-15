@@ -1,10 +1,10 @@
 import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
 import { EntityWithSchool } from '../interface';
+import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { Role } from './role.entity';
 import { SchoolEntity } from './school.entity';
 import { UserParentsEntity } from './user-parents.entity';
-import { EntityId } from '../types';
 
 export enum LanguageType {
 	DE = 'de',
@@ -99,17 +99,17 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property({ type: 'object', nullable: true })
 	preferences?: Record<string, unknown>;
 
-	@Property({ type: 'date', nullable: true })
+	@Property({ nullable: true })
 	@Index()
 	deletedAt?: Date;
 
-	@Property({ type: 'date', nullable: true })
+	@Property({ nullable: true })
 	lastLoginSystemChange?: Date;
 
-	@Property({ type: 'date', nullable: true })
+	@Property({ nullable: true })
 	outdatedSince?: Date;
 
-	@Property({ type: 'date', nullable: true })
+	@Property({ nullable: true })
 	birthday?: Date;
 
 	@Property({ nullable: true })
