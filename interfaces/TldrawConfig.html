@@ -154,6 +154,12 @@
                                         </a>
                                 </li>
                                 <li>
+                                        <a href="#ASSETS_ALLOWED_MIME_TYPES_LIST" 
+>
+                                            ASSETS_ALLOWED_MIME_TYPES_LIST
+                                        </a>
+                                </li>
+                                <li>
                                         <a href="#CONNECTION_STRING" 
 >
                                             CONNECTION_STRING
@@ -181,12 +187,6 @@
                                         <a href="#REDIS_URI" 
 >
                                             REDIS_URI
-                                        </a>
-                                </li>
-                                <li>
-                                        <a href="#TLDRAW_ASSETS_ALLOWED_EXTENSIONS_LIST" 
->
-                                            TLDRAW_ASSETS_ALLOWED_EXTENSIONS_LIST
                                         </a>
                                 </li>
                                 <li>
@@ -265,6 +265,39 @@
                                     <tr>
                                         <td class="col-md-4">
                                             <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="ASSETS_ALLOWED_MIME_TYPES_LIST"></a>
+                                        <span class="name "><b>ASSETS_ALLOWED_MIME_TYPES_LIST</b>
+                                            <a href="#ASSETS_ALLOWED_MIME_TYPES_LIST">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>ASSETS_ALLOWED_MIME_TYPES_LIST:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 
                                         </td>
                                     </tr>
@@ -422,39 +455,6 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <code>REDIS_URI:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-</code>
-                                    </td>
-                                </tr>
-
-
-                                    <tr>
-                                        <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                                        </td>
-                                    </tr>
-
-
-
-
-
-                        </tbody>
-                    </table>
-                    <table class="table table-sm table-bordered">
-                        <tbody>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <a name="TLDRAW_ASSETS_ALLOWED_EXTENSIONS_LIST"></a>
-                                        <span class="name "><b>TLDRAW_ASSETS_ALLOWED_EXTENSIONS_LIST</b>
-                                            <a href="#TLDRAW_ASSETS_ALLOWED_EXTENSIONS_LIST">
-                                                <span class="icon ion-ios-link"></span>
-                                            </a>
-                                        </span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="col-md-4">
-                                        <code>TLDRAW_ASSETS_ALLOWED_EXTENSIONS_LIST:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -723,7 +723,7 @@ export interface TldrawConfig {
 	REDIS_URI: string;
 	TLDRAW_ASSETS_ENABLED: boolean;
 	TLDRAW_ASSETS_MAX_SIZE: number;
-	TLDRAW_ASSETS_ALLOWED_EXTENSIONS_LIST: string;
+	ASSETS_ALLOWED_MIME_TYPES_LIST: string;
 	API_HOST: number;
 	TLDRAW_MAX_DOCUMENT_SIZE: number;
 }
@@ -743,7 +743,7 @@ const tldrawConfig &#x3D; {
 	REDIS_URI: Configuration.has(&#x27;REDIS_URI&#x27;) ? (Configuration.get(&#x27;REDIS_URI&#x27;) as string) : null,
 	TLDRAW_ASSETS_ENABLED: Configuration.get(&#x27;TLDRAW__ASSETS_ENABLED&#x27;) as boolean,
 	TLDRAW_ASSETS_MAX_SIZE: Configuration.get(&#x27;TLDRAW__ASSETS_MAX_SIZE&#x27;) as number,
-	TLDRAW_ASSETS_ALLOWED_EXTENSIONS_LIST: Configuration.get(&#x27;TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST&#x27;) as string,
+	ASSETS_ALLOWED_MIME_TYPES_LIST: Configuration.get(&#x27;TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST&#x27;) as string,
 	API_HOST: Configuration.get(&#x27;API_HOST&#x27;) as string,
 	TLDRAW_MAX_DOCUMENT_SIZE: Configuration.get(&#x27;TLDRAW__MAX_DOCUMENT_SIZE&#x27;) as number,
 };
