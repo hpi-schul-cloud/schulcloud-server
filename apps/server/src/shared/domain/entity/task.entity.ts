@@ -57,7 +57,7 @@ export class Task extends BaseEntityWithTimestamps implements LearnroomElement, 
 	@Index()
 	dueDate?: Date;
 
-	@Property()
+	@Property({ type: 'boolean' })
 	private = true;
 
 	@Property({ nullable: true })

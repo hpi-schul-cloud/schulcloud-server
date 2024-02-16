@@ -88,7 +88,7 @@ export class LessonEntity extends BaseEntityWithTimestamps implements LearnroomE
 	name: string;
 
 	@Index()
-	@Property()
+	@Property({ type: 'boolean' })
 	hidden = false;
 
 	@Index()
