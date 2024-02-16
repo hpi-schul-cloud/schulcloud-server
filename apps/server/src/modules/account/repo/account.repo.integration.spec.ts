@@ -4,6 +4,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, User } from '@shared/domain/entity';
 import { accountFactory, cleanupCollections, userFactory } from '@shared/testing';
+import { UserIdAndExternalIdBuilder } from '@shared/domain/builder';
 import { AccountRepo } from './account.repo';
 
 describe('account repo', () => {
@@ -253,6 +254,43 @@ describe('account repo', () => {
 			const offset = 2;
 			const foundAccounts = await repo.findMany(offset);
 			expect(foundAccounts).toHaveLength(mockAccounts.length - offset);
+		});
+	});
+
+	describe('findByUserIdsAndSystemIds', () => {
+		describe('when accounts exist', () => {
+			const setup = async () => {
+				const userA = userFactory.buildWithId({ externalId: new ObjectId().toHexString() });
+				const userB = userFactory.buildWithId({ externalId: new ObjectId().toHexString() });
+				const userC = userFactory.buildWithId({ externalId: new ObjectId().toHexString() });
+
+				const accountA = accountFactory.withSystemId(userA.externalId as string).build({ userId: userA.id });
+				const accountB = accountFactory.withSystemId(userB.externalId as string).build({ userId: userB.id });
+				const accountC = accountFactory.withSystemId(userC.externalId as string).build({ userId: userC.id });
+
+				await em.persistAndFlush([accountA, accountB, accountC]);
+				em.clear();
+
+				const userIdsAndExternalIds = [
+					UserIdAndExternalIdBuilder.build(userA.id, userA.externalId),
+					UserIdAndExternalIdBuilder.build(userB.id, userB.externalId),
+				];
+
+				return {
+					accountA,
+					accountB,
+					userIdsAndExternalIds,
+				};
+			};
+
+			it('should return array of accounts', async () => {
+				const { accountA, accountB, userIdsAndExternalIds } = await setup();
+
+				const foundAccounts = await repo.findByUserIdsAndSystemIds(userIdsAndExternalIds);
+
+				expect(foundAccounts[0].id).toEqual(accountA.id);
+				expect(foundAccounts[1].id).toEqual(accountB.id);
+			});
 		});
 	});
 });

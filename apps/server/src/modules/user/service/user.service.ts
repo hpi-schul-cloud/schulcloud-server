@@ -194,6 +194,11 @@ export class UserService {
 		return users;
 	}
 
+	public async findByExternalIdsAndProvidedBySystemId(externalIds: string[]): Promise<void> {
+		const foundUsers = await this.findByExternalIds(externalIds);
+		console.log(foundUsers);
+	}
+
 	public async findByExternalIds(externalIds: string[]): Promise<UserIdAndExternalId[]> {
 		return this.userRepo.findByExternalIds(externalIds);
 	}

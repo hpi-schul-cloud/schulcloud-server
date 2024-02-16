@@ -1,10 +1,11 @@
-import { AnyEntity, EntityName, Primary } from '@mikro-orm/core';
+import { AnyEntity, EntityName, FilterQuery, Primary } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Account } from '@shared/domain/entity/account.entity';
-import { SortOrder } from '@shared/domain/interface';
+import { SortOrder, UserIdAndExternalId } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
+import { AccountScope } from './account-scope';
 
 @Injectable()
 export class AccountRepo extends BaseRepo<Account> {
@@ -77,6 +78,19 @@ export class AccountRepo extends BaseRepo<Account> {
 	async findMany(offset = 0, limit = 100): Promise<Account[]> {
 		const result = await this._em.find(this.entityName, {}, { offset, limit, orderBy: { _id: SortOrder.asc } });
 		this._em.clear();
+		return result;
+	}
+
+	async findByUserIdsAndSystemIds(usersIdsAndExternalIds: UserIdAndExternalId[]): Promise<Account[]> {
+		const scope = new AccountScope();
+		const userIdScope = new AccountScope('$or');
+
+		usersIdsAndExternalIds.map((userIdAndExternalId) => userIdScope.byUserIdAndExternalId(userIdAndExternalId));
+
+		scope.addQuery(userIdScope.query);
+
+		const result = await this._em.find(Account, scope.query);
+
 		return result;
 	}
 
