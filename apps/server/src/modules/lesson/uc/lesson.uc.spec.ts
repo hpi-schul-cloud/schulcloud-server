@@ -92,7 +92,7 @@ describe('LessonUC', () => {
 
 				return { user, course, lesson, hiddenLesson };
 			};
-			it('should get user with permissions from authrozationService', async () => {
+			it('should get user with permissions from authorizationService', async () => {
 				const { user } = setup();
 				await lessonUC.getLessons(user.id, 'courseId');
 				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
@@ -124,7 +124,7 @@ describe('LessonUC', () => {
 					[user, hiddenLesson, AuthorizationContextBuilder.read([Permission.TOPIC_VIEW])],
 				]);
 			});
-			it('should return filtered lessons', async () => {
+			it('should return all lessons', async () => {
 				const { user, course, lesson, hiddenLesson } = setup();
 				const result = await lessonUC.getLessons(user.id, course.id);
 				expect(result).toEqual([lesson, hiddenLesson]);
