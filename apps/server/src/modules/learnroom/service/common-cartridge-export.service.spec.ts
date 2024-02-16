@@ -27,7 +27,6 @@ describe('CommonCartridgeExportService', () => {
 		const course = courseFactory.teachersWithId(2).buildWithId();
 		const tasks = taskFactory.buildListWithId(2);
 		const lessons = lessonFactory.buildListWithId(1, {
-			// tasks,
 			contents: [
 				{
 					title: 'text-title',
@@ -62,7 +61,6 @@ describe('CommonCartridgeExportService', () => {
 		});
 		const [lesson] = lessons;
 		const taskFromLesson = taskFactory.buildWithId({ course, lesson });
-		// lesson.tasks = new Collection<Task>([taskFromLesson]);
 
 		lessonServiceMock.findById.mockResolvedValue(lesson);
 		courseServiceMock.findById.mockResolvedValue(course);
