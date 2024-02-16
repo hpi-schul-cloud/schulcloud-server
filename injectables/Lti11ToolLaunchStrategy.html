@@ -252,7 +252,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/lti11-tool-launch.strategy.ts:24</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/lti11-tool-launch.strategy.ts:23</a></div>
                             </td>
                         </tr>
 
@@ -397,7 +397,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:38</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:37</a></code>
 </div>
                         </td>
                     </tr>
@@ -485,7 +485,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:130</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:142</a></code>
 </div>
                         </td>
                     </tr>
@@ -573,7 +573,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:171</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:183</a></code>
 </div>
                         </td>
                     </tr>
@@ -642,8 +642,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="152"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/lti11-tool-launch.strategy.ts:152</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="164"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/lti11-tool-launch.strategy.ts:164</a></div>
                         </td>
                     </tr>
 
@@ -1687,11 +1687,10 @@
 import { UserService } from &#x27;@modules/user&#x27;;
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import { Pseudonym, RoleReference, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
-import { LtiPrivacyPermission } from &#x27;@shared/domain/entity&#x27;;
 import { RoleName } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { Authorization } from &#x27;oauth-1.0a&#x27;;
-import { LtiRole } from &#x27;../../../common/enum&#x27;;
+import { LtiPrivacyPermission, LtiRole } from &#x27;../../../common/enum&#x27;;
 import { ExternalTool } from &#x27;../../../external-tool/domain&#x27;;
 import { LtiRoleMapper } from &#x27;../../mapper&#x27;;
 import { AuthenticationValues, LaunchRequestMethod, PropertyData, PropertyLocation } from &#x27;../../types&#x27;;
@@ -1759,14 +1758,22 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 				value: config.launch_presentation_locale,
 				location: PropertyLocation.BODY,
 			}),
-			new PropertyData({
-				name: &#x27;roles&#x27;,
-				value: ltiRoles.join(&#x27;,&#x27;),
-				location: PropertyLocation.BODY,
-			}),
 		];
 
-		if (config.privacy_permission &#x3D;&#x3D;&#x3D; LtiPrivacyPermission.NAME) {
+		if (config.privacy_permission !&#x3D;&#x3D; LtiPrivacyPermission.ANONYMOUS) {
+			additionalProperties.push(
+				new PropertyData({
+					name: &#x27;roles&#x27;,
+					value: ltiRoles.join(&#x27;,&#x27;),
+					location: PropertyLocation.BODY,
+				})
+			);
+		}
+
+		if (
+			config.privacy_permission &#x3D;&#x3D;&#x3D; LtiPrivacyPermission.NAME ||
+			config.privacy_permission &#x3D;&#x3D;&#x3D; LtiPrivacyPermission.PUBLIC
+		) {
 			const displayName: string &#x3D; await this.userService.getDisplayName(user);
 
 			additionalProperties.push(
@@ -1778,7 +1785,10 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			);
 		}
 
-		if (config.privacy_permission &#x3D;&#x3D;&#x3D; LtiPrivacyPermission.EMAIL) {
+		if (
+			config.privacy_permission &#x3D;&#x3D;&#x3D; LtiPrivacyPermission.EMAIL ||
+			config.privacy_permission &#x3D;&#x3D;&#x3D; LtiPrivacyPermission.PUBLIC
+		) {
 			additionalProperties.push(
 				new PropertyData({
 					name: &#x27;lis_person_contact_email_primary&#x27;,
@@ -1798,7 +1808,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 					location: PropertyLocation.BODY,
 				})
 			);
-		} else {
+		} else if (config.privacy_permission !&#x3D;&#x3D; LtiPrivacyPermission.ANONYMOUS) {
 			additionalProperties.push(
 				new PropertyData({
 					name: &#x27;user_id&#x27;,
@@ -1806,6 +1816,8 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 					location: PropertyLocation.BODY,
 				})
 			);
+		} else {
+			// Don&#x27;t add a user_id, when the privacy is anonymous
 		}
 
 		return additionalProperties;
