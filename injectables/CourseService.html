@@ -161,6 +161,10 @@
                                 <a href="#findById" >findById</a>
                             </li>
                             <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#findOneForUser" >findOneForUser</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Private</span>
                                 <a href="#getCoursesId" >getCoursesId</a>
                             </li>
@@ -524,6 +528,87 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findOneForUser"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>findOneForUser</b></span>
+                        <a href="#findOneForUser"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findOneForUser(courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:72</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>courseId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../entitys/Course.html" target="_self" >Promise&lt;Course&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getCoursesId"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -664,6 +749,11 @@ export class CourseService {
 
 	private getCoursesId(courses: Course[]): EntityId[] {
 		return courses.map((course) &#x3D;&gt; course.id);
+	}
+
+	async findOneForUser(courseId: EntityId, userId: EntityId): Promise&lt;Course&gt; {
+		const course &#x3D; await this.repo.findOne(courseId, userId);
+		return course;
 	}
 }
 </code></pre>

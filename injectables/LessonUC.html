@@ -146,6 +146,10 @@
                                     <span class="modifier">Async</span>
                                 <a href="#delete" >delete</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#getLessons" >getLessons</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -164,12 +168,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, lessonService: <a href="../injectables/LessonService.html" target="_self">LessonService</a>)</code>
+<code>constructor(authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, lessonService: <a href="../injectables/LessonService.html" target="_self">LessonService</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/lesson/uc/lesson.uc.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/lesson/uc/lesson.uc.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -203,6 +207,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/LessonService.html" target="_self" >LessonService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>courseService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/CourseService.html" target="_self" >CourseService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -246,8 +262,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="14"
-                                    class="link-to-prism">apps/server/src/modules/lesson/uc/lesson.uc.ts:14</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">apps/server/src/modules/lesson/uc/lesson.uc.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -295,7 +311,88 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>unknown</code>
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getLessons"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>getLessons</b></span>
+                        <a href="#getLessons"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getLessons(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/lesson/uc/lesson.uc.ts:32</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>courseId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../entitys/LessonEntity.html" target="_self" >Promise&lt;LessonEntity[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -315,16 +412,19 @@
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { Permission } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { LessonEntity } from &#x27;@shared/domain/entity&#x27;;
+import { CourseService } from &#x27;@modules/learnroom/service/course.service&#x27;;
 import { LessonService } from &#x27;../service&#x27;;
 
 @Injectable()
 export class LessonUC {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
-		private readonly lessonService: LessonService
+		private readonly lessonService: LessonService,
+		private readonly courseService: CourseService
 	) {}
 
-	async delete(userId: EntityId, lessonId: EntityId) {
+	async delete(userId: EntityId, lessonId: EntityId): Promise&lt;boolean&gt; {
 		const [user, lesson] &#x3D; await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
 			this.lessonService.findById(lessonId),
@@ -337,6 +437,20 @@ export class LessonUC {
 		await this.lessonService.deleteLesson(lesson);
 
 		return true;
+	}
+
+	async getLessons(userId: EntityId, courseId: EntityId): Promise&lt;LessonEntity[]&gt; {
+		const user &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		const course &#x3D; await this.courseService.findOneForUser(courseId, userId);
+
+		this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.read([Permission.COURSE_VIEW]));
+
+		const [lessons] &#x3D; await this.lessonService.findByCourseIds([courseId]);
+		const filteredLessons &#x3D; lessons.filter((lesson) &#x3D;&gt;
+			this.authorizationService.hasPermission(user, lesson, AuthorizationContextBuilder.read([Permission.TOPIC_VIEW]))
+		);
+
+		return filteredLessons;
 	}
 }
 </code></pre>
