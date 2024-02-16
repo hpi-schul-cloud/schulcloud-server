@@ -1,7 +1,8 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { SchoolQueryParams, SchoolUrlParams } from './dto/param';
+import { School } from '../domain';
+import { SchoolQueryParams, SchoolUpdateBodyParams, SchoolUrlParams } from './dto/param';
 import { SchoolForExternalInviteResponse, SchoolResponse } from './dto/response';
 import { SchoolExistsResponse } from './dto/response/school-exists.response';
 import { SchoolForLdapLoginResponse } from './dto/response/school-for-ldap-login.response';
@@ -44,6 +45,18 @@ export class SchoolController {
 	@Get('/list-for-ldap-login')
 	public async getSchoolListForLadpLogin(): Promise<SchoolForLdapLoginResponse[]> {
 		const res = await this.schoolUc.getSchoolListForLdapLogin();
+
+		return res;
+	}
+
+	@Patch('/:schoolId')
+	@Authenticate('jwt')
+	public async updateSchool(
+		@Param() urlParams: SchoolUrlParams,
+		@Body() body: SchoolUpdateBodyParams,
+		@CurrentUser() user: ICurrentUser
+	): Promise<School> {
+		const res = await this.schoolUc.updateSchool(user.userId, urlParams.schoolId, body);
 
 		return res;
 	}

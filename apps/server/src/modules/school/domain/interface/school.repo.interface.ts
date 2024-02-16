@@ -9,6 +9,8 @@ export interface SchoolRepo {
 	getSchoolById(schoolId: EntityId): Promise<School>;
 
 	getSchoolsBySystemIds(systemIds: EntityId[]): Promise<School[]>;
+
+	save(domainObject: School): Promise<School>;
 }
 
 export const SCHOOL_REPO = 'SCHOOL_REPO';

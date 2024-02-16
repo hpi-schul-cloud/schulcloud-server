@@ -1,8 +1,9 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
-import { SortOrder } from '@shared/domain/interface';
+import { Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { SchoolQuery, SchoolService, SchoolYearService, SchoolYearHelper } from '../domain';
+import { SchoolQuery, SchoolService, SchoolYearHelper, SchoolYearService } from '../domain';
+import { SchoolUpdateBodyParams } from './dto/param';
 import { SchoolExistsResponse, SchoolForExternalInviteResponse, SchoolResponse } from './dto/response';
 import { SchoolForLdapLoginResponse } from './dto/response/school-for-ldap-login.response';
 import { SchoolResponseMapper } from './mapper';
@@ -65,5 +66,22 @@ export class SchoolUc {
 		const dtos = SchoolResponseMapper.mapToListForLdapLoginResponses(schools);
 
 		return dtos;
+	}
+
+	public async updateSchool(userId: string, schoolId: string, body: SchoolUpdateBodyParams) {
+		const [school, user] = await Promise.all([
+			this.schoolService.getSchoolById(schoolId),
+			this.authorizationService.getUserWithPermissions(userId),
+		]);
+
+		const authContext = AuthorizationContextBuilder.write([Permission.SCHOOL_EDIT]);
+		this.authorizationService.checkPermission(user, school, authContext);
+
+		const updatedSchool = await this.schoolService.updateSchool(schoolId, body);
+
+		// TODO: Implement mapper
+		// const dto = SchoolResponseMapper.mapToResponse(updatedSchool);
+
+		return updatedSchool;
 	}
 }

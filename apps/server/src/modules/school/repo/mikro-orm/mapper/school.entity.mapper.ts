@@ -1,4 +1,5 @@
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
+import { SchoolFactory } from '@src/modules/school/domain/factory';
 import { School } from '../../../domain';
 import { CountyEmbeddableMapper } from './county.embeddable.mapper';
 import { FederalStateEntityMapper } from './federal-state.entity.mapper';
@@ -12,7 +13,7 @@ export class SchoolEntityMapper {
 		const county = entity.county && CountyEmbeddableMapper.mapToDo(entity.county);
 		const systemIds = entity.systems.getItems().map((system) => system.id);
 
-		const school = new School({
+		const school = SchoolFactory.build({
 			id: entity.id,
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,

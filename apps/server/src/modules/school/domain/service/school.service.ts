@@ -7,7 +7,8 @@ import { System, SystemService } from '@src/modules/system';
 import { SchoolConfig } from '../../school.config';
 import { School, SchoolProps, SystemForLdapLogin } from '../do';
 import { SchoolForLdapLogin, SchoolForLdapLoginProps } from '../do/school-for-ldap-login';
-import { SchoolRepo, SCHOOL_REPO } from '../interface';
+import { SchoolFactory } from '../factory';
+import { SCHOOL_REPO, SchoolRepo, SchoolUpdateBody } from '../interface';
 import { SchoolQuery } from '../query';
 
 @Injectable()
@@ -71,6 +72,16 @@ export class SchoolService {
 		);
 
 		return schoolsForLdapLogin;
+	}
+
+	public async updateSchool(schoolId: string, body: SchoolUpdateBody) {
+		const school = await this.schoolRepo.getSchoolById(schoolId);
+
+		const updatedSchool = SchoolFactory.updateFromPartialBody(school, body);
+
+		await this.schoolRepo.save(updatedSchool);
+
+		return updatedSchool;
 	}
 
 	private mapToSchoolForLdapLogin(school: School, ldapLoginSystems: System[]): SchoolForLdapLogin {
