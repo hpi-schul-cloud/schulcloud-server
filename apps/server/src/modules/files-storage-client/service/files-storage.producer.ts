@@ -11,7 +11,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
-import { FilesStorageClientConfig } from '../interfaces';
+import { FilesStorageClientConfig } from '../files-storage-client-config';
 
 @Injectable()
 export class FilesStorageProducer extends RpcMessageProducer {
