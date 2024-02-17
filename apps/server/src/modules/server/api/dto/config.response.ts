@@ -47,8 +47,8 @@ export class ConfigResponse {
 	@ApiProperty()
 	TLDRAW__ASSETS_MAX_SIZE: number;
 
-	@ApiProperty()
-	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST: string;
+	@ApiPropertyOptional()
+	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST?: string | undefined;
 
 	constructor(config: ServerConfig) {
 		this.FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED =

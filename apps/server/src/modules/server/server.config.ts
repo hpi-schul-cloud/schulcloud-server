@@ -45,7 +45,7 @@ export interface ServerConfig
 	FEATURE_TLDRAW_ENABLED: boolean;
 	TLDRAW__ASSETS_ENABLED: boolean;
 	TLDRAW__ASSETS_MAX_SIZE: number;
-	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST: string;
+	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST: string | undefined;
 }
 
 const config: ServerConfig = {
@@ -73,7 +73,9 @@ const config: ServerConfig = {
 		.map((domain) => domain.trim()),
 	TLDRAW__ASSETS_ENABLED: Configuration.get('TLDRAW__ASSETS_ENABLED') as boolean,
 	TLDRAW__ASSETS_MAX_SIZE: Configuration.get('TLDRAW__ASSETS_MAX_SIZE') as number,
-	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST: Configuration.get('TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST') as string,
+	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST: Configuration.has('TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST')
+		? (Configuration.get('TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST') as string)
+		: undefined,
 	FEATURE_TLDRAW_ENABLED: Configuration.get('FEATURE_TLDRAW_ENABLED') as boolean,
 	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: Configuration.get(
 		'FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED'
