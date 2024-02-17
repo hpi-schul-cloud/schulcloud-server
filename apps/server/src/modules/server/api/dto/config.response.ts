@@ -15,9 +15,6 @@ export class ConfigResponse {
 	FEATURE_LTI_TOOLS_TAB_ENABLED: boolean;
 
 	@ApiProperty()
-	FILES_STORAGE__MAX_FILE_SIZE: number;
-
-	@ApiProperty()
 	FEATURE_SHOW_OUTDATED_USERS: boolean;
 
 	@ApiProperty()
@@ -56,7 +53,6 @@ export class ConfigResponse {
 		this.MIGRATION_END_GRACE_PERIOD_MS = config.MIGRATION_END_GRACE_PERIOD_MS;
 		this.FEATURE_CTL_TOOLS_TAB_ENABLED = config.ctlToolsTabEnabled;
 		this.FEATURE_LTI_TOOLS_TAB_ENABLED = config.ltiToolsTabEnabled;
-		this.FILES_STORAGE__MAX_FILE_SIZE = config.FILES_STORAGE__MAX_FILE_SIZE;
 		this.FEATURE_SHOW_OUTDATED_USERS = config.FEATURE_SHOW_OUTDATED_USERS;
 		this.FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION = config.FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION;
 		this.FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED = config.contextConfigurationEnabled;

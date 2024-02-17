@@ -46,12 +46,22 @@ import {
 	RenameFileParams,
 	SingleFileParams,
 } from './dto';
+import { FilesStorageConfigResponse } from '../dto/files-storage-config.response';
 
 @ApiTags('file')
 @Authenticate('jwt')
 @Controller('file')
 export class FilesStorageController {
 	constructor(private readonly filesStorageUC: FilesStorageUC) {}
+
+	@ApiOperation({ summary: 'Useable configuration for clients' })
+	@ApiResponse({ status: 200, type: FilesStorageConfigResponse })
+	@Get('/config/public')
+	publicConfig(): FilesStorageConfigResponse {
+		const response = this.filesStorageUC.getPublicConfig();
+
+		return response;
+	}
 
 	@ApiOperation({ summary: 'Upload file from url' })
 	@ApiResponse({ status: 201, type: FileRecordResponse })
