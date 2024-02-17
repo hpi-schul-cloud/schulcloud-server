@@ -319,11 +319,7 @@
 				"S3_ENDPOINT",
 				"S3_REGION",
 				"S3_BUCKET_CONTENT",
-				"S3_BUCKET_LIBRARIES",
-				"S3_ACCESS_KEY_ID_RW",
-				"S3_SECRET_ACCESS_KEY_RW",
-				"S3_ACCESS_KEY_ID_R",
-				"S3_SECRET_ACCESS_KEY_R"
+				"S3_BUCKET_LIBRARIES"
 			],
 			"default": {},
 			"properties": {
@@ -338,25 +334,25 @@
 					"default": "eu-central-2",
 					"description": "Region name of bucket"
 				},
-				"S3_ACCESS_KEY_ID_RW": {
+				"S3_ACCESS_KEY_ID": {
 					"type": "string",
 					"default": "",
-					"description": "Access Key to S3_BUCKET_CONTENT with R/W permissions"
+					"description": "Access Key to S3_BUCKET_CONTENT with RW and listing buckets permissions"
 				},
-				"S3_SECRET_ACCESS_KEY_RW": {
+				"S3_SECRET_ACCESS_KEY": {
 					"type": "string",
 					"default": "",
-					"description": "Secret key to S3_BUCKET_CONTENT with R/W permissions"
+					"description": "Secret key to to S3_BUCKET_CONTENT with RW and listing buckets permissions"
 				},
-				"S3_ACCESS_KEY_ID_R": {
+				"LIBRARIES_S3_ACCESS_KEY_ID": {
 					"type": "string",
 					"default": "",
-					"description": "Access Key to S3_BUCKET_LIBRARIES with R permissions"
+					"description": "Access Key to S3_BUCKET_LIBRARIES (at least read and listing buckets permissions for editor, aditionally write permission for library management)"
 				},
-				"S3_SECRET_ACCESS_KEY_R": {
+				"LIBRARIES_S3_SECRET_ACCESS_KEY": {
 					"type": "string",
 					"default": "",
-					"description": "Secret key to S3_BUCKET_LIBRARIES with R permissions"
+					"description": "Secret key to S3_BUCKET_LIBRARIES (at least read and listing buckets permissions for editor, aditionally write permission for library management)"
 				},
 				"S3_BUCKET_CONTENT": {
 					"type": "string",
@@ -1483,7 +1479,7 @@
 				"MAX_DOCUMENT_SIZE",
 				"ASSETS_ENABLED",
 				"ASSETS_MAX_SIZE",
-				"ASSETS_ALLOWED_EXTENSIONS_LIST"
+				"ASSETS_ALLOWED_MIME_TYPES_LIST"
 			],
 			"properties": {
 				"SOCKET_PORT": {
@@ -1514,10 +1510,10 @@
 					"type": "integer",
 					"description": "Maximum asset size in bytes"
 				},
-				"ASSETS_ALLOWED_EXTENSIONS_LIST": {
+				"ASSETS_ALLOWED_MIME_TYPES_LIST": {
 					"type": "string",
-					"description": "List with allowed assets extensions, comma separated, empty if all extensions supported by tldraw should be allowed",
-					"examples": ["png,jpg,jpeg,svg,webp"]
+					"description": "List with allowed assets MIME types, comma separated, empty if all MIME types supported by tldraw should be allowed",
+					"examples": ["image/gif,image/jpeg,video/webm"]
 				}
 			},
 			"default": {
@@ -1528,7 +1524,7 @@
 				"MAX_DOCUMENT_SIZE": 15000000,
 				"ASSETS_ENABLED": true,
 				"ASSETS_MAX_SIZE": 10485760,
-				"ASSETS_ALLOWED_EXTENSIONS_LIST": ""
+				"ASSETS_ALLOWED_MIME_TYPES_LIST": "image/png,image/jpeg,image/gif,image/svg+xml"
 			}
 		},
 		"TLDRAW_DB_URL": {
