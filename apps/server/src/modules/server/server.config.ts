@@ -35,6 +35,14 @@ export interface ServerConfig
 		UserLoginMigrationConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
+	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
+	ALERT_STATUS_URL: string | null;
+	FEATURE_ES_COLLECTIONS_ENABLED: boolean;
+	FEATURE_EXTENSIONS_ENABLED: boolean;
+	FEATURE_TEAMS_ENABLED: boolean;
+	FEATURE_LERNSTORE_ENABLED: boolean;
+	FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED: boolean;
+	// ----
 	FEATURE_SHOW_OUTDATED_USERS: boolean;
 	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: boolean;
 	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: boolean;
@@ -47,7 +55,21 @@ export interface ServerConfig
 	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST: string | undefined;
 }
 
+// TODO: each as cast must be check with type guard
 const config: ServerConfig = {
+	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean') as boolean,
+	ALERT_STATUS_URL:
+		Configuration.get('ALERT_STATUS_URL') === null
+			? (Configuration.get('ALERT_STATUS_URL') as null)
+			: (Configuration.get('ALERT_STATUS_URL') as string),
+	FEATURE_ES_COLLECTIONS_ENABLED: Configuration.get('FEATURE_ES_COLLECTIONS_ENABLED') as boolean,
+	FEATURE_EXTENSIONS_ENABLED: Configuration.get('FEATURE_EXTENSIONS_ENABLED') as boolean,
+	FEATURE_TEAMS_ENABLED: Configuration.get('FEATURE_TEAMS_ENABLED') as boolean,
+	FEATURE_LERNSTORE_ENABLED: Configuration.get('FEATURE_LERNSTORE_ENABLED') as boolean,
+	FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED: Configuration.get(
+		'FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED'
+	) as boolean,
+	// --
 	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
