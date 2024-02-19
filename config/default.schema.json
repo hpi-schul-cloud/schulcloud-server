@@ -520,6 +520,11 @@
 			"default": "amqp://guest:guest@localhost:5672",
 			"description": "The URI of the RabbitMQ server."
 		},
+		"LEGACY_RABBITMQ_GLOBAL_PREFETCH_COUNT": {
+			"type": "number",
+			"default": 25,
+			"description": "deprecated from the start, PLEASE GET YOUR OWN CONFIG, prefetch count is applied per channel globally for all legacy rabbitmq channels (nest based code is not affected)"
+		},
 		"HOST": {
 			"type": "string",
 			"format": "uri",
