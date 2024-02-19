@@ -1,10 +1,10 @@
 import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
 import { EntityWithSchool } from '../interface';
+import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { Role } from './role.entity';
 import { SchoolEntity } from './school.entity';
 import { UserParentsEntity } from './user-parents.entity';
-import { EntityId } from '../types';
 
 export enum LanguageType {
 	DE = 'de',
@@ -96,7 +96,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property({ nullable: true })
 	forcePasswordChange?: boolean;
 
-	@Property({ nullable: true })
+	@Property({ type: 'object', nullable: true })
 	preferences?: Record<string, unknown>;
 
 	@Property({ nullable: true })
