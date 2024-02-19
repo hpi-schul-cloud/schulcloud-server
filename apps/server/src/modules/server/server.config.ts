@@ -3,7 +3,7 @@ import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { AccountConfig } from '@modules/account';
 import type { AuthenticationConfig, XApiKeyConfig } from '@modules/authentication';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
-import type { CommonCartridgeConfig } from '@modules/learnroom';
+import type { CommonCartridgeConfig, LearnroomConfig } from '@modules/learnroom';
 import type { SchoolConfig } from '@modules/school';
 import type { UserConfig } from '@modules/user';
 import type { CoreModuleConfig } from '@src/core';
@@ -12,7 +12,9 @@ import { ToolConfiguration, type IToolFeatures } from '@modules/tool';
 import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
 import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@modules/video-conference';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
-import type { LessonConfig } from '@src/modules/lesson';
+import type { LessonConfig } from '@modules/lesson';
+import type { BoardConfig } from '@modules/board';
+import type { SharingConfig } from '@modules/sharing';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -38,7 +40,10 @@ export interface ServerConfig
 		TldrawClientConfig,
 		UserLoginMigrationConfig,
 		LessonConfig,
-		IVideoConferenceSettings {
+		IVideoConferenceSettings,
+		BoardConfig,
+		LearnroomConfig,
+		SharingConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
@@ -52,7 +57,16 @@ export interface ServerConfig
 	TEACHER_STUDENT_VISIBILITY__IS_VISIBLE: boolean;
 	FEATURE_SCHOOL_POLICY_ENABLED_NEW: boolean;
 	FEATURE_SCHOOL_TERMS_OF_USE_ENABLED: boolean;
+	FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED: boolean;
+	FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED: boolean;
+	FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED: boolean;
 	ROCKETCHAT_SERVICE_ENABLED: boolean;
+	JWT_SHOW_TIMEOUT_WARNING_SECONDS: number;
+	JWT_TIMEOUT_SECONDS: number;
+	NOT_AUTHENTICATED_REDIRECT_URL: string;
+	DOCUMENT_BASE_DIR: string;
+	SC_THEME: string; // should be enum
+	SC_TITLE: string; // should be enum
 	// ----
 	FEATURE_SHOW_OUTDATED_USERS: boolean;
 	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: boolean;
@@ -68,9 +82,9 @@ export interface ServerConfig
 	// ----
 	// TODO: create Ticket to move this to config public service of h5p
 	I18N__AVAILABLE_LANGUAGES: string; // string[] / enum
-	I18N__DEFAULT_LANGUAGE: string; // enum
-	I18N__FALLBACK_LANGUAGE: string; // enum
-	I18N__DEFAULT_TIMEZONE: string; // enum
+	I18N__DEFAULT_LANGUAGE: string; // should be enum
+	I18N__FALLBACK_LANGUAGE: string; // should be enum
+	I18N__DEFAULT_TIMEZONE: string; // should be enum
 	// ----
 }
 
@@ -88,6 +102,16 @@ const config: ServerConfig = {
 	FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED: Configuration.get(
 		'FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED'
 	) as boolean,
+	FEATURE_COLUMN_BOARD_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_ENABLED') as boolean,
+	FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED') as boolean,
+	FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED: Configuration.get('FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED') as boolean,
+	FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED: Configuration.get(
+		'FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED'
+	) as boolean,
+	FEATURE_COURSE_SHARE: Configuration.get('FEATURE_COURSE_SHARE') as boolean,
+	FEATURE_COURSE_SHARE_NEW: Configuration.get('FEATURE_COURSE_SHARE_NEW') as boolean,
+	FEATURE_LESSON_SHARE: Configuration.get('FEATURE_LESSON_SHARE') as boolean,
+	FEATURE_TASK_SHARE: Configuration.get('FEATURE_TASK_SHARE') as boolean,
 	TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT: Configuration.get(
 		'TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT'
 	) as boolean,
@@ -95,6 +119,12 @@ const config: ServerConfig = {
 	FEATURE_SCHOOL_POLICY_ENABLED_NEW: Configuration.get('FEATURE_SCHOOL_POLICY_ENABLED_NEW') as boolean,
 	FEATURE_SCHOOL_TERMS_OF_USE_ENABLED: Configuration.get('FEATURE_SCHOOL_TERMS_OF_USE_ENABLED') as boolean,
 	ROCKETCHAT_SERVICE_ENABLED: Configuration.get('ROCKETCHAT_SERVICE_ENABLED') as boolean,
+	JWT_SHOW_TIMEOUT_WARNING_SECONDS: Configuration.get('JWT_SHOW_TIMEOUT_WARNING_SECONDS') as number,
+	JWT_TIMEOUT_SECONDS: Configuration.get('JWT_TIMEOUT_SECONDS') as number,
+	NOT_AUTHENTICATED_REDIRECT_URL: Configuration.get('NOT_AUTHENTICATED_REDIRECT_URL') as string,
+	DOCUMENT_BASE_DIR: Configuration.get('DOCUMENT_BASE_DIR') as string,
+	SC_THEME: Configuration.get('SC_THEME') as string,
+	SC_TITLE: Configuration.get('SC_TITLE') as string,
 	// --
 	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
