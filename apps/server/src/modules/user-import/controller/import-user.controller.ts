@@ -1,4 +1,5 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
+import { serverConfig } from '@modules/server';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
@@ -121,7 +122,7 @@ export class ImportUserController {
 		await this.userImportUc.endSchoolInMaintenance(currentUser.userId);
 	}
 
-	@RequestTimeout(120000)
+	@RequestTimeout(serverConfig().SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS)
 	@Post('populate-import-users')
 	@ApiOperation({
 		summary: 'Populates import users',
