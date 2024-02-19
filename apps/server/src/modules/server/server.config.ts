@@ -52,6 +52,7 @@ export interface ServerConfig
 	TEACHER_STUDENT_VISIBILITY__IS_VISIBLE: boolean;
 	FEATURE_SCHOOL_POLICY_ENABLED_NEW: boolean;
 	FEATURE_SCHOOL_TERMS_OF_USE_ENABLED: boolean;
+	ROCKETCHAT_SERVICE_ENABLED: boolean;
 	// ----
 	FEATURE_SHOW_OUTDATED_USERS: boolean;
 	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: boolean;
@@ -64,6 +65,13 @@ export interface ServerConfig
 	TLDRAW__ASSETS_ENABLED: boolean;
 	TLDRAW__ASSETS_MAX_SIZE: number;
 	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST?: string;
+	// ----
+	// TODO: create Ticket to move this to config public service of h5p
+	I18N__AVAILABLE_LANGUAGES: string; // string[] / enum
+	I18N__DEFAULT_LANGUAGE: string; // enum
+	I18N__FALLBACK_LANGUAGE: string; // enum
+	I18N__DEFAULT_TIMEZONE: string; // enum
+	// ----
 }
 
 // TODO: each as cast should be check with type guard
@@ -86,6 +94,7 @@ const config: ServerConfig = {
 	TEACHER_STUDENT_VISIBILITY__IS_VISIBLE: Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_VISIBLE') as boolean,
 	FEATURE_SCHOOL_POLICY_ENABLED_NEW: Configuration.get('FEATURE_SCHOOL_POLICY_ENABLED_NEW') as boolean,
 	FEATURE_SCHOOL_TERMS_OF_USE_ENABLED: Configuration.get('FEATURE_SCHOOL_TERMS_OF_USE_ENABLED') as boolean,
+	ROCKETCHAT_SERVICE_ENABLED: Configuration.get('ROCKETCHAT_SERVICE_ENABLED') as boolean,
 	// --
 	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
@@ -131,6 +140,10 @@ const config: ServerConfig = {
 	ETHERPAD__PAD_URI: Configuration.has('ETHERPAD__PAD_URI')
 		? (Configuration.get('ETHERPAD__PAD_URI') as string)
 		: undefined,
+	I18N__AVAILABLE_LANGUAGES: Configuration.get('I18N__AVAILABLE_LANGUAGES') as string,
+	I18N__DEFAULT_LANGUAGE: Configuration.get('I18N__DEFAULT_LANGUAGE') as string,
+	I18N__FALLBACK_LANGUAGE: Configuration.get('I18N__FALLBACK_LANGUAGE') as string,
+	I18N__DEFAULT_TIMEZONE: Configuration.get('I18N__DEFAULT_TIMEZONE') as string,
 	...getTldrawClientConfig(),
 	...ToolConfiguration.toolFeatures,
 	...VideoConferenceConfiguration.videoConference,
