@@ -10,6 +10,7 @@ import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
 import { ToolConfiguration, type IToolFeatures } from '@modules/tool';
 import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
+import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@modules/video-conference';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
 import type { LessonConfig } from '@src/modules/lesson';
 
@@ -21,6 +22,7 @@ export enum NodeEnvType {
 }
 
 // Envirement keys should be added over configs from modules, directly adding is only allow for legacy stuff
+// Maye some of them must be outsource to additional microservice config endpoints.
 export interface ServerConfig
 	extends CoreModuleConfig,
 		UserConfig,
@@ -35,7 +37,8 @@ export interface ServerConfig
 		IToolFeatures,
 		TldrawClientConfig,
 		UserLoginMigrationConfig,
-		LessonConfig {
+		LessonConfig,
+		IVideoConferenceSettings {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
@@ -55,17 +58,17 @@ export interface ServerConfig
 	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: boolean;
 	FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED: boolean;
 	FEATURE_SHOW_MIGRATION_WIZARD: boolean;
-	MIGRATION_WIZARD_DOCUMENTATION_LINK: string | undefined;
+	MIGRATION_WIZARD_DOCUMENTATION_LINK?: string;
 	// TODO: check what is happed with this envirements from tldraw, why they are not part of the interface?
 	FEATURE_TLDRAW_ENABLED: boolean;
 	TLDRAW__ASSETS_ENABLED: boolean;
 	TLDRAW__ASSETS_MAX_SIZE: number;
-	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST: string | undefined;
+	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST?: string;
 }
 
 // TODO: each as cast should be check with type guard
 const config: ServerConfig = {
-	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean') as boolean,
+	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN') as boolean,
 	ALERT_STATUS_URL:
 		Configuration.get('ALERT_STATUS_URL') === null
 			? (Configuration.get('ALERT_STATUS_URL') as null)
@@ -125,9 +128,12 @@ const config: ServerConfig = {
 		: undefined,
 	FEATURE_NEXBOARD_COPY_ENABLED: Configuration.get('FEATURE_NEXBOARD_COPY_ENABLED') as boolean,
 	FEATURE_ETHERPAD_ENABLED: Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean,
-	ETHERPAD__PAD_URI: Configuration.get('ETHERPAD__PAD_URI') as string,
+	ETHERPAD__PAD_URI: Configuration.has('ETHERPAD__PAD_URI')
+		? (Configuration.get('ETHERPAD__PAD_URI') as string)
+		: undefined,
 	...getTldrawClientConfig(),
 	...ToolConfiguration.toolFeatures,
+	...VideoConferenceConfiguration.videoConference,
 };
 
 export const serverConfig = () => config;

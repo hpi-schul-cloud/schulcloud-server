@@ -53,27 +53,41 @@ export class ConfigResponse {
 	@ApiProperty({ nullable: true })
 	ALERT_STATUS_URL: string | null;
 
+	@ApiProperty()
 	FEATURE_ES_COLLECTIONS_ENABLED: boolean;
 
+	@ApiProperty()
 	FEATURE_EXTENSIONS_ENABLED: boolean;
 
+	@ApiProperty()
 	FEATURE_TEAMS_ENABLED: boolean;
 
+	@ApiProperty()
 	FEATURE_LERNSTORE_ENABLED: boolean;
 
+	@ApiProperty()
 	FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED: boolean;
 
+	@ApiProperty()
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: boolean;
 
+	@ApiProperty()
 	TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT: boolean;
 
+	@ApiProperty()
 	TEACHER_STUDENT_VISIBILITY__IS_VISIBLE: boolean;
 
+	@ApiProperty()
 	FEATURE_SCHOOL_POLICY_ENABLED_NEW: boolean;
 
+	@ApiProperty()
 	FEATURE_SCHOOL_TERMS_OF_USE_ENABLED: boolean;
 
+	@ApiProperty()
 	FEATURE_NEXBOARD_COPY_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_VIDEOCONFERENCE_ENABLED: boolean;
 
 	constructor(config: ServerConfig) {
 		this.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN = config.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN;
@@ -107,14 +121,12 @@ export class ConfigResponse {
 		this.TLDRAW__ASSETS_ENABLED = config.TLDRAW__ASSETS_ENABLED;
 		this.TLDRAW__ASSETS_MAX_SIZE = config.TLDRAW__ASSETS_MAX_SIZE;
 		this.TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST = config.TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST;
+		this.FEATURE_VIDEOCONFERENCE_ENABLED = config.enabled;
 	}
 }
 
 /**
  TODO missed keys - check type from default.schema.json
-	'',
-	'',
-	'FEATURE_VIDEOCONFERENCE_ENABLED',
 	'ROCKETCHAT_SERVICE_ENABLED',
 	'LERNSTORE_MODE',
 	'I18N__AVAILABLE_LANGUAGES',

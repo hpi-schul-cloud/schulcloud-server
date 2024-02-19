@@ -1,5 +1,5 @@
 export interface LessonConfig {
 	FEATURE_NEXBOARD_COPY_ENABLED: boolean;
 	FEATURE_ETHERPAD_ENABLED: boolean;
-	ETHERPAD__PAD_URI: string;
+	ETHERPAD__PAD_URI?: string;
 }
