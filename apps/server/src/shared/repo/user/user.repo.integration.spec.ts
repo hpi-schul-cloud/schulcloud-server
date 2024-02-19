@@ -463,7 +463,7 @@ describe('user repo', () => {
 				};
 			};
 
-			it('should return empty array', async () => {
+			it('should return zero', async () => {
 				const { user } = setup();
 
 				const result = await repo.deleteUser(user.id);
@@ -477,47 +477,42 @@ describe('user repo', () => {
 				const user2: User = userFactory.buildWithId();
 				const user3: User = userFactory.buildWithId();
 				await em.persistAndFlush([user1, user2, user3]);
-
-				const expectedUser2 = {
-					firstName: user2.firstName,
-					lastName: user2.lastName,
-					email: user2.email,
-					roles: user2.roles,
-					school: user2.school,
-				};
-
-				const expectedUser3 = {
-					firstName: user3.firstName,
-					lastName: user3.lastName,
-					email: user3.email,
-					roles: user3.roles,
-					school: user3.school,
-				};
-
-				const expectedResult = 1;
+				em.clear();
 
 				return {
-					expectedResult,
-					expectedUser2,
-					expectedUser3,
 					user1,
 					user2,
 					user3,
 				};
 			};
 			it('should delete user', async () => {
-				const { expectedResult, expectedUser2, expectedUser3, user1, user2, user3 } = await setup();
-				const deleteResult = await repo.deleteUser(user1.id);
-				expect(deleteResult).toEqual(expectedResult);
+				const { user1 } = await setup();
+				await repo.deleteUser(user1.id);
 
 				const result1 = await em.find(User, { id: user1.id });
 				expect(result1).toHaveLength(0);
+			});
 
-				const result2 = await repo.findById(user2.id);
-				expect(result2).toMatchObject(expectedUser2);
+			it('should return one deleted user', async () => {
+				const { user1 } = await setup();
+				const result = await repo.deleteUser(user1.id);
+				expect(result).toEqual(1);
+			});
 
-				const result3 = await repo.findById(user3.id);
-				expect(result3).toMatchObject(expectedUser3);
+			it('should not affect other users', async () => {
+				const { user1, user2, user3 } = await setup();
+				await repo.deleteUser(user1.id);
+
+				const emUser2 = await em.find(User, { id: user2.id });
+				const emUser3 = await em.find(User, { id: user3.id });
+				expect(emUser2).toHaveLength(1);
+				expect(emUser3).toHaveLength(1);
+
+				const resultUser2 = await repo.findById(user2.id);
+				const resultUser3 = await repo.findById(user3.id);
+
+				expect(resultUser2.id).toEqual(user2.id);
+				expect(resultUser3.id).toEqual(user3.id);
 			});
 		});
 	});

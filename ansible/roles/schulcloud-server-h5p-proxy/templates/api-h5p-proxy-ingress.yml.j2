@@ -1,7 +1,7 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ NAMESPACE }}-api-h5p-ingress
+  name: {{ NAMESPACE }}-api-h5p-proxy-ingress
   namespace: {{ NAMESPACE }}
   annotations:
     nginx.ingress.kubernetes.io/ssl-redirect: "{{ TLS_ENABELD|default("false") }}"
@@ -29,13 +29,13 @@ spec:
 {% endif %}
 {% endif %}
   rules:
-  - host: {{ DOMAIN }}
+  - host: {{ H5P_PROXY_PREFIX |default("h5p-") }}{{ DOMAIN }}
     http:
       paths:
-      - path: /api/v3/h5p-editor/
+      - path: /
         backend:
           service:
-            name: api-h5p-svc
+            name: api-h5p-proxy-svc
             port:
-              number: 4448
+              number: 80
         pathType: Prefix
