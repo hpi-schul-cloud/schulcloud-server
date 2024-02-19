@@ -3,6 +3,7 @@ import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
+import { createIdentifier } from '@src/modules/common-cartridge/utils';
 import {
 	CommonCartridgeFileBuilder,
 	CommonCartridgeOrganizationBuilder,
@@ -61,11 +62,13 @@ export class CommonCartridgeExportService {
 		version: CommonCartridgeVersion
 	): Promise<void> {
 		const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
+		const organization = builder.addOrganization({
+			title: '',
+			identifier: createIdentifier(),
+		});
 
 		tasks.forEach((task) => {
-			builder
-				.addOrganization(this.commonCartridgeMapper.mapTaskToOrganization(task))
-				.addResource(this.commonCartridgeMapper.mapTaskToResource(task, version));
+			organization.addResource(this.commonCartridgeMapper.mapTaskToResource(task, version));
 		});
 	}
 
