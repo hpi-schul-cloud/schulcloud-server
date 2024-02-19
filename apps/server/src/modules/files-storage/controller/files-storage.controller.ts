@@ -28,8 +28,7 @@ import { PaginationParams } from '@shared/controller';
 import { Request, Response } from 'express';
 import { config } from '../files-storage.config';
 import { GetFileResponse } from '../interface';
-import { FilesStorageMapper } from '../mapper';
-import { FileRecordMapper } from '../mapper/file-record.mapper';
+import { FilesStorageMapper, FileRecordMapper } from '../mapper';
 import { FilesStorageUC } from '../uc';
 import {
 	CopyFileListResponse,
