@@ -11,6 +11,7 @@ import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
 import { ToolConfiguration, type IToolFeatures } from '@modules/tool';
 import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
 import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
+import type { LessonConfig } from '@src/modules/lesson';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -19,6 +20,7 @@ export enum NodeEnvType {
 	MIGRATION = 'migration',
 }
 
+// Envirement keys should be added over configs from modules, directly adding is only allow for legacy stuff
 export interface ServerConfig
 	extends CoreModuleConfig,
 		UserConfig,
@@ -32,7 +34,8 @@ export interface ServerConfig
 		AuthenticationConfig,
 		IToolFeatures,
 		TldrawClientConfig,
-		UserLoginMigrationConfig {
+		UserLoginMigrationConfig,
+		LessonConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
@@ -42,20 +45,25 @@ export interface ServerConfig
 	FEATURE_TEAMS_ENABLED: boolean;
 	FEATURE_LERNSTORE_ENABLED: boolean;
 	FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED: boolean;
+	TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT: boolean;
+	TEACHER_STUDENT_VISIBILITY__IS_VISIBLE: boolean;
+	FEATURE_SCHOOL_POLICY_ENABLED_NEW: boolean;
+	FEATURE_SCHOOL_TERMS_OF_USE_ENABLED: boolean;
 	// ----
 	FEATURE_SHOW_OUTDATED_USERS: boolean;
 	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: boolean;
 	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: boolean;
 	FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED: boolean;
 	FEATURE_SHOW_MIGRATION_WIZARD: boolean;
-	MIGRATION_WIZARD_DOCUMENTATION_LINK: string | undefined; // is implemented in legacy in this way
+	MIGRATION_WIZARD_DOCUMENTATION_LINK: string | undefined;
+	// TODO: check what is happed with this envirements from tldraw, why they are not part of the interface?
 	FEATURE_TLDRAW_ENABLED: boolean;
 	TLDRAW__ASSETS_ENABLED: boolean;
 	TLDRAW__ASSETS_MAX_SIZE: number;
 	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST: string | undefined;
 }
 
-// TODO: each as cast must be check with type guard
+// TODO: each as cast should be check with type guard
 const config: ServerConfig = {
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean') as boolean,
 	ALERT_STATUS_URL:
@@ -69,6 +77,12 @@ const config: ServerConfig = {
 	FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED: Configuration.get(
 		'FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED'
 	) as boolean,
+	TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT: Configuration.get(
+		'TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT'
+	) as boolean,
+	TEACHER_STUDENT_VISIBILITY__IS_VISIBLE: Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_VISIBLE') as boolean,
+	FEATURE_SCHOOL_POLICY_ENABLED_NEW: Configuration.get('FEATURE_SCHOOL_POLICY_ENABLED_NEW') as boolean,
+	FEATURE_SCHOOL_TERMS_OF_USE_ENABLED: Configuration.get('FEATURE_SCHOOL_TERMS_OF_USE_ENABLED') as boolean,
 	// --
 	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
@@ -109,6 +123,9 @@ const config: ServerConfig = {
 	MIGRATION_WIZARD_DOCUMENTATION_LINK: Configuration.has('MIGRATION_WIZARD_DOCUMENTATION_LINK')
 		? (Configuration.get('MIGRATION_WIZARD_DOCUMENTATION_LINK') as string)
 		: undefined,
+	FEATURE_NEXBOARD_COPY_ENABLED: Configuration.get('FEATURE_NEXBOARD_COPY_ENABLED') as boolean,
+	FEATURE_ETHERPAD_ENABLED: Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean,
+	ETHERPAD__PAD_URI: Configuration.get('ETHERPAD__PAD_URI') as string,
 	...getTldrawClientConfig(),
 	...ToolConfiguration.toolFeatures,
 };
