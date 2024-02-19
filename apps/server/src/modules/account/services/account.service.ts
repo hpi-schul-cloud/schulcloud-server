@@ -4,8 +4,9 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
 import { Counted, DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { isEmail, validateOrReject } from 'class-validator';
-import { DomainOperation } from '@shared/domain/interface';
+import { DomainOperation, UserIdAndExternalId } from '@shared/domain/interface';
 import { DomainOperationBuilder } from '@shared/domain/builder';
+import { Account } from '@shared/domain/entity';
 import { LegacyLogger } from '../../../core/logger';
 import { ServerConfig } from '../../server/server.config';
 import { AccountServiceDb } from './account-db.service';
@@ -13,6 +14,7 @@ import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
 import { AccountDto, AccountSaveDto } from './dto';
+import { AccountRepo } from '../repo/account.repo';
 
 @Injectable()
 export class AccountService extends AbstractAccountService {
@@ -23,6 +25,7 @@ export class AccountService extends AbstractAccountService {
 		private readonly accountIdm: AccountServiceIdm,
 		private readonly configService: ConfigService<ServerConfig, true>,
 		private readonly accountValidationService: AccountValidationService,
+		private readonly accountRepo: AccountRepo,
 		private readonly logger: LegacyLogger
 	) {
 		super();
@@ -204,5 +207,15 @@ export class AccountService extends AbstractAccountService {
 			}
 		}
 		return null;
+	}
+
+	async findByUserIdsAndSystemIds(usersIdsAndExternalIds: UserIdAndExternalId[]): Promise<string[]> {
+		const foundAccounts = await this.accountRepo.findByUserIdsAndSystemIds(usersIdsAndExternalIds);
+
+		const foundUserIds: string[] = foundAccounts
+			.map((account: Account) => account.userId?.toHexString())
+			.filter((userId) => userId !== undefined) as string[];
+
+		return foundUserIds;
 	}
 }

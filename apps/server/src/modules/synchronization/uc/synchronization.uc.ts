@@ -21,8 +21,11 @@ export class SynchronizationUc {
 		const synchronizationId = await this.synchronizationService.createSynchronization();
 		console.log(synchronizationId);
 
-		const usersToCheck: SanisResponse[] = await this.schulconnexRestClient.getPersonenInfo({});
+		const usersDownloaded: SanisResponse[] = await this.schulconnexRestClient.getPersonenInfo({});
 
-		console.log(usersToCheck);
+		const userToCheck = usersDownloaded.map((user) => user.pid);
+
+		const usersToSynchronization = await this.userService.findByExternalIdsAndProvidedBySystemId(userToCheck);
+		console.log(usersToSynchronization);
 	}
 }
