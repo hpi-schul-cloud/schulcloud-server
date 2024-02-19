@@ -315,12 +315,7 @@
 		"H5P_EDITOR": {
 			"type": "object",
 			"description": "Properties of the H5P server microservice and library management job",
-			"required": [
-				"S3_ENDPOINT",
-				"S3_REGION",
-				"S3_BUCKET_CONTENT",
-				"S3_BUCKET_LIBRARIES"
-			],
+			"required": ["S3_ENDPOINT", "S3_REGION", "S3_BUCKET_CONTENT", "S3_BUCKET_LIBRARIES"],
 			"default": {},
 			"properties": {
 				"S3_ENDPOINT": {
@@ -1183,7 +1178,7 @@
 		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE": {
 			"type": "integer",
 			"default": 2000000000,
-			"description": "The maximum file upload size for the Common Cartridge file during import."
+			"description": "The maximum file upload size in bytes for the Common Cartridge file during import."
 		},
 		"GHOST_BASE_URL": {
 			"type": "string",
