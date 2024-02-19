@@ -1,13 +1,11 @@
 import { FindOptions } from '@mikro-orm/core';
 import { AutoPath, EntityData, EntityName } from '@mikro-orm/core/typings';
 import { Injectable } from '@nestjs/common';
-import { FederalStateEntity, SchoolYearEntity } from '@shared/domain/entity';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { IFindOptions, SortOrder } from '@shared/domain/interface/find-options';
 import { EntityId } from '@shared/domain/types/entity-id';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { School, SchoolProps, SchoolQuery, SchoolRepo } from '../../domain';
-import { CountyEmbeddableMapper } from './mapper/county.embeddable.mapper';
 import { SchoolEntityMapper } from './mapper/school.entity.mapper';
 import { SchoolScope } from './scope/school.scope';
 
@@ -56,28 +54,9 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 	}
 
 	mapDOToEntityProperties(domainObject: School): EntityData<SchoolEntity> {
-		const props = domainObject.getProps();
+		const entityProps = SchoolEntityMapper.mapToEntityProperties(domainObject, this.em);
 
-		return {
-			name: props.name,
-			officialSchoolNumber: props.officialSchoolNumber,
-			externalId: props.externalId,
-			previousExternalId: props.previousExternalId,
-			inMaintenanceSince: props.inMaintenanceSince,
-			inUserMigration: props.inUserMigration,
-			purpose: props.purpose,
-			logo_dataUrl: props.logo_dataUrl,
-			logo_name: props.logo_name,
-			fileStorageType: props.fileStorageType,
-			language: props.language,
-			timezone: props.timezone,
-			permissions: props.permissions,
-			enableStudentTeamCreation: props.enableStudentTeamCreation,
-			federalState: props.federalState ? this.em.getReference(FederalStateEntity, props.federalState?.id) : undefined,
-			features: Array.from(props.features),
-			currentYear: props.currentYear ? this.em.getReference(SchoolYearEntity, props.currentYear?.id) : undefined,
-			county: props.county ? CountyEmbeddableMapper.mapToEntity(props.county) : undefined,
-		};
+		return entityProps;
 	}
 
 	private mapToMikroOrmOptions<P extends string = never>(
