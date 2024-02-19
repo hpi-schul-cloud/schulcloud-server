@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
-import { DomainOperation, IFindOptions } from '@shared/domain/interface';
+import { DeletionService, DomainOperation, IFindOptions } from '@shared/domain/interface';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
@@ -13,7 +13,7 @@ import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 
 @Injectable()
-export class PseudonymService {
+export class PseudonymService implements DeletionService {
 	constructor(
 		private readonly pseudonymRepo: PseudonymsRepo,
 		private readonly externalToolPseudonymRepo: ExternalToolPseudonymRepo,
@@ -79,7 +79,7 @@ export class PseudonymService {
 		return pseudonym;
 	}
 
-	public async deleteByUserId(userId: string): Promise<DomainOperation> {
+	public async deleteUserData(userId: string): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Pseudonyms',

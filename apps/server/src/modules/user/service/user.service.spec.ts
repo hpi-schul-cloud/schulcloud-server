@@ -448,7 +448,7 @@ describe('UserService', () => {
 			it('should call userRepo.findByIdOrNull with userId', async () => {
 				const { userId } = setup();
 
-				await service.deleteUser(userId);
+				await service.deleteUserData(userId);
 
 				expect(userRepo.findByIdOrNull).toHaveBeenCalledWith(userId, true);
 			});
@@ -456,7 +456,7 @@ describe('UserService', () => {
 			it('should return domainOperation object with information about deleted user', async () => {
 				const { expectedResult, userId } = setup();
 
-				const result = await service.deleteUser(userId);
+				const result = await service.deleteUserData(userId);
 
 				expect(result).toEqual(expectedResult);
 			});
@@ -464,7 +464,7 @@ describe('UserService', () => {
 			it('should Not call userRepo.deleteUser with userId', async () => {
 				const { userId } = setup();
 
-				await service.deleteUser(userId);
+				await service.deleteUserData(userId);
 
 				expect(userRepo.deleteUser).not.toHaveBeenCalled();
 			});
@@ -488,7 +488,7 @@ describe('UserService', () => {
 			it('should call userRepo.findByIdOrNull with userId', async () => {
 				const { user } = setup();
 
-				await service.deleteUser(user.id);
+				await service.deleteUserData(user.id);
 
 				expect(userRepo.findByIdOrNull).toHaveBeenCalledWith(user.id, true);
 			});
@@ -496,7 +496,7 @@ describe('UserService', () => {
 			it('should call userRepo.deleteUser with userId', async () => {
 				const { user } = setup();
 
-				await service.deleteUser(user.id);
+				await service.deleteUserData(user.id);
 
 				expect(userRepo.deleteUser).toHaveBeenCalledWith(user.id);
 			});
@@ -504,7 +504,7 @@ describe('UserService', () => {
 			it('should return domainOperation object with information about deleted user', async () => {
 				const { expectedResult, user } = setup();
 
-				const result = await service.deleteUser(user.id);
+				const result = await service.deleteUserData(user.id);
 
 				expect(result).toEqual(expectedResult);
 			});
@@ -528,7 +528,7 @@ describe('UserService', () => {
 			it('should throw an error', async () => {
 				const { expectedError, user } = setup();
 
-				await expect(service.deleteUser(user.id)).rejects.toThrowError(
+				await expect(service.deleteUserData(user.id)).rejects.toThrowError(
 					new DeletionErrorLoggableException(expectedError)
 				);
 			});

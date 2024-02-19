@@ -62,7 +62,7 @@ describe(RegistrationPinService.name, () => {
 			it('should return domainOperation object with proper values', async () => {
 				const { expectedResult, user } = setup();
 
-				const result = await service.deleteRegistrationPinByEmail(user.email);
+				const result = await service.deleteUserData(user.email);
 
 				expect(result).toEqual(expectedResult);
 			});
@@ -89,7 +89,7 @@ describe(RegistrationPinService.name, () => {
 			it('should call registrationPinRep', async () => {
 				const { user } = setup();
 
-				await service.deleteRegistrationPinByEmail(user.email);
+				await service.deleteUserData(user.email);
 
 				expect(registrationPinRepo.deleteRegistrationPinByEmail).toBeCalledWith(user.email);
 			});
@@ -97,7 +97,7 @@ describe(RegistrationPinService.name, () => {
 			it('should delete registrationPin by email and return domainOperation object with proper information', async () => {
 				const { expectedResult, user } = setup();
 
-				const result = await service.deleteRegistrationPinByEmail(user.email);
+				const result = await service.deleteUserData(user.email);
 
 				expect(result).toEqual(expectedResult);
 			});
@@ -124,7 +124,7 @@ describe(RegistrationPinService.name, () => {
 			it('should throw an error', async () => {
 				const { expectedError, user } = setup();
 
-				await expect(service.deleteRegistrationPinByEmail(user.email)).rejects.toThrowError(expectedError);
+				await expect(service.deleteUserData(user.email)).rejects.toThrowError(expectedError);
 			});
 		});
 	});

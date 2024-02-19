@@ -118,7 +118,7 @@ describe(ClassService.name, () => {
 			it('should throw and error', async () => {
 				const { userId } = setup();
 
-				await expect(service.deleteUserDataFromClasses(userId)).rejects.toThrowError(InternalServerErrorException);
+				await expect(service.deleteUserData(userId)).rejects.toThrowError(InternalServerErrorException);
 			});
 		});
 
@@ -148,7 +148,7 @@ describe(ClassService.name, () => {
 
 			it('should call classesRepo.findAllByUserId', async () => {
 				const { userId1 } = setup();
-				await service.deleteUserDataFromClasses(userId1.toHexString());
+				await service.deleteUserData(userId1.toHexString());
 
 				expect(classesRepo.findAllByUserId).toBeCalledWith(userId1.toHexString());
 			});
@@ -156,7 +156,7 @@ describe(ClassService.name, () => {
 			it('should update classes without updated user', async () => {
 				const { expectedResult, userId1 } = setup();
 
-				const result = await service.deleteUserDataFromClasses(userId1.toHexString());
+				const result = await service.deleteUserData(userId1.toHexString());
 
 				expect(result).toEqual(expectedResult);
 			});

@@ -92,7 +92,7 @@ describe(DashboardService.name, () => {
 				const { user } = setup();
 				const spy = jest.spyOn(dashboardRepo, 'getUsersDashboardIfExist');
 
-				await dashboardService.deleteDashboardByUserId(user.id);
+				await dashboardService.deleteUserData(user.id);
 
 				expect(spy).toHaveBeenCalledWith(user.id);
 			});
@@ -102,7 +102,7 @@ describe(DashboardService.name, () => {
 				jest.spyOn(dashboardRepo, 'getUsersDashboardIfExist').mockResolvedValueOnce(dashboard);
 				const spy = jest.spyOn(dashboardElementRepo, 'deleteByDashboardId');
 
-				await dashboardService.deleteDashboardByUserId(user.id);
+				await dashboardService.deleteUserData(user.id);
 
 				expect(spy).toHaveBeenCalledWith(dashboard.id);
 			});
@@ -111,7 +111,7 @@ describe(DashboardService.name, () => {
 				const { user } = setup();
 				const spy = jest.spyOn(dashboardRepo, 'deleteDashboardByUserId');
 
-				await dashboardService.deleteDashboardByUserId(user.id);
+				await dashboardService.deleteUserData(user.id);
 
 				expect(spy).toHaveBeenCalledWith(user.id);
 			});
@@ -121,7 +121,7 @@ describe(DashboardService.name, () => {
 				jest.spyOn(dashboardRepo, 'getUsersDashboardIfExist').mockResolvedValueOnce(dashboard);
 				jest.spyOn(dashboardRepo, 'deleteDashboardByUserId').mockImplementation(() => Promise.resolve(1));
 
-				const result = await dashboardService.deleteDashboardByUserId(user.id);
+				const result = await dashboardService.deleteUserData(user.id);
 
 				expect(result).toEqual(expectedResult);
 			});

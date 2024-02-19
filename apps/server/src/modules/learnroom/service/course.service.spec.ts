@@ -125,13 +125,13 @@ describe('CourseService', () => {
 
 		it('should call courseRepo.findAllByUserId', async () => {
 			const { user } = setup();
-			await courseService.deleteUserDataFromCourse(user.id);
+			await courseService.deleteUserData\(user.id);
 			expect(courseRepo.findAllByUserId).toBeCalledWith(user.id);
 		});
 
 		it('should update courses without deleted user', async () => {
 			const { expectedResult, user } = setup();
-			const result = await courseService.deleteUserDataFromCourse(user.id);
+			const result = await courseService.deleteUserData\(user.id);
 			expect(result).toEqual(expectedResult);
 		});
 	});

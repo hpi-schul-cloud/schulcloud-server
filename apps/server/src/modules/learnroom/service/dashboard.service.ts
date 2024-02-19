@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainOperationBuilder } from '@shared/domain/builder';
-import { DomainOperation } from '@shared/domain/interface';
+import { DeletionService, DomainOperation } from '@shared/domain/interface';
 import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { IDashboardRepo, DashboardElementRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 
 @Injectable()
-export class DashboardService {
+export class DashboardService implements DeletionService {
 	constructor(
 		@Inject('DASHBOARD_REPO') private readonly dashboardRepo: IDashboardRepo,
 		private readonly dashboardElementRepo: DashboardElementRepo,
@@ -16,7 +16,7 @@ export class DashboardService {
 		this.logger.setContext(DashboardService.name);
 	}
 
-	async deleteDashboardByUserId(userId: EntityId): Promise<DomainOperation> {
+	async deleteUserData(userId: EntityId): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Dashboard',

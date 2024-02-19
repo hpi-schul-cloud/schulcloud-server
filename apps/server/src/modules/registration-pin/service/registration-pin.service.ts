@@ -2,19 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
-import { DomainOperation } from '@shared/domain/interface';
+import { DeletionService, DomainOperation } from '@shared/domain/interface';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import { RegistrationPinRepo } from '../repo';
 import { RegistrationPinEntity } from '../entity';
 
 @Injectable()
-export class RegistrationPinService {
+export class RegistrationPinService implements DeletionService {
 	constructor(private readonly registrationPinRepo: RegistrationPinRepo, private readonly logger: Logger) {
 		this.logger.setContext(RegistrationPinService.name);
 	}
 
-	async deleteRegistrationPinByEmail(email: string): Promise<DomainOperation> {
+	async deleteUserData(email: string): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from RegistrationPin',

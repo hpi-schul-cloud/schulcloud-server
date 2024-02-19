@@ -3,13 +3,13 @@ import { Injectable } from '@nestjs/common';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { Submission } from '@shared/domain/entity';
-import { DomainOperation } from '@shared/domain/interface';
+import { DeletionService, DomainOperation } from '@shared/domain/interface';
 import { Counted, DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { SubmissionRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 
 @Injectable()
-export class SubmissionService {
+export class SubmissionService implements DeletionService {
 	constructor(
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
@@ -30,6 +30,15 @@ export class SubmissionService {
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(submission.id);
 
 		await this.submissionRepo.delete(submission);
+	}
+
+	async deleteUserData(userId: EntityId): Promise<DomainOperation[]> {
+		const [submissionsDeleted, submissionsModified] = await Promise.all([
+			this.deleteSingleSubmissionsOwnedByUser(userId),
+			this.removeUserReferencesFromSubmissions(userId),
+		]);
+
+		return [submissionsDeleted, submissionsModified];
 	}
 
 	async deleteSingleSubmissionsOwnedByUser(userId: EntityId): Promise<DomainOperation> {

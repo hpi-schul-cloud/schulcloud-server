@@ -306,7 +306,7 @@ describe('AccountService', () => {
 		it('should call deleteByUserId in accountService', async () => {
 			const { spy, userId } = setup();
 
-			await accountService.deleteAccountByUserId(userId);
+			await accountService.deleteUserData(userId);
 			expect(spy).toHaveBeenCalledWith(userId);
 			spy.mockRestore();
 		});
@@ -316,7 +316,7 @@ describe('AccountService', () => {
 
 			spy.mockResolvedValueOnce([accountId]);
 
-			const result = await accountService.deleteAccountByUserId(userId);
+			const result = await accountService.deleteUserData(userId);
 			expect(spy).toHaveBeenCalledWith(userId);
 			expect(result).toEqual(expectedResult);
 			spy.mockRestore();

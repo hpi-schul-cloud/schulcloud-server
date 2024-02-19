@@ -4,16 +4,16 @@ import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { NewsRepo } from '@shared/repo';
 import { DomainOperationBuilder } from '@shared/domain/builder';
-import { DomainOperation } from '@shared/domain/interface';
+import { DeletionService, DomainOperation } from '@shared/domain/interface';
 import { News } from '@shared/domain/entity';
 
 @Injectable()
-export class NewsService {
+export class NewsService implements DeletionService {
 	constructor(private readonly newsRepo: NewsRepo, private readonly logger: Logger) {
 		this.logger.setContext(NewsService.name);
 	}
 
-	public async deleteCreatorOrUpdaterReference(userId: EntityId): Promise<DomainOperation> {
+	public async deleteUserData(userId: EntityId): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from News',

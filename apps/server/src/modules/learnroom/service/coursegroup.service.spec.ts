@@ -102,7 +102,7 @@ describe('CourseGroupService', () => {
 		it('should call courseGroupRepo.findByUserId', async () => {
 			const { user } = setup();
 
-			await courseGroupService.deleteUserDataFromCourseGroup(user.id);
+			await courseGroupService.deleteUserData(user.id);
 
 			expect(courseGroupRepo.findByUserId).toBeCalledWith(user.id);
 		});
@@ -110,7 +110,7 @@ describe('CourseGroupService', () => {
 		it('should update courses without deleted user', async () => {
 			const { expectedResult, user } = setup();
 
-			const result = await courseGroupService.deleteUserDataFromCourseGroup(user.id);
+			const result = await courseGroupService.deleteUserData(user.id);
 
 			expect(result).toEqual(expectedResult);
 		});

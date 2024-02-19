@@ -9,7 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { LanguageType, User } from '@shared/domain/entity';
-import { DomainOperation, IFindOptions } from '@shared/domain/interface';
+import { DeletionService, DomainOperation, IFindOptions } from '@shared/domain/interface';
 import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
@@ -22,7 +22,7 @@ import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
 
 @Injectable()
-export class UserService {
+export class UserService implements DeletionService {
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly userDORepo: UserDORepo,
@@ -136,7 +136,7 @@ export class UserService {
 		}
 	}
 
-	async deleteUser(userId: EntityId): Promise<DomainOperation> {
+	async deleteUserData(userId: EntityId): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable('Deleting user', DomainName.USER, userId, StatusModel.PENDING)
 		);

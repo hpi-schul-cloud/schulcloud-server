@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { CourseGroup } from '@shared/domain/entity';
-import { DomainOperation } from '@shared/domain/interface';
+import { DeletionService, DomainOperation } from '@shared/domain/interface';
 import { Counted, DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { CourseGroupRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 
 @Injectable()
-export class CourseGroupService {
+export class CourseGroupService implements DeletionService {
 	constructor(private readonly repo: CourseGroupRepo, private readonly logger: Logger) {
 		this.logger.setContext(CourseGroupService.name);
 	}
@@ -19,7 +19,7 @@ export class CourseGroupService {
 		return [courseGroups, count];
 	}
 
-	public async deleteUserDataFromCourseGroup(userId: EntityId): Promise<DomainOperation> {
+	public async deleteUserData(userId: EntityId): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from CourseGroup',

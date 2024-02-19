@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
 import { Counted, DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { isEmail, validateOrReject } from 'class-validator';
-import { DomainOperation } from '@shared/domain/interface';
+import { DeletionService, DomainOperation } from '@shared/domain/interface';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { LegacyLogger } from '../../../core/logger';
 import { ServerConfig } from '../../server/server.config';
@@ -15,7 +15,7 @@ import { AccountValidationService } from './account.validation.service';
 import { AccountDto, AccountSaveDto } from './dto';
 
 @Injectable()
-export class AccountService extends AbstractAccountService {
+export class AccountService extends AbstractAccountService implements DeletionService {
 	private readonly accountImpl: AbstractAccountService;
 
 	constructor(
@@ -171,7 +171,7 @@ export class AccountService extends AbstractAccountService {
 		return deletedAccounts;
 	}
 
-	async deleteAccountByUserId(userId: string): Promise<DomainOperation> {
+	async deleteUserData(userId: string): Promise<DomainOperation> {
 		const deletedAccounts = await this.deleteByUserId(userId);
 
 		const result = DomainOperationBuilder.build(

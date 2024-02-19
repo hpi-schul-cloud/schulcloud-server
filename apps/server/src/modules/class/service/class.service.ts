@@ -3,12 +3,12 @@ import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainOperationBuilder } from '@shared/domain/builder';
-import { DomainOperation } from '@shared/domain/interface';
+import { DomainOperation, DeletionService } from '@shared/domain/interface';
 import { Class } from '../domain';
 import { ClassesRepo } from '../repo';
 
 @Injectable()
-export class ClassService {
+export class ClassService implements DeletionService {
 	constructor(private readonly classesRepo: ClassesRepo, private readonly logger: Logger) {
 		this.logger.setContext(ClassService.name);
 	}
@@ -25,7 +25,7 @@ export class ClassService {
 		return classes;
 	}
 
-	public async deleteUserDataFromClasses(userId: EntityId): Promise<DomainOperation> {
+	public async deleteUserData(userId: EntityId): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting data from Classes',

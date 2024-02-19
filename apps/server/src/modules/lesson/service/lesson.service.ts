@@ -5,12 +5,12 @@ import { Counted, DomainName, EntityId, OperationType, StatusModel } from '@shar
 import { AuthorizationLoaderService } from '@src/modules/authorization';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DomainOperation } from '@shared/domain/interface';
+import { DeletionService, DomainOperation } from '@shared/domain/interface';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { LessonRepo } from '../repository';
 
 @Injectable()
-export class LessonService implements AuthorizationLoaderService {
+export class LessonService implements AuthorizationLoaderService, DeletionService {
 	constructor(
 		private readonly lessonRepo: LessonRepo,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
@@ -39,7 +39,7 @@ export class LessonService implements AuthorizationLoaderService {
 		return lessons;
 	}
 
-	async deleteUserDataFromLessons(userId: EntityId): Promise<DomainOperation> {
+	async deleteUserData(userId: EntityId): Promise<DomainOperation> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Lessons',

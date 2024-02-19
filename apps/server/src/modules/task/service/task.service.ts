@@ -1,7 +1,7 @@
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { Task } from '@shared/domain/entity';
-import { DomainOperation, IFindOptions } from '@shared/domain/interface';
+import { DeletionService, DomainOperation, IFindOptions } from '@shared/domain/interface';
 import { Counted, DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { TaskRepo } from '@shared/repo';
 import { DomainOperationBuilder } from '@shared/domain/builder';
@@ -10,7 +10,7 @@ import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { SubmissionService } from './submission.service';
 
 @Injectable()
-export class TaskService {
+export class TaskService implements DeletionService {
 	constructor(
 		private readonly taskRepo: TaskRepo,
 		private readonly submissionService: SubmissionService,
@@ -46,6 +46,27 @@ export class TaskService {
 
 	async findById(taskId: EntityId): Promise<Task> {
 		return this.taskRepo.findById(taskId);
+	}
+
+	async deleteUserData(creatorId: EntityId): Promise<DomainOperation[]> {
+		const [tasksDeleted, tasksModifiedByRemoveCreator, tasksModifiedByRemoveUserFromFinished] = await Promise.all([
+			this.deleteTasksByOnlyCreator(creatorId),
+			this.removeCreatorIdFromTasks(creatorId),
+			this.removeUserFromFinished(creatorId),
+		]);
+
+		const modifiedTasksCount = tasksModifiedByRemoveCreator.count + tasksModifiedByRemoveUserFromFinished.count;
+		const modifiedTasksRef = [...tasksModifiedByRemoveCreator.refs, ...tasksModifiedByRemoveUserFromFinished.refs];
+
+		return [
+			tasksDeleted,
+			DomainOperationBuilder.build(
+				tasksModifiedByRemoveCreator.domain,
+				tasksModifiedByRemoveCreator.operation,
+				modifiedTasksCount,
+				modifiedTasksRef
+			),
+		];
 	}
 
 	async deleteTasksByOnlyCreator(creatorId: EntityId): Promise<DomainOperation> {

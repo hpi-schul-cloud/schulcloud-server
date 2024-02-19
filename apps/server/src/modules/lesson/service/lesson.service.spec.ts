@@ -165,7 +165,7 @@ describe('LessonService', () => {
 			it('should call lessonRepo.findByUserId', async () => {
 				const { userId } = setup();
 
-				await lessonService.deleteUserDataFromLessons(userId);
+				await lessonService.deleteUserData(userId);
 
 				expect(lessonRepo.findByUserId).toBeCalledWith(userId);
 			});
@@ -173,7 +173,7 @@ describe('LessonService', () => {
 			it('should update lessons without deleted user', async () => {
 				const { expectedResult, userId } = setup();
 
-				const result = await lessonService.deleteUserDataFromLessons(userId);
+				const result = await lessonService.deleteUserData(userId);
 
 				expect(result).toEqual(expectedResult);
 			});

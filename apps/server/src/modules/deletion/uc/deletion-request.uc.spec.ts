@@ -307,21 +307,21 @@ describe(DeletionRequestUc.name, () => {
 
 				const user = userDoFactory.buildWithId();
 
-				accountService.deleteAccountByUserId.mockResolvedValueOnce(accountDeleted);
-				registrationPinService.deleteRegistrationPinByEmail.mockResolvedValueOnce(registrationPinDeleted);
-				classService.deleteUserDataFromClasses.mockResolvedValueOnce(classesUpdated);
-				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(courseGroupUpdated);
-				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(courseUpdated);
+				accountService.deleteUserData.mockResolvedValueOnce(accountDeleted);
+				registrationPinService.deleteUserData.mockResolvedValueOnce(registrationPinDeleted);
+				classService.deleteUserData.mockResolvedValueOnce(classesUpdated);
+				courseGroupService.deleteUserData.mockResolvedValueOnce(courseGroupUpdated);
+				courseService.deleteUserData\.mockResolvedValueOnce(courseUpdated);
 				filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(filesDeleted);
 				filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles.mockResolvedValueOnce(filesUpdated);
-				lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(lessonsUpdated);
+				lessonService.deleteUserData.mockResolvedValueOnce(lessonsUpdated);
 				pseudonymService.deleteByUserId.mockResolvedValueOnce(pseudonymsDeleted);
 				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(teamsUpdated);
-				userService.deleteUser.mockResolvedValueOnce(userDeleted);
+				userService.deleteUserData.mockResolvedValueOnce(userDeleted);
 				rocketChatUserService.deleteByUserId.mockResolvedValueOnce(rocketChatUserDeleted);
 				rocketChatService.deleteUser.mockResolvedValueOnce(rocketChatServiceDeleted);
 				filesStorageClientAdapterService.removeCreatorIdFromFileRecords.mockResolvedValueOnce(fileRecordsUpdated);
-				dashboardService.deleteDashboardByUserId.mockResolvedValueOnce(dashboardDeleted);
+				dashboardService.deleteUserData.mockResolvedValueOnce(dashboardDeleted);
 				taskService.removeCreatorIdFromTasks.mockResolvedValueOnce(tasksModifiedByRemoveCreatorId);
 				taskService.removeUserFromFinished.mockResolvedValueOnce(tasksModifiedByRemoveUserFromFinished);
 				taskService.deleteTasksByOnlyCreator.mockResolvedValueOnce(tasksDeleted);
@@ -360,7 +360,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(accountService.deleteAccountByUserId).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+				expect(accountService.deleteUserData).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call registrationPinService.deleteRegistrationPinByEmail to delete user data in registrationPin module', async () => {
@@ -370,7 +370,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(registrationPinService.deleteRegistrationPinByEmail).toHaveBeenCalled();
+				expect(registrationPinService.deleteUserData).toHaveBeenCalled();
 			});
 
 			it('should call userService.findById and userService.getParentEmailsFromUser to get own email and parentEmails', async () => {
@@ -379,7 +379,7 @@ describe(DeletionRequestUc.name, () => {
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
 				userService.findByIdOrNull.mockResolvedValueOnce(user);
 				userService.getParentEmailsFromUser.mockRejectedValue([parentEmail]);
-				registrationPinService.deleteRegistrationPinByEmail.mockRejectedValueOnce(3);
+				registrationPinService.deleteUserData.mockRejectedValueOnce(3);
 
 				await uc.executeDeletionRequests();
 
@@ -394,7 +394,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(classService.deleteUserDataFromClasses).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+				expect(classService.deleteUserData).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call courseGroupService.deleteUserDataFromCourseGroup to delete user data in courseGroup module', async () => {
@@ -404,7 +404,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(courseGroupService.deleteUserDataFromCourseGroup).toHaveBeenCalledWith(
+				expect(courseGroupService.deleteUserData).toHaveBeenCalledWith(
 					deletionRequestToExecute.targetRefId
 				);
 			});
@@ -416,7 +416,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(courseService.deleteUserDataFromCourse).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+				expect(courseService.deleteUserData\).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call filesService.markFilesOwnedByUserForDeletion to mark users files to delete in file module', async () => {
@@ -460,7 +460,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(lessonService.deleteUserDataFromLessons).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+				expect(lessonService.deleteUserData).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call pseudonymService.deleteByUserId to delete users data in pseudonym module', async () => {
@@ -522,7 +522,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(dashboardService.deleteDashboardByUserId).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+				expect(dashboardService.deleteUserData).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call taskService.deleteTasksByOnlyCreator to delete Tasks only with creator', async () => {
@@ -636,15 +636,15 @@ describe(DeletionRequestUc.name, () => {
 					new ObjectId().toHexString(),
 				]);
 
-				classService.deleteUserDataFromClasses.mockResolvedValueOnce(classesUpdated);
-				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(courseGroupUpdated);
-				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(courseUpdated);
+				classService.deleteUserData.mockResolvedValueOnce(classesUpdated);
+				courseGroupService.deleteUserData.mockResolvedValueOnce(courseGroupUpdated);
+				courseService.deleteUserData\.mockResolvedValueOnce(courseUpdated);
 				filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(filesDeleted);
 				filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles.mockResolvedValueOnce(filesUpdated);
-				lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(lessonsUpdated);
+				lessonService.deleteUserData.mockResolvedValueOnce(lessonsUpdated);
 				pseudonymService.deleteByUserId.mockResolvedValueOnce(pseudonymsDeleted);
 				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(teamsUpdated);
-				userService.deleteUser.mockRejectedValueOnce(new Error());
+				userService.deleteUserData.mockRejectedValueOnce(new Error());
 
 				return {
 					deletionRequestToExecute,
