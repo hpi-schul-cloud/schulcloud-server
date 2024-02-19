@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import {
@@ -121,7 +122,7 @@ export class ImportUserController {
 		await this.userImportUc.endSchoolInMaintenance(currentUser.userId);
 	}
 
-	@RequestTimeout(120000)
+	@RequestTimeout(Configuration.get('PERSONEN_INFO_TIMEOUT_IN_MS') as number)
 	@Post('populate-import-users')
 	@ApiOperation({
 		summary: 'Populates import users',
