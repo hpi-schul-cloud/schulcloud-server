@@ -11,7 +11,7 @@ export interface UserSearchQuery {
 	skip: number | undefined;
 	limit: number | undefined;
 	consentStatus?: Record<string, string[]>;
-	classes?: Record<string, string[]>;
+	classes?: string[];
 	searchQuery?: string;
 	searchFilterGate?: number;
 	createdAt?: Date | undefined;

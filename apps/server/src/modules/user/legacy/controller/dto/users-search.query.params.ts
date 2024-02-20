@@ -26,9 +26,8 @@ export class UsersSearchQueryParams extends PaginationParams {
 	consentStatus?: Record<string, string[]>;
 
 	@IsOptional()
-	@IsObject()
 	@ApiPropertyOptional()
-	classes?: Record<string, string[]>;
+	classes?: string[];
 
 	@IsOptional()
 	@IsObject()
