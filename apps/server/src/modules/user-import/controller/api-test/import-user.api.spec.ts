@@ -1,5 +1,6 @@
 import { SanisResponse, schulconnexResponseFactory } from '@infra/schulconnex-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { OauthTokenResponse } from '@modules/oauth/service/dto';
 import { ServerTestModule } from '@modules/server/server.module';
 import {
 	FilterImportUserParams,
@@ -24,20 +25,19 @@ import { ImportUser, MatchCreator, SchoolEntity, SystemEntity, User } from '@sha
 import { Permission, RoleName, SortOrder } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	accountFactory,
 	cleanupCollections,
 	importUserFactory,
 	roleFactory,
 	schoolEntityFactory,
 	systemEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
+import { AccountEntity } from '@src/modules/account/entity/account.entity';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { OauthTokenResponse } from '@modules/oauth/service/dto';
-import { AccountEntity } from '@src/modules/account/entity/account.entity';
 import { IUserImportFeatures, UserImportFeatures } from '../../config';
 
 describe('ImportUser Controller (API)', () => {

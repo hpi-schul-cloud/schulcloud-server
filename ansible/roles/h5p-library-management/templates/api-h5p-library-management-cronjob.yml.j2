@@ -3,15 +3,15 @@ kind: CronJob
 metadata:
   namespace: {{ NAMESPACE }}
   labels:
-    app: api-library-management-cronjob
+    app: api-h5p-library-management-cronjob
     app.kubernetes.io/part-of: schulcloud-verbund
     app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-    app.kubernetes.io/name:  api-library-management-cronjob
+    app.kubernetes.io/name:  api-h5p-library-management-cronjob
     app.kubernetes.io/component: h5p
     app.kubernetes.io/managed-by: ansible
     git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
     git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
-  name: api-library-management-cronjob
+  name: api-h5p-library-management-cronjob
 spec:
   schedule: "{{ SERVER_H5P_LIBRARY_MANAGEMENT_CRONJOB|default("0 3 * * 3,6", true) }}"
   concurrencyPolicy: Forbid
@@ -21,10 +21,10 @@ spec:
       template:
         metadata:
           labels:
-            app:  api-library-management-cronjob
+            app:  api-h5p-library-management-cronjob
             app.kubernetes.io/part-of: schulcloud-verbund
             app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
-            app.kubernetes.io/name:  api-library-management-cronjob
+            app.kubernetes.io/name:  api-h5p-library-management-cronjob
             app.kubernetes.io/component: h5p
             app.kubernetes.io/managed-by: ansible
             git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
@@ -38,6 +38,8 @@ spec:
                 name: api-configmap
             - secretRef:
                 name: api-secret
+            - secretRef:
+                name: api-h5p-library-management-secret
             command: ['/bin/sh', '-c']
             args: ['npm run nest:start:h5p:library-management']
             resources:
