@@ -541,13 +541,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/CacheWrapperModule.html" data-type="entity-link" >CacheWrapperModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-CacheWrapperModule-c1180e9418ef71adbc128e21936822939853a917ff8c895cb044efeaa429ad821112c569a76ec692271f97c2039c3e2fd8dc8a9101dfb5aadfa2a937a3288d15"' : 'data-bs-target="#xs-injectables-links-module-CacheWrapperModule-c1180e9418ef71adbc128e21936822939853a917ff8c895cb044efeaa429ad821112c569a76ec692271f97c2039c3e2fd8dc8a9101dfb5aadfa2a937a3288d15"' }>
+                                        'data-bs-target="#injectables-links-module-CacheWrapperModule-eca37a7be7cd971dd19125be3d7f413d784698bd7c7e5baf48dabac834eb2af61f5c2854457ba877271238c0bf66cf34dceccdf807610d2a608e0807b71f5bd0"' : 'data-bs-target="#xs-injectables-links-module-CacheWrapperModule-eca37a7be7cd971dd19125be3d7f413d784698bd7c7e5baf48dabac834eb2af61f5c2854457ba877271238c0bf66cf34dceccdf807610d2a608e0807b71f5bd0"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-CacheWrapperModule-c1180e9418ef71adbc128e21936822939853a917ff8c895cb044efeaa429ad821112c569a76ec692271f97c2039c3e2fd8dc8a9101dfb5aadfa2a937a3288d15"' :
-                                        'id="xs-injectables-links-module-CacheWrapperModule-c1180e9418ef71adbc128e21936822939853a917ff8c895cb044efeaa429ad821112c569a76ec692271f97c2039c3e2fd8dc8a9101dfb5aadfa2a937a3288d15"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-CacheWrapperModule-eca37a7be7cd971dd19125be3d7f413d784698bd7c7e5baf48dabac834eb2af61f5c2854457ba877271238c0bf66cf34dceccdf807610d2a608e0807b71f5bd0"' :
+                                        'id="xs-injectables-links-module-CacheWrapperModule-eca37a7be7cd971dd19125be3d7f413d784698bd7c7e5baf48dabac834eb2af61f5c2854457ba877271238c0bf66cf34dceccdf807610d2a608e0807b71f5bd0"' }>
                                         <li class="link">
                                             <a href="injectables/CacheService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >CacheService</a>
                                         </li>
