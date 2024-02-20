@@ -6,6 +6,7 @@ import type { FilesStorageClientConfig } from '@modules/files-storage-client';
 import type { CommonCartridgeConfig, LearnroomConfig } from '@modules/learnroom';
 import type { SchoolConfig } from '@modules/school';
 import type { UserConfig } from '@modules/user';
+import { type IUserImportFeatures, UserImportConfiguration } from '@modules/user-import';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
 import { ToolConfiguration, type IToolFeatures } from '@modules/tool';
@@ -43,9 +44,11 @@ export interface ServerConfig
 		IVideoConferenceSettings,
 		BoardConfig,
 		LearnroomConfig,
-		SharingConfig {
+		SharingConfig,
+		IUserImportFeatures {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
+	ACCESSIBILITY_REPORT_EMAIL: string;
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
 	ALERT_STATUS_URL: string | null;
 	FEATURE_ES_COLLECTIONS_ENABLED: boolean;
@@ -60,6 +63,11 @@ export interface ServerConfig
 	FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED: boolean;
 	FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED: boolean;
+	FEATURE_LOGIN_LINK_ENABLED: boolean;
+	FEATURE_CONSENT_NECESSARY: boolean;
+	FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED: boolean;
+	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: boolean;
+	GHOST_BASE_URL: string;
 	ROCKETCHAT_SERVICE_ENABLED: boolean;
 	JWT_SHOW_TIMEOUT_WARNING_SECONDS: number;
 	JWT_TIMEOUT_SECONDS: number;
@@ -90,6 +98,7 @@ export interface ServerConfig
 
 // TODO: each as cast should be check with type guard
 const config: ServerConfig = {
+	ACCESSIBILITY_REPORT_EMAIL: Configuration.get('ACCESSIBILITY_REPORT_EMAIL') as string,
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN') as boolean,
 	ALERT_STATUS_URL:
 		Configuration.get('ALERT_STATUS_URL') === null
@@ -112,12 +121,20 @@ const config: ServerConfig = {
 	FEATURE_COURSE_SHARE_NEW: Configuration.get('FEATURE_COURSE_SHARE_NEW') as boolean,
 	FEATURE_LESSON_SHARE: Configuration.get('FEATURE_LESSON_SHARE') as boolean,
 	FEATURE_TASK_SHARE: Configuration.get('FEATURE_TASK_SHARE') as boolean,
+	FEATURE_LOGIN_LINK_ENABLED: Configuration.get('FEATURE_LOGIN_LINK_ENABLED') as boolean,
+	FEATURE_COPY_SERVICE_ENABLED: Configuration.get('FEATURE_COPY_SERVICE_ENABLED') as boolean,
+	FEATURE_CONSENT_NECESSARY: Configuration.get('FEATURE_CONSENT_NECESSARY') as boolean,
+	FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED: Configuration.get(
+		'FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED'
+	) as boolean,
 	TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT: Configuration.get(
 		'TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT'
 	) as boolean,
 	TEACHER_STUDENT_VISIBILITY__IS_VISIBLE: Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_VISIBLE') as boolean,
 	FEATURE_SCHOOL_POLICY_ENABLED_NEW: Configuration.get('FEATURE_SCHOOL_POLICY_ENABLED_NEW') as boolean,
 	FEATURE_SCHOOL_TERMS_OF_USE_ENABLED: Configuration.get('FEATURE_SCHOOL_TERMS_OF_USE_ENABLED') as boolean,
+	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: Configuration.get('FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED') as boolean,
+	GHOST_BASE_URL: Configuration.get('GHOST_BASE_URL') as string,
 	ROCKETCHAT_SERVICE_ENABLED: Configuration.get('ROCKETCHAT_SERVICE_ENABLED') as boolean,
 	JWT_SHOW_TIMEOUT_WARNING_SECONDS: Configuration.get('JWT_SHOW_TIMEOUT_WARNING_SECONDS') as number,
 	JWT_TIMEOUT_SECONDS: Configuration.get('JWT_TIMEOUT_SECONDS') as number,
@@ -177,6 +194,7 @@ const config: ServerConfig = {
 	...getTldrawClientConfig(),
 	...ToolConfiguration.toolFeatures,
 	...VideoConferenceConfiguration.videoConference,
+	...UserImportConfiguration.userImportFeatures,
 };
 
 export const serverConfig = () => config;

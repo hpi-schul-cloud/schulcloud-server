@@ -37,7 +37,7 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { ServerController, ServerUc } from './api';
+import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 
 const serverModules = [
@@ -96,7 +96,7 @@ export const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 };
 
 const providers = [ServerUc, { provide: SERVER_CONFIG_TOKEN, useValue: serverConfig() }];
-const controllers = [ServerController];
+const controllers = [ServerController, ServerConfigController];
 
 /**
  * Server Module used for production

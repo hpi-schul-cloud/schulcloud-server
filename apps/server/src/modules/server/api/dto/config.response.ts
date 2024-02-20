@@ -3,6 +3,9 @@ import type { ServerConfig } from '../..';
 
 export class ConfigResponse {
 	@ApiProperty()
+	ACCESSIBILITY_REPORT_EMAIL: string;
+
+	@ApiProperty()
 	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: boolean;
 
 	@ApiProperty()
@@ -45,12 +48,13 @@ export class ConfigResponse {
 	TLDRAW__ASSETS_MAX_SIZE: number;
 
 	@ApiPropertyOptional()
-	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST?: string | undefined;
+	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST?: string;
 
 	@ApiProperty()
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
 
-	@ApiProperty({ nullable: true })
+	// TODO: export is create object | null thats invalid and must be fixed. But null is defined in default.schema.json
+	@ApiProperty({ type: String, nullable: true })
 	ALERT_STATUS_URL: string | null;
 
 	@ApiProperty()
@@ -89,44 +93,92 @@ export class ConfigResponse {
 	@ApiProperty()
 	FEATURE_VIDEOCONFERENCE_ENABLED: boolean;
 
+	@ApiProperty()
 	FEATURE_COLUMN_BOARD_ENABLED: boolean;
 
+	@ApiProperty()
 	FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED: boolean;
 
+	@ApiProperty()
 	FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED: boolean;
 
+	@ApiProperty()
 	FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED: boolean;
 
+	@ApiProperty()
 	FEATURE_COURSE_SHARE: boolean;
 
+	@ApiProperty()
 	FEATURE_COURSE_SHARE_NEW: boolean;
 
+	@ApiProperty()
+	FEATURE_LOGIN_LINK_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_LESSON_SHARE: boolean;
+
+	@ApiProperty()
+	FEATURE_TASK_SHARE: boolean;
+
+	@ApiProperty()
+	FEATURE_USER_MIGRATION_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_COPY_SERVICE_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_CONSENT_NECESSARY: boolean;
+
+	@ApiProperty()
+	FEATURE_IMSCC_COURSE_EXPORT_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: boolean;
+
+	@ApiProperty()
+	GHOST_BASE_URL: string;
+
+	@ApiProperty()
 	ROCKETCHAT_SERVICE_ENABLED: boolean;
 
 	// LERNSTORE_MODE: boolean; looks like not in use anymore
 
+	@ApiProperty()
 	I18N__AVAILABLE_LANGUAGES: string; // enum 'de,en,es,ua' -> Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',')
 
+	@ApiProperty()
 	I18N__DEFAULT_LANGUAGE: string; // enum
 
+	@ApiProperty()
 	I18N__FALLBACK_LANGUAGE: string; // enum
 
+	@ApiProperty()
 	I18N__DEFAULT_TIMEZONE: string; // enum
 
+	@ApiProperty()
 	JWT_SHOW_TIMEOUT_WARNING_SECONDS: number;
 
+	@ApiProperty()
 	JWT_TIMEOUT_SECONDS: number;
 
+	@ApiProperty()
 	NOT_AUTHENTICATED_REDIRECT_URL: string;
 
+	@ApiProperty()
 	DOCUMENT_BASE_DIR: string;
 
+	@ApiProperty()
 	SC_THEME: string;
 
+	@ApiProperty()
 	SC_TITLE: string;
 
 	// config: ConfigResponse
 	constructor(config: ServerConfig) {
+		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
 		this.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN = config.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN;
 		this.ALERT_STATUS_URL = config.ALERT_STATUS_URL;
 		this.FEATURE_ES_COLLECTIONS_ENABLED = config.FEATURE_ES_COLLECTIONS_ENABLED;
@@ -147,6 +199,16 @@ export class ConfigResponse {
 		this.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED = config.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED;
 		this.FEATURE_COURSE_SHARE = config.FEATURE_COURSE_SHARE; // TODO: Is removed and replaced with _NEW soon! Fix it before merge!
 		this.FEATURE_COURSE_SHARE_NEW = config.FEATURE_COURSE_SHARE_NEW;
+		this.FEATURE_LOGIN_LINK_ENABLED = config.FEATURE_LOGIN_LINK_ENABLED;
+		this.FEATURE_LESSON_SHARE = config.FEATURE_LESSON_SHARE;
+		this.FEATURE_TASK_SHARE = config.FEATURE_TASK_SHARE;
+		this.FEATURE_USER_MIGRATION_ENABLED = config.userMigrationEnabled;
+		this.FEATURE_COPY_SERVICE_ENABLED = config.FEATURE_COPY_SERVICE_ENABLED;
+		this.FEATURE_CONSENT_NECESSARY = config.FEATURE_CONSENT_NECESSARY;
+		this.FEATURE_IMSCC_COURSE_EXPORT_ENABLED = config.FEATURE_IMSCC_COURSE_EXPORT_ENABLED;
+		this.FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED = config.FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED;
+		this.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED = config.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED;
+		this.GHOST_BASE_URL = config.GHOST_BASE_URL;
 		this.ROCKETCHAT_SERVICE_ENABLED = config.ROCKETCHAT_SERVICE_ENABLED;
 		this.I18N__AVAILABLE_LANGUAGES = config.I18N__AVAILABLE_LANGUAGES;
 		this.I18N__DEFAULT_LANGUAGE = config.I18N__DEFAULT_LANGUAGE;
@@ -178,18 +240,3 @@ export class ConfigResponse {
 		this.FEATURE_VIDEOCONFERENCE_ENABLED = config.enabled;
 	}
 }
-
-/**
- TODO missed keys - check type from default.schema.json 23 offen
-	'FEATURE_LOGIN_LINK_ENABLED',
-	'FEATURE_LESSON_SHARE',
-	'FEATURE_TASK_SHARE',
-	'FEATURE_USER_MIGRATION_ENABLED',
-	'FEATURE_COPY_SERVICE_ENABLED',
-	'ACCESSIBILITY_REPORT_EMAIL',
-	'GHOST_BASE_URL',
-	'FEATURE_CONSENT_NECESSARY',
-	'FEATURE_IMSCC_COURSE_EXPORT_ENABLED',
-	'FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED',
-	'FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED',
- */
