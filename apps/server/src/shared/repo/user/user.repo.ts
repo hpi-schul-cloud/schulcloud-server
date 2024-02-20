@@ -6,11 +6,11 @@ import { ImportUser, Role, SchoolEntity, User } from '@shared/domain/entity';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId, NameMatch } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { createMultiDocumentAggregation } from 'apps/server/src/modules/user/legcy';
+import { createMultiDocumentAggregation } from 'apps/server/src/modules/user/legacy';
 import { ObjectID } from 'bson';
 import { MongoPatterns } from '@shared/repo';
-import { UsersSearchQueryParams } from '../../../modules/user/legcy/controller/dto/users-search.query.params';
-import { UserSearchQuery } from '../../../modules/user/legcy/interfaces/user-search.query';
+import { UsersSearchQueryParams } from '@modules/user/legacy/controller/dto/users-search.query.params';
+import { UserSearchQuery } from '@modules/user/legacy/interfaces/user-search.query';
 
 @Injectable()
 export class UserRepo extends BaseRepo<User> {

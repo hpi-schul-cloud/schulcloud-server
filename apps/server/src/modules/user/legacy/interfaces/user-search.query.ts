@@ -1,4 +1,4 @@
-import { UserSortQuery } from '@modules/user/legcy/interfaces/user-sort.query';
+import { UserSortQuery } from '@modules/user/legacy/interfaces/user-sort.query';
 import { ObjectID } from 'bson';
 
 export interface UserSearchQuery {

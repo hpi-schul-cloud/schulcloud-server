@@ -4,9 +4,10 @@ import { RoleModule } from '../../role';
 import { AuthorizationModule } from '../../authorization';
 import { AdminApiStudentsController, AdminApiTeachersController } from './controller';
 import { AdminApiUsersUc } from './uc';
+import { AccountModule } from '../../account';
 
 @Module({
-	imports: [UserModule, RoleModule, AuthorizationModule],
+	imports: [UserModule, RoleModule, AccountModule, AuthorizationModule],
 	controllers: [AdminApiStudentsController, AdminApiTeachersController],
 	providers: [AdminApiUsersUc],
 })
