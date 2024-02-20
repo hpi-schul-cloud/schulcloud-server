@@ -5,7 +5,7 @@ import { EntityId } from '@shared/domain/types';
 import { AccountService } from '@src/modules/account';
 import { RoleService } from '@src/modules/role';
 import { nanoid } from 'nanoid';
-import { UserService } from '../service/user.service';
+import { UserService } from '../service';
 
 @Injectable()
 export class AdminApiUserUc {

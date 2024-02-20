@@ -5,7 +5,7 @@ import { LoggerModule } from '@src/core/logger';
 import { AccountModule } from '@modules/account';
 import { RoleModule } from '@modules/role/role.module';
 import { LegacySchoolModule } from '@modules/legacy-school';
-import { UserService } from './service/user.service';
+import { UserService } from './service';
 
 @Module({
 	imports: [LegacySchoolModule, RoleModule, AccountModule, LoggerModule],

@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { AccountModule } from '../account';
 import { RoleModule } from '../role';
-import { AdminApiUsersController } from './controller/admin-api-user.controller';
-import { AdminApiUserUc } from './uc/admin-api-user.uc';
+import { AdminApiUsersController } from './controller';
+import { AdminApiUserUc } from './uc';
 import { UserModule } from './user.module';
 
 @Module({

@@ -32,4 +32,10 @@ export class RoleService {
 		const roleDtos: RoleDto[] = RoleMapper.mapFromEntitiesToDtos(entities);
 		return roleDtos;
 	}
+
+	async findByName(name: RoleName): Promise<RoleDto> {
+		const entity: Role = await this.roleRepo.findByName(name);
+		const role: RoleDto = RoleMapper.mapFromEntityToDto(entity);
+		return role;
+	}
 }
