@@ -23,7 +23,7 @@ export class UsersSearchQueryParams extends PaginationParams {
 	@IsOptional()
 	@IsObject()
 	@ApiPropertyOptional()
-	consentStatus?: Record<string, string[]>;
+	consentStatus?: Record<'$in', string[]>;
 
 	@IsOptional()
 	@ApiPropertyOptional()
@@ -32,20 +32,22 @@ export class UsersSearchQueryParams extends PaginationParams {
 	@IsOptional()
 	@IsObject()
 	@ApiPropertyOptional()
-	createdAt?: Record<string, Date>;
+	createdAt?: Record<RangeType, Date>;
 
 	@IsOptional()
 	@IsObject()
 	@ApiPropertyOptional()
-	lastLoginSystemChange?: Record<string, Date>;
+	lastLoginSystemChange?: Record<RangeType, Date>;
 
 	@IsOptional()
 	@IsObject()
 	@ApiPropertyOptional()
-	outdatedSince?: Record<string, Date>;
+	outdatedSince?: Record<RangeType, Date>;
 
 	@IsOptional()
 	@IsString()
 	@ApiPropertyOptional()
 	searchQuery?: string;
 }
+
+export type RangeType = '$gt' | '$gte' | '$lt' | '$lte';
