@@ -315,12 +315,7 @@
 		"H5P_EDITOR": {
 			"type": "object",
 			"description": "Properties of the H5P server microservice and library management job",
-			"required": [
-				"S3_ENDPOINT",
-				"S3_REGION",
-				"S3_BUCKET_CONTENT",
-				"S3_BUCKET_LIBRARIES"
-			],
+			"required": ["S3_ENDPOINT", "S3_REGION", "S3_BUCKET_CONTENT", "S3_BUCKET_LIBRARIES"],
 			"default": {},
 			"properties": {
 				"S3_ENDPOINT": {
@@ -1144,11 +1139,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for course sharing feature."
-		},
-		"FEATURE_COURSE_SHARE_NEW": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for the new course sharing feature."
 		},
 		"FEATURE_LESSON_SHARE": {
 			"type": "boolean",
