@@ -3,9 +3,11 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
-import { accountFactory, cleanupCollections, userFactory } from '@shared/testing';
+import { accountDtoFactory, accountFactory, cleanupCollections, userFactory } from '@shared/testing';
 import { AccountRepo } from './account.repo';
 import { AccountEntity } from '../entity/account.entity';
+import { AccountDoToEntityMapper } from './mapper/account-do-to-entity.mapper';
+import { AccountEntityToDoMapper } from './mapper';
 
 describe('account repo', () => {
 	let module: TestingModule;
@@ -33,6 +35,61 @@ describe('account repo', () => {
 		expect(repo.entityName).toBe(AccountEntity);
 	});
 
+	describe('save', () => {
+		describe('When an account is given', () => {
+			it('should save an account', async () => {
+				const account = accountDtoFactory.build();
+
+				await repo.save(account);
+
+				const foundAccount = await repo.findById(account.id);
+				expect(foundAccount).toBeDefined();
+			});
+		});
+
+		describe('When an existing account is given', () => {
+			const setup = async () => {
+				const account = accountFactory.build();
+				await em.persistAndFlush(account);
+				em.clear();
+				return account;
+			};
+
+			it('should update the account', async () => {
+				const account = await setup();
+
+				const updatedAccount = accountDtoFactory.build({ id: account.id });
+				await repo.save(updatedAccount);
+
+				const foundAccount = await repo.findById(account.id);
+				expect(foundAccount?.username).toBe(updatedAccount.username);
+			});
+		});
+	});
+
+	describe('findById', () => {
+		describe('When the account exists', () => {
+			const setup = async () => {
+				const account = accountFactory.build();
+				await em.persistAndFlush(account);
+				em.clear();
+				return account;
+			};
+
+			it('should find it by id', async () => {
+				const account = await setup();
+				const foundAccount = await repo.findById(account.id);
+				expect(foundAccount.id).toEqual(account.id);
+			});
+		});
+
+		describe('When the account does not exist', () => {
+			it('should throw not found error', async () => {
+				await expect(repo.findById('000')).rejects.toThrow(NotFoundError);
+			});
+		});
+	});
+
 	describe('findByUserId', () => {
 		describe('When calling findByUserId with id', () => {
 			const setup = async () => {
@@ -46,6 +103,13 @@ describe('account repo', () => {
 				const accountToFind = await setup();
 				const account = await repo.findByUserId(accountToFind.userId ?? '');
 				expect(account?.id).toEqual(accountToFind.id);
+			});
+		});
+
+		describe('When id does not exist', () => {
+			it('should return null', async () => {
+				const account = await repo.findByUserId(new ObjectId().toHexString());
+				expect(account).toBeNull();
 			});
 		});
 	});
@@ -77,10 +141,15 @@ describe('account repo', () => {
 	describe('findMultipleByUserId', () => {
 		describe('When multiple user ids are given', () => {
 			const setup = async () => {
-				const anAccountToFind = accountFactory.build();
-				const anotherAccountToFind = accountFactory.build();
-				await em.persistAndFlush(anAccountToFind);
-				await em.persistAndFlush(anotherAccountToFind);
+				const anAccountToFind = accountDtoFactory.build({
+					userId: new ObjectId().toHexString(),
+				});
+				const anotherAccountToFind = accountDtoFactory.build({
+					userId: new ObjectId().toHexString(),
+				});
+
+				await em.persistAndFlush(AccountDoToEntityMapper.mapToEntity(anAccountToFind));
+				await em.persistAndFlush(AccountDoToEntityMapper.mapToEntity(anotherAccountToFind));
 				em.clear();
 
 				return { anAccountToFind, anotherAccountToFind };
@@ -90,9 +159,14 @@ describe('account repo', () => {
 				const { anAccountToFind, anotherAccountToFind } = await setup();
 				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				const accounts = await repo.findMultipleByUserId([anAccountToFind.userId!, anotherAccountToFind.userId!]);
-				expect(accounts).toContainEqual(anAccountToFind);
-				expect(accounts).toContainEqual(anotherAccountToFind);
+
 				expect(accounts).toHaveLength(2);
+				expect(accounts).toEqual(
+					expect.arrayContaining([
+						expect.objectContaining({ ...anAccountToFind.getProps() }),
+						expect.objectContaining({ ...anotherAccountToFind.getProps() }),
+					])
+				);
 			});
 		});
 
@@ -112,6 +186,7 @@ describe('account repo', () => {
 				em.clear();
 				return accountToFind;
 			};
+
 			it('should find a user', async () => {
 				const accountToFind = await setup();
 				const account = await repo.findByUserIdOrFail(accountToFind.userId ?? '');
@@ -134,6 +209,7 @@ describe('account repo', () => {
 				await em.persistAndFlush([user, account]);
 				return { user, account };
 			};
+
 			it('should return a valid reference', async () => {
 				const { user, account } = await setup();
 
@@ -147,14 +223,33 @@ describe('account repo', () => {
 	describe('saveWithoutFlush', () => {
 		describe('When calling saveWithoutFlush', () => {
 			const setup = () => {
-				const account = accountFactory.build();
+				const account = accountDtoFactory.build();
 				return account;
 			};
-			it('should add an account to the persist stack', () => {
+
+			it('should add an account to the persist stack', async () => {
 				const account = setup();
 
-				repo.saveWithoutFlush(account);
+				await repo.saveWithoutFlush(account);
 				expect(em.getUnitOfWork().getPersistStack().size).toBe(1);
+			});
+		});
+		describe('When an account is updated', () => {
+			const setup = async () => {
+				const account = accountFactory.build();
+				await em.persistAndFlush(account);
+				em.clear();
+				return account;
+			};
+
+			it('should add it to the change set', async () => {
+				const account = await setup();
+
+				const updatedAccount = accountDtoFactory.build({ id: account.id });
+				await repo.saveWithoutFlush(updatedAccount);
+
+				em.getUnitOfWork().computeChangeSets();
+				expect(em.getUnitOfWork().getChangeSets().length).toBe(1);
 			});
 		});
 	});
@@ -302,6 +397,13 @@ describe('account repo', () => {
 				await expect(repo.findById(account.id)).rejects.toThrow(NotFoundError);
 			});
 		});
+
+		describe('When account is not deleted', () => {
+			it('should return empty list', async () => {
+				const accounts = await repo.deleteByUserId(new ObjectId().toHexString());
+				expect(accounts).toHaveLength(0);
+			});
+		});
 	});
 
 	describe('findMany', () => {
@@ -320,7 +422,7 @@ describe('account repo', () => {
 			it('should find all accounts', async () => {
 				const mockAccounts = await setup();
 				const foundAccounts = await repo.findMany();
-				expect(foundAccounts).toEqual(mockAccounts);
+				expect(foundAccounts).toEqual(AccountEntityToDoMapper.mapEntitiesToDos(mockAccounts));
 			});
 		});
 

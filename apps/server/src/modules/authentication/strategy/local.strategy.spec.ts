@@ -33,7 +33,7 @@ describe('LocalStrategy', () => {
 		userRepoMock = createMock<UserRepo>();
 		strategy = new LocalStrategy(authenticationServiceMock, idmOauthServiceMock, configServiceMock, userRepoMock);
 		mockUser = userFactory.withRoleByName(RoleName.STUDENT).buildWithId();
-		mockAccount = AccountEntityToDoMapper.mapToDto(
+		mockAccount = AccountEntityToDoMapper.mapToDo(
 			accountFactory.buildWithId({ userId: mockUser.id, password: mockPasswordHash })
 		);
 	});

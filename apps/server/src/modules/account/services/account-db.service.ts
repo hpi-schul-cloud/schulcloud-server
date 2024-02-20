@@ -7,9 +7,7 @@ import { IdentityManagementService } from '@src/infra/identity-management/identi
 import bcrypt from 'bcryptjs';
 import { AccountConfig } from '../account-config';
 import { Account, AccountSave } from '../domain/account';
-import { AccountEntity } from '../entity/account.entity';
 import { AccountRepo } from '../repo/account.repo';
-import { AccountEntityToDoMapper } from '../repo/mapper/account-entity-to-do.mapper';
 
 // HINT: do more empty lines :)
 
@@ -23,39 +21,35 @@ export class AccountServiceDb {
 
 	async findById(id: EntityId): Promise<Account> {
 		const internalId = await this.getInternalId(id);
-		const accountEntity = await this.accountRepo.findById(internalId);
-		return AccountEntityToDoMapper.mapToDto(accountEntity);
+
+		return this.accountRepo.findById(internalId);
 	}
 
 	async findMultipleByUserId(userIds: EntityId[]): Promise<Account[]> {
-		const accountEntities = await this.accountRepo.findMultipleByUserId(userIds);
-		return AccountEntityToDoMapper.mapAccountsToDto(accountEntities);
+		return this.accountRepo.findMultipleByUserId(userIds);
 	}
 
 	async findByUserId(userId: EntityId): Promise<Account | null> {
-		const accountEntity = await this.accountRepo.findByUserId(userId);
-		return accountEntity ? AccountEntityToDoMapper.mapToDto(accountEntity) : null;
+		return this.accountRepo.findByUserId(userId);
 	}
 
 	async findByUserIdOrFail(userId: EntityId): Promise<Account> {
-		const accountEntity = await this.accountRepo.findByUserIdOrFail(userId);
-		return AccountEntityToDoMapper.mapToDto(accountEntity);
+		return this.accountRepo.findByUserIdOrFail(userId);
 	}
 
 	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account | null> {
-		const accountEntity = await this.accountRepo.findByUsernameAndSystemId(username, systemId);
-		return accountEntity ? AccountEntityToDoMapper.mapToDto(accountEntity) : null;
+		return this.accountRepo.findByUsernameAndSystemId(username, systemId);
 	}
 
 	async save(accountSave: AccountSave): Promise<Account> {
-		let account: AccountEntity;
+		let account: Account;
 		// HINT: mapping could be done by a mapper (though this whole file is subject to be removed in the future)
 		// HINT: today we have logic to map back into unit work in the baseDO
 		if (accountSave.id) {
 			const internalId = await this.getInternalId(accountSave.id);
 			account = await this.accountRepo.findById(internalId);
-			account.userId = new ObjectId(accountSave.userId);
-			account.systemId = accountSave.systemId ? new ObjectId(accountSave.systemId) : undefined;
+			account.userId = accountSave.userId;
+			account.systemId = accountSave.systemId;
 			account.username = accountSave.username;
 			account.activated = accountSave.activated;
 			account.expiresAt = accountSave.expiresAt;
@@ -65,12 +59,11 @@ export class AccountServiceDb {
 			}
 			account.credentialHash = accountSave.credentialHash;
 			account.token = accountSave.token;
-
-			await this.accountRepo.save(account);
 		} else {
-			account = new AccountEntity({
-				userId: new ObjectId(accountSave.userId),
-				systemId: accountSave.systemId ? new ObjectId(accountSave.systemId) : undefined,
+			account = new Account({
+				id: new ObjectId().toHexString(),
+				userId: accountSave.userId,
+				systemId: accountSave.systemId,
 				username: accountSave.username,
 				activated: accountSave.activated,
 				expiresAt: accountSave.expiresAt,
@@ -79,10 +72,8 @@ export class AccountServiceDb {
 				token: accountSave.token,
 				credentialHash: accountSave.credentialHash,
 			});
-
-			await this.accountRepo.save(account); // HINT: this can be done once in the end
 		}
-		return AccountEntityToDoMapper.mapToDto(account);
+		return this.accountRepo.save(account);
 	}
 
 	async updateUsername(accountId: EntityId, username: string): Promise<Account> {
@@ -90,7 +81,7 @@ export class AccountServiceDb {
 		const account = await this.accountRepo.findById(internalId);
 		account.username = username;
 		await this.accountRepo.save(account);
-		return AccountEntityToDoMapper.mapToDto(account);
+		return account;
 	}
 
 	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<Account> {
@@ -98,7 +89,7 @@ export class AccountServiceDb {
 		const account = await this.accountRepo.findById(internalId);
 		account.lasttriedFailedLogin = lastTriedFailedLogin;
 		await this.accountRepo.save(account);
-		return AccountEntityToDoMapper.mapToDto(account);
+		return account;
 	}
 
 	async updatePassword(accountId: EntityId, password: string): Promise<Account> {
@@ -107,7 +98,7 @@ export class AccountServiceDb {
 		account.password = await this.encryptPassword(password);
 
 		await this.accountRepo.save(account);
-		return AccountEntityToDoMapper.mapToDto(account);
+		return account;
 	}
 
 	async delete(id: EntityId): Promise<void> {
@@ -120,13 +111,11 @@ export class AccountServiceDb {
 	}
 
 	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>> {
-		const accountEntities = await this.accountRepo.searchByUsernamePartialMatch(userName, skip, limit);
-		return AccountEntityToDoMapper.mapSearchResult(accountEntities);
+		return this.accountRepo.searchByUsernamePartialMatch(userName, skip, limit);
 	}
 
 	async searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
-		const accountEntities = await this.accountRepo.searchByUsernameExactMatch(userName);
-		return AccountEntityToDoMapper.mapSearchResult(accountEntities);
+		return this.accountRepo.searchByUsernameExactMatch(userName);
 	}
 
 	validatePassword(account: Account, comparePassword: string): Promise<boolean> {
@@ -166,6 +155,6 @@ export class AccountServiceDb {
 	}
 
 	async findMany(offset = 0, limit = 100): Promise<Account[]> {
-		return AccountEntityToDoMapper.mapAccountsToDto(await this.accountRepo.findMany(offset, limit));
+		return this.accountRepo.findMany(offset, limit);
 	}
 }

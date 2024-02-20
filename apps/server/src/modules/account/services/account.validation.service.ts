@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { AccountRepo } from '../repo/account.repo';
-import { AccountEntityToDoMapper } from '../repo/mapper/account-entity-to-do.mapper';
 
 @Injectable()
 export class AccountValidationService {
@@ -10,9 +9,7 @@ export class AccountValidationService {
 
 	async isUniqueEmail(email: string, userId?: EntityId, accountId?: EntityId, systemId?: EntityId): Promise<boolean> {
 		const foundUsers = await this.userRepo.findByEmail(email);
-		const [accounts] = AccountEntityToDoMapper.mapSearchResult(
-			await this.accountRepo.searchByUsernameExactMatch(email)
-		);
+		const [accounts] = await this.accountRepo.searchByUsernameExactMatch(email);
 		const filteredAccounts = accounts.filter((foundAccount) => foundAccount.systemId === systemId);
 
 		const multipleUsers = foundUsers.length > 1;

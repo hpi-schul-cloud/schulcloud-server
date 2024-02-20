@@ -13,7 +13,7 @@ describe('AccountEntityToDoMapper', () => {
 		jest.useRealTimers();
 	});
 
-	describe('mapToDto', () => {
+	describe('mapToDo', () => {
 		describe('When mapping AccountEntity to Account', () => {
 			const setup = () => {
 				const accountEntity = accountFactory.withAllProperties().buildWithId({}, '000000000000000000000001');
@@ -26,7 +26,7 @@ describe('AccountEntityToDoMapper', () => {
 			it('should map all fields', () => {
 				const { accountEntity } = setup();
 
-				const ret = AccountEntityToDoMapper.mapToDto(accountEntity);
+				const ret = AccountEntityToDoMapper.mapToDo(accountEntity);
 
 				expect({ ...ret.getProps(), _id: accountEntity._id }).toMatchObject(accountEntity);
 			});
@@ -34,7 +34,7 @@ describe('AccountEntityToDoMapper', () => {
 			it('should ignore missing ids', () => {
 				const { missingSystemUserIdEntity } = setup();
 
-				const ret = AccountEntityToDoMapper.mapToDto(missingSystemUserIdEntity);
+				const ret = AccountEntityToDoMapper.mapToDo(missingSystemUserIdEntity);
 
 				expect(ret.userId).toBeUndefined();
 				expect(ret.systemId).toBeUndefined();
@@ -42,7 +42,7 @@ describe('AccountEntityToDoMapper', () => {
 		});
 	});
 
-	describe('mapSearchResult', () => {
+	describe('mapCountedEntities', () => {
 		describe('When mapping multiple Account entities', () => {
 			const setup = () => {
 				const testEntity1: AccountEntity = accountFactory.buildWithId({}, '000000000000000000000001');
@@ -58,7 +58,7 @@ describe('AccountEntityToDoMapper', () => {
 			it('should map exact same amount of entities', () => {
 				const { testEntities, testAmount } = setup();
 
-				const [accounts, total] = AccountEntityToDoMapper.mapSearchResult([testEntities, testAmount]);
+				const [accounts, total] = AccountEntityToDoMapper.mapCountedEntities([testEntities, testAmount]);
 
 				expect(total).toBe(testAmount);
 				expect(accounts).toHaveLength(2);
@@ -68,7 +68,7 @@ describe('AccountEntityToDoMapper', () => {
 		});
 	});
 
-	describe('mapAccountsToDto', () => {
+	describe('mapEntitiesToDos', () => {
 		describe('When mapping multiple Account entities', () => {
 			const setup = () => {
 				const testEntity1: AccountEntity = accountFactory.buildWithId({}, '000000000000000000000001');
@@ -82,7 +82,7 @@ describe('AccountEntityToDoMapper', () => {
 			it('should map all entities', () => {
 				const testEntities = setup();
 
-				const ret = AccountEntityToDoMapper.mapAccountsToDto(testEntities);
+				const ret = AccountEntityToDoMapper.mapEntitiesToDos(testEntities);
 
 				expect(ret).toHaveLength(2);
 				expect(ret).toContainEqual(expect.objectContaining({ id: '000000000000000000000001' }));
