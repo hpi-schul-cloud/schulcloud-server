@@ -6,7 +6,7 @@ export class SchoolFactory {
 		return new School(props);
 	}
 
-	static updateFromPartialBody(school: School, partialBody: SchoolUpdateBody) {
+	static buildFromPartialBody(school: School, partialBody: SchoolUpdateBody) {
 		const props = school.getProps();
 
 		props.name = partialBody.name ?? props.name;

@@ -477,7 +477,7 @@ describe('SchoolService', () => {
 
 				await service.updateSchool(id, partialBody);
 
-				const updatedSchool = SchoolFactory.updateFromPartialBody(school, partialBody);
+				const updatedSchool = SchoolFactory.buildFromPartialBody(school, partialBody);
 				expect(schoolRepo.save).toHaveBeenCalledWith(updatedSchool);
 			});
 
