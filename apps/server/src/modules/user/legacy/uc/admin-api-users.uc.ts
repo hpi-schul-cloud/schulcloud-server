@@ -1,17 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
+import { UserRepo } from '@shared/repo';
 import { RoleService } from '../../../role';
 import { AuthorizationService } from '../../../authorization';
 import { UsersAdminContextEnum } from '../enum';
 import { UserByIdParams, UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';
 import { AdminUsersService } from '../service';
-import { UserService } from '../../service';
 
 @Injectable()
 export class AdminApiUsersUc {
 	constructor(
-		private readonly userService: UserService,
+		private readonly userRepo: UserRepo,
 		private readonly roleService: RoleService,
 		private readonly adminUsersService: AdminUsersService,
 		private readonly authorizationService: AuthorizationService
@@ -22,7 +22,7 @@ export class AdminApiUsersUc {
 		currentUserId: string,
 		params: UsersSearchQueryParams
 	): Promise<UserListResponse> {
-		const currentUser = await this.userService.getUserEntityWithRoles(currentUserId);
+		const currentUser = await this.userRepo.findById(currentUserId, true);
 		this.validateAccessToContext(context, currentUser);
 		const { school } = currentUser;
 		const currentSchoolYear = school.currentYear;
@@ -37,7 +37,7 @@ export class AdminApiUsersUc {
 		currentUserId: string,
 		params: UserByIdParams
 	): Promise<UserResponse> {
-		const currentUser = await this.userService.getUserEntityWithRoles(currentUserId);
+		const currentUser = await this.userRepo.findById(currentUserId, true);
 		this.validateAccessToContext(context, currentUser);
 		const { school } = currentUser;
 		const currentSchoolYear = school.currentYear;
