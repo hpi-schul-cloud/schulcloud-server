@@ -2,7 +2,7 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { Injectable } from '@nestjs/common';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { SchoolQuery, SchoolService, SchoolYearHelper, SchoolYearService } from '../domain';
+import { School, SchoolQuery, SchoolService, SchoolYear, SchoolYearHelper, SchoolYearService } from '../domain';
 import { SchoolUpdateBodyParams } from './dto/param';
 import { SchoolExistsResponse, SchoolForExternalInviteResponse, SchoolResponse } from './dto/response';
 import { SchoolForLdapLoginResponse } from './dto/response/school-for-ldap-login.response';
@@ -27,12 +27,9 @@ export class SchoolUc {
 		const authContext = AuthorizationContextBuilder.read([]);
 		this.authorizationService.checkPermission(user, school, authContext);
 
-		const { activeYear, lastYear, nextYear } = SchoolYearHelper.computeActiveAndLastAndNextYear(school, schoolYears);
-		const yearsResponse = YearsResponseMapper.mapToResponse(schoolYears, activeYear, lastYear, nextYear);
+		const response = this.getSchoolResponse(school, schoolYears);
 
-		const dto = SchoolResponseMapper.mapToResponse(school, yearsResponse);
-
-		return dto;
+		return response;
 	}
 
 	public async getSchoolListForExternalInvite(
@@ -69,9 +66,10 @@ export class SchoolUc {
 	}
 
 	public async updateSchool(userId: string, schoolId: string, body: SchoolUpdateBodyParams) {
-		const [school, user] = await Promise.all([
+		const [school, user, schoolYears] = await Promise.all([
 			this.schoolService.getSchoolById(schoolId),
 			this.authorizationService.getUserWithPermissions(userId),
+			this.schoolYearService.getAllSchoolYears(),
 		]);
 
 		const authContext = AuthorizationContextBuilder.write([Permission.SCHOOL_EDIT]);
@@ -79,9 +77,17 @@ export class SchoolUc {
 
 		const updatedSchool = await this.schoolService.updateSchool(schoolId, body);
 
-		// TODO: Implement mapper
-		// const dto = SchoolResponseMapper.mapToResponse(updatedSchool);
+		const response = this.getSchoolResponse(updatedSchool, schoolYears);
 
-		return updatedSchool;
+		return response;
+	}
+
+	private getSchoolResponse(school: School, schoolYears: SchoolYear[]) {
+		const { activeYear, lastYear, nextYear } = SchoolYearHelper.computeActiveAndLastAndNextYear(school, schoolYears);
+		const yearsResponse = YearsResponseMapper.mapToResponse(schoolYears, activeYear, lastYear, nextYear);
+
+		const dto = SchoolResponseMapper.mapToResponse(school, yearsResponse);
+
+		return dto;
 	}
 }
