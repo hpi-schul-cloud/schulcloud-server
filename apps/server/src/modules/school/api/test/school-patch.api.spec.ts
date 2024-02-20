@@ -169,6 +169,7 @@ describe('School Controller (API)', () => {
 							expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 						});
 					});
+
 					describe('when school is admins school', () => {
 						const setup = async () => {
 							const schoolYears = schoolYearFactory.withStartYear(2002).buildList(3);
@@ -259,6 +260,16 @@ describe('School Controller (API)', () => {
 
 							const updatedSchool = await em.findOne(SchoolEntity, { id: school.id });
 							expect(updatedSchool).toEqual(expect.objectContaining(newParams));
+						});
+
+						it('should not update school', async () => {
+							const { loggedInClient, school } = await setup();
+
+							const firstResponse = await loggedInClient.get(`id/${school.id}`);
+							const response = await loggedInClient.patch(school.id).send({});
+
+							expect(response.status).toEqual(HttpStatus.OK);
+							expect(response.body).toEqual(firstResponse.body);
 						});
 					});
 				});
