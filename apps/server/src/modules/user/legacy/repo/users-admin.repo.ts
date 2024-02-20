@@ -109,27 +109,9 @@ export class UsersAdminRepo extends BaseRepo<User> {
 		const dateParameters = ['createdAt', 'outdatedSince', 'lastLoginSystemChange'];
 		for (const dateParam of dateParameters) {
 			if (params[dateParam]) {
-				this.setDateParameter(query, params, dateParam);
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				query[dateParam] = params[dateParam];
 			}
-		}
-	}
-
-	private setDateParameter(query: UserSearchQuery, params: UsersSearchQueryParams, dateParam: string) {
-		if (typeof params[dateParam] === 'object') {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-			for (const [key, value] of Object.entries(params[dateParam])) {
-				if (['$gt', '$gte', '$lt', '$lte'].includes(key)) {
-					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-					// @ts-ignore
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-					params[dateParam][key] = new Date(value);
-				}
-			}
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			query[dateParam] = params[dateParam];
-		} else {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-			query[dateParam] = new Date(params[dateParam]);
 		}
 	}
 
