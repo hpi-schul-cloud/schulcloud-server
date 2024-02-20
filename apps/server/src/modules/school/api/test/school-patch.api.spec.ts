@@ -2,7 +2,16 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
-import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, schoolEntityFactory } from '@shared/testing';
+import {
+	TestApiClient,
+	UserAndAccountTestFactory,
+	cleanupCollections,
+	countyEmbeddableFactory,
+	federalStateFactory,
+	schoolEntityFactory,
+	schoolYearFactory,
+	systemEntityFactory,
+} from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
 
 describe('School Controller (API)', () => {
@@ -162,32 +171,94 @@ describe('School Controller (API)', () => {
 					});
 					describe('when school is admins school', () => {
 						const setup = async () => {
-							const school = schoolEntityFactory.build();
+							const schoolYears = schoolYearFactory.withStartYear(2002).buildList(3);
+							const currentYear = schoolYears[1];
+							const federalState = federalStateFactory.build();
+							const county = countyEmbeddableFactory.build();
+							const systems = systemEntityFactory.buildList(3);
+							const school = schoolEntityFactory.build({ currentYear, federalState, systems, county });
 							const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-							await em.persistAndFlush([adminAccount, adminUser, school]);
+							await em.persistAndFlush([...schoolYears, federalState, adminAccount, adminUser, school]);
 							em.clear();
 
 							const loggedInClient = await testApiClient.login(adminAccount);
 
-							return { loggedInClient, school };
+							const newParams = {
+								name: 'new name',
+								officialSchoolNumber: 'new school number',
+								logo_dataUrl: 'new logo data url',
+								logo_name: 'new logo name',
+								fileStorageType: 'awsS3',
+								language: 'en',
+								features: ['rocketChat'],
+							};
+
+							const schoolYearResponses = schoolYears.map((schoolYear) => {
+								return {
+									id: schoolYear.id,
+									name: schoolYear.name,
+									startDate: schoolYear.startDate.toISOString(),
+									endDate: schoolYear.endDate.toISOString(),
+								};
+							});
+
+							const expectedResponse = {
+								id: school.id,
+								createdAt: school.createdAt.toISOString(),
+								updatedAt: school.updatedAt.toISOString(),
+								federalState: {
+									id: federalState.id,
+									name: federalState.name,
+									abbreviation: federalState.abbreviation,
+									logoUrl: federalState.logoUrl,
+									counties: federalState.counties?.map((item) => {
+										return {
+											id: item._id.toHexString(),
+											name: item.name,
+											countyId: item.countyId,
+											antaresKey: item.antaresKey,
+										};
+									}),
+								},
+								county: {
+									id: county._id.toHexString(),
+									name: county.name,
+									countyId: county.countyId,
+									antaresKey: county.antaresKey,
+								},
+								inMaintenance: false,
+								isExternal: false,
+								currentYear: schoolYearResponses[1],
+								years: {
+									schoolYears: schoolYearResponses,
+									activeYear: schoolYearResponses[1],
+									lastYear: schoolYearResponses[0],
+									nextYear: schoolYearResponses[2],
+								},
+								name: newParams.name,
+								features: newParams.features,
+								systemIds: systems.map((system) => system.id),
+								language: newParams.language,
+								fileStorageType: newParams.fileStorageType,
+								logo_name: newParams.logo_name,
+								logo_dataUrl: newParams.logo_dataUrl,
+								officialSchoolNumber: newParams.officialSchoolNumber,
+							};
+
+							return { loggedInClient, school, expectedResponse, newParams };
 						};
 
 						it('should update school', async () => {
-							const { loggedInClient, school } = await setup();
+							const { loggedInClient, school, expectedResponse, newParams } = await setup();
 
-							const response = await loggedInClient.patch(school.id).send({
-								name: 'new name',
-							});
+							const response = await loggedInClient.patch(school.id).send(newParams);
 
 							expect(response.status).toEqual(HttpStatus.OK);
-							expect(response.body).toContain({
-								id: school.id,
-								name: 'new name',
-							});
+							expect(response.body).toEqual(expectedResponse);
 
 							const updatedSchool = await em.findOne(SchoolEntity, { id: school.id });
-							expect(updatedSchool?.name).toEqual('new name');
+							expect(updatedSchool).toEqual(expect.objectContaining(newParams));
 						});
 					});
 				});
