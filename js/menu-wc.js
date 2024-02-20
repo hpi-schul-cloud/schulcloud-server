@@ -2364,13 +2364,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/ServerModule.html" data-type="entity-link" >ServerModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-ServerModule-0bb16ef57fec5151fb0e7e6e118a706b4119bae9dfd6dbfe4895aaec2f812269c5417fb2427aed12b2c9e59196bf02b7ac43345c6c24b5da57450a2087587102"' : 'data-bs-target="#xs-controllers-links-module-ServerModule-0bb16ef57fec5151fb0e7e6e118a706b4119bae9dfd6dbfe4895aaec2f812269c5417fb2427aed12b2c9e59196bf02b7ac43345c6c24b5da57450a2087587102"' }>
+                                            'data-bs-target="#controllers-links-module-ServerModule-5442d5e43476970085580ef6f1a546d7dedebb99047f71d2e91996de28a0cd5702d9ce636118f6afe0e601783d03eadca0dad3311927ab29eee63851b76bd98d"' : 'data-bs-target="#xs-controllers-links-module-ServerModule-5442d5e43476970085580ef6f1a546d7dedebb99047f71d2e91996de28a0cd5702d9ce636118f6afe0e601783d03eadca0dad3311927ab29eee63851b76bd98d"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-ServerModule-0bb16ef57fec5151fb0e7e6e118a706b4119bae9dfd6dbfe4895aaec2f812269c5417fb2427aed12b2c9e59196bf02b7ac43345c6c24b5da57450a2087587102"' :
-                                            'id="xs-controllers-links-module-ServerModule-0bb16ef57fec5151fb0e7e6e118a706b4119bae9dfd6dbfe4895aaec2f812269c5417fb2427aed12b2c9e59196bf02b7ac43345c6c24b5da57450a2087587102"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-ServerModule-5442d5e43476970085580ef6f1a546d7dedebb99047f71d2e91996de28a0cd5702d9ce636118f6afe0e601783d03eadca0dad3311927ab29eee63851b76bd98d"' :
+                                            'id="xs-controllers-links-module-ServerModule-5442d5e43476970085580ef6f1a546d7dedebb99047f71d2e91996de28a0cd5702d9ce636118f6afe0e601783d03eadca0dad3311927ab29eee63851b76bd98d"' }>
                                             <li class="link">
                                                 <a href="controllers/ServerController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ServerController</a>
                                             </li>
@@ -2381,13 +2381,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/ServerTestModule.html" data-type="entity-link" >ServerTestModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-ServerTestModule-0bb16ef57fec5151fb0e7e6e118a706b4119bae9dfd6dbfe4895aaec2f812269c5417fb2427aed12b2c9e59196bf02b7ac43345c6c24b5da57450a2087587102"' : 'data-bs-target="#xs-controllers-links-module-ServerTestModule-0bb16ef57fec5151fb0e7e6e118a706b4119bae9dfd6dbfe4895aaec2f812269c5417fb2427aed12b2c9e59196bf02b7ac43345c6c24b5da57450a2087587102"' }>
+                                            'data-bs-target="#controllers-links-module-ServerTestModule-5442d5e43476970085580ef6f1a546d7dedebb99047f71d2e91996de28a0cd5702d9ce636118f6afe0e601783d03eadca0dad3311927ab29eee63851b76bd98d"' : 'data-bs-target="#xs-controllers-links-module-ServerTestModule-5442d5e43476970085580ef6f1a546d7dedebb99047f71d2e91996de28a0cd5702d9ce636118f6afe0e601783d03eadca0dad3311927ab29eee63851b76bd98d"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-ServerTestModule-0bb16ef57fec5151fb0e7e6e118a706b4119bae9dfd6dbfe4895aaec2f812269c5417fb2427aed12b2c9e59196bf02b7ac43345c6c24b5da57450a2087587102"' :
-                                            'id="xs-controllers-links-module-ServerTestModule-0bb16ef57fec5151fb0e7e6e118a706b4119bae9dfd6dbfe4895aaec2f812269c5417fb2427aed12b2c9e59196bf02b7ac43345c6c24b5da57450a2087587102"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-ServerTestModule-5442d5e43476970085580ef6f1a546d7dedebb99047f71d2e91996de28a0cd5702d9ce636118f6afe0e601783d03eadca0dad3311927ab29eee63851b76bd98d"' :
+                                            'id="xs-controllers-links-module-ServerTestModule-5442d5e43476970085580ef6f1a546d7dedebb99047f71d2e91996de28a0cd5702d9ce636118f6afe0e601783d03eadca0dad3311927ab29eee63851b76bd98d"' }>
                                             <li class="link">
                                                 <a href="controllers/ServerController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ServerController</a>
                                             </li>
@@ -7514,6 +7514,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/SchulconnexApiInterface.html" data-type="entity-link" >SchulconnexApiInterface</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/SchulconnexClientConfig.html" data-type="entity-link" >SchulconnexClientConfig</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/SchulconnexPersonenInfoParams.html" data-type="entity-link" >SchulconnexPersonenInfoParams</a>

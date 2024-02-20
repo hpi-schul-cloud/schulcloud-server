@@ -352,8 +352,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="48"
-                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:48</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -537,15 +537,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getRequest(url: URL, accessToken: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>getRequest(url: URL, accessToken: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, timeout?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="54"
-                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:54</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="58"
+                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:58</a></div>
                         </td>
                     </tr>
 
@@ -597,6 +597,18 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>timeout</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -634,8 +646,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="67"
-                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:67</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">apps/server/src/infra/schulconnex-client/schulconnex-rest-client.ts:72</a></div>
                         </td>
                     </tr>
 
@@ -703,7 +715,11 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 		const url: URL &#x3D; new URL(&#x60;${this.SCHULCONNEX_API_BASE_URL}/personen-info&#x60;);
 		url.search &#x3D; QueryString.stringify(params, { arrayFormat: &#x27;comma&#x27; });
 
-		const response: Promise&lt;SanisResponse[]&gt; &#x3D; this.getRequest&lt;SanisResponse[]&gt;(url, token.accessToken);
+		const response: Promise&lt;SanisResponse[]&gt; &#x3D; this.getRequest&lt;SanisResponse[]&gt;(
+			url,
+			token.accessToken,
+			this.options.personenInfoTimeoutInMs
+		);
 
 		return response;
 	}
@@ -714,12 +730,13 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 		}
 	}
 
-	private async getRequest&lt;T&gt;(url: URL, accessToken: string): Promise&lt;T&gt; {
+	private async getRequest&lt;T&gt;(url: URL, accessToken: string, timeout?: number): Promise&lt;T&gt; {
 		const observable: Observable&lt;AxiosResponse&lt;T&gt;&gt; &#x3D; this.httpService.get(url.toString(), {
 			headers: {
 				Authorization: &#x60;Bearer ${accessToken}&#x60;,
 				&#x27;Accept-Encoding&#x27;: &#x27;gzip&#x27;,
 			},
+			timeout,
 		});
 
 		const responseToken: AxiosResponse&lt;T&gt; &#x3D; await lastValueFrom(observable);

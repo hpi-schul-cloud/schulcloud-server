@@ -345,6 +345,7 @@ const serverModules &#x3D; [
 		tokenEndpoint: Configuration.get(&#x27;SCHULCONNEX_CLIENT__TOKEN_ENDPOINT&#x27;) as string,
 		clientId: Configuration.get(&#x27;SCHULCONNEX_CLIENT__CLIENT_ID&#x27;) as string,
 		clientSecret: Configuration.get(&#x27;SCHULCONNEX_CLIENT__CLIENT_SECRET&#x27;) as string,
+		personenInfoTimeoutInMs: Configuration.get(&#x27;SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS&#x27;) as number,
 	}),
 	ImportUserModule,
 	UserImportConfigModule,
