@@ -34,7 +34,7 @@ jobs:
           fetch-depth: 0
 
       - name: Login to registry
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -135,7 +135,7 @@ jobs:
     needs:
       - build_and_push
       - branch_meta
-    uses: hpi-schul-cloud/dof_app_deploy/.github/workflows/deploy.yml@main
+    uses: hpi-schul-cloud/dof_app_deploy/.github/workflows/deploy.yml@bc-6589
     with:
       branch: ${{ needs.branch_meta.outputs.branch }}
     secrets:
@@ -167,7 +167,7 @@ jobs:
       security-events: write
     steps:
       - name: run trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@9ab158e8597f3b310480b9a69402b419bc03dbd5
+        uses: aquasecurity/trivy-action@1f6384b6ceecbbc6673526f865b818a2a06b07c9
         with:
           image-ref: 'ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }}'
           format: 'sarif'
@@ -176,7 +176,7 @@ jobs:
           ignore-unfixed: true
       - name: upload trivy results
         if: ${{ always() }}
-        uses: github/codeql-action/upload-sarif@v2
+        uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: 'trivy-results.sarif'
 
