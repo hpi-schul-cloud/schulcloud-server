@@ -77,9 +77,9 @@ export class SchoolService {
 	public async updateSchool(schoolId: string, body: SchoolUpdateBody) {
 		const school = await this.schoolRepo.getSchoolById(schoolId);
 
-		const updatedSchool = SchoolFactory.updateFromPartialBody(school, body);
+		const fullSchoolObject = SchoolFactory.updateFromPartialBody(school, body);
 
-		await this.schoolRepo.save(updatedSchool);
+		const updatedSchool = await this.schoolRepo.save(fullSchoolObject);
 
 		return updatedSchool;
 	}

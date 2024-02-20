@@ -480,6 +480,18 @@ describe('SchoolService', () => {
 				const updatedSchool = SchoolFactory.updateFromPartialBody(school, partialBody);
 				expect(schoolRepo.save).toHaveBeenCalledWith(updatedSchool);
 			});
+
+			it('should return the updated school', async () => {
+				const { id, school } = setup();
+				const partialBody = { name: 'new name' };
+
+				const updatedSchool = SchoolFactory.updateFromPartialBody(school, partialBody);
+				schoolRepo.save.mockResolvedValueOnce(updatedSchool);
+
+				const result = await service.updateSchool(id, partialBody);
+
+				expect(result).toEqual(updatedSchool);
+			});
 		});
 
 		describe('when school does not exist', () => {
