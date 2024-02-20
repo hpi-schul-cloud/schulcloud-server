@@ -1,5 +1,5 @@
 import { ObjectId } from 'bson';
-import { UserSearchQuery } from '../../interfaces';
+import { UserSearchQuery } from '../interfaces';
 
 const convertToIn = (value) => {
 	let list: any[] = [];
