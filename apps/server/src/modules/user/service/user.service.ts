@@ -16,22 +16,32 @@ import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { Logger } from '@src/core/logger';
 import { DomainOperationBuilder } from '@shared/domain/builder';
 import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import { UserDeletedEvent } from '@src/modules/deletion/event';
+import { DataDeletedEvent } from '@src/modules/deletion/event/data-deleted.event';
 import { UserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
 
 @Injectable()
-export class UserService implements DeletionService {
+@EventsHandler(UserDeletedEvent)
+export class UserService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly userDORepo: UserDORepo,
 		private readonly configService: ConfigService<UserConfig, true>,
 		private readonly roleService: RoleService,
 		private readonly accountService: AccountService,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus
 	) {
 		this.logger.setContext(UserService.name);
+	}
+
+	async handle({ deletionRequest }: UserDeletedEvent) {
+		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
 	}
 
 	async getUserEntityWithRoles(userId: EntityId): Promise<User> {

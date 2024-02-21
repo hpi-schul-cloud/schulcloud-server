@@ -17,13 +17,17 @@ import { SubmissionService, TaskService } from '@modules/task';
 import { DomainOperation } from '@shared/domain/interface';
 import { DomainOperationBuilder } from '@shared/domain/builder/domain-operation.builder';
 import { NewsService } from '@src/modules/news/service/news.service';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../builder';
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 import { DeletionRequest, DeletionLog } from '../domain';
 import { DeletionRequestService, DeletionLogService } from '../services';
+import { UserDeletedEvent } from '../event';
+import { DataDeletedEvent } from '../event/data-deleted.event';
 
 @Injectable()
-export class DeletionRequestUc {
+@EventsHandler(DataDeletedEvent)
+export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 	constructor(
 		private readonly deletionRequestService: DeletionRequestService,
 		private readonly deletionLogService: DeletionLogService,
@@ -44,9 +48,14 @@ export class DeletionRequestUc {
 		private readonly dashboardService: DashboardService,
 		private readonly taskService: TaskService,
 		private readonly submissionService: SubmissionService,
-		private readonly newsService: NewsService
+		private readonly newsService: NewsService,
+		private readonly eventBus: EventBus
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
+	}
+
+	async handle({ deletionRequest, domainOperation }: DataDeletedEvent) {
+		await this.logDeletion(deletionRequest, domainOperation);
 	}
 
 	async createDeletionRequest(deletionRequest: DeletionRequestBodyProps): Promise<DeletionRequestResponse> {
@@ -100,23 +109,25 @@ export class DeletionRequestUc {
 
 	private async executeDeletionRequest(deletionRequest: DeletionRequest): Promise<void> {
 		try {
-			await Promise.all([
-				this.removeAccount(deletionRequest),
-				this.removeUserFromClasses(deletionRequest),
-				this.removeUserFromCourseGroup(deletionRequest),
-				this.removeUserFromCourse(deletionRequest),
-				// this.removeUsersFilesAndPermissions(deletionRequest),
-				// this.removeUsersDataFromFileRecords(deletionRequest),
-				this.removeUserFromLessons(deletionRequest),
-				this.removeUsersPseudonyms(deletionRequest),
-				this.removeUserFromTeams(deletionRequest),
-				this.removeUser(deletionRequest),
-				// this.removeUserFromRocketChat(deletionRequest),
-				this.removeUsersDashboard(deletionRequest),
-				this.removeUserFromTasks(deletionRequest),
-				this.removeUserFromSubmissions(deletionRequest),
-				this.removeUsersDataFromNews(deletionRequest),
-			]);
+			// await Promise.all([
+			// this.removeAccount(deletionRequest),
+			// this.removeUserFromClasses(deletionRequest),
+			// this.removeUserFromCourseGroup(deletionRequest),
+			// this.removeUserFromCourse(deletionRequest),
+			// // this.removeUsersFilesAndPermissions(deletionRequest),
+			// // this.removeUsersDataFromFileRecords(deletionRequest),
+			// this.removeUserFromLessons(deletionRequest),
+			// this.removeUsersPseudonyms(deletionRequest),
+			// this.removeUserFromTeams(deletionRequest),
+			// this.removeUser(deletionRequest),
+			// // this.removeUserFromRocketChat(deletionRequest),
+			// this.removeUsersDashboard(deletionRequest),
+			// this.removeUserFromTasks(deletionRequest),
+			// this.removeUserFromSubmissions(deletionRequest),
+			// this.removeUsersDataFromNews(deletionRequest),
+			// ]);
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			await this.eventBus.publish(new UserDeletedEvent(deletionRequest));
 			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
 		} catch (error) {
 			this.logger.error(`execution of deletionRequest ${deletionRequest.id} was failed`, error);

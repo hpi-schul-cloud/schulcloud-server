@@ -6,6 +6,9 @@ import { Counted, DomainName, EntityId, OperationType } from '@shared/domain/typ
 import { isEmail, validateOrReject } from 'class-validator';
 import { DeletionService, DomainOperation } from '@shared/domain/interface';
 import { DomainOperationBuilder } from '@shared/domain/builder';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import { UserDeletedEvent } from '@src/modules/deletion/event';
+import { DataDeletedEvent } from '@src/modules/deletion/event/data-deleted.event';
 import { LegacyLogger } from '../../../core/logger';
 import { ServerConfig } from '../../server/server.config';
 import { AccountServiceDb } from './account-db.service';
@@ -15,7 +18,8 @@ import { AccountValidationService } from './account.validation.service';
 import { AccountDto, AccountSaveDto } from './dto';
 
 @Injectable()
-export class AccountService extends AbstractAccountService implements DeletionService {
+@EventsHandler(UserDeletedEvent)
+export class AccountService extends AbstractAccountService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	private readonly accountImpl: AbstractAccountService;
 
 	constructor(
@@ -23,7 +27,8 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		private readonly accountIdm: AccountServiceIdm,
 		private readonly configService: ConfigService<ServerConfig, true>,
 		private readonly accountValidationService: AccountValidationService,
-		private readonly logger: LegacyLogger
+		private readonly logger: LegacyLogger,
+		private readonly eventBus: EventBus
 	) {
 		super();
 		this.logger.setContext(AccountService.name);
@@ -32,6 +37,11 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		} else {
 			this.accountImpl = accountDb;
 		}
+	}
+
+	async handle({ deletionRequest }: UserDeletedEvent) {
+		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
 	}
 
 	async findById(id: string): Promise<AccountDto> {
@@ -172,6 +182,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	}
 
 	async deleteUserData(userId: string): Promise<DomainOperation> {
+		this.logger.debug(`Start deleting data for userId - ${userId} in account collection`);
 		const deletedAccounts = await this.deleteByUserId(userId);
 
 		const result = DomainOperationBuilder.build(
@@ -180,6 +191,8 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 			deletedAccounts.length,
 			deletedAccounts
 		);
+
+		this.logger.debug(`Deleted data for userId - ${userId} from account collection`);
 
 		return result;
 	}
