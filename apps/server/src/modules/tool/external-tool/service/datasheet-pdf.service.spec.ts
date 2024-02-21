@@ -1,3 +1,5 @@
+import { School } from '@modules/school';
+import { schoolFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
 import {
@@ -58,6 +60,7 @@ describe(DatasheetPdfService.name, () => {
 		describe('when tool is oauth2 tool with optional properties and custom parameters', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.buildWithId();
+				const school: School = schoolFactory.build();
 
 				const param: CustomParameter = customParameterFactory.build();
 				const externalTool: ExternalTool = externalToolFactory.build({ parameters: [param] });
@@ -69,6 +72,7 @@ describe(DatasheetPdfService.name, () => {
 						toolName: externalTool.name,
 						instance: 'dBildungscloud',
 						creatorName: `${user.firstName} ${user.lastName}`,
+						schoolName: school.getInfo().name,
 					});
 
 				setupMockCreatePdf(false);
