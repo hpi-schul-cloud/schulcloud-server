@@ -32,11 +32,11 @@ describe('CommonCartridgeManifestParser', () => {
 		describe('when schema is not present', () => {
 			const setup = async () => setupFile(false);
 
-			it('should return null', async () => {
+			it('should return undefined', async () => {
 				const { sut } = await setup();
 				const result = sut.getSchema();
 
-				expect(result).toBeNull();
+				expect(result).toBeUndefined();
 			});
 		});
 	});
@@ -56,11 +56,11 @@ describe('CommonCartridgeManifestParser', () => {
 		describe('when version is not present', () => {
 			const setup = async () => setupFile(false);
 
-			it('should return null', async () => {
+			it('should return undefined', async () => {
 				const { sut } = await setup();
 				const result = sut.getVersion();
 
-				expect(result).toBeNull();
+				expect(result).toBeUndefined();
 			});
 		});
 	});
@@ -84,7 +84,7 @@ describe('CommonCartridgeManifestParser', () => {
 				const { sut } = await setup();
 				const result = sut.getTitle();
 
-				expect(result).toBeNull();
+				expect(result).toBeUndefined();
 			});
 		});
 	});
