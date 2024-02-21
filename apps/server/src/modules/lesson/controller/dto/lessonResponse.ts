@@ -82,7 +82,15 @@ export class LessonResponse {
 	})
 	position: number;
 
+	@ApiProperty({
+		description: 'Contents of the Lesson entity',
+		type: [LessonContentResponse],
+	})
 	contents: LessonContentResponse[] | [];
 
+	@ApiProperty({
+		description: 'Materials of the Lesson entity',
+		type: [MaterialResponse],
+	})
 	materials: MaterialResponse[] | [];
 }

@@ -22,7 +22,7 @@ export class LessonContentResponse {
 		this.content = lessonContent.content;
 	}
 
-	@ApiProperty({})
+	@ApiProperty()
 	content?:
 		| ComponentTextProperties
 		| ComponentEtherpadProperties
