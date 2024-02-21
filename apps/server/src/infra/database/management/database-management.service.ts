@@ -3,7 +3,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BaseEntity } from '@shared/domain/entity';
 import { Collection, Db } from 'mongodb';
-import { MigrateOptions } from '@mikro-orm/migrations-mongodb';
+import { MigrateOptions, UmzugMigration } from '@mikro-orm/migrations-mongodb';
 
 @Injectable()
 export class DatabaseManagementService {
@@ -79,6 +79,12 @@ export class DatabaseManagementService {
 		const params = this.migrationParams(only, from, to);
 
 		await migrator.down(params);
+	}
+
+	async migrationPending(): Promise<UmzugMigration[]> {
+		const migrator = this.orm.getMigrator();
+		const pendingMigrations = await migrator.getPendingMigrations();
+		return pendingMigrations;
 	}
 
 	private migrationParams(only?: string, from?: string, to?: string) {
