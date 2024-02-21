@@ -679,5 +679,10 @@ describe('DatabaseManagementService', () => {
 			await uc.migrationDown('foo', 'bar', 'baz');
 			expect(dbService.migrationDown).toHaveBeenCalledWith('foo', 'bar', 'baz');
 		});
+		it('should call migrationPending', async () => {
+			dbService.migrationDown = jest.fn();
+			await uc.migrationPending();
+			expect(dbService.migrationPending).toHaveBeenCalled();
+		});
 	});
 });
