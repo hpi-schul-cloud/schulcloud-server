@@ -124,18 +124,19 @@ describe('Course Controller (API)', () => {
 			const teacher = createTeacher();
 			const course = await readFile('./apps/server/test/assets/common-cartridge/us_history_since_1877.imscc');
 			const courseFileName = 'us_history_since_1877.imscc';
-			const client = await testApiClient.login(teacher.account);
 
 			await em.persistAndFlush([teacher.account, teacher.user]);
 			em.clear();
 
-			return { client, course, courseFileName };
+			const loggedInClient = await testApiClient.login(teacher.account);
+
+			return { loggedInClient, course, courseFileName };
 		};
 
 		it('should import course', async () => {
-			const { client, course, courseFileName } = await setup();
+			const { loggedInClient, course, courseFileName } = await setup();
 
-			const response = await client.postWithAttachment('import', 'file', course, courseFileName);
+			const response = await loggedInClient.postWithAttachment('import', 'file', course, courseFileName);
 
 			expect(response.statusCode).toEqual(201);
 		});
