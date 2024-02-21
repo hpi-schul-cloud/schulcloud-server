@@ -3,5 +3,3 @@ export enum SystemTypeEnum {
 	OAUTH = 'oauth', // systems for direct authentication via OAuth,
 	OIDC = 'oidc', // systems for direct authentication via OpenID Connect,
 }
-
-export type SystemType = SystemTypeEnum;
