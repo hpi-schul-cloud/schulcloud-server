@@ -113,8 +113,16 @@ export class ExternalToolUc {
 		});
 
 		let schoolExternalTool: SchoolExternalTool | undefined;
+		let schoolName: string | undefined;
 		if (schoolExternalTools.length) {
 			schoolExternalTool = schoolExternalTools[0];
+
+			// hasAll[Permission] or hasOneOf[Permission]?
+			// = SCHOOL_TOOL_ADMIN or != TOOL_ADMIN?
+			if (this.authorizationService.hasAllPermissions(user, [Permission.SCHOOL_TOOL_ADMIN])) {
+				// where to put this method? schoolExternalToolService? externalToolService? Or call the schoolService directly?
+				schoolName = await this.schoolExternalToolService.getSchooolName(schoolExternalTool.schoolId);
+			}
 		}
 
 		const externalTool: ExternalTool = await this.externalToolService.findById(externalToolId);
@@ -123,7 +131,8 @@ export class ExternalToolUc {
 				externalTool,
 				user.firstName,
 				user.lastName,
-				schoolExternalTool
+				schoolExternalTool,
+				schoolName
 			);
 
 		const buffer: Buffer = await this.datasheetPdfService.generatePdf(dataSheetData);
