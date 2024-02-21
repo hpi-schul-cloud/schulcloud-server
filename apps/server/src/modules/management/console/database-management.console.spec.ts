@@ -105,6 +105,11 @@ describe('DatabaseManagementConsole', () => {
 				expect(consoleInfoSpy).toHaveBeenCalledWith('migration down is completed');
 				expect(databaseManagementUc.migrationDown).toHaveBeenCalled();
 			});
+			it('should check pending migrations', async () => {
+				await service.migration({ pending: true });
+				expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining('Pending:'));
+				expect(databaseManagementUc.migrationPending).toHaveBeenCalled();
+			});
 			it('should no migrate if no param specified', async () => {
 				await service.migration({});
 				expect(consoleErrorSpy).toHaveBeenCalledWith('no migration option was given');
