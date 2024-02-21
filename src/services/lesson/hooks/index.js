@@ -184,7 +184,8 @@ const restrictToUsersCoursesLessons = async (context) => {
 		if (context.params.query.shareToken) return context;
 		({ courseId, courseGroupId } = context.params.query);
 	} else {
-		const lesson = await context.app.service('lessons').get(context.id);
+		// const lesson = await context.app.service('lessons').get(context.id);
+		const lesson = await context.app.service('nest-lesson-uc').getLesson(userId, context.id);
 		({ courseId, courseGroupId } = lesson);
 	}
 
@@ -232,7 +233,14 @@ const populateWhitelist = {
 exports.before = () => {
 	return {
 		all: [authenticate('jwt'), mapUsers],
-		find: [disallow()],
+		// @deprecated - to be replaced with nest lessons service, for now needed by src/services/content/hooks/materials.js
+		// TODO disallow()
+		find: [
+			hasPermission('TOPIC_VIEW'),
+			iff(isProvider('external'), validateLessonFind),
+			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
+			iff(isProvider('external'), restrictToUsersCoursesLessons),
+		],
 		get: [disallow()],
 		create: [
 			checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),

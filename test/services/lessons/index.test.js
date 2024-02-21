@@ -42,7 +42,7 @@ describe('lessons service', () => {
 			expect(lesson.courseId.toString()).to.equal(testLesson.courseId);
 		}));
 
-	it.only('GET a lesson is disabled', async () => {
+	it('GET a lesson is disabled', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 		const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
@@ -52,7 +52,7 @@ describe('lessons service', () => {
 		expect(app.service('lessons').get(lesson._id, params)).to.be.rejectedWith(MethodNotAllowed);
 	});
 
-	it.only('FIND all lessons is disabled', async () => {
+	it('FIND all lessons is disabled', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
 		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
 		const params = await testObjects.generateRequestParamsFromUser(admin);

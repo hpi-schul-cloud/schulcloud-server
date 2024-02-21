@@ -61,7 +61,7 @@ describe('pseudonym service', function pseudonymTest() {
 		expect(app.service('pseudonym')).to.be.ok;
 	});
 
-	it.only('throws MethodNotAllowed on GET', async () => {
+	it('throws MethodNotAllowed on GET', async () => {
 		const { testTool } = await createTestData();
 		expect(pseudonymService.get(testTool._id)).to.be.rejectedWith(MethodNotAllowed);
 	});

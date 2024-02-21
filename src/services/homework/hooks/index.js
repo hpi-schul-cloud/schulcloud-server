@@ -293,7 +293,8 @@ const hasCreatePermission = async (context) => {
 	}
 
 	if (data.lessonId) {
-		const lesson = await context.app.service('lessons').get(data.lessonId);
+		// const lesson = await context.app.service('lessons').get(data.lessonId);
+		const lesson = await context.app.service('nest-lesson-uc').getLesson(userId, data.lessonId);
 		if (!(data.courseId && equalIds(lesson.courseId, data.courseId))) {
 			throw new NotFound('lesson not found. did you forget to pass the correct course?');
 		}
@@ -334,7 +335,8 @@ const addLessonInfoToSingle = async (hook, data) => {
 		return Promise.resolve(data);
 	}
 
-	const lesson = await hook.app.service('lessons').get(lessonId);
+	// const lesson = await hook.app.service('lessons').get(lessonId);
+	const lesson = await hook.app.service('nest-lesson-uc').getLesson(hook.params.account.userId, lessonId);
 	if (lesson) {
 		data.lessonName = lesson.name;
 		data.lessonHidden = lesson.hidden;
@@ -357,36 +359,38 @@ const addLessonInfo = async (hook) => {
 	return Promise.resolve(hook);
 };
 
-exports.before = () => ({
-	all: [authenticate('jwt')],
-	find: [
-		iff(isProvider('external'), [
-			globalHooks.hasPermission('HOMEWORK_VIEW'),
-			globalHooks.mapPaginationQuery.bind(this),
-			hasViewPermissionBefore,
-		]),
-		globalHooks.addCollation,
-	],
-	get: [iff(isProvider('external'), [globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore])],
-	create: [iff(isProvider('external'), globalHooks.hasPermission('HOMEWORK_CREATE'), hasCreatePermission)],
-	update: [iff(isProvider('external'), disallow())],
-	patch: [
-		iff(isProvider('external'), [
-			globalHooks.hasPermission('HOMEWORK_EDIT'),
-			globalHooks.permitGroupOperation,
-			hasPatchPermission,
-		]),
-	],
-	remove: [
-		iff(isProvider('external'), [
-			globalHooks.hasPermission('HOMEWORK_CREATE'),
-			globalHooks.permitGroupOperation,
-			logDeletionAttempt,
-			restrictHomeworkDeletion,
-			logDeletionPermit,
-		]),
-	],
-});
+exports.before = () => {
+	return {
+		all: [authenticate('jwt')],
+		find: [
+			iff(isProvider('external'), [
+				globalHooks.hasPermission('HOMEWORK_VIEW'),
+				globalHooks.mapPaginationQuery.bind(this),
+				hasViewPermissionBefore,
+			]),
+			globalHooks.addCollation,
+		],
+		get: [iff(isProvider('external'), [globalHooks.hasPermission('HOMEWORK_VIEW'), hasViewPermissionBefore])],
+		create: [iff(isProvider('external'), globalHooks.hasPermission('HOMEWORK_CREATE'), hasCreatePermission)],
+		update: [iff(isProvider('external'), disallow())],
+		patch: [
+			iff(isProvider('external'), [
+				globalHooks.hasPermission('HOMEWORK_EDIT'),
+				globalHooks.permitGroupOperation,
+				hasPatchPermission,
+			]),
+		],
+		remove: [
+			iff(isProvider('external'), [
+				globalHooks.hasPermission('HOMEWORK_CREATE'),
+				globalHooks.permitGroupOperation,
+				logDeletionAttempt,
+				restrictHomeworkDeletion,
+				logDeletionPermit,
+			]),
+		],
+	};
+};
 
 exports.after = {
 	all: [],

@@ -30,7 +30,6 @@ export class LessonController {
 	@Get(':lessonId')
 	async getLesson(@Param() urlParams: LessonUrlParams, @CurrentUser() currentUser: ICurrentUser) {
 		const lesson = await this.lessonUC.getLesson(currentUser.userId, urlParams.lessonId);
-		const response = LessonMapper.mapToResponse(lesson);
-		return response;
+		return lesson;
 	}
 }
