@@ -1,5 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import type { IdentityManagementConfig } from '@infra/identity-management';
+import { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { AccountConfig } from '@modules/account';
 import type { AuthenticationConfig, XApiKeyConfig } from '@modules/authentication';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
@@ -26,7 +27,8 @@ export interface ServerConfig
 		SchoolConfig,
 		MailConfig,
 		XApiKeyConfig,
-		AuthenticationConfig {
+		AuthenticationConfig,
+		SchulconnexClientConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 }
@@ -57,6 +59,9 @@ const config: ServerConfig = {
 	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)
 		.split(',')
 		.map((domain) => domain.trim()),
+	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: Configuration.get(
+		'SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS'
+	) as number,
 };
 
 export const serverConfig = () => config;
