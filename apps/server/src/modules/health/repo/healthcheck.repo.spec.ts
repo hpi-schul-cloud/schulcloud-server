@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { TestingModule, Test } from '@nestjs/testing';
 
 import { cleanupCollections } from '@shared/testing';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { HealthcheckEntity } from './entity';
 import { HealthcheckRepo } from './healthcheck.repo';
 
