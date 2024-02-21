@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { HealthApiModule, HealthEntities } from '@src/modules/health';
 
 /**

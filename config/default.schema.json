@@ -1581,6 +1581,15 @@
 				"CLIENT_ID": "",
 				"CLIENT_SECRET": ""
 			}
+		},
+		"HOSTNAME": {
+			"type": "string",
+			"description": "Hostname. Should not be usually defined as it's expected to be taken from the process env."
+		},
+		"HEALTHCHECKS_EXCLUDE_MONGODB": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle that, when enabled, excludes MongoDB from the healthchecks."
 		}
 	},
 	"required": []
