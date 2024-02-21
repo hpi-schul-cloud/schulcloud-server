@@ -3,6 +3,7 @@ import { CopyHelperModule } from '@modules/copy-helper';
 import { LessonModule } from '@modules/lesson';
 import { TaskModule } from '@modules/task';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
+import { ToolConfigModule } from '@modules/tool/tool-config.module';
 import { Module } from '@nestjs/common';
 import {
 	BoardRepo,
@@ -14,7 +15,6 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { ToolConfigModule } from '../tool/tool-config.module';
 import {
 	BoardCopyService,
 	ColumnBoardTargetService,
@@ -26,7 +26,6 @@ import {
 	DashboardService,
 	RoomsService,
 } from './service';
-import { LearnroomConfigService } from './service/learnroom-config.service';
 import { CommonCartridgeFileValidatorPipe } from './utils';
 
 @Module({
@@ -59,7 +58,6 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		CourseGroupService,
 		CourseGroupRepo,
 		DashboardService,
-		LearnroomConfigService,
 		CommonCartridgeFileValidatorPipe,
 	],
 	exports: [
@@ -70,7 +68,6 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		CommonCartridgeImportService,
 		CourseGroupService,
 		DashboardService,
-		LearnroomConfigService,
 	],
 })
 export class LearnroomModule {}

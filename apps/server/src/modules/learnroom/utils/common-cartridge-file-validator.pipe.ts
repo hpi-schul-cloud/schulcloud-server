@@ -1,27 +1,28 @@
 import { BadRequestException, Injectable, PipeTransform } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import AdmZip from 'adm-zip';
-import { LearnroomConfigService } from '../service';
+import { LearnroomConfig } from '../learnroom.config';
 
 @Injectable()
 export class CommonCartridgeFileValidatorPipe implements PipeTransform<Express.Multer.File, Express.Multer.File> {
-	constructor(private readonly configService: LearnroomConfigService) {}
+	constructor(private readonly configService: ConfigService<LearnroomConfig, true>) {}
 
 	public transform(value: Express.Multer.File): Express.Multer.File {
 		if (!value) {
 			throw new BadRequestException('No file uploaded');
 		}
-		if (value.size > this.configService.commonCartridgeImportMaxFileSize) {
+		if (value.size > this.configService.getOrThrow<number>('FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE')) {
 			throw new BadRequestException('File too big');
 		}
 
-		if (!this.hasManifestFile(value.buffer)) {
+		if (!this.isValidCommonCartridgeFile(value.buffer)) {
 			throw new BadRequestException('Invalid file type');
 		}
 
 		return value;
 	}
 
-	private hasManifestFile(file: Buffer): boolean {
+	private isValidCommonCartridgeFile(file: Buffer): boolean {
 		try {
 			const archive = new AdmZip(file);
 			// imsmanifest.xml is the standard name, but manifest.xml is also valid until v1.3

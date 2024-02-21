@@ -1,8 +1,8 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import AdmZip from 'adm-zip';
 import { readFile } from 'node:fs/promises';
-import { LearnroomConfigService } from '../service';
 import { CommonCartridgeFileValidatorPipe } from './common-cartridge-file-validator.pipe';
 
 describe('CommonCartridgeFileValidatorPipe', () => {
@@ -14,7 +14,6 @@ describe('CommonCartridgeFileValidatorPipe', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				CommonCartridgeFileValidatorPipe,
-				LearnroomConfigService,
 				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
@@ -52,7 +51,7 @@ describe('CommonCartridgeFileValidatorPipe', () => {
 
 		describe('when the file is too big', () => {
 			const setup = () => {
-				configServiceMock.get.mockReturnValue(1000);
+				configServiceMock.getOrThrow.mockReturnValue(1000);
 
 				return { file: { size: 1001 } as unknown as Express.Multer.File };
 			};
@@ -64,12 +63,30 @@ describe('CommonCartridgeFileValidatorPipe', () => {
 			});
 		});
 
-		describe('when the file does not contain a manifest file', () => {
+		describe('when the file is not a zip archive', () => {
 			const setup = () => {
-				configServiceMock.get.mockReturnValue(1000);
+				configServiceMock.getOrThrow.mockReturnValue(1000);
 
 				return {
 					file: { size: 1000, buffer: Buffer.from('') } as unknown as Express.Multer.File,
+				};
+			};
+
+			it('should throw', () => {
+				const { file } = setup();
+
+				expect(() => sut.transform(file)).toThrow('Invalid file type');
+			});
+		});
+
+		describe('when the file does not contain a manifest file', () => {
+			const setup = () => {
+				const buffer = new AdmZip().toBuffer();
+
+				configServiceMock.get.mockReturnValue(1000);
+
+				return {
+					file: { size: 1000, buffer } as unknown as Express.Multer.File,
 				};
 			};
 
@@ -84,7 +101,7 @@ describe('CommonCartridgeFileValidatorPipe', () => {
 			const setup = async () => {
 				const buffer = await readFile('./apps/server/test/assets/common-cartridge/us_history_since_1877.imscc');
 
-				configServiceMock.get.mockReturnValue(1000);
+				configServiceMock.getOrThrow.mockReturnValue(1000);
 
 				return {
 					file: { size: 1000, buffer } as unknown as Express.Multer.File,

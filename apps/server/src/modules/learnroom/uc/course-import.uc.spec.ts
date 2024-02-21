@@ -8,7 +8,7 @@ import { Permission } from '@shared/domain/interface';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
 import { LearnroomConfig } from '../learnroom.config';
-import { CommonCartridgeImportService, CourseService, LearnroomConfigService } from '../service';
+import { CommonCartridgeImportService, CourseService } from '../service';
 import { CourseImportUc } from './course-import.uc';
 
 describe('CourseImportUc', () => {
@@ -25,7 +25,6 @@ describe('CourseImportUc', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				CourseImportUc,
-				LearnroomConfigService,
 				{
 					provide: ConfigService,
 					useValue: createMock<ConfigService>(),
@@ -72,7 +71,7 @@ describe('CourseImportUc', () => {
 				const course = courseFactory.buildWithId();
 				const file = Buffer.from('');
 
-				configServiceMock.get.mockReturnValue(true);
+				configServiceMock.getOrThrow.mockReturnValue(true);
 				authorizationServiceMock.getUserWithPermissions.mockResolvedValue(user);
 				courseImportServiceMock.createCourse.mockReturnValue(course);
 
@@ -98,7 +97,7 @@ describe('CourseImportUc', () => {
 
 		describe('when user has insufficient permissions', () => {
 			const setup = () => {
-				configServiceMock.get.mockReturnValue(true);
+				configServiceMock.getOrThrow.mockReturnValue(true);
 				authorizationServiceMock.checkAllPermissions.mockImplementation(() => {
 					throw new Error();
 				});
@@ -113,7 +112,7 @@ describe('CourseImportUc', () => {
 
 		describe('when the feature is disabled', () => {
 			const setup = () => {
-				configServiceMock.get.mockReturnValue(false);
+				configServiceMock.getOrThrow.mockReturnValue(false);
 			};
 
 			it('should throw', async () => {

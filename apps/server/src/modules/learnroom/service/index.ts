@@ -6,5 +6,4 @@ export * from './course-copy.service';
 export * from './course.service';
 export * from './coursegroup.service';
 export * from './dashboard.service';
-export * from './learnroom-config.service';
 export * from './rooms.service';
