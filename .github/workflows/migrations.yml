@@ -18,7 +18,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: mongodb setup
-      uses: supercharge/mongodb-github-action@1.8.0
+      uses: supercharge/mongodb-github-action@1.10.0
     - name: setup
       uses: actions/setup-node@v4
       with:
@@ -26,4 +26,4 @@ jobs:
     - run: npm ci
     - run: npm run setup:db:seed
     - name: check no pending migrations (migration is in db)
-      run: test $(npx mikro-orm migration:pending | grep -c "Migration") -eq 0
+      run: test $(npm run migration:pending | grep -c "Migration") -eq 0

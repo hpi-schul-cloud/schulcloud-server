@@ -21,7 +21,7 @@ import {
 	userLoginMigrationFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { LegacySchoolRepo } from '..';
+import { LegacySchoolRepo } from './legacy-school.repo';
 
 describe('LegacySchoolRepo', () => {
 	let module: TestingModule;
