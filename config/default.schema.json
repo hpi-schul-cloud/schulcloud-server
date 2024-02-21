@@ -1568,6 +1568,11 @@
 				"CLIENT_SECRET": {
 					"type": "string",
 					"description": "Client secret for accessing the schulconnex API (from server vault)"
+				},
+				"PERSONEN_INFO_TIMEOUT_IN_MS": {
+					"type": "integer",
+					"description": "Timeout in milliseconds for fetching personen info from schulconnex",
+					"default": 120000
 				}
 			},
 			"default": {
