@@ -520,6 +520,11 @@
 			"default": "amqp://guest:guest@localhost:5672",
 			"description": "The URI of the RabbitMQ server."
 		},
+		"LEGACY_RABBITMQ_GLOBAL_PREFETCH_COUNT": {
+			"type": "number",
+			"default": 25,
+			"description": "deprecated from the start, PLEASE GET YOUR OWN CONFIG, prefetch count is applied per channel globally for all legacy rabbitmq channels (nest based code is not affected)"
+		},
 		"HOST": {
 			"type": "string",
 			"format": "uri",
@@ -1392,6 +1397,11 @@
 			"default": false,
 			"description": "Enables groups of type class in courses"
 		},
+		"FEATURE_NEST_SYSTEMS_API_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Uses the v3 api over the v1 api for systems"
+		},
 		"FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1558,6 +1568,11 @@
 				"CLIENT_SECRET": {
 					"type": "string",
 					"description": "Client secret for accessing the schulconnex API (from server vault)"
+				},
+				"PERSONEN_INFO_TIMEOUT_IN_MS": {
+					"type": "integer",
+					"description": "Timeout in milliseconds for fetching personen info from schulconnex",
+					"default": 120000
 				}
 			},
 			"default": {
