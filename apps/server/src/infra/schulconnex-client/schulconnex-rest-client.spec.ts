@@ -130,27 +130,45 @@ describe(SchulconnexRestClient.name, () => {
 				});
 				const response: SanisResponse[] = schulconnexResponseFactory.buildList(2);
 
+				const optionsWithTimeout: SchulconnexRestClientOptions = {
+					...options,
+					personenInfoTimeoutInMs: 30000,
+				};
+
+				const optionsClient: SchulconnexRestClient = new SchulconnexRestClient(
+					optionsWithTimeout,
+					httpService,
+					oauthAdapterService,
+					logger
+				);
+
 				oauthAdapterService.sendTokenRequest.mockResolvedValueOnce(tokens);
 				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: response })));
 
 				return {
 					tokens,
 					response,
+					optionsClient,
+					optionsWithTimeout,
 				};
 			};
 
 			it('should make a request to a SchulConneX-API', async () => {
-				const { tokens } = setup();
+				const { tokens, optionsClient, optionsWithTimeout } = setup();
 
-				await client.getPersonenInfo({ 'organisation.id': '1234', vollstaendig: ['personen', 'organisationen'] });
+				await optionsClient.getPersonenInfo({
+					'organisation.id': '1234',
+					vollstaendig: ['personen', 'organisationen'],
+				});
 
 				expect(httpService.get).toHaveBeenCalledWith(
-					`${options.apiUrl}/personen-info?organisation.id=1234&vollstaendig=personen%2Corganisationen`,
+					`${optionsWithTimeout.apiUrl}/personen-info?organisation.id=1234&vollstaendig=personen%2Corganisationen`,
 					{
 						headers: {
 							Authorization: `Bearer ${tokens.accessToken}`,
 							'Accept-Encoding': 'gzip',
 						},
+						timeout: optionsWithTimeout.personenInfoTimeoutInMs,
 					}
 				);
 			});

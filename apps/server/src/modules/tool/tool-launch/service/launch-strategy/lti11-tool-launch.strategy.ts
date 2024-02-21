@@ -2,11 +2,10 @@ import { PseudonymService } from '@modules/pseudonym/service';
 import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
 import { Pseudonym, RoleReference, UserDO } from '@shared/domain/domainobject';
-import { LtiPrivacyPermission } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Authorization } from 'oauth-1.0a';
-import { LtiRole } from '../../../common/enum';
+import { LtiPrivacyPermission, LtiRole } from '../../../common/enum';
 import { ExternalTool } from '../../../external-tool/domain';
 import { LtiRoleMapper } from '../../mapper';
 import { AuthenticationValues, LaunchRequestMethod, PropertyData, PropertyLocation } from '../../types';
@@ -74,14 +73,22 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 				value: config.launch_presentation_locale,
 				location: PropertyLocation.BODY,
 			}),
-			new PropertyData({
-				name: 'roles',
-				value: ltiRoles.join(','),
-				location: PropertyLocation.BODY,
-			}),
 		];
 
-		if (config.privacy_permission === LtiPrivacyPermission.NAME) {
+		if (config.privacy_permission !== LtiPrivacyPermission.ANONYMOUS) {
+			additionalProperties.push(
+				new PropertyData({
+					name: 'roles',
+					value: ltiRoles.join(','),
+					location: PropertyLocation.BODY,
+				})
+			);
+		}
+
+		if (
+			config.privacy_permission === LtiPrivacyPermission.NAME ||
+			config.privacy_permission === LtiPrivacyPermission.PUBLIC
+		) {
 			const displayName: string = await this.userService.getDisplayName(user);
 
 			additionalProperties.push(
@@ -93,7 +100,10 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			);
 		}
 
-		if (config.privacy_permission === LtiPrivacyPermission.EMAIL) {
+		if (
+			config.privacy_permission === LtiPrivacyPermission.EMAIL ||
+			config.privacy_permission === LtiPrivacyPermission.PUBLIC
+		) {
 			additionalProperties.push(
 				new PropertyData({
 					name: 'lis_person_contact_email_primary',
@@ -113,7 +123,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 					location: PropertyLocation.BODY,
 				})
 			);
-		} else {
+		} else if (config.privacy_permission !== LtiPrivacyPermission.ANONYMOUS) {
 			additionalProperties.push(
 				new PropertyData({
 					name: 'user_id',
@@ -121,6 +131,8 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 					location: PropertyLocation.BODY,
 				})
 			);
+		} else {
+			// Don't add a user_id, when the privacy is anonymous
 		}
 
 		return additionalProperties;
