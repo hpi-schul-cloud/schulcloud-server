@@ -27,6 +27,7 @@ export enum FileRecordParentType {
 	'Lesson' = 'lessons',
 	'Submission' = 'submissions',
 	'BoardNode' = 'boardnodes',
+	'DrawingNode' = 'drawingnodes',
 }
 
 export interface CopyFilesOfParentParams {

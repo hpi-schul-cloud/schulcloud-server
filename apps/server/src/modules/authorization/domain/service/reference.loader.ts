@@ -16,10 +16,12 @@ import {
 	TeamsRepo,
 	UserRepo,
 } from '@shared/repo';
+import { DrawingDoAuthorizableService } from '@modules/board/service';
 import { AuthorizableReferenceType } from '../type';
 
 type RepoType =
 	| BoardDoAuthorizableService
+	| DrawingDoAuthorizableService
 	| ContextExternalToolAuthorizableService
 	| CourseGroupRepo
 	| CourseRepo
@@ -51,6 +53,7 @@ export class ReferenceLoader {
 		private readonly submissionRepo: SubmissionRepo,
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly boardNodeAuthorizableService: BoardDoAuthorizableService,
+		private readonly drawingAuthorizableService: DrawingDoAuthorizableService,
 		private readonly contextExternalToolAuthorizableService: ContextExternalToolAuthorizableService
 	) {
 		this.repos.set(AuthorizableReferenceType.Task, { repo: this.taskRepo });
@@ -63,6 +66,7 @@ export class ReferenceLoader {
 		this.repos.set(AuthorizableReferenceType.Submission, { repo: this.submissionRepo });
 		this.repos.set(AuthorizableReferenceType.SchoolExternalToolEntity, { repo: this.schoolExternalToolRepo });
 		this.repos.set(AuthorizableReferenceType.BoardNode, { repo: this.boardNodeAuthorizableService });
+		this.repos.set(AuthorizableReferenceType.DrawingNode, { repo: this.drawingAuthorizableService });
 		this.repos.set(AuthorizableReferenceType.ContextExternalToolEntity, {
 			repo: this.contextExternalToolAuthorizableService,
 		});

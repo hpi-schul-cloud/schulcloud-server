@@ -1,4 +1,5 @@
 export * from './board-do-authorizable.service';
+export * from './drawing-do-authorizable.service';
 export * from './board-do.service';
 export * from './card.service';
 export * from './column-board.service';

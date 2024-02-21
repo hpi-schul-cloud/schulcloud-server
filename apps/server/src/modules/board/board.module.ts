@@ -9,6 +9,8 @@ import { LoggerModule } from '@src/core/logger';
 import { HttpModule } from '@nestjs/axios';
 import { ToolConfigModule } from '@modules/tool/tool-config.module';
 import { TldrawClientModule } from '@modules/tldraw-client';
+import { DrawingDoAuthorizableService } from './service/drawing-do-authorizable.service';
+import { DrawingDoRepo } from './repo/drawing-do.repo';
 import { BoardDoRepo, BoardNodeRepo, RecursiveDeleteVisitor } from './repo';
 import {
 	BoardDoAuthorizableService,
@@ -35,7 +37,9 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 	],
 	providers: [
 		BoardDoAuthorizableService,
+		DrawingDoAuthorizableService,
 		BoardDoRepo,
+		DrawingDoRepo,
 		BoardDoService,
 		BoardNodeRepo,
 		CardService,
@@ -52,6 +56,7 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 	],
 	exports: [
 		BoardDoAuthorizableService,
+		DrawingDoAuthorizableService,
 		CardService,
 		ColumnBoardService,
 		ColumnService,
