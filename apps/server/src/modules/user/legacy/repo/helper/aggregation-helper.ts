@@ -1,5 +1,5 @@
 import { ObjectId } from 'bson';
-import { UserSearchQuery } from '../interfaces';
+import { UserSearchQuery } from '../../interfaces';
 
 const convertToIn = (value) => {
 	let list: any[] = [];
@@ -14,6 +14,7 @@ const convertToIn = (value) => {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		list = [value];
 	}
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 	return list;
 };
 
@@ -24,6 +25,7 @@ const convertToIn = (value) => {
  * @param {*} consentStatus - Array, String or Object with a $in
  */
 const stageBaseFilter = (aggregation, attr, value) => {
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	aggregation.push({
 		$match: {
 			[attr]: {
@@ -38,7 +40,9 @@ const stageBaseFilter = (aggregation, attr, value) => {
  * @param {Array} select
  */
 const convertSelect = (select) =>
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
 	select.reduce((acc, curr) => {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 		return { ...acc, [curr]: 1 };
 	}, {});
 
@@ -51,6 +55,7 @@ const getParentReducer = (type) => {
 		$reduce: {
 			input: '$consent.parentConsents',
 			initialValue: false,
+			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 			in: { $or: ['$$value', `$$this.${type}`] },
 		},
 	};
@@ -67,6 +72,7 @@ const getParentReducer = (type) => {
  * @param {*} aggregation - current aggregation array
  */
 const stageAddConsentSortParam = (aggregation) => {
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	aggregation.push({
 		$addFields: {
 			consentSortParam: {
@@ -156,6 +162,7 @@ const getConsentStatusSwitch = () => {
 };
 
 const stageAddConsentStatus = (aggregation) => {
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	aggregation.push({
 		$addFields: {
 			consentStatus: getConsentStatusSwitch(),
@@ -170,13 +177,18 @@ const stageAddConsentStatus = (aggregation) => {
  * @param {Array} select
  */
 const stageAddSelectProjectWithConsentCreate = (aggregation, select) => {
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const project = convertSelect(select);
 
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	if (select.includes('consentStatus')) {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		project.consentStatus = getConsentStatusSwitch();
 	}
 
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	aggregation.push({
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		$project: project,
 	});
 };
@@ -185,7 +197,9 @@ const stageAddSelectProjectWithConsentCreate = (aggregation, select) => {
  * Only select fields which are in select
  */
 const stageSimpleProject = (aggregation, select) => {
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	aggregation.push({
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		$project: convertSelect(select),
 	});
 };

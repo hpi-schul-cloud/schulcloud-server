@@ -2,10 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { createMultiDocumentAggregation } from 'apps/server/src/modules/user/legacy';
 import { ObjectID } from 'bson';
-import { UsersSearchQueryParams } from '@modules/user/legacy/controller/dto/users-search.query.params';
-import { UserSearchQuery } from '@modules/user/legacy/interfaces/user-search.query';
+import { createMultiDocumentAggregation } from './helper';
+import { UsersSearchQueryParams } from '../controller/dto';
+import { UserSearchQuery } from '../interfaces';
 
 @Injectable()
 export class UsersAdminRepo extends BaseRepo<User> {

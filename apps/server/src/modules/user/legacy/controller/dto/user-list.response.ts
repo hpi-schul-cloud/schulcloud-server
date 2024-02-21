@@ -3,10 +3,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import { UserResponse } from './user.response';
 
 export class UserListResponse extends PaginationResponse<UserResponse[]> {
-	constructor(data, total: number, limit?: number, skip?: number) {
-		super(total, skip, limit);
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-		this.data = data?.length > 0 ? data.map((user) => new UserResponse(user)) : [];
+	constructor(response: UserListResponse) {
+		super(response.total, response.skip, response.limit);
+		this.data = response.data?.length > 0 ? response.data.map((user) => new UserResponse(user)) : [];
 	}
 
 	@ApiProperty({ type: [UserResponse] })

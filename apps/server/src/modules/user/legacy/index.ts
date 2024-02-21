@@ -1,5 +1,3 @@
-export * from './service';
-export * from './interfaces';
-export * from './repo';
-export * from './users-admin-api.module';
+export { AdminUsersService } from './service';
+export { UserSearchQuery, UserSortQuery } from './interfaces';
 export * from './users-admin.module';

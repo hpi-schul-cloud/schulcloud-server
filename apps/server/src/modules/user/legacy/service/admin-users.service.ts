@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import { UsersAdminRepo } from '../repo';
 import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';
-import {UsersAdminRepo} from "@modules/user/legacy/repo/users-admin.repo";
 
 @Injectable()
 export class AdminUsersService {
@@ -17,17 +16,13 @@ export class AdminUsersService {
 		schoolYearId: EntityId | undefined,
 		params: UsersSearchQueryParams
 	): Promise<UserListResponse> {
-		const usersResponse = await this.usersAdminRepo.getUsersWithNestedData(roleId, schoolId, schoolYearId, params);
-		return new UserListResponse(
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-			usersResponse[0].data,
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-			usersResponse[0].total,
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-			usersResponse[0].limit,
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument,@typescript-eslint/no-unsafe-member-access
-			usersResponse[0].skip
-		);
+		const usersResponse = (await this.usersAdminRepo.getUsersWithNestedData(
+			roleId,
+			schoolId,
+			schoolYearId,
+			params
+		)) as UserListResponse[];
+		return new UserListResponse(usersResponse[0]);
 	}
 
 	async getUserWithNestedData(

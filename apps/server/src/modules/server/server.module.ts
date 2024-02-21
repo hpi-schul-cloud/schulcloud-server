@@ -37,7 +37,7 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
-import { UsersAdminApiModule } from 'apps/server/src/modules/user/legacy';
+import { UsersAdminApiModule } from 'apps/server/src/modules/user/legacy/users-admin-api.module';
 import { ServerController } from './controller';
 import { serverConfig } from './server.config';
 
