@@ -1,3 +1,4 @@
+import { School, SchoolService } from '@modules/school';
 import { Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { SchoolExternalToolRepo } from '@shared/repo';
@@ -15,6 +16,7 @@ export class SchoolExternalToolService {
 		private readonly schoolExternalToolRepo: SchoolExternalToolRepo,
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService,
+		private readonly schoolService: SchoolService,
 		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures
 	) {}
 
@@ -99,5 +101,12 @@ export class SchoolExternalToolService {
 		}
 
 		return false;
+	}
+
+	public async getSchooolName(schoolId: EntityId): Promise<string> {
+		const school: School = await this.schoolService.getSchoolById(schoolId);
+		const schoolName = school.getInfo().name;
+
+		return schoolName;
 	}
 }
