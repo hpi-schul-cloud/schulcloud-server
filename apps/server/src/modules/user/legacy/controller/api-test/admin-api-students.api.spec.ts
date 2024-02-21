@@ -16,7 +16,7 @@ import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
-import {RangeType, UserListResponse, UserResponse, UsersSearchQueryParams} from '@modules/user/legacy/controller/dto';
+import { UserListResponse, UserResponse, UsersSearchQueryParams} from '@modules/user/legacy/controller/dto';
 
 describe('Users Admin Students Controller (API)', () => {
 	const basePath = '/users/admin/students';
