@@ -2769,13 +2769,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/ToolApiModule.html" data-type="entity-link" >ToolApiModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-ToolApiModule-fc625cd035128abaa170497798f4759f3aa58cea21724cb169986cbaf33a55773c2922b86d4da1d14aea29ca9f515a6a32b50b402a512cc0316af73e7695faa0"' : 'data-bs-target="#xs-controllers-links-module-ToolApiModule-fc625cd035128abaa170497798f4759f3aa58cea21724cb169986cbaf33a55773c2922b86d4da1d14aea29ca9f515a6a32b50b402a512cc0316af73e7695faa0"' }>
+                                            'data-bs-target="#controllers-links-module-ToolApiModule-7f4f3d1c3b55efd4b0a31f43f81985ad7b96f03559a63752acf7da9cfd32c4244c1ba5166b4ca82ff094799c3ffd060f38b8cd07394131faf612778a950f1a3e"' : 'data-bs-target="#xs-controllers-links-module-ToolApiModule-7f4f3d1c3b55efd4b0a31f43f81985ad7b96f03559a63752acf7da9cfd32c4244c1ba5166b4ca82ff094799c3ffd060f38b8cd07394131faf612778a950f1a3e"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-ToolApiModule-fc625cd035128abaa170497798f4759f3aa58cea21724cb169986cbaf33a55773c2922b86d4da1d14aea29ca9f515a6a32b50b402a512cc0316af73e7695faa0"' :
-                                            'id="xs-controllers-links-module-ToolApiModule-fc625cd035128abaa170497798f4759f3aa58cea21724cb169986cbaf33a55773c2922b86d4da1d14aea29ca9f515a6a32b50b402a512cc0316af73e7695faa0"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-ToolApiModule-7f4f3d1c3b55efd4b0a31f43f81985ad7b96f03559a63752acf7da9cfd32c4244c1ba5166b4ca82ff094799c3ffd060f38b8cd07394131faf612778a950f1a3e"' :
+                                            'id="xs-controllers-links-module-ToolApiModule-7f4f3d1c3b55efd4b0a31f43f81985ad7b96f03559a63752acf7da9cfd32c4244c1ba5166b4ca82ff094799c3ffd060f38b8cd07394131faf612778a950f1a3e"' }>
                                             <li class="link">
                                                 <a href="controllers/ToolConfigurationController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ToolConfigurationController</a>
                                             </li>
@@ -2798,13 +2798,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-ToolApiModule-fc625cd035128abaa170497798f4759f3aa58cea21724cb169986cbaf33a55773c2922b86d4da1d14aea29ca9f515a6a32b50b402a512cc0316af73e7695faa0"' : 'data-bs-target="#xs-injectables-links-module-ToolApiModule-fc625cd035128abaa170497798f4759f3aa58cea21724cb169986cbaf33a55773c2922b86d4da1d14aea29ca9f515a6a32b50b402a512cc0316af73e7695faa0"' }>
+                                        'data-bs-target="#injectables-links-module-ToolApiModule-7f4f3d1c3b55efd4b0a31f43f81985ad7b96f03559a63752acf7da9cfd32c4244c1ba5166b4ca82ff094799c3ffd060f38b8cd07394131faf612778a950f1a3e"' : 'data-bs-target="#xs-injectables-links-module-ToolApiModule-7f4f3d1c3b55efd4b0a31f43f81985ad7b96f03559a63752acf7da9cfd32c4244c1ba5166b4ca82ff094799c3ffd060f38b8cd07394131faf612778a950f1a3e"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ToolApiModule-fc625cd035128abaa170497798f4759f3aa58cea21724cb169986cbaf33a55773c2922b86d4da1d14aea29ca9f515a6a32b50b402a512cc0316af73e7695faa0"' :
-                                        'id="xs-injectables-links-module-ToolApiModule-fc625cd035128abaa170497798f4759f3aa58cea21724cb169986cbaf33a55773c2922b86d4da1d14aea29ca9f515a6a32b50b402a512cc0316af73e7695faa0"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ToolApiModule-7f4f3d1c3b55efd4b0a31f43f81985ad7b96f03559a63752acf7da9cfd32c4244c1ba5166b4ca82ff094799c3ffd060f38b8cd07394131faf612778a950f1a3e"' :
+                                        'id="xs-injectables-links-module-ToolApiModule-7f4f3d1c3b55efd4b0a31f43f81985ad7b96f03559a63752acf7da9cfd32c4244c1ba5166b4ca82ff094799c3ffd060f38b8cd07394131faf612778a950f1a3e"' }>
                                         <li class="link">
                                             <a href="injectables/ContextExternalToolUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ContextExternalToolUc</a>
                                         </li>

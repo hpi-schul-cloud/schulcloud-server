@@ -254,7 +254,14 @@ export class DatasheetPdfService {
 			{ text: &#x60;Erstellt am ${templateData.createdAt} von ${templateData.creatorName}&#x60;, style: &#x27;right-aligned&#x27; },
 			&#x27;\n&#x27;,
 			{ text: templateData.instance, style: &#x27;right-aligned&#x27; },
-			&#x27;\n&#x27;,
+			&#x27;\n&#x27;
+		);
+
+		if (templateData.schoolName) {
+			content.push({ text: templateData.schoolName, style: &#x27;right-aligned&#x27; }, &#x27;\n&#x27;);
+		}
+
+		content.push(
 			{ text: &#x27;Datenblatt&#x27;, style: [&#x27;center-aligned&#x27;, &#x27;h1&#x27;] },
 			{ text: templateData.toolName, style: [&#x27;center-aligned&#x27;, &#x27;h2&#x27;] },
 			&#x27;\n&#x27;,
