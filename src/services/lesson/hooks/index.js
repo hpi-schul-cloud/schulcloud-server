@@ -2,7 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { nanoid } = require('nanoid');
-const { iff, isProvider } = require('feathers-hooks-common');
+const { iff, isProvider, disallow } = require('feathers-hooks-common');
 const { NotFound, BadRequest } = require('../../../errors');
 const { equal } = require('../../../helper/compare').ObjectId;
 const {
@@ -232,17 +232,8 @@ const populateWhitelist = {
 exports.before = () => {
 	return {
 		all: [authenticate('jwt'), mapUsers],
-		find: [
-			hasPermission('TOPIC_VIEW'),
-			iff(isProvider('external'), validateLessonFind),
-			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
-			iff(isProvider('external'), restrictToUsersCoursesLessons),
-		],
-		get: [
-			hasPermission('TOPIC_VIEW'),
-			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
-			iff(isProvider('external'), restrictToUsersCoursesLessons),
-		],
+		find: [disallow()],
+		get: [disallow()],
 		create: [
 			checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),
 			injectUserId,

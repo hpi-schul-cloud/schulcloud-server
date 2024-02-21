@@ -2,6 +2,7 @@ const assert = require('assert');
 const { expect } = require('chai');
 const appPromise = require('../../../src/app');
 const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
+const { MethodNotAllowed } = require('../../../src/errors');
 const testObjects = require('../helpers/testObjects')(appPromise());
 
 const testLesson = {
@@ -41,17 +42,22 @@ describe('lessons service', () => {
 			expect(lesson.courseId.toString()).to.equal(testLesson.courseId);
 		}));
 
-	it('GET a lesson', async () => {
+	it.only('GET a lesson is disabled', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool({});
 		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 		const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
 		const lesson = await testObjects.createTestLesson({ name: 'testlesson', courseId: course._id });
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		params.query = {};
-		const result = await app.service('lessons').get(lesson._id, params);
-		expect(result).to.not.be.undefined;
-		expect(result).to.haveOwnProperty('_id');
-		expect(result).to.haveOwnProperty('name');
+		expect(app.service('lessons').get(lesson._id, params)).to.be.rejectedWith(MethodNotAllowed);
+	});
+
+	it.only('FIND all lessons is disabled', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool({});
+		const admin = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
+		const params = await testObjects.generateRequestParamsFromUser(admin);
+		params.query = {};
+		expect(app.service('lessons').find(params)).to.be.rejectedWith(MethodNotAllowed);
 	});
 
 	describe('student operations', () => {
