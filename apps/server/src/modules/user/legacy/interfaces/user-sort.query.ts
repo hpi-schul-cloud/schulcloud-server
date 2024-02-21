@@ -1,6 +1,6 @@
 import { User } from '@shared/domain/entity';
-import { SortOrderMap } from '@shared/domain/interface';
+import { SortOrderNumberType } from '@shared/domain/interface';
 
-export interface UserSortQuery extends SortOrderMap<User> {
+export interface UserSortQuery extends SortOrderNumberType<User> {
 	searchQuery?: number;
 }

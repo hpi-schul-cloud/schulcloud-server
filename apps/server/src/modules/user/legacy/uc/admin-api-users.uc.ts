@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
+import { ForbiddenOperationError } from '@shared/common';
 import { RoleService } from '../../../role';
 import { AuthorizationService } from '../../../authorization';
 import { UsersAdminContextEnum } from '../enum';
@@ -49,7 +50,11 @@ export class AdminApiUsersUc {
 
 	private validateAccessToContext(context: UsersAdminContextEnum, currentUser: User) {
 		const permission = this.getPermissionForContext(context);
-		this.authorizationService.checkAllPermissions(currentUser, [permission]);
+		try {
+			this.authorizationService.checkAllPermissions(currentUser, [permission]);
+		} catch (e) {
+			throw new ForbiddenOperationError('Current user is not authorized to search for accounts.');
+		}
 	}
 
 	private getPermissionForContext(context: UsersAdminContextEnum) {
