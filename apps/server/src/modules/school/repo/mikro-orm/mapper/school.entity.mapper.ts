@@ -1,6 +1,6 @@
 import { EntityData } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { FederalStateEntity, SchoolYearEntity } from '@shared/domain/entity';
+import { FederalStateEntity, SchoolYearEntity, SystemEntity } from '@shared/domain/entity';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { SchoolFactory } from '@src/modules/school/domain/factory';
 import { School } from '../../../domain';
@@ -56,6 +56,7 @@ export class SchoolEntityMapper {
 		const features = Array.from(props.features);
 		const currentYear = props.currentYear ? em.getReference(SchoolYearEntity, props.currentYear?.id) : undefined;
 		const county = props.county ? CountyEmbeddableMapper.mapToEntity(props.county) : undefined;
+		const systems = props.systemIds ? props.systemIds.map((id) => em.getReference(SystemEntity, id)) : [];
 
 		const schoolEntityProps = {
 			name: props.name,
@@ -76,6 +77,7 @@ export class SchoolEntityMapper {
 			features,
 			currentYear,
 			county,
+			systems,
 		};
 
 		return schoolEntityProps;
