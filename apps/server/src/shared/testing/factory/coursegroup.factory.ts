@@ -1,13 +1,13 @@
-import { CourseGroup, ICourseGroupProperties } from '@shared/domain';
+import { CourseGroup, CourseGroupProperties } from '@shared/domain/entity';
 import { DeepPartial } from 'fishery';
-import { courseFactory } from './course.factory';
 import { BaseFactory } from './base.factory';
+import { courseFactory } from './course.factory';
 import { userFactory } from './user.factory';
 
-class CourseGroupFactory extends BaseFactory<CourseGroup, ICourseGroupProperties> {
+class CourseGroupFactory extends BaseFactory<CourseGroup, CourseGroupProperties> {
 	studentsWithId(numberOfStudents: number): this {
 		const students = userFactory.buildListWithId(numberOfStudents);
-		const params: DeepPartial<ICourseGroupProperties> = { students };
+		const params: DeepPartial<CourseGroupProperties> = { students };
 
 		return this.params(params);
 	}

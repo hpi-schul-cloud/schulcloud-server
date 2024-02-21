@@ -1,7 +1,7 @@
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DashboardEntity, DashboardGridElementModel, GridElement } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { DashboardEntity, DashboardGridElementModel, GridElement } from '@shared/domain/entity';
 import { courseFactory, userFactory } from '@shared/testing';
 import { DashboardModelMapper } from './dashboard.model.mapper';
 import { DashboardRepo } from './dashboard.repo';
@@ -241,6 +241,95 @@ describe('dashboard repo', () => {
 				const secondDashboard = await repo.getUsersDashboard(users[1].id);
 
 				expect(firstDashboard.id).not.toEqual(secondDashboard.id);
+			});
+		});
+	});
+
+	describe('getUsersDashboardIfExist', () => {
+		describe('when user has no dashboard', () => {
+			const setup = async () => {
+				const user = userFactory.build();
+				await em.persistAndFlush(user);
+
+				return { user };
+			};
+
+			it('should return null', async () => {
+				const { user } = await setup();
+
+				const result = await repo.getUsersDashboardIfExist(user.id);
+
+				expect(result).toBeNull();
+			});
+		});
+
+		describe('when user has a dashboard already', () => {
+			const setup = async () => {
+				const user = userFactory.build();
+				const course = courseFactory.build({ students: [user], name: 'Mathe' });
+				await em.persistAndFlush([user, course]);
+				const dashboard = new DashboardEntity(new ObjectId().toString(), {
+					grid: [
+						{
+							pos: { x: 1, y: 3 },
+							gridElement: GridElement.FromSingleReference(course),
+						},
+					],
+					userId: user.id,
+				});
+				await repo.persistAndFlush(dashboard);
+
+				return { user, dashboard };
+			};
+
+			it('should return the existing dashboard', async () => {
+				const { user, dashboard } = await setup();
+
+				const result = await repo.getUsersDashboardIfExist(user.id);
+				expect(result?.id).toEqual(dashboard.id);
+				expect(result?.userId).toEqual(dashboard.userId);
+			});
+		});
+	});
+
+	describe('deleteDashboardByUserId', () => {
+		const setup = async () => {
+			const userWithoutDashoard = userFactory.build();
+			const user = userFactory.build();
+			const course = courseFactory.build({ students: [user], name: 'Mathe' });
+			await em.persistAndFlush([userWithoutDashoard, user, course]);
+			const dashboard = new DashboardEntity(new ObjectId().toString(), {
+				grid: [
+					{
+						pos: { x: 1, y: 3 },
+						gridElement: GridElement.FromSingleReference(course),
+					},
+				],
+				userId: user.id,
+			});
+			await repo.persistAndFlush(dashboard);
+
+			return { userWithoutDashoard, user };
+		};
+		describe('when user has no dashboard ', () => {
+			it('should return 0', async () => {
+				const { userWithoutDashoard } = await setup();
+
+				const result = await repo.deleteDashboardByUserId(userWithoutDashoard.id);
+				expect(result).toEqual(0);
+			});
+		});
+
+		describe('when user has dashboard ', () => {
+			it('should return 1', async () => {
+				const { user } = await setup();
+
+				const result1 = await repo.deleteDashboardByUserId(user.id);
+				expect(result1).toEqual(1);
+
+				const result2 = await repo.getUsersDashboard(user.id);
+				expect(result2 instanceof DashboardEntity).toEqual(true);
+				expect(result2.getGrid().length).toEqual(0);
 			});
 		});
 	});

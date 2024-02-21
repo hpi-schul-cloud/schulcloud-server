@@ -5,18 +5,28 @@ import {
 	CardNode,
 	ColumnBoardNode,
 	ColumnNode,
+	DrawingElementNode,
+	ExternalToolElementNodeEntity,
 	FileElementNode,
+	LinkElementNode,
 	RichTextElementNode,
 	SubmissionContainerElementNode,
-} from '@shared/domain';
+	SubmissionItemNode,
+} from '@shared/domain/entity';
 import {
 	cardFactory,
 	columnBoardFactory,
 	columnBoardNodeFactory,
 	columnFactory,
+	contextExternalToolEntityFactory,
+	drawingElementFactory,
+	externalToolElementFactory,
 	fileElementFactory,
+	linkElementFactory,
 	richTextElementFactory,
+	setupEntities,
 	submissionContainerElementFactory,
+	submissionItemFactory,
 } from '@shared/testing';
 import { BoardNodeRepo } from './board-node.repo';
 import { RecursiveSaveVisitor } from './recursive-save.visitor';
@@ -26,9 +36,11 @@ describe(RecursiveSaveVisitor.name, () => {
 	let em: DeepMocked<EntityManager>;
 	let boardNodeRepo: DeepMocked<BoardNodeRepo>;
 
-	beforeAll(() => {
+	beforeAll(async () => {
 		em = createMock<EntityManager>();
 		boardNodeRepo = createMock<BoardNodeRepo>();
+
+		await setupEntities();
 
 		visitor = new RecursiveSaveVisitor(em, boardNodeRepo);
 	});
@@ -110,6 +122,16 @@ describe(RecursiveSaveVisitor.name, () => {
 
 			expect(richTextElement.accept).toHaveBeenCalledWith(visitor);
 		});
+
+		it('should visit the children (drawing)', () => {
+			const drawingElement = drawingElementFactory.build();
+			jest.spyOn(drawingElement, 'accept');
+			const card = cardFactory.build({ children: [drawingElement] });
+
+			card.accept(visitor);
+
+			expect(drawingElement.accept).toHaveBeenCalledWith(visitor);
+		});
 	});
 
 	describe('when visiting a file element composite', () => {
@@ -123,6 +145,23 @@ describe(RecursiveSaveVisitor.name, () => {
 				id: fileElement.id,
 				type: BoardNodeType.FILE_ELEMENT,
 				caption: fileElement.caption,
+				alternativeText: fileElement.alternativeText,
+			};
+			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
+		});
+	});
+
+	describe('when visiting a link element composite', () => {
+		it('should create or update the node', () => {
+			const linkElement = linkElementFactory.build();
+			jest.spyOn(visitor, 'createOrUpdateBoardNode');
+
+			visitor.visitLinkElement(linkElement);
+
+			const expectedNode: Partial<LinkElementNode> = {
+				id: linkElement.id,
+				type: BoardNodeType.LINK_ELEMENT,
+				url: linkElement.url,
 			};
 			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
 		});
@@ -144,6 +183,21 @@ describe(RecursiveSaveVisitor.name, () => {
 		});
 	});
 
+	describe('when visiting a drawing element composite', () => {
+		it('should create or update the node', () => {
+			const drawingElement = drawingElementFactory.build();
+			jest.spyOn(visitor, 'createOrUpdateBoardNode');
+
+			visitor.visitDrawingElement(drawingElement);
+
+			const expectedNode: Partial<DrawingElementNode> = {
+				id: drawingElement.id,
+				type: BoardNodeType.DRAWING_ELEMENT,
+			};
+			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
+		});
+	});
+
 	describe('when visiting a submission container element composite', () => {
 		it('should create or update the node', () => {
 			const submissionContainerElement = submissionContainerElementFactory.build();
@@ -155,6 +209,41 @@ describe(RecursiveSaveVisitor.name, () => {
 				id: submissionContainerElement.id,
 				type: BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
 				dueDate: submissionContainerElement.dueDate,
+			};
+			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
+		});
+	});
+
+	describe('when visiting a submission item composite', () => {
+		it('should create or update the node', () => {
+			const submissionItem = submissionItemFactory.build();
+			jest.spyOn(visitor, 'createOrUpdateBoardNode');
+
+			visitor.visitSubmissionItem(submissionItem);
+
+			const expectedNode: Partial<SubmissionItemNode> = {
+				id: submissionItem.id,
+				type: BoardNodeType.SUBMISSION_ITEM,
+				completed: submissionItem.completed,
+			};
+			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
+		});
+	});
+
+	describe('when visiting a external tool element', () => {
+		it('should create or update the node', () => {
+			const contextExternalTool = contextExternalToolEntityFactory.buildWithId();
+			const externalToolElement = externalToolElementFactory.build({
+				contextExternalToolId: contextExternalTool.id,
+			});
+			jest.spyOn(visitor, 'createOrUpdateBoardNode');
+
+			visitor.visitExternalToolElement(externalToolElement);
+
+			const expectedNode: Partial<ExternalToolElementNodeEntity> = {
+				id: externalToolElement.id,
+				type: BoardNodeType.EXTERNAL_TOOL,
+				contextExternalTool,
 			};
 			expect(visitor.createOrUpdateBoardNode).toHaveBeenCalledWith(expect.objectContaining(expectedNode));
 		});
@@ -176,6 +265,7 @@ describe(RecursiveSaveVisitor.name, () => {
 			it('should persist the board node', () => {
 				const board = columnBoardFactory.build();
 				const boardNode = columnBoardNodeFactory.build();
+
 				em.getUnitOfWork().getById.mockReturnValue(boardNode);
 
 				visitor.visitColumnBoard(board);

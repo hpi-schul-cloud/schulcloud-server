@@ -1,9 +1,9 @@
 import { EntityManager } from '@mikro-orm/core';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, Permission, RoleName, User } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
-import { accountFactory, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
+import { Account, User } from '@shared/domain/entity';
+import { Permission, RoleName } from '@shared/domain/interface';
+import { accountFactory, mapUserToCurrentUser, roleFactory, schoolEntityFactory, userFactory } from '@shared/testing';
 import {
 	AccountByIdBodyParams,
 	AccountSearchQueryParams,
@@ -11,6 +11,7 @@ import {
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
 } from '@src/modules/account/controller/dto';
+import { ICurrentUser } from '@src/modules/authentication';
 import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
@@ -38,7 +39,7 @@ describe('Account Controller (API)', () => {
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
 
 	const setup = async () => {
-		const school = schoolFactory.buildWithId();
+		const school = schoolEntityFactory.buildWithId();
 
 		const adminRoles = roleFactory.build({
 			name: RoleName.ADMINISTRATOR,
@@ -239,13 +240,6 @@ describe('Account Controller (API)', () => {
 				.get(`${basePath}/${studentAccount.id}`)
 				.expect(200);
 		});
-		it('should reject if id has invalid format', async () => {
-			currentUser = mapUserToCurrentUser(superheroUser, superheroAccount);
-			await request(app.getHttpServer()) //
-				.get(`${basePath}/qwerty`)
-				.send()
-				.expect(400);
-		});
 		it('should reject if user is not a authorized', async () => {
 			currentUser = mapUserToCurrentUser(adminUser, adminAccount);
 			await request(app.getHttpServer()) //
@@ -305,12 +299,6 @@ describe('Account Controller (API)', () => {
 			await request(app.getHttpServer()) //
 				.delete(`${basePath}/${studentAccount.id}`)
 				.expect(200);
-		});
-		it('should reject invalid account id format', async () => {
-			currentUser = mapUserToCurrentUser(superheroUser, studentAccount);
-			await request(app.getHttpServer()) //
-				.delete(`${basePath}/qwerty`)
-				.expect(400);
 		});
 		it('should reject if user is not a authorized', async () => {
 			currentUser = mapUserToCurrentUser(adminUser, adminAccount);

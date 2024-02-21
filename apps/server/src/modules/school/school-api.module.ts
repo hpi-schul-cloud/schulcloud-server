@@ -1,15 +1,11 @@
 import { Module } from '@nestjs/common';
-import { AuthorizationModule } from '@src/modules/authorization';
-import { LoggerModule } from '@src/core/logger';
-import { UserLoginMigrationModule } from '@src/modules/user-login-migration';
-import { SchoolUc } from './uc/school.uc';
+import { AuthorizationModule } from '@modules/authorization/authorization.module';
 import { SchoolModule } from './school.module';
-import { SchoolController } from './controller/school.controller';
-import { MigrationMapper } from './mapper/migration.mapper';
+import { SchoolController, SchoolUc } from './api';
 
 @Module({
-	imports: [SchoolModule, AuthorizationModule, LoggerModule, UserLoginMigrationModule],
+	imports: [SchoolModule, AuthorizationModule],
 	controllers: [SchoolController],
-	providers: [SchoolUc, MigrationMapper],
+	providers: [SchoolUc],
 })
 export class SchoolApiModule {}

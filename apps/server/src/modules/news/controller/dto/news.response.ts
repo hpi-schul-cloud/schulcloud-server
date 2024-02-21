@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { PaginationResponse } from '@shared/controller';
-import { NewsTargetModel } from '@shared/domain';
+import { NewsTargetModel } from '@shared/domain/types';
 import { SchoolInfoResponse } from './school-info.response';
 import { TargetInfoResponse } from './target-info.response';
 import { UserInfoResponse } from './user-info.response';
@@ -103,7 +103,7 @@ export class NewsResponse {
 	@ApiProperty({
 		description: 'Reference to the User that created the News entity',
 	})
-	creator: UserInfoResponse;
+	creator?: UserInfoResponse;
 
 	@ApiPropertyOptional({
 		description: 'Reference to the User that updated the News entity',

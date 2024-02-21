@@ -1,8 +1,9 @@
+import { FeathersServiceProvider } from '@infra/feathers';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { Test, TestingModule } from '@nestjs/testing';
-import { NewsTargetModel } from '@shared/domain';
-import { FeathersServiceProvider } from '@shared/infra/feathers';
+
+import { NewsTargetModel } from '@shared/domain/types';
 import { FeathersAuthProvider } from './feathers-auth.provider';
 
 describe('FeathersAuthProvider', () => {

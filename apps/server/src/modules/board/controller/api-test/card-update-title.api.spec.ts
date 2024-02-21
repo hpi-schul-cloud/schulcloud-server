@@ -1,7 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, CardNode } from '@shared/domain';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { CardNode } from '@shared/domain/entity';
 import {
 	cardNodeFactory,
 	cleanupCollections,
@@ -11,7 +13,6 @@ import {
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { ServerTestModule } from '@src/modules/server/server.module';
 
 const baseRouteName = '/cards';
 

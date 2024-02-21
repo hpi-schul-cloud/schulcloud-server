@@ -1,31 +1,35 @@
 /* istanbul ignore file */
+import { Mail, MailService } from '@infra/mail';
 // application imports
 /* eslint-disable no-console */
 import { MikroORM } from '@mikro-orm/core';
+import { AccountService } from '@modules/account';
+import { AccountValidationService } from '@modules/account/services/account.validation.service';
+import { AccountUc } from '@modules/account/uc/account.uc';
+import { SystemRule } from '@modules/authorization/domain/rules';
+import { CollaborativeStorageUc } from '@modules/collaborative-storage/uc/collaborative-storage.uc';
+import { GroupService } from '@modules/group';
+import { FeathersRosterService } from '@modules/pseudonym';
+import { RocketChatService } from '@modules/rocketchat';
+import { ServerModule } from '@modules/server';
+import { TeamService } from '@modules/teams/service/team.service';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { enableOpenApiDocs } from '@shared/controller/swagger';
-import { Mail, MailService } from '@shared/infra/mail';
 import { LegacyLogger, Logger } from '@src/core/logger';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountValidationService } from '@src/modules/account/services/account.validation.service';
-import { AccountUc } from '@src/modules/account/uc/account.uc';
-import { CollaborativeStorageUc } from '@src/modules/collaborative-storage/uc/collaborative-storage.uc';
-import { RocketChatService } from '@src/modules/rocketchat';
-import { ServerModule } from '@src/modules/server';
-import { InternalServerModule } from '@src/modules/internal-server';
 import express from 'express';
-
 import { join } from 'path';
+
 // register source-map-support for debugging
 import { install as sourceMapInstall } from 'source-map-support';
 
-import legacyAppPromise = require('../../../../src/app');
+import { ColumnBoardService } from '@modules/board';
+import { AppStartLoggable } from './helpers/app-start-loggable';
 import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
 	createAndStartPrometheusMetricsAppIfEnabled,
 } from './helpers/prometheus-metrics';
-import { AppStartLoggable } from './helpers/app-start-loggable';
+import legacyAppPromise = require('../../../../src/app');
 
 async function bootstrap() {
 	sourceMapInstall();
@@ -46,7 +50,7 @@ async function bootstrap() {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const feathersExpress = await legacyAppPromise(orm);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-	feathersExpress.setup();
+	await feathersExpress.setup();
 
 	// set reference to legacy app as an express setting so we can
 	// access it over the current request within FeathersServiceProvider
@@ -59,18 +63,12 @@ async function bootstrap() {
 
 	await nestApp.init();
 
-	// create the internal server module on a separate express instance
-	const internalServerExpress = express();
-	const internalServerExpressAdapter = new ExpressAdapter(internalServerExpress);
-	const internalServerApp = await NestFactory.create(InternalServerModule, internalServerExpressAdapter);
-	await internalServerApp.init();
-
 	// provide NestJS mail service to feathers app
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 	feathersExpress.services['nest-mail'] = {
-		send(data: Mail): void {
+		async send(data: Mail): Promise<void> {
 			const mailService = nestApp.get(MailService);
-			mailService.send(data);
+			await mailService.send(data);
 		},
 	};
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
@@ -83,6 +81,16 @@ async function bootstrap() {
 	feathersExpress.services['nest-account-uc'] = nestApp.get(AccountUc);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-collaborative-storage-uc'] = nestApp.get(CollaborativeStorageUc);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+	feathersExpress.services['nest-team-service'] = nestApp.get(TeamService);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+	feathersExpress.services['nest-feathers-roster-service'] = nestApp.get(FeathersRosterService);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+	feathersExpress.services['nest-group-service'] = nestApp.get(GroupService);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+	feathersExpress.services['nest-column-board-service'] = nestApp.get(ColumnBoardService);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+	feathersExpress.services['nest-system-rule'] = nestApp.get(SystemRule);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-orm'] = orm;
 
@@ -94,11 +102,7 @@ async function bootstrap() {
 	// exposed alias mounts
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	rootExpress.use('/api/v1', feathersExpress);
-
 	rootExpress.use('/api/v3', nestExpress);
-
-	rootExpress.use('/internal', internalServerExpress);
-
 	rootExpress.use(express.static(join(__dirname, '../static-assets')));
 
 	// logger middleware for deprecated paths
@@ -118,7 +122,7 @@ async function bootstrap() {
 	const port = 3030;
 
 	rootExpress.listen(port, () => {
-		logger.log(
+		logger.info(
 			new AppStartLoggable({
 				appName: 'Main server app',
 				port,

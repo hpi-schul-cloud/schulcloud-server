@@ -1,11 +1,19 @@
+import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ConsoleWriterService } from '@infra/console';
+import { DatabaseManagementUc } from '@modules/management/uc/database-management.uc';
 import { AbstractBootstrapConsole, BootstrapConsole } from 'nestjs-console';
 
 export class TestBootstrapConsole extends AbstractBootstrapConsole<TestingModule> {
 	create(): Promise<TestingModule> {
 		return Test.createTestingModule({
 			imports: [this.options.module],
-		}).compile();
+		})
+			.overrideProvider(DatabaseManagementUc)
+			.useValue(createMock<DatabaseManagementUc>())
+			.overrideProvider(ConsoleWriterService)
+			.useValue(createMock<ConsoleWriterService>())
+			.compile();
 	}
 }
 

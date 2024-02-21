@@ -1,8 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { CopyElementType, CopyHelperService } from '@modules/copy-helper';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ComponentType, IComponentProperties } from '@shared/domain';
-import { courseFactory, fileFactory, lessonFactory, schoolFactory, setupEntities } from '@shared/testing';
-import { CopyElementType, CopyHelperService } from '@src/modules/copy-helper';
+import { ComponentProperties, ComponentType } from '@shared/domain/entity';
+import {
+	courseFactory,
+	legacyFileEntityMockFactory,
+	lessonFactory,
+	schoolEntityFactory,
+	setupEntities,
+} from '@shared/testing';
 import { CopyFilesService } from './copy-files.service';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 
@@ -51,25 +57,25 @@ describe('copy files service', () => {
 
 	describe('copy files of entity', () => {
 		const setup = () => {
-			const school = schoolFactory.build();
-			const file1 = fileFactory.buildWithId({ name: 'file.jpg' });
-			const file2 = fileFactory.buildWithId({ name: 'file.jpg' });
+			const school = schoolEntityFactory.build();
+			const file1 = legacyFileEntityMockFactory.build();
+			const file2 = legacyFileEntityMockFactory.build();
 			const imageHTML1 = getImageHTML(file1.id, file1.name);
 			const imageHTML2 = getImageHTML(file2.id, file2.name);
-			return { file1, file2, school, imageHTML1, imageHTML2 };
+			return { school, imageHTML1, imageHTML2 };
 		};
 
 		describe('copy files of lesson', () => {
 			const lessonSetup = () => {
-				const { file1, file2, school, imageHTML1, imageHTML2 } = setup();
+				const { school, imageHTML1, imageHTML2 } = setup();
 				const originalCourse = courseFactory.build({ school });
-				const textContent: IComponentProperties = {
+				const textContent: ComponentProperties = {
 					title: '',
 					hidden: false,
 					component: ComponentType.TEXT,
 					content: { text: `${imageHTML1} test abschnitt ${imageHTML2}` },
 				};
-				const geoGebraContent: IComponentProperties = {
+				const geoGebraContent: ComponentProperties = {
 					title: 'geoGebra component 1',
 					hidden: false,
 					component: ComponentType.GEOGEBRA,
@@ -86,7 +92,7 @@ describe('copy files service', () => {
 				const mockedFileDto = { id: 'mockedFileId', sourceId: 'mockedSourceId', name: 'mockedName' };
 
 				filesStorageClientAdapterService.copyFilesOfParent.mockResolvedValue([mockedFileDto]);
-				return { originalLesson, copyLesson, file1, file2, schoolId: school.id, userId, mockedFileDto };
+				return { originalLesson, copyLesson, schoolId: school.id, userId, mockedFileDto };
 			};
 
 			it('should return fileUrlReplacements', async () => {

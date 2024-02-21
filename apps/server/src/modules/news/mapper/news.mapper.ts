@@ -1,4 +1,5 @@
-import { News, ICreateNews, INewsScope, IUpdateNews, NewsTargetModel } from '@shared/domain';
+import { News } from '@shared/domain/entity';
+import { CreateNews, INewsScope, IUpdateNews, NewsTargetModel } from '@shared/domain/types';
 import { LogMessageData } from '@src/core/logger';
 import { CreateNewsParams, FilterNewsParams, NewsResponse, UpdateNewsParams } from '../controller/dto';
 import { SchoolInfoMapper } from './school-info.mapper';
@@ -9,7 +10,6 @@ export class NewsMapper {
 	static mapToResponse(news: News): NewsResponse {
 		const target = TargetInfoMapper.mapToResponse(news.target);
 		const school = SchoolInfoMapper.mapToResponse(news.school);
-		const creator = UserInfoMapper.mapToResponse(news.creator);
 
 		const dto = new NewsResponse({
 			id: news.id,
@@ -22,12 +22,14 @@ export class NewsMapper {
 			targetModel: news.targetModel,
 			target,
 			school,
-			creator,
 			createdAt: news.createdAt,
 			updatedAt: news.updatedAt,
 			permissions: news.permissions,
 		});
 
+		if (news.creator) {
+			dto.creator = UserInfoMapper.mapToResponse(news.creator);
+		}
 		if (news.updater) {
 			dto.updater = UserInfoMapper.mapToResponse(news.updater);
 		}
@@ -49,7 +51,7 @@ export class NewsMapper {
 		return dto;
 	}
 
-	static mapCreateNewsToDomain(params: CreateNewsParams): ICreateNews {
+	static mapCreateNewsToDomain(params: CreateNewsParams): CreateNews {
 		const dto = {
 			title: params.title,
 			content: params.content,

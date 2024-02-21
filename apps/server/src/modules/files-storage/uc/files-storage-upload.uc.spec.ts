@@ -1,49 +1,39 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AntivirusService } from '@infra/antivirus';
+import { S3ClientAdapter } from '@infra/s3-client';
+import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Action } from '@modules/authorization';
+import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { HttpService } from '@nestjs/axios';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain';
-import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
-import { fileRecordFactory, setupEntities } from '@shared/testing';
+import { Permission } from '@shared/domain/interface';
+import { AxiosHeadersKeyValue, axiosResponseFactory, fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { Action, AuthorizationService } from '@src/modules/authorization';
-import { AxiosRequestConfig, AxiosResponse, AxiosResponseHeaders } from 'axios';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { Request } from 'express';
 import { of } from 'rxjs';
 import { Readable } from 'stream';
-import { S3ClientAdapter } from '../client/s3-client.adapter';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
+import { PreviewService } from '../service/preview.service';
 import { FilesStorageUC } from './files-storage.uc';
 
-const createAxiosResponse = (data: Readable, headers: AxiosResponseHeaders = {}): AxiosResponse<Readable> => {
-	const response: AxiosResponse<Readable> = {
+const createAxiosResponse = <T>(data: T, headers?: AxiosHeadersKeyValue) =>
+	axiosResponseFactory.build({
 		data,
-		status: 0,
-		statusText: '',
 		headers,
-		config: {},
-	};
-
-	return response;
-};
+	});
 
 const createAxiosErrorResponse = (): AxiosResponse => {
-	const headers: AxiosResponseHeaders = {};
-	const config: AxiosRequestConfig = {};
-	const errorResponse: AxiosResponse = {
-		data: {},
+	const errorResponse: AxiosResponse = axiosResponseFactory.build({
 		status: 404,
-		statusText: 'errorText',
-		headers,
-		config,
-		request: {},
-	};
+	});
 
 	return errorResponse;
 };
@@ -84,7 +74,7 @@ describe('FilesStorageUC upload methods', () => {
 	let module: TestingModule;
 	let filesStorageUC: FilesStorageUC;
 	let filesStorageService: DeepMocked<FilesStorageService>;
-	let authorizationService: DeepMocked<AuthorizationService>;
+	let authorizationReferenceService: DeepMocked<AuthorizationReferenceService>;
 	let httpService: DeepMocked<HttpService>;
 
 	beforeAll(async () => {
@@ -110,18 +100,26 @@ describe('FilesStorageUC upload methods', () => {
 					useValue: createMock<LegacyLogger>(),
 				},
 				{
-					provide: AuthorizationService,
-					useValue: createMock<AuthorizationService>(),
+					provide: AuthorizationReferenceService,
+					useValue: createMock<AuthorizationReferenceService>(),
 				},
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
 				},
+				{
+					provide: PreviewService,
+					useValue: createMock<PreviewService>(),
+				},
+				{
+					provide: EntityManager,
+					useValue: createMock<EntityManager>(),
+				},
 			],
 		}).compile();
 
 		filesStorageUC = module.get(FilesStorageUC);
-		authorizationService = module.get(AuthorizationService);
+		authorizationReferenceService = module.get(AuthorizationReferenceService);
 		httpService = module.get(HttpService);
 		filesStorageService = module.get(FilesStorageService);
 	});
@@ -179,7 +177,7 @@ describe('FilesStorageUC upload methods', () => {
 
 				await filesStorageUC.uploadFromUrl(userId, uploadFromUrlParams);
 
-				expect(authorizationService.checkPermissionByReferences).toBeCalledWith(
+				expect(authorizationReferenceService.checkPermissionByReferences).toBeCalledWith(
 					userId,
 					uploadFromUrlParams.parentType,
 					uploadFromUrlParams.parentId,
@@ -226,7 +224,7 @@ describe('FilesStorageUC upload methods', () => {
 			const setup = () => {
 				const { userId, uploadFromUrlParams } = createUploadFromUrlParams();
 				const error = new Error('test');
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error);
+				authorizationReferenceService.checkPermissionByReferences.mockRejectedValueOnce(error);
 
 				return { uploadFromUrlParams, userId, error };
 			};
@@ -292,12 +290,20 @@ describe('FilesStorageUC upload methods', () => {
 					mimeType: fileRecord.mimeType,
 				};
 
+				let resolveUploadFile: (value: FileRecord | PromiseLike<FileRecord>) => void;
+				const fileRecordPromise = new Promise<FileRecord>((resolve) => {
+					resolveUploadFile = resolve;
+				});
+				filesStorageService.uploadFile.mockImplementationOnce(() => fileRecordPromise);
+
 				request.pipe.mockImplementation((requestStream) => {
 					requestStream.emit('file', 'file', readable, fileInfo);
+
+					requestStream.emit('finish');
+					resolveUploadFile(fileRecord);
+
 					return requestStream;
 				});
-
-				filesStorageService.uploadFile.mockResolvedValueOnce(fileRecord);
 
 				return { params, userId, request, fileRecord, readable, fileInfo };
 			};
@@ -308,7 +314,7 @@ describe('FilesStorageUC upload methods', () => {
 				await filesStorageUC.upload(userId, params, request);
 
 				const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(params.parentType);
-				expect(authorizationService.checkPermissionByReferences).toHaveBeenCalledWith(
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
 					userId,
 					allowedType,
 					params.parentId,
@@ -321,7 +327,6 @@ describe('FilesStorageUC upload methods', () => {
 				const file = FileDtoBuilder.buildFromRequest(fileInfo, readable);
 
 				await filesStorageUC.upload(userId, params, request);
-
 				expect(filesStorageService.uploadFile).toHaveBeenCalledWith(userId, params, file);
 			});
 
@@ -340,8 +345,15 @@ describe('FilesStorageUC upload methods', () => {
 				const fileRecord = fileRecords[0];
 				const request = createRequest();
 				const readable = Readable.from('abc');
+				const error = new Error('test');
 
 				const size = request.headers['content-length'];
+
+				let rejectUploadFile: (value: Error) => void;
+				const fileRecordPromise = new Promise<FileRecord>((resolve, reject) => {
+					rejectUploadFile = reject;
+				});
+				filesStorageService.uploadFile.mockImplementationOnce(() => fileRecordPromise);
 
 				request.get.mockReturnValue(size);
 				request.pipe.mockImplementation((requestStream) => {
@@ -351,11 +363,11 @@ describe('FilesStorageUC upload methods', () => {
 						mimeType: fileRecord.mimeType,
 					});
 
+					requestStream.emit('finish');
+					rejectUploadFile(error);
+
 					return requestStream;
 				});
-
-				const error = new Error('test');
-				filesStorageService.uploadFile.mockRejectedValueOnce(error);
 
 				return { params, userId, request, error };
 			};
@@ -373,7 +385,7 @@ describe('FilesStorageUC upload methods', () => {
 				const request = createRequest();
 				const error = new ForbiddenException();
 
-				authorizationService.checkPermissionByReferences.mockRejectedValueOnce(error);
+				authorizationReferenceService.checkPermissionByReferences.mockRejectedValueOnce(error);
 
 				return { params, userId, request, error };
 			};

@@ -1,18 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityNotFoundError } from '@shared/common';
-import { OauthConfig, System, SystemTypeEnum } from '@shared/domain';
-import { IdentityManagementOauthService } from '@shared/infra/identity-management';
-import { SystemRepo } from '@shared/repo';
 import { systemFactory } from '@shared/testing';
-import { SystemMapper } from '../mapper/system.mapper';
+import { SystemRepo } from '../repo';
 import { SystemService } from './system.service';
 
-describe('SystemService', () => {
+describe(SystemService.name, () => {
 	let module: TestingModule;
-	let systemService: SystemService;
-	let systemRepoMock: DeepMocked<SystemRepo>;
-	let kcIdmOauthServiceMock: DeepMocked<IdentityManagementOauthService>;
+	let service: SystemService;
+
+	let systemRepo: DeepMocked<SystemRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -22,15 +19,11 @@ describe('SystemService', () => {
 					provide: SystemRepo,
 					useValue: createMock<SystemRepo>(),
 				},
-				{
-					provide: IdentityManagementOauthService,
-					useValue: createMock<IdentityManagementOauthService>(),
-				},
 			],
 		}).compile();
-		systemRepoMock = module.get(SystemRepo);
-		systemService = module.get(SystemService);
-		kcIdmOauthServiceMock = module.get(IdentityManagementOauthService);
+
+		service = module.get(SystemService);
+		systemRepo = module.get(SystemRepo);
 	});
 
 	afterAll(async () => {
@@ -38,199 +31,83 @@ describe('SystemService', () => {
 	});
 
 	afterEach(() => {
-		jest.clearAllMocks();
+		jest.resetAllMocks();
 	});
 
 	describe('findById', () => {
-		describe('when identity management is available', () => {
-			const standaloneSystem = systemFactory.buildWithId({ alias: 'standaloneSystem' });
-			const oidcSystem = systemFactory.withOidcConfig().buildWithId({ alias: 'oidcSystem' });
-			const oauthSystem = systemFactory.withOauthConfig().buildWithId({ alias: 'oauthSystem' });
-			const setup = (system: System) => {
-				systemRepoMock.findById.mockResolvedValue(system);
-				kcIdmOauthServiceMock.isOauthConfigAvailable.mockResolvedValue(true);
-				kcIdmOauthServiceMock.getOauthConfig.mockResolvedValue(oauthSystem.oauthConfig as OauthConfig);
+		describe('when the system exists', () => {
+			const setup = () => {
+				const system = systemFactory.build();
+
+				systemRepo.findById.mockResolvedValueOnce(system);
+
+				return {
+					system,
+				};
 			};
 
-			it('should return found system', async () => {
-				setup(standaloneSystem);
-				const result = await systemService.findById(standaloneSystem.id);
-				expect(result).toStrictEqual(SystemMapper.mapFromEntityToDto(standaloneSystem));
-			});
+			it('should return the system', async () => {
+				const { system } = setup();
 
-			it('should return found system with generated oauth config for oidc systems', async () => {
-				setup(oidcSystem);
-				if (oauthSystem.oauthConfig === undefined) {
-					fail('oauth system has no oauth configuration');
-				}
-				const result = await systemService.findById(oidcSystem.id);
-				expect(result).toEqual(
-					expect.objectContaining({
-						id: oidcSystem.id,
-						type: SystemTypeEnum.OAUTH,
-						alias: oidcSystem.alias,
-						displayName: oidcSystem.displayName,
-						url: oidcSystem.url,
-						provisioningStrategy: oidcSystem.provisioningStrategy,
-						provisioningUrl: oidcSystem.provisioningUrl,
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-						oauthConfig: expect.objectContaining({
-							clientId: oauthSystem.oauthConfig.clientId,
-							clientSecret: oauthSystem.oauthConfig.clientSecret,
-							idpHint: oidcSystem.oidcConfig?.idpHint,
-							redirectUri: oauthSystem.oauthConfig.redirectUri + oidcSystem.id,
-							grantType: oauthSystem.oauthConfig.grantType,
-							tokenEndpoint: oauthSystem.oauthConfig.tokenEndpoint,
-							authEndpoint: oauthSystem.oauthConfig.authEndpoint,
-							responseType: oauthSystem.oauthConfig.responseType,
-							scope: oauthSystem.oauthConfig.scope,
-							provider: oauthSystem.oauthConfig.provider,
-							logoutEndpoint: oauthSystem.oauthConfig.logoutEndpoint,
-							issuer: oauthSystem.oauthConfig.issuer,
-							jwksEndpoint: oauthSystem.oauthConfig.jwksEndpoint,
-						}),
-					})
-				);
+				const result = await service.findById(system.id);
+
+				expect(result).toEqual(system);
 			});
 		});
 
-		describe('when identity management is not available', () => {
-			const standaloneSystem = systemFactory.buildWithId();
-			const oidcSystem = systemFactory.withOidcConfig().buildWithId();
-			const setup = (system: System) => {
-				systemRepoMock.findById.mockResolvedValue(system);
-				kcIdmOauthServiceMock.isOauthConfigAvailable.mockResolvedValue(false);
+		describe('when the system does not exist', () => {
+			const setup = () => {
+				systemRepo.findById.mockResolvedValueOnce(null);
 			};
 
-			it('should return found system', async () => {
-				setup(standaloneSystem);
-				const result = await systemService.findById(standaloneSystem.id);
-				expect(result).toStrictEqual(SystemMapper.mapFromEntityToDto(standaloneSystem));
-			});
+			it('should return null', async () => {
+				setup();
 
-			it('should throw and not generate oauth config for oidc systems', async () => {
-				setup(oidcSystem);
-				await expect(systemService.findById(oidcSystem.id)).rejects.toThrow(EntityNotFoundError);
+				const result = await service.findById(new ObjectId().toHexString());
+
+				expect(result).toBeNull();
 			});
 		});
 	});
 
-	describe('findByType', () => {
-		describe('when identity management is available', () => {
-			const ldapSystem = systemFactory.withLdapConfig().buildWithId({ alias: 'ldapSystem' });
-			const oauthSystem = systemFactory.withOauthConfig().buildWithId({ alias: 'oauthSystem' });
-			const oidcSystem = systemFactory.withOidcConfig().buildWithId({ alias: 'oidcSystem' });
+	describe('delete', () => {
+		describe('when the system was deleted', () => {
 			const setup = () => {
-				systemRepoMock.findAll.mockResolvedValue([ldapSystem, oauthSystem, oidcSystem]);
-				systemRepoMock.findByFilter.mockImplementation((type: SystemTypeEnum) => {
-					if (type === SystemTypeEnum.LDAP) return Promise.resolve([ldapSystem]);
-					if (type === SystemTypeEnum.OAUTH) return Promise.resolve([oauthSystem]);
-					if (type === SystemTypeEnum.OIDC) return Promise.resolve([oidcSystem]);
-					return Promise.resolve([]);
-				});
-				kcIdmOauthServiceMock.isOauthConfigAvailable.mockResolvedValue(true);
-				kcIdmOauthServiceMock.getOauthConfig.mockResolvedValue(oauthSystem.oauthConfig as OauthConfig);
+				const system = systemFactory.build();
+
+				systemRepo.delete.mockResolvedValueOnce(true);
+
+				return {
+					system,
+				};
 			};
 
-			it('should return all systems', async () => {
-				setup();
-				const result = await systemService.findByType();
-				expect(result).toEqual(
-					expect.arrayContaining([
-						...SystemMapper.mapFromEntitiesToDtos([ldapSystem, oauthSystem]),
-						expect.objectContaining({
-							alias: oidcSystem.alias,
-							displayName: oidcSystem.displayName,
-						}),
-					])
-				);
-			});
+			it('should return true', async () => {
+				const { system } = setup();
 
-			it('should return found systems', async () => {
-				setup();
-				const result = await systemService.findByType(SystemTypeEnum.LDAP);
-				expect(result).toStrictEqual(SystemMapper.mapFromEntitiesToDtos([ldapSystem]));
-			});
+				const result = await service.delete(system);
 
-			it('should return found systems with generated oauth config for oidc systems', async () => {
-				setup();
-				if (oauthSystem.oauthConfig === undefined) {
-					fail('oauth system has no oauth configuration');
-				}
-				const resultingSystems = await systemService.findByType(SystemTypeEnum.OAUTH);
-
-				expect(resultingSystems).toEqual(
-					expect.arrayContaining([
-						expect.objectContaining({
-							type: SystemTypeEnum.OAUTH,
-							alias: oidcSystem.alias,
-							displayName: oidcSystem.displayName,
-							// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-							oauthConfig: expect.objectContaining({
-								clientId: oauthSystem.oauthConfig.clientId,
-								clientSecret: oauthSystem.oauthConfig.clientSecret,
-								idpHint: oidcSystem.oidcConfig?.idpHint,
-								redirectUri: oauthSystem.oauthConfig.redirectUri + oidcSystem.id,
-								grantType: oauthSystem.oauthConfig.grantType,
-								tokenEndpoint: oauthSystem.oauthConfig.tokenEndpoint,
-								authEndpoint: oauthSystem.oauthConfig.authEndpoint,
-								responseType: oauthSystem.oauthConfig.responseType,
-								scope: oauthSystem.oauthConfig.scope,
-								provider: oauthSystem.oauthConfig.provider,
-								logoutEndpoint: oauthSystem.oauthConfig.logoutEndpoint,
-								issuer: oauthSystem.oauthConfig.issuer,
-								jwksEndpoint: oauthSystem.oauthConfig.jwksEndpoint,
-							}),
-						}),
-					])
-				);
+				expect(result).toEqual(true);
 			});
 		});
 
-		describe('when identity management is not available', () => {
-			const oauthSystem = systemFactory.withOauthConfig().buildWithId();
-			const oidcSystem = systemFactory.withOidcConfig().buildWithId();
+		describe('when the system was not deleted', () => {
 			const setup = () => {
-				systemRepoMock.findByFilter.mockImplementation((type: SystemTypeEnum) => {
-					if (type === SystemTypeEnum.OAUTH) return Promise.resolve([oauthSystem]);
-					if (type === SystemTypeEnum.OIDC) return Promise.resolve([oidcSystem]);
-					return Promise.resolve([]);
-				});
-				kcIdmOauthServiceMock.isOauthConfigAvailable.mockResolvedValue(false);
-			};
-			it('should filter out oidc systems', async () => {
-				setup();
-				const result = await systemService.findByType(SystemTypeEnum.OAUTH);
-				expect(result).toStrictEqual(SystemMapper.mapFromEntitiesToDtos([oauthSystem]));
-			});
-		});
-	});
+				const system = systemFactory.build();
 
-	describe('save', () => {
-		describe('when creating a new system', () => {
-			const newSystem = systemFactory.build();
-			const setup = () => {
-				systemRepoMock.save.mockResolvedValue();
+				systemRepo.delete.mockResolvedValueOnce(false);
+
+				return {
+					system,
+				};
 			};
 
-			it('should save new system', async () => {
-				setup();
-				const result = await systemService.save(newSystem);
-				expect(result).toStrictEqual(SystemMapper.mapFromEntityToDto(newSystem));
-			});
-		});
+			it('should return false', async () => {
+				const { system } = setup();
 
-		describe('when updating an existing system', () => {
-			const existingSystem = systemFactory.buildWithId();
-			const setup = () => {
-				systemRepoMock.findById.mockResolvedValue(existingSystem);
-			};
+				const result = await service.delete(system);
 
-			it('should update existing system', async () => {
-				setup();
-				const result = await systemService.save(existingSystem);
-				expect(systemRepoMock.findById).toHaveBeenCalledTimes(1);
-				expect(result).toStrictEqual(SystemMapper.mapFromEntityToDto(existingSystem));
+				expect(result).toEqual(false);
 			});
 		});
 	});

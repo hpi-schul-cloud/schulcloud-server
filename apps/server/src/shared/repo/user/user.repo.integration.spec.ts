@@ -1,10 +1,18 @@
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MatchCreator, SortOrder, System, User } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
-import { cleanupCollections, importUserFactory, roleFactory, schoolFactory, userFactory } from '@shared/testing';
-import { systemFactory } from '@shared/testing/factory/system.factory';
+import { MatchCreator, SystemEntity, User } from '@shared/domain/entity';
+import { UserParentsEntityProps } from '@shared/domain/entity/user-parents.entity';
+import { SortOrder } from '@shared/domain/interface';
+import {
+	cleanupCollections,
+	importUserFactory,
+	roleFactory,
+	schoolEntityFactory,
+	systemEntityFactory,
+	userFactory,
+} from '@shared/testing';
 import { UserRepo } from './user.repo';
 
 describe('user repo', () => {
@@ -63,13 +71,16 @@ describe('user repo', () => {
 					'ldapDn',
 					'externalId',
 					'forcePasswordChange',
+					'customAvatarBackgroundColor',
 					'importHash',
+					'parents',
 					'preferences',
 					'language',
 					'deletedAt',
 					'lastLoginSystemChange',
 					'outdatedSince',
 					'previousExternalId',
+					'birthday',
 				].sort()
 			);
 		});
@@ -118,14 +129,51 @@ describe('user repo', () => {
 		});
 	});
 
+	describe('findByIdOrNull', () => {
+		describe('when user not found', () => {
+			const setup = () => {
+				const id = new ObjectId().toHexString();
+
+				return { id };
+			};
+
+			it('should return null', async () => {
+				const { id } = setup();
+
+				const result = await repo.findByIdOrNull(id);
+
+				expect(result).toBeNull();
+			});
+		});
+
+		describe('when user was found', () => {
+			const setup = async () => {
+				const user = userFactory.buildWithId();
+
+				await em.persistAndFlush([user]);
+				em.clear();
+
+				return { user };
+			};
+
+			it('should return user', async () => {
+				const { user } = await setup();
+
+				const result = await repo.findByIdOrNull(user.id, true);
+
+				expect(result?.id).toEqual(user.id);
+			});
+		});
+	});
+
 	describe('findByExternalIdorFail', () => {
-		let sys: System;
+		let sys: SystemEntity;
 		let userA: User;
 		let userB: User;
 		beforeEach(async () => {
-			sys = systemFactory.build();
+			sys = systemEntityFactory.build();
 			await em.persistAndFlush([sys]);
-			const school = schoolFactory.build({ systems: [sys] });
+			const school = schoolEntityFactory.build({ systems: [sys] });
 			// const school = schoolFactory.withSystem().build();
 
 			userA = userFactory.build({ school, externalId: '111' });
@@ -133,6 +181,7 @@ describe('user repo', () => {
 			await em.persistAndFlush([userA, userB]);
 			em.clear();
 		});
+
 		it('should return right keys', async () => {
 			const result = await repo.findByExternalIdOrFail(userA.externalId as string, sys.id);
 			expect(Object.keys(result).sort()).toEqual(
@@ -146,18 +195,21 @@ describe('user repo', () => {
 					'lastNameSearchValues',
 					'email',
 					'emailSearchValues',
+					'customAvatarBackgroundColor',
 					'school',
 					'_id',
 					'ldapDn',
 					'externalId',
 					'forcePasswordChange',
 					'importHash',
+					'parents',
 					'preferences',
 					'language',
 					'deletedAt',
 					'lastLoginSystemChange',
 					'outdatedSince',
 					'previousExternalId',
+					'birthday',
 				].sort()
 			);
 		});
@@ -181,7 +233,7 @@ describe('user repo', () => {
 
 	describe('findWithoutImportUser', () => {
 		const persistUserAndSchool = async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const user = userFactory.build({ school });
 			await em.persistAndFlush([user, school]);
 			em.clear();
@@ -218,7 +270,7 @@ describe('user repo', () => {
 		});
 
 		it('should exclude deleted users', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const user = userFactory.build({ school, deletedAt: new Date() });
 			await em.persistAndFlush([school, user]);
 			em.clear();
@@ -228,7 +280,7 @@ describe('user repo', () => {
 		});
 
 		it('should filter users by firstName contains or lastName contains, ignore case', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const user = userFactory.build({ firstName: 'Papa', lastName: 'Pane', school });
 			const otherUser = userFactory.build({ school });
 			await em.persistAndFlush([user, otherUser]);
@@ -266,7 +318,7 @@ describe('user repo', () => {
 		});
 
 		it('should sort returned users by firstname, lastname', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const user = userFactory.build({ school, firstName: 'Anna', lastName: 'Schmidt' });
 			const otherUser = userFactory.build({ school, firstName: 'Peter', lastName: 'Ball' });
 			await em.persistAndFlush([user, otherUser]);
@@ -301,7 +353,7 @@ describe('user repo', () => {
 		});
 
 		it('should skip returned two users by one', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const user = userFactory.build({ school });
 			const otherUser = userFactory.build({ school });
 			await em.persistAndFlush([user, otherUser]);
@@ -314,7 +366,7 @@ describe('user repo', () => {
 		});
 
 		it('should limit returned users from two to one', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const user = userFactory.build({ school });
 			const otherUser = userFactory.build({ school });
 			await em.persistAndFlush([user, otherUser]);
@@ -327,7 +379,7 @@ describe('user repo', () => {
 		});
 
 		it('should throw an error by passing invalid schoolId', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			// id do not exist
 			await expect(repo.findWithoutImportUser(school)).rejects.toThrowError();
 		});
@@ -397,6 +449,158 @@ describe('user repo', () => {
 			await repo.flush();
 
 			expect(user.id).not.toBeNull();
+		});
+	});
+
+	describe('deleteUser', () => {
+		describe('when user does not exist', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+
+				return {
+					user,
+				};
+			};
+
+			it('should return zero', async () => {
+				const { user } = setup();
+
+				const result = await repo.deleteUser(user.id);
+
+				expect(result).toEqual(0);
+			});
+		});
+		describe('when user exists', () => {
+			const setup = async () => {
+				const user1: User = userFactory.buildWithId();
+				const user2: User = userFactory.buildWithId();
+				const user3: User = userFactory.buildWithId();
+				await em.persistAndFlush([user1, user2, user3]);
+				em.clear();
+
+				return {
+					user1,
+					user2,
+					user3,
+				};
+			};
+			it('should delete user', async () => {
+				const { user1 } = await setup();
+				await repo.deleteUser(user1.id);
+
+				const result1 = await em.find(User, { id: user1.id });
+				expect(result1).toHaveLength(0);
+			});
+
+			it('should return one deleted user', async () => {
+				const { user1 } = await setup();
+				const result = await repo.deleteUser(user1.id);
+				expect(result).toEqual(1);
+			});
+
+			it('should not affect other users', async () => {
+				const { user1, user2, user3 } = await setup();
+				await repo.deleteUser(user1.id);
+
+				const emUser2 = await em.find(User, { id: user2.id });
+				const emUser3 = await em.find(User, { id: user3.id });
+				expect(emUser2).toHaveLength(1);
+				expect(emUser3).toHaveLength(1);
+
+				const resultUser2 = await repo.findById(user2.id);
+				const resultUser3 = await repo.findById(user3.id);
+
+				expect(resultUser2.id).toEqual(user2.id);
+				expect(resultUser3.id).toEqual(user3.id);
+			});
+		});
+	});
+
+	describe('getParentEmailsFromUser', () => {
+		const setup = async () => {
+			const id = new ObjectId().toHexString();
+			const parentOfUser: UserParentsEntityProps = {
+				firstName: 'firstName',
+				lastName: 'lastName',
+				email: 'test@test.eu',
+			};
+			const user = userFactory.asStudent().buildWithId({
+				parents: [parentOfUser],
+			});
+
+			const expectedParentEmail = [parentOfUser.email];
+
+			await em.persistAndFlush(user);
+			em.clear();
+
+			return {
+				id,
+				user,
+				expectedParentEmail,
+			};
+		};
+
+		describe('when searching parent email for existing user', () => {
+			it('should return array witn parent email', async () => {
+				const { user, expectedParentEmail } = await setup();
+				const result = await repo.getParentEmailsFromUser(user.id);
+
+				expect(result).toEqual(expectedParentEmail);
+			});
+		});
+
+		describe('when searching parent email for not existing user', () => {
+			it('should return null', async () => {
+				const { id } = await setup();
+
+				const result = await repo.getParentEmailsFromUser(id);
+
+				expect(result).toHaveLength(0);
+			});
+		});
+	});
+
+	describe('getParentEmailsFromUser', () => {
+		describe('when a user meets the criteria', () => {
+			const setup = async () => {
+				const user = userFactory.buildWithId();
+
+				await em.persistAndFlush(user);
+				em.clear();
+
+				return {
+					user,
+				};
+			};
+
+			it('should return the user', async () => {
+				const { user } = await setup();
+
+				const result = await repo.findUserBySchoolAndName(user.school.id, user.firstName, user.lastName);
+
+				expect(result).toHaveLength(1);
+			});
+		});
+
+		describe('when no user meets the criteria', () => {
+			const setup = async () => {
+				const user = userFactory.buildWithId();
+
+				await em.persistAndFlush(user);
+				em.clear();
+
+				return {
+					user,
+				};
+			};
+
+			it('should return an empty array', async () => {
+				const { user } = await setup();
+
+				const result = await repo.findUserBySchoolAndName(user.school.id, 'Unknown', 'User');
+
+				expect(result).toEqual([]);
+			});
 		});
 	});
 });

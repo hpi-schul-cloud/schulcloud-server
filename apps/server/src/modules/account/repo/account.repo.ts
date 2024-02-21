@@ -1,8 +1,9 @@
 import { AnyEntity, EntityName, Primary } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
 import { Account } from '@shared/domain/entity/account.entity';
+import { SortOrder } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 
 @Injectable()
@@ -60,18 +61,23 @@ export class AccountRepo extends BaseRepo<Account> {
 		return this.delete(account);
 	}
 
-	async deleteByUserId(userId: EntityId): Promise<void> {
+	async deleteByUserId(userId: EntityId): Promise<EntityId[]> {
 		const account = await this.findByUserId(userId);
-		if (account) {
-			await this._em.removeAndFlush(account);
+		if (account === null) {
+			return [];
 		}
+		await this._em.removeAndFlush(account);
+
+		return [account.id];
 	}
 
 	/**
 	 * @deprecated For migration purpose only
 	 */
 	async findMany(offset = 0, limit = 100): Promise<Account[]> {
-		return this._em.find(this.entityName, {}, { offset, limit });
+		const result = await this._em.find(this.entityName, {}, { offset, limit, orderBy: { _id: SortOrder.asc } });
+		this._em.clear();
+		return result;
 	}
 
 	private async searchByUsername(

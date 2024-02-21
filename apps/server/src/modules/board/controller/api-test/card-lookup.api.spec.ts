@@ -1,8 +1,11 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { ICurrentUser } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { BoardExternalReferenceType } from '@shared/domain';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import {
 	cardNodeFactory,
 	cleanupCollections,
@@ -12,12 +15,9 @@ import {
 	mapUserToCurrentUser,
 	richTextElementNodeFactory,
 	roleFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	userFactory,
 } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
 import { CardIdsParams, CardListResponse } from '../dto';
@@ -77,7 +77,7 @@ describe(`card lookup (api)`, () => {
 
 	const setup = async () => {
 		await cleanupCollections(em);
-		const school = schoolFactory.build();
+		const school = schoolEntityFactory.build();
 		const roles = roleFactory.buildList(1, {
 			// permissions: [Permission.COURSE_CREATE],
 		});

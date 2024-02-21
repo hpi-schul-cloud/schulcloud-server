@@ -1,20 +1,11 @@
+import { FeathersAuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
-import {
-	Counted,
-	EntityId,
-	ICreateNews,
-	IFindOptions,
-	INewsScope,
-	IUpdateNews,
-	News,
-	NewsTargetModel,
-	Permission,
-	SortOrder,
-} from '@shared/domain';
+import { News } from '@shared/domain/entity';
+import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
+import { Counted, CreateNews, EntityId, INewsScope, IUpdateNews, NewsTargetModel } from '@shared/domain/types';
 import { NewsRepo, NewsTargetFilter } from '@shared/repo';
 import { CrudOperation } from '@shared/types';
 import { Logger } from '@src/core/logger';
-import { FeathersAuthorizationService } from '@src/modules/authorization';
 import { NewsCrudOperationLoggable } from '../loggable/news-crud-operation.loggable';
 
 type NewsPermission = Permission.NEWS_VIEW | Permission.NEWS_EDIT;
@@ -36,7 +27,7 @@ export class NewsUc {
 	 * @param params
 	 * @returns
 	 */
-	public async create(userId: EntityId, schoolId: EntityId, params: ICreateNews): Promise<News> {
+	public async create(userId: EntityId, schoolId: EntityId, params: CreateNews): Promise<News> {
 		const { targetModel, targetId } = params.target;
 		await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, [Permission.NEWS_CREATE]);
 
@@ -52,7 +43,7 @@ export class NewsUc {
 		});
 		await this.newsRepo.save(news);
 
-		this.logger.log(new NewsCrudOperationLoggable(CrudOperation.CREATE, userId, news));
+		this.logger.info(new NewsCrudOperationLoggable(CrudOperation.CREATE, userId, news));
 
 		return news;
 	}
@@ -134,7 +125,7 @@ export class NewsUc {
 
 		await this.newsRepo.save(news);
 
-		this.logger.log(new NewsCrudOperationLoggable(CrudOperation.UPDATE, userId, news));
+		this.logger.info(new NewsCrudOperationLoggable(CrudOperation.UPDATE, userId, news));
 
 		return news;
 	}
@@ -151,7 +142,7 @@ export class NewsUc {
 
 		await this.newsRepo.delete(news);
 
-		this.logger.log(new NewsCrudOperationLoggable(CrudOperation.DELETE, userId, news));
+		this.logger.info(new NewsCrudOperationLoggable(CrudOperation.DELETE, userId, news));
 
 		return id;
 	}

@@ -1,5 +1,6 @@
 import { FilterQuery } from '@mikro-orm/core';
-import { EntityId, News } from '@shared/domain';
+import { News } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { EmptyResultQuery } from '../query';
 import { Scope } from '../scope';
 import { NewsTargetFilter } from './news-target-filter';
@@ -37,6 +38,13 @@ export class NewsScope extends Scope<News> {
 	byCreator(creatorId: EntityId): NewsScope {
 		if (creatorId !== undefined) {
 			this.addQuery({ creator: creatorId });
+		}
+		return this;
+	}
+
+	byUpdater(updaterId: EntityId): NewsScope {
+		if (updaterId !== undefined) {
+			this.addQuery({ updater: updaterId });
 		}
 		return this;
 	}

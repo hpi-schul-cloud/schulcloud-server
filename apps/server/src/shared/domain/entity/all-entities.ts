@@ -1,45 +1,55 @@
-import { ShareToken } from '@src/modules/sharing/entity/share-token.entity';
+import { ClassEntity } from '@modules/class/entity';
+import { GroupEntity } from '@modules/group/entity';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
+import { ExternalToolPseudonymEntity, PseudonymEntity } from '@modules/pseudonym/entity';
+import { RegistrationPinEntity } from '@modules/registration-pin/entity';
+import { ShareToken } from '@modules/sharing/entity/share-token.entity';
+import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
+import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
+import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { DeletionLogEntity, DeletionRequestEntity } from '@src/modules/deletion/entity';
+import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
+import { TldrawDrawing } from '@modules/tldraw/entities';
 import { Account } from './account.entity';
 import {
+	BoardNode,
 	CardNode,
 	ColumnBoardNode,
 	ColumnNode,
+	DrawingElementNode,
+	ExternalToolElementNodeEntity,
 	FileElementNode,
+	LinkElementNode,
 	RichTextElementNode,
 	SubmissionContainerElementNode,
+	SubmissionItemNode,
 } from './boardnode';
-import { BoardNode } from './boardnode/boardnode.entity';
-import { CardElement, RichTextCardElement } from './card-element.entity';
 import { Course } from './course.entity';
 import { CourseGroup } from './coursegroup.entity';
 import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.model.entity';
-import { FederalState } from './federal-state.entity';
-import { File } from './file.entity';
+import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
 import { ImportUser } from './import-user.entity';
 import {
 	Board,
 	BoardElement,
-	ColumnBoardTarget,
 	ColumnboardBoardElement,
+	ColumnBoardTarget,
 	LessonBoardElement,
 	TaskBoardElement,
 } from './legacy-board';
-import { Lesson } from './lesson.entity';
+import { LessonEntity } from './lesson.entity';
 import { LtiTool } from './ltitool.entity';
 import { Material } from './materials.entity';
 import { CourseNews, News, SchoolNews, TeamNews } from './news.entity';
-import { Pseudonym } from './pseudonym.entity';
 import { Role } from './role.entity';
-import { School, SchoolRolePermission, SchoolRoles } from './school.entity';
-import { SchoolYear } from './schoolyear.entity';
-import { StorageProvider } from './storageprovider.entity';
+import { SchoolEntity, SchoolRolePermission, SchoolRoles } from './school.entity';
+import { SchoolYearEntity } from './schoolyear.entity';
+import { StorageProviderEntity } from './storageprovider.entity';
 import { Submission } from './submission.entity';
-import { System } from './system.entity';
-import { TaskCard } from './task-card.entity';
+import { SystemEntity } from './system.entity';
 import { Task } from './task.entity';
-import { Team, TeamUser } from './team.entity';
-import { ContextExternalTool, ExternalTool, SchoolExternalTool } from './tools';
-import { UserLoginMigration } from './user-login-migration.entity';
+import { TeamEntity, TeamUserEntity } from './team.entity';
+import { UserLoginMigrationEntity } from './user-login-migration.entity';
 import { User } from './user.entity';
 import { VideoConference } from './video-conference.entity';
 
@@ -53,45 +63,55 @@ export const ALL_ENTITIES = [
 	ColumnBoardNode,
 	ColumnBoardTarget,
 	ColumnNode,
+	ClassEntity,
+	DeletionRequestEntity,
+	DeletionLogEntity,
 	FileElementNode,
+	LinkElementNode,
 	RichTextElementNode,
+	DrawingElementNode,
 	SubmissionContainerElementNode,
+	SubmissionItemNode,
+	ExternalToolElementNodeEntity,
+	ContextExternalToolEntity,
+	CountyEmbeddable,
 	Course,
-	ContextExternalTool,
 	CourseGroup,
 	CourseNews,
 	DashboardGridElementModel,
 	DashboardModelEntity,
-	ExternalTool,
-	FederalState,
-	File,
+	ExternalToolEntity,
+	FederalStateEntity,
 	ImportUser,
-	Lesson,
+	LessonEntity,
 	LessonBoardElement,
 	LtiTool,
 	Material,
 	News,
-	Pseudonym,
+	PseudonymEntity,
+	ExternalToolPseudonymEntity,
+	RocketChatUserEntity,
 	Role,
-	School,
-	SchoolExternalTool,
+	SchoolEntity,
+	SchoolExternalToolEntity,
 	SchoolNews,
 	SchoolRolePermission,
 	SchoolRoles,
-	SchoolYear,
+	SchoolSystemOptionsEntity,
+	SchoolYearEntity,
 	ShareToken,
-	StorageProvider,
+	StorageProviderEntity,
 	Submission,
-	System,
+	SystemEntity,
 	Task,
 	TaskBoardElement,
-	TaskCard,
-	CardElement,
-	RichTextCardElement,
-	Team,
+	TeamEntity,
 	TeamNews,
-	TeamUser,
+	TeamUserEntity,
 	User,
-	UserLoginMigration,
+	UserLoginMigrationEntity,
 	VideoConference,
+	GroupEntity,
+	RegistrationPinEntity,
+	TldrawDrawing,
 ];

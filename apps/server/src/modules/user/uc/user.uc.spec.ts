@@ -1,11 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { UserService } from '@modules/user/service/user.service';
 import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LanguageType, Permission, User } from '@shared/domain';
+import { LanguageType, User } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
 import { roleFactory, setupEntities, userFactory } from '@shared/testing';
-import { UserService } from '@src/modules/user/service/user.service';
 import { UserUc } from './user.uc';
 
 describe('UserUc', () => {

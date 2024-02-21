@@ -1,18 +1,11 @@
+import { MongoMemoryDatabaseModule } from '@infra/database';
+import { MikroORM, NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { cleanupCollections, importUserFactory, schoolFactory, userFactory } from '@shared/testing';
-
-import { MikroORM, NotFoundError } from '@mikro-orm/core';
-import {
-	IImportUserRoleName,
-	ImportUser,
-	MatchCreator,
-	MatchCreatorScope,
-	RoleName,
-	School,
-	User,
-} from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { IImportUserRoleName, ImportUser, MatchCreator, SchoolEntity, User } from '@shared/domain/entity';
+import { RoleName } from '@shared/domain/interface';
+import { MatchCreatorScope } from '@shared/domain/types';
+import { cleanupCollections, importUserFactory, schoolEntityFactory, userFactory } from '@shared/testing';
 import { ImportUserRepo } from '.';
 
 describe('ImportUserRepo', () => {
@@ -22,7 +15,7 @@ describe('ImportUserRepo', () => {
 	let orm: MikroORM;
 
 	const persistedReferences = async () => {
-		const school = schoolFactory.build();
+		const school = schoolEntityFactory.build();
 		const user = userFactory.build({ school });
 		await em.persistAndFlush([school, user]);
 		return { user, school };
@@ -111,7 +104,7 @@ describe('ImportUserRepo', () => {
 	describe('[findImportUsers] find importUsers scope integration', () => {
 		describe('bySchool', () => {
 			it('should respond with given schools importUsers', async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ school });
 				const otherSchoolsImportUser = importUserFactory.build();
 				await em.persistAndFlush([school, importUser, otherSchoolsImportUser]);
@@ -120,28 +113,28 @@ describe('ImportUserRepo', () => {
 				expect(count).toEqual(1);
 			});
 			it('should not respond with other schools than requested', async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ school });
-				const otherSchoolsImportUser = importUserFactory.build({ school: schoolFactory.build() });
+				const otherSchoolsImportUser = importUserFactory.build({ school: schoolEntityFactory.build() });
 				await em.persistAndFlush([school, importUser, otherSchoolsImportUser]);
 				const [results] = await repo.findImportUsers(school);
 				expect(results).not.toContain(otherSchoolsImportUser);
 			});
 			it('should not respond with any school for wrong id given', async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ school });
 				const otherSchoolsImportUser = importUserFactory.build();
 				await em.persistAndFlush([school, importUser, otherSchoolsImportUser]);
-				await expect(async () => repo.findImportUsers({ _id: 'invalid_id' } as unknown as School)).rejects.toThrowError(
-					'invalid school id'
-				);
+				await expect(async () =>
+					repo.findImportUsers({ _id: 'invalid_id' } as unknown as SchoolEntity)
+				).rejects.toThrowError('invalid school id');
 			});
 			it('should not respond with any school for wrong id given', async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ school });
 				const otherSchoolsImportUser = importUserFactory.build();
 				await em.persistAndFlush([school, importUser, otherSchoolsImportUser]);
-				await expect(async () => repo.findImportUsers({} as unknown as School)).rejects.toThrowError(
+				await expect(async () => repo.findImportUsers({} as unknown as SchoolEntity)).rejects.toThrowError(
 					'invalid school id'
 				);
 			});
@@ -149,7 +142,7 @@ describe('ImportUserRepo', () => {
 
 		describe('byFirstName', () => {
 			it('should find fully matching firstnames "exact match"', async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ firstName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ firstName: 'Peter', school });
 				await em.persistAndFlush([school, importUser, otherImportUser]);
@@ -159,7 +152,7 @@ describe('ImportUserRepo', () => {
 				expect(count).toEqual(1);
 			});
 			it('should find partially matching firstnames "ignoring case"', async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ firstName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ firstName: 'Marie', school });
 				await em.persistAndFlush([school, importUser, otherImportUser]);
@@ -169,7 +162,7 @@ describe('ImportUserRepo', () => {
 				expect(count).toEqual(1);
 			});
 			it('should find partially matching firstname "starts-with"', async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ firstName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ firstName: 'Marie', school });
 				const otherImportUser2 = importUserFactory.build({ firstName: 'Peter', school });
@@ -181,7 +174,7 @@ describe('ImportUserRepo', () => {
 				expect(count).toEqual(2);
 			});
 			it('should find partially matching firstname "ends-with"', async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ firstName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ firstName: 'Luise', school });
 				const otherImportUser2 = importUserFactory.build({ firstName: 'Peter', school });
@@ -193,7 +186,7 @@ describe('ImportUserRepo', () => {
 				expect(count).toEqual(2);
 			});
 			it('should skip firstname filter for undefined values', async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ firstName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ firstName: 'Peter', school });
 				await em.persistAndFlush([school, importUser, otherImportUser]);
@@ -203,7 +196,7 @@ describe('ImportUserRepo', () => {
 				expect(count).toEqual(2);
 			});
 			it('should skip firstname filter for empty string', async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ firstName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ firstName: 'Peter', school });
 				await em.persistAndFlush([school, importUser, otherImportUser]);
@@ -213,7 +206,7 @@ describe('ImportUserRepo', () => {
 				expect(count).toEqual(2);
 			});
 			it('should skip special chars from filter', async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ firstName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ firstName: 'Peter', school });
 				await em.persistAndFlush([school, importUser, otherImportUser]);
@@ -223,7 +216,7 @@ describe('ImportUserRepo', () => {
 				expect(count).toEqual(2);
 			});
 			it('should keep characters as filter with language letters, numbers, space and minus', async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({
 					firstName: 'Marie-Luise áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ0987654321',
 					school,
@@ -240,7 +233,7 @@ describe('ImportUserRepo', () => {
 		});
 		describe('byLastName', () => {
 			it('should find fully matching lastNames "exact match"', async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ lastName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ lastName: 'Peter', school });
 				await em.persistAndFlush([school, importUser, otherImportUser]);
@@ -250,7 +243,7 @@ describe('ImportUserRepo', () => {
 				expect(count).toEqual(1);
 			});
 			it('should find partially matching lastNames "ignoring case"', async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ lastName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ lastName: 'Marie', school });
 				await em.persistAndFlush([school, importUser, otherImportUser]);
@@ -260,7 +253,7 @@ describe('ImportUserRepo', () => {
 				expect(count).toEqual(1);
 			});
 			it('should find partially matching lastName "starts-with"', async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ lastName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ lastName: 'Marie', school });
 				const otherImportUser2 = importUserFactory.build({ lastName: 'Peter', school });
@@ -272,7 +265,7 @@ describe('ImportUserRepo', () => {
 				expect(count).toEqual(2);
 			});
 			it('should find partially matching lastName "ends-with"', async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ lastName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ lastName: 'Luise', school });
 				const otherImportUser2 = importUserFactory.build({ lastName: 'Peter', school });
@@ -284,7 +277,7 @@ describe('ImportUserRepo', () => {
 				expect(count).toEqual(2);
 			});
 			it('should skip lastName filter for undefined values', async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ lastName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ lastName: 'Peter', school });
 				await em.persistAndFlush([school, importUser, otherImportUser]);
@@ -294,7 +287,7 @@ describe('ImportUserRepo', () => {
 				expect(count).toEqual(2);
 			});
 			it('should skip lastName filter for empty string', async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ lastName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ lastName: 'Peter', school });
 				await em.persistAndFlush([school, importUser, otherImportUser]);
@@ -304,7 +297,7 @@ describe('ImportUserRepo', () => {
 				expect(count).toEqual(2);
 			});
 			it('should skip special chars from filter', async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ lastName: 'Marie-Luise', school });
 				const otherImportUser = importUserFactory.build({ lastName: 'Peter', school });
 				await em.persistAndFlush([school, importUser, otherImportUser]);
@@ -314,7 +307,7 @@ describe('ImportUserRepo', () => {
 				expect(count).toEqual(2);
 			});
 			it('should keep characters as filter with language letters, numbers, space and minus', async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({
 					lastName: 'Marie-Luise áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ0987654321',
 					school,
@@ -332,7 +325,7 @@ describe('ImportUserRepo', () => {
 	});
 	describe('byLoginName', () => {
 		it('should find fully matching loginNames "exact match"', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({
 				ldapDn: 'uid=MarieLuise12,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
 				school,
@@ -345,7 +338,7 @@ describe('ImportUserRepo', () => {
 			expect(count).toEqual(1);
 		});
 		it('should find partially matching loginNames "ignoring case"', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({
 				ldapDn: 'uid=MarieLuise12,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
 				school,
@@ -358,7 +351,7 @@ describe('ImportUserRepo', () => {
 			expect(count).toEqual(1);
 		});
 		it('should find partially matching loginName "starts-with"', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({
 				ldapDn: 'uid=MarieLuise12,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
 				school,
@@ -376,7 +369,7 @@ describe('ImportUserRepo', () => {
 			expect(count).toEqual(2);
 		});
 		it('should find partially matching loginName "ends-with"', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({
 				ldapDn: 'uid=MarieLuise12,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
 				school,
@@ -394,7 +387,7 @@ describe('ImportUserRepo', () => {
 			expect(count).toEqual(2);
 		});
 		it('should skip loginName filter for undefined values', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({
 				ldapDn: 'uid=MarieLuise12,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
 				school,
@@ -407,7 +400,7 @@ describe('ImportUserRepo', () => {
 			expect(count).toEqual(2);
 		});
 		it('should skip loginName filter for empty string', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({
 				ldapDn: 'uid=MarieLuise12,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
 				school,
@@ -420,7 +413,7 @@ describe('ImportUserRepo', () => {
 			expect(count).toEqual(2);
 		});
 		it('should skip special chars from filter', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({
 				ldapDn: 'uid=MarieLuise12,cn=schueler,cn=users,ou=1,dc=training,dc=ucs',
 				school,
@@ -433,7 +426,7 @@ describe('ImportUserRepo', () => {
 			expect(count).toEqual(2);
 		});
 		it('should keep characters as filter with language letters, numbers, space and minus', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({
 				ldapDn: 'uid=Marie-Luise áàâäãåçéèêëíìîïñóòôöõúùûüýÿæœÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸÆŒ0987654321,foo',
 				school,
@@ -451,7 +444,7 @@ describe('ImportUserRepo', () => {
 
 	describe('byRole', () => {
 		it('should contain importusers with role name administrator', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({
 				roleNames: [RoleName.ADMINISTRATOR],
 				school,
@@ -469,7 +462,7 @@ describe('ImportUserRepo', () => {
 			expect(count).toEqual(2); // no other role name or no role name
 		});
 		it('should contain importusers with role name student', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({
 				roleNames: [RoleName.STUDENT],
 				school,
@@ -484,7 +477,7 @@ describe('ImportUserRepo', () => {
 			expect(count).toEqual(2); // no other role name or no role name
 		});
 		it('should contain importusers with role name teacher', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({
 				roleNames: [RoleName.TEACHER],
 				school,
@@ -502,7 +495,7 @@ describe('ImportUserRepo', () => {
 			expect(count).toEqual(2); // no other role name or no role name
 		});
 		it('should fail for all other, invalid role names', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			await em.persistAndFlush(school);
 			await expect(async () =>
 				repo.findImportUsers(school, { role: 'foo' as unknown as IImportUserRoleName })
@@ -511,7 +504,7 @@ describe('ImportUserRepo', () => {
 	});
 	describe('byClasses', () => {
 		it('should skip whitespace as filter', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({ classNames: ['1a'], school });
 			const otherImportUser = importUserFactory.build({ classNames: ['2a'], school });
 			await em.persistAndFlush([importUser, otherImportUser]);
@@ -521,7 +514,7 @@ describe('ImportUserRepo', () => {
 			expect(count).toEqual(2);
 		});
 		it('should match classes with full match by ignore case', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({ classNames: ['1a'], school });
 			const otherImportUser = importUserFactory.build({ classNames: ['2a'], school });
 			await em.persistAndFlush([importUser, otherImportUser]);
@@ -531,7 +524,7 @@ describe('ImportUserRepo', () => {
 			expect(count).toEqual(1);
 		});
 		it('should match classes with starts-with by ignore case', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({ classNames: ['1a'], school });
 			const otherImportUser = importUserFactory.build({ classNames: ['2a'], school });
 			await em.persistAndFlush([importUser, otherImportUser]);
@@ -541,7 +534,7 @@ describe('ImportUserRepo', () => {
 			expect(count).toEqual(1);
 		});
 		it('should match classes with ends-with by ignore case', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({ classNames: ['1a'], school });
 			const otherImportUser = importUserFactory.build({ classNames: ['2a'], school });
 			await em.persistAndFlush([importUser, otherImportUser]);
@@ -551,7 +544,7 @@ describe('ImportUserRepo', () => {
 			expect(count).toEqual(2);
 		});
 		it('should trim filter value', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({ classNames: ['1a'], school });
 			const otherImportUser = importUserFactory.build({ classNames: ['2a'], school });
 			await em.persistAndFlush([importUser, otherImportUser]);
@@ -671,7 +664,7 @@ describe('ImportUserRepo', () => {
 			expect(count).toEqual(3); // like without filter
 		});
 		it('should skip all other, invalid match names', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({ school });
 			await em.persistAndFlush([school, importUser]);
 			const [results] = await repo.findImportUsers(school, { matches: ['foo'] as unknown as [MatchCreatorScope] });
@@ -681,7 +674,7 @@ describe('ImportUserRepo', () => {
 
 	describe('isFlagged', () => {
 		it('should respond with and without flagged importusers by default', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({
 				school,
 			});
@@ -695,7 +688,7 @@ describe('ImportUserRepo', () => {
 			expect(results).toContain(flaggedImportUser);
 		});
 		it('should respond with  flagged importusers only', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const importUser = importUserFactory.build({
 				school,
 			});
@@ -712,7 +705,7 @@ describe('ImportUserRepo', () => {
 
 	describe('options: limit and offset', () => {
 		it('should apply limit', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const importUsers = importUserFactory.buildList(10, { school });
 			await em.persistAndFlush(importUsers);
 			const [results, count] = await repo.findImportUsers(school, {}, { pagination: { limit: 3 } });
@@ -726,7 +719,7 @@ describe('ImportUserRepo', () => {
 			expect(count2).toEqual(10);
 		});
 		it('should apply offset', async () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const importUsers = importUserFactory.buildList(10, { school });
 			await em.persistAndFlush(importUsers);
 			const [results, count] = await repo.findImportUsers(school, {}, { pagination: { skip: 3 } });
@@ -747,7 +740,7 @@ describe('ImportUserRepo', () => {
 		});
 		describe('on user (match_userId)', () => {
 			it('[SPARSE] should allow to unset items (acceppt null or undefined multiple times)', async () => {
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				await em.persistAndFlush(school);
 				const users = userFactory.buildList(10, { school });
 				await em.persistAndFlush(users);
@@ -771,7 +764,7 @@ describe('ImportUserRepo', () => {
 			});
 			it('[UNIQUE] should prohibit same match of one user ', async () => {
 				await orm.getSchemaGenerator().ensureIndexes();
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				await em.persistAndFlush(school);
 				const user = userFactory.build({ school });
 				await em.persistAndFlush(user);
@@ -782,6 +775,26 @@ describe('ImportUserRepo', () => {
 				await expect(async () => em.persistAndFlush(importUserWithSameMatch)).rejects.toThrowError(
 					'duplicate key error'
 				);
+			});
+		});
+	});
+
+	describe('saveImportUsers', () => {
+		describe('with existing importusers', () => {
+			const setup = () => {
+				const school = schoolEntityFactory.build();
+				const importUser = importUserFactory.build({ school });
+				const otherImportUser = importUserFactory.build({ school });
+
+				return { importUser, otherImportUser };
+			};
+
+			it('should persist importUsers', async () => {
+				const { importUser, otherImportUser } = setup();
+
+				await repo.saveImportUsers([importUser, otherImportUser]);
+
+				await expect(em.findAndCount(ImportUser, {})).resolves.toEqual([[importUser, otherImportUser], 2]);
 			});
 		});
 	});

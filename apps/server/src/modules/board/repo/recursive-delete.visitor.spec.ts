@@ -1,22 +1,32 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { FileRecordParentType } from '@infra/rabbitmq';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FileRecordParentType } from '@shared/infra/rabbitmq';
 import {
 	columnBoardFactory,
 	columnFactory,
+	contextExternalToolFactory,
+	drawingElementFactory,
+	externalToolElementFactory,
 	fileElementFactory,
-	submissionContainerElementFactory,
+	linkElementFactory,
 	setupEntities,
+	submissionContainerElementFactory,
+	submissionItemFactory,
 } from '@shared/testing';
-import { FileDto, FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { DrawingElementAdapterService } from '@modules/tldraw-client';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
 
 describe(RecursiveDeleteVisitor.name, () => {
 	let module: TestingModule;
+	let service: RecursiveDeleteVisitor;
+
 	let em: DeepMocked<EntityManager>;
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
-	let service: RecursiveDeleteVisitor;
+	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
+	let drawingElementAdapterService: DeepMocked<DrawingElementAdapterService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -24,12 +34,17 @@ describe(RecursiveDeleteVisitor.name, () => {
 				RecursiveDeleteVisitor,
 				{ provide: EntityManager, useValue: createMock<EntityManager>() },
 				{ provide: FilesStorageClientAdapterService, useValue: createMock<FilesStorageClientAdapterService>() },
+				{ provide: ContextExternalToolService, useValue: createMock<ContextExternalToolService>() },
+				{ provide: DrawingElementAdapterService, useValue: createMock<DrawingElementAdapterService>() },
 			],
 		}).compile();
 
+		service = module.get(RecursiveDeleteVisitor);
 		em = module.get(EntityManager);
 		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
-		service = module.get(RecursiveDeleteVisitor);
+		contextExternalToolService = module.get(ContextExternalToolService);
+		drawingElementAdapterService = module.get(DrawingElementAdapterService);
+
 		await setupEntities();
 	});
 
@@ -143,6 +158,58 @@ describe(RecursiveDeleteVisitor.name, () => {
 		});
 	});
 
+	describe('visitLinkElementAsync', () => {
+		const setup = () => {
+			const childLinkElement = linkElementFactory.build();
+			const linkElement = linkElementFactory.build({
+				children: [childLinkElement],
+			});
+
+			return { linkElement, childLinkElement };
+		};
+
+		it('should call entity remove', async () => {
+			const { linkElement, childLinkElement } = setup();
+
+			await service.visitLinkElementAsync(linkElement);
+
+			expect(em.remove).toHaveBeenCalledWith(em.getReference(linkElement.constructor, linkElement.id));
+			expect(em.remove).toHaveBeenCalledWith(em.getReference(childLinkElement.constructor, childLinkElement.id));
+		});
+
+		it('should call deleteFilesOfParent', async () => {
+			const { linkElement } = setup();
+
+			await service.visitLinkElementAsync(linkElement);
+
+			expect(filesStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalledWith(linkElement.id);
+		});
+	});
+
+	describe('visitDrawingElementAsync', () => {
+		const setup = () => {
+			const childDrawingElement = drawingElementFactory.build();
+
+			return { childDrawingElement };
+		};
+
+		it('should call entity remove', async () => {
+			const { childDrawingElement } = setup();
+
+			await service.visitDrawingElementAsync(childDrawingElement);
+
+			expect(em.remove).toHaveBeenCalledWith(em.getReference(childDrawingElement.constructor, childDrawingElement.id));
+		});
+
+		it('should trigger deletion of tldraw data via adapter', async () => {
+			const { childDrawingElement } = setup();
+
+			await service.visitDrawingElementAsync(childDrawingElement);
+
+			expect(drawingElementAdapterService.deleteDrawingBinData).toHaveBeenCalledWith(childDrawingElement.id);
+		});
+	});
+
 	describe('visitSubmissionContainerElementAsync', () => {
 		const setup = () => {
 			const childSubmissionContainerElement = submissionContainerElementFactory.build();
@@ -164,6 +231,106 @@ describe(RecursiveDeleteVisitor.name, () => {
 			expect(em.remove).toHaveBeenCalledWith(
 				em.getReference(childSubmissionContainerElement.constructor, childSubmissionContainerElement.id)
 			);
+		});
+	});
+
+	describe('visitSubmissionItemAsync', () => {
+		const setup = () => {
+			const childSubmissionItem = submissionItemFactory.build();
+			const submissionItem = submissionItemFactory.build({
+				children: [childSubmissionItem],
+			});
+
+			return { submissionItem, childSubmissionItem };
+		};
+
+		it('should call entity remove', async () => {
+			const { submissionItem, childSubmissionItem } = setup();
+
+			await service.visitSubmissionItemAsync(submissionItem);
+
+			expect(em.remove).toHaveBeenCalledWith(em.getReference(submissionItem.constructor, submissionItem.id));
+			expect(em.remove).toHaveBeenCalledWith(em.getReference(childSubmissionItem.constructor, childSubmissionItem.id));
+		});
+	});
+
+	describe('visitExternalToolElementAsync', () => {
+		describe('when the linked context external tool exists', () => {
+			const setup = () => {
+				const contextExternalTool = contextExternalToolFactory.buildWithId();
+				const childExternalToolElement = externalToolElementFactory.build();
+				const externalToolElement = externalToolElementFactory.build({
+					children: [childExternalToolElement],
+					contextExternalToolId: contextExternalTool.id,
+				});
+
+				contextExternalToolService.findById.mockResolvedValue(contextExternalTool);
+
+				return {
+					externalToolElement,
+					childExternalToolElement,
+					contextExternalTool,
+				};
+			};
+
+			it('should delete the context external tool that is linked to the element', async () => {
+				const { externalToolElement, contextExternalTool } = setup();
+
+				await service.visitExternalToolElementAsync(externalToolElement);
+
+				expect(contextExternalToolService.deleteContextExternalTool).toHaveBeenCalledWith(contextExternalTool);
+			});
+
+			it('should call entity remove', async () => {
+				const { externalToolElement, childExternalToolElement } = setup();
+
+				await service.visitExternalToolElementAsync(externalToolElement);
+
+				expect(em.remove).toHaveBeenCalledWith(
+					em.getReference(externalToolElement.constructor, externalToolElement.id)
+				);
+				expect(em.remove).toHaveBeenCalledWith(
+					em.getReference(childExternalToolElement.constructor, childExternalToolElement.id)
+				);
+			});
+		});
+
+		describe('when the external tool does not exist anymore', () => {
+			const setup = () => {
+				const childExternalToolElement = externalToolElementFactory.build();
+				const externalToolElement = externalToolElementFactory.build({
+					children: [childExternalToolElement],
+					contextExternalToolId: new ObjectId().toHexString(),
+				});
+
+				contextExternalToolService.findById.mockResolvedValue(null);
+
+				return {
+					externalToolElement,
+					childExternalToolElement,
+				};
+			};
+
+			it('should not try to delete the context external tool that is linked to the element', async () => {
+				const { externalToolElement } = setup();
+
+				await service.visitExternalToolElementAsync(externalToolElement);
+
+				expect(contextExternalToolService.deleteContextExternalTool).not.toHaveBeenCalled();
+			});
+
+			it('should call entity remove', async () => {
+				const { externalToolElement, childExternalToolElement } = setup();
+
+				await service.visitExternalToolElementAsync(externalToolElement);
+
+				expect(em.remove).toHaveBeenCalledWith(
+					em.getReference(externalToolElement.constructor, externalToolElement.id)
+				);
+				expect(em.remove).toHaveBeenCalledWith(
+					em.getReference(childExternalToolElement.constructor, childExternalToolElement.id)
+				);
+			});
 		});
 	});
 });

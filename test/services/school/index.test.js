@@ -133,7 +133,7 @@ describe('school service', () => {
 			const out = await schoolService.get(schoolId);
 			expect(out, 'school has been saved').to.be.not.null;
 			expect(out.currentYear, 'the defined year has been added to the school').to.be.ok;
-			expect(equalIds(sampleYear._id, out.currentYear), 'the defined year has been added to the school').to.be.true;
+			expect(equalIds(sampleYear._id, out.currentYear._id), 'the defined year has been added to the school').to.be.true;
 		});
 
 		it('create school with no currentYear defined that will be added', async () => {
@@ -144,7 +144,7 @@ describe('school service', () => {
 			expect(out, 'school has been saved').to.be.not.null;
 			const { currentYear } = out;
 			expect(currentYear, 'the defined year has been added to the school').to.be.ok;
-			const foundYear = defaultYears.filter((year) => equalIds(year._id, currentYear));
+			const foundYear = defaultYears.filter((year) => equalIds(year._id, currentYear._id));
 			expect(foundYear.length, 'the auto added year exists in years').to.be.equal(1);
 			// here we could test, we have defaultYear added but however we just need any year
 			// to be set and this should not test year logic
@@ -575,6 +575,42 @@ describe('school service', () => {
 	});
 });
 
+describe('find schools', () => {
+	let app;
+	let server;
+	let schoolsService;
+
+	before(async () => {
+		app = await appPromise();
+		server = await app.listen();
+		schoolsService = app.service('schools');
+	});
+
+	after(async () => {
+		await server.close();
+	});
+
+	afterEach(async () => {
+		await testObjects.cleanup();
+	});
+
+	beforeEach('set data samples', async () => {
+		await testObjects.createTestSchool({});
+		await testObjects.createTestSchool({});
+		await testObjects.createTestSchool({});
+	});
+
+	it('find with pagination and limit', async () => {
+		const result = await schoolsService.find({ query: { $limit: 2 } });
+		expect(result.data.length).to.be.equal(2);
+	});
+
+	it('find should return all schools when $limit = false', async () => {
+		const result = await schoolsService.find({ query: { $limit: false } });
+		expect(result.data.length).to.be.equal(result.total);
+	});
+});
+
 describe('years service', () => {
 	let app;
 	let server;
@@ -589,55 +625,6 @@ describe('years service', () => {
 	});
 
 	it('registered the years services', () => {
-		assert.ok(app.service('years'));
 		assert.ok(app.service('gradeLevels'));
-	});
-});
-
-describe('schoolsList service', () => {
-	let app;
-	let server;
-	let schoolsListService;
-
-	before(async () => {
-		app = await appPromise();
-		server = await app.listen();
-		schoolsListService = app.service('schoolsList');
-	});
-
-	after(async () => {
-		await testObjects.cleanup();
-		await server.close();
-	});
-
-	it('registered the schoolsList services', () => {
-		assert.ok(schoolsListService);
-	});
-
-	describe('find', () => {
-		before('load data and set samples', async () => {
-			await createSchool();
-		});
-
-		it('can be accessed unautorized', async () => {
-			const params = {
-				provider: 'rest',
-				headers: {
-					authorization: undefined,
-				},
-				account: undefined,
-				query: {},
-			};
-			const result = await schoolsListService.find(params);
-			expect(result.length).gt(0);
-		});
-
-		it('should return only certain fields', async () => {
-			const schoolsList = await schoolsListService.find();
-			const fields = ['name', '_id', 'systems'];
-			schoolsList.forEach((school) => {
-				expect(Object.keys(school).every((field) => fields.includes(field))).to.be.true;
-			});
-		});
 	});
 });

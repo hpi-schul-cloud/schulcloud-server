@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Counted, EntityId } from '@shared/domain';
+import { Counted, EntityId } from '@shared/domain/types';
 import { AccountDto, AccountSaveDto } from './dto';
 
 export abstract class AbstractAccountService {
@@ -26,7 +26,7 @@ export abstract class AbstractAccountService {
 
 	abstract delete(id: EntityId): Promise<void>;
 
-	abstract deleteByUserId(userId: EntityId): Promise<void>;
+	abstract deleteByUserId(userId: EntityId): Promise<EntityId[]>;
 
 	abstract searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<AccountDto[]>>;
 

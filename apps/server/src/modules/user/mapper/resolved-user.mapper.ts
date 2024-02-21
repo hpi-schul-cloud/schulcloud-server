@@ -1,4 +1,4 @@
-import { User, Role } from '@shared/domain';
+import { Role, User } from '@shared/domain/entity';
 import { ResolvedUserResponse } from '../controller/dto';
 
 export class ResolvedUserMapper {
@@ -9,7 +9,7 @@ export class ResolvedUserMapper {
 		dto.lastName = user.lastName;
 		dto.createdAt = user.createdAt;
 		dto.updatedAt = user.updatedAt;
-		dto.schoolId = user.school.toString();
+		dto.schoolId = user.school.id;
 		dto.roles = roles.map((role) => {
 			return { name: role.name, id: role.id };
 		});

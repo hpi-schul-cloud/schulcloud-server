@@ -3,16 +3,20 @@ kind: CronJob
 metadata:
   namespace: {{ NAMESPACE }}
   labels:
-    app: api
+    app: api-delete-s3-files-cronjob
     cronjob: delete-s3-files
+    app.kubernetes.io/part-of: schulcloud-verbund
+    app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    app.kubernetes.io/name: delete-s3-files
+    app.kubernetes.io/component: files
+    app.kubernetes.io/managed-by: ansible
+    git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+    git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
   name: api-delete-s3-files-cronjob
 spec:
   concurrencyPolicy: Forbid
   schedule: "{{ SERVER_FILE_DELETION_CRONJOB_SCHEDULE|default("@hourly", true) }}"
   jobTemplate:
-    labels:
-      app: api
-      cronjob: delete-s3-files
     spec:
       template:
         spec:
@@ -34,3 +38,29 @@ spec:
                 cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
                 memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
           restartPolicy: OnFailure
+{% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
+          affinity:
+            podAffinity:
+              preferredDuringSchedulingIgnoredDuringExecution:
+              - weight: 100
+                podAffinityTerm:
+                  labelSelector:
+                    matchExpressions:
+                    - key: app.kubernetes.io/part-of
+                      operator: In
+                      values:
+                      - schulcloud-verbund
+                  topologyKey: "kubernetes.io/hostname"
+                  namespaceSelector: {}
+{% endif %}
+        metadata:
+          labels:
+            app: api-delete-s3-files-cronjob
+            cronjob: delete-s3-files
+            app.kubernetes.io/part-of: schulcloud-verbund
+            app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+            app.kubernetes.io/name: delete-s3-files
+            app.kubernetes.io/component: files
+            app.kubernetes.io/managed-by: ansible
+            git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+            git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}

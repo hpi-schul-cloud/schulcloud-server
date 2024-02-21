@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AccountService } from '@modules/account/services/account.service';
+import { AccountDto } from '@modules/account/services/dto';
+import { ICurrentUser } from '@modules/authentication';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { ICurrentUser } from '@src/modules/authentication';
 import jwt from 'jsonwebtoken';
 import { BruteForceError } from '../errors/brute-force.error';
 import { JwtValidationAdapter } from '../strategy/jwt-validation.adapter';
@@ -99,6 +99,7 @@ describe('AuthenticationService', () => {
 					roles: ['student'],
 					schoolId: 'mockSchoolId',
 					userId: 'mockUserId',
+					isExternalUser: false,
 				};
 				await authenticationService.generateJwt(mockCurrentUser);
 				expect(jwtService.sign).toBeCalledWith(

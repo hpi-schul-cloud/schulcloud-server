@@ -1,24 +1,32 @@
 import { NotImplementedException } from '@nestjs/common';
-import type {
-	BoardDoBuilder,
-	BoardNode,
-	CardNode,
-	ColumnBoardNode,
-	ColumnNode,
-	FileElementNode,
-	RichTextElementNode,
-	SubmissionContainerElementNode,
-} from '@shared/domain';
 import {
 	AnyBoardDo,
-	BoardNodeType,
 	Card,
 	Column,
 	ColumnBoard,
+	ExternalToolElement,
 	FileElement,
+	LinkElement,
 	RichTextElement,
 	SubmissionContainerElement,
-} from '@shared/domain';
+	SubmissionItem,
+} from '@shared/domain/domainobject';
+import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
+import {
+	BoardNodeType,
+	type BoardDoBuilder,
+	type BoardNode,
+	type CardNode,
+	type ColumnBoardNode,
+	type ColumnNode,
+	type ExternalToolElementNodeEntity,
+	type FileElementNode,
+	type LinkElementNode,
+	type RichTextElementNode,
+	type SubmissionContainerElementNode,
+	type SubmissionItemNode,
+} from '@shared/domain/entity';
+import { DrawingElementNode } from '@shared/domain/entity/boardnode/drawing-element-node.entity';
 
 export class BoardDoBuilderImpl implements BoardDoBuilder {
 	private childrenMap: Record<string, BoardNode[]> = {};
@@ -69,11 +77,16 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 	public buildCard(boardNode: CardNode): Card {
 		this.ensureBoardNodeType(this.getChildren(boardNode), [
 			BoardNodeType.FILE_ELEMENT,
+			BoardNodeType.LINK_ELEMENT,
 			BoardNodeType.RICH_TEXT_ELEMENT,
+			BoardNodeType.DRAWING_ELEMENT,
 			BoardNodeType.SUBMISSION_CONTAINER_ELEMENT,
+			BoardNodeType.EXTERNAL_TOOL,
 		]);
 
-		const elements = this.buildChildren<RichTextElement | SubmissionContainerElement>(boardNode);
+		const elements = this.buildChildren<
+			ExternalToolElement | FileElement | LinkElement | RichTextElement | SubmissionContainerElement
+		>(boardNode);
 
 		const card = new Card({
 			id: boardNode.id,
@@ -92,6 +105,22 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		const element = new FileElement({
 			id: boardNode.id,
 			caption: boardNode.caption,
+			alternativeText: boardNode.alternativeText,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+		});
+		return element;
+	}
+
+	public buildLinkElement(boardNode: LinkElementNode): LinkElement {
+		this.ensureLeafNode(boardNode);
+
+		const element = new LinkElement({
+			id: boardNode.id,
+			url: boardNode.url,
+			title: boardNode.title,
+			imageUrl: boardNode.imageUrl,
 			children: [],
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
@@ -113,16 +142,63 @@ export class BoardDoBuilderImpl implements BoardDoBuilder {
 		return element;
 	}
 
-	public buildSubmissionContainerElement(boardNode: SubmissionContainerElementNode): SubmissionContainerElement {
+	public buildDrawingElement(boardNode: DrawingElementNode): DrawingElement {
 		this.ensureLeafNode(boardNode);
 
-		const element = new SubmissionContainerElement({
+		const element = new DrawingElement({
 			id: boardNode.id,
-			dueDate: boardNode.dueDate,
+			description: boardNode.description,
 			children: [],
 			createdAt: boardNode.createdAt,
 			updatedAt: boardNode.updatedAt,
 		});
+		return element;
+	}
+
+	public buildSubmissionContainerElement(boardNode: SubmissionContainerElementNode): SubmissionContainerElement {
+		this.ensureBoardNodeType(this.getChildren(boardNode), [BoardNodeType.SUBMISSION_ITEM]);
+		const elements = this.buildChildren<SubmissionItem>(boardNode);
+
+		const element = new SubmissionContainerElement({
+			id: boardNode.id,
+			children: elements,
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+			dueDate: boardNode.dueDate,
+		});
+
+		return element;
+	}
+
+	public buildSubmissionItem(boardNode: SubmissionItemNode): SubmissionItem {
+		this.ensureBoardNodeType(this.getChildren(boardNode), [
+			BoardNodeType.FILE_ELEMENT,
+			BoardNodeType.RICH_TEXT_ELEMENT,
+		]);
+		const elements = this.buildChildren<RichTextElement | FileElement>(boardNode);
+
+		const element = new SubmissionItem({
+			id: boardNode.id,
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+			completed: boardNode.completed,
+			userId: boardNode.userId,
+			children: elements,
+		});
+		return element;
+	}
+
+	buildExternalToolElement(boardNode: ExternalToolElementNodeEntity): ExternalToolElement {
+		this.ensureLeafNode(boardNode);
+
+		const element: ExternalToolElement = new ExternalToolElement({
+			id: boardNode.id,
+			children: [],
+			createdAt: boardNode.createdAt,
+			updatedAt: boardNode.updatedAt,
+			contextExternalToolId: boardNode.contextExternalTool?.id,
+		});
+
 		return element;
 	}
 

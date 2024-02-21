@@ -1,11 +1,32 @@
-import { ISchoolYearProperties, SchoolYear } from '@shared/domain/entity/schoolyear.entity';
+import { SchoolYearEntity, SchoolYearProperties } from '@shared/domain/entity/schoolyear.entity';
 import { BaseFactory } from './base.factory';
 
-export const schoolYearFactory = BaseFactory.define<SchoolYear, ISchoolYearProperties>(SchoolYear, () => {
-	const year = new Date().getFullYear();
-	const nextYear = (year + 1).toString().substr(-2);
-	const name = `${year}/${nextYear}`;
-	const startDate = new Date(`${year}-08-01`);
-	const endDate = new Date(`${year + 1}-07-31`);
+type SchoolYearTransientParams = {
+	startYear: number;
+};
+
+class SchoolYearFactory extends BaseFactory<SchoolYearEntity, SchoolYearProperties, SchoolYearTransientParams> {
+	public withStartYear(startYear: number): this {
+		this.rewindSequence();
+		return this.transient({ startYear });
+	}
+}
+
+export const schoolYearFactory = SchoolYearFactory.define(SchoolYearEntity, ({ transientParams, sequence }) => {
+	const now = new Date();
+	const startYearWithoutSequence = transientParams?.startYear ?? now.getFullYear();
+	const sequenceStartingWithZero = sequence - 1;
+	let correction = 0;
+
+	if (now.getMonth() < 7 && !transientParams?.startYear) {
+		correction = 1;
+	}
+
+	const startYear = startYearWithoutSequence + sequenceStartingWithZero - correction;
+
+	const name = `${startYear}/${(startYear + 1).toString().slice(-2)}`;
+	const startDate = new Date(`${startYear}-08-01`);
+	const endDate = new Date(`${startYear + 1}-07-31`);
+
 	return { name, startDate, endDate };
 });

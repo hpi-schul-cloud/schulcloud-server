@@ -4,14 +4,14 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import type { CourseGroup } from './coursegroup.entity';
-import { School } from './school.entity';
+import { SchoolEntity } from './school.entity';
 import type { Task } from './task.entity';
 import type { User } from './user.entity';
 
-export interface ISubmissionProperties {
-	school: School;
+export interface SubmissionProperties {
+	school: SchoolEntity;
 	task: Task;
-	student: User;
+	student?: User;
 	courseGroup?: CourseGroup;
 	teamMembers?: User[];
 	comment: string;
@@ -25,16 +25,16 @@ export interface ISubmissionProperties {
 @Index({ properties: ['student', 'teamMembers'] })
 @Unique({ properties: ['student', 'task'] })
 export class Submission extends BaseEntityWithTimestamps {
-	@ManyToOne('School', { fieldName: 'schoolId' })
+	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
 	@Index()
-	school: School;
+	school: SchoolEntity;
 
 	@ManyToOne('Task', { fieldName: 'homeworkId' })
 	@Index()
 	task: Task;
 
-	@ManyToOne('User', { fieldName: 'studentId' })
-	student: User;
+	@ManyToOne('User', { fieldName: 'studentId', nullable: true })
+	student?: User;
 
 	@ManyToOne('CourseGroup', { fieldName: 'courseGroupId', nullable: true })
 	courseGroup?: CourseGroup;
@@ -57,9 +57,12 @@ export class Submission extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	gradeComment?: string;
 
-	constructor(props: ISubmissionProperties) {
+	constructor(props: SubmissionProperties) {
 		super();
 		this.school = props.school;
+		if (props.student !== undefined) {
+			this.student = props.student;
+		}
 		this.student = props.student;
 		this.comment = props.comment;
 		this.task = props.task;
@@ -112,10 +115,13 @@ export class Submission extends BaseEntityWithTimestamps {
 	// Bad that the logic is needed to expose the userIds, but is used in task for now.
 	// Check later if it can be replaced and remove all related code.
 	public getSubmitterIds(): EntityId[] {
-		const creatorId = this.student.id;
+		const creatorId = this.student?.id;
 		const teamMemberIds = this.getTeamMemberIds();
 		const courseGroupMemberIds = this.getCourseGroupStudentIds();
-		const memberIds = [creatorId, ...teamMemberIds, ...courseGroupMemberIds];
+		const memberIds =
+			creatorId !== undefined
+				? [creatorId, ...teamMemberIds, ...courseGroupMemberIds]
+				: [...teamMemberIds, ...courseGroupMemberIds];
 
 		const uniqueMemberIds = [...new Set(memberIds)];
 
@@ -139,5 +145,29 @@ export class Submission extends BaseEntityWithTimestamps {
 		const isGradedForUser = isMember && isGraded;
 
 		return isGradedForUser;
+	}
+
+	public isGroupSubmission(): boolean {
+		return this.hasCourseGroup() || (!this.hasCourseGroup() && this.teamMembers.length > 1);
+	}
+
+	public isSingleSubmissionOwnedByUser(): boolean {
+		return !this.hasCourseGroup() && this.teamMembers.length === 1;
+	}
+
+	private hasCourseGroup(): boolean {
+		return !!this.courseGroup;
+	}
+
+	public removeStudentById(userId: EntityId): void {
+		if (userId === this.student?.id) {
+			this.student = undefined;
+		}
+	}
+
+	public removeUserFromTeamMembers(userId: EntityId): void {
+		const modifiedArray = this.teamMembers.getItems().filter((user) => user.id !== userId);
+
+		this.teamMembers.set(modifiedArray);
 	}
 }

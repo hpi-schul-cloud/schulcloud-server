@@ -1,19 +1,19 @@
-import { ICommonCartridgeElement } from './common-cartridge-element.interface';
+import { CommonCartridgeElement } from './common-cartridge-element.interface';
+import { CommonCartridgeVersion } from './common-cartridge-enums';
 import { CommonCartridgeMetadataElement, ICommonCartridgeMetadataProps } from './common-cartridge-metadata-element';
 import { CommonCartridgeOrganizationWrapperElement } from './common-cartridge-organization-wrapper-element';
 import { CommonCartridgeResourceWrapperElement } from './common-cartridge-resource-wrapper-element';
-import { CommonCartridgeVersion } from './common-cartridge-enums';
 
 export type ICommonCartridgeManifestProps = {
 	identifier: string;
 };
 
-export class CommonCartridgeManifestElement implements ICommonCartridgeElement {
+export class CommonCartridgeManifestElement implements CommonCartridgeElement {
 	constructor(
 		private readonly props: ICommonCartridgeManifestProps,
 		private readonly metadataProps: ICommonCartridgeMetadataProps,
-		private readonly organizations: ICommonCartridgeElement[],
-		private readonly resources: ICommonCartridgeElement[]
+		private readonly organizations: CommonCartridgeElement[],
+		private readonly resources: CommonCartridgeElement[]
 	) {}
 
 	transform(): Record<string, unknown> {

@@ -2,7 +2,7 @@ import { INestApplicationContext } from '@nestjs/common';
 
 import { BootstrapConsole, ConsoleService } from 'nestjs-console';
 import { ServerConsoleModule } from '@src/console/console.module';
-import { ConsoleWriterService } from '@shared/infra/console';
+import { ConsoleWriterService } from '@infra/console';
 import { execute, TestBootstrapConsole } from './test-bootstrap.console';
 
 describe('ServerConsole (API)', () => {
@@ -29,7 +29,7 @@ describe('ServerConsole (API)', () => {
 		consoleService.resetCli();
 	});
 
-	it('should poduce default output when executing "console server test"', async () => {
+	it('should produce default output when executing "console server test"', async () => {
 		await execute(bootstrap, ['server', 'test']);
 		expect(logMock).toHaveBeenCalledWith('Schulcloud Server API');
 	});

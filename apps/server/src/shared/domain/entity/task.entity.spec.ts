@@ -3,13 +3,12 @@ import {
 	courseFactory,
 	courseGroupFactory,
 	lessonFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	setupEntities,
 	submissionFactory,
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { UsersList } from './task.entity';
 
 describe('Task Entity', () => {
 	beforeAll(async () => {
@@ -859,7 +858,7 @@ describe('Task Entity', () => {
 
 	describe('getSchoolId', () => {
 		it('schould return schoolId from school', () => {
-			const school = schoolFactory.buildWithId();
+			const school = schoolEntityFactory.buildWithId();
 			const task = taskFactory.buildWithId({ school });
 
 			const schoolId = task.getSchoolId();
@@ -868,39 +867,50 @@ describe('Task Entity', () => {
 		});
 	});
 
-	describe('getUsersList', () => {
-		describe('when has no users assigned', () => {
-			it('should return an empty array', () => {
-				const task = taskFactory.build();
-				const result = task.getUsersList();
-				expect(result).toEqual([]);
+	describe('removeCreatorId is called', () => {
+		describe('WHEN creatorId exists', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const task = taskFactory.buildWithId({ creator: user });
+
+				return { task };
+			};
+
+			it('should set it to undefined', () => {
+				const { task } = setup();
+
+				const result = task.removeCreatorId();
+
+				expect(result).toBe(undefined);
 			});
 		});
+	});
 
-		describe('when task card has several users', () => {
-			it('should return the correct list of users', () => {
+	describe('removeUserFromFinished', () => {
+		describe('when user exist in Finished array', () => {
+			const setup = () => {
 				const user1 = userFactory.buildWithId();
 				const user2 = userFactory.buildWithId();
-				const user3 = userFactory.buildWithId();
-				const user4 = userFactory.buildWithId();
-				const course = courseFactory.buildWithId({ teachers: [user1] });
-				const task = taskFactory.isPublished().buildWithId({ creator: user2, course, users: [user3, user4] });
+				const task = taskFactory.buildWithId({ finished: [user1, user2] });
 
-				const usersList: UsersList[] = [
-					{
-						id: user3.id,
-						firstName: user3.firstName,
-						lastName: user3.lastName,
-					},
-					{
-						id: user4.id,
-						firstName: user4.firstName,
-						lastName: user4.lastName,
-					},
-				];
+				return { user1, user2, task };
+			};
 
-				const result = task.getUsersList();
-				expect(result).toEqual(usersList);
+			it('should remove user form finished collection', () => {
+				const { task, user1 } = setup();
+
+				task.removeUserFromFinished(user1.id);
+
+				expect(task.finished.contains(user1)).toBe(false);
+			});
+
+			it('should remove only user selected, not other users in finished collection', () => {
+				const { task, user1, user2 } = setup();
+
+				task.removeUserFromFinished(user1.id);
+
+				expect(task.finished.contains(user1)).toBe(false);
+				expect(task.finished.contains(user2)).toBe(true);
 			});
 		});
 	});

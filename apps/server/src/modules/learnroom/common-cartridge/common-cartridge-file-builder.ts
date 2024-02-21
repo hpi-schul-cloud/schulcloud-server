@@ -1,18 +1,18 @@
 import AdmZip from 'adm-zip';
 import { Builder } from 'xml2js';
+import { CommonCartridgeElement } from './common-cartridge-element.interface';
 import { CommonCartridgeVersion } from './common-cartridge-enums';
-import { ICommonCartridgeElement } from './common-cartridge-element.interface';
 import { CommonCartridgeManifestElement } from './common-cartridge-manifest-element';
-import {
-	CommonCartridgeResourceItemElement,
-	ICommonCartridgeResourceProps,
-} from './common-cartridge-resource-item-element';
 import {
 	CommonCartridgeOrganizationItemElement,
 	ICommonCartridgeOrganizationProps,
 } from './common-cartridge-organization-item-element';
+import {
+	CommonCartridgeResourceItemElement,
+	ICommonCartridgeResourceProps,
+} from './common-cartridge-resource-item-element';
 
-export type ICommonCartridgeFileBuilderOptions = {
+export type CommonCartridgeFileBuilderOptions = {
 	identifier: string;
 	title: string;
 	copyrightOwners: string;
@@ -26,23 +26,24 @@ export interface ICommonCartridgeOrganizationBuilder {
 
 export interface ICommonCartridgeFileBuilder {
 	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder;
+
 	addResourceToFile(props: ICommonCartridgeResourceProps): ICommonCartridgeFileBuilder;
+
 	build(): Promise<Buffer>;
 }
 
 class CommonCartridgeOrganizationBuilder implements ICommonCartridgeOrganizationBuilder {
 	constructor(
 		private readonly props: ICommonCartridgeOrganizationProps,
-		private readonly fileBuilder: ICommonCartridgeFileBuilder,
 		private readonly xmlBuilder: Builder,
 		private readonly zipBuilder: AdmZip
 	) {}
 
-	get organization(): ICommonCartridgeElement {
+	get organization(): CommonCartridgeElement {
 		return new CommonCartridgeOrganizationItemElement(this.props);
 	}
 
-	get resources(): ICommonCartridgeElement[] {
+	get resources(): CommonCartridgeElement[] {
 		return this.props.resources.map(
 			(resourceProps) => new CommonCartridgeResourceItemElement(resourceProps, this.xmlBuilder)
 		);
@@ -67,10 +68,10 @@ export class CommonCartridgeFileBuilder implements ICommonCartridgeFileBuilder {
 
 	private readonly resources = new Array<CommonCartridgeResourceItemElement>();
 
-	constructor(private readonly options: ICommonCartridgeFileBuilderOptions) {}
+	constructor(private readonly options: CommonCartridgeFileBuilderOptions) {}
 
 	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder {
-		const organizationBuilder = new CommonCartridgeOrganizationBuilder(props, this, this.xmlBuilder, this.zipBuilder);
+		const organizationBuilder = new CommonCartridgeOrganizationBuilder(props, this.xmlBuilder, this.zipBuilder);
 		this.organizations.push(organizationBuilder);
 		return organizationBuilder;
 	}

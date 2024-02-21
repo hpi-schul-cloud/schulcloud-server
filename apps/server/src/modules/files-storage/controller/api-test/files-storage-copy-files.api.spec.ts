@@ -1,35 +1,40 @@
 import { createMock } from '@golevelup/ts-jest';
+import { AntivirusService } from '@infra/antivirus';
+import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { ICurrentUser } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { EntityId, Permission } from '@shared/domain';
-import { AntivirusService } from '@shared/infra/antivirus/antivirus.service';
+import { Permission } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import {
 	cleanupCollections,
 	courseFactory,
 	fileRecordFactory,
 	mapUserToCurrentUser,
 	roleFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	userFactory,
 } from '@shared/testing';
-import { ICurrentUser } from '@src/modules/authentication';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { FilesStorageTestModule } from '@src/modules/files-storage';
-import {
-	CopyFileParams,
-	CopyFilesOfParentParams,
-	FileRecordListResponse,
-	FileRecordResponse,
-} from '@src/modules/files-storage/controller/dto';
+import NodeClam from 'clamscan';
 import { Request } from 'express';
+import FileType from 'file-type-cjs/file-type-cjs-index';
 import request from 'supertest';
-import { S3ClientAdapter } from '../../client/s3-client.adapter';
 import { FileRecordParentType } from '../../entity';
+import { FilesStorageTestModule } from '../../files-storage-test.module';
+import { FILES_STORAGE_S3_CONNECTION } from '../../files-storage.config';
+import { CopyFileParams, CopyFilesOfParentParams, FileRecordListResponse, FileRecordResponse } from '../dto';
 import { availableParentTypes } from './mocks';
 
 const baseRouteName = '/file/copy';
+
+jest.mock('file-type-cjs/file-type-cjs-index', () => {
+	return {
+		fileTypeStream: jest.fn(),
+	};
+});
 
 class API {
 	app: INestApplication;
@@ -90,7 +95,7 @@ describe(`${baseRouteName} (api)`, () => {
 		})
 			.overrideProvider(AntivirusService)
 			.useValue(createMock<AntivirusService>())
-			.overrideProvider(S3ClientAdapter)
+			.overrideProvider(FILES_STORAGE_S3_CONNECTION)
 			.useValue(createMock<S3ClientAdapter>())
 			.overrideGuard(JwtAuthGuard)
 			.useValue({
@@ -100,6 +105,8 @@ describe(`${baseRouteName} (api)`, () => {
 					return true;
 				},
 			})
+			.overrideProvider(NodeClam)
+			.useValue(createMock<NodeClam>())
 			.compile();
 
 		app = module.createNestApplication();
@@ -120,7 +127,7 @@ describe(`${baseRouteName} (api)`, () => {
 		describe('with bad request data', () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const roles = roleFactory.buildList(1, {
 					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
 				});
@@ -192,7 +199,7 @@ describe(`${baseRouteName} (api)`, () => {
 		describe(`with valid request data`, () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const roles = roleFactory.buildList(1, {
 					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
 				});
@@ -213,6 +220,8 @@ describe(`${baseRouteName} (api)`, () => {
 						parentType: FileRecordParentType.Course,
 					},
 				};
+
+				jest.spyOn(FileType, 'fileTypeStream').mockImplementation((readable) => Promise.resolve(readable));
 			});
 
 			it('should return status 200 for successful request', async () => {
@@ -245,7 +254,7 @@ describe(`${baseRouteName} (api)`, () => {
 		describe('with bad request data', () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const roles = roleFactory.buildList(1, {
 					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
 				});
@@ -286,7 +295,7 @@ describe(`${baseRouteName} (api)`, () => {
 
 			beforeEach(async () => {
 				await cleanupCollections(em);
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const roles = roleFactory.buildList(1, {
 					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
 				});

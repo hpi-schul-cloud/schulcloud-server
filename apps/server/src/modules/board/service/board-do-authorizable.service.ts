@@ -1,3 +1,4 @@
+import { AuthorizationLoaderService } from '@modules/authorization';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import {
 	AnyBoardDo,
@@ -5,12 +6,11 @@ import {
 	BoardExternalReferenceType,
 	BoardRoles,
 	ColumnBoard,
-	Course,
-	EntityId,
-	UserBoardRoles,
-} from '@shared/domain';
+	UserWithBoardRoles,
+} from '@shared/domain/domainobject';
+import { Course } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
-import { AuthorizationLoaderService } from '@src/modules/authorization';
 import { BoardDoRepo } from '../repo';
 
 @Injectable()
@@ -22,42 +22,72 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 
 	async findById(id: EntityId): Promise<BoardDoAuthorizable> {
 		const boardDo = await this.boardDoRepo.findById(id, 1);
-		const { users } = await this.getBoardAuthorizable(boardDo);
-		const boardDoAuthorizable = new BoardDoAuthorizable({ users, id });
+		const boardDoAuthorizable = await this.getBoardAuthorizable(boardDo);
 
 		return boardDoAuthorizable;
 	}
 
 	async getBoardAuthorizable(boardDo: AnyBoardDo): Promise<BoardDoAuthorizable> {
+		const rootBoardDo = await this.getRootBoardDo(boardDo);
+		const parentDo = await this.getParentDo(boardDo);
+		let users: UserWithBoardRoles[] = [];
+
+		if (rootBoardDo.context?.type === BoardExternalReferenceType.Course) {
+			const course = await this.courseRepo.findById(rootBoardDo.context.id);
+			users = this.mapCourseUsersToUserBoardRoles(course);
+		}
+
+		const boardDoAuthorizable = new BoardDoAuthorizable({ users, id: boardDo.id, boardDo, parentDo });
+
+		return boardDoAuthorizable;
+	}
+
+	private mapCourseUsersToUserBoardRoles(course: Course): UserWithBoardRoles[] {
+		const users = [
+			...course.getTeachersList().map((user) => {
+				return {
+					userId: user.id,
+					firstName: user.firstName,
+					lastName: user.lastName,
+					roles: [BoardRoles.EDITOR],
+				};
+			}),
+			...course.getSubstitutionTeachersList().map((user) => {
+				return {
+					userId: user.id,
+					firstName: user.firstName,
+					lastName: user.lastName,
+					roles: [BoardRoles.EDITOR],
+				};
+			}),
+			...course.getStudentsList().map((user) => {
+				return {
+					userId: user.id,
+					firstName: user.firstName,
+					lastName: user.lastName,
+					roles: [BoardRoles.READER],
+				};
+			}),
+		];
+		// TODO check unique
+		return users;
+	}
+
+	private async getParentDo(boardDo: AnyBoardDo): Promise<Promise<AnyBoardDo> | undefined> {
+		const parentDo = await this.boardDoRepo.findParentOfId(boardDo.id);
+		return parentDo;
+	}
+
+	private async getRootBoardDo(boardDo: AnyBoardDo): Promise<ColumnBoard> {
 		const ancestorIds = await this.boardDoRepo.getAncestorIds(boardDo);
 		const ids = [...ancestorIds, boardDo.id];
 		const rootId = ids[0];
 		const rootBoardDo = await this.boardDoRepo.findById(rootId, 1);
-		if (rootBoardDo instanceof ColumnBoard) {
-			if (rootBoardDo.context?.type === BoardExternalReferenceType.Course) {
-				const course = await this.courseRepo.findById(rootBoardDo.context.id);
-				const users = this.mapCourseUsersToUsergroup(course);
-				return new BoardDoAuthorizable({ users, id: boardDo.id });
-			}
-		} else {
+
+		if (!(rootBoardDo instanceof ColumnBoard)) {
 			throw new Error('root boardnode was expected to be a ColumnBoard');
 		}
 
-		return new BoardDoAuthorizable({ users: [], id: boardDo.id });
-	}
-
-	private mapCourseUsersToUsergroup(course: Course): UserBoardRoles[] {
-		const users = [
-			...course.getTeacherIds().map((userId) => {
-				return { userId, roles: [BoardRoles.EDITOR] };
-			}),
-			...course.getSubstitutionTeacherIds().map((userId) => {
-				return { userId, roles: [BoardRoles.EDITOR] };
-			}),
-			...course.getStudentIds().map((userId) => {
-				return { userId, roles: [BoardRoles.READER] };
-			}),
-		];
-		return users;
+		return rootBoardDo;
 	}
 }

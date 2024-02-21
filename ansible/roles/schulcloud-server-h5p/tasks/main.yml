@@ -1,0 +1,20 @@
+  - name: Secret by 1Password (H5P S3 Buckets)
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-h5p-onepassword.yml.j2
+    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool and WITH_H5P_EDITOR is defined and WITH_H5P_EDITOR|bool
+
+  - name: H5PEditorProvider
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-h5p-svc.yml.j2
+    when: WITH_H5P_EDITOR is defined and WITH_H5P_EDITOR|bool
+
+  - name: H5pEditorDeployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-h5p-deployment.yml.j2
+    when: WITH_H5P_EDITOR is defined and WITH_H5P_EDITOR|bool

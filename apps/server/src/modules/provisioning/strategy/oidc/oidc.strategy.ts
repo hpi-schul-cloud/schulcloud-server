@@ -1,18 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { UserDO } from '@shared/domain/domainobject/user.do';
-import { OauthDataDto, ProvisioningDto } from '../../dto';
+import { Inject, Injectable } from '@nestjs/common';
+import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
+import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
+import { ExternalGroupDto, OauthDataDto, ProvisioningDto } from '../../dto';
 import { ProvisioningStrategy } from '../base.strategy';
 import { OidcProvisioningService } from './service/oidc-provisioning.service';
 
 @Injectable()
 export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
-	constructor(protected readonly oidcProvisioningService: OidcProvisioningService) {
+	constructor(
+		@Inject(ProvisioningFeatures) protected readonly provisioningFeatures: IProvisioningFeatures,
+		protected readonly oidcProvisioningService: OidcProvisioningService
+	) {
 		super();
 	}
 
 	override async apply(data: OauthDataDto): Promise<ProvisioningDto> {
-		let school: SchoolDO | undefined;
+		let school: LegacySchoolDo | undefined;
 		if (data.externalSchool) {
 			school = await this.oidcProvisioningService.provisionExternalSchool(data.externalSchool, data.system.systemId);
 		}
@@ -22,6 +25,27 @@ export abstract class OidcProvisioningStrategy extends ProvisioningStrategy {
 			data.system.systemId,
 			school?.id
 		);
+
+		if (this.provisioningFeatures.schulconnexGroupProvisioningEnabled) {
+			await this.oidcProvisioningService.removeExternalGroupsAndAffiliation(
+				data.externalUser.externalId,
+				data.externalGroups ?? [],
+				data.system.systemId
+			);
+
+			if (data.externalGroups) {
+				let groups: ExternalGroupDto[] = data.externalGroups;
+
+				groups = await this.oidcProvisioningService.filterExternalGroups(groups, school?.id, data.system.systemId);
+
+				await Promise.all(
+					groups.map((group: ExternalGroupDto) =>
+						this.oidcProvisioningService.provisionExternalGroup(group, data.externalSchool, data.system.systemId)
+					)
+				);
+			}
+		}
+
 		return new ProvisioningDto({ externalUserId: user.externalId || data.externalUser.externalId });
 	}
 }

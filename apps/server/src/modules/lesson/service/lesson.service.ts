@@ -1,26 +1,91 @@
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
-import { Counted, EntityId, Lesson } from '@shared/domain';
-import { LessonRepo } from '@shared/repo';
-import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
+import { ComponentProperties, LessonEntity } from '@shared/domain/entity';
+import { Counted, DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { AuthorizationLoaderService } from '@src/modules/authorization';
+import { Logger } from '@src/core/logger';
+import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
+import { DomainOperation } from '@shared/domain/interface';
+import { DomainOperationBuilder } from '@shared/domain/builder';
+import { LessonRepo } from '../repository';
 
 @Injectable()
-export class LessonService {
+export class LessonService implements AuthorizationLoaderService {
 	constructor(
 		private readonly lessonRepo: LessonRepo,
-		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
-	) {}
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
+		private readonly logger: Logger
+	) {
+		this.logger.setContext(LessonService.name);
+	}
 
-	async deleteLesson(lesson: Lesson): Promise<void> {
+	async deleteLesson(lesson: LessonEntity): Promise<void> {
 		await this.filesStorageClientAdapterService.deleteFilesOfParent(lesson.id);
 
 		await this.lessonRepo.delete(lesson);
 	}
 
-	async findById(lessonId: EntityId): Promise<Lesson> {
+	async findById(lessonId: EntityId): Promise<LessonEntity> {
 		return this.lessonRepo.findById(lessonId);
 	}
 
-	async findByCourseIds(courseIds: EntityId[]): Promise<Counted<Lesson[]>> {
-		return this.lessonRepo.findAllByCourseIds(courseIds);
+	async findByCourseIds(courseIds: EntityId[], filters?: { hidden?: boolean }): Promise<Counted<LessonEntity[]>> {
+		return this.lessonRepo.findAllByCourseIds(courseIds, filters);
+	}
+
+	async findAllLessonsByUserId(userId: EntityId): Promise<LessonEntity[]> {
+		const lessons = await this.lessonRepo.findByUserId(userId);
+
+		return lessons;
+	}
+
+	async deleteUserDataFromLessons(userId: EntityId): Promise<DomainOperation> {
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Deleting user data from Lessons',
+				DomainName.LESSONS,
+				userId,
+				StatusModel.PENDING
+			)
+		);
+		const lessons = await this.lessonRepo.findByUserId(userId);
+
+		const updatedLessons = lessons.map((lesson: LessonEntity) => {
+			lesson.contents.map((c: ComponentProperties) => {
+				if (c.user === userId) {
+					c.user = undefined;
+				}
+				return c;
+			});
+			return lesson;
+		});
+
+		await this.lessonRepo.save(updatedLessons);
+
+		const numberOfUpdatedLessons = updatedLessons.length;
+
+		const result = DomainOperationBuilder.build(
+			DomainName.LESSONS,
+			OperationType.UPDATE,
+			numberOfUpdatedLessons,
+			this.getLessonsId(updatedLessons)
+		);
+
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully removed user data from Classes',
+				DomainName.LESSONS,
+				userId,
+				StatusModel.FINISHED,
+				numberOfUpdatedLessons,
+				0
+			)
+		);
+
+		return result;
+	}
+
+	private getLessonsId(lessons: LessonEntity[]): EntityId[] {
+		return lessons.map((lesson) => lesson.id);
 	}
 }

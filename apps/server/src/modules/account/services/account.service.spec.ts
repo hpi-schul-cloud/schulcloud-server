@@ -1,7 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IServerConfig } from '@src/modules/server';
+import { ObjectId } from 'bson';
+import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainName, OperationType } from '@shared/domain/types';
 import { LegacyLogger } from '../../../core/logger';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
@@ -40,7 +43,7 @@ describe('AccountService', () => {
 				},
 				{
 					provide: ConfigService,
-					useValue: createMock<ConfigService<IServerConfig, true>>(),
+					useValue: createMock<ConfigService<ServerConfig, true>>(),
 				},
 				{
 					provide: AccountValidationService,
@@ -286,6 +289,37 @@ describe('AccountService', () => {
 
 			await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
 			expect(accountServiceIdm.deleteByUserId).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('deleteAccountByUserId', () => {
+		const setup = () => {
+			const userId = new ObjectId().toHexString();
+			const accountId = new ObjectId().toHexString();
+			const spy = jest.spyOn(accountService, 'deleteByUserId');
+
+			const expectedResult = DomainOperationBuilder.build(DomainName.ACCOUNT, OperationType.DELETE, 1, [accountId]);
+
+			return { accountId, expectedResult, spy, userId };
+		};
+
+		it('should call deleteByUserId in accountService', async () => {
+			const { spy, userId } = setup();
+
+			await accountService.deleteAccountByUserId(userId);
+			expect(spy).toHaveBeenCalledWith(userId);
+			spy.mockRestore();
+		});
+
+		it('should call deleteByUserId in accountService', async () => {
+			const { accountId, expectedResult, spy, userId } = setup();
+
+			spy.mockResolvedValueOnce([accountId]);
+
+			const result = await accountService.deleteAccountByUserId(userId);
+			expect(spy).toHaveBeenCalledWith(userId);
+			expect(result).toEqual(expectedResult);
+			spy.mockRestore();
 		});
 	});
 

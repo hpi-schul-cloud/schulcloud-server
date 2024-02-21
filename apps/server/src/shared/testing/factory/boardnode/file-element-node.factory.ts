@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { FileElementNode, FileElementNodeProps } from '@shared/domain';
+import { FileElementNode, FileElementNodeProps } from '@shared/domain/entity';
 import { BaseFactory } from '../base.factory';
 
 export const fileElementNodeFactory = BaseFactory.define<FileElementNode, FileElementNodeProps>(
@@ -7,6 +7,7 @@ export const fileElementNodeFactory = BaseFactory.define<FileElementNode, FileEl
 	({ sequence }) => {
 		return {
 			caption: `caption #${sequence}`,
+			alternativeText: `alternativeText #${sequence}`,
 		};
 	}
 );

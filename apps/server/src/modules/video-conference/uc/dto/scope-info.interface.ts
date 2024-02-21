@@ -1,8 +1,11 @@
-import { EntityId } from '@shared/domain/types/entity-id';
+import { EntityId } from '@shared/domain/types';
 
-export interface IScopeInfo {
+export interface ScopeInfo {
 	scopeId: EntityId;
+
 	scopeName: string;
-	logoutUrl: string;
+
 	title: string;
+
+	logoutUrl: string;
 }

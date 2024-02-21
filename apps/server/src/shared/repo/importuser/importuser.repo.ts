@@ -2,7 +2,9 @@ import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Counted, EntityId, IFindOptions, IImportUserScope, ImportUser, School, User } from '@shared/domain';
+import { ImportUser, SchoolEntity, User } from '@shared/domain/entity';
+import { IFindOptions } from '@shared/domain/interface';
+import { Counted, EntityId, IImportUserScope } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { ImportUserScope } from './importuser.scope';
 
@@ -32,7 +34,7 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 	}
 
 	async findImportUsers(
-		school: School,
+		school: SchoolEntity,
 		filters: IImportUserScope = {},
 		options?: IFindOptions<ImportUser>
 	): Promise<Counted<ImportUser[]>> {
@@ -66,7 +68,11 @@ export class ImportUserRepo extends BaseRepo<ImportUser> {
 		return [importUserEntities, count];
 	}
 
-	async deleteImportUsersBySchool(school: School): Promise<void> {
+	async deleteImportUsersBySchool(school: SchoolEntity): Promise<void> {
 		await this._em.nativeDelete(ImportUser, { school });
+	}
+
+	public async saveImportUsers(importUsers: ImportUser[]): Promise<void> {
+		await this._em.persistAndFlush(importUsers);
 	}
 }

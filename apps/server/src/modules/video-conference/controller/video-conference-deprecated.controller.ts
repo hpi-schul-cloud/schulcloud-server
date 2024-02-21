@@ -1,4 +1,4 @@
-import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import {
 	BadRequestException,
 	Body,
@@ -12,16 +12,15 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { VideoConferenceScope } from '@shared/domain/interface';
-import { ICurrentUser } from '@src/modules/authentication/interface';
+import { BBBBaseResponse } from '../bbb';
+import { defaultVideoConferenceOptions } from '../interface';
 import { VideoConferenceResponseDeprecatedMapper } from '../mapper/vc-deprecated-response.mapper';
 import { VideoConferenceDeprecatedUc } from '../uc';
 import { VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
 import { VideoConferenceCreateParams } from './dto';
-import { defaultVideoConferenceOptions } from '../interface';
-import { BBBBaseResponse } from '../bbb';
 import {
+	DeprecatedVideoConferenceInfoResponse,
 	VideoConferenceBaseResponse,
-	VideoConferenceInfoResponse,
 } from './dto/response/video-conference-deprecated.response';
 
 /**
@@ -74,7 +73,7 @@ export class VideoConferenceDeprecatedController {
 	})
 	@ApiResponse({
 		status: 200,
-		type: VideoConferenceInfoResponse,
+		type: DeprecatedVideoConferenceInfoResponse,
 		description: 'Returns a list of information about a video conference.',
 	})
 	@ApiResponse({ status: 400, type: BadRequestException, description: 'Invalid parameters.' })
@@ -88,7 +87,7 @@ export class VideoConferenceDeprecatedController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('scope') scope: VideoConferenceScope,
 		@Param('scopeId') scopeId: string
-	): Promise<VideoConferenceInfoResponse> {
+	): Promise<DeprecatedVideoConferenceInfoResponse> {
 		const dto: VideoConferenceInfo = await this.videoConferenceUc.getMeetingInfo(currentUser, scope, scopeId);
 		return VideoConferenceResponseDeprecatedMapper.mapToInfoResponse(dto);
 	}

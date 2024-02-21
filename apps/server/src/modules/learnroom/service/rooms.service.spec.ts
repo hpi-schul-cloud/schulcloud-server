@@ -2,19 +2,21 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@modules/board';
+import { LessonService } from '@modules/lesson';
+import { TaskService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReference, BoardExternalReferenceType, EntityId } from '@shared/domain';
-import { BoardRepo, LessonRepo } from '@shared/repo';
+import { BoardExternalReference, BoardExternalReferenceType } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
+import { BoardRepo } from '@shared/repo';
 import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { CardService, ColumnBoardService, ColumnService, ContentElementService } from '@src/modules/board';
-import { TaskService } from '@src/modules/task/service';
 import { ColumnBoardTargetService } from './column-board-target.service';
 import { RoomsService } from './rooms.service';
 
 describe('rooms service', () => {
 	let module: TestingModule;
 	let roomsService: RoomsService;
-	let lessonRepo: DeepMocked<LessonRepo>;
+	let lessonService: DeepMocked<LessonService>;
 	let taskService: DeepMocked<TaskService>;
 	let boardRepo: DeepMocked<BoardRepo>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
@@ -29,12 +31,11 @@ describe('rooms service', () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		await setupEntities();
 		module = await Test.createTestingModule({
-			imports: [],
 			providers: [
 				RoomsService,
 				{
-					provide: LessonRepo,
-					useValue: createMock<LessonRepo>(),
+					provide: LessonService,
+					useValue: createMock<LessonService>(),
 				},
 				{
 					provide: TaskService,
@@ -67,7 +68,7 @@ describe('rooms service', () => {
 			],
 		}).compile();
 		roomsService = module.get(RoomsService);
-		lessonRepo = module.get(LessonRepo);
+		lessonService = module.get(LessonService);
 		taskService = module.get(TaskService);
 		boardRepo = module.get(BoardRepo);
 		columnBoardService = module.get(ColumnBoardService);
@@ -91,7 +92,7 @@ describe('rooms service', () => {
 				board.syncBoardElementReferences([...tasks, ...lessons]);
 
 				const tasksSpy = taskService.findBySingleParent.mockResolvedValue([tasks, 3]);
-				const lessonsSpy = lessonRepo.findAllByCourseIds.mockResolvedValue([lessons, 3]);
+				const lessonsSpy = lessonService.findByCourseIds.mockResolvedValue([lessons, 3]);
 				const syncBoardElementReferencesSpy = jest.spyOn(board, 'syncBoardElementReferences');
 				const saveSpy = boardRepo.save.mockResolvedValue();
 
@@ -135,7 +136,7 @@ describe('rooms service', () => {
 
 		describe('for column boards', () => {
 			const setup = () => {
-				lessonRepo.findAllByCourseIds.mockResolvedValueOnce([[], 0]);
+				lessonService.findByCourseIds.mockResolvedValueOnce([[], 0]);
 				taskService.findBySingleParent.mockResolvedValueOnce([[], 0]);
 
 				const user = userFactory.buildWithId();
@@ -173,7 +174,7 @@ describe('rooms service', () => {
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
-						expect(columnBoardService.create).toBeCalledWith<BoardExternalReference[]>({
+						expect(columnBoardService.createWelcomeColumnBoard).toBeCalledWith<BoardExternalReference[]>({
 							type: BoardExternalReferenceType.Course,
 							id: board.course.id,
 						});
@@ -186,7 +187,9 @@ describe('rooms service', () => {
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
-						expect(columnBoardService.create).not.toBeCalledWith(expect.objectContaining({ id: board.course.id }));
+						expect(columnBoardService.createWelcomeColumnBoard).not.toBeCalledWith(
+							expect.objectContaining({ id: board.course.id })
+						);
 					});
 				});
 
@@ -213,7 +216,7 @@ describe('rooms service', () => {
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
-						expect(columnBoardService.create).toBeCalledWith<BoardExternalReference[]>({
+						expect(columnBoardService.createWelcomeColumnBoard).toBeCalledWith<BoardExternalReference[]>({
 							type: BoardExternalReferenceType.Course,
 							id: board.course.id,
 						});
@@ -235,7 +238,7 @@ describe('rooms service', () => {
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
-						expect(columnBoardService.create).toBeCalledWith<BoardExternalReference[]>({
+						expect(columnBoardService.createWelcomeColumnBoard).toBeCalledWith<BoardExternalReference[]>({
 							type: BoardExternalReferenceType.Course,
 							id: board.course.id,
 						});
@@ -256,7 +259,7 @@ describe('rooms service', () => {
 
 						await roomsService.updateBoard(board, board.course.id, user.id);
 
-						expect(columnBoardService.create).not.toBeCalled();
+						expect(columnBoardService.createWelcomeColumnBoard).not.toBeCalled();
 					});
 				});
 

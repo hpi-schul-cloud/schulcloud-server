@@ -1,4 +1,6 @@
 const _ = require('lodash');
+const { Configuration } = require('@hpi-schul-cloud/commons/lib');
+const { service } = require('../../../utils/feathers-mongoose');
 
 const { BadRequest } = require('../../../errors');
 const globalHooks = require('../../../hooks');
@@ -10,17 +12,60 @@ const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCur
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
 
 const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
-
 /**
  * adds all students to a course when a class is added to the course
  * @param hook - contains created/patched object and request body
  */
-const addWholeClassToCourse = (hook) => {
+const splitClassIdsInGroupsAndClasses = async (hook) => {
+	if (!Configuration.get('FEATURE_GROUPS_IN_COURSE_ENABLED')) {
+		return;
+	}
+
+	const { app } = hook;
+	const requestBody = hook.data;
+
+	if ((requestBody.classIds || []).length > 0) {
+		const groups = await Promise.allSettled(
+			requestBody.classIds.map((classId) => app.service('nest-group-service').findById(classId))
+		).then(async (promiseResults) => {
+			const successfullPromises = promiseResults.filter((result) => result.status === 'fulfilled');
+			const foundGroups = successfullPromises.map((result) => result.value);
+
+			return foundGroups;
+		});
+
+		let classes = await Promise.all(requestBody.classIds.map((classId) => ClassModel.findById(classId).exec()));
+		classes = classes.filter((clazz) => clazz !== null);
+
+		requestBody.groupIds = groups.map((group) => group.id);
+		requestBody.classIds = classes.map((clazz) => clazz._id);
+	}
+};
+
+const addWholeClassToCourse = async (hook) => {
+	const { app } = hook;
 	const requestBody = hook.data;
 	const course = hook.result;
-	if (requestBody.classIds === undefined) {
-		return hook;
+
+	if (Configuration.get('FEATURE_GROUPS_IN_COURSE_ENABLED') && (requestBody.groupIds || []).length > 0) {
+		await Promise.all(
+			requestBody.groupIds.map((groupId) =>
+				app
+					.service('nest-group-service')
+					.findById(groupId)
+					.then((group) => group.users)
+			)
+		).then(async (groupUsers) => {
+			// flatten deep arrays and remove duplicates
+			const userIds = _.flattenDeep(groupUsers).map((groupUser) => groupUser.userId);
+			const uniqueUserIds = _.uniqWith(userIds, (a, b) => a === b);
+
+			await CourseModel.update({ _id: course._id }, { $addToSet: { userIds: { $each: uniqueUserIds } } }).exec();
+
+			return undefined;
+		});
 	}
+
 	if ((requestBody.classIds || []).length > 0) {
 		// just courses do have a property "classIds"
 		return Promise.all(
@@ -34,6 +79,7 @@ const addWholeClassToCourse = (hook) => {
 			studentIds = _.uniqWith(_.flattenDeep(studentIds), (e1, e2) => JSON.stringify(e1) === JSON.stringify(e2));
 
 			await CourseModel.update({ _id: course._id }, { $addToSet: { userIds: { $each: studentIds } } }).exec();
+
 			return hook;
 		});
 	}
@@ -47,15 +93,41 @@ const addWholeClassToCourse = (hook) => {
  * @param hook - contains and request body
  */
 const deleteWholeClassFromCourse = (hook) => {
+	const { app } = hook;
 	const requestBody = hook.data;
 	const courseId = hook.id;
-	if (requestBody.classIds === undefined && requestBody.user === undefined) {
+	if (requestBody.classIds === undefined && requestBody.user === undefined && requestBody.groupIds === undefined) {
 		return hook;
 	}
 	return CourseModel.findById(courseId)
 		.exec()
-		.then((course) => {
+		.then(async (course) => {
 			if (!course) return hook;
+
+			const removedGroups = _.differenceBy(course.groupIds, requestBody.groupIds, (v) => JSON.stringify(v));
+			if (Configuration.get('FEATURE_GROUPS_IN_COURSE_ENABLED') && removedGroups.length > 0) {
+				await Promise.all(
+					removedGroups.map((groupId) =>
+						app
+							.service('nest-group-service')
+							.findById(groupId)
+							.then((group) => group.users)
+					)
+				).then(async (groupUsers) => {
+					// flatten deep arrays and remove duplicates
+					const userIds = _.flattenDeep(groupUsers).map((groupUser) => groupUser.userId);
+					const uniqueUserIds = _.uniqWith(userIds, (a, b) => a === b);
+
+					await CourseModel.update(
+						{ _id: course._id },
+						{ $pull: { userIds: { $in: uniqueUserIds } } },
+						{ multi: true }
+					).exec();
+					hook.data.userIds = hook.data.userIds.filter((value) => !uniqueUserIds.some((id) => equalIds(id, value)));
+
+					return undefined;
+				});
+			}
 
 			const removedClasses = _.differenceBy(course.classIds, requestBody.classIds, (v) => JSON.stringify(v));
 			if (removedClasses.length < 1) return hook;
@@ -79,6 +151,11 @@ const deleteWholeClassFromCourse = (hook) => {
 				return hook;
 			});
 		});
+};
+
+const removeColumnBoard = async (context) => {
+	const courseId = context.id;
+	await context.app.service('nest-column-board-service').deleteByCourseId(courseId);
 };
 
 /**
@@ -137,8 +214,10 @@ const restrictChangesToArchivedCourse = async (context) => {
 };
 
 module.exports = {
+	splitClassIdsInGroupsAndClasses,
 	addWholeClassToCourse,
 	deleteWholeClassFromCourse,
+	removeColumnBoard,
 	removeSubstitutionDuplicates,
 	courseInviteHook,
 	patchPermissionHook,

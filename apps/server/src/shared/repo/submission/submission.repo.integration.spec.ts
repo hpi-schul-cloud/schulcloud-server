@@ -1,7 +1,7 @@
+import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Submission } from '@shared/domain';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { Submission } from '@shared/domain/entity';
 import {
 	cleanupCollections,
 	courseFactory,
@@ -107,7 +107,7 @@ describe('submission repo', () => {
 
 			expect(count).toEqual(1);
 			expect(result.length).toEqual(1);
-			expect(result[0].student.id).toEqual(student.id);
+			expect(result[0].student?.id).toEqual(student.id);
 		});
 
 		it('should return submissions when the user is a team member', async () => {

@@ -35,7 +35,7 @@ class EduSharingPlayer {
 			throw new MethodNotAllowed('This feature is disabled on this instance');
 		}
 		const esPlayer = EduSharingConnectorV7.getPlayerForNode(uuid);
-		
+
 		return esPlayer;
 	}
 }
@@ -49,7 +49,7 @@ class MerlinToken {
 module.exports = (app) => {
 	const eduSharingRoute = '/edu-sharing';
 	const eduSharingPlayerRoute = '/edu-sharing/player';
-	const merlinRoute = '/edu-sharing/merlinToken';
+	const merlinRoute = '/edu-sharing-merlinToken';
 	const docRoute = '/edu-sharing/api';
 
 	app.use(eduSharingRoute, new EduSharing());

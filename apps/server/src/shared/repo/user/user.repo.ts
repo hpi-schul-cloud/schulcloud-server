@@ -2,7 +2,9 @@ import { QueryOrderMap, QueryOrderNumeric } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
-import { Counted, EntityId, IFindOptions, ImportUser, INameMatch, Role, School, SortOrder, User } from '@shared/domain';
+import { ImportUser, Role, SchoolEntity, User } from '@shared/domain/entity';
+import { IFindOptions, SortOrder } from '@shared/domain/interface';
+import { Counted, EntityId, NameMatch } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { MongoPatterns } from '../mongo.patterns';
 
@@ -16,7 +18,22 @@ export class UserRepo extends BaseRepo<User> {
 		const user = await super.findById(id);
 
 		if (populate) {
-			await this._em.populate(user, ['roles', 'school.systems', 'school.schoolYear']);
+			await this._em.populate(user, ['roles', 'school.systems', 'school.currentYear']);
+			await this.populateRoles(user.roles.getItems());
+		}
+
+		return user;
+	}
+
+	async findByIdOrNull(id: EntityId, populate = false): Promise<User | null> {
+		const user: User | null = await this._em.findOne(User, { id });
+
+		if (!user) {
+			return null;
+		}
+
+		if (populate) {
+			await this._em.populate(user, ['roles', 'school.systems', 'school.currentYear']);
 			await this.populateRoles(user.roles.getItems());
 		}
 
@@ -36,8 +53,8 @@ export class UserRepo extends BaseRepo<User> {
 	 * used for importusers module to request users not referenced in importusers
 	 */
 	async findWithoutImportUser(
-		school: School,
-		filters?: INameMatch,
+		school: SchoolEntity,
+		filters?: NameMatch,
 		options?: IFindOptions<User>
 	): Promise<Counted<User[]>> {
 		const { _id: schoolId } = school;
@@ -140,7 +157,13 @@ export class UserRepo extends BaseRepo<User> {
 
 		const userDocuments = await this._em.aggregate(User, pipeline);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-		const users = userDocuments.map((userDocument) => this._em.map(User, userDocument));
+		const users = userDocuments.map((userDocument) => {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			const { createdAt, updatedAt, ...newUserDocument } = userDocument;
+
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			return this._em.map(User, newUserDocument);
+		});
 		await this._em.populate(users, ['roles']);
 		return [users, count];
 	}
@@ -151,6 +174,24 @@ export class UserRepo extends BaseRepo<User> {
 			email: new RegExp(`^${email.replace(/\W/g, '\\$&')}$`, 'i'),
 		});
 		return promise;
+	}
+
+	async deleteUser(userId: EntityId): Promise<number> {
+		const deletedUserNumber = await this._em.nativeDelete(User, {
+			id: userId,
+		});
+
+		return deletedUserNumber;
+	}
+
+	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
+		const user: User | null = await this._em.findOne(User, { id: userId });
+		let parentsEmails: string[] = [];
+		if (user !== null) {
+			parentsEmails = user.parents?.map((parent) => parent.email) ?? [];
+		}
+
+		return parentsEmails;
 	}
 
 	private async populateRoles(roles: Role[]): Promise<void> {
@@ -171,5 +212,11 @@ export class UserRepo extends BaseRepo<User> {
 
 	async flush(): Promise<void> {
 		await this._em.flush();
+	}
+
+	public async findUserBySchoolAndName(schoolId: EntityId, firstName: string, lastName: string): Promise<User[]> {
+		const users: User[] = await this._em.find(User, { school: schoolId, firstName, lastName });
+
+		return users;
 	}
 }

@@ -1,9 +1,9 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsDate, IsMongoId, IsOptional, IsString } from 'class-validator';
-import { InputFormat, ITaskUpdate } from '@shared/domain';
 import { SanitizeHtml } from '@shared/controller';
+import { InputFormat, TaskUpdate } from '@shared/domain/types';
+import { IsDate, IsMongoId, IsOptional, IsString } from 'class-validator';
 
-export class TaskUpdateParams implements ITaskUpdate {
+export class TaskUpdateParams implements TaskUpdate {
 	@IsString()
 	@IsMongoId()
 	@IsOptional()
@@ -14,18 +14,6 @@ export class TaskUpdateParams implements ITaskUpdate {
 		nullable: false,
 	})
 	courseId?: string;
-
-	@IsString({ each: true })
-	@IsMongoId({ each: true })
-	@IsOptional()
-	@ApiPropertyOptional({
-		description: 'List of users ids, which belong to course. This restricts access to the task.',
-		required: false,
-		nullable: true,
-		pattern: '[a-f0-9]{24}',
-		type: [String],
-	})
-	usersIds?: string[];
 
 	@IsString()
 	@IsMongoId()

@@ -1,13 +1,14 @@
 /* istanbul ignore file */
-import { Account, EntityId, IAccountProperties, User } from '@shared/domain';
+import { Account, IdmAccountProperties, User } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 
 import { ObjectId } from 'bson';
 import { DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 
-class AccountFactory extends BaseFactory<Account, IAccountProperties> {
+class AccountFactory extends BaseFactory<Account, IdmAccountProperties> {
 	withSystemId(id: EntityId | ObjectId): this {
-		const params: DeepPartial<IAccountProperties> = { systemId: id };
+		const params: DeepPartial<IdmAccountProperties> = { systemId: id };
 
 		return this.params(params);
 	}
@@ -17,7 +18,7 @@ class AccountFactory extends BaseFactory<Account, IAccountProperties> {
 			throw new Error('User does not have an id.');
 		}
 
-		const params: DeepPartial<IAccountProperties> = { userId: user.id };
+		const params: DeepPartial<IdmAccountProperties> = { userId: user.id };
 
 		return this.params(params);
 	}

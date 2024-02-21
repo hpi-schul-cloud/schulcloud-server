@@ -1,16 +1,16 @@
+import { OauthProviderService } from '@infra/oauth-provider';
+import { AcceptLoginRequestBody, ProviderLoginResponse, ProviderRedirectResponse } from '@infra/oauth-provider/dto';
+import { AuthorizationService } from '@modules/authorization';
+import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '@modules/oauth-provider/controller/dto';
+import { OauthProviderRequestMapper } from '@modules/oauth-provider/mapper/oauth-provider-request.mapper';
+import { PseudonymService } from '@modules/pseudonym/service';
+import { ExternalTool, Oauth2ToolConfig } from '@modules/tool/external-tool/domain';
+import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { ExternalToolDO, Oauth2ToolConfigDO, Permission, PseudonymDO, User } from '@shared/domain';
+import { Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { LtiToolDO } from '@shared/domain/domainobject/ltitool.do';
-import { OauthProviderService } from '@shared/infra/oauth-provider';
-import {
-	AcceptLoginRequestBody,
-	ProviderLoginResponse,
-	ProviderRedirectResponse,
-} from '@shared/infra/oauth-provider/dto';
-import { AuthorizationService } from '@src/modules/authorization';
-import { AcceptQuery, LoginRequestBody, OAuthRejectableBody } from '@src/modules/oauth-provider/controller/dto';
-import { OauthProviderRequestMapper } from '@src/modules/oauth-provider/mapper/oauth-provider-request.mapper';
-import { PseudonymService } from '@src/modules/pseudonym/service';
+import { User } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
 import { OauthProviderLoginFlowService } from '../service/oauth-provider.login-flow.service';
 
 @Injectable()
@@ -19,7 +19,8 @@ export class OauthProviderLoginFlowUc {
 		private readonly oauthProviderService: OauthProviderService,
 		private readonly oauthProviderLoginFlowService: OauthProviderLoginFlowService,
 		private readonly pseudonymService: PseudonymService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly userService: UserService
 	) {}
 
 	async getLoginRequest(challenge: string): Promise<ProviderLoginResponse> {
@@ -53,7 +54,7 @@ export class OauthProviderLoginFlowUc {
 			throw new InternalServerErrorException(`Cannot find oAuthClientId in login response for challenge: ${challenge}`);
 		}
 
-		const tool: ExternalToolDO | LtiToolDO = await this.oauthProviderLoginFlowService.findToolByClientId(
+		const tool: ExternalTool | LtiToolDO = await this.oauthProviderLoginFlowService.findToolByClientId(
 			loginResponse.client.client_id
 		);
 
@@ -66,7 +67,8 @@ export class OauthProviderLoginFlowUc {
 			this.authorizationService.checkAllPermissions(user, [Permission.NEXTCLOUD_USER]);
 		}
 
-		const pseudonym: PseudonymDO = await this.pseudonymService.findOrCreatePseudonym(currentUserId, tool.id);
+		const user: UserDO = await this.userService.findById(currentUserId);
+		const pseudonym: Pseudonym = await this.pseudonymService.findOrCreatePseudonym(user, tool);
 
 		const skipConsent: boolean = this.shouldSkipConsent(tool);
 
@@ -87,11 +89,11 @@ export class OauthProviderLoginFlowUc {
 		return redirectResponse;
 	}
 
-	private shouldSkipConsent(tool: ExternalToolDO | LtiToolDO): boolean {
+	private shouldSkipConsent(tool: ExternalTool | LtiToolDO): boolean {
 		if (tool instanceof LtiToolDO) {
 			return !!tool.skipConsent;
 		}
-		if (tool.config instanceof Oauth2ToolConfigDO) {
+		if (tool.config instanceof Oauth2ToolConfig) {
 			return tool.config.skipConsent;
 		}
 		throw new UnprocessableEntityException(

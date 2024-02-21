@@ -1,14 +1,13 @@
+import { AuthenticationModule } from '@modules/authentication/authentication.module';
+import { AuthorizationModule } from '@modules/authorization';
+import { LegacySchoolModule } from '@modules/legacy-school';
+import { OauthModule } from '@modules/oauth';
+import { ProvisioningModule } from '@modules/provisioning';
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
-import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
-import { AuthorizationModule } from '@src/modules/authorization';
-import { OauthModule } from '@src/modules/oauth';
-import { ProvisioningModule } from '@src/modules/provisioning';
-import { SchoolModule } from '@src/modules/school';
 import { UserLoginMigrationController } from './controller/user-login-migration.controller';
-import { UserMigrationController } from './controller/user-migration.controller';
-import { PageContentMapper } from './mapper';
 import {
+	CloseUserLoginMigrationUc,
 	RestartUserLoginMigrationUc,
 	StartUserLoginMigrationUc,
 	ToggleUserLoginMigrationUc,
@@ -24,15 +23,15 @@ import { UserLoginMigrationModule } from './user-login-migration.module';
 		AuthenticationModule,
 		AuthorizationModule,
 		LoggerModule,
-		SchoolModule,
+		LegacySchoolModule,
 	],
 	providers: [
 		UserLoginMigrationUc,
 		StartUserLoginMigrationUc,
 		RestartUserLoginMigrationUc,
 		ToggleUserLoginMigrationUc,
-		PageContentMapper,
+		CloseUserLoginMigrationUc,
 	],
-	controllers: [UserMigrationController, UserLoginMigrationController],
+	controllers: [UserLoginMigrationController],
 })
 export class UserLoginMigrationApiModule {}

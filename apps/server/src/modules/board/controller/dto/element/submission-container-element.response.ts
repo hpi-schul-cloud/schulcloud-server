@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ContentElementType } from '@shared/domain';
+import { ContentElementType } from '@shared/domain/domainobject';
 import { TimestampsResponse } from '../timestamps.response';
 
 export class SubmissionContainerElementContent {
@@ -7,8 +7,12 @@ export class SubmissionContainerElementContent {
 		this.dueDate = dueDate;
 	}
 
-	@ApiProperty()
-	dueDate: Date;
+	@ApiProperty({
+		type: Date,
+		description: 'The dueDate as date string or null of not set',
+		example: '2023-08-17T14:17:51.958+00:00',
+	})
+	dueDate: Date | null;
 }
 
 export class SubmissionContainerElementResponse {

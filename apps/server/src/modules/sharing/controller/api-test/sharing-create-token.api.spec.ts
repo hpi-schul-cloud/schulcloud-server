@@ -1,24 +1,24 @@
-import { Request } from 'express';
-import request from 'supertest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { EntityManager } from '@mikro-orm/mongodb';
-import { ExecutionContext, INestApplication } from '@nestjs/common';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { ICurrentUser } from '@modules/authentication';
+import { JwtAuthGuard } from '@modules/authentication/guard/jwt-auth.guard';
+import { ServerTestModule } from '@modules/server/server.module';
+import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
-import { Permission } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
+import { Permission } from '@shared/domain/interface';
 import {
 	cleanupCollections,
 	courseFactory,
 	mapUserToCurrentUser,
 	roleFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	userFactory,
 } from '@shared/testing';
-import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
-import { ServerTestModule } from '@src/modules/server/server.module';
-import { ShareTokenBodyParams, ShareTokenResponse } from '../dto';
+import { Request } from 'express';
+import request from 'supertest';
 import { ShareTokenParentType } from '../../domainobject/share-token.do';
+import { ShareTokenBodyParams, ShareTokenResponse } from '../dto';
 
 const baseRouteName = '/sharetoken';
 
@@ -79,7 +79,7 @@ describe(`share token creation (api)`, () => {
 
 	const setup = async () => {
 		await cleanupCollections(em);
-		const school = schoolFactory.build();
+		const school = schoolEntityFactory.build();
 		const roles = roleFactory.buildList(1, {
 			permissions: [Permission.COURSE_CREATE],
 		});
@@ -101,27 +101,27 @@ describe(`share token creation (api)`, () => {
 
 			const response = await api.post({ parentId: course.id, parentType: ShareTokenParentType.Course });
 
-			expect(response.status).toEqual(500);
+			expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
 		});
 	});
 
-	describe('with ivalid request data', () => {
+	describe('with invalid request data', () => {
 		it('should return status 400 on empty parent id', async () => {
 			const response = await api.post({
 				parentId: '',
 				parentType: ShareTokenParentType.Course,
 			});
 
-			expect(response.status).toEqual(400);
+			expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 		});
 
-		it('should return status 403 when parent id is not found', async () => {
+		it('should return status 404 when parent id is not found', async () => {
 			const response = await api.post({
-				parentId: '000011112222333344445555',
+				parentId: new ObjectId().toHexString(),
 				parentType: ShareTokenParentType.Course,
 			});
 
-			expect(response.status).toEqual(403);
+			expect(response.status).toEqual(HttpStatus.NOT_FOUND);
 		});
 
 		it('should return status 400 on invalid parent id', async () => {
@@ -130,7 +130,7 @@ describe(`share token creation (api)`, () => {
 				parentType: ShareTokenParentType.Course,
 			});
 
-			expect(response.status).toEqual(400);
+			expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 		});
 
 		it('should return status 400 on invalid parent type', async () => {
@@ -142,7 +142,7 @@ describe(`share token creation (api)`, () => {
 				parentType: 'invalid',
 			});
 
-			expect(response.status).toEqual(400);
+			expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 		});
 
 		it('should return status 400 when expiresInDays is invalid integer', async () => {
@@ -155,7 +155,7 @@ describe(`share token creation (api)`, () => {
 				expiresInDays: 'foo',
 			});
 
-			expect(response.status).toEqual(400);
+			expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 		});
 
 		it('should return status 400 when expiresInDays is negative', async () => {
@@ -167,7 +167,7 @@ describe(`share token creation (api)`, () => {
 				expiresInDays: -10,
 			});
 
-			expect(response.status).toEqual(400);
+			expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 		});
 
 		it('should return status 400 when expiresInDays is not an integer', async () => {
@@ -179,7 +179,7 @@ describe(`share token creation (api)`, () => {
 				expiresInDays: 2.5,
 			});
 
-			expect(response.status).toEqual(400);
+			expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 		});
 	});
 
@@ -189,7 +189,7 @@ describe(`share token creation (api)`, () => {
 
 			const response = await api.post({ parentId: course.id, parentType: ShareTokenParentType.Course });
 
-			expect(response.status).toEqual(201);
+			expect(response.status).toEqual(HttpStatus.CREATED);
 		});
 
 		it('should return a valid result', async () => {
@@ -216,7 +216,7 @@ describe(`share token creation (api)`, () => {
 					schoolExclusive: true,
 				});
 
-				expect(response.status).toEqual(201);
+				expect(response.status).toEqual(HttpStatus.CREATED);
 			});
 
 			it('should return a valid result', async () => {
@@ -248,7 +248,7 @@ describe(`share token creation (api)`, () => {
 					expiresInDays: 5,
 				});
 
-				expect(response.status).toEqual(201);
+				expect(response.status).toEqual(HttpStatus.CREATED);
 			});
 
 			it('should return a valid result containg the expiration timestamp', async () => {

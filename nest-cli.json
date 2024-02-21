@@ -45,6 +45,15 @@
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		},
+		"deletion-console": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/deletion-console.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
 		"files-storage": {
 			"type": "application",
 			"root": "apps/server",
@@ -63,6 +72,15 @@
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		},
+		"preview-generator-amqp": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/preview-generator-consumer.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
 		"fwu-learning-contents": {
 			"type": "application",
 			"root": "apps/server",
@@ -76,6 +94,33 @@
 			"type": "application",
 			"root": "apps/server",
 			"entryFile": "apps/h5p-editor.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
+		"h5p-library-management": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/h5p-library-management.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+			        "tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
+		"admin-api-server": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/admin-api-server.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
+		},
+		"tldraw": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/tldraw.app",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"

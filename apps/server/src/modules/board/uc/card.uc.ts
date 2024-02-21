@@ -1,27 +1,22 @@
-import { Injectable } from '@nestjs/common';
-import {
-	AnyBoardDo,
-	Card,
-	ContentElementType,
-	EntityId,
-	FileElement,
-	RichTextElement,
-	SubmissionContainerElement,
-} from '@shared/domain';
+import { Action, AuthorizationService } from '@modules/authorization';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { AnyBoardDo, AnyContentElementDo, Card, ContentElementType } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
-import { AuthorizationService } from '@src/modules/authorization/authorization.service';
-import { Action } from '@src/modules/authorization/types/action.enum';
 import { BoardDoAuthorizableService, CardService, ContentElementService } from '../service';
+import { BaseUc } from './base.uc';
 
 @Injectable()
-export class CardUc {
+export class CardUc extends BaseUc {
 	constructor(
-		private readonly authorizationService: AuthorizationService,
-		private readonly boardDoAuthorizableService: BoardDoAuthorizableService,
+		@Inject(forwardRef(() => AuthorizationService))
+		protected readonly authorizationService: AuthorizationService,
+		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly cardService: CardService,
 		private readonly elementService: ContentElementService,
 		private readonly logger: LegacyLogger
 	) {
+		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(CardUc.name);
 	}
 
@@ -34,30 +29,52 @@ export class CardUc {
 		return allowedCards;
 	}
 
+	async updateCardHeight(userId: EntityId, cardId: EntityId, height: number): Promise<void> {
+		this.logger.debug({ action: 'updateCardHeight', userId, cardId, height });
+
+		const card = await this.cardService.findById(cardId);
+		await this.checkPermission(userId, card, Action.write);
+
+		await this.cardService.updateHeight(card, height);
+	}
+
+	async updateCardTitle(userId: EntityId, cardId: EntityId, title: string): Promise<void> {
+		this.logger.debug({ action: 'updateCardTitle', userId, cardId, title });
+
+		const card = await this.cardService.findById(cardId);
+		await this.checkPermission(userId, card, Action.write);
+
+		await this.cardService.updateTitle(card, title);
+	}
+
+	async deleteCard(userId: EntityId, cardId: EntityId): Promise<void> {
+		this.logger.debug({ action: 'deleteCard', userId, cardId });
+
+		const card = await this.cardService.findById(cardId);
+		await this.checkPermission(userId, card, Action.write);
+
+		await this.cardService.delete(card);
+	}
+
 	// --- elements ---
 
 	async createElement(
 		userId: EntityId,
 		cardId: EntityId,
-		type: ContentElementType
-	): Promise<FileElement | RichTextElement | SubmissionContainerElement> {
+		type: ContentElementType,
+		toPosition?: number
+	): Promise<AnyContentElementDo> {
 		this.logger.debug({ action: 'createElement', userId, cardId, type });
 
 		const card = await this.cardService.findById(cardId);
 		await this.checkPermission(userId, card, Action.write);
 
 		const element = await this.elementService.create(card, type);
+		if (toPosition !== undefined && typeof toPosition === 'number') {
+			await this.elementService.move(element, card, toPosition);
+		}
 
 		return element;
-	}
-
-	async deleteElement(userId: EntityId, elementId: EntityId): Promise<void> {
-		this.logger.debug({ action: 'deleteElement', userId, elementId });
-
-		const element = await this.elementService.findById(elementId);
-		await this.checkPermission(userId, element, Action.write);
-
-		await this.elementService.delete(element);
 	}
 
 	async moveElement(
@@ -66,7 +83,7 @@ export class CardUc {
 		targetCardId: EntityId,
 		targetPosition: number
 	): Promise<void> {
-		this.logger.debug({ action: 'moveCard', userId, elementId, targetCardId, targetPosition });
+		this.logger.debug({ action: 'moveElement', userId, elementId, targetCardId, targetPosition });
 
 		const element = await this.elementService.findById(elementId);
 		const targetCard = await this.cardService.findById(targetCardId);
@@ -75,14 +92,6 @@ export class CardUc {
 		await this.checkPermission(userId, targetCard, Action.write);
 
 		await this.elementService.move(element, targetCard, targetPosition);
-	}
-
-	private async checkPermission(userId: EntityId, boardDo: AnyBoardDo, action: Action): Promise<void> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(boardDo);
-		const context = { action, requiredPermissions: [] };
-
-		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
 	}
 
 	private async filterAllowed<T extends AnyBoardDo>(userId: EntityId, boardDos: T[], action: Action): Promise<T[]> {

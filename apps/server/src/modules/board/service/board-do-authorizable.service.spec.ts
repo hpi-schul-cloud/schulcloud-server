@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReferenceType, BoardRoles } from '@shared/domain';
+import { BoardExternalReferenceType, BoardRoles } from '@shared/domain/domainobject';
 import { CourseRepo } from '@shared/repo';
-import { courseFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
+import { cardFactory, courseFactory, roleFactory, setupEntities, userFactory } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { BoardDoRepo } from '../repo';
 import { BoardDoAuthorizableService } from './board-do-authorizable.service';
@@ -102,6 +102,9 @@ describe(BoardDoAuthorizableService.name, () => {
 					teacherId: teacher.id,
 					substitutionTeacherId: substitutionTeacher.id,
 					studentIds: students.map((s) => s.id),
+					teacher,
+					substitutionTeacher,
+					students,
 				};
 			};
 
@@ -120,6 +123,53 @@ describe(BoardDoAuthorizableService.name, () => {
 				expect(userPermissions[studentIds[0]]).toEqual([BoardRoles.READER]);
 				expect(userPermissions[studentIds[1]]).toEqual([BoardRoles.READER]);
 				expect(userPermissions[studentIds[2]]).toEqual([BoardRoles.READER]);
+			});
+
+			it('should return the users with their names', async () => {
+				const { board, teacher, substitutionTeacher, students } = setup();
+
+				const boardDoAuthorizable = await service.getBoardAuthorizable(board);
+				const firstNames = boardDoAuthorizable.users.reduce((map, user) => {
+					map[user.userId] = user.firstName;
+					return map;
+				}, {});
+
+				const lastNames = boardDoAuthorizable.users.reduce((map, user) => {
+					map[user.userId] = user.lastName;
+					return map;
+				}, {});
+
+				expect(boardDoAuthorizable.users).toHaveLength(5);
+				expect(firstNames[teacher.id]).toEqual(teacher.firstName);
+				expect(lastNames[teacher.id]).toEqual(teacher.lastName);
+				expect(firstNames[substitutionTeacher.id]).toEqual(substitutionTeacher.firstName);
+				expect(lastNames[substitutionTeacher.id]).toEqual(substitutionTeacher.lastName);
+				expect(firstNames[students[0].id]).toEqual(students[0].firstName);
+				expect(lastNames[students[0].id]).toEqual(students[0].lastName);
+				expect(firstNames[students[1].id]).toEqual(students[1].firstName);
+				expect(lastNames[students[1].id]).toEqual(students[1].lastName);
+				expect(firstNames[students[2].id]).toEqual(students[2].firstName);
+				expect(lastNames[students[2].id]).toEqual(students[2].lastName);
+			});
+
+			it('should return the boardDo', async () => {
+				const { board } = setup();
+
+				const boardDoAuthorizable = await service.getBoardAuthorizable(board);
+
+				expect(boardDoAuthorizable.boardDo).toEqual(board);
+			});
+
+			it('should return the parentDo', async () => {
+				setup();
+				const column = columnFactory.build();
+				const card = cardFactory.build();
+
+				boardDoRepo.findParentOfId.mockResolvedValueOnce(column);
+
+				const boardDoAuthorizable = await service.getBoardAuthorizable(card);
+
+				expect(boardDoAuthorizable.parentDo).toEqual(column);
 			});
 		});
 

@@ -1,6 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
-const { SC_SHORT_TITLE } = require('../../../../../config/globals');
+const { SC_TITLE } = require('../../../../../config/globals');
 const logger = require('../../../../logger');
 
 const {
@@ -15,15 +15,11 @@ const {
 
 const {
 	STATE,
-	KEYWORDS: { E_MAIL_ADDRESS },
 	sendMail,
-	getUser,
 	deleteEntry,
-	createEntry,
 	setEntryState,
 	createActivationLink,
 	Mail,
-	BadRequest,
 	Forbidden,
 	GeneralError,
 	customErrorMessages,
@@ -38,7 +34,7 @@ const buildActivationLinkMail = (user, entry) => {
 \nHallo ${user.firstName},
 \nbitte bestätige deine neue E-Mail-Adresse (${email}) über folgenden Link: ${activationLink}
 \nBitte beachte, dass der Aktivierungslink nur 2 Stunden gültig ist.
-\nDein ${SC_SHORT_TITLE} Team`,
+\nDein ${SC_TITLE} Team`,
 		html: '',
 	};
 
@@ -51,10 +47,10 @@ const buildFYIMail = (user) => {
 	const content = {
 		text: `E-Mail-Adresse geändert
 \nHallo ${user.firstName},
-\nwir wollten dich nur informieren, dass sich die E-Mail-Adresse für dein ${SC_SHORT_TITLE} Konto geändert hat.
+\nwir wollten dich nur informieren, dass sich die E-Mail-Adresse für dein ${SC_TITLE} Konto geändert hat.
 \nWenn du die Änderung veranlasst hast, ist alles in Ordnung.
 \nFalls du nicht darum gebeten hast, deine E-Mail-Adresse zu änderen, kontaktiere deinen Schuladministrator oder unseren User-Support.
-\nDein ${SC_SHORT_TITLE} Team`,
+\nDein ${SC_TITLE} Team`,
 		html: '',
 	};
 
@@ -84,21 +80,6 @@ const mail = async (ref, type, user, entry) => {
  * this service can be used to create an job to change the email/username.
  */
 class EMailAddressActivationService {
-	/**
-	 * create job
-	 */
-	async create(data, params) {
-		if (!data || !data.email || !data.password) throw new BadRequest('Missing information');
-		const user = await getUser(this.app, params.account.userId);
-
-		// create new entry
-		const entry = await createEntry(this, params.account.userId, E_MAIL_ADDRESS, data.email);
-
-		// send email
-		await mail(this, 'activationLinkMail', user, entry);
-		return { success: true };
-	}
-
 	async update(id, data, params) {
 		const { entry, user } = data;
 		const account = await this.app.service('nest-account-service').findByUserId(user._id);

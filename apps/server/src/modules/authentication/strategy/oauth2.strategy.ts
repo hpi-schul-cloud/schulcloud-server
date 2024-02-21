@@ -1,14 +1,13 @@
+import { AccountService } from '@modules/account/services/account.service';
+import { AccountDto } from '@modules/account/services/dto';
+import { OAuthService, OAuthTokenDto } from '@modules/oauth';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { AccountService } from '@src/modules/account/services/account.service';
-import { AccountDto } from '@src/modules/account/services/dto';
-import { OAuthTokenDto } from '@src/modules/oauth';
-import { OAuthService } from '@src/modules/oauth/service/oauth.service';
 import { Strategy } from 'passport-custom';
 import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
-import { SchoolInMigrationError } from '../errors/school-in-migration.error';
-import { ICurrentUser } from '../interface';
+import { ICurrentUser, OauthCurrentUser } from '../interface';
+import { SchoolInMigrationLoggableException } from '../loggable';
 import { CurrentUserMapper } from '../mapper';
 
 @Injectable()
@@ -22,14 +21,10 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
 
 		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, redirectUri, code);
 
-		const { user }: { user?: UserDO; redirect: string } = await this.oauthService.provisionUser(
-			systemId,
-			tokenDto.idToken,
-			tokenDto.accessToken
-		);
+		const user: UserDO | null = await this.oauthService.provisionUser(systemId, tokenDto.idToken, tokenDto.accessToken);
 
 		if (!user || !user.id) {
-			throw new SchoolInMigrationError();
+			throw new SchoolInMigrationLoggableException();
 		}
 
 		const account: AccountDto | null = await this.accountService.findByUserId(user.id);
@@ -37,7 +32,12 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
 			throw new UnauthorizedException('no account found');
 		}
 
-		const currentUser: ICurrentUser = CurrentUserMapper.userDoToICurrentUser(account.id, user, systemId);
+		const currentUser: OauthCurrentUser = CurrentUserMapper.mapToOauthCurrentUser(
+			account.id,
+			user,
+			systemId,
+			tokenDto.idToken
+		);
 
 		return currentUser;
 	}

@@ -1,10 +1,10 @@
 import { Collection, Entity, IdentifiedReference, ManyToMany, OneToOne, wrap } from '@mikro-orm/core';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { ILearnroomElement } from '../../interface';
+import { LearnroomElement } from '../../interface';
 import { EntityId } from '../../types';
 import { BaseEntityWithTimestamps } from '../base.entity';
 import type { Course } from '../course.entity';
-import { Lesson } from '../lesson.entity';
+import { LessonEntity } from '../lesson.entity';
 import { Task } from '../task.entity';
 import { BoardElement, BoardElementReference } from './boardelement.entity';
 import { ColumnboardBoardElement } from './column-board-boardelement';
@@ -25,13 +25,13 @@ export class Board extends BaseEntityWithTimestamps {
 		this.course = wrap(props.course).toReference();
 	}
 
-	@OneToOne({ type: 'Course', fieldName: 'courseId', wrappedReference: true, unique: true })
+	@OneToOne({ type: 'Course', fieldName: 'courseId', wrappedReference: true, unique: true, owner: true })
 	course: IdentifiedReference<Course>;
 
 	@ManyToMany('BoardElement', undefined, { fieldName: 'referenceIds' })
 	references = new Collection<BoardElement>(this);
 
-	getByTargetId(id: EntityId): ILearnroomElement {
+	getByTargetId(id: EntityId): LearnroomElement {
 		const element = this.getElementByTargetId(id);
 		return element.target;
 	}
@@ -95,7 +95,7 @@ export class Board extends BaseEntityWithTimestamps {
 		if (boardElementTarget instanceof Task) {
 			return new TaskBoardElement({ target: boardElementTarget });
 		}
-		if (boardElementTarget instanceof Lesson) {
+		if (boardElementTarget instanceof LessonEntity) {
 			return new LessonBoardElement({ target: boardElementTarget });
 		}
 		if (boardElementTarget instanceof ColumnBoardTarget) {

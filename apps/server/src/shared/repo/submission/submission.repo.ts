@@ -1,6 +1,7 @@
 import { FilterQuery } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { Counted, CourseGroup, EntityId, Submission } from '@shared/domain';
+import { CourseGroup, Submission } from '@shared/domain/entity';
+import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '../base.repo';
 
 // TODO: add scope helper
@@ -22,6 +23,7 @@ export class SubmissionRepo extends BaseRepo<Submission> {
 		const [submissions, count] = await this._em.findAndCount(this.entityName, {
 			task: { $in: taskIds },
 		});
+
 		await this.populateReferences(submissions);
 
 		return [submissions, count];

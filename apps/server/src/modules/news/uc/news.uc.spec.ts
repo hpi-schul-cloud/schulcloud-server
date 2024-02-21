@@ -1,12 +1,13 @@
 import { createMock } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { FeathersAuthorizationService } from '@modules/authorization';
 import { UnauthorizedException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ICreateNews, NewsTargetModel, Permission } from '@shared/domain';
+import { Permission } from '@shared/domain/interface';
+import { CreateNews, NewsTargetModel } from '@shared/domain/types';
 import { NewsRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { FeathersAuthorizationService } from '@src/modules/authorization';
 import { NewsUc } from './news.uc';
 
 describe('NewsUc', () => {
@@ -232,7 +233,7 @@ describe('NewsUc', () => {
 				content: 'content',
 				displayAt: new Date(),
 				target: { targetModel: NewsTargetModel.School, targetId: schoolId },
-			} as ICreateNews;
+			} as CreateNews;
 			const createdNews = await service.create(userId, schoolId, params);
 			expect(createdNews.school).toEqual(schoolId);
 			expect(createdNews.creator).toEqual(userId);
@@ -247,7 +248,7 @@ describe('NewsUc', () => {
 				content: 'content',
 				displayAt: new Date(),
 				target: { targetModel: NewsTargetModel.School, targetId: schoolId },
-			} as ICreateNews;
+			} as CreateNews;
 			await service.create(userId, schoolId, params);
 			expect(createSpy).toHaveBeenCalled();
 		});

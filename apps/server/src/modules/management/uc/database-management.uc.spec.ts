@@ -1,16 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { DatabaseManagementService } from '@infra/database';
+import { DefaultEncryptionService, LdapEncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
+import { FileSystemAdapter } from '@infra/file-system';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { StorageProvider, System } from '@shared/domain';
-import { DatabaseManagementService } from '@shared/infra/database';
-import {
-	DefaultEncryptionService,
-	LdapEncryptionService,
-	SymetricKeyEncryptionService,
-} from '@shared/infra/encryption';
-import { FileSystemAdapter } from '@shared/infra/file-system';
+import { StorageProviderEntity, SystemEntity } from '@shared/domain/entity';
 import { setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from 'mongodb';
@@ -124,7 +120,7 @@ describe('DatabaseManagementService', () => {
 		},
 	};
 
-	const storageProviderParsed: StorageProvider[] = [
+	const storageProviderParsed: StorageProviderEntity[] = [
 		{
 			id: '62d6ca7e769952e3f6e67925',
 			_id: new ObjectId('62d6ca7e769952e3f6e67925'),
@@ -496,11 +492,11 @@ describe('DatabaseManagementService', () => {
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
-					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
+					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
 						clientId: 'SANIS_CLIENT_ID',
 						clientSecret: 'SANIS_CLIENT_SECRET',
 					});
-					expect((importedSystems[1] as System).oidcConfig).toMatchObject({
+					expect((importedSystems[1] as SystemEntity).oidcConfig).toMatchObject({
 						clientId: 'OIDC_CLIENT_ID',
 						clientSecret: 'OIDC_CLIENT_SECRET',
 					});
@@ -512,11 +508,11 @@ describe('DatabaseManagementService', () => {
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
-					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
+					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
 						clientId: 'SANIS_CLIENT_ID_env',
 						clientSecret: 'SANIS_CLIENT_SECRET_env',
 					});
-					expect((importedSystems[1] as System).oidcConfig).toMatchObject({
+					expect((importedSystems[1] as SystemEntity).oidcConfig).toMatchObject({
 						clientId: 'OIDC_CLIENT_ID_env',
 						clientSecret: 'OIDC_CLIENT_SECRET_env',
 					});
@@ -528,11 +524,11 @@ describe('DatabaseManagementService', () => {
 					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
-					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
+					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
 						clientId: '',
 						clientSecret: '',
 					});
-					expect((importedSystems[1] as System).oidcConfig).toMatchObject({
+					expect((importedSystems[1] as SystemEntity).oidcConfig).toMatchObject({
 						clientId: '',
 						clientSecret: '',
 					});
@@ -560,7 +556,7 @@ describe('DatabaseManagementService', () => {
 					expect(dbService.createCollection).toBeCalledWith(systemsCollectionName);
 					expect(dbService.clearCollection).not.toBeCalled();
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
-					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
+					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
 						clientId: configurationCompareValue,
 						clientSecret: configurationCompareValue,
 					});
@@ -589,11 +585,11 @@ describe('DatabaseManagementService', () => {
 					expect(dbService.createCollection).toBeCalledWith(systemsCollectionName);
 					expect(dbService.clearCollection).not.toBeCalled();
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
-					expect((importedSystems[0] as System).oauthConfig).toMatchObject({
+					expect((importedSystems[0] as SystemEntity).oauthConfig).toMatchObject({
 						clientId: 'SANIS_CLIENT_ID',
 						clientSecret: 'SANIS_CLIENT_SECRET_encrypted',
 					});
-					expect((importedSystems[1] as System).oidcConfig).toMatchObject({
+					expect((importedSystems[1] as SystemEntity).oidcConfig).toMatchObject({
 						clientId: 'OIDC_CLIENT_ID',
 						clientSecret: 'OIDC_CLIENT_SECRET_encrypted',
 					});
@@ -609,7 +605,7 @@ describe('DatabaseManagementService', () => {
 					expect(dbService.createCollection).toBeCalledWith(systemsCollectionName);
 					expect(dbService.clearCollection).not.toBeCalled();
 					const importedSystems = dbService.importCollection.mock.calls[0][1];
-					expect(importedSystems as System[]).toEqual(
+					expect(importedSystems as SystemEntity[]).toEqual(
 						expect.arrayContaining([
 							expect.objectContaining({
 								ldapConfig: {
@@ -659,6 +655,34 @@ describe('DatabaseManagementService', () => {
 				(c) => `${c.collectionName}:${c.data.length}`
 			);
 			expect(collectionsSeeded).toStrictEqual(expectedCollectionsWithLength);
+		});
+	});
+
+	describe('migration', () => {
+		it('should call migrationUp', async () => {
+			dbService.migrationUp = jest.fn();
+			await uc.migrationUp();
+			expect(dbService.migrationUp).toHaveBeenCalled();
+		});
+		it('should call migrationUp with params', async () => {
+			dbService.migrationUp = jest.fn();
+			await uc.migrationUp('foo', 'bar', 'baz');
+			expect(dbService.migrationUp).toHaveBeenCalledWith('foo', 'bar', 'baz');
+		});
+		it('should call migrationDown', async () => {
+			dbService.migrationDown = jest.fn();
+			await uc.migrationDown();
+			expect(dbService.migrationDown).toHaveBeenCalled();
+		});
+		it('should call migrationDown with params', async () => {
+			dbService.migrationDown = jest.fn();
+			await uc.migrationDown('foo', 'bar', 'baz');
+			expect(dbService.migrationDown).toHaveBeenCalledWith('foo', 'bar', 'baz');
+		});
+		it('should call migrationPending', async () => {
+			dbService.migrationDown = jest.fn();
+			await uc.migrationPending();
+			expect(dbService.migrationPending).toHaveBeenCalled();
 		});
 	});
 });

@@ -1,45 +1,34 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { CalendarEventDto, CalendarService } from '@infra/calendar';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { CourseService } from '@modules/learnroom/service';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { UserService } from '@modules/user';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
-import {
-	Course,
-	EntityId,
-	Permission,
-	RoleName,
-	SchoolFeatures,
-	TeamUser,
-	UserDO,
-	VideoConferenceDO,
-	VideoConferenceScope,
-} from '@shared/domain';
-import { CalendarEventDto, CalendarService } from '@shared/infra/calendar';
+import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { Test, TestingModule } from '@nestjs/testing';
+import { UserDO, VideoConferenceDO } from '@shared/domain/domainobject';
+import { Course, TeamUserEntity } from '@shared/domain/entity';
+import { Permission, RoleName, VideoConferenceScope } from '@shared/domain/interface';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { TeamsRepo, VideoConferenceRepo } from '@shared/repo';
-import {
-	AuthorizableReferenceType,
-	AuthorizationContextBuilder,
-	AuthorizationService,
-} from '@src/modules/authorization';
-import { SchoolService } from '@src/modules/school';
-import { UserService } from '@src/modules/user';
-import { courseFactory, roleFactory, setupEntities, userDoFactory } from '@shared/testing';
+import { courseFactory, roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
+import { teamFactory } from '@shared/testing/factory/team.factory';
+import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
 import { ObjectId } from 'bson';
-import { teamFactory } from '@shared/testing/factory/team.factory';
-import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
-import { CourseService } from '@src/modules/learnroom/service/course.service';
-import { VideoConferenceService } from './video-conference.service';
-import { ErrorStatus } from '../error/error-status.enum';
 import { BBBRole } from '../bbb';
-import { IScopeInfo, ScopeRef, VideoConferenceState } from '../uc/dto';
+import { ErrorStatus } from '../error';
 import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';
+import { ScopeInfo, ScopeRef, VideoConferenceState } from '../uc/dto';
+import { VideoConferenceService } from './video-conference.service';
 
 describe('VideoConferenceService', () => {
 	let service: DeepMocked<VideoConferenceService>;
 	let courseService: DeepMocked<CourseService>;
 	let calendarService: DeepMocked<CalendarService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 	let teamsRepo: DeepMocked<TeamsRepo>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceRepo: DeepMocked<VideoConferenceRepo>;
@@ -68,8 +57,8 @@ describe('VideoConferenceService', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: TeamsRepo,
@@ -90,7 +79,7 @@ describe('VideoConferenceService', () => {
 		courseService = module.get(CourseService);
 		calendarService = module.get(CalendarService);
 		authorizationService = module.get(AuthorizationService);
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 		teamsRepo = module.get(TeamsRepo);
 		userService = module.get(UserService);
 		videoConferenceRepo = module.get(VideoConferenceRepo);
@@ -193,6 +182,42 @@ describe('VideoConferenceService', () => {
 				};
 			};
 
+			it('should call the user service to find the user by id', async () => {
+				const { userId, scopeId } = setup();
+
+				await service.hasExpertRole(userId, VideoConferenceScope.COURSE, scopeId);
+
+				expect(userService.findById).toHaveBeenCalledWith(userId);
+			});
+
+			it('should return false', async () => {
+				const { userId, scopeId } = setup();
+
+				const result = await service.hasExpertRole(userId, VideoConferenceScope.COURSE, scopeId);
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when user has the EXPERT role and an additional role for a course conference', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory
+					.withRoles([
+						{ id: new ObjectId().toHexString(), name: RoleName.STUDENT },
+						{ id: new ObjectId().toHexString(), name: RoleName.EXPERT },
+					])
+					.buildWithId();
+				const userId = user.id as EntityId;
+				const scopeId = new ObjectId().toHexString();
+
+				userService.findById.mockResolvedValue(user);
+
+				return {
+					userId,
+					scopeId,
+				};
+			};
+
 			it('should return false', async () => {
 				const { userId, scopeId } = setup();
 
@@ -236,9 +261,9 @@ describe('VideoConferenceService', () => {
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 
-				const teamUser: TeamUser = teamUserFactory.withRoleAndUserId(roleFactory.buildWithId(), userId).build();
+				const teamUser: TeamUserEntity = teamUserFactory.withRoleAndUserId(roleFactory.buildWithId(), userId).build();
 				const team = teamFactory
-					.withTeamUser(teamUser)
+					.withTeamUser([teamUser])
 					.withRoleAndUserId(roleFactory.buildWithId({ name: RoleName.TEAMEXPERT }), userId)
 					.build();
 				teamsRepo.findById.mockResolvedValue(team);
@@ -296,64 +321,160 @@ describe('VideoConferenceService', () => {
 	});
 
 	describe('checkPermission', () => {
-		const setup = () => {
-			const userId = 'user-id';
-			const conferenceScope = VideoConferenceScope.COURSE;
-			const entityId = 'entity-id';
+		describe('when user has START_MEETING permission and is in course scope', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const entity = courseFactory.buildWithId();
+				const conferenceScope = VideoConferenceScope.COURSE;
 
-			return {
-				userId,
-				conferenceScope,
-				entityId,
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				authorizationService.hasPermission.mockReturnValueOnce(true).mockReturnValueOnce(false);
+				courseService.findById.mockResolvedValueOnce(entity);
+
+				return {
+					user,
+					userId: user.id,
+					entity,
+					entityId: entity.id,
+					conferenceScope,
+				};
 			};
-		};
 
-		describe('when user has START_MEETING permission', () => {
+			it('should call the correct authorization order', async () => {
+				const { user, entity, userId, conferenceScope, entityId } = setup();
+
+				await service.determineBbbRole(userId, entityId, conferenceScope);
+
+				expect(authorizationService.hasPermission).toHaveBeenCalledWith(
+					user,
+					entity,
+					AuthorizationContextBuilder.read([Permission.START_MEETING])
+				);
+			});
+
 			it('should return BBBRole.MODERATOR', async () => {
 				const { userId, conferenceScope, entityId } = setup();
 
-				authorizationService.hasPermissionByReferences.mockResolvedValueOnce(true);
-				authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false);
-
-				const result: BBBRole = await service.determineBbbRole(userId, entityId, conferenceScope);
+				const result = await service.determineBbbRole(userId, entityId, conferenceScope);
 
 				expect(result).toBe(BBBRole.MODERATOR);
-				expect(authorizationService.hasPermissionByReferences).toHaveBeenCalledWith(
-					userId,
-					AuthorizableReferenceType.Course,
-					entityId,
+			});
+		});
+
+		// can be removed when team / course / user is passed from UC
+		// missing when course / team loading throw an error, but also not nessasary if it is passed to UC.
+		describe('when user has START_MEETING permission and is in team(event) scope', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const entity = teamFactory.buildWithId();
+				const conferenceScope = VideoConferenceScope.EVENT;
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				authorizationService.hasPermission.mockReturnValueOnce(true).mockReturnValueOnce(false);
+				teamsRepo.findById.mockResolvedValueOnce(entity);
+
+				return {
+					user,
+					userId: user.id,
+					entity,
+					entityId: entity.id,
+					conferenceScope,
+				};
+			};
+
+			it('should call the correct authorization order', async () => {
+				const { user, entity, userId, conferenceScope, entityId } = setup();
+
+				await service.determineBbbRole(userId, entityId, conferenceScope);
+
+				expect(authorizationService.hasPermission).toHaveBeenCalledWith(
+					user,
+					entity,
 					AuthorizationContextBuilder.read([Permission.START_MEETING])
 				);
+			});
+
+			it('should return BBBRole.MODERATOR', async () => {
+				const { userId, conferenceScope, entityId } = setup();
+
+				const result = await service.determineBbbRole(userId, entityId, conferenceScope);
+
+				expect(result).toBe(BBBRole.MODERATOR);
 			});
 		});
 
 		describe('when user has JOIN_MEETING permission', () => {
-			it('should return BBBRole.VIEWER', async () => {
-				const { userId, conferenceScope, entityId } = setup();
-				authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false);
-				authorizationService.hasPermissionByReferences.mockResolvedValueOnce(true);
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const entity = courseFactory.buildWithId();
+				const conferenceScope = VideoConferenceScope.COURSE;
 
-				const result: BBBRole = await service.determineBbbRole(userId, entityId, conferenceScope);
+				authorizationService.hasPermission.mockReturnValueOnce(false).mockReturnValueOnce(true);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				courseService.findById.mockResolvedValueOnce(entity);
 
-				expect(result).toBe(BBBRole.VIEWER);
-				expect(authorizationService.hasPermissionByReferences).toHaveBeenCalledWith(
-					userId,
-					AuthorizableReferenceType.Course,
-					entityId,
+				return {
+					user,
+					userId: user.id,
+					entity,
+					entityId: entity.id,
+					conferenceScope,
+				};
+			};
+
+			it('should call the correct authorization order', async () => {
+				const { user, entity, userId, conferenceScope, entityId } = setup();
+
+				await service.determineBbbRole(userId, entityId, conferenceScope);
+
+				expect(authorizationService.hasPermission).toHaveBeenNthCalledWith(
+					1,
+					user,
+					entity,
+					AuthorizationContextBuilder.read([Permission.START_MEETING])
+				);
+				expect(authorizationService.hasPermission).toHaveBeenNthCalledWith(
+					2,
+					user,
+					entity,
 					AuthorizationContextBuilder.read([Permission.JOIN_MEETING])
 				);
+			});
+
+			it('should return BBBRole.VIEWER', async () => {
+				const { userId, conferenceScope, entityId } = setup();
+
+				const result = await service.determineBbbRole(userId, entityId, conferenceScope);
+
+				expect(result).toBe(BBBRole.VIEWER);
 			});
 		});
 
 		describe('when user has neither START_MEETING nor JOIN_MEETING permission', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const entity = courseFactory.buildWithId();
+				const conferenceScope = VideoConferenceScope.COURSE;
+
+				authorizationService.hasPermission.mockReturnValueOnce(false).mockReturnValueOnce(false);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				courseService.findById.mockResolvedValueOnce(entity);
+
+				return {
+					user,
+					userId: user.id,
+					entity,
+					entityId: entity.id,
+					conferenceScope,
+				};
+			};
+
 			it('should throw a ForbiddenException', async () => {
 				const { userId, conferenceScope, entityId } = setup();
-				authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false);
-				authorizationService.hasPermissionByReferences.mockResolvedValueOnce(false);
 
-				const func = () => service.determineBbbRole(userId, entityId, conferenceScope);
+				const callDetermineBbbRole = () => service.determineBbbRole(userId, entityId, conferenceScope);
 
-				await expect(func).rejects.toThrow(new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION));
+				await expect(callDetermineBbbRole).rejects.toThrow(new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION));
 			});
 		});
 	});
@@ -386,7 +507,7 @@ describe('VideoConferenceService', () => {
 				const func = () => service.throwOnFeaturesDisabled(schoolId);
 
 				await expect(func()).rejects.toThrow(new ForbiddenException(ErrorStatus.SCHOOL_FEATURE_DISABLED));
-				expect(schoolService.hasFeature).toHaveBeenCalledWith(schoolId, SchoolFeatures.VIDEOCONFERENCE);
+				expect(schoolService.hasFeature).toHaveBeenCalledWith(schoolId, SchoolFeature.VIDEOCONFERENCE);
 			});
 		});
 
@@ -398,7 +519,7 @@ describe('VideoConferenceService', () => {
 				const func = () => service.throwOnFeaturesDisabled(schoolId);
 
 				await expect(func()).resolves.toBeUndefined();
-				expect(schoolService.hasFeature).toHaveBeenCalledWith(schoolId, SchoolFeatures.VIDEOCONFERENCE);
+				expect(schoolService.hasFeature).toHaveBeenCalledWith(schoolId, SchoolFeature.VIDEOCONFERENCE);
 			});
 		});
 	});
@@ -433,7 +554,7 @@ describe('VideoConferenceService', () => {
 				course.id = scopeId;
 				courseService.findById.mockResolvedValue(course);
 
-				const result: IScopeInfo = await service.getScopeInfo(userId, scopeId, conferenceScope);
+				const result: ScopeInfo = await service.getScopeInfo(userId, scopeId, conferenceScope);
 
 				expect(result).toEqual({
 					scopeId,
@@ -452,7 +573,7 @@ describe('VideoConferenceService', () => {
 				const event: CalendarEventDto = { title: 'Event', teamId };
 				calendarService.findEvent.mockResolvedValue(event);
 
-				const result: IScopeInfo = await service.getScopeInfo(userId, scopeId, VideoConferenceScope.EVENT);
+				const result: ScopeInfo = await service.getScopeInfo(userId, scopeId, VideoConferenceScope.EVENT);
 
 				expect(result).toEqual({
 					scopeId: teamId,

@@ -1,1 +1,1 @@
-export * from './system.repo';
+export * from './legacy-system.repo';

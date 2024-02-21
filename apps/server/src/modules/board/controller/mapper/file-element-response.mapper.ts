@@ -1,4 +1,4 @@
-import { ContentElementType, FileElement } from '@shared/domain';
+import { ContentElementType, FileElement } from '@shared/domain/domainobject';
 import { FileElementContent, FileElementResponse, TimestampsResponse } from '../dto';
 import { BaseResponseMapper } from './base-mapper.interface';
 
@@ -18,7 +18,7 @@ export class FileElementResponseMapper implements BaseResponseMapper {
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
 			type: ContentElementType.FILE,
-			content: new FileElementContent({ caption: element.caption }),
+			content: new FileElementContent({ caption: element.caption, alternativeText: element.alternativeText }),
 		});
 
 		return result;

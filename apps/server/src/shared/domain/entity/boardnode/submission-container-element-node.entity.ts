@@ -5,8 +5,8 @@ import { BoardDoBuilder, BoardNodeType } from './types';
 
 @Entity({ discriminatorValue: BoardNodeType.SUBMISSION_CONTAINER_ELEMENT })
 export class SubmissionContainerElementNode extends BoardNode {
-	@Property()
-	dueDate: Date;
+	@Property({ type: Date, nullable: true })
+	dueDate: Date | null;
 
 	constructor(props: SubmissionContainerNodeProps) {
 		super(props);
@@ -22,5 +22,5 @@ export class SubmissionContainerElementNode extends BoardNode {
 }
 
 export interface SubmissionContainerNodeProps extends BoardNodeProps {
-	dueDate: Date;
+	dueDate: Date | null;
 }

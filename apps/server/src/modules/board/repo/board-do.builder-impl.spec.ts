@@ -1,13 +1,17 @@
-import { BoardNodeType } from '@shared/domain';
+import { ExternalToolElement, LinkElement } from '@shared/domain/domainobject';
+import { BoardNodeType } from '@shared/domain/entity';
 import {
 	cardNodeFactory,
 	columnBoardNodeFactory,
 	columnNodeFactory,
+	externalToolElementNodeFactory,
 	fileElementNodeFactory,
+	linkElementNodeFactory,
 	richTextElementNodeFactory,
-	submissionContainerElementNodeFactory,
 	setupEntities,
+	submissionContainerElementNodeFactory,
 } from '@shared/testing';
+import { drawingElementNodeFactory } from '@shared/testing/factory/boardnode/drawing-element-node.factory';
 import { BoardDoBuilderImpl } from './board-do.builder-impl';
 
 describe(BoardDoBuilderImpl.name, () => {
@@ -166,6 +170,25 @@ describe(BoardDoBuilderImpl.name, () => {
 		});
 	});
 
+	describe('when building a drawing element', () => {
+		it('should work without descendants', () => {
+			const drawingElementNode = drawingElementNodeFactory.build();
+
+			const domainObject = new BoardDoBuilderImpl().buildDrawingElement(drawingElementNode);
+
+			expect(domainObject.constructor.name).toBe('DrawingElement');
+		});
+
+		it('should throw error if drawingElement is not a leaf', () => {
+			const drawingElementNode = drawingElementNodeFactory.buildWithId();
+			const columnNode = columnNodeFactory.buildWithId({ parent: drawingElementNode });
+
+			expect(() => {
+				new BoardDoBuilderImpl([columnNode]).buildDrawingElement(drawingElementNode);
+			}).toThrowError();
+		});
+	});
+
 	describe('when building a submission container element', () => {
 		it('should work without descendants', () => {
 			const submissionContainerElementNode = submissionContainerElementNodeFactory.build();
@@ -181,6 +204,44 @@ describe(BoardDoBuilderImpl.name, () => {
 
 			expect(() => {
 				new BoardDoBuilderImpl([columnNode]).buildSubmissionContainerElement(submissionContainerElementNode);
+			}).toThrowError();
+		});
+	});
+
+	describe('when building a external tool element', () => {
+		it('should work without descendants', () => {
+			const externalToolElementNode = externalToolElementNodeFactory.build();
+
+			const domainObject = new BoardDoBuilderImpl().buildExternalToolElement(externalToolElementNode);
+
+			expect(domainObject.constructor.name).toBe(ExternalToolElement.name);
+		});
+
+		it('should throw error if externalToolElement is not a leaf', () => {
+			const externalToolElementNode = externalToolElementNodeFactory.buildWithId();
+			const columnNode = columnNodeFactory.buildWithId({ parent: externalToolElementNode });
+
+			expect(() => {
+				new BoardDoBuilderImpl([columnNode]).buildExternalToolElement(externalToolElementNode);
+			}).toThrowError();
+		});
+	});
+
+	describe('when building a link element', () => {
+		it('should work without descendants', () => {
+			const linkElementNode = linkElementNodeFactory.buildWithId();
+
+			const domainObject = new BoardDoBuilderImpl().buildLinkElement(linkElementNode);
+
+			expect(domainObject.constructor.name).toBe(LinkElement.name);
+		});
+
+		it('should throw error if linkElement is not a leaf', () => {
+			const linkElementNode = linkElementNodeFactory.buildWithId();
+			const columnNode = columnNodeFactory.buildWithId({ parent: linkElementNode });
+
+			expect(() => {
+				new BoardDoBuilderImpl([columnNode]).buildLinkElement(linkElementNode);
 			}).toThrowError();
 		});
 	});

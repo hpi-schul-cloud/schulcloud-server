@@ -1,12 +1,13 @@
+import { UserService } from '@modules/user';
+import { ErrorStatus } from '@modules/video-conference/error/error-status.enum';
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { EntityId, UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain';
-import { ErrorStatus } from '@src/modules/video-conference/error/error-status.enum';
-import { UserService } from '@src/modules/user';
+import { UserDO, VideoConferenceDO, VideoConferenceOptionsDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { BBBBaseMeetingConfig, BBBMeetingInfoResponse, BBBResponse, BBBRole, BBBService } from '../bbb';
-import { IScopeInfo, ScopeRef, VideoConferenceInfo, VideoConferenceState } from './dto';
-import { VideoConferenceService } from '../service';
-import { PermissionMapping } from '../mapper/video-conference.mapper';
 import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { PermissionMapping } from '../mapper/video-conference.mapper';
+import { VideoConferenceService } from '../service';
+import { ScopeInfo, ScopeRef, VideoConferenceInfo, VideoConferenceState } from './dto';
 
 @Injectable()
 export class VideoConferenceInfoUc {
@@ -17,11 +18,17 @@ export class VideoConferenceInfoUc {
 	) {}
 
 	async getMeetingInfo(currentUserId: EntityId, scope: ScopeRef): Promise<VideoConferenceInfo> {
+		/* need to be replace with
+		const [authorizableUser, scopeRessource]: [User, TeamEntity | Course] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(userId),
+			this.videoConferenceService.loadScopeRessources(scopeId, scope),
+		]);
+		*/
 		const user: UserDO = await this.userService.findById(currentUserId);
 
 		await this.videoConferenceService.throwOnFeaturesDisabled(user.schoolId);
 
-		const scopeInfo: IScopeInfo = await this.videoConferenceService.getScopeInfo(currentUserId, scope.id, scope.scope);
+		const scopeInfo: ScopeInfo = await this.videoConferenceService.getScopeInfo(currentUserId, scope.id, scope.scope);
 
 		const bbbRole: BBBRole = await this.videoConferenceService.determineBbbRole(
 			currentUserId,

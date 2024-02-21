@@ -1,4 +1,5 @@
-import { InputFormat, ITaskCreate, ITaskUpdate, RichText, TaskWithStatusVo } from '@shared/domain';
+import { TaskWithStatusVo } from '@shared/domain/entity';
+import { InputFormat, RichText, TaskCreate, TaskUpdate } from '@shared/domain/types';
 import { TaskCreateParams, TaskResponse, TaskUpdateParams } from '../controller/dto';
 import { TaskStatusMapper } from './task-status.mapper';
 
@@ -24,9 +25,6 @@ export class TaskMapper {
 				type: task.descriptionInputFormat || InputFormat.RICH_TEXT_CK4,
 			});
 		}
-		if (task.taskCard) {
-			dto.taskCardId = task.taskCard;
-		}
 		dto.availableDate = task.availableDate;
 		dto.dueDate = task.dueDate;
 
@@ -36,22 +34,17 @@ export class TaskMapper {
 		}
 		dto.lessonHidden = taskDesc.lessonHidden;
 
-		if (task.users) {
-			dto.users = task.getUsersList();
-		}
-
 		return dto;
 	}
 
-	static mapTaskUpdateToDomain(params: TaskUpdateParams): ITaskUpdate {
-		const dto: ITaskUpdate = {
+	static mapTaskUpdateToDomain(params: TaskUpdateParams): TaskUpdate {
+		const dto: TaskUpdate = {
 			name: params.name,
 			courseId: params.courseId,
 			lessonId: params.lessonId,
 			description: params.description,
 			availableDate: params.availableDate,
 			dueDate: params.dueDate,
-			usersIds: params.usersIds,
 		};
 		if (params.description) {
 			dto.descriptionInputFormat = InputFormat.RICH_TEXT_CK5;
@@ -59,15 +52,14 @@ export class TaskMapper {
 		return dto;
 	}
 
-	static mapTaskCreateToDomain(params: TaskCreateParams): ITaskCreate {
-		const dto: ITaskCreate = {
+	static mapTaskCreateToDomain(params: TaskCreateParams): TaskCreate {
+		const dto: TaskCreate = {
 			name: params.name || 'Draft',
 			courseId: params.courseId,
 			lessonId: params.lessonId,
 			description: params.description,
 			availableDate: params.availableDate,
 			dueDate: params.dueDate,
-			usersIds: params.usersIds,
 		};
 		if (params.description) {
 			dto.descriptionInputFormat = InputFormat.RICH_TEXT_CK5;

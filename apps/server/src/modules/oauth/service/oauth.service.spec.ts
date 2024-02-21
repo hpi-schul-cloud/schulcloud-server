@@ -1,27 +1,30 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons';
+import { DefaultEncryptionService, EncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { LegacySchoolService } from '@modules/legacy-school';
+import { ProvisioningService } from '@modules/provisioning';
+import { OauthConfigDto } from '@modules/system/service';
+import { SystemDto } from '@modules/system/service/dto/system.dto';
+import { UserService } from '@modules/user';
+import { MigrationCheckService } from '@modules/user-login-migration';
 import { Test, TestingModule } from '@nestjs/testing';
-import { OauthConfig, SchoolFeatures, System } from '@shared/domain';
-import { SchoolDO } from '@shared/domain/domainobject/school.do';
-import { UserDO } from '@shared/domain/domainobject/user.do';
+import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
+import { OauthConfigEntity, SystemEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { DefaultEncryptionService, IEncryptionService, SymetricKeyEncryptionService } from '@shared/infra/encryption';
-import { setupEntities, userDoFactory } from '@shared/testing';
-import { schoolDOFactory } from '@shared/testing/factory/domainobject/school.factory';
-import { systemFactory } from '@shared/testing/factory/system.factory';
+import { SchoolFeature } from '@shared/domain/types';
+import { legacySchoolDoFactory, setupEntities, systemEntityFactory, userDoFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { ProvisioningDto, ProvisioningService } from '@src/modules/provisioning';
-import { ExternalSchoolDto, ExternalUserDto, OauthDataDto, ProvisioningSystemDto } from '@src/modules/provisioning/dto';
-import { SchoolService } from '@src/modules/school';
-import { OauthConfigDto } from '@src/modules/system/service';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
-import { SystemService } from '@src/modules/system/service/system.service';
-import { UserService } from '@src/modules/user';
-import { MigrationCheckService, UserMigrationService } from '@src/modules/user-login-migration';
+import { OauthDataDto } from '@src/modules/provisioning/dto';
+import { LegacySystemService } from '@src/modules/system';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { OAuthSSOError } from '../error/oauth-sso.error';
 import { OAuthTokenDto } from '../interface';
-import { OauthTokenResponse } from './dto';
+import {
+	AuthCodeFailureLoggableException,
+	IdTokenInvalidLoggableException,
+	OauthConfigMissingLoggableException,
+	UserNotFoundAfterProvisioningLoggableException,
+} from '../loggable';
 import { OauthAdapterService } from './oauth-adapter.service';
 import { OAuthService } from './oauth.service';
 
@@ -47,14 +50,13 @@ describe('OAuthService', () => {
 	let oAuthEncryptionService: DeepMocked<SymetricKeyEncryptionService>;
 	let provisioningService: DeepMocked<ProvisioningService>;
 	let userService: DeepMocked<UserService>;
-	let systemService: DeepMocked<SystemService>;
-	let userMigrationService: DeepMocked<UserMigrationService>;
+	let systemService: DeepMocked<LegacySystemService>;
 	let oauthAdapterService: DeepMocked<OauthAdapterService>;
 	let migrationCheckService: DeepMocked<MigrationCheckService>;
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 
-	let testSystem: System;
-	let testOauthConfig: OauthConfig;
+	let testSystem: SystemEntity;
+	let testOauthConfig: OauthConfigEntity;
 
 	const hostUri = 'https://mock.de';
 
@@ -69,12 +71,12 @@ describe('OAuthService', () => {
 					useValue: createMock<UserService>(),
 				},
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: DefaultEncryptionService,
-					useValue: createMock<IEncryptionService>(),
+					useValue: createMock<EncryptionService>(),
 				},
 				{
 					provide: LegacyLogger,
@@ -85,12 +87,8 @@ describe('OAuthService', () => {
 					useValue: createMock<ProvisioningService>(),
 				},
 				{
-					provide: SystemService,
-					useValue: createMock<SystemService>(),
-				},
-				{
-					provide: UserMigrationService,
-					useValue: createMock<UserMigrationService>(),
+					provide: LegacySystemService,
+					useValue: createMock<LegacySystemService>(),
 				},
 				{
 					provide: OauthAdapterService,
@@ -107,11 +105,10 @@ describe('OAuthService', () => {
 		oAuthEncryptionService = module.get(DefaultEncryptionService);
 		provisioningService = module.get(ProvisioningService);
 		userService = module.get(UserService);
-		systemService = module.get(SystemService);
-		userMigrationService = module.get(UserMigrationService);
+		systemService = module.get(LegacySystemService);
 		oauthAdapterService = module.get(OauthAdapterService);
 		migrationCheckService = module.get(MigrationCheckService);
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 	});
 
 	afterAll(async () => {
@@ -133,41 +130,41 @@ describe('OAuthService', () => {
 			}
 		});
 
-		testSystem = systemFactory.withOauthConfig().buildWithId();
-		testOauthConfig = testSystem.oauthConfig as OauthConfig;
+		testSystem = systemEntityFactory.withOauthConfig().buildWithId();
+		testOauthConfig = testSystem.oauthConfig as OauthConfigEntity;
 	});
 
 	describe('requestToken', () => {
 		const setupRequest = () => {
 			const code = '43534543jnj543342jn2';
-			const tokenResponse: OauthTokenResponse = {
-				access_token: 'accessToken',
-				refresh_token: 'refreshToken',
-				id_token: 'idToken',
+			const oauthToken: OAuthTokenDto = {
+				accessToken: 'accessToken',
+				idToken: 'idToken',
+				refreshToken: 'refreshToken',
 			};
 
 			return {
 				code,
-				tokenResponse,
+				oauthToken,
 			};
 		};
 
 		beforeEach(() => {
-			const { tokenResponse } = setupRequest();
+			const { oauthToken } = setupRequest();
 			oAuthEncryptionService.decrypt.mockReturnValue('decryptedSecret');
-			oauthAdapterService.sendAuthenticationCodeTokenRequest.mockResolvedValue(tokenResponse);
+			oauthAdapterService.sendTokenRequest.mockResolvedValue(oauthToken);
 		});
 
 		describe('when it requests a token', () => {
 			it('should get token from the external server', async () => {
-				const { code, tokenResponse } = setupRequest();
+				const { code, oauthToken } = setupRequest();
 
 				const result: OAuthTokenDto = await service.requestToken(code, testOauthConfig, 'redirectUri');
 
 				expect(result).toEqual<OAuthTokenDto>({
-					idToken: tokenResponse.id_token,
-					accessToken: tokenResponse.access_token,
-					refreshToken: tokenResponse.refresh_token,
+					idToken: oauthToken.idToken,
+					accessToken: oauthToken.accessToken,
+					refreshToken: oauthToken.refreshToken,
 				});
 			});
 		});
@@ -194,51 +191,8 @@ describe('OAuthService', () => {
 				jest.spyOn(jwt, 'verify').mockImplementationOnce((): string => 'string');
 
 				await expect(service.validateToken('idToken', testOauthConfig)).rejects.toEqual(
-					new OAuthSSOError('Failed to validate idToken', 'sso_token_verfication_error')
+					new IdTokenInvalidLoggableException()
 				);
-			});
-		});
-	});
-
-	describe('getPostLoginRedirectUrl is called', () => {
-		describe('when the oauth provider is iserv', () => {
-			it('should return an iserv login url string', async () => {
-				const system: SystemDto = new SystemDto({
-					type: 'oauth',
-					oauthConfig: {
-						provider: 'iserv',
-						logoutEndpoint: 'http://iserv.de/logout',
-					} as OauthConfigDto,
-				});
-				systemService.findById.mockResolvedValue(system);
-
-				const result: string = await service.getPostLoginRedirectUrl('idToken', 'systemId');
-
-				expect(result).toEqual(
-					`http://iserv.de/logout?id_token_hint=idToken&post_logout_redirect_uri=https%3A%2F%2Fmock.de%2Fdashboard`
-				);
-			});
-		});
-
-		describe('when it is called with a postLoginRedirect and the provider is not iserv', () => {
-			it('should return the postLoginRedirect', async () => {
-				const system: SystemDto = new SystemDto({ type: 'oauth' });
-				systemService.findById.mockResolvedValue(system);
-
-				const result: string = await service.getPostLoginRedirectUrl('idToken', 'systemId', 'postLoginRedirect');
-
-				expect(result).toEqual('postLoginRedirect');
-			});
-		});
-
-		describe('when it is called with any other oauth provider', () => {
-			it('should return a login url string', async () => {
-				const system: SystemDto = new SystemDto({ type: 'oauth' });
-				systemService.findById.mockResolvedValue(system);
-
-				const result: string = await service.getPostLoginRedirectUrl('idToken', 'systemId');
-
-				expect(result).toEqual(`${hostUri}/dashboard`);
 			});
 		});
 	});
@@ -267,34 +221,34 @@ describe('OAuthService', () => {
 				oauthConfig,
 			});
 
-			const oauthTokenResponse: OauthTokenResponse = {
-				access_token: 'accessToken',
-				refresh_token: 'refreshToken',
-				id_token: 'idToken',
+			const oauthToken: OAuthTokenDto = {
+				accessToken: 'accessToken',
+				idToken: 'idToken',
+				refreshToken: 'refreshToken',
 			};
 
 			return {
 				authCode,
 				system,
-				oauthTokenResponse,
+				oauthToken,
 				oauthConfig,
 			};
 		};
 
 		describe('when system does not have oauth config', () => {
 			it('should authenticate a user', async () => {
-				const { authCode, system, oauthTokenResponse } = setup();
+				const { authCode, system, oauthToken } = setup();
 				systemService.findById.mockResolvedValue(testSystem);
 				oAuthEncryptionService.decrypt.mockReturnValue('decryptedSecret');
 				oauthAdapterService.getPublicKey.mockResolvedValue('publicKey');
-				oauthAdapterService.sendAuthenticationCodeTokenRequest.mockResolvedValue(oauthTokenResponse);
+				oauthAdapterService.sendTokenRequest.mockResolvedValue(oauthToken);
 
 				const result: OAuthTokenDto = await service.authenticateUser(system.id!, 'redirectUri', authCode);
 
 				expect(result).toEqual<OAuthTokenDto>({
-					accessToken: oauthTokenResponse.access_token,
-					idToken: oauthTokenResponse.id_token,
-					refreshToken: oauthTokenResponse.refresh_token,
+					accessToken: oauthToken.accessToken,
+					idToken: oauthToken.idToken,
+					refreshToken: oauthToken.refreshToken,
 				});
 			});
 		});
@@ -308,9 +262,7 @@ describe('OAuthService', () => {
 
 				const func = () => service.authenticateUser(testSystem.id, 'redirectUri', authCode);
 
-				await expect(func).rejects.toThrow(
-					new OAuthSSOError(`Requested system ${testSystem.id} has no oauth configured`, 'sso_internal_error')
-				);
+				await expect(func).rejects.toThrow(new OauthConfigMissingLoggableException(testSystem.id));
 			});
 		});
 
@@ -318,9 +270,7 @@ describe('OAuthService', () => {
 			it('should throw an error', async () => {
 				const func = () => service.authenticateUser('systemId', 'redirectUri', undefined, 'errorCode');
 
-				await expect(func).rejects.toThrow(
-					new OAuthSSOError('Authorization Query Object has no authorization code or error', 'errorCode')
-				);
+				await expect(func).rejects.toThrow(new AuthCodeFailureLoggableException('errorCode'));
 			});
 		});
 
@@ -328,338 +278,495 @@ describe('OAuthService', () => {
 			it('should throw an error', async () => {
 				const func = () => service.authenticateUser('systemId', 'redirectUri');
 
-				await expect(func).rejects.toThrow(
-					new OAuthSSOError('Authorization Query Object has no authorization code or error', 'sso_auth_code_step')
-				);
+				await expect(func).rejects.toThrow(new AuthCodeFailureLoggableException());
 			});
 		});
 	});
 
-	describe('provisionUser is called', () => {
-		describe('when only provisioning a user', () => {
-			it('should return the user and a redirect', async () => {
-				const externalUserId = 'externalUserId';
-				const user: UserDO = userDoFactory.buildWithId({ externalId: externalUserId });
-				const oauthData: OauthDataDto = new OauthDataDto({
-					system: new ProvisioningSystemDto({
-						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.OIDC,
-					}),
-					externalUser: new ExternalUserDto({
-						externalId: externalUserId,
-					}),
-				});
-				const provisioningDto: ProvisioningDto = new ProvisioningDto({
-					externalUserId,
-				});
-
-				provisioningService.getData.mockResolvedValue(oauthData);
-				provisioningService.provisionData.mockResolvedValue(provisioningDto);
-				userService.findByExternalId.mockResolvedValue(user);
-
-				const result: { user?: UserDO; redirect: string } = await service.provisionUser(
-					'systemId',
-					'idToken',
-					'accessToken'
-				);
-
-				expect(result).toEqual<{ user?: UserDO; redirect: string }>({
-					user,
-					redirect: `${hostUri}/dashboard`,
-				});
-			});
-		});
-
-		describe('when provisioning a user that should migrate, but the user does not exist', () => {
-			it('should return a redirect to the migration page and skip provisioning', async () => {
-				const migrationRedirectUrl = 'migrationRedirectUrl';
-				const oauthData: OauthDataDto = new OauthDataDto({
-					system: new ProvisioningSystemDto({
-						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.OIDC,
-					}),
-					externalUser: new ExternalUserDto({
-						externalId: 'externalUserId',
-					}),
-					externalSchool: new ExternalSchoolDto({
-						externalId: 'schoolExternalId',
-						name: 'externalSchool',
-						officialSchoolNumber: 'officialSchoolNumber',
-					}),
-				});
-
-				provisioningService.getData.mockResolvedValue(oauthData);
-				schoolService.getSchoolBySchoolNumber.mockResolvedValue(null);
-				migrationCheckService.shouldUserMigrate.mockResolvedValue(true);
-				userMigrationService.getMigrationConsentPageRedirect.mockResolvedValue(migrationRedirectUrl);
-				userService.findByExternalId.mockResolvedValue(null);
-
-				const result: { user?: UserDO; redirect: string } = await service.provisionUser(
-					'systemId',
-					'idToken',
-					'accessToken'
-				);
-
-				expect(result).toEqual<{ user?: UserDO; redirect: string }>({
-					user: undefined,
-					redirect: migrationRedirectUrl,
-				});
-				expect(provisioningService.provisionData).not.toHaveBeenCalled();
-			});
-		});
-
-		describe('when provisioning an existing user that should migrate', () => {
-			it('should return a redirect to the migration page and provision the user', async () => {
-				const migrationRedirectUrl = 'migrationRedirectUrl';
-				const externalUserId = 'externalUserId';
-				const user: UserDO = userDoFactory.buildWithId({ externalId: externalUserId });
-				const oauthData: OauthDataDto = new OauthDataDto({
-					system: new ProvisioningSystemDto({
-						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.OIDC,
-					}),
-					externalUser: new ExternalUserDto({
-						externalId: externalUserId,
-					}),
-					externalSchool: new ExternalSchoolDto({
-						externalId: 'schoolExternalId',
-						name: 'externalSchool',
-						officialSchoolNumber: 'officialSchoolNumber',
-					}),
-				});
-				const school: SchoolDO = schoolDOFactory.buildWithId({ features: [SchoolFeatures.OAUTH_PROVISIONING_ENABLED] });
-
-				provisioningService.getData.mockResolvedValue(oauthData);
-				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
-				migrationCheckService.shouldUserMigrate.mockResolvedValue(true);
-				userMigrationService.getMigrationConsentPageRedirect.mockResolvedValue(migrationRedirectUrl);
-				userService.findByExternalId.mockResolvedValue(user);
-
-				const result: { user?: UserDO; redirect: string } = await service.provisionUser(
-					'systemId',
-					'idToken',
-					'accessToken'
-				);
-
-				expect(result).toEqual<{ user?: UserDO; redirect: string }>({
-					user,
-					redirect: migrationRedirectUrl,
-				});
-				expect(provisioningService.provisionData).toHaveBeenCalled();
-			});
-		});
-
-		describe('when provisioning an existing user, that is in a school with provisioning disabled', () => {
+	describe('provisionUser', () => {
+		describe('when provisioning a user and a school without official school number', () => {
 			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const idToken = 'idToken';
+				const accessToken = 'accessToken';
 				const externalUserId = 'externalUserId';
-				const user: UserDO = userDoFactory.buildWithId({ externalId: externalUserId });
-				const oauthData: OauthDataDto = new OauthDataDto({
-					system: new ProvisioningSystemDto({
-						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.OIDC,
-					}),
-					externalUser: new ExternalUserDto({
-						externalId: externalUserId,
-					}),
-					externalSchool: new ExternalSchoolDto({
-						externalId: 'schoolExternalId',
-						name: 'externalSchool',
-						officialSchoolNumber: 'officialSchoolNumber',
-					}),
-				});
-				const school: SchoolDO = schoolDOFactory.buildWithId({ features: [] });
 
-				provisioningService.getData.mockResolvedValue(oauthData);
-				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
-				migrationCheckService.shouldUserMigrate.mockResolvedValue(false);
-				userService.findByExternalId.mockResolvedValue(user);
+				const user: UserDO = userDoFactory.build({
+					id: new ObjectId().toHexString(),
+					externalId: externalUserId,
+				});
+
+				const provisioningData: OauthDataDto = new OauthDataDto({
+					system: {
+						systemId,
+						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningUrl: 'https://mock.person-info.de/',
+					},
+					externalUser: {
+						externalId: externalUserId,
+					},
+					externalSchool: {
+						externalId: 'externalSchoolId',
+						name: 'External School',
+					},
+				});
+
+				provisioningService.getData.mockResolvedValueOnce(provisioningData);
+				userService.findByExternalId.mockResolvedValueOnce(user);
 
 				return {
+					systemId,
+					idToken,
+					accessToken,
+					provisioningData,
 					user,
 				};
 			};
 
-			it('should not provision the user, but find it', async () => {
-				const { user } = setup();
+			it('should provision the data', async () => {
+				const { systemId, idToken, accessToken, provisioningData } = setup();
 
-				const result: { user?: UserDO; redirect: string } = await service.provisionUser(
-					'systemId',
-					'idToken',
-					'accessToken'
-				);
+				await service.provisionUser(systemId, idToken, accessToken);
 
-				expect(result).toEqual<{ user?: UserDO; redirect: string }>({
-					user,
-					redirect: 'https://mock.de/dashboard',
-				});
-				expect(provisioningService.provisionData).not.toHaveBeenCalled();
+				expect(provisioningService.provisionData).toHaveBeenCalledWith(provisioningData);
+			});
+
+			it('should return the user', async () => {
+				const { systemId, idToken, accessToken, user } = setup();
+
+				const result = await service.provisionUser(systemId, idToken, accessToken);
+
+				expect(result).toEqual(user);
 			});
 		});
 
-		describe('when provisioning a new user, that is in a school with provisioning disabled', () => {
+		describe('when provisioning a user and a school without official school number, but the user cannot be found after the provisioning', () => {
 			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const idToken = 'idToken';
+				const accessToken = 'accessToken';
 				const externalUserId = 'externalUserId';
-				const oauthData: OauthDataDto = new OauthDataDto({
-					system: new ProvisioningSystemDto({
-						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.OIDC,
-					}),
-					externalUser: new ExternalUserDto({
-						externalId: externalUserId,
-					}),
-					externalSchool: new ExternalSchoolDto({
-						externalId: 'schoolExternalId',
-						name: 'externalSchool',
-						officialSchoolNumber: 'officialSchoolNumber',
-					}),
-				});
-				const school: SchoolDO = schoolDOFactory.buildWithId({ features: [] });
 
-				provisioningService.getData.mockResolvedValue(oauthData);
-				schoolService.getSchoolBySchoolNumber.mockResolvedValue(school);
-				migrationCheckService.shouldUserMigrate.mockResolvedValue(false);
-				userService.findByExternalId.mockResolvedValue(null);
+				const provisioningData: OauthDataDto = new OauthDataDto({
+					system: {
+						systemId,
+						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningUrl: 'https://mock.person-info.de/',
+					},
+					externalUser: {
+						externalId: externalUserId,
+					},
+					externalSchool: {
+						externalId: 'externalSchoolId',
+						name: 'External School',
+					},
+				});
+
+				provisioningService.getData.mockResolvedValueOnce(provisioningData);
+				userService.findByExternalId.mockResolvedValueOnce(null);
 
 				return {
-					externalUserId,
-				};
-			};
-
-			it('should throw an error with code sso_provisioning_disabled', async () => {
-				const { externalUserId } = setup();
-
-				const func = () => service.provisionUser('systemId', 'idToken', 'accessToken');
-
-				await expect(func).rejects.toThrow(
-					new OAuthSSOError(
-						`Provisioning of user with externalId: ${externalUserId} failed`,
-						'sso_provisioning_disabled'
-					)
-				);
-				expect(provisioningService.provisionData).not.toHaveBeenCalled();
-			});
-		});
-
-		describe('when the user cannot be found after provisioning', () => {
-			const setup = () => {
-				const externalUserId = 'externalUserId';
-				const oauthData: OauthDataDto = new OauthDataDto({
-					system: new ProvisioningSystemDto({
-						systemId: 'systemId',
-						provisioningStrategy: SystemProvisioningStrategy.OIDC,
-					}),
-					externalUser: new ExternalUserDto({
-						externalId: externalUserId,
-					}),
-				});
-				const provisioningDto: ProvisioningDto = new ProvisioningDto({
-					externalUserId,
-				});
-
-				provisioningService.getData.mockResolvedValue(oauthData);
-				provisioningService.provisionData.mockResolvedValue(provisioningDto);
-				userService.findByExternalId.mockResolvedValue(null);
-
-				return {
-					externalUserId,
+					systemId,
+					idToken,
+					accessToken,
+					provisioningData,
 				};
 			};
 
 			it('should throw an error', async () => {
-				const { externalUserId } = setup();
+				const { systemId, idToken, accessToken } = setup();
 
-				const func = () => service.provisionUser('systemId', 'idToken', 'accessToken');
-
-				await expect(func).rejects.toThrow(
-					new OAuthSSOError(`Provisioning of user with externalId: ${externalUserId} failed`, 'sso_user_notfound')
-				);
-			});
-		});
-	});
-
-	describe('getAuthenticationUrl is called', () => {
-		describe('when a normal authentication url is requested', () => {
-			it('should return a authentication url', () => {
-				const oauthConfig: OauthConfig = new OauthConfig({
-					clientId: '12345',
-					clientSecret: 'mocksecret',
-					tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
-					grantType: 'authorization_code',
-					redirectUri: 'http://mockhost:3030/api/v3/sso/oauth/testsystemId',
-					scope: 'openid uuid',
-					responseType: 'code',
-					authEndpoint: 'http://mock.de/auth',
-					provider: 'mock_type',
-					logoutEndpoint: 'http://mock.de/logout',
-					issuer: 'mock_issuer',
-					jwksEndpoint: 'http://mock.de/jwks',
-				});
-
-				const result: string = service.getAuthenticationUrl(oauthConfig, 'state', false);
-
-				expect(result).toEqual(
-					'http://mock.de/auth?client_id=12345&redirect_uri=https%3A%2F%2Fmock.de%2Fapi%2Fv3%2Fsso%2Foauth&response_type=code&scope=openid+uuid&state=state'
+				await expect(service.provisionUser(systemId, idToken, accessToken)).rejects.toThrow(
+					UserNotFoundAfterProvisioningLoggableException
 				);
 			});
 		});
 
-		describe('when a migration authentication url is requested', () => {
-			it('should return a authentication url', () => {
-				const oauthConfig: OauthConfig = new OauthConfig({
-					clientId: '12345',
-					clientSecret: 'mocksecret',
-					tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
-					grantType: 'authorization_code',
-					redirectUri: 'http://mockhost.de/api/v3/sso/oauth/testsystemId',
-					scope: 'openid uuid',
-					responseType: 'code',
-					authEndpoint: 'http://mock.de/auth',
-					provider: 'mock_type',
-					logoutEndpoint: 'http://mock.de/logout',
-					issuer: 'mock_issuer',
-					jwksEndpoint: 'http://mock.de/jwks',
+		describe('when provisioning a user and a new school with official school number', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const idToken = 'idToken';
+				const accessToken = 'accessToken';
+				const externalUserId = 'externalUserId';
+
+				const user: UserDO = userDoFactory.build({
+					id: new ObjectId().toHexString(),
+					externalId: externalUserId,
 				});
 
-				const result: string = service.getAuthenticationUrl(oauthConfig, 'state', true);
+				const provisioningData: OauthDataDto = new OauthDataDto({
+					system: {
+						systemId,
+						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningUrl: 'https://mock.person-info.de/',
+					},
+					externalUser: {
+						externalId: externalUserId,
+					},
+					externalSchool: {
+						externalId: 'externalSchoolId',
+						name: 'External School',
+						officialSchoolNumber: 'officialSchoolNumber',
+					},
+				});
 
-				expect(result).toEqual(
-					'http://mock.de/auth?client_id=12345&redirect_uri=https%3A%2F%2Fmock.de%2Fapi%2Fv3%2Fsso%2Foauth%2Fmigration&response_type=code&scope=openid+uuid&state=state'
-				);
+				provisioningService.getData.mockResolvedValueOnce(provisioningData);
+				schoolService.getSchoolBySchoolNumber.mockResolvedValueOnce(null);
+				migrationCheckService.shouldUserMigrate.mockResolvedValueOnce(false);
+				userService.findByExternalId.mockResolvedValueOnce(user);
+
+				return {
+					systemId,
+					idToken,
+					accessToken,
+					provisioningData,
+					user,
+				};
+			};
+
+			it('should provision the data', async () => {
+				const { systemId, idToken, accessToken, provisioningData } = setup();
+
+				await service.provisionUser(systemId, idToken, accessToken);
+
+				expect(provisioningService.provisionData).toHaveBeenCalledWith(provisioningData);
 			});
 
-			it('should return add an idp hint if existing authentication url', () => {
-				const oauthConfig: OauthConfig = new OauthConfig({
-					clientId: '12345',
-					clientSecret: 'mocksecret',
-					tokenEndpoint: 'http://mock.de/mock/auth/public/mockToken',
-					grantType: 'authorization_code',
-					redirectUri: 'http://mockhost.de/api/v3/sso/oauth/testsystemId',
-					scope: 'openid uuid',
-					responseType: 'code',
-					authEndpoint: 'http://mock.de/auth',
-					provider: 'mock_type',
-					logoutEndpoint: 'http://mock.de/logout',
-					issuer: 'mock_issuer',
-					jwksEndpoint: 'http://mock.de/jwks',
-					idpHint: 'TheIdpHint',
+			it('should return the user', async () => {
+				const { systemId, idToken, accessToken, user } = setup();
+
+				const result = await service.provisionUser(systemId, idToken, accessToken);
+
+				expect(result).toEqual(user);
+			});
+		});
+
+		describe('when provisioning a user and an existing school with official school number, that has provisioning enabled', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const idToken = 'idToken';
+				const accessToken = 'accessToken';
+				const externalUserId = 'externalUserId';
+				const externalSchoolId = 'externalSchoolId';
+				const officialSchoolNumber = 'officialSchoolNumber';
+
+				const user: UserDO = userDoFactory.build({
+					id: new ObjectId().toHexString(),
+					externalId: externalUserId,
 				});
 
-				const result: string = service.getAuthenticationUrl(oauthConfig, 'state', true);
+				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+					id: new ObjectId().toHexString(),
+					externalId: externalSchoolId,
+					officialSchoolNumber,
+					features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+				});
 
-				expect(result).toEqual(
-					'http://mock.de/auth?client_id=12345&redirect_uri=https%3A%2F%2Fmock.de%2Fapi%2Fv3%2Fsso%2Foauth%2Fmigration&response_type=code&scope=openid+uuid&state=state&kc_idp_hint=TheIdpHint'
+				const provisioningData: OauthDataDto = new OauthDataDto({
+					system: {
+						systemId,
+						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningUrl: 'https://mock.person-info.de/',
+					},
+					externalUser: {
+						externalId: externalUserId,
+					},
+					externalSchool: {
+						externalId: externalSchoolId,
+						name: school.name,
+						officialSchoolNumber,
+					},
+				});
+
+				provisioningService.getData.mockResolvedValueOnce(provisioningData);
+				schoolService.getSchoolBySchoolNumber.mockResolvedValueOnce(school);
+				migrationCheckService.shouldUserMigrate.mockResolvedValueOnce(false);
+				userService.findByExternalId.mockResolvedValueOnce(user);
+
+				return {
+					systemId,
+					idToken,
+					accessToken,
+					provisioningData,
+					user,
+				};
+			};
+
+			it('should provision the data', async () => {
+				const { systemId, idToken, accessToken, provisioningData } = setup();
+
+				await service.provisionUser(systemId, idToken, accessToken);
+
+				expect(provisioningService.provisionData).toHaveBeenCalledWith(provisioningData);
+			});
+
+			it('should return the user', async () => {
+				const { systemId, idToken, accessToken, user } = setup();
+
+				const result = await service.provisionUser(systemId, idToken, accessToken);
+
+				expect(result).toEqual(user);
+			});
+		});
+
+		describe('when provisioning an existing user and an existing school with official school number, that has provisioning disabled', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const idToken = 'idToken';
+				const accessToken = 'accessToken';
+				const externalUserId = 'externalUserId';
+				const externalSchoolId = 'externalSchoolId';
+				const officialSchoolNumber = 'officialSchoolNumber';
+
+				const user: UserDO = userDoFactory.build({
+					id: new ObjectId().toHexString(),
+					externalId: externalUserId,
+				});
+
+				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+					id: new ObjectId().toHexString(),
+					externalId: externalSchoolId,
+					officialSchoolNumber,
+					features: [],
+				});
+
+				const provisioningData: OauthDataDto = new OauthDataDto({
+					system: {
+						systemId,
+						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningUrl: 'https://mock.person-info.de/',
+					},
+					externalUser: {
+						externalId: externalUserId,
+					},
+					externalSchool: {
+						externalId: externalSchoolId,
+						name: school.name,
+						officialSchoolNumber,
+					},
+				});
+
+				provisioningService.getData.mockResolvedValueOnce(provisioningData);
+				schoolService.getSchoolBySchoolNumber.mockResolvedValueOnce(school);
+				migrationCheckService.shouldUserMigrate.mockResolvedValueOnce(false);
+				userService.findByExternalId.mockResolvedValueOnce(user);
+
+				return {
+					systemId,
+					idToken,
+					accessToken,
+					provisioningData,
+					user,
+				};
+			};
+
+			it('should not provision the data', async () => {
+				const { systemId, idToken, accessToken } = setup();
+
+				await service.provisionUser(systemId, idToken, accessToken);
+
+				expect(provisioningService.provisionData).not.toHaveBeenCalled();
+			});
+
+			it('should return the user', async () => {
+				const { systemId, idToken, accessToken, user } = setup();
+
+				const result = await service.provisionUser(systemId, idToken, accessToken);
+
+				expect(result).toEqual(user);
+			});
+		});
+
+		describe('when provisioning a new user and an existing school with official school number, that has provisioning disabled', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const idToken = 'idToken';
+				const accessToken = 'accessToken';
+				const externalUserId = 'externalUserId';
+				const externalSchoolId = 'externalSchoolId';
+				const officialSchoolNumber = 'officialSchoolNumber';
+
+				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+					id: new ObjectId().toHexString(),
+					externalId: externalSchoolId,
+					officialSchoolNumber,
+					features: [],
+				});
+
+				const provisioningData: OauthDataDto = new OauthDataDto({
+					system: {
+						systemId,
+						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningUrl: 'https://mock.person-info.de/',
+					},
+					externalUser: {
+						externalId: externalUserId,
+					},
+					externalSchool: {
+						externalId: externalSchoolId,
+						name: school.name,
+						officialSchoolNumber,
+					},
+				});
+
+				provisioningService.getData.mockResolvedValueOnce(provisioningData);
+				schoolService.getSchoolBySchoolNumber.mockResolvedValueOnce(school);
+				migrationCheckService.shouldUserMigrate.mockResolvedValueOnce(false);
+				userService.findByExternalId.mockResolvedValueOnce(null);
+
+				return {
+					systemId,
+					idToken,
+					accessToken,
+					provisioningData,
+				};
+			};
+
+			it('should not provision the data', async () => {
+				const { systemId, idToken, accessToken } = setup();
+
+				await expect(service.provisionUser(systemId, idToken, accessToken)).rejects.toThrow();
+
+				expect(provisioningService.provisionData).not.toHaveBeenCalled();
+			});
+
+			it('should throw an error', async () => {
+				const { systemId, idToken, accessToken } = setup();
+
+				await expect(service.provisionUser(systemId, idToken, accessToken)).rejects.toThrow(
+					UserNotFoundAfterProvisioningLoggableException
 				);
 			});
 		});
-	});
 
-	describe('createErrorRedirect is called', () => {
-		it('should return redirect with errorCode', () => {
-			const expectedErrorCode = 'ERROR_CODE';
+		describe('when provisioning a new user and an existing school with official school number, that is currently migrating', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const idToken = 'idToken';
+				const accessToken = 'accessToken';
+				const externalUserId = 'externalUserId';
+				const externalSchoolId = 'externalSchoolId';
+				const officialSchoolNumber = 'officialSchoolNumber';
 
-			const redirect = service.createErrorRedirect(expectedErrorCode);
+				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+					id: new ObjectId().toHexString(),
+					externalId: externalSchoolId,
+					officialSchoolNumber,
+					features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+				});
 
-			expect(redirect).toEqual(`${hostUri}/login?error=${expectedErrorCode}`);
+				const provisioningData: OauthDataDto = new OauthDataDto({
+					system: {
+						systemId,
+						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningUrl: 'https://mock.person-info.de/',
+					},
+					externalUser: {
+						externalId: externalUserId,
+					},
+					externalSchool: {
+						externalId: externalSchoolId,
+						name: school.name,
+						officialSchoolNumber,
+					},
+				});
+
+				provisioningService.getData.mockResolvedValueOnce(provisioningData);
+				schoolService.getSchoolBySchoolNumber.mockResolvedValueOnce(school);
+				migrationCheckService.shouldUserMigrate.mockResolvedValueOnce(true);
+				userService.findByExternalId.mockResolvedValueOnce(null);
+
+				return {
+					systemId,
+					idToken,
+					accessToken,
+					provisioningData,
+				};
+			};
+
+			it('should not provision the data', async () => {
+				const { systemId, idToken, accessToken } = setup();
+
+				await service.provisionUser(systemId, idToken, accessToken);
+
+				expect(provisioningService.provisionData).not.toHaveBeenCalled();
+			});
+
+			it('should return null', async () => {
+				const { systemId, idToken, accessToken } = setup();
+
+				const result = await service.provisionUser(systemId, idToken, accessToken);
+
+				expect(result).toBeNull();
+			});
+		});
+
+		describe('when provisioning an existing user and an existing school with official school number, that is currently migrating', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const idToken = 'idToken';
+				const accessToken = 'accessToken';
+				const externalUserId = 'externalUserId';
+				const externalSchoolId = 'externalSchoolId';
+				const officialSchoolNumber = 'officialSchoolNumber';
+
+				const user: UserDO = userDoFactory.build({
+					id: new ObjectId().toHexString(),
+					externalId: externalUserId,
+				});
+
+				const school: LegacySchoolDo = legacySchoolDoFactory.build({
+					id: new ObjectId().toHexString(),
+					externalId: externalSchoolId,
+					officialSchoolNumber,
+					features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+				});
+
+				const provisioningData: OauthDataDto = new OauthDataDto({
+					system: {
+						systemId,
+						provisioningStrategy: SystemProvisioningStrategy.SANIS,
+						provisioningUrl: 'https://mock.person-info.de/',
+					},
+					externalUser: {
+						externalId: externalUserId,
+					},
+					externalSchool: {
+						externalId: externalSchoolId,
+						name: school.name,
+						officialSchoolNumber,
+					},
+				});
+
+				provisioningService.getData.mockResolvedValueOnce(provisioningData);
+				schoolService.getSchoolBySchoolNumber.mockResolvedValueOnce(school);
+				migrationCheckService.shouldUserMigrate.mockResolvedValueOnce(true);
+				userService.findByExternalId.mockResolvedValueOnce(user).mockResolvedValueOnce(user);
+
+				return {
+					systemId,
+					idToken,
+					accessToken,
+					provisioningData,
+					user,
+				};
+			};
+
+			it('should provision the data', async () => {
+				const { systemId, idToken, accessToken, provisioningData } = setup();
+
+				await service.provisionUser(systemId, idToken, accessToken);
+
+				expect(provisioningService.provisionData).toHaveBeenCalledWith(provisioningData);
+			});
+
+			it('should return the user', async () => {
+				const { systemId, idToken, accessToken, user } = setup();
+
+				const result = await service.provisionUser(systemId, idToken, accessToken);
+
+				expect(result).toEqual(user);
+			});
 		});
 	});
 });

@@ -5,6 +5,13 @@ metadata:
   namespace: {{ NAMESPACE }}
   labels:
     app: amqp-files
+    app.kubernetes.io/part-of: schulcloud-verbund
+    app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    app.kubernetes.io/name: amqp-files
+    app.kubernetes.io/component: files
+    app.kubernetes.io/managed-by: ansible
+    git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+    git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
 spec:
   replicas: {{ AMQP_FILE_STORAGE_REPLICAS|default("1", true) }}
   strategy:
@@ -21,6 +28,13 @@ spec:
     metadata:
       labels:
         app: amqp-files
+        app.kubernetes.io/part-of: schulcloud-verbund
+        app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        app.kubernetes.io/name: amqp-files
+        app.kubernetes.io/component: files
+        app.kubernetes.io/managed-by: ansible
+        git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+        git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
     spec:
       securityContext:
         runAsUser: 1000
@@ -34,8 +48,10 @@ spec:
         envFrom:
         - configMapRef:
             name: api-configmap
+        - configMapRef:
+            name: amqp-files-configmap
         - secretRef:
-            name: api-secret
+            name: amqp-files-secret
         command: ['npm', 'run', 'nest:start:files-storage-amqp:prod']
         resources:
           limits:
@@ -44,3 +60,42 @@ spec:
           requests:
             cpu: {{ AMQP_FILE_STORAGE_CPU_REQUESTS|default("100m", true) }}
             memory: {{ AMQP_FILE_STORAGE_MEMORY_REQUESTS|default("50Mi", true) }}
+{% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
+      affinity:
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 9
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/part-of
+                  operator: In
+                  values:
+                  - schulcloud-verbund
+              topologyKey: "kubernetes.io/hostname"
+              namespaceSelector: {}
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+{% if ANIT_AFFINITY_NODEPOOL_ENABLE is defined and ANIT_AFFINITY_NODEPOOL_ENABLE|bool %}
+          - weight: 10
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - amqp-files
+              topologyKey: {{ ANIT_AFFINITY_NODEPOOL_TOPOLOGY_KEY }}
+{% endif %}
+          - weight: 20
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - amqp-files
+              topologyKey: "topology.kubernetes.io/zone"
+{% endif %}
+              
+          

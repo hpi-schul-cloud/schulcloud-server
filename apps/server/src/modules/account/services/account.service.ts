@@ -2,10 +2,12 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
-import { Counted } from '@shared/domain';
+import { Counted, DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { isEmail, validateOrReject } from 'class-validator';
+import { DomainOperation } from '@shared/domain/interface';
+import { DomainOperationBuilder } from '@shared/domain/builder';
 import { LegacyLogger } from '../../../core/logger';
-import { IServerConfig } from '../../server/server.config';
+import { ServerConfig } from '../../server/server.config';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
@@ -19,7 +21,7 @@ export class AccountService extends AbstractAccountService {
 	constructor(
 		private readonly accountDb: AccountServiceDb,
 		private readonly accountIdm: AccountServiceIdm,
-		private readonly configService: ConfigService<IServerConfig, true>,
+		private readonly configService: ConfigService<ServerConfig, true>,
 		private readonly accountValidationService: AccountValidationService,
 		private readonly logger: LegacyLogger
 	) {
@@ -68,7 +70,12 @@ export class AccountService extends AbstractAccountService {
 			idmReferenceId: ret.id,
 			password: accountDto.password,
 		};
-		const idmAccount = await this.executeIdmMethod(async () => this.accountIdm.save(newAccount));
+		const idmAccount = await this.executeIdmMethod(async () => {
+			this.logger.debug(`Saving account with accountID ${ret.id} ...`);
+			const account = await this.accountIdm.save(newAccount);
+			this.logger.debug(`Saved account with accountID ${ret.id}`);
+			return account;
+		});
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
@@ -108,21 +115,34 @@ export class AccountService extends AbstractAccountService {
 
 	async updateUsername(accountId: string, username: string): Promise<AccountDto> {
 		const ret = await this.accountDb.updateUsername(accountId, username);
-		const idmAccount = await this.executeIdmMethod(async () => this.accountIdm.updateUsername(accountId, username));
+		const idmAccount = await this.executeIdmMethod(async () => {
+			this.logger.debug(`Updating username for account with accountID ${accountId} ...`);
+			const account = await this.accountIdm.updateUsername(accountId, username);
+			this.logger.debug(`Updated username for account with accountID ${accountId}`);
+			return account;
+		});
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
 	async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<AccountDto> {
 		const ret = await this.accountDb.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
-		const idmAccount = await this.executeIdmMethod(async () =>
-			this.accountIdm.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin)
-		);
+		const idmAccount = await this.executeIdmMethod(async () => {
+			this.logger.debug(`Updating last tried failed login for account with accountID ${accountId} ...`);
+			const account = await this.accountIdm.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
+			this.logger.debug(`Updated last tried failed login for account with accountID ${accountId}`);
+			return account;
+		});
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
 	async updatePassword(accountId: string, password: string): Promise<AccountDto> {
 		const ret = await this.accountDb.updatePassword(accountId, password);
-		const idmAccount = await this.executeIdmMethod(async () => this.accountIdm.updatePassword(accountId, password));
+		const idmAccount = await this.executeIdmMethod(async () => {
+			this.logger.debug(`Updating password for account with accountID ${accountId} ...`);
+			const account = await this.accountIdm.updatePassword(accountId, password);
+			this.logger.debug(`Updated password for account with accountID ${accountId}`);
+			return account;
+		});
 		return { ...ret, idmReferenceId: idmAccount?.idmReferenceId };
 	}
 
@@ -132,12 +152,36 @@ export class AccountService extends AbstractAccountService {
 
 	async delete(accountId: string): Promise<void> {
 		await this.accountDb.delete(accountId);
-		await this.executeIdmMethod(async () => this.accountIdm.delete(accountId));
+		await this.executeIdmMethod(async () => {
+			this.logger.debug(`Deleting account with accountId ${accountId} ...`);
+			await this.accountIdm.delete(accountId);
+			this.logger.debug(`Deleted account with accountId ${accountId}`);
+		});
 	}
 
-	async deleteByUserId(userId: string): Promise<void> {
-		await this.accountDb.deleteByUserId(userId);
-		await this.executeIdmMethod(async () => this.accountIdm.deleteByUserId(userId));
+	async deleteByUserId(userId: string): Promise<EntityId[]> {
+		const deletedAccounts = await this.accountDb.deleteByUserId(userId);
+		await this.executeIdmMethod(async () => {
+			this.logger.debug(`Deleting account with userId ${userId} ...`);
+			const deletedAccountIdm = await this.accountIdm.deleteByUserId(userId);
+			deletedAccounts.push(...deletedAccountIdm);
+			this.logger.debug(`Deleted account with userId ${userId}`);
+		});
+
+		return deletedAccounts;
+	}
+
+	async deleteAccountByUserId(userId: string): Promise<DomainOperation> {
+		const deletedAccounts = await this.deleteByUserId(userId);
+
+		const result = DomainOperationBuilder.build(
+			DomainName.ACCOUNT,
+			OperationType.DELETE,
+			deletedAccounts.length,
+			deletedAccounts
+		);
+
+		return result;
 	}
 
 	/**

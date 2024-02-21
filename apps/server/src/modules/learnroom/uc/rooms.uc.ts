@@ -1,8 +1,8 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
 import { RoomsService } from '../service/rooms.service';
-import { RoomBoardDTO } from '../types/room-board.types';
+import { RoomBoardDTO } from '../types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
 
@@ -24,8 +24,8 @@ export class RoomsUc {
 
 		await this.roomsService.updateBoard(board, roomId, userId);
 
-		const dto = this.factory.createDTO({ room: course, board, user });
-		return dto;
+		const roomBoardDTO = this.factory.createDTO({ room: course, board, user });
+		return roomBoardDTO;
 	}
 
 	async updateVisibilityOfBoardElement(

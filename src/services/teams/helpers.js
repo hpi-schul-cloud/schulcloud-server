@@ -77,7 +77,7 @@ const getTeam = (refClass, teamId) => {
 	// todo: app to this -> this.app
 	const populateParams = {
 		query: {
-			$populate: [{ path: 'roles' }, { path: 'userIds.userId' }],
+			$populate: [{ path: 'userIds.userId' }],
 		},
 	};
 	return refClass.app

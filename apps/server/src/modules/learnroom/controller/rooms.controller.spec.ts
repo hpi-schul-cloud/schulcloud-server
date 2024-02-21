@@ -1,8 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
+import { ICurrentUser } from '@modules/authentication';
+import { CopyApiResponse, CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId } from '@shared/domain';
-import { ICurrentUser } from '@src/modules/authentication';
-import { CopyApiResponse, CopyElementType, CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
+import { EntityId } from '@shared/domain/types';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
 import { RoomBoardDTO } from '../types';
 import { CourseCopyUC } from '../uc/course-copy.uc';
@@ -75,7 +75,13 @@ describe('rooms controller', () => {
 			const setup = () => {
 				const currentUser = { userId: 'userId' } as ICurrentUser;
 
-				const ucResult = { roomId: 'id', title: 'title', displayColor: '#FFFFFF', elements: [] } as RoomBoardDTO;
+				const ucResult = {
+					roomId: 'id',
+					title: 'title',
+					displayColor: '#FFFFFF',
+					elements: [],
+					isArchived: false,
+				} as RoomBoardDTO;
 				const ucSpy = jest.spyOn(uc, 'getBoard').mockImplementation(() => Promise.resolve(ucResult));
 
 				const mapperResult = new SingleColumnBoardResponse({
@@ -83,6 +89,7 @@ describe('rooms controller', () => {
 					title: 'title',
 					displayColor: '#FFFFFF',
 					elements: [],
+					isArchived: false,
 				});
 				const mapperSpy = jest.spyOn(mapper, 'mapToResponse').mockImplementation(() => mapperResult);
 				return { currentUser, ucResult, ucSpy, mapperResult, mapperSpy };

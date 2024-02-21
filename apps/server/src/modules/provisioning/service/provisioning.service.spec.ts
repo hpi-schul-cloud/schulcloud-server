@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { SystemDto } from '@modules/system/service/dto/system.dto';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SystemDto } from '@src/modules/system/service/dto/system.dto';
-import { SystemService } from '@src/modules/system/service/system.service';
+import { LegacySystemService } from '../../system/service/legacy-system.service';
 import {
 	ExternalUserDto,
 	OauthDataDto,
@@ -18,7 +18,7 @@ describe('ProvisioningService', () => {
 	let module: TestingModule;
 	let service: ProvisioningService;
 
-	let systemService: DeepMocked<SystemService>;
+	let systemService: DeepMocked<LegacySystemService>;
 	let provisioningStrategy: DeepMocked<SanisProvisioningStrategy>;
 
 	beforeAll(async () => {
@@ -26,8 +26,8 @@ describe('ProvisioningService', () => {
 			providers: [
 				ProvisioningService,
 				{
-					provide: SystemService,
-					useValue: createMock<SystemService>(),
+					provide: LegacySystemService,
+					useValue: createMock<LegacySystemService>(),
 				},
 				{
 					provide: SanisProvisioningStrategy,
@@ -57,7 +57,7 @@ describe('ProvisioningService', () => {
 		}).compile();
 
 		service = module.get(ProvisioningService);
-		systemService = module.get(SystemService);
+		systemService = module.get(LegacySystemService);
 		provisioningStrategy = module.get(SanisProvisioningStrategy);
 	});
 

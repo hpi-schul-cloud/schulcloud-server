@@ -1,9 +1,9 @@
-import { ICommonCartridgeElement } from './common-cartridge-element.interface';
+import { CommonCartridgeElement } from './common-cartridge-element.interface';
 import { CommonCartridgeResourceWrapperElement } from './common-cartridge-resource-wrapper-element';
 
 describe('CommonCartridgeResourceWrapperElement', () => {
 	it('should transform the resource elements into an array of transformed objects', () => {
-		const resourceElementsMock: ICommonCartridgeElement[] = [
+		const resourceElementsMock: CommonCartridgeElement[] = [
 			{
 				transform: jest.fn().mockReturnValue({ identifier: 'resource-1' }),
 			},

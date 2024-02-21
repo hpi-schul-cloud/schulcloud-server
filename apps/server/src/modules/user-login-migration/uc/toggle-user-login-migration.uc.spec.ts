@@ -1,26 +1,25 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { LegacySchoolService } from '@modules/legacy-school';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Permission, SchoolDO, User, UserLoginMigrationDO } from '@shared/domain';
-import { schoolDOFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
+import { LegacySchoolDo, UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { User } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
+import { legacySchoolDoFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
-import { SchoolService } from '@src/modules/school';
-import {
-	UserLoginMigrationAlreadyClosedLoggableException,
-	UserLoginMigrationGracePeriodExpiredLoggableException,
-	UserLoginMigrationNotFoundLoggableException,
-} from '../error';
+import { ObjectId } from 'bson';
+import { UserLoginMigrationNotFoundLoggableException } from '../loggable';
 import { UserLoginMigrationService } from '../service';
 import { ToggleUserLoginMigrationUc } from './toggle-user-login-migration.uc';
 
-describe('ToggleUserLoginMigrationUc', () => {
+describe(ToggleUserLoginMigrationUc.name, () => {
 	let module: TestingModule;
 	let uc: ToggleUserLoginMigrationUc;
 
 	let userLoginMigrationService: DeepMocked<UserLoginMigrationService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let schoolService: DeepMocked<SchoolService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -35,8 +34,8 @@ describe('ToggleUserLoginMigrationUc', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: SchoolService,
-					useValue: createMock<SchoolService>(),
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: Logger,
@@ -48,7 +47,7 @@ describe('ToggleUserLoginMigrationUc', () => {
 		uc = module.get(ToggleUserLoginMigrationUc);
 		userLoginMigrationService = module.get(UserLoginMigrationService);
 		authorizationService = module.get(AuthorizationService);
-		schoolService = module.get(SchoolService);
+		schoolService = module.get(LegacySchoolService);
 
 		await setupEntities();
 	});
@@ -71,20 +70,20 @@ describe('ToggleUserLoginMigrationUc', () => {
 
 				const user: User = userFactory.buildWithId();
 
-				const school: SchoolDO = schoolDOFactory.buildWithId();
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(migrationBeforeMandatory);
 				userLoginMigrationService.setMigrationMandatory.mockResolvedValueOnce(migrationAfterMandatory);
 
-				return { user, school, migrationAfterMandatory };
+				return { user, school, migrationAfterMandatory, migrationBeforeMandatory };
 			};
 
 			it('should check permission', async () => {
 				const { user, school } = setup();
 
-				await uc.setMigrationMandatory('userId', 'schoolId', true);
+				await uc.setMigrationMandatory(new ObjectId().toHexString(), new ObjectId().toHexString(), true);
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 					user,
@@ -94,17 +93,21 @@ describe('ToggleUserLoginMigrationUc', () => {
 			});
 
 			it('should call the service to set a migration mandatory', async () => {
-				setup();
+				const { migrationBeforeMandatory } = setup();
 
-				await uc.setMigrationMandatory('userId', 'schoolId', true);
+				await uc.setMigrationMandatory(new ObjectId().toHexString(), new ObjectId().toHexString(), true);
 
-				expect(userLoginMigrationService.setMigrationMandatory).toHaveBeenCalledWith('schoolId', true);
+				expect(userLoginMigrationService.setMigrationMandatory).toHaveBeenCalledWith(migrationBeforeMandatory, true);
 			});
 
 			it('should return a UserLoginMigration', async () => {
 				const { migrationAfterMandatory } = setup();
 
-				const result: UserLoginMigrationDO = await uc.setMigrationMandatory('userId', 'schoolId', true);
+				const result: UserLoginMigrationDO = await uc.setMigrationMandatory(
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString(),
+					true
+				);
 
 				expect(result).toEqual(migrationAfterMandatory);
 			});
@@ -119,20 +122,20 @@ describe('ToggleUserLoginMigrationUc', () => {
 
 				const user: User = userFactory.buildWithId();
 
-				const school: SchoolDO = schoolDOFactory.buildWithId();
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(migrationBeforeOptional);
 				userLoginMigrationService.setMigrationMandatory.mockResolvedValueOnce(migrationAfterOptional);
 
-				return { user, school, migrationAfterOptional };
+				return { user, school, migrationAfterOptional, migrationBeforeOptional };
 			};
 
 			it('should check permission', async () => {
 				const { user, school } = setup();
 
-				await uc.setMigrationMandatory('userId', 'schoolId', false);
+				await uc.setMigrationMandatory(new ObjectId().toHexString(), new ObjectId().toHexString(), false);
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 					user,
@@ -142,17 +145,21 @@ describe('ToggleUserLoginMigrationUc', () => {
 			});
 
 			it('should call the service to set a migration optional', async () => {
-				setup();
+				const { migrationBeforeOptional } = setup();
 
-				await uc.setMigrationMandatory('userId', 'schoolId', false);
+				await uc.setMigrationMandatory(new ObjectId().toHexString(), new ObjectId().toHexString(), false);
 
-				expect(userLoginMigrationService.setMigrationMandatory).toHaveBeenCalledWith('schoolId', false);
+				expect(userLoginMigrationService.setMigrationMandatory).toHaveBeenCalledWith(migrationBeforeOptional, false);
 			});
 
 			it('should return a UserLoginMigration', async () => {
 				const { migrationAfterOptional } = setup();
 
-				const result: UserLoginMigrationDO = await uc.setMigrationMandatory('userId', 'schoolId', false);
+				const result: UserLoginMigrationDO = await uc.setMigrationMandatory(
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString(),
+					false
+				);
 
 				expect(result).toEqual(migrationAfterOptional);
 			});
@@ -162,7 +169,7 @@ describe('ToggleUserLoginMigrationUc', () => {
 			const setup = () => {
 				const user: User = userFactory.buildWithId();
 
-				const school: SchoolDO = schoolDOFactory.buildWithId();
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -174,9 +181,9 @@ describe('ToggleUserLoginMigrationUc', () => {
 			it('should throw an exception', async () => {
 				setup();
 
-				const func = async () => uc.setMigrationMandatory('userId', 'schoolId', true);
-
-				await expect(func).rejects.toThrow(ForbiddenException);
+				await expect(
+					uc.setMigrationMandatory(new ObjectId().toHexString(), new ObjectId().toHexString(), true)
+				).rejects.toThrow(ForbiddenException);
 			});
 		});
 
@@ -184,7 +191,7 @@ describe('ToggleUserLoginMigrationUc', () => {
 			const setup = () => {
 				const user: User = userFactory.buildWithId();
 
-				const school: SchoolDO = schoolDOFactory.buildWithId();
+				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
@@ -194,61 +201,9 @@ describe('ToggleUserLoginMigrationUc', () => {
 			it('should throw a UserLoginMigrationNotFoundLoggableException', async () => {
 				setup();
 
-				const func = async () => uc.setMigrationMandatory('userId', 'schoolId', true);
-
-				await expect(func).rejects.toThrow(UserLoginMigrationNotFoundLoggableException);
-			});
-		});
-
-		describe('when the grace period for restarting a migration has expired', () => {
-			const setup = () => {
-				jest.useFakeTimers();
-				jest.setSystemTime(new Date(2023, 6));
-
-				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					closedAt: new Date(2023, 5),
-					finishedAt: new Date(2023, 5),
-				});
-
-				const user: User = userFactory.buildWithId();
-
-				const school: SchoolDO = schoolDOFactory.buildWithId();
-
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				schoolService.getSchoolById.mockResolvedValueOnce(school);
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(migration);
-			};
-
-			it('should throw a UserLoginMigrationGracePeriodExpiredLoggableException', async () => {
-				setup();
-
-				const func = async () => uc.setMigrationMandatory('userId', 'schoolId', true);
-
-				await expect(func).rejects.toThrow(UserLoginMigrationGracePeriodExpiredLoggableException);
-			});
-		});
-
-		describe('when migration is closed', () => {
-			const setup = () => {
-				const migration: UserLoginMigrationDO = userLoginMigrationDOFactory.buildWithId({
-					closedAt: new Date(2023, 5),
-				});
-
-				const user: User = userFactory.buildWithId();
-
-				const school: SchoolDO = schoolDOFactory.buildWithId();
-
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				schoolService.getSchoolById.mockResolvedValueOnce(school);
-				userLoginMigrationService.findMigrationBySchool.mockResolvedValueOnce(migration);
-			};
-
-			it('should throw a UserLoginMigrationAlreadyClosedLoggableException', async () => {
-				setup();
-
-				const func = async () => uc.setMigrationMandatory('userId', 'schoolId', true);
-
-				await expect(func).rejects.toThrow(UserLoginMigrationAlreadyClosedLoggableException);
+				await expect(
+					uc.setMigrationMandatory(new ObjectId().toHexString(), new ObjectId().toHexString(), true)
+				).rejects.toThrow(UserLoginMigrationNotFoundLoggableException);
 			});
 		});
 	});

@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain';
+import { DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
+import { FileDO } from '@src/infra/rabbitmq';
+import { DomainOperation } from '@shared/domain/interface';
+import { DomainOperationBuilder } from '@shared/domain/builder';
 import { CopyFileDto, FileDto } from '../dto';
-import { IFileRequestInfo } from '../interfaces';
-import { ICopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
+import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
 import { FilesStorageClientMapper } from '../mapper';
 import { FilesStorageProducer } from './files-storage.producer';
 
@@ -13,15 +15,15 @@ export class FilesStorageClientAdapterService {
 		this.logger.setContext(FilesStorageClientAdapterService.name);
 	}
 
-	async copyFilesOfParent(param: ICopyFilesRequestInfo): Promise<CopyFileDto[]> {
+	async copyFilesOfParent(param: CopyFilesRequestInfo): Promise<CopyFileDto[]> {
 		const response = await this.fileStorageMQProducer.copyFilesOfParent(param);
 		const fileInfos = FilesStorageClientMapper.mapCopyFileListResponseToCopyFilesDto(response);
 
 		return fileInfos;
 	}
 
-	async listFilesOfParent(param: IFileRequestInfo): Promise<FileDto[]> {
-		const response = await this.fileStorageMQProducer.listFilesOfParent(param);
+	async listFilesOfParent(parentId: EntityId): Promise<FileDto[]> {
+		const response = await this.fileStorageMQProducer.listFilesOfParent(parentId);
 
 		const fileInfos = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response);
 
@@ -34,5 +36,30 @@ export class FilesStorageClientAdapterService {
 		const fileInfos = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response);
 
 		return fileInfos;
+	}
+
+	async deleteOneFile(fileRecordId: EntityId): Promise<FileDto> {
+		const response = await this.fileStorageMQProducer.deleteOneFile(fileRecordId);
+
+		const fileInfo = FilesStorageClientMapper.mapFileRecordResponseToFileDto(response);
+
+		return fileInfo;
+	}
+
+	async removeCreatorIdFromFileRecords(creatorId: EntityId): Promise<DomainOperation> {
+		const response = await this.fileStorageMQProducer.removeCreatorIdFromFileRecords(creatorId);
+
+		const result = DomainOperationBuilder.build(
+			DomainName.FILERECORDS,
+			OperationType.UPDATE,
+			response.length,
+			this.getFileRecordsId(response)
+		);
+
+		return result;
+	}
+
+	private getFileRecordsId(files: FileDO[]): EntityId[] {
+		return files.map((file) => file.id);
 	}
 }

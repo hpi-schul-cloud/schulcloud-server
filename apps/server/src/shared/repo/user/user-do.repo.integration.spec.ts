@@ -1,33 +1,24 @@
 import { createMock } from '@golevelup/ts-jest';
-import { FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
+import { MongoMemoryDatabaseModule } from '@infra/database';
+import { EntityData, FindOptions, NotFoundError, QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { UserQuery } from '@modules/user/service/user-query.type';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
-import {
-	IFindOptions,
-	IUserProperties,
-	LanguageType,
-	Role,
-	RoleName,
-	School,
-	SortOrder,
-	System,
-	User,
-} from '@shared/domain';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { MongoMemoryDatabaseModule } from '@shared/infra/database';
+import { LanguageType, Role, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { IFindOptions, RoleName, SortOrder } from '@shared/domain/interface';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import {
 	cleanupCollections,
 	roleFactory,
-	schoolFactory,
-	systemFactory,
+	schoolEntityFactory,
+	systemEntityFactory,
 	userDoFactory,
 	userFactory,
 } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { UserQuery } from '@src/modules/user/service/user-query.type';
 
 describe('UserRepo', () => {
 	let module: TestingModule;
@@ -64,36 +55,6 @@ describe('UserRepo', () => {
 
 	it('should implement entityName getter', () => {
 		expect(repo.entityName).toBe(User);
-	});
-
-	describe('entityFactory', () => {
-		const props: IUserProperties = {
-			email: 'email@email.email',
-			firstName: 'firstName',
-			lastName: 'lastName',
-			school: schoolFactory.buildWithId(),
-			roles: [roleFactory.buildWithId()],
-		};
-
-		it('should return new entity of type User', () => {
-			const result: User = repo.entityFactory(props);
-
-			expect(result).toBeInstanceOf(User);
-		});
-
-		it('should return new entity with values from properties', () => {
-			const result: User = repo.entityFactory(props);
-
-			expect(result).toEqual(
-				expect.objectContaining({
-					email: props.email,
-					firstName: props.firstName,
-					lastName: props.lastName,
-					school: props.school,
-				})
-			);
-			expect(result.roles.getItems()).toEqual(props.roles);
-		});
 	});
 
 	describe('findById', () => {
@@ -141,13 +102,13 @@ describe('UserRepo', () => {
 
 	describe('findByExternalId', () => {
 		const externalId = 'externalId';
-		let system: System;
-		let school: School;
+		let system: SystemEntity;
+		let school: SchoolEntity;
 		let user: User;
 
 		beforeEach(async () => {
-			system = systemFactory.buildWithId();
-			school = schoolFactory.buildWithId();
+			system = systemEntityFactory.buildWithId();
+			school = schoolEntityFactory.buildWithId();
 			school.systems.add(system);
 			user = userFactory.buildWithId({ externalId, school });
 
@@ -185,13 +146,13 @@ describe('UserRepo', () => {
 
 	describe('findByExternalIdOrFail', () => {
 		const externalId = 'externalId';
-		let system: System;
-		let school: School;
+		let system: SystemEntity;
+		let school: SchoolEntity;
 		let user: User;
 
 		beforeEach(async () => {
-			system = systemFactory.buildWithId();
-			school = schoolFactory.buildWithId();
+			system = systemEntityFactory.buildWithId();
+			school = schoolEntityFactory.buildWithId();
 			school.systems.add(system);
 			user = userFactory.buildWithId({ externalId, school });
 
@@ -220,6 +181,51 @@ describe('UserRepo', () => {
 		});
 	});
 
+	describe('findByEmail', () => {
+		it('should find user by email', async () => {
+			const originalUsername = 'USER@EXAMPLE.COM';
+			const user = userFactory.build({ email: originalUsername });
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			const result = await repo.findByEmail('USER@EXAMPLE.COM');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ email: originalUsername }));
+		});
+
+		it('should find user by email, ignoring case', async () => {
+			const originalUsername = 'USER@EXAMPLE.COM';
+			const user = userFactory.build({ email: originalUsername });
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			let result: UserDO[];
+
+			result = await repo.findByEmail('USER@example.COM');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ email: originalUsername }));
+
+			result = await repo.findByEmail('user@example.com');
+			expect(result).toHaveLength(1);
+			expect(result[0]).toEqual(expect.objectContaining({ email: originalUsername }));
+		});
+
+		it('should not find by wildcard', async () => {
+			const originalUsername = 'USER@EXAMPLE.COM';
+			const user = userFactory.build({ email: originalUsername });
+			await em.persistAndFlush([user]);
+			em.clear();
+
+			let result: UserDO[];
+
+			result = await repo.findByEmail('USER@EXAMPLECCOM');
+			expect(result).toHaveLength(0);
+
+			result = await repo.findByEmail('.*');
+			expect(result).toHaveLength(0);
+		});
+	});
+
 	describe('mapEntityToDO', () => {
 		it('should return a domain object', () => {
 			const id = new ObjectId();
@@ -228,12 +234,13 @@ describe('UserRepo', () => {
 					email: 'email@email.email',
 					firstName: 'firstName',
 					lastName: 'lastName',
-					school: schoolFactory.buildWithId(),
+					school: schoolEntityFactory.buildWithId(),
 					ldapDn: 'ldapDn',
 					externalId: 'externalId',
 					language: LanguageType.DE,
 					forcePasswordChange: false,
 					preferences: { firstLogin: true },
+					birthday: new Date(),
 				},
 				id.toHexString()
 			);
@@ -276,6 +283,7 @@ describe('UserRepo', () => {
 					outdatedSince: testEntity.outdatedSince,
 					lastLoginSystemChange: testEntity.lastLoginSystemChange,
 					previousExternalId: testEntity.previousExternalId,
+					birthday: testEntity.birthday,
 				})
 			);
 		});
@@ -299,18 +307,19 @@ describe('UserRepo', () => {
 						outdatedSince: new Date(),
 						lastLoginSystemChange: new Date(),
 						previousExternalId: 'someId',
+						birthday: new Date(),
 					},
 					'testId'
 				);
 
-			const result: IUserProperties = repo.mapDOToEntityProperties(testDO);
+			const result: EntityData<User> = repo.mapDOToEntityProperties(testDO);
 
-			expect(result).toEqual<IUserProperties>({
+			expect(result).toEqual<EntityData<User>>({
 				email: testDO.email,
 				firstName: testDO.firstName,
 				lastName: testDO.lastName,
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-				school: expect.objectContaining<Partial<School>>({ id: testDO.schoolId }),
+				school: expect.objectContaining<Partial<SchoolEntity>>({ id: testDO.schoolId }),
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				roles: [expect.objectContaining<Partial<Role>>({ id: testDO.roles[0].id })],
 				ldapDn: testDO.ldapDn,
@@ -321,6 +330,7 @@ describe('UserRepo', () => {
 				outdatedSince: testDO.outdatedSince,
 				lastLoginSystemChange: testDO.lastLoginSystemChange,
 				previousExternalId: testDO.previousExternalId,
+				birthday: testDO.birthday,
 			});
 		});
 	});
@@ -339,7 +349,7 @@ describe('UserRepo', () => {
 			const options: IFindOptions<UserDO> = {};
 
 			await em.nativeDelete(User, {});
-			await em.nativeDelete(School, {});
+			await em.nativeDelete(SchoolEntity, {});
 
 			const userA: User = userFactory.buildWithId({ firstName: 'A' });
 			const userB: User = userFactory.buildWithId({ firstName: 'B' });
@@ -463,7 +473,7 @@ describe('UserRepo', () => {
 				const options: IFindOptions<UserDO> = {};
 
 				await em.nativeDelete(User, {});
-				await em.nativeDelete(School, {});
+				await em.nativeDelete(SchoolEntity, {});
 
 				const userA: User = userFactory.buildWithId({ firstName: 'A' });
 				const userB: User = userFactory.buildWithId({ firstName: 'B' });
@@ -524,6 +534,51 @@ describe('UserRepo', () => {
 						orderBy: expect.objectContaining<QueryOrderMap<User>>({}) as QueryOrderMap<User>,
 					})
 				);
+			});
+		});
+	});
+
+	describe('findByIdOrNull', () => {
+		describe('when user not found', () => {
+			const setup = () => {
+				const id = new ObjectId().toHexString();
+
+				return { id };
+			};
+
+			it('should return null', async () => {
+				const { id } = setup();
+
+				const result: UserDO | null = await repo.findByIdOrNull(id);
+
+				expect(result).toBeNull();
+			});
+		});
+
+		describe('when user was found', () => {
+			const setup = async () => {
+				const role: Role = roleFactory.build();
+
+				const user: User = userFactory.buildWithId({ roles: [role] });
+
+				await em.persistAndFlush([user, role]);
+				em.clear();
+
+				return { user, role };
+			};
+
+			it('should return user with role', async () => {
+				const { user, role } = await setup();
+
+				const result: UserDO | null = await repo.findByIdOrNull(user.id, true);
+
+				expect(result?.id).toEqual(user.id);
+				expect(result?.roles).toEqual([
+					{
+						id: role.id,
+						name: role.name,
+					},
+				]);
 			});
 		});
 	});

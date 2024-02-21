@@ -23,13 +23,6 @@
       template: api-fwu-svc.yml.j2
     when: FEATURE_FWU_CONTENT_ENABLED is defined and FEATURE_FWU_CONTENT_ENABLED|bool
 
-  - name: H5pEditorService
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: api-h5p-svc.yml.j2
-    when: FEATURE_H5P_EDITOR_ENABLED is defined and FEATURE_H5P_EDITOR_ENABLED|bool
-
   - name: Configmap
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -42,6 +35,27 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: onepassword.yml.j2
+    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+
+  - name: Admin API server ConfigMap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-configmap.yml.j2
+      apply: yes
+
+  - name: Admin API server Secret (from 1Password)
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-onepassword.yml.j2
+    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+
+  - name: Admin API client secret (from 1Password)
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: onepassword-admin-api-client.yml.j2
     when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
 
   - name: remove old migration Job
@@ -66,11 +80,31 @@
       namespace: "{{ NAMESPACE }}"
       template: deployment.yml.j2
 
+  - name: Ingress
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: ingress.yml.j2
+      apply: yes
+
   - name: FileStorageDeployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-files-deployment.yml.j2
+
+  - name: FileStorageDeployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-files-deployment.yml.j2
+
+  - name: File Storage Ingress
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-files-ingress.yml.j2
+      apply: yes
 
   - name: FwuLearningContentsDeployment
     kubernetes.core.k8s:
@@ -79,14 +113,126 @@
       template: api-fwu-deployment.yml.j2
     when: FEATURE_FWU_CONTENT_ENABLED is defined and FEATURE_FWU_CONTENT_ENABLED|bool
 
+  - name: Fwu Learning Contents Ingress Remove
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      state: absent
+      api_version: networking.k8s.io/v1
+      kind: Ingress
+      name: "{{ NAMESPACE }}-api-fwu-ingress"
+    when: FEATURE_FWU_CONTENT_ENABLED is defined and FEATURE_FWU_CONTENT_ENABLED|bool
+
   - name: Delete Files CronJob
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-delete-s3-files-cronjob.yml.j2
 
-  - name: AMQPFileStorageDeployment
+  - name: Data deletion trigger CronJob
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: data-deletion-trigger-cronjob.yml.j2
+    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+
+  - name: amqp files storage Deployment
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: amqp-files-deployment.yml.j2
+
+  - name: amqp files storage configmap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: amqp-files-configmap.yml.j2
+
+  - name: amqp files storage Secret by 1Password
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: amqp-files-onepassword.yml.j2
+    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+
+  - name: Preview Generator Deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: preview-generator-deployment.yml.j2
+
+  - name: preview generator configmap
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: preview-generator-configmap.yml.j2
+      apply: yes
+
+  - name: preview generator Secret by 1Password
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: preview-generator-onepassword.yml.j2
+    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+
+  - name: preview generator scaled object
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: preview-generator-scaled-object.yml.j2
+    when:
+     - KEDA_ENABLED is defined and KEDA_ENABLED|bool
+     - SCALED_PREVIEW_GENERATOR_ENABLED is defined and SCALED_PREVIEW_GENERATOR_ENABLED|bool
+
+
+  - name: admin api server deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-deployment.yml.j2
+    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+
+  - name: admin api server service
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-server-svc.yml.j2
+    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+
+  - name: TlDraw server Secret (from 1Password)
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: tldraw-server-onepassword.yml.j2
+    when: 
+     - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+     - WITH_TLDRAW is defined and WITH_TLDRAW|bool
+
+  - name: TlDraw server deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: tldraw-deployment.yml.j2
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
+
+  - name: TlDraw server service
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: tldraw-server-svc.yml.j2
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
+
+  - name: Tldraw ingress
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: tldraw-ingress.yml.j2
+      apply: yes
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
+
+  - name: TldrawServiceMonitor
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: tldraw-svc-monitor.yml.j2
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool

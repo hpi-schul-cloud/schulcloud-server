@@ -1,17 +1,17 @@
-import { v1 } from 'uuid';
+import { IdentityManagementModule, IdentityManagementService } from '@infra/identity-management';
+import { KeycloakAdministrationService } from '@infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AccountSaveDto } from '@modules/account/services/dto';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IAccount } from '@shared/domain';
-import { KeycloakAdministrationService } from '@shared/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
-import { AccountSaveDto } from '@src/modules/account/services/dto';
-import { IdentityManagementModule } from '@shared/infra/identity-management';
-import { IdentityManagementService } from '../../../shared/infra/identity-management/identity-management.service';
+import { IdmAccount } from '@shared/domain/interface';
+import { LoggerModule } from '@src/core/logger';
+import { v1 } from 'uuid';
 import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
 import { AccountServiceIdm } from './account-idm.service';
-import { AbstractAccountService } from './account.service.abstract';
 import { AccountLookupService } from './account-lookup.service';
+import { AbstractAccountService } from './account.service.abstract';
 
 describe('AccountIdmService Integration', () => {
 	let module: TestingModule;
@@ -22,21 +22,21 @@ describe('AccountIdmService Integration', () => {
 	let accountIdmService: AbstractAccountService;
 
 	const testRealm = `test-realm-${v1()}`;
-	const technicalRefId = new ObjectId().toString();
+	const testDbcAccountId = new ObjectId().toString();
 	const testAccount = new AccountSaveDto({
 		username: 'john.doe@mail.tld',
 		password: 'super-secret-password',
 		userId: new ObjectId().toString(),
 		systemId: new ObjectId().toString(),
-		idmReferenceId: technicalRefId,
+		idmReferenceId: testDbcAccountId,
 	});
 	const createAccount = async (): Promise<string> =>
 		identityManagementService.createAccount(
 			{
 				username: testAccount.username,
-				attRefFunctionalIntId: testAccount.userId,
-				attRefFunctionalExtId: testAccount.systemId,
-				attRefTechnicalId: technicalRefId,
+				attDbcUserId: testAccount.userId,
+				attDbcSystemId: testAccount.systemId,
+				attDbcAccountId: testDbcAccountId,
 			},
 			testAccount.password
 		);
@@ -56,6 +56,7 @@ describe('AccountIdmService Integration', () => {
 					},
 				}),
 				IdentityManagementModule,
+				LoggerModule,
 			],
 			providers: [
 				AccountServiceIdm,
@@ -98,12 +99,12 @@ describe('AccountIdmService Integration', () => {
 		const foundAccount = await identityManagementService.findAccountById(createdAccount.idmReferenceId ?? '');
 
 		expect(foundAccount).toEqual(
-			expect.objectContaining<IAccount>({
+			expect.objectContaining<IdmAccount>({
 				id: createdAccount.idmReferenceId ?? '',
 				username: createdAccount.username,
-				attRefTechnicalId: technicalRefId,
-				attRefFunctionalIntId: createdAccount.userId,
-				attRefFunctionalExtId: createdAccount.systemId,
+				attDbcAccountId: testDbcAccountId,
+				attDbcUserId: createdAccount.userId,
+				attDbcSystemId: createdAccount.systemId,
 			})
 		);
 	});
@@ -114,13 +115,13 @@ describe('AccountIdmService Integration', () => {
 		const idmId = await createAccount();
 
 		await accountIdmService.save({
-			id: technicalRefId,
+			id: testDbcAccountId,
 			username: newUsername,
 		});
 		const foundAccount = await identityManagementService.findAccountById(idmId);
 
 		expect(foundAccount).toEqual(
-			expect.objectContaining<IAccount>({
+			expect.objectContaining<IdmAccount>({
 				id: idmId,
 				username: newUsername,
 			})
@@ -131,12 +132,12 @@ describe('AccountIdmService Integration', () => {
 		if (!isIdmReachable) return;
 		const newUserName = 'jane.doe@mail.tld';
 		const idmId = await createAccount();
-		await accountIdmService.updateUsername(technicalRefId, newUserName);
+		await accountIdmService.updateUsername(testDbcAccountId, newUserName);
 
 		const foundAccount = await identityManagementService.findAccountById(idmId);
 
 		expect(foundAccount).toEqual(
-			expect.objectContaining<Partial<IAccount>>({
+			expect.objectContaining<Partial<IdmAccount>>({
 				username: newUserName,
 			})
 		);
@@ -145,7 +146,7 @@ describe('AccountIdmService Integration', () => {
 	it('updatePassword should update password', async () => {
 		if (!isIdmReachable) return;
 		await createAccount();
-		await expect(accountIdmService.updatePassword(technicalRefId, 'newPassword')).resolves.not.toThrow();
+		await expect(accountIdmService.updatePassword(testDbcAccountId, 'newPassword')).resolves.not.toThrow();
 	});
 
 	it('delete should remove account', async () => {
@@ -154,7 +155,7 @@ describe('AccountIdmService Integration', () => {
 		const foundAccount = await identityManagementService.findAccountById(idmId);
 		expect(foundAccount).toBeDefined();
 
-		await accountIdmService.delete(technicalRefId);
+		await accountIdmService.delete(testDbcAccountId);
 		await expect(identityManagementService.findAccountById(idmId)).rejects.toThrow();
 	});
 

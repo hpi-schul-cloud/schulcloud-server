@@ -1,7 +1,9 @@
 import { FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 
-import { Counted, Course, EntityId, IFindOptions } from '@shared/domain';
+import { Course } from '@shared/domain/entity';
+import { IFindOptions } from '@shared/domain/interface';
+import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '../base.repo';
 import { Scope } from '../scope';
 
@@ -63,7 +65,7 @@ export class CourseRepo extends BaseRepo<Course> {
 	async findById(id: EntityId, populate = true): Promise<Course> {
 		const course = await super.findById(id);
 		if (populate) {
-			await this._em.populate(course, ['courseGroups', 'teachers']);
+			await this._em.populate(course, ['courseGroups', 'teachers', 'substitutionTeachers', 'students']);
 		}
 		return course;
 	}
@@ -133,16 +135,6 @@ export class CourseRepo extends BaseRepo<Course> {
 
 		const course = await this._em.findOneOrFail(Course, scope.query);
 
-		return course;
-	}
-
-	async findOneForTeacherOrSubstituteTeacher(userId: EntityId, courseId: EntityId): Promise<Course> {
-		const scope = new CourseScope();
-		scope.forCourseId(courseId);
-		scope.forTeacherOrSubstituteTeacher(userId);
-		const course = await this._em.findOneOrFail(Course, scope.query);
-
-		await this._em.populate(course, ['students']);
 		return course;
 	}
 }

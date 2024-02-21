@@ -1,21 +1,20 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { Action, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import {
 	Board,
 	BoardElement,
 	BoardElementType,
-	ColumnboardBoardElement,
 	ColumnBoardTarget,
+	ColumnboardBoardElement,
 	Course,
-	ITaskStatus,
-	Lesson,
-	Permission,
+	LessonEntity,
 	Task,
 	TaskWithStatusVo,
 	User,
-} from '@shared/domain';
-import { AuthorizationService } from '@src/modules/authorization/authorization.service';
-import { Action } from '@src/modules/authorization/types/action.enum';
+} from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
+import { TaskStatus } from '@shared/domain/types';
 import {
 	ColumnBoardMetaData,
 	LessonMetaData,
@@ -73,7 +72,7 @@ class DtoCreator {
 			}
 
 			if (element.boardElementType === BoardElementType.Lesson) {
-				result = this.roomsAuthorisationService.hasLessonReadPermission(this.user, element.target as Lesson);
+				result = this.roomsAuthorisationService.hasLessonReadPermission(this.user, element.target as LessonEntity);
 			}
 
 			if (element instanceof ColumnboardBoardElement && this.isColumnBoardFeatureFlagActive()) {
@@ -127,8 +126,8 @@ class DtoCreator {
 		return { type: RoomBoardElementTypes.TASK, content };
 	}
 
-	private createTaskStatus(task: Task): ITaskStatus {
-		let status: ITaskStatus;
+	private createTaskStatus(task: Task): TaskStatus {
+		let status: TaskStatus;
 		if (this.isTeacher()) {
 			status = task.createTeacherStatusForUser(this.user);
 		} else {
@@ -139,7 +138,7 @@ class DtoCreator {
 
 	private mapLessonElement(element: BoardElement): RoomBoardElementDTO {
 		const type = RoomBoardElementTypes.LESSON;
-		const lesson = element.target as Lesson;
+		const lesson = element.target as LessonEntity;
 		const content: LessonMetaData = {
 			id: lesson.id,
 			name: lesson.name,
@@ -177,6 +176,7 @@ class DtoCreator {
 			displayColor: this.room.color,
 			title: this.room.name,
 			elements,
+			isArchived: this.room.isFinished(),
 		};
 		return dto;
 	}

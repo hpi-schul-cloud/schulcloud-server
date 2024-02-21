@@ -1,7 +1,7 @@
-import { EntityId } from './entity-id';
 import type { Course } from '../entity/course.entity';
-import type { School } from '../entity/school.entity';
-import type { Team } from '../entity/team.entity';
+import type { SchoolEntity } from '../entity/school.entity';
+import type { TeamEntity } from '../entity/team.entity';
+import { EntityId } from './entity-id';
 
 export enum NewsTargetModel {
 	'School' = 'schools',
@@ -10,7 +10,7 @@ export enum NewsTargetModel {
 }
 
 /** news interface for ceating news */
-export interface ICreateNews {
+export interface CreateNews {
 	title: string;
 	content: string;
 	displayAt?: Date;
@@ -18,7 +18,7 @@ export interface ICreateNews {
 }
 
 /** news interface for updating news */
-export type IUpdateNews = Partial<ICreateNews>;
+export type IUpdateNews = Partial<CreateNews>;
 
 /** interface for finding news with optional targetId */
 export interface INewsScope {
@@ -26,4 +26,4 @@ export interface INewsScope {
 	unpublished?: boolean;
 }
 
-export type NewsTarget = School | Team | Course;
+export type NewsTarget = SchoolEntity | TeamEntity | Course;

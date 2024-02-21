@@ -77,8 +77,113 @@ describe('Class Actions', () => {
 
 		it('should throw an error if school could not be found', async () => {
 			const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+			const findSchoolByPreviousExternalIdAndSystemStub = sinon.stub(
+				SchoolRepo,
+				'findSchoolByPreviousExternalIdAndSystem'
+			);
 			findSchoolByLdapIdAndSystemStub.returns(null);
+			findSchoolByPreviousExternalIdAndSystemStub.returns(null);
+
 			await expect(classAction.action({ class: { schoolDn: 'SCHOOL_DN', systemId: '' } })).to.be.rejectedWith(NotFound);
+		});
+
+		describe('when migrated school could be found, but does not have the sync feature', () => {
+			const setup = () => {
+				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+				const findSchoolByPreviousExternalIdAndSystemStub = sinon.stub(
+					SchoolRepo,
+					'findSchoolByPreviousExternalIdAndSystem'
+				);
+
+				findSchoolByLdapIdAndSystemStub.returns(null);
+				findSchoolByPreviousExternalIdAndSystemStub.returns({ name: testSchoolName });
+			};
+
+			it('should throw an error', async () => {
+				setup();
+
+				await expect(classAction.action({ class: { schoolDn: 'SCHOOL_DN', systemId: '' } })).to.be.rejectedWith(
+					NotFound
+				);
+			});
+		});
+
+		describe('when migrated school could be found, but migration is closed', () => {
+			const setup = () => {
+				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+				const findSchoolByPreviousExternalIdAndSystemStub = sinon.stub(
+					SchoolRepo,
+					'findSchoolByPreviousExternalIdAndSystem'
+				);
+
+				findSchoolByLdapIdAndSystemStub.returns(null);
+				findSchoolByPreviousExternalIdAndSystemStub.returns({
+					name: testSchoolName,
+					features: ['enableLdapSyncDuringMigration'],
+					userLoginMigration: {
+						startedAt: new Date(),
+						closedAt: new Date(),
+					},
+				});
+			};
+
+			it('should throw an error', async () => {
+				setup();
+
+				await expect(classAction.action({ class: { schoolDn: 'SCHOOL_DN', systemId: '' } })).to.be.rejectedWith(
+					NotFound
+				);
+			});
+		});
+
+		describe('when migrated school could be found and has the sync feature', () => {
+			const setup = () => {
+				const schoolId = new ObjectId();
+				const className = 'Class Name';
+				const ldapDn = 'some ldap';
+				const currentYear = new ObjectId();
+
+				const findSchoolByLdapIdAndSystemStub = sinon.stub(SchoolRepo, 'findSchoolByLdapIdAndSystem');
+				const findSchoolByPreviousExternalIdAndSystemStub = sinon.stub(
+					SchoolRepo,
+					'findSchoolByPreviousExternalIdAndSystem'
+				);
+				const findClassByYearAndLdapDnStub = sinon.stub(ClassRepo, 'findClassByYearAndLdapDn');
+				const createClassStub = sinon.stub(ClassRepo, 'createClass');
+
+				findSchoolByLdapIdAndSystemStub.returns(null);
+				findSchoolByPreviousExternalIdAndSystemStub.returns({
+					name: testSchoolName,
+					_id: schoolId,
+					currentYear,
+					features: ['enableLdapSyncDuringMigration'],
+					userLoginMigration: {
+						startedAt: new Date(),
+					},
+				});
+				findClassByYearAndLdapDnStub.returns(null);
+				createClassStub.returns({ _id: new ObjectId() });
+
+				return {
+					className,
+					ldapDn,
+					currentYear,
+					createClassStub,
+				};
+			};
+
+			it('should sync the classes', async () => {
+				const { className, ldapDn, currentYear, createClassStub } = setup();
+
+				await classAction.action({ class: { name: className, ldapDN: ldapDn } });
+
+				expect(createClassStub.calledOnce).to.be.true;
+				const { firstArg, lastArg } = createClassStub.firstCall;
+				expect(firstArg.name).to.be.equal(className);
+				expect(firstArg.ldapDN).to.be.equal(ldapDn);
+				expect(lastArg.name).to.be.equal(testSchoolName);
+				expect(lastArg.currentYear._id.toString()).to.be.equal(currentYear.toString());
+			});
 		});
 
 		describe('When school is in maintenance mode', () => {
@@ -236,6 +341,54 @@ describe('Class Actions', () => {
 			expect(updateClassTeachersStub.calledOnce).to.be.true;
 			expect(updateClassTeachersStub.getCall(0).firstArg.toString()).to.be.equal(mockClass._id.toString());
 			expect(updateClassTeachersStub.getCall(0).lastArg).to.eql(['user2', 'user3']);
+		});
+
+		it('should not add any user to the class, when uniqueMembers are []', async () => {
+			const uniqueMembers = [];
+			const schoolObj = { _id: new ObjectId(), currentYear: new ObjectId() };
+			const findByLdapDnsAndSchoolStub = sinon.stub(UserRepo, 'findByLdapDnsAndSchool');
+
+			await classAction.addUsersToClass(schoolObj._id, mockClass._id, uniqueMembers);
+
+			expect(findByLdapDnsAndSchoolStub.notCalled).to.be.true;
+
+			expect(updateClassStudentsStub.getCall(0).firstArg.toString()).to.be.equal(mockClass._id.toString());
+			expect(updateClassStudentsStub.getCall(0).lastArg).to.eql([]);
+
+			expect(updateClassTeachersStub.getCall(0).firstArg.toString()).to.be.equal(mockClass._id.toString());
+			expect(updateClassTeachersStub.getCall(0).lastArg).to.eql([]);
+		});
+
+		it('should not add any user to the class, when uniqueMembers are [undefined]', async () => {
+			const uniqueMembers = [undefined];
+			const schoolObj = { _id: new ObjectId(), currentYear: new ObjectId() };
+			const findByLdapDnsAndSchoolStub = sinon.stub(UserRepo, 'findByLdapDnsAndSchool');
+
+			await classAction.addUsersToClass(schoolObj._id, mockClass._id, uniqueMembers);
+
+			expect(findByLdapDnsAndSchoolStub.notCalled).to.be.true;
+
+			expect(updateClassStudentsStub.getCall(0).firstArg.toString()).to.be.equal(mockClass._id.toString());
+			expect(updateClassStudentsStub.getCall(0).lastArg).to.eql([]);
+
+			expect(updateClassTeachersStub.getCall(0).firstArg.toString()).to.be.equal(mockClass._id.toString());
+			expect(updateClassTeachersStub.getCall(0).lastArg).to.eql([]);
+		});
+
+		it('should not add any user to the class, when uniqueMembers are [null]', async () => {
+			const uniqueMembers = [null];
+			const schoolObj = { _id: new ObjectId(), currentYear: new ObjectId() };
+			const findByLdapDnsAndSchoolStub = sinon.stub(UserRepo, 'findByLdapDnsAndSchool');
+
+			await classAction.addUsersToClass(schoolObj._id, mockClass._id, uniqueMembers);
+
+			expect(findByLdapDnsAndSchoolStub.notCalled).to.be.true;
+
+			expect(updateClassStudentsStub.getCall(0).firstArg.toString()).to.be.equal(mockClass._id.toString());
+			expect(updateClassStudentsStub.getCall(0).lastArg).to.eql([]);
+
+			expect(updateClassTeachersStub.getCall(0).firstArg.toString()).to.be.equal(mockClass._id.toString());
+			expect(updateClassTeachersStub.getCall(0).lastArg).to.eql([]);
 		});
 	});
 });

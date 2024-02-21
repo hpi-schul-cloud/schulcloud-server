@@ -1,63 +1,121 @@
+import { Injectable } from '@nestjs/common';
 import { sanitizeRichText } from '@shared/controller';
 import {
 	AnyBoardDo,
-	BoardCompositeVisitor,
+	BoardCompositeVisitorAsync,
 	Card,
 	Column,
 	ColumnBoard,
+	ExternalToolElement,
 	FileElement,
 	RichTextElement,
 	SubmissionContainerElement,
-} from '@shared/domain';
-import { FileContentBody, RichTextContentBody, SubmissionContainerContentBody } from '../controller/dto';
+	SubmissionItem,
+} from '@shared/domain/domainobject';
+import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
+import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
+import { InputFormat } from '@shared/domain/types';
+import {
+	AnyElementContentBody,
+	DrawingContentBody,
+	ExternalToolContentBody,
+	FileContentBody,
+	LinkContentBody,
+	RichTextContentBody,
+	SubmissionContainerContentBody,
+} from '../controller/dto';
 
-type ContentType = FileContentBody | RichTextContentBody | SubmissionContainerContentBody;
+@Injectable()
+export class ContentElementUpdateVisitor implements BoardCompositeVisitorAsync {
+	private readonly content: AnyElementContentBody;
 
-export class ContentElementUpdateVisitor implements BoardCompositeVisitor {
-	private readonly content: ContentType;
-
-	constructor(content: ContentType) {
+	constructor(content: AnyElementContentBody) {
 		this.content = content;
 	}
 
-	visitColumnBoard(columnBoard: ColumnBoard): void {
-		this.throwNotHandled(columnBoard);
+	async visitColumnBoardAsync(columnBoard: ColumnBoard): Promise<void> {
+		return this.rejectNotHandled(columnBoard);
 	}
 
-	visitColumn(column: Column): void {
-		this.throwNotHandled(column);
+	async visitColumnAsync(column: Column): Promise<void> {
+		return this.rejectNotHandled(column);
 	}
 
-	visitCard(card: Card): void {
-		this.throwNotHandled(card);
+	async visitCardAsync(card: Card): Promise<void> {
+		return this.rejectNotHandled(card);
 	}
 
-	visitFileElement(fileElement: FileElement): void {
+	async visitFileElementAsync(fileElement: FileElement): Promise<void> {
 		if (this.content instanceof FileContentBody) {
-			fileElement.caption = this.content.caption;
-		} else {
-			this.throwNotHandled(fileElement);
+			fileElement.caption = sanitizeRichText(this.content.caption, InputFormat.PLAIN_TEXT);
+			fileElement.alternativeText = sanitizeRichText(this.content.alternativeText, InputFormat.PLAIN_TEXT);
+			return Promise.resolve();
 		}
+		return this.rejectNotHandled(fileElement);
 	}
 
-	visitRichTextElement(richTextElement: RichTextElement): void {
+	async visitLinkElementAsync(linkElement: LinkElement): Promise<void> {
+		if (this.content instanceof LinkContentBody) {
+			linkElement.url = new URL(this.content.url).toString();
+			linkElement.title = this.content.title ?? '';
+			linkElement.description = this.content.description ?? '';
+			if (this.content.imageUrl) {
+				const isRelativeUrl = (url: string) => {
+					const fallbackHostname = 'https://www.fallback-url-if-url-is-relative.org';
+					const imageUrlObject = new URL(url, fallbackHostname);
+					return imageUrlObject.origin === fallbackHostname;
+				};
+
+				if (isRelativeUrl(this.content.imageUrl)) {
+					linkElement.imageUrl = this.content.imageUrl;
+				}
+			}
+			return Promise.resolve();
+		}
+		return this.rejectNotHandled(linkElement);
+	}
+
+	async visitRichTextElementAsync(richTextElement: RichTextElement): Promise<void> {
 		if (this.content instanceof RichTextContentBody) {
 			richTextElement.text = sanitizeRichText(this.content.text, this.content.inputFormat);
 			richTextElement.inputFormat = this.content.inputFormat;
-		} else {
-			this.throwNotHandled(richTextElement);
+			return Promise.resolve();
 		}
+		return this.rejectNotHandled(richTextElement);
 	}
 
-	visitSubmissionContainerElement(submissionContainerElement: SubmissionContainerElement): void {
+	async visitDrawingElementAsync(drawingElement: DrawingElement): Promise<void> {
+		if (this.content instanceof DrawingContentBody) {
+			drawingElement.description = this.content.description;
+			return Promise.resolve();
+		}
+		return this.rejectNotHandled(drawingElement);
+	}
+
+	async visitSubmissionContainerElementAsync(submissionContainerElement: SubmissionContainerElement): Promise<void> {
 		if (this.content instanceof SubmissionContainerContentBody) {
-			submissionContainerElement.dueDate = this.content.dueDate;
-		} else {
-			this.throwNotHandled(submissionContainerElement);
+			if (this.content.dueDate !== undefined) {
+				submissionContainerElement.dueDate = this.content.dueDate;
+			}
+			return Promise.resolve();
 		}
+		return this.rejectNotHandled(submissionContainerElement);
 	}
 
-	private throwNotHandled(component: AnyBoardDo) {
-		throw new Error(`Cannot update element of type: '${component.constructor.name}'`);
+	async visitSubmissionItemAsync(submission: SubmissionItem): Promise<void> {
+		return this.rejectNotHandled(submission);
+	}
+
+	async visitExternalToolElementAsync(externalToolElement: ExternalToolElement): Promise<void> {
+		if (this.content instanceof ExternalToolContentBody && this.content.contextExternalToolId !== undefined) {
+			// Updates should not remove an existing reference to a tool, to prevent orphan tool instances
+			externalToolElement.contextExternalToolId = this.content.contextExternalToolId;
+			return Promise.resolve();
+		}
+		return this.rejectNotHandled(externalToolElement);
+	}
+
+	private rejectNotHandled(component: AnyBoardDo): Promise<void> {
+		return Promise.reject(new Error(`Cannot update element of type: '${component.constructor.name}'`));
 	}
 }

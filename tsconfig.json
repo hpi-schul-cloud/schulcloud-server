@@ -12,16 +12,16 @@
 		"strictPropertyInitialization": true,
 		"noImplicitAny": false,
 		"target": "es2017",
-		"lib": [
-			"es2019.array"
-		],
+		"lib": ["es2019.array", "DOM"],
 		"sourceMap": true,
 		"outDir": "./dist",
 		"baseUrl": "./",
 		"incremental": true,
 		"paths": {
 			"@shared/*": ["apps/server/src/shared/*"],
-			"@src/*": ["apps/server/src/*"]
+			"@src/*": ["apps/server/src/*"],
+			"@modules/*": ["apps/server/src/modules/*"],
+			"@infra/*": ["apps/server/src/infra/*"]
 		}
 	}
 }

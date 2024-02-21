@@ -1,8 +1,8 @@
+import { IdentityManagementService } from '@infra/identity-management';
+import { ServerConfig } from '@modules/server/server.config';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { EntityId } from '@shared/domain';
-import { IdentityManagementService } from '@shared/infra/identity-management';
-import { IServerConfig } from '@src/modules/server/server.config';
+import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 
 /**
@@ -15,7 +15,7 @@ import { ObjectId } from 'bson';
 export class AccountLookupService {
 	constructor(
 		private readonly idmService: IdentityManagementService,
-		private readonly configService: ConfigService<IServerConfig, true>
+		private readonly configService: ConfigService<ServerConfig, true>
 	) {}
 
 	/**
@@ -30,7 +30,7 @@ export class AccountLookupService {
 		}
 		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
 			const account = await this.idmService.findAccountById(id);
-			return new ObjectId(account.attRefTechnicalId);
+			return new ObjectId(account.attDbcAccountId);
 		}
 		return null;
 	}
@@ -46,7 +46,7 @@ export class AccountLookupService {
 			return id;
 		}
 		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
-			const account = await this.idmService.findAccountByTecRefId(id.toString());
+			const account = await this.idmService.findAccountByDbcAccountId(id.toString());
 			return account.id;
 		}
 		return null;

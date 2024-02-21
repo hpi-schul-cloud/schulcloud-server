@@ -1,4 +1,4 @@
-FROM docker.io/node:18 as git
+FROM docker.io/node:18 AS git
 
 RUN mkdir /app && chown -R node:node /app
 WORKDIR /app
@@ -16,7 +16,6 @@ COPY esbuild ./esbuild
 RUN npm ci && npm cache clean --force
 COPY config /schulcloud-server/config
 COPY backup /schulcloud-server/backup
-COPY migrations /schulcloud-server/migrations
 COPY src /schulcloud-server/src
 COPY apps /schulcloud-server/apps
 COPY --from=git /app/serverversion /schulcloud-server/apps/server/static-assets
@@ -24,4 +23,5 @@ COPY scripts/ldapSync.sh /schulcloud-server/scripts/
 RUN npm run build
 
 ENV NODE_ENV=production
+ENV NO_COLOR="true"
 CMD npm run start

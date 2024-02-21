@@ -1,27 +1,25 @@
-import { EntityName } from '@mikro-orm/core';
+import { EntityData, EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { EntityId, School, System, UserLoginMigrationDO } from '@shared/domain';
-import { IUserLoginMigration, UserLoginMigration } from '@shared/domain/entity/user-login-migration.entity';
+import { UserLoginMigrationDO } from '@shared/domain/domainobject';
+import { SchoolEntity, SystemEntity } from '@shared/domain/entity';
+import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
+import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { BaseDORepo } from '../base.do.repo';
 
 @Injectable()
-export class UserLoginMigrationRepo extends BaseDORepo<UserLoginMigrationDO, UserLoginMigration, IUserLoginMigration> {
+export class UserLoginMigrationRepo extends BaseDORepo<UserLoginMigrationDO, UserLoginMigrationEntity> {
 	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
 		super(_em, logger);
 	}
 
-	get entityName(): EntityName<UserLoginMigration> {
-		return UserLoginMigration;
-	}
-
-	entityFactory(props: IUserLoginMigration): UserLoginMigration {
-		return new UserLoginMigration(props);
+	get entityName(): EntityName<UserLoginMigrationEntity> {
+		return UserLoginMigrationEntity;
 	}
 
 	async findBySchoolId(schoolId: EntityId): Promise<UserLoginMigrationDO | null> {
-		const userLoginMigration: UserLoginMigration | null = await this._em.findOne(UserLoginMigration, {
+		const userLoginMigration: UserLoginMigrationEntity | null = await this._em.findOne(UserLoginMigrationEntity, {
 			school: schoolId,
 		});
 
@@ -33,7 +31,7 @@ export class UserLoginMigrationRepo extends BaseDORepo<UserLoginMigrationDO, Use
 		return null;
 	}
 
-	mapEntityToDO(entity: UserLoginMigration): UserLoginMigrationDO {
+	mapEntityToDO(entity: UserLoginMigrationEntity): UserLoginMigrationDO {
 		const userLoginMigrationDO: UserLoginMigrationDO = new UserLoginMigrationDO({
 			id: entity.id,
 			schoolId: entity.school.id,
@@ -48,11 +46,11 @@ export class UserLoginMigrationRepo extends BaseDORepo<UserLoginMigrationDO, Use
 		return userLoginMigrationDO;
 	}
 
-	mapDOToEntityProperties(entityDO: UserLoginMigrationDO): IUserLoginMigration {
-		const userLoginMigrationProps: IUserLoginMigration = {
-			school: this._em.getReference(School, entityDO.schoolId),
-			sourceSystem: entityDO.sourceSystemId ? this._em.getReference(System, entityDO.sourceSystemId) : undefined,
-			targetSystem: this._em.getReference(System, entityDO.targetSystemId),
+	mapDOToEntityProperties(entityDO: UserLoginMigrationDO): EntityData<UserLoginMigrationEntity> {
+		const userLoginMigrationProps: EntityData<UserLoginMigrationEntity> = {
+			school: this._em.getReference(SchoolEntity, entityDO.schoolId),
+			sourceSystem: entityDO.sourceSystemId ? this._em.getReference(SystemEntity, entityDO.sourceSystemId) : undefined,
+			targetSystem: this._em.getReference(SystemEntity, entityDO.targetSystemId),
 			mandatorySince: entityDO.mandatorySince,
 			startedAt: entityDO.startedAt,
 			closedAt: entityDO.closedAt,

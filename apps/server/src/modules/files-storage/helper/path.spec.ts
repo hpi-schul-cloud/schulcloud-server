@@ -1,7 +1,7 @@
-import { EntityId } from '@shared/domain';
+import { EntityId } from '@shared/domain/types';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { createICopyFiles, createPath, getPaths } from '.';
+import { createCopyFiles, createPath, createPreviewDirectoryPath, createPreviewFilePath, getPaths } from '.';
 import { FileRecord } from '../entity';
 import { ErrorType } from '../error';
 
@@ -48,6 +48,20 @@ describe('Path Helper', () => {
 		});
 	});
 
+	describe('createPreviewFilePath', () => {
+		it('should create path', () => {
+			const path = createPreviewFilePath('schoolId', 'previewId', 'fileRecordId');
+			expect(path).toBe('previews/schoolId/fileRecordId/previewId');
+		});
+	});
+
+	describe('createPreviewDirectoryPath', () => {
+		it('should create path', () => {
+			const path = createPreviewDirectoryPath('schoolId', 'fileRecordId');
+			expect(path).toBe('previews/schoolId/fileRecordId');
+		});
+	});
+
 	describe('getPaths', () => {
 		const setup = () => {
 			return { fileRecords: setupFileRecords() };
@@ -87,7 +101,7 @@ describe('Path Helper', () => {
 				targetPath: createPath(targetFile.schoolId, targetFile.id),
 			};
 
-			const result = createICopyFiles(sourceFile, targetFile);
+			const result = createCopyFiles(sourceFile, targetFile);
 
 			expect(result).toEqual(expectedICopyFiles);
 		});

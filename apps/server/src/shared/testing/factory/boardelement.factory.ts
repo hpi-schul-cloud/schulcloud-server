@@ -1,12 +1,12 @@
 import {
 	ColumnboardBoardElement,
 	ColumnBoardTarget,
-	EntityId,
-	Lesson,
 	LessonBoardElement,
+	LessonEntity,
 	Task,
 	TaskBoardElement,
-} from '@shared/domain';
+} from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { BaseFactory } from './base.factory';
 import { lessonFactory } from './lesson.factory';
@@ -18,7 +18,7 @@ export const taskBoardElementFactory = BaseFactory.define<TaskBoardElement, { ta
 	};
 });
 
-export const lessonBoardElementFactory = BaseFactory.define<LessonBoardElement, { target: Lesson }>(
+export const lessonBoardElementFactory = BaseFactory.define<LessonBoardElement, { target: LessonEntity }>(
 	LessonBoardElement,
 	() => {
 		return { target: lessonFactory.build() };

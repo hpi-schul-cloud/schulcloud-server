@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId, DashboardEntity, GridElementWithPosition, DashboardModelEntity } from '@shared/domain';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { Injectable } from '@nestjs/common';
+import { DashboardEntity, DashboardModelEntity, GridElementWithPosition } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import { DashboardModelMapper } from './dashboard.model.mapper';
 
 const generateEmptyDashboard = (userId: EntityId) => {
@@ -12,8 +13,10 @@ const generateEmptyDashboard = (userId: EntityId) => {
 
 export interface IDashboardRepo {
 	getUsersDashboard(userId: EntityId): Promise<DashboardEntity>;
+	getUsersDashboardIfExist(userId: EntityId): Promise<DashboardEntity | null>;
 	getDashboardById(id: EntityId): Promise<DashboardEntity>;
 	persistAndFlush(entity: DashboardEntity): Promise<DashboardEntity>;
+	deleteDashboardByUserId(userId: EntityId): Promise<number>;
 }
 
 @Injectable()
@@ -49,5 +52,20 @@ export class DashboardRepo implements IDashboardRepo {
 		await this.persistAndFlush(dashboard);
 
 		return dashboard;
+	}
+
+	async getUsersDashboardIfExist(userId: EntityId): Promise<DashboardEntity | null> {
+		const dashboardModel = await this.em.findOne(DashboardModelEntity, { user: userId });
+		if (dashboardModel) {
+			return this.mapper.mapDashboardToEntity(dashboardModel);
+		}
+
+		return dashboardModel;
+	}
+
+	async deleteDashboardByUserId(userId: EntityId): Promise<number> {
+		const promise = await this.em.nativeDelete(DashboardModelEntity, { user: userId });
+
+		return promise;
 	}
 }
