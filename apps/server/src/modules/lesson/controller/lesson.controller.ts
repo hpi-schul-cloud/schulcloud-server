@@ -26,4 +26,11 @@ export class LessonController {
 		const response = new LessonMetadataListResponse(dtoList, dtoList.length);
 		return response;
 	}
+
+	@Get(':lessonId')
+	async getLesson(@Param() urlParams: LessonUrlParams, @CurrentUser() currentUser: ICurrentUser) {
+		const lesson = await this.lessonUC.getLesson(currentUser.userId, urlParams.lessonId);
+		const response = LessonMapper.mapToResponse(lesson);
+		return response;
+	}
 }

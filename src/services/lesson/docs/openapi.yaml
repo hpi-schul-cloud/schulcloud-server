@@ -202,7 +202,8 @@ paths:
           name: _id
           description: ID of lessons to return
           schema:
-            type: integer
+            type: string
+            format: '^[0-9a-f]{24}$'
           required: true
       responses:
         '200':
@@ -229,7 +230,7 @@ paths:
           name: _id
           description: ID of lessons to update
           schema:
-            type: integer
+            type: string
           required: true
       responses:
         '200':
@@ -262,7 +263,7 @@ paths:
           name: _id
           description: ID of lessons to update
           schema:
-            type: integer
+            type: string
           required: true
       responses:
         '200':
@@ -295,7 +296,7 @@ paths:
           name: _id
           description: ID of lessons to remove
           schema:
-            type: integer
+            type: string
           required: true
       responses:
         '200':

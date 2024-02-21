@@ -153,4 +153,44 @@ describe('LessonUC', () => {
 			});
 		});
 	});
+
+	describe('getLesson', () => {
+		describe('when user is a valid teacher', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+				const lesson = lessonFactory.buildWithId();
+				lessonService.findById.mockResolvedValueOnce(lesson);
+
+				authorizationService.hasPermission.mockReturnValueOnce(true);
+
+				return { user, lesson };
+			};
+			it('should get user with permissions from authorizationService', async () => {
+				const { user } = setup();
+				await lessonUC.getLesson(user.id, 'lessonId');
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(user.id);
+			});
+			it('should get lesson from lessonService', async () => {
+				const { user, lesson } = setup();
+				await lessonUC.getLesson(user.id, lesson.id);
+				expect(lessonService.findById).toHaveBeenCalledWith(lesson.id);
+			});
+			it('should return check permission', async () => {
+				const { user, lesson } = setup();
+				await lessonUC.getLesson(user.id, lesson.id);
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
+					expect.objectContaining({ ...user }),
+					expect.objectContaining({ ...lesson }),
+					AuthorizationContextBuilder.read([Permission.TOPIC_VIEW])
+				);
+			});
+			it('should return lesson', async () => {
+				const { user, lesson } = setup();
+				const result = await lessonUC.getLesson(user.id, lesson.id);
+				expect(result).toEqual(lesson);
+			});
+		});
+	});
 });
