@@ -1,6 +1,7 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/entity';
 import { SchoolFeature } from '@shared/domain/types';
+import { Type } from 'class-transformer';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { FileStorageType, SchoolUpdateBody } from '../../../domain';
 
@@ -38,5 +39,6 @@ export class SchoolUpdateBodyParams implements SchoolUpdateBody {
 	@IsEnum(SchoolFeature, { each: true })
 	@IsOptional()
 	@ApiPropertyOptional({ enum: SchoolFeature, isArray: true })
+	@Type(() => Set)
 	features?: Set<SchoolFeature>;
 }

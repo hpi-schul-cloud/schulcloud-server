@@ -19,7 +19,7 @@ export abstract class BaseDomainObjectRepo<D extends DomainObject<AuthorizableOb
 	}
 
 	async saveAll(domainObjects: D[]): Promise<D[]> {
-		const promises = domainObjects.map(async (dob) => this.createOrUpdateEntity(dob));
+		const promises = domainObjects.map((dob) => this.createOrUpdateEntity(dob));
 
 		const results = await Promise.all(promises);
 
@@ -35,16 +35,12 @@ export abstract class BaseDomainObjectRepo<D extends DomainObject<AuthorizableOb
 	private async createOrUpdateEntity(domainObject: D): Promise<{ domainObject: D; persistedEntity: E }> {
 		const entityData = this.mapDOToEntityProperties(domainObject);
 		this.removeProtectedEntityFields(entityData);
-
-		const { entityName } = this;
-
-		const existingEntity = domainObject.id
-			? await this.em.findOneOrFail(entityName, { id: domainObject.id } as FilterQuery<E>)
-			: undefined;
+		const { id } = domainObject;
+		const existingEntity = await this.em.findOne(this.entityName, { id } as FilterQuery<E>);
 
 		const persistedEntity = existingEntity
 			? this.em.assign(existingEntity, entityData)
-			: this.em.create(entityName, entityData as RequiredEntityData<E>);
+			: this.em.create(this.entityName, { ...entityData, id } as RequiredEntityData<E>);
 
 		return { domainObject, persistedEntity };
 	}
