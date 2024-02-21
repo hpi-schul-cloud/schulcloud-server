@@ -189,6 +189,9 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
+                                    <a href="#type" >type</a>
+                                </li>
+                                <li>
                                     <a href="#ldapConfig" >ldapConfig</a>
                                 </li>
                                 <li>
@@ -307,6 +310,28 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
+                        <a name="type"></a>
+                        <span class="name"><b>type</b><a href="#type"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>type()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/system/domain/system.do.ts:26</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
                         <a name="ldapConfig"></a>
                         <span class="name"><b>ldapConfig</b><a href="#ldapConfig"><span class="icon ion-ios-link"></span></a></span>
                     </td>
@@ -319,7 +344,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/system/domain/system.do.ts:25</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/system/domain/system.do.ts:30</a></div>
                                 </td>
                             </tr>
 
@@ -341,7 +366,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/modules/system/domain/system.do.ts:29</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="34" class="link-to-prism">apps/server/src/modules/system/domain/system.do.ts:34</a></div>
                                 </td>
                             </tr>
 
@@ -356,6 +381,7 @@
 import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
 import { LdapConfig } from &#x27;./ldap-config&#x27;;
 import { OauthConfig } from &#x27;./oauth-config&#x27;;
+import { SystemType } from &#x27;./system-type.enum&#x27;;
 
 export interface SystemProps extends AuthorizableObject {
 	type: string;
@@ -376,6 +402,10 @@ export interface SystemProps extends AuthorizableObject {
 }
 
 export class System extends DomainObject&lt;SystemProps&gt; {
+	get type(): SystemType | string {
+		return this.props.type;
+	}
+
 	get ldapConfig(): LdapConfig | undefined {
 		return this.props.ldapConfig;
 	}

@@ -24,13 +24,13 @@
 <title>cluster_CommonToolModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 1556,-268 1556,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_CommonToolModule_exports</title>
-<polygon fill="none" stroke="black" points="182,-208 182,-260 1131,-260 1131,-208 182,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_CommonToolModule_providers</title>
 <polygon fill="none" stroke="black" points="298,-78 298,-130 1548,-130 1548,-78 298,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_CommonToolModule_exports</title>
+<polygon fill="none" stroke="black" points="182,-208 182,-260 1131,-260 1131,-208 182,-208"/>
 </g>
 <g id="clust3" class="cluster">
 <title>cluster_CommonToolModule_imports</title>

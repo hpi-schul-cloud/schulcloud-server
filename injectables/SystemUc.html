@@ -154,6 +154,11 @@
                                     <span class="modifier">Async</span>
                                 <a href="#findById" >findById</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#removeSystemFromSchool" >removeSystemFromSchool</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -172,12 +177,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(legacySystemService: <a href="../injectables/LegacySystemService.html" target="_self">LegacySystemService</a>, systemService: <a href="../injectables/SystemService.html" target="_self">SystemService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>)</code>
+<code>constructor(legacySystemService: <a href="../injectables/LegacySystemService.html" target="_self">LegacySystemService</a>, systemService: <a href="../injectables/SystemService.html" target="_self">SystemService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -230,6 +235,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>schoolService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/LegacySchoolService.html" target="_self" >LegacySchoolService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -259,15 +276,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>delete(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, systemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>delete(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, systemId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="43"
-                                    class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:43</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -289,6 +306,18 @@
                                     <tbody>
                                         <tr>
                                                 <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>schoolId</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                             </td>
@@ -340,15 +369,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findByFilter(type?: <a href="../undefineds/SystemType.html" target="_self">SystemType</a>, onlyOauth)</code>
+                    <code>findByFilter(type?: <a href="../undefineds/SystemTypeEnum.html" target="_self">SystemTypeEnum</a>, onlyOauth)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="22"
+                                    class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -372,7 +401,7 @@
                                         <tr>
                                                 <td>type</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#SystemType" target="_self" >SystemType</a></code>
+                                                            <code><a href="../miscellaneous/enumerations.html#SystemTypeEnum" target="_self" >SystemTypeEnum</a></code>
                                             </td>
 
                                             <td>
@@ -433,8 +462,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="36"
+                                    class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -480,6 +509,88 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="removeSystemFromSchool"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>removeSystemFromSchool</b></span>
+                        <a href="#removeSystemFromSchool"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>removeSystemFromSchool(schoolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, system: <a href="../classes/System.html" target="_self">System</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="65"
+                                    class="link-to-prism">apps/server/src/modules/system/uc/system.uc.ts:65</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>schoolId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>system</td>
+                                            <td>
+                                                            <code><a href="../classes/System.html" target="_self" >System</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -487,13 +598,15 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityNotFoundError } from &#x27;@shared/common&#x27;;
 import { NotFoundLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
+import { LegacySchoolDo } from &#x27;@shared/domain/domainobject&#x27;;
 import { SystemEntity, User } from &#x27;@shared/domain/entity&#x27;;
 import { Permission } from &#x27;@shared/domain/interface&#x27;;
-import { EntityId, SystemType, SystemTypeEnum } from &#x27;@shared/domain/types&#x27;;
-import { System } from &#x27;../domain&#x27;;
+import { EntityId, SystemTypeEnum } from &#x27;@shared/domain/types&#x27;;
+import { System, SystemType } from &#x27;../domain&#x27;;
 import { LegacySystemService, SystemDto, SystemService } from &#x27;../service&#x27;;
 
 @Injectable()
@@ -501,10 +614,11 @@ export class SystemUc {
 	constructor(
 		private readonly legacySystemService: LegacySystemService,
 		private readonly systemService: SystemService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly schoolService: LegacySchoolService
 	) {}
 
-	async findByFilter(type?: SystemType, onlyOauth &#x3D; false): Promise&lt;SystemDto[]&gt; {
+	async findByFilter(type?: SystemTypeEnum, onlyOauth &#x3D; false): Promise&lt;SystemDto[]&gt; {
 		let systems: SystemDto[];
 
 		if (onlyOauth) {
@@ -528,7 +642,7 @@ export class SystemUc {
 		return system;
 	}
 
-	async delete(userId: EntityId, systemId: EntityId): Promise&lt;void&gt; {
+	async delete(userId: EntityId, schoolId: EntityId, systemId: EntityId): Promise&lt;void&gt; {
 		const system: System | null &#x3D; await this.systemService.findById(systemId);
 
 		if (!system) {
@@ -543,6 +657,21 @@ export class SystemUc {
 		);
 
 		await this.systemService.delete(system);
+
+		await this.removeSystemFromSchool(schoolId, system);
+	}
+
+	private async removeSystemFromSchool(schoolId: string, system: System) {
+		const school: LegacySchoolDo &#x3D; await this.schoolService.getSchoolById(schoolId);
+
+		school.systems &#x3D; school.systems?.filter((schoolSystemId: string) &#x3D;&gt; schoolSystemId !&#x3D;&#x3D; system.id);
+		school.ldapLastSync &#x3D; undefined;
+
+		if (system.type &#x3D;&#x3D;&#x3D; SystemType.LDAP &amp;&amp; school.systems?.length &#x3D;&#x3D;&#x3D; 0) {
+			school.externalId &#x3D; undefined;
+		}
+
+		await this.schoolService.save(school);
 	}
 }
 </code></pre>

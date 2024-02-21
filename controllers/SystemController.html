@@ -500,7 +500,7 @@ export class SystemController {
 	@ApiOperation({ summary: &#x27;Deletes a system.&#x27; })
 	@HttpCode(HttpStatus.NO_CONTENT)
 	async deleteSystem(@CurrentUser() currentUser: ICurrentUser, @Param() params: SystemIdParams): Promise&lt;void&gt; {
-		await this.systemUc.delete(currentUser.userId, params.systemId);
+		await this.systemUc.delete(currentUser.userId, currentUser.schoolId, params.systemId);
 	}
 }
 </code></pre>
