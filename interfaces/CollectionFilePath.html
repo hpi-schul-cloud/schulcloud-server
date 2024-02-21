@@ -251,6 +251,7 @@ import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { StorageProviderEntity, SystemEntity } from &#x27;@shared/domain/entity&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { orderBy } from &#x27;lodash&#x27;;
+import { UmzugMigration } from &#x27;@mikro-orm/migrations-mongodb&#x27;;
 import { BsonConverter } from &#x27;../converter/bson.converter&#x27;;
 import { generateSeedData } from &#x27;../seed-data/generateSeedData&#x27;;
 
@@ -654,6 +655,10 @@ export class DatabaseManagementUc {
 
 	public async migrationDown(from?: string, to?: string, only?: string): Promise&lt;void&gt; {
 		return this.databaseManagementService.migrationDown(from, to, only);
+	}
+
+	public async migrationPending(): Promise&lt;UmzugMigration[]&gt; {
+		return this.databaseManagementService.migrationPending();
 	}
 }
 </code></pre>

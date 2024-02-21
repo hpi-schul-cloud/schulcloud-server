@@ -170,6 +170,13 @@
                                 </li>
                                 <li>
                                             <span class="modifier">Optional</span>
+                                        <a href="#pending" 
+>
+                                            pending
+                                        </a>
+                                </li>
+                                <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#to" 
 >
                                             to
@@ -311,6 +318,44 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
+                                        <a name="pending"></a>
+                                        <span class="name "><b>pending</b>
+                                            <a href="#pending">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>pending:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
                                         <a name="to"></a>
                                         <span class="name "><b>to</b>
                                             <a href="#to">
@@ -404,6 +449,7 @@ interface MigrationOptions {
 	from?: string;
 	to?: string;
 	only?: string;
+	pending?: boolean;
 }
 
 @Console({ command: &#x27;database&#x27;, description: &#x27;database setup console&#x27; })
@@ -502,12 +548,17 @@ export class DatabaseManagementConsole {
 				required: false,
 				description: &#x27;run a single migration&#x27;,
 			},
+			{
+				flags: &#x27;--pending&#x27;,
+				required: false,
+				description: &#x27;list pending migrations&#x27;,
+			},
 		],
 		description: &#x27;Execute MikroOrm migration up/down&#x27;,
 	})
 	async migration(migrationOptions: MigrationOptions): Promise&lt;string&gt; {
 		let report &#x3D; &#x27;no migration option was given&#x27;;
-		if (!migrationOptions.up &amp;&amp; !migrationOptions.down) {
+		if (!migrationOptions.up &amp;&amp; !migrationOptions.down &amp;&amp; !migrationOptions.pending) {
 			this.consoleWriter.error(report);
 			return report;
 		}
@@ -518,6 +569,10 @@ export class DatabaseManagementConsole {
 		if (migrationOptions.down) {
 			await this.databaseManagementUc.migrationDown(migrationOptions.from, migrationOptions.to, migrationOptions.only);
 			report &#x3D; &#x27;migration down is completed&#x27;;
+		}
+		if (migrationOptions.pending) {
+			const pendingMigrations &#x3D; await this.databaseManagementUc.migrationPending();
+			report &#x3D; &#x60;Pending: ${JSON.stringify(pendingMigrations.map((migration) &#x3D;&gt; migration.name))}&#x60;;
 		}
 
 		this.consoleWriter.info(report);
