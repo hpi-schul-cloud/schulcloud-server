@@ -28,7 +28,9 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: configmap.yml.j2
-      force: true
+      apply: yes
+      server_side_apply:
+        field_manager: ansible
 
   - name: Secret by 1Password
     kubernetes.core.k8s:
