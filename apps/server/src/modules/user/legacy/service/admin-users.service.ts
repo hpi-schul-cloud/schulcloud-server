@@ -18,19 +18,13 @@ export class AdminUsersService {
 		schoolYearId: EntityId | undefined,
 		params: UsersSearchQueryParams
 	): Promise<UserListResponse> {
-		try {
-			const usersResponse = (await this.usersAdminRepo.getUsersWithNestedData(
-				roleId,
-				schoolId,
-				schoolYearId,
-				params
-			)) as UserListResponse[];
-			return new UserListResponse(usersResponse[0]);
-		} catch (e) {
-			console.log(e);
-		}
-
-		return new UserListResponse({ data: [], limit: 0, skip: 0, total: 0 });
+		const usersResponse = (await this.usersAdminRepo.getUsersWithNestedData(
+			roleId,
+			schoolId,
+			schoolYearId,
+			params
+		)) as UserListResponse[];
+		return new UserListResponse(usersResponse[0]);
 	}
 
 	async getUserWithNestedData(

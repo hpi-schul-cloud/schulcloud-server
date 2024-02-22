@@ -1,5 +1,5 @@
-import { UserSortQuery } from '@modules/user/legacy/interfaces/user-sort.query';
 import { ObjectID } from 'bson';
+import { UserSortQuery } from './user-sort.query';
 
 export interface UserSearchQuery {
 	_id?: any;
@@ -14,7 +14,7 @@ export interface UserSearchQuery {
 	classes?: string[];
 	searchQuery?: string;
 	searchFilterGate?: number;
-	createdAt?: Date | undefined;
-	outdatedSince?: Date | undefined;
-	lastLoginSystemChange?: Date | undefined;
+	createdAt?: Date;
+	outdatedSince?: Date;
+	lastLoginSystemChange?: Date;
 }
