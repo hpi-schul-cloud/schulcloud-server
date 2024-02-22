@@ -116,7 +116,7 @@ describe('LessonUC', () => {
 				await lessonUC.getLessons(user.id, course.id);
 				expect(lessonService.findByCourseIds).toHaveBeenCalledWith([course.id]);
 			});
-			it('should return check permission', async () => {
+			it('should check permission', async () => {
 				const { user, course, lesson, hiddenLesson } = setup();
 				await lessonUC.getLessons(user.id, course.id);
 				expect(authorizationService.hasPermission.mock.calls).toEqual([
