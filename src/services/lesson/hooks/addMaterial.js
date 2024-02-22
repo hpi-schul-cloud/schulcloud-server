@@ -13,7 +13,7 @@ const addLessonToParams = async (context) => {
 	}
 
 	// const lesson = await context.app.service('lessons').get(lessonId);
-	const lesson = await context.app.service('nest-lesson-service').getLesson(context.account.userId, lessonId);
+	const lesson = await context.app.service('nest-lesson-uc').getLesson(context.account.userId, lessonId);
 	context.params.lesson = lesson;
 
 	return context;
