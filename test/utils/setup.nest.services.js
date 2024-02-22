@@ -8,7 +8,6 @@ const { ConfigModule } = require('@nestjs/config');
 const { AccountApiModule } = require('../../dist/apps/server/modules/account/account-api.module');
 const { AccountUc } = require('../../dist/apps/server/modules/account/uc/account.uc');
 const { AccountService } = require('../../dist/apps/server/modules/account/services/account.service');
-const { LessonUC } = require('../../dist/apps/server/modules/lesson/uc/lesson.uc');
 const {
 	AccountValidationService,
 } = require('../../dist/apps/server/modules/account/services/account.validation.service');
@@ -54,8 +53,6 @@ const setupNestServices = async (app) => {
 	app.services['nest-team-service'] = teamService;
 	app.services['nest-system-rule'] = systemRule;
 	app.services['nest-orm'] = orm;
-	app.service['nest-lesson-uc'] = lessonUc;
-
 	return { nestApp, orm, accountUc, accountService };
 };
 

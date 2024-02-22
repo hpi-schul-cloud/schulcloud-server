@@ -2,7 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { nanoid } = require('nanoid');
-const { iff, isProvider, disallow } = require('feathers-hooks-common');
+const { iff, isProvider } = require('feathers-hooks-common');
 const { NotFound, BadRequest } = require('../../../errors');
 const { equal } = require('../../../helper/compare').ObjectId;
 const {
@@ -184,8 +184,8 @@ const restrictToUsersCoursesLessons = async (context) => {
 		if (context.params.query.shareToken) return context;
 		({ courseId, courseGroupId } = context.params.query);
 	} else {
-		// const lesson = await context.app.service('lessons').get(context.id);
-		const lesson = await context.app.service('nest-lesson-uc').getLesson(userId, context.id);
+		// @deprecated - use nest endpoint instead to get lesson
+		const lesson = await context.app.service('lessons').get(context.id);
 		({ courseId, courseGroupId } = lesson);
 	}
 
@@ -233,15 +233,19 @@ const populateWhitelist = {
 exports.before = () => {
 	return {
 		all: [authenticate('jwt'), mapUsers],
-		// @deprecated - to be replaced with nest lessons service, for now needed by src/services/content/hooks/materials.js
-		// TODO disallow()
+		// @deprecated - use nest endpoint instead to get lesson
 		find: [
 			hasPermission('TOPIC_VIEW'),
 			iff(isProvider('external'), validateLessonFind),
 			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
 			iff(isProvider('external'), restrictToUsersCoursesLessons),
 		],
-		get: [disallow()],
+		// @deprecated - use nest endpoint instead to get lesson
+		get: [
+			hasPermission('TOPIC_VIEW'),
+			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
+			iff(isProvider('external'), restrictToUsersCoursesLessons),
+		],
 		create: [
 			checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),
 			injectUserId,

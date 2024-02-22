@@ -293,8 +293,8 @@ const hasCreatePermission = async (context) => {
 	}
 
 	if (data.lessonId) {
-		// const lesson = await context.app.service('lessons').get(data.lessonId);
-		const lesson = await context.app.service('nest-lesson-uc').getLesson(userId, data.lessonId);
+		// @deprecated - use nest endpoint instead to get lesson
+		const lesson = await context.app.service('lessons').get(data.lessonId);
 		if (!(data.courseId && equalIds(lesson.courseId, data.courseId))) {
 			throw new NotFound('lesson not found. did you forget to pass the correct course?');
 		}
@@ -335,8 +335,8 @@ const addLessonInfoToSingle = async (hook, data) => {
 		return Promise.resolve(data);
 	}
 
-	// const lesson = await hook.app.service('lessons').get(lessonId);
-	const lesson = await hook.app.service('nest-lesson-uc').getLesson(hook.params.account.userId, lessonId);
+	// @deprecated - use nest endpoint instead to get lesson
+	const lesson = await hook.app.service('lessons').get(lessonId);
 	if (lesson) {
 		data.lessonName = lesson.name;
 		data.lessonHidden = lesson.hidden;

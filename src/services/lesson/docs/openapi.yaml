@@ -195,6 +195,34 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/lessons'
+  '/lessons/{_id}':
+    get:
+      parameters:
+        - in: path
+          name: _id
+          description: ID of lessons to return
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/lessons'
+        '401':
+          description: not authenticated
+        '404':
+          description: not found
+        '500':
+          description: general error
+      description: Retrieves a single resource with the given id from the service.
+      summary: ''
+      tags:
+        - lessons
+      security:
+        - jwtBearer: []
     put:
       parameters:
         - in: path

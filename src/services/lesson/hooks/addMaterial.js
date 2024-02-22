@@ -11,9 +11,8 @@ const addLessonToParams = async (context) => {
 	if (!ObjectId.isValid(lessonId)) {
 		throw new BadRequest(`Invalid lessonId: "${lessonId}"`);
 	}
-
-	// const lesson = await context.app.service('lessons').get(lessonId);
-	const lesson = await context.app.service('nest-lesson-uc').getLesson(context.account.userId, lessonId);
+	// @deprecated - use nest endpoint instead to get lesson
+	const lesson = await context.app.service('lessons').get(lessonId);
 	context.params.lesson = lesson;
 
 	return context;
