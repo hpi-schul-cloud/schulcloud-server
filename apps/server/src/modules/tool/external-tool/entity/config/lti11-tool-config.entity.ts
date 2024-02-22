@@ -11,9 +11,6 @@ export class Lti11ToolConfigEntity extends ExternalToolConfigEntity {
 	@Property()
 	secret: string;
 
-	@Property({ nullable: true })
-	resource_link_id?: string;
-
 	@Enum()
 	lti_message_type: LtiMessageType;
 
@@ -28,7 +25,6 @@ export class Lti11ToolConfigEntity extends ExternalToolConfigEntity {
 		this.type = ToolConfigType.LTI11;
 		this.key = props.key;
 		this.secret = props.secret;
-		this.resource_link_id = props.resource_link_id;
 		this.lti_message_type = props.lti_message_type;
 		this.privacy_permission = props.privacy_permission;
 		this.launch_presentation_locale = props.launch_presentation_locale;
