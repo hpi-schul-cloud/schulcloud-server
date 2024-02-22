@@ -221,7 +221,7 @@ describe('Users Admin Students Controller (API)', () => {
 
 			it('should also return 200', async () => {
 				const { query } = setup();
-				const response = await request(app.getHttpServer()) //
+				await request(app.getHttpServer()) //
 					.get(`${basePath}`)
 					.query(query)
 					.send()
