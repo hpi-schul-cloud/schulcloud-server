@@ -1,5 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import type { IdentityManagementConfig } from '@infra/identity-management';
+import { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { AccountConfig } from '@modules/account';
 import type { AuthenticationConfig, XApiKeyConfig } from '@modules/authentication';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
@@ -45,7 +46,8 @@ export interface ServerConfig
 		BoardConfig,
 		LearnroomConfig,
 		SharingConfig,
-		IUserImportFeatures {
+		IUserImportFeatures,
+		SchulconnexClientConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 	ACCESSIBILITY_REPORT_EMAIL: string;
@@ -191,6 +193,9 @@ const config: ServerConfig = {
 	I18N__DEFAULT_LANGUAGE: Configuration.get('I18N__DEFAULT_LANGUAGE') as string,
 	I18N__FALLBACK_LANGUAGE: Configuration.get('I18N__FALLBACK_LANGUAGE') as string,
 	I18N__DEFAULT_TIMEZONE: Configuration.get('I18N__DEFAULT_TIMEZONE') as string,
+	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: Configuration.get(
+		'SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS'
+	) as number,
 	...getTldrawClientConfig(),
 	...ToolConfiguration.toolFeatures,
 	...VideoConferenceConfiguration.videoConference,

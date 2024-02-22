@@ -57,6 +57,7 @@ const serverModules = [
 		tokenEndpoint: Configuration.get('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT') as string,
 		clientId: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_ID') as string,
 		clientSecret: Configuration.get('SCHULCONNEX_CLIENT__CLIENT_SECRET') as string,
+		personenInfoTimeoutInMs: Configuration.get('SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS') as number,
 	}),
 	ImportUserModule,
 	UserImportConfigModule,
