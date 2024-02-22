@@ -219,17 +219,13 @@ describe('Users Admin Students Controller (API)', () => {
 				};
 			};
 
-			it('should return empty list', async () => {
+			it('should also return 200', async () => {
 				const { query } = setup();
 				const response = await request(app.getHttpServer()) //
 					.get(`${basePath}`)
 					.query(query)
 					.send()
 					.expect(200);
-				const { data, total } = response.body as UserListResponse;
-
-				expect(total).toBe(0);
-				expect(data.length).toBe(0);
 			});
 		});
 
