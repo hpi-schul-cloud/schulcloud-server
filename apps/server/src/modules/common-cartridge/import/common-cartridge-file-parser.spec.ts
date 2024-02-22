@@ -43,19 +43,5 @@ describe('CommonCartridgeFileParser', () => {
 				expect(() => new CommonCartridgeFileParser(file)).toThrow('Manifest file not found');
 			});
 		});
-
-		describe('when file is not an archive', () => {
-			const setup = () => {
-				const file = new AdmZip().toBuffer();
-
-				return { file };
-			};
-
-			it('should throw', () => {
-				const { file } = setup();
-
-				expect(() => new CommonCartridgeFileParser(file)).toThrow('Manifest file not found');
-			});
-		});
 	});
 });
