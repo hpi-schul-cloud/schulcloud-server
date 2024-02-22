@@ -1,7 +1,6 @@
 import { PaginationParams } from '@shared/controller';
 import { IsInt, IsObject, IsOptional, IsString, Min } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { User } from '@shared/domain/entity';
 import { SortOrderNumberType } from '@shared/domain/interface';
 
 export class UsersSearchQueryParams extends PaginationParams {
@@ -18,7 +17,7 @@ export class UsersSearchQueryParams extends PaginationParams {
 	@IsOptional()
 	@IsObject()
 	@ApiPropertyOptional({ description: 'Sort parameter.' })
-	$sort?: SortOrderNumberType<User>;
+	$sort?: SortOrderNumberType;
 
 	@IsOptional()
 	@IsObject()

@@ -177,6 +177,54 @@ describe('Users Admin Students Controller (API)', () => {
 			});
 		});
 
+		describe('when sorting by classes', () => {
+			const setup = () => {
+				currentUser = mapUserToCurrentUser(adminUser, adminAccount);
+				const query: UsersSearchQueryParams = {
+					$skip: 0,
+					$limit: 5,
+					$sort: { classes: 1 },
+				};
+
+				return {
+					query,
+				};
+			};
+
+			it('should return students', async () => {
+				const { query } = setup();
+				await request(app.getHttpServer()) //
+					.get(`${basePath}`)
+					.query(query)
+					.set('Accept', 'application/json')
+					.expect(200);
+			});
+		});
+
+		describe('when sorting by consentStatus', () => {
+			const setup = () => {
+				currentUser = mapUserToCurrentUser(adminUser, adminAccount);
+				const query: UsersSearchQueryParams = {
+					$skip: 0,
+					$limit: 5,
+					$sort: { consentStatus: 1 },
+				};
+
+				return {
+					query,
+				};
+			};
+
+			it('should return students', async () => {
+				const { query } = setup();
+				await request(app.getHttpServer()) //
+					.get(`${basePath}`)
+					.query(query)
+					.set('Accept', 'application/json')
+					.expect(200);
+			});
+		});
+
 		describe('when search params are too tight', () => {
 			const setup = () => {
 				currentUser = mapUserToCurrentUser(adminUser, adminAccount);
@@ -184,8 +232,8 @@ describe('Users Admin Students Controller (API)', () => {
 					$skip: 0,
 					$limit: 5,
 					$sort: { firstName: 1 },
-					classes: ['1A'],
-					consentStatus: { $in: ['ok'] },
+					classes: ['1A', '2A'],
+					consentStatus: { $in: ['ok', 'parentsAgreed'] },
 					searchQuery: 'test',
 					createdAt: {
 						$gt: new Date('2024-02-08T23:00:00Z'),

@@ -15,4 +15,4 @@ export interface IFindOptions<T> {
 	order?: SortOrderMap<T>;
 }
 
-export type SortOrderNumberType<T> = Partial<Record<keyof T, number>>;
+export type SortOrderNumberType = Partial<Record<string, number>>;
