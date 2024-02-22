@@ -53,7 +53,6 @@ export class ConfigResponse {
 	@ApiProperty()
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
 
-	// TODO: export is create object | null thats invalid and must be fixed. But null is defined in default.schema.json
 	@ApiProperty({ type: String, nullable: true })
 	ALERT_STATUS_URL: string | null;
 
