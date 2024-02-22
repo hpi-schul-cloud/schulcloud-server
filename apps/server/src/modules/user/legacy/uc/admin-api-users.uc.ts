@@ -53,7 +53,7 @@ export class AdminApiUsersUc {
 		try {
 			this.authorizationService.checkAllPermissions(currentUser, [permission]);
 		} catch (e) {
-			throw new ForbiddenOperationError('Current user is not authorized to search for accounts.');
+			throw new ForbiddenOperationError(`Current user is not authorized to search for ${context.valueOf()}.`);
 		}
 	}
 
