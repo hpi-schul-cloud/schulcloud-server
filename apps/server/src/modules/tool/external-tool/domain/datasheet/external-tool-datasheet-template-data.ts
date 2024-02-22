@@ -7,6 +7,8 @@ export class ExternalToolDatasheetTemplateData {
 
 	instance: string;
 
+	schoolName?: string;
+
 	toolName: string;
 
 	toolUrl: string;
@@ -29,6 +31,7 @@ export class ExternalToolDatasheetTemplateData {
 		this.createdAt = externalToolData.createdAt;
 		this.creatorName = externalToolData.creatorName;
 		this.instance = externalToolData.instance;
+		this.schoolName = externalToolData.schoolName;
 		this.toolName = externalToolData.toolName;
 		this.toolUrl = externalToolData.toolUrl;
 		this.isDeactivated = externalToolData.isDeactivated;

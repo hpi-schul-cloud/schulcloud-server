@@ -1,11 +1,10 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: {{ NAMESPACE }}-tldraw-ingress
+  name: {{ NAMESPACE }}-admin-api-ingress
   namespace: {{ NAMESPACE }}
   annotations:
-    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/ssl-redirect: "{{ TLS_ENABELD|default("false") }}"
     nginx.ingress.kubernetes.io/proxy-body-size: "{{ INGRESS_MAX_BODY_SIZE|default("2560") }}m"
     nginx.org/client-max-body-size: "{{ INGRESS_MAX_BODY_SIZE|default("2560") }}m"
     # The following properties added with BC-3606.
@@ -21,7 +20,7 @@ metadata:
 
 spec:
   ingressClassName: {{ INGRESS_CLASS }}
-{% if CLUSTER_ISSUER is defined or (TLS_ENABLED is defined and TLS_ENABLED|bool) %}
+{% if CLUSTER_ISSUER is defined or (TLS_ENABELD is defined and TLS_ENABELD|bool) %}
   tls:
   - hosts:
       - {{ DOMAIN }}
@@ -33,10 +32,10 @@ spec:
   - host: {{ DOMAIN }}
     http:
       paths:
-      - path: /tldraw-server
+      - path: /admin/api/v1
         backend:
           service:
-            name: tldraw-server-svc
+            name: api-admin-svc
             port:
-              number: 3345
+              number: 4030
         pathType: Prefix
