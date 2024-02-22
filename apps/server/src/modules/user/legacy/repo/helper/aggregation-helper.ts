@@ -414,6 +414,7 @@ export const createMultiDocumentAggregation = ({
 		// @ts-ignore
 		match.$text = {
 			$search: searchQuery,
+			$language: 'de',
 		};
 	}
 

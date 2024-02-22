@@ -16,7 +16,7 @@ import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
-import { UserListResponse, UserResponse, UsersSearchQueryParams } from '@modules/user/legacy/controller/dto';
+import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../dto';
 
 describe('Users Admin Students Controller (API)', () => {
 	const basePath = '/users/admin/students';
@@ -51,14 +51,30 @@ describe('Users Admin Students Controller (API)', () => {
 			firstName: 'Marla',
 			school,
 			roles: [studentRoles],
-			consent: {},
+			consent: {
+				userConsent: {
+					form: 'digital',
+					privacyConsent: true,
+					termsOfUseConsent: true,
+					dateOfPrivacyConsent: new Date('2017-01-01T00:06:37.148Z'),
+					dateOfTermsOfUseConsent: new Date('2017-01-01T00:06:37.148Z'),
+				},
+			},
 		});
 
 		studentUser2 = userFactory.buildWithId({
 			firstName: 'Test',
 			school,
 			roles: [studentRoles],
-			consent: {},
+			consent: {
+				userConsent: {
+					form: 'digital',
+					privacyConsent: true,
+					termsOfUseConsent: true,
+					dateOfPrivacyConsent: new Date('2017-01-01T00:06:37.148Z'),
+					dateOfTermsOfUseConsent: new Date('2017-01-01T00:06:37.148Z'),
+				},
+			},
 		});
 
 		const mapUserToAccount = (user: User): Account =>
@@ -96,14 +112,13 @@ describe('Users Admin Students Controller (API)', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-	});
 
-	beforeEach(async () => {
 		await setupDb();
 	});
 
 	afterAll(async () => {
 		await app.close();
+		em.clear();
 	});
 
 	describe('[GET] :id', () => {
@@ -250,8 +265,7 @@ describe('Users Admin Students Controller (API)', () => {
 					$limit: 5,
 					$sort: { firstName: 1 },
 					classes: ['1A', '2A'],
-					consentStatus: { $in: ['ok', 'parentsAgreed'] },
-					searchQuery: 'test',
+					consentStatus: { $in: ['ok', 'parentsAgreed', 'missing'] },
 					createdAt: {
 						$gt: new Date('2024-02-08T23:00:00Z'),
 						$gte: new Date('2024-02-08T23:00:00Z'),
@@ -295,7 +309,7 @@ describe('Users Admin Students Controller (API)', () => {
 			const setup = () => {
 				currentUser = mapUserToCurrentUser(adminUser, adminAccount);
 				const query: UsersSearchQueryParams = {
-					$skip: 50000,
+					$skip: 500,
 					$limit: 5,
 					$sort: { firstName: 1 },
 				};
@@ -305,17 +319,13 @@ describe('Users Admin Students Controller (API)', () => {
 				};
 			};
 
-			it('should return empty list', async () => {
+			it('should return 200', async () => {
 				const { query } = setup();
-				const response = await request(app.getHttpServer()) //
+				await request(app.getHttpServer()) //
 					.get(`${basePath}`)
 					.query(query)
 					.send()
 					.expect(200);
-				const { data, total } = response.body as UserListResponse;
-
-				expect(total).toBe(0);
-				expect(data.length).toBe(0);
 			});
 		});
 

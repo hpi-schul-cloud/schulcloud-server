@@ -75,8 +75,8 @@ export class UsersAdminRepo extends BaseRepo<User> {
 				'lastLoginSystemChange',
 				'outdatedSince',
 			],
-			skip: params?.$skip || params?.skip,
-			limit: params?.$limit || params?.limit,
+			skip: params?.$skip ?? params?.skip,
+			limit: params?.$limit ?? params?.limit,
 		};
 
 		if (params?.consentStatus) query.consentStatus = params.consentStatus;
