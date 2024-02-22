@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Role } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
-import { accountFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
+import { accountDtoFactory, setupEntities, systemFactory, userFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountValidationService } from './account.validation.service';
@@ -84,7 +84,7 @@ describe('AccountValidationService', () => {
 					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 				});
 
-				const mockStudentAccount = accountFactory.buildWithId({ userId: mockStudentUser.id });
+				const mockStudentAccount = accountDtoFactory.build({ userId: mockStudentUser.id });
 
 				userRepo.findByEmail.mockResolvedValueOnce([mockStudentUser]);
 				accountRepo.searchByUsernameExactMatch.mockResolvedValueOnce([[mockStudentAccount], 1]);
@@ -124,8 +124,8 @@ describe('AccountValidationService', () => {
 						}),
 					],
 				});
-				const mockAdminAccount = accountFactory.buildWithId({ userId: mockAdminUser.id });
-				const mockStudentAccount = accountFactory.buildWithId({ userId: mockStudentUser.id });
+				const mockAdminAccount = accountDtoFactory.build({ userId: mockAdminUser.id });
+				const mockStudentAccount = accountDtoFactory.build({ userId: mockStudentUser.id });
 
 				userRepo.findByEmail.mockResolvedValueOnce([mockAdminUser]);
 				accountRepo.searchByUsernameExactMatch.mockResolvedValueOnce([[mockAdminAccount], 1]);
@@ -152,8 +152,8 @@ describe('AccountValidationService', () => {
 					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 				});
 
-				const mockTeacherAccount = accountFactory.buildWithId({ userId: mockTeacherUser.id });
-				const mockStudentAccount = accountFactory.buildWithId({ userId: mockStudentUser.id });
+				const mockTeacherAccount = accountDtoFactory.build({ userId: mockTeacherUser.id });
+				const mockStudentAccount = accountDtoFactory.build({ userId: mockStudentUser.id });
 
 				userRepo.findByEmail.mockResolvedValueOnce([mockTeacherUser]);
 				accountRepo.searchByUsernameExactMatch.mockResolvedValueOnce([[mockTeacherAccount], 1]);
@@ -188,7 +188,7 @@ describe('AccountValidationService', () => {
 						}),
 					],
 				});
-				const mockStudentAccount = accountFactory.buildWithId({ userId: mockStudentUser.id });
+				const mockStudentAccount = accountDtoFactory.build({ userId: mockStudentUser.id });
 
 				const mockUsers = [mockTeacherUser, mockStudentUser, mockOtherTeacherUser];
 
@@ -226,9 +226,9 @@ describe('AccountValidationService', () => {
 					],
 				});
 
-				const mockTeacherAccount = accountFactory.buildWithId({ userId: mockTeacherUser.id });
-				const mockStudentAccount = accountFactory.buildWithId({ userId: mockStudentUser.id });
-				const mockOtherTeacherAccount = accountFactory.buildWithId({
+				const mockTeacherAccount = accountDtoFactory.build({ userId: mockTeacherUser.id });
+				const mockStudentAccount = accountDtoFactory.build({ userId: mockStudentUser.id });
+				const mockOtherTeacherAccount = accountDtoFactory.build({
 					userId: mockOtherTeacherUser.id,
 				});
 
@@ -261,12 +261,12 @@ describe('AccountValidationService', () => {
 
 				const externalSystemA = systemFactory.build();
 				const externalSystemB = systemFactory.build();
-				const mockExternalUserAccount = accountFactory.build({
+				const mockExternalUserAccount = accountDtoFactory.build({
 					userId: mockExternalUser.id,
 					username: 'unique.within@system',
 					systemId: externalSystemA.id,
 				});
-				const mockOtherExternalUserAccount = accountFactory.build({
+				const mockOtherExternalUserAccount = accountDtoFactory.build({
 					userId: mockOtherExternalUser.id,
 					username: 'unique.within@system',
 					systemId: externalSystemB.id,
@@ -297,7 +297,7 @@ describe('AccountValidationService', () => {
 					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 				});
 
-				const mockStudentAccount = accountFactory.buildWithId({ userId: mockStudentUser.id });
+				const mockStudentAccount = accountDtoFactory.build({ userId: mockStudentUser.id });
 
 				userRepo.findByEmail.mockResolvedValueOnce([mockStudentUser]);
 				accountRepo.searchByUsernameExactMatch.mockResolvedValueOnce([[mockStudentAccount], 1]);
@@ -318,7 +318,7 @@ describe('AccountValidationService', () => {
 					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 				});
 
-				const mockStudentAccount = accountFactory.buildWithId({ userId: mockStudentUser.id });
+				const mockStudentAccount = accountDtoFactory.build({ userId: mockStudentUser.id });
 
 				const mockAdminUser = userFactory.buildWithId({
 					roles: [
@@ -337,7 +337,7 @@ describe('AccountValidationService', () => {
 						}),
 					],
 				});
-				const mockAdminAccount = accountFactory.buildWithId({ userId: mockAdminUser.id });
+				const mockAdminAccount = accountDtoFactory.build({ userId: mockAdminUser.id });
 
 				userRepo.findByEmail.mockResolvedValueOnce([mockStudentUser]);
 				accountRepo.searchByUsernameExactMatch.mockResolvedValueOnce([[mockStudentAccount], 1]);
@@ -360,7 +360,7 @@ describe('AccountValidationService', () => {
 					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 				});
 
-				const mockStudentAccount = accountFactory.buildWithId({ userId: mockStudentUser.id });
+				const mockStudentAccount = accountDtoFactory.build({ userId: mockStudentUser.id });
 
 				userRepo.findByEmail.mockResolvedValueOnce([mockStudentUser]);
 				accountRepo.searchByUsernameExactMatch.mockResolvedValueOnce([[mockStudentAccount], 1]);
@@ -386,8 +386,8 @@ describe('AccountValidationService', () => {
 					roles: [new Role({ name: RoleName.STUDENT, permissions: [] })],
 				});
 
-				const mockTeacherAccount = accountFactory.buildWithId({ userId: mockTeacherUser.id });
-				const mockStudentAccount = accountFactory.buildWithId({ userId: mockStudentUser.id });
+				const mockTeacherAccount = accountDtoFactory.build({ userId: mockTeacherUser.id });
+				const mockStudentAccount = accountDtoFactory.build({ userId: mockStudentUser.id });
 
 				userRepo.findByEmail.mockResolvedValueOnce([mockStudentUser]);
 				accountRepo.searchByUsernameExactMatch.mockResolvedValueOnce([[mockStudentAccount], 1]);
@@ -407,10 +407,10 @@ describe('AccountValidationService', () => {
 
 		describe('When user is missing in account', () => {
 			const setup = () => {
-				const oprhanAccount = accountFactory.buildWithId({
+				const oprhanAccount = accountDtoFactory.build({
 					username: 'orphan@account',
 					userId: undefined,
-					systemId: new ObjectId(),
+					systemId: new ObjectId().toHexString(),
 				});
 
 				userRepo.findByEmail.mockResolvedValueOnce([]);

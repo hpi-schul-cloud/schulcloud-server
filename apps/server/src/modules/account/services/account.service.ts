@@ -133,7 +133,7 @@ export class AccountService extends AbstractAccountService {
 		}
 		if (updateAccount) {
 			try {
-				await this.save(targetAccount);
+				return await this.save(targetAccount);
 			} catch (err) {
 				throw new EntityNotFoundError(AccountEntity.name);
 			}

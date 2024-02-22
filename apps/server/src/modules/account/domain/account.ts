@@ -66,16 +66,32 @@ export class Account extends DomainObject<AccountProps> {
 		return this.props.token;
 	}
 
+	public set token(token: string | undefined) {
+		this.props.token = token;
+	}
+
 	public get credentialHash(): string | undefined {
 		return this.props.credentialHash;
+	}
+
+	public set credentialHash(credentialHash: string | undefined) {
+		this.props.credentialHash = credentialHash;
 	}
 
 	public get lasttriedFailedLogin(): Date | undefined {
 		return this.props.lasttriedFailedLogin;
 	}
 
+	public set lasttriedFailedLogin(lasttriedFailedLogin: Date | undefined) {
+		this.props.lasttriedFailedLogin = lasttriedFailedLogin;
+	}
+
 	public get expiresAt(): Date | undefined {
 		return this.props.expiresAt;
+	}
+
+	public set expiresAt(expiresAt: Date | undefined) {
+		this.props.expiresAt = expiresAt;
 	}
 
 	public get activated(): boolean | undefined {

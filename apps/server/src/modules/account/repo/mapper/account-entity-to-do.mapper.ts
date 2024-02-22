@@ -3,7 +3,7 @@ import { Account } from '../../domain/account';
 import { AccountEntity } from '../../entity/account.entity';
 
 export class AccountEntityToDoMapper {
-	static mapToDto(account: AccountEntity): Account {
+	static mapToDo(account: AccountEntity): Account {
 		return new Account({
 			id: account.id,
 			createdAt: account.createdAt,
@@ -20,13 +20,13 @@ export class AccountEntityToDoMapper {
 		});
 	}
 
-	static mapSearchResult(accountEntities: Counted<AccountEntity[]>): Counted<Account[]> {
+	static mapCountedEntities(accountEntities: Counted<AccountEntity[]>): Counted<Account[]> {
 		const foundAccounts = accountEntities[0];
-		const accountDtos: Account[] = AccountEntityToDoMapper.mapAccountsToDto(foundAccounts);
+		const accountDtos: Account[] = AccountEntityToDoMapper.mapEntitiesToDos(foundAccounts);
 		return [accountDtos, accountEntities[1]];
 	}
 
-	static mapAccountsToDto(accounts: AccountEntity[]): Account[] {
-		return accounts.map((accountEntity) => AccountEntityToDoMapper.mapToDto(accountEntity));
+	static mapEntitiesToDos(accounts: AccountEntity[]): Account[] {
+		return accounts.map((accountEntity) => AccountEntityToDoMapper.mapToDo(accountEntity));
 	}
 }
