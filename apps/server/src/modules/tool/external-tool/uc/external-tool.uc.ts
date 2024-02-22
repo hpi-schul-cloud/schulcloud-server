@@ -1,4 +1,5 @@
 import { AuthorizationService } from '@modules/authorization';
+import { School, SchoolService } from '@modules/school';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { Injectable } from '@nestjs/common';
@@ -23,6 +24,7 @@ export class ExternalToolUc {
 	constructor(
 		private readonly externalToolService: ExternalToolService,
 		private readonly schoolExternalToolService: SchoolExternalToolService,
+		private readonly schoolService: SchoolService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly toolValidationService: ExternalToolValidationService,
 		private readonly externalToolLogoService: ExternalToolLogoService,
@@ -113,8 +115,14 @@ export class ExternalToolUc {
 		});
 
 		let schoolExternalTool: SchoolExternalTool | undefined;
+		let schoolName: string | undefined;
 		if (schoolExternalTools.length) {
 			schoolExternalTool = schoolExternalTools[0];
+
+			if (this.authorizationService.hasAllPermissions(user, [Permission.SCHOOL_TOOL_ADMIN])) {
+				const school: School = await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
+				schoolName = school.getInfo().name;
+			}
 		}
 
 		const externalTool: ExternalTool = await this.externalToolService.findById(externalToolId);
@@ -123,7 +131,8 @@ export class ExternalToolUc {
 				externalTool,
 				user.firstName,
 				user.lastName,
-				schoolExternalTool
+				schoolExternalTool,
+				schoolName
 			);
 
 		const buffer: Buffer = await this.datasheetPdfService.generatePdf(dataSheetData);
