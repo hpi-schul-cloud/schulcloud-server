@@ -1,5 +1,5 @@
 import { applyDecorators, SetMetadata } from '@nestjs/common';
 
-export function RequestTimeout(ms: number) {
-	return applyDecorators(SetMetadata('timeout', ms));
+export function RequestTimeout(requestTimeoutEnvirementName: string) {
+	return applyDecorators(SetMetadata('requestTimeoutEnvirementName', requestTimeoutEnvirementName));
 }
