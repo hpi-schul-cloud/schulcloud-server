@@ -485,7 +485,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:142</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:145</a></code>
 </div>
                         </td>
                     </tr>
@@ -573,7 +573,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:183</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/AbstractLaunchStrategy.html#source" target="_self" >AbstractLaunchStrategy:186</a></code>
 </div>
                         </td>
                     </tr>
@@ -642,8 +642,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="164"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/lti11-tool-launch.strategy.ts:164</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="167"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/service/launch-strategy/lti11-tool-launch.strategy.ts:167</a></div>
                         </td>
                     </tr>
 
@@ -1724,12 +1724,15 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		data: ToolLaunchParams
 	): Promise&lt;PropertyData[]&gt; {
 		const { config } &#x3D; data.externalTool;
-		const contextId: EntityId &#x3D; data.contextExternalTool.contextRef.id;
 
 		if (!ExternalTool.isLti11Config(config)) {
 			throw new UnprocessableEntityException(
 				&#x60;Unable to build LTI 1.1 launch data. Tool configuration is of type ${config.type}. Expected &quot;lti11&quot;&#x60;
 			);
+		}
+
+		if (!data.contextExternalTool.id) {
+			throw new InternalServerErrorException();
 		}
 
 		const user: UserDO &#x3D; await this.userService.findById(userId);
@@ -1745,7 +1748,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			new PropertyData({ name: &#x27;lti_version&#x27;, value: &#x27;LTI-1p0&#x27;, location: PropertyLocation.BODY }),
 			new PropertyData({
 				name: &#x27;resource_link_id&#x27;,
-				value: config.resource_link_id || contextId,
+				value: data.contextExternalTool.id,
 				location: PropertyLocation.BODY,
 			}),
 			new PropertyData({
