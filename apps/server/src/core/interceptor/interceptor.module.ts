@@ -18,10 +18,7 @@ import { InterceptorConfig, TimeoutInterceptor } from '@shared/common';
 		},
 		{
 			provide: APP_INTERCEPTOR, // TODO remove (for testing)
-			useFactory: (configService: ConfigService<InterceptorConfig, true>) => {
-				const timeout = configService.get<number>('INCOMING_REQUEST_TIMEOUT');
-				return new TimeoutInterceptor(timeout);
-			},
+			useFactory: (configService: ConfigService<InterceptorConfig, true>) => new TimeoutInterceptor(configService),
 			inject: [ConfigService],
 		},
 	],

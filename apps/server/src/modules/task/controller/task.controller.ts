@@ -4,8 +4,6 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestj
 import { ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common';
 import { PaginationParams } from '@shared/controller/';
-// invalid import can produce dependency cycles
-import { serverConfig } from '@modules/server/server.config';
 import { TaskMapper } from '../mapper';
 import { TaskCopyUC } from '../uc/task-copy.uc';
 import { TaskUC } from '../uc/task.uc';
@@ -81,7 +79,7 @@ export class TaskController {
 	}
 
 	@Post(':taskId/copy')
-	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
+	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
 	async copyTask(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: TaskUrlParams,
