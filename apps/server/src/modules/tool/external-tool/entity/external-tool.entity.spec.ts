@@ -33,7 +33,6 @@ describe('ExternalToolEntity', () => {
 				baseUrl: 'mockBaseUrl',
 				key: 'mockKey',
 				secret: 'mockSecret',
-				resource_link_id: 'mockLink',
 				lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 				privacy_permission: LtiPrivacyPermission.ANONYMOUS,
 				launch_presentation_locale: 'de-DE',

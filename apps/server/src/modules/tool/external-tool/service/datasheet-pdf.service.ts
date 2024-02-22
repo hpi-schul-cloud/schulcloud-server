@@ -13,7 +13,14 @@ export class DatasheetPdfService {
 			{ text: `Erstellt am ${templateData.createdAt} von ${templateData.creatorName}`, style: 'right-aligned' },
 			'\n',
 			{ text: templateData.instance, style: 'right-aligned' },
-			'\n',
+			'\n'
+		);
+
+		if (templateData.schoolName) {
+			content.push({ text: templateData.schoolName, style: 'right-aligned' }, '\n');
+		}
+
+		content.push(
 			{ text: 'Datenblatt', style: ['center-aligned', 'h1'] },
 			{ text: templateData.toolName, style: ['center-aligned', 'h2'] },
 			'\n',

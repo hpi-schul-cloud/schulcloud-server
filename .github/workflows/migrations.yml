@@ -18,7 +18,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: mongodb setup
-      uses: supercharge/mongodb-github-action@1.8.0
+      uses: supercharge/mongodb-github-action@1.10.0
     - name: setup
       uses: actions/setup-node@v4
       with:
