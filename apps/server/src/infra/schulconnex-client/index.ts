@@ -18,3 +18,4 @@ export {
 	SanisSonstigeGruppenzugehoerigeResponse,
 } from './response';
 export { schulconnexResponseFactory } from './testing/schulconnex-response-factory';
+export { SchulconnexClientConfig } from './schulconnex-client-config';

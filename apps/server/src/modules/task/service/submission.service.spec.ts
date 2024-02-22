@@ -5,7 +5,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Submission } from '@shared/domain/entity';
 import { Counted } from '@shared/domain/types';
 import { SubmissionRepo } from '@shared/repo';
-import { setupEntities, submissionFactory, taskFactory } from '@shared/testing';
+import { setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
+import { ObjectId } from 'bson';
 import { SubmissionService } from './submission.service';
 
 describe('Submission Service', () => {
@@ -28,6 +30,10 @@ describe('Submission Service', () => {
 				{
 					provide: FilesStorageClientAdapterService,
 					useValue: createMock<FilesStorageClientAdapterService>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();
@@ -208,6 +214,106 @@ describe('Submission Service', () => {
 				const { submission, error } = setup();
 
 				await expect(service.delete(submission)).rejects.toThrow(error);
+			});
+		});
+	});
+
+	describe('deleteSingleSubmissionsOwnedByUser', () => {
+		describe('when submission with specified userId was not found ', () => {
+			const setup = () => {
+				const submission = submissionFactory.buildWithId();
+
+				submissionRepo.findAllByUserId.mockResolvedValueOnce([[], 0]);
+
+				return { submission };
+			};
+
+			it('should return deletedSubmissions number of 0', async () => {
+				const { submission } = setup();
+
+				const result = await service.deleteSingleSubmissionsOwnedByUser(new ObjectId().toString());
+
+				expect(result.count).toEqual(0);
+				expect(result.refs.length).toEqual(0);
+				expect(submission).toBeDefined();
+			});
+		});
+
+		describe('when submission with specified userId was found ', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const submission = submissionFactory.buildWithId({ student: user, teamMembers: [user] });
+
+				submissionRepo.findAllByUserId.mockResolvedValueOnce([[submission], 1]);
+				submissionRepo.delete.mockResolvedValueOnce();
+
+				return { submission, user };
+			};
+
+			it('should return deletedSubmissions number of 1', async () => {
+				const { submission, user } = setup();
+
+				const result = await service.deleteSingleSubmissionsOwnedByUser(user.id);
+
+				expect(result.count).toEqual(1);
+				expect(result.refs.length).toEqual(1);
+				expect(submissionRepo.delete).toBeCalledTimes(1);
+				expect(submissionRepo.delete).toHaveBeenCalledWith([submission]);
+			});
+		});
+	});
+
+	describe('removeUserReferencesFromSubmissions', () => {
+		describe('when submission with specified userId was not found ', () => {
+			const setup = () => {
+				const user1 = userFactory.buildWithId();
+				const user2 = userFactory.buildWithId();
+				const submission = submissionFactory.buildWithId({ student: user1, teamMembers: [user1, user2] });
+
+				submissionRepo.findAllByUserId.mockResolvedValueOnce([[], 0]);
+
+				return { submission, user1, user2 };
+			};
+
+			it('should return updated submission number of 0', async () => {
+				const { submission, user1 } = setup();
+
+				const result = await service.removeUserReferencesFromSubmissions(new ObjectId().toString());
+
+				expect(result.count).toEqual(0);
+				expect(result.refs.length).toEqual(0);
+				expect(submission.student).toEqual(user1);
+				expect(submission.teamMembers.length).toEqual(2);
+			});
+		});
+
+		describe('when submission with specified userId was found ', () => {
+			const setup = () => {
+				const user1 = userFactory.buildWithId();
+				const user2 = userFactory.buildWithId();
+				const submission = submissionFactory.buildWithId({
+					student: user1,
+					teamMembers: [user1, user2],
+				});
+
+				submissionRepo.findAllByUserId.mockResolvedValueOnce([[submission], 1]);
+				submissionRepo.delete.mockResolvedValueOnce();
+
+				return { submission, user1, user2 };
+			};
+
+			it('should return updated submission number of 1', async () => {
+				const { submission, user1, user2 } = setup();
+
+				const result = await service.removeUserReferencesFromSubmissions(user1.id);
+
+				expect(result.count).toEqual(1);
+				expect(result.refs.length).toEqual(1);
+				expect(submission.student).toBeUndefined();
+				expect(submission.teamMembers.length).toEqual(1);
+				expect(submission.teamMembers[0]).toEqual(user2);
+				expect(submissionRepo.save).toBeCalledTimes(1);
+				expect(submissionRepo.save).toHaveBeenCalledWith([submission]);
 			});
 		});
 	});
