@@ -1,1 +1,1 @@
-export * from './common-cartridge-file-parser';
+export { CommonCartridgeFileParser } from './common-cartridge-file-parser';
