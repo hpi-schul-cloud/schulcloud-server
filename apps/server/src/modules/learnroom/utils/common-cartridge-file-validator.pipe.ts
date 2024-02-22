@@ -8,29 +8,40 @@ export class CommonCartridgeFileValidatorPipe implements PipeTransform<Express.M
 	constructor(private readonly configService: ConfigService<LearnroomConfig, true>) {}
 
 	public transform(value: Express.Multer.File): Express.Multer.File {
-		if (!value) {
-			throw new BadRequestException('No file uploaded');
-		}
-		if (value.size > this.configService.getOrThrow<number>('FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE')) {
-			throw new BadRequestException('File too big');
-		}
-
-		if (!this.isValidCommonCartridgeFile(value.buffer)) {
-			throw new BadRequestException('Invalid file type');
-		}
+		this.checkValue(value);
+		this.checkSize(value);
+		this.checkFileType(value);
+		this.checkForManifestFile(new AdmZip(value.buffer));
 
 		return value;
 	}
 
-	private isValidCommonCartridgeFile(file: Buffer): boolean {
-		try {
-			const archive = new AdmZip(file);
-			// imsmanifest.xml is the standard name, but manifest.xml is also valid until v1.3
-			const manifest = archive.getEntry('imsmanifest.xml') || archive.getEntry('manifest.xml');
+	private checkValue(value: Express.Multer.File): void {
+		if (!value) {
+			throw new BadRequestException('No file uploaded');
+		}
+	}
 
-			return manifest !== null;
+	private checkSize(value: Express.Multer.File): void {
+		if (value.size > this.configService.getOrThrow<number>('FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE')) {
+			throw new BadRequestException('File is too large');
+		}
+	}
+
+	private checkFileType(value: Express.Multer.File): void {
+		try {
+			// checks if the file is a valid zip file
+			// eslint-disable-next-line no-new
+			new AdmZip(value.buffer);
 		} catch (error) {
-			return false;
+			throw new BadRequestException(error);
+		}
+	}
+
+	private checkForManifestFile(archive: AdmZip): void {
+		const manifest = archive.getEntry('imsmanifest.xml') || archive.getEntry('manifest.xml');
+		if (!manifest) {
+			throw new BadRequestException('No manifest file found in the archive');
 		}
 	}
 }

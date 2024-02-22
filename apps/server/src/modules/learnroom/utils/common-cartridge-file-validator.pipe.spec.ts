@@ -59,7 +59,7 @@ describe('CommonCartridgeFileValidatorPipe', () => {
 			it('should throw', () => {
 				const { file } = setup();
 
-				expect(() => sut.transform(file)).toThrow('File too big');
+				expect(() => sut.transform(file)).toThrow('File is too large');
 			});
 		});
 
@@ -75,7 +75,7 @@ describe('CommonCartridgeFileValidatorPipe', () => {
 			it('should throw', () => {
 				const { file } = setup();
 
-				expect(() => sut.transform(file)).toThrow('Invalid file type');
+				expect(() => sut.transform(file)).toThrow('Invalid or unsupported zip format. No END header found');
 			});
 		});
 
@@ -93,7 +93,7 @@ describe('CommonCartridgeFileValidatorPipe', () => {
 			it('should throw', () => {
 				const { file } = setup();
 
-				expect(() => sut.transform(file)).toThrow('Invalid file type');
+				expect(() => sut.transform(file)).toThrow('No manifest file found in the archive');
 			});
 		});
 
