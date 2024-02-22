@@ -54,7 +54,6 @@ export class ExternalToolEntityFactory extends BaseFactory<ExternalToolEntity, I
 				baseUrl: 'mockBaseUrl',
 				key: 'key',
 				lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
-				resource_link_id: 'resource_link_id',
 				secret: 'secret',
 				privacy_permission: LtiPrivacyPermission.ANONYMOUS,
 				launch_presentation_locale: 'de-DE',

@@ -204,7 +204,6 @@ describe('ExternalToolRepo', () => {
 				key: 'key',
 				lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 				privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
-				resource_link_id: 'resource_link_id',
 				launch_presentation_locale: 'de-DE',
 			});
 			const { domainObject } = setupDO(config);
