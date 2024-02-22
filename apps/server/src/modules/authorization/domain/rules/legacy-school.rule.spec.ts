@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { roleFactory, legacySchoolDoFactory, setupEntities, userFactory } from '@shared/testing';
-import { ObjectID } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Action } from '../type';
 import { AuthorizationHelper } from '../service/authorization.helper';
 import { LegacySchoolRule } from './legacy-school.rule';
@@ -25,7 +25,7 @@ describe('LegacySchoolRule', () => {
 	});
 
 	const setupSchoolAndUser = () => {
-		const school = legacySchoolDoFactory.build({ id: new ObjectID().toString() });
+		const school = legacySchoolDoFactory.build({ id: new ObjectId().toString() });
 		const role = roleFactory.build({ permissions: [permissionA, permissionB] });
 		const user = userFactory.build({
 			roles: [role],

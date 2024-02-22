@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { FileRecordParentType } from '@modules/files-storage/entity';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolSpecificFileCopyServiceFactory } from './school-specific-file-copy-service.factory';
 import { SchoolSpecificFileCopyServiceImpl } from './school-specific-file-copy.service';
 

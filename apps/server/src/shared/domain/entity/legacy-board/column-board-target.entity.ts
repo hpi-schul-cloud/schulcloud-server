@@ -1,7 +1,7 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { LearnroomElement } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '../base.entity';
 
 type ColumnBoardTargetProps = {

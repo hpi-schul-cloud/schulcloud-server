@@ -1,6 +1,6 @@
 import { Controller, Delete, ExecutionContext, Get, Headers, HttpStatus, INestApplication, Post } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthGuard } from '@nestjs/passport';
 import { TestXApiKeyClient } from './test-xApiKey-client';
 

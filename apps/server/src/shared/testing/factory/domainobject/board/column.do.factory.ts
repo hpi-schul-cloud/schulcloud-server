@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 import { Column, ColumnProps } from '@shared/domain/domainobject';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '../../base.factory';
 
 export const columnFactory = BaseFactory.define<Column, ColumnProps>(Column, ({ sequence }) => {

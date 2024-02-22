@@ -1,7 +1,7 @@
 import { RoleReference, UserDO } from '@shared/domain/domainobject';
 import { groupFactory, roleFactory, userDoFactory } from '@shared/testing';
 
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Group } from './group';
 import { GroupUser } from './group-user';
 

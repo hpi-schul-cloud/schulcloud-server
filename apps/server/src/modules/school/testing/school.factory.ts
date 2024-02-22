@@ -1,6 +1,6 @@
 import { SchoolFeature } from '@shared/domain/types';
 import { BaseFactory } from '@shared/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { School, SchoolProps } from '../domain';
 import { federalStateFactory } from './federal-state.factory';
 

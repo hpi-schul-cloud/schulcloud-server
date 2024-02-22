@@ -16,7 +16,7 @@ import { UserRepo } from '@shared/repo';
 
 import { ICurrentUser } from '@modules/authentication';
 import { BruteForcePrevention } from '@src/imports-from-feathers';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountConfig } from '../account-config';
 import {
 	AccountByIdBodyParams,

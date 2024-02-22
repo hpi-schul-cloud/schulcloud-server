@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ReferencedEntityNotFoundLoggable } from './referenced-entity-not-found-loggable';
 import { EntityId } from '../../domain/types';
 

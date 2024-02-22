@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { DrawingElement, DrawingElementProps } from '@shared/domain/domainobject/board/drawing-element.do';
 import { BaseFactory } from '../../base.factory';
 

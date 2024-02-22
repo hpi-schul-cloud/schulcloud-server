@@ -3,7 +3,7 @@ import { ServerConfig } from '@modules/server/server.config';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 
 /**
  * Service to convert between internal and external ids.

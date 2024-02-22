@@ -1,6 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { submissionContainerElementFactory, submissionItemFactory } from '@shared/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { SubmissionItem } from './submission-item.do';
 import { BoardCompositeVisitor, BoardCompositeVisitorAsync } from './types';
 
