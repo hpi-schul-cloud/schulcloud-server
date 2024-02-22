@@ -89,6 +89,7 @@ const userService = new UserService({
 
 const populateWhitelist = {
 	roles: ['_id', 'name', 'permissions', 'roles'],
+	schoolId: ['_id', 'name'],
 };
 
 const userHooks = {
