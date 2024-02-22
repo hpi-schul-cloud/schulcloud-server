@@ -53,7 +53,7 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 		return schools;
 	}
 
-	mapDOToEntityProperties(domainObject: School): EntityData<SchoolEntity> {
+	protected mapDOToEntityProperties(domainObject: School): EntityData<SchoolEntity> {
 		const entityProps = SchoolEntityMapper.mapToEntityProperties(domainObject, this.em);
 
 		return entityProps;
