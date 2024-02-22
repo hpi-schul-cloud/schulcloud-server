@@ -238,7 +238,7 @@ describe('School Controller (API)', () => {
 									nextYear: schoolYearResponses[2],
 								},
 								name: newParams.name,
-								features: newParams.features,
+								features: ['rocketChat', 'isTeamCreationByStudentsEnabled'],
 								systemIds: systems.map((system) => system.id),
 								language: newParams.language,
 								fileStorageType: newParams.fileStorageType,

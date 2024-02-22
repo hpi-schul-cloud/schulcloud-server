@@ -1,4 +1,5 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { LanguageType } from '@shared/domain/entity';
 import { EntityId, SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { FileStorageType, SchoolPermissions } from '../type';
 import { County } from './county';
@@ -62,6 +63,16 @@ export class School extends DomainObject<SchoolProps> {
 
 		return result;
 	}
+
+	public canStudentCreateTeam(configValue: string): boolean {
+		return (
+			configValue === 'enabled' ||
+			(configValue === 'opt-in' && this.props.enableStudentTeamCreation) ||
+			// It is necessary to check enableStudentTeamCreation to be not false here,
+			// because it being undefined means that the school has not opted out yet.
+			(configValue === 'opt-out' && this.props.enableStudentTeamCreation !== false)
+		);
+	}
 }
 
 export interface SchoolProps extends AuthorizableObject {
@@ -82,7 +93,7 @@ export interface SchoolProps extends AuthorizableObject {
 	logo_dataUrl?: string;
 	logo_name?: string;
 	fileStorageType?: FileStorageType;
-	language?: string;
+	language?: LanguageType;
 	timezone?: string;
 	permissions?: SchoolPermissions;
 	// The enableStudentTeamCreation property is for compatibility with the existing data.

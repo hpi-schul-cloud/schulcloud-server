@@ -22,7 +22,7 @@ export class SchoolService {
 	public async getSchoolById(schoolId: EntityId): Promise<School> {
 		const school = await this.schoolRepo.getSchoolById(schoolId);
 
-		this.setStudentTeamCreationFeature(school);
+		this.addInstanceFeatures(school);
 
 		return school;
 	}
@@ -30,7 +30,7 @@ export class SchoolService {
 	public async getSchools(query: SchoolQuery = {}, options?: IFindOptions<SchoolProps>): Promise<School[]> {
 		const schools = await this.schoolRepo.getSchools(query, options);
 
-		schools.forEach((school) => this.setStudentTeamCreationFeature(school));
+		schools.forEach((school) => this.addInstanceFeatures(school));
 
 		return schools;
 	}
@@ -78,8 +78,10 @@ export class SchoolService {
 		const school = await this.schoolRepo.getSchoolById(schoolId);
 
 		const fullSchoolObject = SchoolFactory.buildFromPartialBody(school, body);
+		this.removeInstanceFeatures(fullSchoolObject);
 
 		const updatedSchool = await this.schoolRepo.save(fullSchoolObject);
+		this.addInstanceFeatures(updatedSchool);
 
 		return updatedSchool;
 	}
@@ -122,17 +124,21 @@ export class SchoolService {
 
 	// TODO: The logic for setting this feature should better be part of the creation of a school object.
 	// But it has to be discussed, how to implement that. Thus we leave the logic here for now.
-	private setStudentTeamCreationFeature(school: School): School {
+	private addInstanceFeatures(school: School): School {
 		const configValue = this.configService.get<string>('STUDENT_TEAM_CREATION');
 
-		if (
-			configValue === 'enabled' ||
-			(configValue === 'opt-in' && school.getProps().enableStudentTeamCreation) ||
-			// It is necessary to check enableStudentTeamCreation to be not false here,
-			// because it being undefined means that the school has not opted out yet.
-			(configValue === 'opt-out' && school.getProps().enableStudentTeamCreation !== false)
-		) {
+		if (school.canStudentCreateTeam(configValue)) {
 			school.addFeature(SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
+		}
+
+		return school;
+	}
+
+	private removeInstanceFeatures(school: School): School {
+		const configValue = this.configService.get<string>('STUDENT_TEAM_CREATION');
+
+		if (school.canStudentCreateTeam(configValue)) {
+			school.removeFeature(SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
 		}
 
 		return school;

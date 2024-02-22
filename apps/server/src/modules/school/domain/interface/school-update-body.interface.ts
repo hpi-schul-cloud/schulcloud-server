@@ -1,12 +1,11 @@
-import { LanguageType } from '@shared/domain/entity';
 import { SchoolProps } from '../do';
-import { FileStorageType } from '../type';
 
-export interface SchoolUpdateBody extends Partial<SchoolProps> {
-	name?: string;
-	officialSchoolNumber?: string;
-	logo_dataUrl?: string;
-	logo_name?: string;
-	fileStorageType?: FileStorageType;
-	language?: LanguageType;
+export interface SchoolUpdateBody {
+	name?: SchoolProps['name'];
+	officialSchoolNumber?: SchoolProps['officialSchoolNumber'];
+	logo_dataUrl?: SchoolProps['logo_dataUrl'];
+	logo_name?: SchoolProps['logo_name'];
+	fileStorageType?: SchoolProps['fileStorageType'];
+	language?: SchoolProps['language'];
+	features?: SchoolProps['features'];
 }

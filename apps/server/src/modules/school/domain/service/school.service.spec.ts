@@ -459,6 +459,7 @@ describe('SchoolService', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
 				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+				configService.get.mockReturnValueOnce('enabled');
 
 				return { school, id: school.id };
 			};
@@ -475,9 +476,11 @@ describe('SchoolService', () => {
 				const { id, school } = setup();
 				const partialBody = { name: 'new name' };
 
+				const updatedSchool = SchoolFactory.buildFromPartialBody(school, partialBody);
+				schoolRepo.save.mockResolvedValueOnce(updatedSchool);
+
 				await service.updateSchool(id, partialBody);
 
-				const updatedSchool = SchoolFactory.buildFromPartialBody(school, partialBody);
 				expect(schoolRepo.save).toHaveBeenCalledWith(updatedSchool);
 			});
 
@@ -485,7 +488,7 @@ describe('SchoolService', () => {
 				const { id, school } = setup();
 				const partialBody = { name: 'new name' };
 
-				const updatedSchool = SchoolFactory.updateFromPartialBody(school, partialBody);
+				const updatedSchool = SchoolFactory.buildFromPartialBody(school, partialBody);
 				schoolRepo.save.mockResolvedValueOnce(updatedSchool);
 
 				const result = await service.updateSchool(id, partialBody);
