@@ -28,9 +28,9 @@ export class DrawingDoAuthorizableService implements AuthorizationLoaderService 
 	}
 
 	async getBoardAuthorizable(boardDo: AnyBoardDo): Promise<BoardDoAuthorizable> {
+		let users: UserWithBoardRoles[] = [];
 		const parentDo = await this.getParentDo(boardDo);
 		const rootBoardDo = await this.getRootBoardDo(boardDo);
-		let users: UserWithBoardRoles[] = [];
 
 		if (rootBoardDo.context?.type === BoardExternalReferenceType.Course) {
 			const course = await this.courseRepo.findById(rootBoardDo.context.id);
@@ -47,29 +47,28 @@ export class DrawingDoAuthorizableService implements AuthorizationLoaderService 
 			...course.getTeachersList().map((user) => {
 				return {
 					userId: user.id,
+					roles: [BoardRoles.EDITOR],
 					firstName: user.firstName,
 					lastName: user.lastName,
-					roles: [BoardRoles.EDITOR],
-				};
-			}),
-			...course.getSubstitutionTeachersList().map((user) => {
-				return {
-					userId: user.id,
-					firstName: user.firstName,
-					lastName: user.lastName,
-					roles: [BoardRoles.EDITOR],
 				};
 			}),
 			...course.getStudentsList().map((user) => {
 				return {
 					userId: user.id,
+					roles: [BoardRoles.EDITOR],
 					firstName: user.firstName,
 					lastName: user.lastName,
+				};
+			}),
+			...course.getSubstitutionTeachersList().map((user) => {
+				return {
+					userId: user.id,
 					roles: [BoardRoles.EDITOR],
+					firstName: user.firstName,
+					lastName: user.lastName,
 				};
 			}),
 		];
-		// TODO check unique
 		return users;
 	}
 
