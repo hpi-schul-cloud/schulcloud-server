@@ -1,5 +1,4 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { LanguageType } from '@shared/domain/entity';
 import { EntityId, SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { FileStorageType, SchoolPermissions } from '../type';
 import { County } from './county';
@@ -93,7 +92,7 @@ export interface SchoolProps extends AuthorizableObject {
 	logo_dataUrl?: string;
 	logo_name?: string;
 	fileStorageType?: FileStorageType;
-	language?: LanguageType;
+	language?: string;
 	timezone?: string;
 	permissions?: SchoolPermissions;
 	// The enableStudentTeamCreation property is for compatibility with the existing data.

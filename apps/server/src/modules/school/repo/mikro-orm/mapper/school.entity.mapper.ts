@@ -1,6 +1,6 @@
 import { EntityData } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { FederalStateEntity, LanguageType, SchoolYearEntity, SystemEntity } from '@shared/domain/entity';
+import { FederalStateEntity, SchoolYearEntity, SystemEntity } from '@shared/domain/entity';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { SchoolFactory } from '@src/modules/school/domain/factory';
 import { School } from '../../../domain';
@@ -30,7 +30,7 @@ export class SchoolEntityMapper {
 			logo_dataUrl: entity.logo_dataUrl,
 			logo_name: entity.logo_name,
 			fileStorageType: entity.fileStorageType,
-			language: entity.language as LanguageType,
+			language: entity.language,
 			timezone: entity.timezone,
 			permissions: entity.permissions,
 			enableStudentTeamCreation: entity.enableStudentTeamCreation,
