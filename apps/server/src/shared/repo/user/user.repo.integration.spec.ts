@@ -81,6 +81,7 @@ describe('user repo', () => {
 					'outdatedSince',
 					'previousExternalId',
 					'birthday',
+					'consent',
 				].sort()
 			);
 		});
@@ -210,6 +211,7 @@ describe('user repo', () => {
 					'outdatedSince',
 					'previousExternalId',
 					'birthday',
+					'consent',
 				].sort()
 			);
 		});
