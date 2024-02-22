@@ -3,10 +3,19 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { SortOrder } from '@shared/domain/interface';
-import { cleanupCollections, federalStateFactory, schoolEntityFactory, systemEntityFactory } from '@shared/testing';
+import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
+import {
+	cleanupCollections,
+	federalStateFactory as federalStateEntityFactory,
+	schoolEntityFactory,
+	schoolYearFactory as schoolYearEntityFactory,
+	systemEntityFactory,
+} from '@shared/testing';
 import { countyEmbeddableFactory } from '@shared/testing/factory/county.embeddable.factory';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
-import { SCHOOL_REPO } from '../../domain';
+import { FileStorageType, SCHOOL_REPO } from '../../domain';
+import { federalStateFactory, schoolYearFactory } from '../../testing';
+import { countyFactory } from '../../testing/county.factory';
 import { SchoolEntityMapper } from './mapper';
 import { SchoolMikroOrmRepo } from './school.repo';
 
@@ -220,6 +229,77 @@ describe('SchoolMikroOrmRepo', () => {
 				const result = await repo.getSchoolsBySystemIds([specifiedSystem.id]);
 
 				expect(result).toEqual(expected);
+			});
+		});
+	});
+
+	describe('save', () => {
+		describe('when entity is new', () => {
+			const setup = async () => {
+				const federalState = federalStateEntityFactory.build();
+				const currentYear = schoolYearEntityFactory.build();
+
+				await em.persistAndFlush([federalState, currentYear]);
+				em.clear();
+
+				const entity = schoolEntityFactory.build({ federalState, currentYear });
+				const schoolDo = SchoolEntityMapper.mapToDo(entity);
+
+				return { schoolDo };
+			};
+
+			it('should save entity', async () => {
+				const { schoolDo } = await setup();
+
+				const result = await repo.save(schoolDo);
+
+				expect(result).toEqual(schoolDo);
+			});
+		});
+
+		describe('when entity is existing', () => {
+			const setup = async () => {
+				const entity = schoolEntityFactory.build();
+
+				await em.persistAndFlush(entity);
+				em.clear();
+
+				// Wie kann dieser Test erfolgreich sein wenn z.B. Federalstate in der Datenbank nicht bekannt sind.
+				// GetReference in mapToEntityProperties müsste doch fehlschlagen.
+				const newFederalState = federalStateFactory.build();
+				const newSchoolYear = schoolYearFactory.build();
+				const newCounty = countyFactory.build();
+
+				const schoolDo = SchoolEntityMapper.mapToDo(entity);
+				schoolDo.getProps().name = 'new name';
+				schoolDo.getProps().officialSchoolNumber = 'new officialSchoolNumber';
+				schoolDo.getProps().externalId = 'new externalId';
+				schoolDo.getProps().previousExternalId = 'new previousExternalId';
+				schoolDo.getProps().inMaintenanceSince = new Date();
+				schoolDo.getProps().inUserMigration = true;
+				schoolDo.getProps().purpose = SchoolPurpose.EXPERT;
+				schoolDo.getProps().logo_dataUrl = 'new logo_dataUrl';
+				schoolDo.getProps().logo_name = 'new logo_name';
+				schoolDo.getProps().fileStorageType = FileStorageType.AWS_S3;
+				schoolDo.getProps().language = 'new language';
+				schoolDo.getProps().timezone = 'new timezone';
+				schoolDo.getProps().permissions = {};
+				schoolDo.getProps().enableStudentTeamCreation = true;
+				schoolDo.getProps().federalState = newFederalState;
+				schoolDo.getProps().features = new Set([SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION]);
+				schoolDo.getProps().currentYear = newSchoolYear;
+				schoolDo.getProps().county = newCounty;
+				schoolDo.getProps().systemIds = ['1'];
+
+				return { schoolDo };
+			};
+
+			it('should update entity', async () => {
+				const { schoolDo } = await setup();
+
+				const result = await repo.save(schoolDo);
+
+				expect(result).toEqual(schoolDo);
 			});
 		});
 	});
