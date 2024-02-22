@@ -96,14 +96,13 @@ describe('Users Admin Teachers Controller (API)', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-	});
 
-	beforeEach(async () => {
 		await setupDb();
 	});
 
 	afterAll(async () => {
 		await app.close();
+		em.clear();
 	});
 
 	describe('[GET] :id', () => {
