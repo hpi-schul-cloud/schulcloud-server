@@ -17,6 +17,7 @@ import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
 import type { LessonConfig } from '@modules/lesson';
 import type { BoardConfig } from '@modules/board';
 import type { SharingConfig } from '@modules/sharing';
+import type { SystemConfig } from '@modules/system';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -47,7 +48,8 @@ export interface ServerConfig
 		LearnroomConfig,
 		SharingConfig,
 		IUserImportFeatures,
-		SchulconnexClientConfig {
+		SchulconnexClientConfig,
+		SystemConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 	ACCESSIBILITY_REPORT_EMAIL: string;
@@ -136,6 +138,7 @@ const config: ServerConfig = {
 	FEATURE_SCHOOL_POLICY_ENABLED_NEW: Configuration.get('FEATURE_SCHOOL_POLICY_ENABLED_NEW') as boolean,
 	FEATURE_SCHOOL_TERMS_OF_USE_ENABLED: Configuration.get('FEATURE_SCHOOL_TERMS_OF_USE_ENABLED') as boolean,
 	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: Configuration.get('FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED') as boolean,
+	FEATURE_NEST_SYSTEMS_API_ENABLED: Configuration.get('FEATURE_NEST_SYSTEMS_API_ENABLED') as boolean,
 	GHOST_BASE_URL: Configuration.get('GHOST_BASE_URL') as string,
 	ROCKETCHAT_SERVICE_ENABLED: Configuration.get('ROCKETCHAT_SERVICE_ENABLED') as boolean,
 	JWT_SHOW_TIMEOUT_WARNING_SECONDS: Configuration.get('JWT_SHOW_TIMEOUT_WARNING_SECONDS') as number,
