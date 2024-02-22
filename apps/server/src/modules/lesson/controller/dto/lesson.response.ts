@@ -3,7 +3,7 @@ import { EntityId } from '@shared/domain/types';
 import { PaginationResponse } from '@shared/controller';
 import { ComponentProperties, LessonEntity } from '@shared/domain/entity';
 import { MaterialResponse } from './material.response';
-import { LessonContentResponse } from './lessonContentResponse';
+import { LessonContentResponse } from './lesson-content.response';
 
 export class LessonMetadataResponse {
 	constructor({ _id, name }: LessonMetadataResponse) {

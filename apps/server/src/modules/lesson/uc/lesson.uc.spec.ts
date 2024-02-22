@@ -6,7 +6,6 @@ import { courseFactory, lessonFactory, setupEntities, userFactory } from '@share
 import { CourseService } from '@modules/learnroom/service';
 import { LessonService } from '../service';
 import { LessonUC } from './lesson.uc';
-import { LessonResponse } from '../controller/dto';
 
 describe('LessonUC', () => {
 	let lessonUC: LessonUC;
@@ -187,11 +186,10 @@ describe('LessonUC', () => {
 					AuthorizationContextBuilder.read([Permission.TOPIC_VIEW])
 				);
 			});
-			it('should return lessonResonse', async () => {
+			it('should return lesson', async () => {
 				const { user, lesson } = setup();
 				const result = await lessonUC.getLesson(user.id, lesson.id);
-				const lessonResponse = new LessonResponse(lesson);
-				expect(result).toEqual(lessonResponse);
+				expect(result).toEqual(lesson);
 			});
 		});
 	});

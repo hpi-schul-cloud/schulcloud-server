@@ -24,7 +24,6 @@ import { join } from 'path';
 import { install as sourceMapInstall } from 'source-map-support';
 
 import { ColumnBoardService } from '@modules/board';
-import { LessonUC } from '@modules/lesson/uc';
 import { AppStartLoggable } from './helpers/app-start-loggable';
 import {
 	addPrometheusMetricsMiddlewaresIfEnabled,
@@ -82,8 +81,6 @@ async function bootstrap() {
 	feathersExpress.services['nest-account-uc'] = nestApp.get(AccountUc);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-collaborative-storage-uc'] = nestApp.get(CollaborativeStorageUc);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
-	feathersExpress.services['nest-lesson-uc'] = nestApp.get(LessonUC);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
 	feathersExpress.services['nest-team-service'] = nestApp.get(TeamService);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment

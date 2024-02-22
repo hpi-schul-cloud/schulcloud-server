@@ -5,7 +5,6 @@ import { EntityId } from '@shared/domain/types';
 import { LessonEntity } from '@shared/domain/entity';
 import { CourseService } from '@modules/learnroom/service/course.service';
 import { LessonService } from '../service';
-import { LessonResponse } from '../controller/dto';
 
 @Injectable()
 export class LessonUC {
@@ -44,12 +43,12 @@ export class LessonUC {
 		return filteredLessons;
 	}
 
-	async getLesson(userId: EntityId, lessonId: EntityId): Promise<LessonResponse> {
+	async getLesson(userId: EntityId, lessonId: EntityId): Promise<LessonEntity> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const lesson = await this.lessonService.findById(lessonId);
 
 		this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.read([Permission.TOPIC_VIEW]));
-		const response = new LessonResponse(lesson);
-		return response;
+
+		return lesson;
 	}
 }
