@@ -135,9 +135,15 @@
                 <h3>Extends</h3>
             </p>
             <p class="comment">
-                            <code><a href="../classes/OauthSsoErrorLoggableException.html" target="_self" >OauthSsoErrorLoggableException</a></code>
+                        <code>InternalServerErrorException</code>
             </p>
 
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
+            </p>
 
 
             <section data-compodoc="block-index">
@@ -154,7 +160,6 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier"></span>
                                 <a href="#getLogMessage" >getLogMessage</a>
                             </li>
                         </ul>
@@ -230,7 +235,6 @@
                 <td class="col-md-4">
                     <a name="getLogMessage"></a>
                     <span class="name">
-                            <span class="modifier"></span>
                         <span ><b>getLogMessage</b></span>
                         <a href="#getLogMessage"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -238,22 +242,15 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getLogMessage()</code>
+<code>getLogMessage()</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Inherited from         <code><a href="../classes/OauthSsoErrorLoggableException.html" target="_self" >OauthSsoErrorLoggableException</a></code>
-</div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/OauthSsoErrorLoggableException.html#source" target="_self" >OauthSsoErrorLoggableException:9</a></code>
-</div>
+                            <div class="io-line">Defined in <a href="" data-line="9"
+                                    class="link-to-prism">apps/server/src/modules/oauth/loggable/auth-code-failure-loggable-exception.ts:9</a></div>
                         </td>
                     </tr>
 
@@ -279,15 +276,15 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
-import { OauthSsoErrorLoggableException } from &#x27;./oauth-sso-error-loggable-exception&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
 
-export class AuthCodeFailureLoggableException extends OauthSsoErrorLoggableException {
+export class AuthCodeFailureLoggableException extends InternalServerErrorException implements Loggable {
 	constructor(private readonly errorCode?: string) {
 		super(errorCode ?? &#x27;sso_auth_code_step&#x27;, &#x27;Authorization Query Object has no authorization code or error&#x27;);
 	}
 
-	override getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
 			type: &#x27;SSO_AUTH_CODE_STEP&#x27;,
 			message: &#x27;Authorization Query Object has no authorization code or error&#x27;,

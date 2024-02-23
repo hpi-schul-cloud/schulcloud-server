@@ -4877,9 +4877,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/OAuthRejectableBody.html" data-type="entity-link" >OAuthRejectableBody</a>
                             </li>
                             <li class="link">
-                                <a href="classes/OauthSsoErrorLoggableException.html" data-type="entity-link" >OauthSsoErrorLoggableException</a>
-                            </li>
-                            <li class="link">
                                 <a href="classes/OAuthTokenDto.html" data-type="entity-link" >OAuthTokenDto</a>
                             </li>
                             <li class="link">
