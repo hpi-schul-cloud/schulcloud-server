@@ -35,7 +35,7 @@ describe('users admin repo', () => {
 
 	describe('when searching by searchQuery', () => {
 		const setup = () => {
-			const aggregationSpy = jest.spyOn(em, 'aggregate');
+			const aggregationSpy = jest.spyOn(em, 'aggregate').mockResolvedValueOnce([]);
 
 			const exampleId = '5fa31aacb229544f2c697b48';
 
@@ -58,7 +58,11 @@ describe('users admin repo', () => {
 
 			await repo.getUsersWithNestedData(exampleId, exampleId, exampleId, queryParams);
 
-			expect(aggregationSpy).toHaveBeenCalledWith('pipeline', expect.stringContaining('$match: { score: { $gte:'));
+			expect(aggregationSpy).toHaveBeenCalledWith(
+				User,
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+				expect.arrayContaining([expect.objectContaining({ $match: { score: { $gte: 9 } } })])
+			);
 		});
 	});
 });
