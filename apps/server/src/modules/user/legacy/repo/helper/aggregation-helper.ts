@@ -195,7 +195,7 @@ const stageSimpleProject = (aggregation, select) => {
 	});
 };
 
-const stageLookupClasses = (aggregation, schoolId: ObjectId, schoolYearId: ObjectId) => {
+const stageLookupClasses = (aggregation, schoolId: ObjectId, schoolYearId: ObjectId | unknown) => {
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	aggregation.push({
 		$lookup: {
@@ -397,10 +397,6 @@ export const createMultiDocumentAggregation = ({
 	searchFilterGate,
 	...match
 }: UserSearchQuery) => {
-	// eslint-disable-next-line no-param-reassign
-	limit = Number(limit);
-	// eslint-disable-next-line no-param-reassign
-	skip = Number(skip);
 	if (typeof match._id === 'string') {
 		match._id = new ObjectId(match._id);
 	}
@@ -432,11 +428,7 @@ export const createMultiDocumentAggregation = ({
 
 	if (select) {
 		stageAddSelectProjectWithConsentCreate(aggregation, select.concat(selectSortDiff));
-		if (select.includes('classes')) {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-			// @ts-ignore
-			stageLookupClasses(aggregation, match.schoolId, schoolYearId);
-		}
+		stageLookupClasses(aggregation, match.schoolId, schoolYearId);
 	}
 
 	if (consentStatus) {
@@ -453,7 +445,9 @@ export const createMultiDocumentAggregation = ({
 
 	stageSimpleProject(aggregation, select);
 
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-	if (!match._id || Array.isArray(match._id.$in)) stageFormatWithTotal(aggregation, limit, skip);
+	if (!match?._id) {
+		stageFormatWithTotal(aggregation, limit, skip);
+	}
+
 	return aggregation;
 };
