@@ -3714,6 +3714,12 @@ This allows adding console commands to execute provider methods.</p>
 	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get(&#x27;BLOCKLIST_OF_EMAIL_DOMAINS&#x27;) as string)
 		.split(&#x27;,&#x27;)
 		.map((domain) &#x3D;&gt; domain.trim()),
+	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED: Configuration.get(
+		&#x27;FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED&#x27;
+	) as boolean,
+	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE: Configuration.get(
+		&#x27;FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE&#x27;
+	) as number,
 	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: Configuration.get(
 		&#x27;SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS&#x27;
 	) as number,

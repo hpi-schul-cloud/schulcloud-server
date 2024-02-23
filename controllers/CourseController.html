@@ -157,6 +157,19 @@
                                     <span class="modifier">Async</span>
                                 <a href="#findForUser" >findForUser</a>
                             </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#importCourse" >importCourse</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -204,8 +217,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="59"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:59</a></div>
                         </td>
                     </tr>
 
@@ -317,8 +330,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -376,20 +389,139 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="importCourse"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>importCourse</b></span>
+                        <a href="#importCourse"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>importCourse(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, file: <a href="../interfaces/File.html" target="_self">Express.Multer.File</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;import&#x27;)<br />@UseInterceptors(undefined)<br />@ApiOperation({summary: &#x27;Imports a course from a Common Cartridge file.&#x27;})<br />@ApiConsumes(&#x27;multipart/form-data&#x27;)<br />@ApiBody({type: CourseImportBodyParams, required: true})<br />@ApiCreatedResponse({description: &#x27;Course was successfully imported.&#x27;})<br />@ApiBadRequestResponse({description: &#x27;Request data has invalid format.&#x27;})<br />@ApiInternalServerErrorResponse({description: &#x27;Internal server error.&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:82</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>file</td>
+                                            <td>
+                                                            <code><a href="../interfaces/File.html" target="_self" >Express.Multer.File</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
-import { Controller, Get, NotFoundException, Param, Query, Res, StreamableFile } from &#x27;@nestjs/common&#x27;;
+import {
+	Controller,
+	Get,
+	NotFoundException,
+	Param,
+	Post,
+	Query,
+	Res,
+	StreamableFile,
+	UploadedFile,
+	UseInterceptors,
+} from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
-import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { FileInterceptor } from &#x27;@nestjs/platform-express&#x27;;
+import {
+	ApiBadRequestResponse,
+	ApiBody,
+	ApiConsumes,
+	ApiCreatedResponse,
+	ApiInternalServerErrorResponse,
+	ApiOperation,
+	ApiTags,
+} from &#x27;@nestjs/swagger&#x27;;
 import { PaginationParams } from &#x27;@shared/controller/&#x27;;
 import { Response } from &#x27;express&#x27;;
 import { CourseMapper } from &#x27;../mapper/course.mapper&#x27;;
+import { CourseImportUc } from &#x27;../uc&#x27;;
 import { CourseExportUc } from &#x27;../uc/course-export.uc&#x27;;
 import { CourseUc } from &#x27;../uc/course.uc&#x27;;
-import { CourseMetadataListResponse, CourseQueryParams, CourseUrlParams } from &#x27;./dto&#x27;;
+import { CommonCartridgeFileValidatorPipe } from &#x27;../utils&#x27;;
+import { CourseImportBodyParams, CourseMetadataListResponse, CourseQueryParams, CourseUrlParams } from &#x27;./dto&#x27;;
 
 @ApiTags(&#x27;Courses&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
@@ -398,6 +530,7 @@ export class CourseController {
 	constructor(
 		private readonly courseUc: CourseUc,
 		private readonly courseExportUc: CourseExportUc,
+		private readonly courseImportUc: CourseImportUc,
 		private readonly configService: ConfigService
 	) {}
 
@@ -428,6 +561,22 @@ export class CourseController {
 			&#x27;Content-Disposition&#x27;: &#x27;attachment;&#x27;,
 		});
 		return new StreamableFile(result);
+	}
+
+	@Post(&#x27;import&#x27;)
+	@UseInterceptors(FileInterceptor(&#x27;file&#x27;))
+	@ApiOperation({ summary: &#x27;Imports a course from a Common Cartridge file.&#x27; })
+	@ApiConsumes(&#x27;multipart/form-data&#x27;)
+	@ApiBody({ type: CourseImportBodyParams, required: true })
+	@ApiCreatedResponse({ description: &#x27;Course was successfully imported.&#x27; })
+	@ApiBadRequestResponse({ description: &#x27;Request data has invalid format.&#x27; })
+	@ApiInternalServerErrorResponse({ description: &#x27;Internal server error.&#x27; })
+	public async importCourse(
+		@CurrentUser() currentUser: ICurrentUser,
+		@UploadedFile(CommonCartridgeFileValidatorPipe)
+		file: Express.Multer.File
+	): Promise&lt;void&gt; {
+		await this.courseImportUc.importFromCommonCartridge(currentUser.userId, file.buffer);
 	}
 }
 </code></pre>

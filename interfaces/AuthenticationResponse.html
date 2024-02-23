@@ -285,6 +285,21 @@ export class TestApiClient {
 		return testRequestInstance;
 	}
 
+	public postWithAttachment(
+		subPath: string | undefined,
+		fieldName: string,
+		data: Buffer,
+		fileName: string
+	): supertest.Test {
+		const path &#x3D; this.getPath(subPath);
+		const testRequestInstance &#x3D; supertest(this.app.getHttpServer())
+			.post(path)
+			.set(&#x27;authorization&#x27;, this.formattedJwt)
+			.attach(fieldName, data, fileName);
+
+		return testRequestInstance;
+	}
+
 	public async login(account: Account): Promise&lt;this&gt; {
 		const path &#x3D; testReqestConst.loginPath;
 		const params: { username: string; password: string } &#x3D; {

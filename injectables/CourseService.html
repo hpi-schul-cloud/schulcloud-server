@@ -143,6 +143,10 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#create" >create</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#deleteUserDataFromCourse" >deleteUserDataFromCourse</a>
@@ -246,6 +250,75 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="create"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>create</b></span>
+                        <a href="#create"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>create(course: <a href="../entitys/Course.html" target="_self">Course</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="68"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:68</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>course</td>
+                                            <td>
+                                                            <code><a href="../entitys/Course.html" target="_self" >Course</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -546,8 +619,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -627,8 +700,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="68"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:68</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:72</a></div>
                         </td>
                     </tr>
 
@@ -745,6 +818,10 @@ export class CourseService {
 		const [courses] &#x3D; await this.repo.findAllByUserId(userId);
 
 		return courses;
+	}
+
+	async create(course: Course): Promise&lt;void&gt; {
+		await this.repo.createCourse(course);
 	}
 
 	private getCoursesId(courses: Course[]): EntityId[] {

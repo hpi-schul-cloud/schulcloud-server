@@ -143,6 +143,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#findAllByUser" >findAllByUser</a>
                             </li>
                         </ul>
@@ -163,7 +164,8 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>)</code>
+                                <span class="modifier">Public</span>
+                        <code>constructor(courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -217,6 +219,7 @@
                 <td class="col-md-4">
                     <a name="findAllByUser"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                         <span ><b>findAllByUser</b></span>
                         <a href="#findAllByUser"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -224,7 +227,8 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>findAllByUser(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, options?: <a href="../classes/PaginationParams.html" target="_self">PaginationParams</a>)</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findAllByUser(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, options?: <a href="../classes/PaginationParams.html" target="_self">PaginationParams</a>)</code>
                 </td>
             </tr>
 
@@ -305,9 +309,9 @@ import { CourseRepo } from &#x27;@shared/repo&#x27;;
 
 @Injectable()
 export class CourseUc {
-	constructor(private readonly courseRepo: CourseRepo) {}
+	public constructor(private readonly courseRepo: CourseRepo) {}
 
-	findAllByUser(userId: EntityId, options?: PaginationParams): Promise&lt;Counted&lt;Course[]&gt;&gt; {
+	public findAllByUser(userId: EntityId, options?: PaginationParams): Promise&lt;Counted&lt;Course[]&gt;&gt; {
 		return this.courseRepo.findAllByUserId(userId, {}, { pagination: options, order: { updatedAt: SortOrder.desc } });
 	}
 }
