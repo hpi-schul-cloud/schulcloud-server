@@ -39,12 +39,15 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		data: ToolLaunchParams
 	): Promise<PropertyData[]> {
 		const { config } = data.externalTool;
-		const contextId: EntityId = data.contextExternalTool.contextRef.id;
 
 		if (!ExternalTool.isLti11Config(config)) {
 			throw new UnprocessableEntityException(
 				`Unable to build LTI 1.1 launch data. Tool configuration is of type ${config.type}. Expected "lti11"`
 			);
+		}
+
+		if (!data.contextExternalTool.id) {
+			throw new InternalServerErrorException();
 		}
 
 		const user: UserDO = await this.userService.findById(userId);
@@ -60,7 +63,7 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 			new PropertyData({ name: 'lti_version', value: 'LTI-1p0', location: PropertyLocation.BODY }),
 			new PropertyData({
 				name: 'resource_link_id',
-				value: config.resource_link_id || contextId,
+				value: data.contextExternalTool.id,
 				location: PropertyLocation.BODY,
 			}),
 			new PropertyData({
