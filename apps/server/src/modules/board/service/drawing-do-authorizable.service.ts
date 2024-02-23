@@ -16,12 +16,12 @@ import { DrawingDoRepo } from '../repo/drawing-do.repo';
 @Injectable()
 export class DrawingDoAuthorizableService implements AuthorizationLoaderService {
 	constructor(
-		@Inject(forwardRef(() => DrawingDoRepo)) private readonly boardDoRepo: DrawingDoRepo,
+		@Inject(forwardRef(() => DrawingDoRepo)) private readonly drawingDoRepo: DrawingDoRepo,
 		private readonly courseRepo: CourseRepo
 	) {}
 
 	async findById(id: EntityId): Promise<BoardDoAuthorizable> {
-		const boardDo = await this.boardDoRepo.findById(id, 1);
+		const boardDo = await this.drawingDoRepo.findById(id, 1);
 		const boardDoAuthorizable = await this.getBoardAuthorizable(boardDo);
 
 		return boardDoAuthorizable;
@@ -73,15 +73,15 @@ export class DrawingDoAuthorizableService implements AuthorizationLoaderService 
 	}
 
 	private async getParentDo(boardDo: AnyBoardDo): Promise<Promise<AnyBoardDo> | undefined> {
-		const parentDo = await this.boardDoRepo.findParentOfId(boardDo.id);
+		const parentDo = await this.drawingDoRepo.findParentOfId(boardDo.id);
 		return parentDo;
 	}
 
 	private async getRootBoardDo(boardDo: AnyBoardDo): Promise<ColumnBoard> {
-		const ancestorIds = await this.boardDoRepo.getAncestorIds(boardDo);
+		const ancestorIds = await this.drawingDoRepo.getAncestorIds(boardDo);
 		const allIds = [...ancestorIds, boardDo.id];
 		const rootId = allIds[0];
-		const rootBoardDo = await this.boardDoRepo.findById(rootId, 1);
+		const rootBoardDo = await this.drawingDoRepo.findById(rootId, 1);
 
 		if (!(rootBoardDo instanceof ColumnBoard)) {
 			throw new Error('root boardnode was expected to be a ColumnBoard');
