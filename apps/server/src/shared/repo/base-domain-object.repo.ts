@@ -25,11 +25,7 @@ export abstract class BaseDomainObjectRepo<D extends DomainObject<AuthorizableOb
 
 		await this.em.flush();
 
-		const savedDomainObjects = results.map(({ domainObject, persistedEntity }) =>
-			this.remapProtectedEntityFields(domainObject, persistedEntity)
-		);
-
-		return savedDomainObjects;
+		return results.map((result) => result.domainObject);
 	}
 
 	private async createOrUpdateEntity(domainObject: D): Promise<{ domainObject: D; persistedEntity: E }> {
@@ -73,15 +69,5 @@ export abstract class BaseDomainObjectRepo<D extends DomainObject<AuthorizableOb
 				delete entityData[key];
 			}
 		});
-	}
-
-	private remapProtectedEntityFields(domainObject: D, persistedEntity: E) {
-		if ('createdAt' in domainObject && 'createdAt' in persistedEntity) {
-			domainObject.createdAt = persistedEntity.createdAt;
-		}
-		if ('updatedAt' in domainObject && 'updatedAt' in persistedEntity) {
-			domainObject.updatedAt = persistedEntity.updatedAt;
-		}
-		return domainObject;
 	}
 }

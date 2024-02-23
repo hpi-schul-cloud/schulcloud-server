@@ -18,6 +18,8 @@ describe('BaseDomainObjectRepo', () => {
 
 	interface TestDOProps extends AuthorizableObject {
 		name: string;
+		createdAt?: Date;
+		updatedAt?: Date;
 	}
 
 	@Entity()
@@ -40,15 +42,17 @@ describe('BaseDomainObjectRepo', () => {
 		}
 
 		mapEntityToDO(entity: TestEntity): TestDO {
-			const { id, name } = entity;
-			return new TestDO({ id, name });
+			const { id, name, createdAt, updatedAt } = entity;
+			return new TestDO({ id, name, createdAt, updatedAt });
 		}
 
 		mapDOToEntityProperties(entityDO: TestDO): EntityData<TestEntity> {
-			const { id, name } = entityDO.getProps();
+			const { id, name, createdAt, updatedAt } = entityDO.getProps();
 			return {
 				id,
 				name,
+				createdAt,
+				updatedAt,
 			};
 		}
 	}
@@ -174,6 +178,22 @@ describe('BaseDomainObjectRepo', () => {
 
 				expect(savedDob).toBeInstanceOf(TestDO);
 				expect(savedDob.getProps()).toEqual(updatedDob.getProps());
+			});
+
+			it('should take protected properties from entity', async () => {
+				const { dob, entity } = await setup();
+				const createdAt = new Date(0);
+				const updatedAt = new Date(0);
+
+				const updatedDob = new TestDO({ id: dob.id, name: 'updated', createdAt, updatedAt });
+
+				const savedDob = await repo.save(updatedDob);
+
+				const resultEntity = await em.findOne(TestEntity, { id: savedDob.id });
+
+				expect(resultEntity).toBeInstanceOf(TestEntity);
+				expect(resultEntity?.createdAt).toEqual(entity.createdAt);
+				expect(resultEntity?.updatedAt).toEqual(entity.updatedAt);
 			});
 		});
 	});
@@ -307,6 +327,14 @@ describe('BaseDomainObjectRepo', () => {
 
 			const entities = await em.find(TestEntity, {});
 			expect(entities).toHaveLength(0);
+		});
+
+		it('should throw error when id is not set', async () => {
+			await setup();
+			// @ts-expect-error - testing invalid input
+			const notFoundDob = new TestDO({ name: 'test' });
+
+			await expect(repo.delete(notFoundDob)).rejects.toThrowError('Cannot delete object without id');
 		});
 	});
 
