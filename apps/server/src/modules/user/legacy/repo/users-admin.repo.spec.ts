@@ -65,4 +65,95 @@ describe('users admin repo', () => {
 			);
 		});
 	});
+
+	describe('when searching by classes', () => {
+		const setup = () => {
+			const aggregationSpy = jest.spyOn(em, 'aggregate').mockResolvedValueOnce([]);
+
+			const exampleId = '5fa31aacb229544f2c697b48';
+
+			const queryParams: UsersSearchQueryParams = {
+				$skip: 0,
+				$limit: 5,
+				$sort: { firstName: 1 },
+				classes: ['test'],
+			};
+
+			const classesLookupStage = {
+				$lookup: {
+					from: 'classes',
+					let: { id: '$_id' },
+					pipeline: [
+						{
+							$match: {
+								$expr: {
+									$and: [
+										{ $eq: ['$schoolId', exampleId] },
+										{
+											$and: [
+												{
+													$or: [{ $eq: ['$year', exampleId] }, { $eq: [{ $type: '$year' }, 'missing'] }],
+												},
+												{
+													$or: [{ $max: '$gradeLevel' }, { $eq: [{ $type: '$gradeLevel' }, 'missing'] }],
+												},
+											],
+										},
+										{
+											$or: [{ $in: ['$$id', '$userIds'] }, { $in: ['$$id', '$teacherIds'] }],
+										},
+									],
+								},
+							},
+						},
+						{
+							$sort: {
+								year: -1,
+								gradeLevel: -1,
+								name: 1,
+							},
+						},
+						{
+							$project: {
+								gradeLevel: {
+									$convert: {
+										input: '$gradeLevel',
+										to: 'string',
+										onNull: '',
+									},
+								},
+								name: {
+									$convert: {
+										input: '$name',
+										to: 'string',
+										onNull: '',
+									},
+								},
+							},
+						},
+					],
+					as: 'classes',
+				},
+			};
+
+			return {
+				queryParams,
+				aggregationSpy,
+				exampleId,
+				classesLookupStage,
+			};
+		};
+
+		it('should provide lookup stage in aggregation', async () => {
+			const { queryParams, aggregationSpy, exampleId, classesLookupStage } = setup();
+
+			await repo.getUsersWithNestedData(exampleId, exampleId, exampleId, queryParams);
+
+			expect(aggregationSpy).toHaveBeenCalledWith(
+				User,
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+				expect.arrayContaining([expect.objectContaining(classesLookupStage)])
+			);
+		});
+	});
 });
