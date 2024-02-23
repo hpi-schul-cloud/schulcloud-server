@@ -97,7 +97,6 @@ export class UsersAdminRepo extends BaseRepo<User> {
 			// increase gate by searched word, to get better results
 			query.searchFilterGate = searchQueryElements.length * 2 + amountOfSearchWords;
 			// recreating sort here, to set searchQuery as first (main) parameter of sorting
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			query.sort = {
 				...query.sort,
 				searchQuery: 1,
