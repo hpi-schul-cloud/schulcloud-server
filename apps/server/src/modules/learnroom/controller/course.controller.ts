@@ -1,13 +1,35 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Controller, Get, NotFoundException, Param, Query, Res, StreamableFile } from '@nestjs/common';
+import {
+	Controller,
+	Get,
+	NotFoundException,
+	Param,
+	Post,
+	Query,
+	Res,
+	StreamableFile,
+	UploadedFile,
+	UseInterceptors,
+} from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import {
+	ApiBadRequestResponse,
+	ApiBody,
+	ApiConsumes,
+	ApiCreatedResponse,
+	ApiInternalServerErrorResponse,
+	ApiOperation,
+	ApiTags,
+} from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/';
 import { Response } from 'express';
 import { CourseMapper } from '../mapper/course.mapper';
+import { CourseImportUc } from '../uc';
 import { CourseExportUc } from '../uc/course-export.uc';
 import { CourseUc } from '../uc/course.uc';
-import { CourseMetadataListResponse, CourseQueryParams, CourseUrlParams } from './dto';
+import { CommonCartridgeFileValidatorPipe } from '../utils';
+import { CourseImportBodyParams, CourseMetadataListResponse, CourseQueryParams, CourseUrlParams } from './dto';
 
 @ApiTags('Courses')
 @Authenticate('jwt')
@@ -16,6 +38,7 @@ export class CourseController {
 	constructor(
 		private readonly courseUc: CourseUc,
 		private readonly courseExportUc: CourseExportUc,
+		private readonly courseImportUc: CourseImportUc,
 		private readonly configService: ConfigService
 	) {}
 
@@ -46,5 +69,21 @@ export class CourseController {
 			'Content-Disposition': 'attachment;',
 		});
 		return new StreamableFile(result);
+	}
+
+	@Post('import')
+	@UseInterceptors(FileInterceptor('file'))
+	@ApiOperation({ summary: 'Imports a course from a Common Cartridge file.' })
+	@ApiConsumes('multipart/form-data')
+	@ApiBody({ type: CourseImportBodyParams, required: true })
+	@ApiCreatedResponse({ description: 'Course was successfully imported.' })
+	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
+	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+	public async importCourse(
+		@CurrentUser() currentUser: ICurrentUser,
+		@UploadedFile(CommonCartridgeFileValidatorPipe)
+		file: Express.Multer.File
+	): Promise<void> {
+		await this.courseImportUc.importFromCommonCartridge(currentUser.userId, file.buffer);
 	}
 }
