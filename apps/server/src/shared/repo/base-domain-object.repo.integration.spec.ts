@@ -99,7 +99,7 @@ describe('BaseDomainObjectRepo', () => {
 
 	describe('save', () => {
 		describe('when create new entity', () => {
-			const setup = async () => {
+			const setup = () => {
 				const oid = new ObjectId();
 
 				const dob = new TestDO({ id: oid.toHexString(), name: 'test' });
@@ -110,7 +110,7 @@ describe('BaseDomainObjectRepo', () => {
 			};
 
 			it('should call em.create', async () => {
-				const { dob, spyCreate, oid, expected } = await setup();
+				const { dob, spyCreate, oid, expected } = setup();
 
 				const savedDob = await repo.save(dob);
 
@@ -119,7 +119,7 @@ describe('BaseDomainObjectRepo', () => {
 			});
 
 			it('should find a persisted entity', async () => {
-				const { dob } = await setup();
+				const { dob } = setup();
 
 				const savedDob = await repo.save(dob);
 
@@ -130,7 +130,7 @@ describe('BaseDomainObjectRepo', () => {
 			});
 
 			it('should save a single domain object', async () => {
-				const { dob } = await setup();
+				const { dob } = setup();
 
 				const savedDob = await repo.save(dob);
 
@@ -201,7 +201,7 @@ describe('BaseDomainObjectRepo', () => {
 
 	describe('saveAll', () => {
 		describe('when create multiple domain objects', () => {
-			const setup = async () => {
+			const setup = () => {
 				const id1 = new ObjectId().toHexString();
 				const id2 = new ObjectId().toHexString();
 				const dobs = [new TestDO({ id: id1, name: 'test1' }), new TestDO({ id: id2, name: 'test2' })];
@@ -216,7 +216,7 @@ describe('BaseDomainObjectRepo', () => {
 			};
 
 			it('should call em.create with expected params', async () => {
-				const { dobs, spyCreate, expected } = await setup();
+				const { dobs, spyCreate, expected } = setup();
 
 				const savedDobs = await repo.saveAll(dobs);
 
@@ -228,7 +228,7 @@ describe('BaseDomainObjectRepo', () => {
 			});
 
 			it('should save multiple domain objects', async () => {
-				const { dobs } = await setup();
+				const { dobs } = setup();
 
 				const savedDobs = await repo.saveAll(dobs);
 
