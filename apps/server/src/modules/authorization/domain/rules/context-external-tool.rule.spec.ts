@@ -1,12 +1,12 @@
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
+import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/entity/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Role, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
-	contextExternalToolEntityFactory,
 	roleFactory,
 	schoolEntityFactory,
 	schoolExternalToolEntityFactory,

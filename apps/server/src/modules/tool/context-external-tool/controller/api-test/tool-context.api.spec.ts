@@ -6,7 +6,6 @@ import { Account, Course, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
 	accountFactory,
-	contextExternalToolEntityFactory,
 	courseFactory,
 	customParameterEntityFactory,
 	externalToolEntityFactory,
@@ -22,6 +21,7 @@ import { CustomParameterScope, CustomParameterType, ToolContextType } from '../.
 import { ExternalToolEntity } from '../../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
+import { contextExternalToolEntityFactory } from '../../entity/testing';
 import {
 	ContextExternalToolPostParams,
 	ContextExternalToolResponse,

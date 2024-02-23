@@ -6,7 +6,6 @@ import { Course, SchoolEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
 	basicToolConfigFactory,
-	contextExternalToolEntityFactory,
 	contextExternalToolFactory,
 	courseFactory,
 	customParameterFactory,
@@ -20,6 +19,7 @@ import { schoolExternalToolConfigurationStatusEntityFactory } from '@shared/test
 import { Response } from 'supertest';
 import { CustomParameterLocation, CustomParameterScope, ToolConfigType } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
+import { contextExternalToolEntityFactory } from '../../../context-external-tool/entity/testing';
 import { ExternalToolEntity } from '../../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { LaunchRequestMethod } from '../../types';

@@ -8,7 +8,6 @@ import { Permission } from '@shared/domain/interface';
 import {
 	accountFactory,
 	boardFactory,
-	contextExternalToolEntityFactory,
 	courseFactory,
 	customParameterFactory,
 	externalToolEntityFactory,
@@ -26,6 +25,7 @@ import {
 	ToolContextType,
 } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
+import { contextExternalToolEntityFactory } from '../../../context-external-tool/entity/testing';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ExternalToolEntity } from '../../entity';
 import {

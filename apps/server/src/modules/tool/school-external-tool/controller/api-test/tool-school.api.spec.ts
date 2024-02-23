@@ -8,7 +8,6 @@ import { Permission } from '@shared/domain/interface';
 import {
 	accountFactory,
 	columnBoardNodeFactory,
-	contextExternalToolEntityFactory,
 	customParameterEntityFactory,
 	externalToolElementNodeFactory,
 	externalToolEntityFactory,
@@ -20,6 +19,7 @@ import {
 } from '@shared/testing';
 import { schoolToolConfigurationStatusFactory } from '@shared/testing/factory';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
+import { contextExternalToolEntityFactory } from '../../../context-external-tool/entity/testing';
 import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../entity';
 import {

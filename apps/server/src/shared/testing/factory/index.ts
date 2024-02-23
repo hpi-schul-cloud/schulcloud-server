@@ -5,7 +5,6 @@ export * from './base.factory';
 export * from './board.factory';
 export * from './boardelement.factory';
 export * from './boardnode';
-export * from './context-external-tool-entity.factory';
 export * from './course.factory';
 export * from './coursegroup.factory';
 export * from './domainobject';

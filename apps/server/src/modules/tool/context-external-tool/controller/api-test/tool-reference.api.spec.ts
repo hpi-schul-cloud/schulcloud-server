@@ -7,7 +7,6 @@ import { Permission } from '@shared/domain/interface';
 import {
 	cleanupCollections,
 	contextExternalToolConfigurationStatusResponseFactory,
-	contextExternalToolEntityFactory,
 	courseFactory,
 	customParameterFactory,
 	externalToolEntityFactory,
@@ -19,6 +18,7 @@ import {
 
 import { Response } from 'supertest';
 import { CustomParameterLocation, CustomParameterScope, ToolContextType } from '../../../common/enum';
+import { contextExternalToolEntityFactory } from '../../entity/testing';
 import { ExternalToolEntity } from '../../../external-tool/entity';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
