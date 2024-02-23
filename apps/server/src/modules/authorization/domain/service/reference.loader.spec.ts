@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardDoAuthorizableService, DrawingDoAuthorizableService } from '@modules/board';
+import { BoardDoAuthorizableService } from '@modules/board';
 import { LessonService } from '@modules/lesson';
 import { ContextExternalToolAuthorizableService } from '@modules/tool';
 import { NotImplementedException } from '@nestjs/common';
@@ -33,7 +33,6 @@ describe('reference.loader', () => {
 	let schoolExternalToolRepo: DeepMocked<SchoolExternalToolRepo>;
 	let boardNodeAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	let contextExternalToolAuthorizableService: DeepMocked<ContextExternalToolAuthorizableService>;
-	let drawingDoAuthorizableService: DeepMocked<DrawingDoAuthorizableService>;
 	const entityId: EntityId = new ObjectId().toHexString();
 
 	beforeAll(async () => {
@@ -86,10 +85,6 @@ describe('reference.loader', () => {
 					provide: ContextExternalToolAuthorizableService,
 					useValue: createMock<ContextExternalToolAuthorizableService>(),
 				},
-				{
-					provide: DrawingDoAuthorizableService,
-					useValue: createMock<DrawingDoAuthorizableService>(),
-				},
 			],
 		}).compile();
 
@@ -105,7 +100,6 @@ describe('reference.loader', () => {
 		schoolExternalToolRepo = await module.get(SchoolExternalToolRepo);
 		boardNodeAuthorizableService = await module.get(BoardDoAuthorizableService);
 		contextExternalToolAuthorizableService = await module.get(ContextExternalToolAuthorizableService);
-		drawingDoAuthorizableService = await module.get(DrawingDoAuthorizableService);
 	});
 
 	afterEach(() => {
@@ -196,12 +190,6 @@ describe('reference.loader', () => {
 			void expect(async () =>
 				service.loadAuthorizableObject('NotAllowedEntityType' as AuthorizableReferenceType, entityId)
 			).rejects.toThrow(NotImplementedException);
-		});
-
-		it('should call findNodeService.findById', async () => {
-			await service.loadAuthorizableObject(AuthorizableReferenceType.DrawingNode, entityId);
-
-			expect(drawingDoAuthorizableService.findById).toBeCalledWith(entityId);
 		});
 	});
 });

@@ -1,1 +1,1 @@
-export const availableParentTypes = 'users, schools, courses, tasks, lessons, submissions, boardnodes, drawingnodes';
+export const availableParentTypes = 'users, schools, courses, tasks, lessons, submissions, boardnodes';

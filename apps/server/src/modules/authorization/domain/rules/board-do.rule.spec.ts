@@ -11,7 +11,7 @@ import { ObjectId } from 'bson';
 import { BoardDoAuthorizable, BoardRoles } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { Action } from '../type';
-import { AuthorizationHelper } from '../service';
+import { AuthorizationHelper } from '../service/authorization.helper';
 import { BoardDoRule } from './board-do.rule';
 
 describe(BoardDoRule.name, () => {
@@ -469,7 +469,7 @@ describe(BoardDoRule.name, () => {
 			});
 			describe('when user is Reader', () => {
 				const setup = () => {
-					const user = userFactory.asStudent().buildWithId();
+					const user = userFactory.buildWithId();
 					const drawingElement = drawingElementFactory.build();
 					const boardDoAuthorizable = new BoardDoAuthorizable({
 						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
@@ -498,72 +498,6 @@ describe(BoardDoRule.name, () => {
 					});
 
 					expect(res).toBe(true);
-				});
-			});
-			describe('when user is Editor with file context', () => {
-				const setup = () => {
-					const user = userFactory.asStudent().buildWithId();
-					const drawingElement = drawingElementFactory.build();
-					const boardDoAuthorizable = new BoardDoAuthorizable({
-						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
-						id: new ObjectId().toHexString(),
-						boardDo: drawingElement,
-					});
-
-					return { user, boardDoAuthorizable };
-				};
-				it('should return true if trying to "read"', () => {
-					const { user, boardDoAuthorizable } = setup();
-
-					const res = service.hasPermission(user, boardDoAuthorizable, {
-						action: Action.read,
-						requiredPermissions: [Permission.FILESTORAGE_VIEW],
-					});
-
-					expect(res).toBe(true);
-				});
-				it('should return true if trying to "write" ', () => {
-					const { user, boardDoAuthorizable } = setup();
-
-					const res = service.hasPermission(user, boardDoAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [Permission.FILESTORAGE_VIEW],
-					});
-
-					expect(res).toBe(true);
-				});
-			});
-			describe('when user is Reader with file context', () => {
-				const setup = () => {
-					const user = userFactory.asStudent().buildWithId();
-					const drawingElement = drawingElementFactory.build();
-					const boardDoAuthorizable = new BoardDoAuthorizable({
-						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
-						id: new ObjectId().toHexString(),
-						boardDo: drawingElement,
-					});
-
-					return { user, boardDoAuthorizable };
-				};
-				it('should return false if trying to "write"', () => {
-					const { user, boardDoAuthorizable } = setup();
-
-					const res = service.hasPermission(user, boardDoAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [Permission.FILESTORAGE_VIEW],
-					});
-
-					expect(res).toBe(false);
-				});
-				it('should ALSO return false if trying to "read" ', () => {
-					const { user, boardDoAuthorizable } = setup();
-
-					const res = service.hasPermission(user, boardDoAuthorizable, {
-						action: Action.read,
-						requiredPermissions: [Permission.FILESTORAGE_VIEW],
-					});
-
-					expect(res).toBe(false);
 				});
 			});
 		});
