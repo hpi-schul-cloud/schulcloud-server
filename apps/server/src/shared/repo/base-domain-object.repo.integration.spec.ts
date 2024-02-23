@@ -84,6 +84,7 @@ describe('BaseDomainObjectRepo', () => {
 	beforeEach(async () => {
 		await em.nativeDelete(TestEntity, {});
 		em.clear();
+		jest.clearAllMocks();
 	});
 
 	afterAll(async () => {
@@ -208,21 +209,21 @@ describe('BaseDomainObjectRepo', () => {
 
 				const expected = dobs.map((dob) => {
 					const props = dob.getProps();
-					return { _id: props.id, name: props.name };
+					return { _id: new ObjectId(props.id), name: props.name };
 				});
 
 				return { dobs, spyCreate, expected };
 			};
 
-			it.skip('should call em.create', async () => {
+			it('should call em.create with expected params', async () => {
 				const { dobs, spyCreate, expected } = await setup();
 
 				const savedDobs = await repo.saveAll(dobs);
 
 				expect(savedDobs).toHaveLength(dobs.length);
 				savedDobs.forEach((savedDob, index) => {
-					expect(savedDob).toBeInstanceOf(TestDO);
-					expect(spyCreate).toHaveBeenCalledWith(TestEntity, expected[index]);
+					expect(savedDob.id).toEqual(expected[index]._id.toHexString());
+					expect(spyCreate).toBeCalledWith(TestEntity, expected[index]);
 				});
 			});
 
