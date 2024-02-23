@@ -10,7 +10,7 @@ export class IdTokenInvalidLoggableException extends BusinessError implements Lo
 				title: 'Id token invalid',
 				defaultMessage: 'Failed to validate idToken',
 			},
-			HttpStatus.INTERNAL_SERVER_ERROR
+			HttpStatus.UNAUTHORIZED
 		);
 	}
 
