@@ -125,9 +125,7 @@ export class SchoolService {
 	// TODO: The logic for setting this feature should better be part of the creation of a school object.
 	// But it has to be discussed, how to implement that. Thus we leave the logic here for now.
 	private addInstanceFeatures(school: School): School {
-		const configValue = this.configService.get<string>('STUDENT_TEAM_CREATION');
-
-		if (school.canStudentCreateTeam(configValue)) {
+		if (this.canStudentCreateTeam(school)) {
 			school.addFeature(SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
 		}
 
@@ -135,12 +133,23 @@ export class SchoolService {
 	}
 
 	private removeInstanceFeatures(school: School): School {
-		const configValue = this.configService.get<string>('STUDENT_TEAM_CREATION');
-
-		if (school.canStudentCreateTeam(configValue)) {
+		if (this.canStudentCreateTeam(school)) {
 			school.removeFeature(SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
 		}
 
 		return school;
+	}
+
+	private canStudentCreateTeam(school: School): boolean {
+		const configValue = this.configService.get<string>('STUDENT_TEAM_CREATION');
+		const { enableStudentTeamCreation } = school.getProps();
+
+		return (
+			configValue === 'enabled' ||
+			(configValue === 'opt-in' && enableStudentTeamCreation) ||
+			// It is necessary to check enableStudentTeamCreation to be not false here,
+			// because it being undefined means that the school has not opted out yet.
+			(configValue === 'opt-out' && enableStudentTeamCreation !== false)
+		);
 	}
 }

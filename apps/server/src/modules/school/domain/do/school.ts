@@ -62,16 +62,6 @@ export class School extends DomainObject<SchoolProps> {
 
 		return result;
 	}
-
-	public canStudentCreateTeam(configValue: string): boolean {
-		return (
-			configValue === 'enabled' ||
-			(configValue === 'opt-in' && this.props.enableStudentTeamCreation) ||
-			// It is necessary to check enableStudentTeamCreation to be not false here,
-			// because it being undefined means that the school has not opted out yet.
-			(configValue === 'opt-out' && this.props.enableStudentTeamCreation !== false)
-		);
-	}
 }
 
 export interface SchoolProps extends AuthorizableObject {
