@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { Reflector } from '@nestjs/core';
 import { Observable, throwError, TimeoutError } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
+import { InterceptorConfig } from './interfaces';
 
 /**
  * This interceptor leaves the request execution after a given timeout in ms.
@@ -10,6 +11,8 @@ import { catchError, timeout } from 'rxjs/operators';
  */
 @Injectable()
 export class TimeoutInterceptor implements NestInterceptor {
+	defaultConfigKey: keyof InterceptorConfig = 'INCOMING_REQUEST_TIMEOUT';
+
 	constructor(private readonly configService: ConfigService) {}
 
 	intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
@@ -19,7 +22,7 @@ export class TimeoutInterceptor implements NestInterceptor {
 			reflector.get<string>('requestTimeoutEnvirementName', context.getClass());
 
 		// type of requestTimeoutEnvirementName is always invalid and can be different
-		const timeoutMS = this.configService.getOrThrow<number>(requestTimeoutEnvirementName || 'INCOMING_REQUEST_TIMEOUT');
+		const timeoutMS = this.configService.getOrThrow<number>(requestTimeoutEnvirementName || this.defaultConfigKey);
 
 		return next.handle().pipe(
 			timeout(timeoutMS),
