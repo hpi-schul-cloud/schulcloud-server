@@ -13,8 +13,6 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError, RequestTimeout } from '@shared/common';
-// invalid import can produce dependency cycles
-import { serverConfig } from '@modules/server/server.config';
 import { ShareTokenInfoResponseMapper, ShareTokenResponseMapper } from '../mapper';
 import { ShareTokenUC } from '../uc';
 import {

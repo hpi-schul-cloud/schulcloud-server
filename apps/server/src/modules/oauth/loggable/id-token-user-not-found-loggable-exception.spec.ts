@@ -21,8 +21,8 @@ describe(IdTokenUserNotFoundLoggableException.name, () => {
 			const logMessage = exception.getLogMessage();
 
 			expect(logMessage).toEqual({
-				type: 'SSO_USER_NOTFOUND',
-				message: 'Failed to find user with uuid from id token',
+				type: 'USER_NOT_FOUND',
+				message: 'Failed to find user with uuid from id token.',
 				stack: exception.stack,
 				data: {
 					uuid,

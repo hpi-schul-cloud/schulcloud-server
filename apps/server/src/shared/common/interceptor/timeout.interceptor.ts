@@ -11,16 +11,18 @@ import { InterceptorConfig } from './interfaces';
  */
 @Injectable()
 export class TimeoutInterceptor implements NestInterceptor {
-	constructor(private readonly configService: ConfigService<InterceptorConfig, true>) {}
+	defaultConfigKey: keyof InterceptorConfig = 'INCOMING_REQUEST_TIMEOUT';
+
+	constructor(private readonly configService: ConfigService) {}
 
 	intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
 		const reflector = new Reflector();
 		const requestTimeoutEnvirementName =
-			reflector.get<keyof InterceptorConfig>('requestTimeoutEnvirementName', context.getHandler()) ||
-			reflector.get<keyof InterceptorConfig>('requestTimeoutEnvirementName', context.getClass());
+			reflector.get<string>('requestTimeoutEnvirementName', context.getHandler()) ||
+			reflector.get<string>('requestTimeoutEnvirementName', context.getClass());
 
 		// type of requestTimeoutEnvirementName is always invalid and can be different
-		const timeoutMS = this.configService.getOrThrow<number>(requestTimeoutEnvirementName || 'INCOMING_REQUEST_TIMEOUT');
+		const timeoutMS = this.configService.getOrThrow<number>(requestTimeoutEnvirementName || this.defaultConfigKey);
 
 		return next.handle().pipe(
 			timeout(timeoutMS),
