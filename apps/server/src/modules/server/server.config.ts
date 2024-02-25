@@ -148,7 +148,6 @@ const config: ServerConfig = {
 	DOCUMENT_BASE_DIR: Configuration.get('DOCUMENT_BASE_DIR') as string,
 	SC_THEME: Configuration.get('SC_THEME') as string,
 	SC_TITLE: Configuration.get('SC_TITLE') as string,
-	// --
 	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
