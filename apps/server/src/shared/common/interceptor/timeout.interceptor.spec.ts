@@ -3,7 +3,7 @@ import { Controller, Get, HttpStatus, INestApplication } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
-import { InterceptorConfig, RequestTimeout, TimeoutInterceptor } from '@shared/common';
+import { RequestTimeout, TimeoutInterceptor } from '@shared/common';
 import { TestApiClient } from '@shared/testing';
 
 const delay = (ms: number) =>
@@ -42,8 +42,8 @@ describe('TimeoutInterceptor', () => {
 					useValue: createMock<ConfigService>(),
 				},
 				{
-					provide: APP_INTERCEPTOR, // TODO remove (for testing)
-					useFactory: (configService: ConfigService<InterceptorConfig, true>) => new TimeoutInterceptor(configService),
+					provide: APP_INTERCEPTOR,
+					useFactory: (configService: ConfigService) => new TimeoutInterceptor(configService),
 					inject: [ConfigService],
 				},
 			],
