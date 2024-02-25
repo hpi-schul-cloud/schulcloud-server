@@ -1,5 +1,7 @@
-export * from './course.url.params';
+export * from './course-import.body.params';
 export * from './course-metadata.response';
+export * from './course.query.params';
+export * from './course.url.params';
 export * from './dashboard.response';
 export * from './dashboard.url.params';
 export * from './lesson';
@@ -10,4 +12,3 @@ export * from './patch-visibility.params';
 export * from './room-element.url.params';
 export * from './room.url.params';
 export * from './single-column-board';
-export * from './course.query.params';
