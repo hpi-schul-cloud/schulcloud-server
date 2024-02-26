@@ -450,6 +450,7 @@ export const createMultiDocumentAggregation = ({
 
 	stageSimpleProject(aggregation, select);
 
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 	if (!match?._id || Array.isArray(match?._id?.$in)) {
 		stageFormatWithTotal(aggregation, limit, skip);
 	}
