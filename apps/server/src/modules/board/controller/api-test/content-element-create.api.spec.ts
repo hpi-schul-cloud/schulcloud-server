@@ -3,7 +3,7 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType, ContentElementType } from '@shared/domain/domainobject';
-import { RichTextElementNode } from '@shared/domain/entity';
+import { DrawingElementNode, RichTextElementNode } from '@shared/domain/entity';
 import {
 	TestApiClient,
 	UserAndAccountTestFactory,
@@ -142,6 +142,24 @@ describe(`content element create (api)`, () => {
 
 				expect(response.statusCode).toEqual(400);
 			});
+
+			it('should return the created content element of type DRAWING', async () => {
+				const { loggedInClient, cardNode } = await setup();
+
+				const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.DRAWING });
+
+				expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.DRAWING);
+			});
+
+			it('should actually create the DRAWING element', async () => {
+				const { loggedInClient, cardNode } = await setup();
+				const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.DRAWING });
+
+				const elementId = (response.body as AnyContentElementResponse).id;
+
+				const result = await em.findOneOrFail(DrawingElementNode, elementId);
+				expect(result.id).toEqual(elementId);
+			});
 		});
 		describe('with invalid user', () => {
 			describe('with teacher not belonging to course', () => {
@@ -203,6 +221,16 @@ describe(`content element create (api)`, () => {
 
 						const response = await loggedInClient.post(`${cardNode.id}/elements`, {
 							type: ContentElementType.RICH_TEXT,
+						});
+
+						expect(response.statusCode).toEqual(403);
+					});
+
+					it('should return status 403 for DRAWING', async () => {
+						const { cardNode, loggedInClient } = await setup();
+
+						const response = await loggedInClient.post(`${cardNode.id}/elements`, {
+							type: ContentElementType.DRAWING,
 						});
 
 						expect(response.statusCode).toEqual(403);
