@@ -14,8 +14,8 @@ import {
 	Lti11ToolConfigEntity,
 	Oauth2ToolConfigEntity,
 } from '@modules/tool/external-tool/entity';
+import { BaseFactory } from '@shared/testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
-import { BaseFactory } from './base.factory';
 
 export class ExternalToolEntityFactory extends BaseFactory<ExternalToolEntity, IExternalToolProperties> {
 	withName(name: string): this {
