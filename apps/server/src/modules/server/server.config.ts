@@ -9,6 +9,7 @@ import type { SchoolConfig } from '@modules/school';
 import type { UserConfig } from '@modules/user';
 import type { CoreModuleConfig } from '@src/core';
 import { MailConfig } from '@src/infra/mail/interfaces/mail-config';
+import { LearnroomConfig } from '../learnroom';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -27,6 +28,7 @@ export interface ServerConfig
 		SchoolConfig,
 		MailConfig,
 		XApiKeyConfig,
+		LearnroomConfig,
 		AuthenticationConfig,
 		SchulconnexClientConfig {
 	NODE_ENV: string;
@@ -59,6 +61,12 @@ const config: ServerConfig = {
 	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get('BLOCKLIST_OF_EMAIL_DOMAINS') as string)
 		.split(',')
 		.map((domain) => domain.trim()),
+	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED: Configuration.get(
+		'FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED'
+	) as boolean,
+	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE: Configuration.get(
+		'FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE'
+	) as number,
 	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: Configuration.get(
 		'SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS'
 	) as number,

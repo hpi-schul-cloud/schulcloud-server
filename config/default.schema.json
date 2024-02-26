@@ -315,12 +315,7 @@
 		"H5P_EDITOR": {
 			"type": "object",
 			"description": "Properties of the H5P server microservice and library management job",
-			"required": [
-				"S3_ENDPOINT",
-				"S3_REGION",
-				"S3_BUCKET_CONTENT",
-				"S3_BUCKET_LIBRARIES"
-			],
+			"required": ["S3_ENDPOINT", "S3_REGION", "S3_BUCKET_CONTENT", "S3_BUCKET_LIBRARIES"],
 			"default": {},
 			"properties": {
 				"S3_ENDPOINT": {
@@ -1186,6 +1181,16 @@
 			"default": "https://www.geogebra.org",
 			"pattern": ".*(?<!/)$",
 			"description": "Base URL of GeoGebra materials"
+    },
+		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the Common Cartridge course import feature."
+		},
+		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE": {
+			"type": "integer",
+			"default": 2000000000,
+			"description": "The maximum file upload size in bytes for the Common Cartridge file during import."
 		},
 		"GHOST_BASE_URL": {
 			"type": "string",

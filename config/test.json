@@ -44,6 +44,7 @@
 	"CALENDAR_URI": "https://schul.tech:3000",
 	"HYDRA_URI": "http://hydra:9000",
 	"FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED": true,
+	"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED": true,
 	"SESSION": {
 		"SAME_SITE": "lax",
 		"SECURE": false,
