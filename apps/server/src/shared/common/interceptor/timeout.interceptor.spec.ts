@@ -112,7 +112,7 @@ describe('TimeoutInterceptor', () => {
 	describe('when override the default timeout', () => {
 		const setup = () => {
 			configServiceMock.getOrThrow.mockImplementationOnce((key: string) => {
-				const result = key === 'MY_CONFIG_NAME' ? 1000 : 1000;
+				const result = key === 'MY_CONFIG_NAME' ? 1 : 1000;
 
 				return result;
 			});
