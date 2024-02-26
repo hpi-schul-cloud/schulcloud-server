@@ -10,7 +10,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Counted, EntityId } from '@shared/domain/types';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { ConfigService } from '@nestjs/config';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
@@ -94,10 +93,6 @@ describe('FilesStorageUC delete methods', () => {
 				{
 					provide: PreviewService,
 					useValue: createMock<PreviewService>(),
-				},
-				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
 				},
 				{
 					provide: EntityManager,

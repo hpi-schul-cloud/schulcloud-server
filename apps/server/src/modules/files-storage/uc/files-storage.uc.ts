@@ -10,7 +10,6 @@ import busboy from 'busboy';
 import { Request } from 'express';
 import { firstValueFrom } from 'rxjs';
 import internal from 'stream';
-import { ConfigService } from '@nestjs/config';
 import {
 	CopyFileParams,
 	CopyFileResponse,
@@ -30,7 +29,6 @@ import { GetFileResponse } from '../interface';
 import { ConfigResponseMapper, FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
-import { FileStorageConfig } from '../files-storage.config';
 import { FilesStorageConfigResponse } from '../dto/files-storage-config.response';
 
 @Injectable()
@@ -41,7 +39,6 @@ export class FilesStorageUC {
 		private readonly httpService: HttpService,
 		private readonly filesStorageService: FilesStorageService,
 		private readonly previewService: PreviewService,
-		private readonly configService: ConfigService<FileStorageConfig, true>,
 		// maybe better to pass the request context from controller and avoid em at this place
 		private readonly em: EntityManager
 	) {
@@ -59,7 +56,7 @@ export class FilesStorageUC {
 	}
 
 	public getPublicConfig(): FilesStorageConfigResponse {
-		const maxFileSize = this.configService.get<number>('MAX_FILE_SIZE');
+		const maxFileSize = this.filesStorageService.getMaxFileSize();
 
 		const configResponse = ConfigResponseMapper.mapToResponse(maxFileSize);
 

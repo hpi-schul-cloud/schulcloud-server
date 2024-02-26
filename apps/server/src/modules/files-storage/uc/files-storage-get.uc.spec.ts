@@ -8,7 +8,6 @@ import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { ConfigService } from '@nestjs/config';
 import { FileRecordParams } from '../controller/dto';
 import { FileRecord, FileRecordParentType } from '../entity';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
@@ -74,10 +73,6 @@ describe('FilesStorageUC', () => {
 				{
 					provide: PreviewService,
 					useValue: createMock<PreviewService>(),
-				},
-				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
 				},
 				{
 					provide: EntityManager,
@@ -181,6 +176,46 @@ describe('FilesStorageUC', () => {
 				const result = await filesStorageUC.getFileRecordsOfParent(userId, params);
 
 				expect(result).toEqual([[], 0]);
+			});
+		});
+	});
+
+	describe('getPublicConfig', () => {
+		describe('when service is aviable', () => {
+			const setup = () => {
+				const fileSize = 500;
+				filesStorageService.getMaxFileSize.mockReturnValueOnce(fileSize);
+
+				const expectedResult = {
+					MAX_FILE_SIZE: fileSize,
+				};
+
+				return { expectedResult };
+			};
+
+			it('should be create a config response dto', () => {
+				const { expectedResult } = setup();
+
+				const result = filesStorageUC.getPublicConfig();
+
+				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when service throw an error', () => {
+			const setup = () => {
+				const error = new Error('Service throw error');
+				filesStorageService.getMaxFileSize.mockImplementationOnce(() => {
+					throw error;
+				});
+
+				return { error };
+			};
+
+			it('should be create a config response dto', () => {
+				const { error } = setup();
+
+				expect(() => filesStorageUC.getPublicConfig()).toThrowError(error);
 			});
 		});
 	});
