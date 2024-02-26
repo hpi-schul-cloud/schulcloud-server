@@ -4,6 +4,7 @@ import { Reflector } from '@nestjs/core';
 import { Observable, throwError, TimeoutError } from 'rxjs';
 import { catchError, timeout } from 'rxjs/operators';
 import { InterceptorConfig } from './interfaces';
+import { TypeGuard } from '../guards';
 
 /**
  * This interceptor leaves the request execution after a given timeout in ms.
@@ -23,6 +24,8 @@ export class TimeoutInterceptor implements NestInterceptor {
 
 		// type of requestTimeoutEnvirementName is always invalid and can be different
 		const timeoutMS = this.configService.getOrThrow<number>(requestTimeoutEnvirementName || this.defaultConfigKey);
+
+		TypeGuard.checkNumber(timeoutMS);
 
 		return next.handle().pipe(
 			timeout(timeoutMS),

@@ -109,7 +109,7 @@ describe('TimeoutInterceptor', () => {
 		});
 	});
 
-	describe('when override the default timeout ', () => {
+	describe('when override the default timeout', () => {
 		const setup = () => {
 			configServiceMock.getOrThrow.mockImplementationOnce((key: string) => {
 				const result = key === 'MY_CONFIG_NAME' ? 1000 : 1000;
@@ -124,6 +124,20 @@ describe('TimeoutInterceptor', () => {
 			const response = await testApiClient.get('overriden');
 
 			expect(response.status).toEqual(HttpStatus.REQUEST_TIMEOUT);
+		});
+	});
+
+	describe('when requested config is not a number', () => {
+		const setup = () => {
+			configServiceMock.getOrThrow.mockReturnValueOnce('string');
+		};
+
+		it('should respond with status request timeout', async () => {
+			setup();
+
+			const response = await testApiClient.get('overriden');
+
+			expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
 		});
 	});
 });
