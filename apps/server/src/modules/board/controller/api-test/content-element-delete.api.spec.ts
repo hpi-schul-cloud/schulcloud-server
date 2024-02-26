@@ -22,6 +22,7 @@ import request from 'supertest';
 import { drawingElementNodeFactory } from '@shared/testing/factory/boardnode/drawing-element-node.factory';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { DrawingElementAdapterService } from '@modules/tldraw-client';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 
 const baseRouteName = '/elements';
 
@@ -48,14 +49,18 @@ describe(`content element delete (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let currentUser: ICurrentUser;
-	let filesStorageClientAdapterService: FilesStorageClientAdapterService;
-	let drawingElementAdapterService: DrawingElementAdapterService;
+	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
+	let drawingElementAdapterService: DeepMocked<DrawingElementAdapterService>;
 	let api: API;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
+			.overrideProvider(FilesStorageClientAdapterService)
+			.useValue(createMock<FilesStorageClientAdapterService>())
+			.overrideProvider(DrawingElementAdapterService)
+			.useValue(createMock<DrawingElementAdapterService>())
 			.overrideGuard(JwtAuthGuard)
 			.useValue({
 				canActivate(context: ExecutionContext) {
@@ -157,8 +162,8 @@ describe(`content element delete (api)`, () => {
 			const cardNode = cardNodeFactory.buildWithId({ parent: columnNode });
 			const element = drawingElementNodeFactory.buildWithId({ parent: cardNode });
 
-			jest.spyOn(filesStorageClientAdapterService, 'deleteFilesOfParent').mockResolvedValueOnce([]);
-			jest.spyOn(drawingElementAdapterService, 'deleteDrawingBinData').mockResolvedValueOnce();
+			filesStorageClientAdapterService.deleteFilesOfParent.mockResolvedValueOnce([]);
+			drawingElementAdapterService.deleteDrawingBinData.mockResolvedValueOnce();
 
 			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, element]);
 			em.clear();
