@@ -41,7 +41,9 @@ describe('School Controller (API)', () => {
 	describe('PATCH /:id', () => {
 		describe('when user is not logged in', () => {
 			it('should return 401', async () => {
-				const response = await testApiClient.patch('id').send({
+				const id = new ObjectId().toHexString();
+
+				const response = await testApiClient.patch(id).send({
 					name: 'new name',
 				});
 
@@ -158,7 +160,7 @@ describe('School Controller (API)', () => {
 				});
 
 				describe('when request is valid', () => {
-					describe('when school is not admins school', () => {
+					describe('when the school is not the user´s school', () => {
 						const setup = async () => {
 							const adminsSchool = schoolEntityFactory.build();
 							const otherSchool = schoolEntityFactory.build();
@@ -183,7 +185,7 @@ describe('School Controller (API)', () => {
 						});
 					});
 
-					describe('when school is admins school', () => {
+					describe('when the school is the user´s school', () => {
 						const setup = async () => {
 							const schoolYears = schoolYearFactory.withStartYear(2002).buildList(3);
 							const currentYear = schoolYears[1];

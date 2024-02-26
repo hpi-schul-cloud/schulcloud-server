@@ -27,9 +27,9 @@ export class SchoolUc {
 		const authContext = AuthorizationContextBuilder.read([]);
 		this.authorizationService.checkPermission(user, school, authContext);
 
-		const response = this.getSchoolResponse(school, schoolYears);
+		const responseDto = this.mapToSchoolResponseDto(school, schoolYears);
 
-		return response;
+		return responseDto;
 	}
 
 	public async getSchoolListForExternalInvite(
@@ -65,7 +65,7 @@ export class SchoolUc {
 		return dtos;
 	}
 
-	public async updateSchool(userId: string, schoolId: string, body: SchoolUpdateBodyParams) {
+	public async updateSchool(userId: string, schoolId: string, body: SchoolUpdateBodyParams): Promise<SchoolResponse> {
 		const [school, user, schoolYears] = await Promise.all([
 			this.schoolService.getSchoolById(schoolId),
 			this.authorizationService.getUserWithPermissions(userId),
@@ -77,12 +77,12 @@ export class SchoolUc {
 
 		const updatedSchool = await this.schoolService.updateSchool(schoolId, body);
 
-		const response = this.getSchoolResponse(updatedSchool, schoolYears);
+		const responseDto = this.mapToSchoolResponseDto(updatedSchool, schoolYears);
 
-		return response;
+		return responseDto;
 	}
 
-	private getSchoolResponse(school: School, schoolYears: SchoolYear[]) {
+	private mapToSchoolResponseDto(school: School, schoolYears: SchoolYear[]): SchoolResponse {
 		const { activeYear, lastYear, nextYear } = SchoolYearHelper.computeActiveAndLastAndNextYear(school, schoolYears);
 		const yearsResponse = YearsResponseMapper.mapToResponse(schoolYears, activeYear, lastYear, nextYear);
 
