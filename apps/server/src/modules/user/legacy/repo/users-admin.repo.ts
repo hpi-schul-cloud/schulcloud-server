@@ -58,9 +58,6 @@ export class UsersAdminRepo extends BaseRepo<User> {
 			schoolId: new ObjectID(schoolId),
 			roles: new ObjectID(roleId),
 			schoolYearId: new ObjectID(schoolYearId),
-			sort: {
-				...params?.$sort,
-			},
 			select: [
 				'consentStatus',
 				'consent',
@@ -82,6 +79,11 @@ export class UsersAdminRepo extends BaseRepo<User> {
 		if (params?.users) query._id = params.users;
 		if (params?.consentStatus) query.consentStatus = params.consentStatus;
 		if (params?.classes) query.classes = params.classes;
+		if (params.$sort) {
+			query.sort = {
+				...params?.$sort,
+			};
+		}
 		this.setSearchParametersIfExist(query, params);
 		this.setDateParametersIfExists(query, params);
 

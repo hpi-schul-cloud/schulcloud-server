@@ -14,6 +14,7 @@ export class UserResponse {
 		consentStatus,
 		consent,
 		classes,
+		importHash,
 	}: UserResponse) {
 		this._id = _id.toString();
 		this.firstName = firstName;
@@ -25,6 +26,7 @@ export class UserResponse {
 		this.consentStatus = consentStatus;
 		this.consent = consent ? new ConsentResponse(consent) : undefined;
 		this.classes = classes;
+		this.importHash = importHash;
 	}
 
 	@ApiProperty()
@@ -56,4 +58,7 @@ export class UserResponse {
 
 	@ApiProperty({ type: [ClassResponse] })
 	classes?: ClassResponse[];
+
+	@ApiProperty()
+	importHash?: string;
 }

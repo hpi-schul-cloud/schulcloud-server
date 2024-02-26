@@ -6,7 +6,7 @@ export interface UserSearchQuery {
 	schoolId: ObjectID;
 	roles: ObjectID;
 	schoolYearId: ObjectID | undefined;
-	sort: UserSortQuery | undefined;
+	sort?: UserSortQuery;
 	select: string[];
 	skip: number | undefined;
 	limit: number | undefined;
