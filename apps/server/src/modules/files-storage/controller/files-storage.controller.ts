@@ -23,10 +23,9 @@ import {
 	UseInterceptors,
 } from '@nestjs/common';
 import { ApiConsumes, ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError, RequestLoggingInterceptor, RequestTimeout } from '@shared/common';
+import { ApiValidationError, RequestLoggingInterceptor } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
 import { Request, Response } from 'express';
-import { config } from '../files-storage.config';
 import { GetFileResponse } from '../interface';
 import { FilesStorageMapper } from '../mapper';
 import { FileRecordMapper } from '../mapper/file-record.mapper';
@@ -60,7 +59,6 @@ export class FilesStorageController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@Post('/upload-from-url/:schoolId/:parentType/:parentId')
-	@RequestTimeout(config().INCOMING_REQUEST_TIMEOUT)
 	async uploadFromUrl(
 		@Body() body: FileUrlParams,
 		@Param() params: FileRecordParams,
@@ -81,7 +79,6 @@ export class FilesStorageController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiConsumes('multipart/form-data')
 	@Post('/upload/:schoolId/:parentType/:parentId')
-	@RequestTimeout(config().INCOMING_REQUEST_TIMEOUT)
 	async upload(
 		@Body() _: FileParams,
 		@Param() params: FileRecordParams,
@@ -131,7 +128,6 @@ export class FilesStorageController {
 	@ApiHeader({ name: 'Range', required: false })
 	@ApiHeader({ name: 'If-None-Match', required: false })
 	@Get('/preview/:fileRecordId/:fileName')
-	@RequestTimeout(config().INCOMING_REQUEST_TIMEOUT)
 	async downloadPreview(
 		@Param() params: DownloadFileParams,
 		@CurrentUser() currentUser: ICurrentUser,
