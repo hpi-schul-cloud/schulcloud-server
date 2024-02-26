@@ -46,9 +46,15 @@ describe(HealthService.name, () => {
 		});
 
 		describe('should return', () => {
-			it('the upserted healthcheck domain object with given ID', async () => {
+			const setup = () => {
 				repo.upsertById.mockResolvedValueOnce(testDO);
 				const expectedDO = new Healthcheck(testId, testUpdatedAt);
+
+				return { expectedDO };
+			};
+
+			it('the upserted healthcheck domain object with given ID', async () => {
+				const { expectedDO } = setup();
 
 				const foundDO = await service.upsertHealthcheckById(testId);
 

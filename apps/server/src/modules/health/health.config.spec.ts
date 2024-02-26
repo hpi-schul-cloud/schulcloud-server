@@ -26,20 +26,23 @@ describe(HealthConfig.name, () => {
 		});
 
 		describe('should have correct value loaded from the configuration for the', () => {
-			it("'hostname' field", () => {
-				const testHostname = 'test-hostname';
-
-				Configuration.set('HOSTNAME', testHostname);
+			const setup = (configVarKey: string, configVarValue: any) => {
+				Configuration.set(configVarKey, configVarValue);
 				HealthConfig.reload();
+			};
 
-				expect(HealthConfig.instance.hostname).toEqual(testHostname);
+			it("'hostname' field", () => {
+				const expectedHostname = 'test-hostname';
+				setup('HOSTNAME', expectedHostname);
+
+				expect(HealthConfig.instance.hostname).toEqual(expectedHostname);
 			});
 
 			it("'excludeMongoDB' toggle", () => {
-				Configuration.set('HEALTHCHECKS_EXCLUDE_MONGODB', true);
-				HealthConfig.reload();
+				const expectedHealthchecksExcludeMongoDB = true;
+				setup('HEALTHCHECKS_EXCLUDE_MONGODB', expectedHealthchecksExcludeMongoDB);
 
-				expect(HealthConfig.instance.excludeMongoDB).toEqual(true);
+				expect(HealthConfig.instance.excludeMongoDB).toEqual(expectedHealthchecksExcludeMongoDB);
 			});
 		});
 	});

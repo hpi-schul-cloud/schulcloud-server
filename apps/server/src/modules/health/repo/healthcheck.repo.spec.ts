@@ -7,8 +7,6 @@ import { HealthcheckEntity } from './entity';
 import { HealthcheckRepo } from './healthcheck.repo';
 
 describe(HealthcheckRepo.name, () => {
-	const testId = 'test_healthcheck_id';
-
 	let module: TestingModule;
 	let em: EntityManager;
 	let repo: HealthcheckRepo;
@@ -35,8 +33,16 @@ describe(HealthcheckRepo.name, () => {
 	});
 
 	describe('upsertById', () => {
-		describe('should return', () => {
-			it('upserted healthcheck with given ID', async () => {
+		describe('when called with some ID', () => {
+			const setup = () => {
+				const testId = 'test_healthcheck_id';
+
+				return { testId };
+			};
+
+			it('should return valid object', async () => {
+				const { testId } = setup();
+
 				const upsertedDO = await repo.upsertById(testId);
 
 				expect(upsertedDO.id).not.toEqual('');

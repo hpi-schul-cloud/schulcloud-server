@@ -4,49 +4,64 @@ import { HealthStatusResponse, HealthStatusCheckResponse } from '../response';
 
 describe(HealthStatusResponseMapper.name, () => {
 	describe(HealthStatusResponseMapper.mapToResponse.name, () => {
-		describe('should properly map health status with', () => {
-			const testStatus = 'warn';
+		const testStatus = 'warn';
+		const testRequiredStatusProps = { status: testStatus };
 
-			const testRequiredStatusProps = { status: testStatus };
-
-			it('just the required fields', () => {
+		describe('when called with just the required fields', () => {
+			const setup = () => {
 				const testHealthStatus = new HealthStatus(testRequiredStatusProps);
 				const expectedMappedResponse = new HealthStatusResponse(testRequiredStatusProps);
+
+				return { testHealthStatus, expectedMappedResponse };
+			};
+
+			it('should map to a valid object', () => {
+				const { testHealthStatus, expectedMappedResponse } = setup();
 
 				const mappedResponse = HealthStatusResponseMapper.mapToResponse(testHealthStatus);
 
 				expect(mappedResponse).toStrictEqual<HealthStatusResponse>(expectedMappedResponse);
 			});
+		});
 
-			describe('all the top-level fields', () => {
-				const testDescription = 'System health status';
-				const testOutput = 'High RAM usage';
-				const testStatusProps = {
-					status: testStatus,
-					description: testDescription,
-					output: testOutput,
-				};
-				const testCheckKey = 'memory:utilization';
-				const testCheckProps = {
-					componentType: 'system',
-					componentId: '163e5371-f2ee-4a19-b02d-8bfecb769219',
-					observedValue: 42,
-					observedUnit: 'percent',
-					status: testStatus,
-					time: new Date(),
-					output: 'High RAM usage',
-				};
+		describe('when called with all the top-level fields', () => {
+			const testDescription = 'System health status';
+			const testOutput = 'High RAM usage';
+			const testStatusProps = {
+				status: testStatus,
+				description: testDescription,
+				output: testOutput,
+			};
+			const testCheckKey = 'memory:utilization';
+			const testCheckProps = {
+				componentType: 'system',
+				componentId: '163e5371-f2ee-4a19-b02d-8bfecb769219',
+				observedValue: 42,
+				observedUnit: 'percent',
+				status: testStatus,
+				time: new Date(),
+				output: 'High RAM usage',
+			};
 
-				it('but without any checks', () => {
+			describe('without any checks', () => {
+				const setup = () => {
 					const testHealthStatus = new HealthStatus(testStatusProps);
 					const expectedMappedResponse = new HealthStatusResponse(testStatusProps);
+
+					return { testHealthStatus, expectedMappedResponse };
+				};
+
+				it('should map to a valid object', () => {
+					const { testHealthStatus, expectedMappedResponse } = setup();
 
 					const mappedResponse = HealthStatusResponseMapper.mapToResponse(testHealthStatus);
 
 					expect(mappedResponse).toStrictEqual<HealthStatusResponse>(expectedMappedResponse);
 				});
+			});
 
-				it('and a single check', () => {
+			describe('with a single check', () => {
+				const setup = () => {
 					const testHealthStatus = new HealthStatus({
 						...testStatusProps,
 						checks: {
@@ -60,12 +75,20 @@ describe(HealthStatusResponseMapper.name, () => {
 						},
 					});
 
+					return { testHealthStatus, expectedMappedResponse };
+				};
+
+				it('should map to a valid object', () => {
+					const { testHealthStatus, expectedMappedResponse } = setup();
+
 					const mappedResponse = HealthStatusResponseMapper.mapToResponse(testHealthStatus);
 
 					expect(mappedResponse).toStrictEqual<HealthStatusResponse>(expectedMappedResponse);
 				});
+			});
 
-				it('and a three checks', () => {
+			describe('with three checks', () => {
+				const setup = () => {
 					const secondTestCheckKey = 'mongoDB:totalSpaceUsage';
 					const secondTestCheckProps = {
 						componentType: 'datastore',
@@ -101,6 +124,12 @@ describe(HealthStatusResponseMapper.name, () => {
 							[thirdTestCheckKey]: [new HealthStatusCheckResponse(thirdTestCheckProps)],
 						},
 					});
+
+					return { testHealthStatus, expectedMappedResponse };
+				};
+
+				it('should map to a valid object', () => {
+					const { testHealthStatus, expectedMappedResponse } = setup();
 
 					const mappedResponse = HealthStatusResponseMapper.mapToResponse(testHealthStatus);
 

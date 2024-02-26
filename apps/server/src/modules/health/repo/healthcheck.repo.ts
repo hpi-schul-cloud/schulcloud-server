@@ -12,6 +12,6 @@ export class HealthcheckRepo {
 	async upsertById(id: string): Promise<Healthcheck> {
 		const entity = await this.em.upsert(HealthcheckEntity, { id, updatedAt: new Date() });
 
-		return HealthcheckRepoMapper.mapHealthcheckEntityToDo(entity);
+		return HealthcheckRepoMapper.mapHealthcheckEntityToDO(entity);
 	}
 }

@@ -4,17 +4,25 @@ import { HealthStatusCheck } from './health-status-check.do';
 
 describe(HealthStatus.name, () => {
 	describe('isPassed', () => {
-		describe('should return', () => {
-			describe(`'true' in case of a '${HealthStatuses.STATUS_PASS}' health status`, () => {
-				it('in a plain general health check (no internal checks)', () => {
+		describe(`when called on a health status with a '${HealthStatuses.STATUS_PASS}' status`, () => {
+			describe('in the general health check (without internal checks)', () => {
+				const setup = () => {
 					const testHealthStatus = new HealthStatus({ status: HealthStatuses.STATUS_PASS });
+
+					return { testHealthStatus };
+				};
+
+				it(`should return 'true'`, () => {
+					const { testHealthStatus } = setup();
 
 					const result = testHealthStatus.isPassed();
 
 					expect(result).toEqual(true);
 				});
+			});
 
-				it(`in all of the internal checks`, () => {
+			describe('in all of the internal checks', () => {
+				const setup = () => {
 					const testHealthStatus = new HealthStatus({
 						status: HealthStatuses.STATUS_PASS,
 						checks: {
@@ -58,22 +66,38 @@ describe(HealthStatus.name, () => {
 						},
 					});
 
+					return { testHealthStatus };
+				};
+
+				it(`should return 'true'`, () => {
+					const { testHealthStatus } = setup();
+
 					const result = testHealthStatus.isPassed();
 
 					expect(result).toEqual(true);
 				});
 			});
+		});
 
-			describe(`'false' in case of a '${HealthStatuses.STATUS_FAIL}' health status`, () => {
-				it('in a plain general health check (no internal checks)', () => {
+		describe(`when called on a health status with a '${HealthStatuses.STATUS_FAIL}' status`, () => {
+			describe('in the general health check (without internal checks)', () => {
+				const setup = () => {
 					const testHealthStatus = new HealthStatus({ status: HealthStatuses.STATUS_FAIL });
+
+					return { testHealthStatus };
+				};
+
+				it(`should return 'false'`, () => {
+					const { testHealthStatus } = setup();
 
 					const result = testHealthStatus.isPassed();
 
 					expect(result).toEqual(false);
 				});
+			});
 
-				it('within a single internal check', () => {
+			describe('in a single internal check', () => {
+				const setup = () => {
 					const testHealthStatus = new HealthStatus({
 						// The main health status should be HealthStatuses.STATUS_FAIL (if any of the
 						// checks fails, the whole health check should also fail), but it was set to
@@ -97,12 +121,20 @@ describe(HealthStatus.name, () => {
 						},
 					});
 
+					return { testHealthStatus };
+				};
+
+				it(`should return 'false'`, () => {
+					const { testHealthStatus } = setup();
+
 					const result = testHealthStatus.isPassed();
 
 					expect(result).toEqual(false);
 				});
+			});
 
-				it('in one of the many internal checks', () => {
+			describe('in any of the many internal checks', () => {
+				const setup = () => {
 					const testHealthStatus = new HealthStatus({
 						status: HealthStatuses.STATUS_PASS,
 						checks: {
@@ -154,6 +186,12 @@ describe(HealthStatus.name, () => {
 							],
 						},
 					});
+
+					return { testHealthStatus };
+				};
+
+				it(`should return 'false'`, () => {
+					const { testHealthStatus } = setup();
 
 					const result = testHealthStatus.isPassed();
 
