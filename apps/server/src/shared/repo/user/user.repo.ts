@@ -6,7 +6,7 @@ import { ImportUser, Role, SchoolEntity, User } from '@shared/domain/entity';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId, NameMatch } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { MongoPatterns } from '@shared/repo';
+import { MongoPatterns } from '../mongo.patterns';
 
 @Injectable()
 export class UserRepo extends BaseRepo<User> {

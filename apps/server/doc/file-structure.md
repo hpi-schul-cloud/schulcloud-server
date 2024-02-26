@@ -18,7 +18,7 @@ src/ // sourcecode & unit tests
             - controller/ // where controllers define the api
                 - dto/ // dto's define api in/out types as a class with annotations
                     - <action->[params].ts // (like create-user.params.ts)
-                    - <data->[response].ts // (like create-create-user.response.ts)
+                    - <data->[response].ts // (like create-user.response.ts)
                     - index.ts // exports all dto's
                 - <module>.controller.ts // defines rest api, references main service file
                 - <other>.controller.ts // think about a new module when require multiple controllers :)
