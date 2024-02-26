@@ -3,7 +3,7 @@ import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType, ContentElementType } from '@shared/domain/domainobject';
-import { RichTextElementNode } from '@shared/domain/entity';
+import { DrawingElementNode, RichTextElementNode } from '@shared/domain/entity';
 import {
 	TestApiClient,
 	UserAndAccountTestFactory,
@@ -149,6 +149,16 @@ describe(`content element create (api)`, () => {
 				const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.DRAWING });
 
 				expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.DRAWING);
+			});
+
+			it('should actually create the DRAWING element', async () => {
+				const { loggedInClient, cardNode } = await setup();
+				const response = await loggedInClient.post(`${cardNode.id}/elements`, { type: ContentElementType.DRAWING });
+
+				const elementId = (response.body as AnyContentElementResponse).id;
+
+				const result = await em.findOneOrFail(DrawingElementNode, elementId);
+				expect(result.id).toEqual(elementId);
 			});
 		});
 		describe('with invalid user', () => {
