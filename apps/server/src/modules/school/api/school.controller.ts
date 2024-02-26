@@ -49,7 +49,7 @@ export class SchoolController {
 		return res;
 	}
 
-	@ApiOperation({ summary: 'Update the title of a single column.' })
+	@ApiOperation({ summary: 'Updating school props by school administrators' })
 	@ApiResponse({ status: 200, type: SchoolResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
