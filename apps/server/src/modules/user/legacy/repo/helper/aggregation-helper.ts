@@ -161,6 +161,15 @@ const getConsentStatusSwitch = () => {
 	};
 };
 
+const stageAddConsentStatus = (aggregation) => {
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+	aggregation.push({
+		$addFields: {
+			consentStatus: getConsentStatusSwitch(),
+		},
+	});
+};
+
 /**
  * Convert Select array to and aggregation Project and adds consentStatus if part of select
  *
@@ -433,7 +442,10 @@ export const createMultiDocumentAggregation = ({
 
 	if (select) {
 		stageAddSelectProjectWithConsentCreate(aggregation, select.concat(selectSortDiff));
-		stageLookupClasses(aggregation, match.schoolId, schoolYearId);
+		if (select.includes('classes')) stageLookupClasses(aggregation, match.schoolId, schoolYearId);
+	} else {
+		stageAddConsentStatus(aggregation);
+		if (match.schoolId && schoolYearId) stageLookupClasses(aggregation, match.schoolId, schoolYearId);
 	}
 
 	if (consentStatus) {

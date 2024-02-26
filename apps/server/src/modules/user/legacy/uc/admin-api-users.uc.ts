@@ -7,7 +7,7 @@ import {
 	AuthorizableReferenceType,
 	AuthorizationContextBuilder,
 	AuthorizationService,
-	ForbiddenLoggableException
+	ForbiddenLoggableException,
 } from '../../../authorization';
 import { UsersAdminContextEnum } from '../enum';
 import { UserByIdParams, UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';
