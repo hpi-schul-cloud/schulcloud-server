@@ -9,7 +9,6 @@ import type { SchoolConfig } from '@modules/school';
 import type { UserConfig } from '@modules/user';
 import type { CoreModuleConfig } from '@src/core';
 import { MailConfig } from '@src/infra/mail/interfaces/mail-config';
-import { LearnroomConfig } from '../learnroom';
 
 export enum NodeEnvType {
 	TEST = 'test',

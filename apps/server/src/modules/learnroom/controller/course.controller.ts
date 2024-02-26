@@ -2,7 +2,6 @@ import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication
 import {
 	Controller,
 	Get,
-	NotFoundException,
 	Param,
 	Post,
 	Query,
