@@ -3,6 +3,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 import { ICurrentUser } from '@src/modules/authentication';
 import { Authenticate, CurrentUser } from '@src/modules/authentication/decorator/auth.decorator';
+// TODO: barrel file for uc?
 import { AccountUc } from '../uc/account.uc';
 import { AccountSearchDto } from '../uc/dto/account-search.dto';
 import { UpdateAccountDto } from '../uc/dto/update-account.dto';
@@ -27,10 +28,12 @@ export class AccountController {
 	@Get()
 	@ApiOperation({
 		summary:
+			// TODO: according to tests, Superhero role is required anyway, not just for "unlimited access"
 			'Returns all accounts which satisfies the given criteria. For unlimited access Superhero role is REQUIRED.',
 	})
 	@ApiResponse({ status: 200, type: AccountSearchListResponse, description: 'Returns a paged list of accounts.' })
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
+	// TODO: if superhero is required, adjust this error description
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'User is not a superhero or administrator.' })
 	async searchAccounts(
 		@CurrentUser() currentUser: ICurrentUser,

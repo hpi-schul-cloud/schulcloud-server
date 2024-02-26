@@ -8,6 +8,9 @@ export class AccountByIdBodyParams {
 	@IsString()
 	@SanitizeHtml()
 	@IsEmail()
+	/* TODO: @ApiPropertyOptional({
+		description: 'The new user name for the user.',
+	}) */
 	@ApiProperty({
 		description: 'The new user name for the user.',
 		required: false,
@@ -19,6 +22,7 @@ export class AccountByIdBodyParams {
 	@IsOptional()
 	@IsString()
 	@Matches(passwordPattern)
+	// TODO: use ApiPropertyOptional instead
 	@ApiProperty({
 		description: 'The new password for the user.',
 		required: false,
@@ -28,6 +32,7 @@ export class AccountByIdBodyParams {
 
 	@IsOptional()
 	@IsBoolean()
+	// TODO: use ApiPropertyOptional instead
 	@ApiProperty({
 		description: 'The new activation state of the user.',
 		required: false,

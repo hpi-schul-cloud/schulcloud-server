@@ -8,6 +8,7 @@ export class AccountSearchQueryParams extends PaginationParams {
 	@ApiProperty({
 		description: 'The search criteria.',
 		enum: AccountSearchType,
+		// TODO: could be removed
 		required: true,
 		nullable: false,
 	})
@@ -17,6 +18,7 @@ export class AccountSearchQueryParams extends PaginationParams {
 	@SanitizeHtml()
 	@ApiProperty({
 		description: 'The search value.',
+		// TODO: could be removed
 		required: true,
 		nullable: false,
 	})

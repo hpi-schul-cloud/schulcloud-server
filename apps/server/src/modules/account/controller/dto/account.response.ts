@@ -15,12 +15,15 @@ export class AccountResponse {
 	@ApiProperty()
 	username: string;
 
+	// TODO: ApiPropertyOptional
 	@ApiProperty()
 	userId?: string;
 
+	// TODO: ApiPropertyOptional
 	@ApiProperty()
 	activated?: boolean;
 
+	// TODO: ApiPropertyOptional
 	@ApiProperty()
 	updatedAt?: Date;
 }

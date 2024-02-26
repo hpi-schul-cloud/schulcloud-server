@@ -231,6 +231,7 @@ export class AccountService extends AbstractAccountService {
 	}
 
 	async validateAccountBeforeSaveOrReject(accountSave: AccountSave) {
+		// TODO: remove comments
 		await validateOrReject(accountSave);
 		// sanatizeUsername ✔
 		if (!accountSave.systemId) {

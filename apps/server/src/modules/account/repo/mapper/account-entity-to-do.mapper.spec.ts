@@ -45,6 +45,7 @@ describe('AccountEntityToDoMapper', () => {
 	describe('mapCountedEntities', () => {
 		describe('When mapping multiple Account entities', () => {
 			const setup = () => {
+				// TODO: Why force ids to a specific value? buildWithId will generate a valid one for you
 				const testEntity1: AccountEntity = accountFactory.buildWithId({}, '000000000000000000000001');
 				const testEntity2: AccountEntity = accountFactory.buildWithId({}, '000000000000000000000002');
 

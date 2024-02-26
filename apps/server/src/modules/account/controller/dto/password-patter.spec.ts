@@ -1,5 +1,8 @@
+// TODO: filename seems to have a typo
+
 import { passwordPattern } from './password-pattern';
 
+// TODO: fix typo
 describe('password patter', () => {
 	it('should accept a valid password', () => {
 		expect(passwordPattern.test('Asdf 1ds df!')).toBe(true);

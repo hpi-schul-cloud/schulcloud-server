@@ -18,6 +18,7 @@ export interface AccountProps extends AuthorizableObject {
 }
 
 export class Account extends DomainObject<AccountProps> {
+	// TODO: exists in DomainObject
 	public get id(): EntityId {
 		return this.props.id;
 	}

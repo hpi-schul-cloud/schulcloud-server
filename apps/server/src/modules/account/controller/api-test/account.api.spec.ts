@@ -28,9 +28,11 @@ describe('Account Controller (API)', () => {
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
 
+	// TODO: should be imported from account factory (or just use account factory, it already uses these passwords)
 	const defaultPassword = 'DummyPasswd!1';
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
 
+	// TODO: use UserAndAccountTestFactory instead?
 	const mapUserToAccount = (user: User): AccountEntity =>
 		accountFactory.buildWithId({
 			userId: user.id,
@@ -50,10 +52,12 @@ describe('Account Controller (API)', () => {
 	});
 
 	beforeEach(async () => {
+		// TODO: we should be able to remove this, since each test generates its own, isolated data
 		await cleanupCollections(em);
 	});
 
 	afterAll(async () => {
+		// TODO: we should be able to remove this, since each test generates its own, isolated data
 		await cleanupCollections(em);
 		await app.close();
 	});
@@ -79,6 +83,7 @@ describe('Account Controller (API)', () => {
 				return { passwordPatchParams, loggedInClient, studentAccount };
 			};
 
+			// TODO: why "temporary"? either add a test for the non-temporary case, or remove the temporary
 			it(`should update the current user's (temporary) password`, async () => {
 				const { passwordPatchParams, loggedInClient, studentAccount } = await setup();
 
@@ -138,6 +143,7 @@ describe('Account Controller (API)', () => {
 				};
 				return { newEmailValue, patchMyAccountParams, loggedInClient, studentAccount };
 			};
+
 			it(`should update a users account`, async () => {
 				const { newEmailValue, patchMyAccountParams, loggedInClient, studentAccount } = await setup();
 
@@ -160,6 +166,7 @@ describe('Account Controller (API)', () => {
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
+				// TODO: remove
 				const newEmailValue = 'new@mail.com';
 
 				const patchMyAccountParams: PatchMyAccountParams = {
@@ -178,6 +185,34 @@ describe('Account Controller (API)', () => {
 	});
 
 	describe('[GET]', () => {
+		/* describe('Given a student and superhero account', () => {
+			const setupUsersWithAccounts = async () => {
+				const school = schoolEntityFactory.buildWithId();
+	
+				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
+				const superheroRoles = roleFactory.build({ name: RoleName.SUPERHERO, permissions: [] });
+	
+				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
+				const superheroUser = userFactory.buildWithId({ roles: [superheroRoles] });
+	
+				const studentAccount = mapUserToAccount(studentUser);
+				const superheroAccount = mapUserToAccount(superheroUser);
+	
+				em.persist(school);
+				em.persist([studentRoles, superheroRoles]);
+				em.persist([studentUser, superheroUser]);
+				em.persist([studentAccount, superheroAccount]);
+				await em.flush();
+	
+				const loggedInClient = await testApiClient.login(superheroAccount);
+	
+				return { loggedInClient, studentUser };
+			};
+
+			describe(...)
+		}) */
+
+		// TODO: make differences in query visible here (also to avoid repeating the same condition 3 times). eg. When Searching userid with a superhero user
 		describe('When searching with a superhero user', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
@@ -191,6 +226,7 @@ describe('Account Controller (API)', () => {
 				const studentAccount = mapUserToAccount(studentUser);
 				const superheroAccount = mapUserToAccount(superheroUser);
 
+				// TODO: it should be possible to write all of them in a single
 				em.persist(school);
 				em.persist([studentRoles, superheroRoles]);
 				em.persist([studentUser, superheroUser]);
@@ -253,8 +289,10 @@ describe('Account Controller (API)', () => {
 
 				await loggedInClient.get().query(query).send().expect(200);
 			});
+			// TODO: maybe add a test that it actually returns an empty list
 		});
 
+		// TODO: adjust description
 		describe('When searching with a superhero user', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
@@ -292,6 +330,7 @@ describe('Account Controller (API)', () => {
 			});
 		});
 
+		// TODO: adjust description
 		describe('When searching with a superhero user', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
@@ -433,6 +472,7 @@ describe('Account Controller (API)', () => {
 			});
 		});
 
+		// TODO: repeated description. either merge or make clear what the difference is
 		describe('When searching with a superhero user', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
@@ -521,6 +561,7 @@ describe('Account Controller (API)', () => {
 			});
 		});
 
+		// TODO: make clear what the difference to the first describe block is
 		describe('When updating with a superhero user', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
@@ -623,6 +664,7 @@ describe('Account Controller (API)', () => {
 			});
 		});
 
+		// TODO: repeating description...
 		describe('When using a superhero user', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();

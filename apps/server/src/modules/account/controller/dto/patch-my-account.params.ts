@@ -7,6 +7,7 @@ export class PatchMyAccountParams {
 	@IsString()
 	@ApiProperty({
 		description: 'The current user password to authorize the update action.',
+		// TODO: can be removed
 		required: true,
 		nullable: false,
 	})
@@ -16,6 +17,7 @@ export class PatchMyAccountParams {
 	@IsString()
 	@IsOptional()
 	@Matches(passwordPattern)
+	// TODO: ApiPropertyOptional
 	@ApiProperty({
 		description: 'The new password for the current user.',
 		required: false,
@@ -24,8 +26,10 @@ export class PatchMyAccountParams {
 	passwordNew?: string;
 
 	@IsEmail()
+	// TODO: please add tests to ensure sanitisation
 	@SanitizeHtml()
 	@IsOptional()
+	// TODO: ApiPropertyOptional
 	@ApiProperty({
 		description: 'The new email address for the current user.',
 		required: false,
@@ -36,6 +40,7 @@ export class PatchMyAccountParams {
 	@IsString()
 	@SanitizeHtml()
 	@IsOptional()
+	// TODO: ApiPropertyOptional
 	@ApiProperty({
 		description: 'The new first name for the current user.',
 		required: false,
@@ -46,6 +51,7 @@ export class PatchMyAccountParams {
 	@IsString()
 	@SanitizeHtml()
 	@IsOptional()
+	// TODO: ApiPropertyOptional
 	@ApiProperty({
 		description: 'The new last name for the current user.',
 		required: false,

@@ -16,6 +16,7 @@ export class AccountRepo {
 		return AccountEntity;
 	}
 
+	// TODO: use BaseDomainObjectRepo (should be merged 26.2)
 	public async save(account: Account): Promise<Account> {
 		const saveEntity = AccountDoToEntityMapper.mapToEntity(account);
 		const existing = await this.em.findOne(AccountEntity, { id: account.id });
