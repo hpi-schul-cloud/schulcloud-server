@@ -1,5 +1,5 @@
 import { PaginationParams } from '@shared/controller';
-import { IsInt, IsObject, IsOptional, IsString, Min } from 'class-validator';
+import { IsInt, IsOptional, IsString, Min } from 'class-validator';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { SortOrderNumberType } from '@shared/domain/interface';
 
@@ -15,12 +15,10 @@ export class UsersSearchQueryParams extends PaginationParams {
 	$skip?: number = 0;
 
 	@IsOptional()
-	@IsObject()
 	@ApiPropertyOptional({ description: 'Sort parameter.' })
 	$sort?: SortOrderNumberType;
 
 	@IsOptional()
-	@IsObject()
 	@ApiPropertyOptional()
 	consentStatus?: Record<'$in', string[]>;
 
@@ -29,17 +27,14 @@ export class UsersSearchQueryParams extends PaginationParams {
 	classes?: string[];
 
 	@IsOptional()
-	@IsObject()
 	@ApiPropertyOptional()
 	createdAt?: Record<RangeType, Date>;
 
 	@IsOptional()
-	@IsObject()
 	@ApiPropertyOptional()
 	lastLoginSystemChange?: Record<RangeType, Date>;
 
 	@IsOptional()
-	@IsObject()
 	@ApiPropertyOptional()
 	outdatedSince?: Record<RangeType, Date>;
 
@@ -47,6 +42,10 @@ export class UsersSearchQueryParams extends PaginationParams {
 	@IsString()
 	@ApiPropertyOptional()
 	searchQuery?: string;
+
+	@IsOptional()
+	@ApiPropertyOptional()
+	users?: string[];
 }
 
 export type RangeType = '$gt' | '$gte' | '$lt' | '$lte';

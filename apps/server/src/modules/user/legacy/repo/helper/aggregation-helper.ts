@@ -399,6 +399,11 @@ export const createMultiDocumentAggregation = ({
 }: UserSearchQuery) => {
 	if (typeof match._id === 'string') {
 		match._id = new ObjectId(match._id);
+	} else if (Array.isArray(match._id)) {
+		// build "$in" Query
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+		const convertToObjectIds = (inArray: any[]) => inArray.map((id) => new ObjectId(id));
+		match._id = { $in: convertToObjectIds(convertToIn(match._id)) };
 	}
 
 	const selectSortDiff = Object.getOwnPropertyNames(sort || {}).filter((s) => !select.includes(s));
@@ -445,7 +450,7 @@ export const createMultiDocumentAggregation = ({
 
 	stageSimpleProject(aggregation, select);
 
-	if (!match?._id) {
+	if (!match?._id || Array.isArray(match?._id?.$in)) {
 		stageFormatWithTotal(aggregation, limit, skip);
 	}
 

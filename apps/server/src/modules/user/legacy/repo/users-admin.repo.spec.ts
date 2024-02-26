@@ -38,6 +38,48 @@ describe('users admin repo', () => {
 		expect(repo.entityName).toBe(User);
 	});
 
+	describe('when searching by users ids', () => {
+		const setup = () => {
+			const aggregationSpy = jest.spyOn(em, 'aggregate').mockResolvedValueOnce([]);
+
+			const exampleId = '5fa31aacb229544f2c697b48';
+
+			const queryParams: UsersSearchQueryParams = {
+				$skip: 0,
+				$limit: 5,
+				$sort: { firstName: 1 },
+				users: [exampleId],
+			};
+
+			const matchStage = {
+				$match: {
+					_id: { $in: [new ObjectId(exampleId)] },
+					roles: new ObjectId(exampleId),
+					schoolId: new ObjectId(exampleId),
+				},
+			};
+
+			return {
+				queryParams,
+				aggregationSpy,
+				exampleId,
+				matchStage,
+			};
+		};
+
+		it('should provide match for ids', async () => {
+			const { queryParams, aggregationSpy, exampleId, matchStage } = setup();
+
+			await repo.getUsersWithNestedData(exampleId, exampleId, exampleId, queryParams);
+
+			expect(aggregationSpy).toHaveBeenCalledWith(
+				User,
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+				expect.arrayContaining([expect.objectContaining(matchStage)])
+			);
+		});
+	});
+
 	describe('when searching by searchQuery', () => {
 		const setup = () => {
 			const aggregationSpy = jest.spyOn(em, 'aggregate').mockResolvedValueOnce([]);

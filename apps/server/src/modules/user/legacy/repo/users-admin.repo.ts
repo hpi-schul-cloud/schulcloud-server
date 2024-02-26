@@ -77,6 +77,7 @@ export class UsersAdminRepo extends BaseRepo<User> {
 			],
 			skip: params?.$skip ?? params?.skip,
 			limit: params?.$limit ?? params?.limit,
+			_id: params?.users,
 		};
 
 		if (params?.consentStatus) query.consentStatus = params.consentStatus;
