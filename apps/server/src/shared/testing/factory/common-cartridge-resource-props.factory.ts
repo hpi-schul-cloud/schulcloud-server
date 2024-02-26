@@ -3,14 +3,14 @@ import {
 	CommonCartridgeIntendedUseType,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
-} from '@src/modules/common-cartridge';
-import { CommonCartridgeElement } from '@src/modules/common-cartridge/interfaces/common-cartridge-element.interface';
-import { CommonCartridgeManifestResourcePropsV110 } from '@src/modules/common-cartridge/resources/v1.1.0/common-cartridge-manifest-resource';
-import { CommonCartridgeWebContentResourcePropsV110 } from '@src/modules/common-cartridge/resources/v1.1.0/common-cartridge-web-content-resource';
-import { CommonCartridgeWebLinkResourcePropsV110 } from '@src/modules/common-cartridge/resources/v1.1.0/common-cartridge-web-link-resource';
-import { CommonCartridgeManifestResourcePropsV130 } from '@src/modules/common-cartridge/resources/v1.3.0/common-cartridge-manifest-resource';
-import { CommonCartridgeWebContentResourcePropsV130 } from '@src/modules/common-cartridge/resources/v1.3.0/common-cartridge-web-content-resource';
-import { CommonCartridgeWebLinkResourcePropsV130 } from '@src/modules/common-cartridge/resources/v1.3.0/common-cartridge-web-link-resource';
+} from '@src/modules/common-cartridge/export';
+import { CommonCartridgeElement } from '@src/modules/common-cartridge/export/interfaces/common-cartridge-element.interface';
+import { CommonCartridgeManifestResourcePropsV110 } from '@src/modules/common-cartridge/export/resources/v1.1.0/common-cartridge-manifest-resource';
+import { CommonCartridgeWebContentResourcePropsV110 } from '@src/modules/common-cartridge/export/resources/v1.1.0/common-cartridge-web-content-resource';
+import { CommonCartridgeWebLinkResourcePropsV110 } from '@src/modules/common-cartridge/export/resources/v1.1.0/common-cartridge-web-link-resource';
+import { CommonCartridgeManifestResourcePropsV130 } from '@src/modules/common-cartridge/export/resources/v1.3.0/common-cartridge-manifest-resource';
+import { CommonCartridgeWebContentResourcePropsV130 } from '@src/modules/common-cartridge/export/resources/v1.3.0/common-cartridge-web-content-resource';
+import { CommonCartridgeWebLinkResourcePropsV130 } from '@src/modules/common-cartridge/export/resources/v1.3.0/common-cartridge-web-link-resource';
 
 export function createCommonCartridgeWeblinkResourcePropsV110(): CommonCartridgeWebLinkResourcePropsV110 {
 	return {

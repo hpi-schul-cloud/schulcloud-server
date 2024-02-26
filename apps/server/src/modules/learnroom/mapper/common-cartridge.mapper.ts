@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ComponentProperties, ComponentType, Course, LessonEntity, Task } from '@shared/domain/entity';
-import { createIdentifier } from '@src/modules/common-cartridge/utils';
+import { createIdentifier } from '@src/modules/common-cartridge/export/utils';
 import {
 	CommonCartridgeElementProps,
 	CommonCartridgeElementType,
@@ -11,7 +11,7 @@ import {
 	CommonCartridgeResourceProps,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
-} from '../../common-cartridge';
+} from '../../common-cartridge/export';
 import { LearnroomConfig } from '../learnroom.config';
 
 @Injectable()

@@ -1,15 +1,15 @@
 import { faker } from '@faker-js/faker';
-import { CommonCartridgeElementType, CommonCartridgeVersion } from '@src/modules/common-cartridge';
-import { CommonCartridgeMetadataElementPropsV110 } from '@src/modules/common-cartridge/elements/v1.1.0/common-cartridge-metadata-element';
-import { CommonCartridgeOrganizationElementPropsV110 } from '@src/modules/common-cartridge/elements/v1.1.0/common-cartridge-organization-element';
-import { CommonCartridgeOrganizationsWrapperElementPropsV110 } from '@src/modules/common-cartridge/elements/v1.1.0/common-cartridge-organizations-wrapper-element';
-import { CommonCartridgeResourcesWrapperElementPropsV110 } from '@src/modules/common-cartridge/elements/v1.1.0/common-cartridge-resources-wrapper-element';
-import { CommonCartridgeMetadataElementPropsV130 } from '@src/modules/common-cartridge/elements/v1.3.0/common-cartridge-metadata-element';
-import { CommonCartridgeOrganizationElementPropsV130 } from '@src/modules/common-cartridge/elements/v1.3.0/common-cartridge-organization-element';
-import { CommonCartridgeOrganizationsWrapperElementPropsV130 } from '@src/modules/common-cartridge/elements/v1.3.0/common-cartridge-organizations-wrapper-element';
-import { CommonCartridgeResourcesWrapperElementPropsV130 } from '@src/modules/common-cartridge/elements/v1.3.0/common-cartridge-resources-wrapper-element';
-import { CommonCartridgeElement } from '@src/modules/common-cartridge/interfaces/common-cartridge-element.interface';
-import { CommonCartridgeResource } from '@src/modules/common-cartridge/interfaces/common-cartridge-resource.interface';
+import { CommonCartridgeElementType, CommonCartridgeVersion } from '@src/modules/common-cartridge/export';
+import { CommonCartridgeMetadataElementPropsV110 } from '@src/modules/common-cartridge/export/elements/v1.1.0/common-cartridge-metadata-element';
+import { CommonCartridgeOrganizationElementPropsV110 } from '@src/modules/common-cartridge/export/elements/v1.1.0/common-cartridge-organization-element';
+import { CommonCartridgeOrganizationsWrapperElementPropsV110 } from '@src/modules/common-cartridge/export/elements/v1.1.0/common-cartridge-organizations-wrapper-element';
+import { CommonCartridgeResourcesWrapperElementPropsV110 } from '@src/modules/common-cartridge/export/elements/v1.1.0/common-cartridge-resources-wrapper-element';
+import { CommonCartridgeMetadataElementPropsV130 } from '@src/modules/common-cartridge/export/elements/v1.3.0/common-cartridge-metadata-element';
+import { CommonCartridgeOrganizationElementPropsV130 } from '@src/modules/common-cartridge/export/elements/v1.3.0/common-cartridge-organization-element';
+import { CommonCartridgeOrganizationsWrapperElementPropsV130 } from '@src/modules/common-cartridge/export/elements/v1.3.0/common-cartridge-organizations-wrapper-element';
+import { CommonCartridgeResourcesWrapperElementPropsV130 } from '@src/modules/common-cartridge/export/elements/v1.3.0/common-cartridge-resources-wrapper-element';
+import { CommonCartridgeElement } from '@src/modules/common-cartridge/export/interfaces/common-cartridge-element.interface';
+import { CommonCartridgeResource } from '@src/modules/common-cartridge/export/interfaces/common-cartridge-resource.interface';
 
 export function createCommonCartridgeMetadataElementPropsV110(): CommonCartridgeMetadataElementPropsV110 {
 	return {

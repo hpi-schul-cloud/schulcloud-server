@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType } from '@shared/domain/entity';
 import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { OmitVersion, createIdentifier } from '@src/modules/common-cartridge/utils';
+import { OmitVersion, createIdentifier } from '@src/modules/common-cartridge/export/utils';
 import {
 	CommonCartridgeElementProps,
 	CommonCartridgeElementType,
@@ -14,7 +14,7 @@ import {
 	CommonCartridgeResourceProps,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
-} from '../../common-cartridge';
+} from '../../common-cartridge/export';
 import { LearnroomConfig } from '../learnroom.config';
 import { CommonCartridgeMapper } from './common-cartridge.mapper';
 

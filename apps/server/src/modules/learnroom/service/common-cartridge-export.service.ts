@@ -3,12 +3,12 @@ import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { createIdentifier } from '@src/modules/common-cartridge/utils';
+import { createIdentifier } from '@src/modules/common-cartridge/export/utils';
 import {
 	CommonCartridgeFileBuilder,
 	CommonCartridgeOrganizationBuilder,
 	CommonCartridgeVersion,
-} from '../../common-cartridge';
+} from '../../common-cartridge/export';
 import { CommonCartridgeMapper } from '../mapper/common-cartridge.mapper';
 import { CourseService } from './course.service';
 

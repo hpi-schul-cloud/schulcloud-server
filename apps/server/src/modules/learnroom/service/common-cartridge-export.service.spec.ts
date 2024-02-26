@@ -8,7 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType } from '@shared/domain/entity';
 import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import AdmZip from 'adm-zip';
-import { CommonCartridgeVersion } from '../../common-cartridge';
+import { CommonCartridgeVersion } from '../../common-cartridge/export';
 import { CommonCartridgeMapper } from '../mapper/common-cartridge.mapper';
 
 describe('CommonCartridgeExportService', () => {
