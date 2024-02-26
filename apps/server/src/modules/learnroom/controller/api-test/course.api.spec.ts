@@ -5,6 +5,7 @@ import { INestApplication, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
+import { readFile } from 'node:fs/promises';
 
 const createStudent = () => {
 	const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({}, [Permission.COURSE_VIEW]);
@@ -51,6 +52,7 @@ describe('Course Controller (API)', () => {
 
 			return { student, course, teacher };
 		};
+
 		it('should find courses as student', async () => {
 			const { student, course } = setup();
 			await em.persistAndFlush([student.account, student.user, course]);
@@ -65,6 +67,7 @@ describe('Course Controller (API)', () => {
 			expect(data[0].startDate).toBe(course.startDate);
 			expect(data[0].untilDate).toBe(course.untilDate);
 		});
+
 		it('should find courses as teacher', async () => {
 			const { teacher, course } = setup();
 			await em.persistAndFlush([teacher.account, teacher.user, course]);
@@ -96,6 +99,7 @@ describe('Course Controller (API)', () => {
 
 			return { course, teacher, teacherUnkownToCourse, substitutionTeacher, student1 };
 		};
+
 		it('should find course export', async () => {
 			const { teacher, course } = setup();
 			await em.persistAndFlush([teacher.account, teacher.user, course]);
@@ -112,6 +116,29 @@ describe('Course Controller (API)', () => {
 			expect(response.header['content-type']).toBe('application/zip');
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			expect(response.header['content-disposition']).toBe('attachment;');
+		});
+	});
+
+	describe('[POST] /courses/import', () => {
+		const setup = async () => {
+			const teacher = createTeacher();
+			const course = await readFile('./apps/server/test/assets/common-cartridge/us_history_since_1877.imscc');
+			const courseFileName = 'us_history_since_1877.imscc';
+
+			await em.persistAndFlush([teacher.account, teacher.user]);
+			em.clear();
+
+			const loggedInClient = await testApiClient.login(teacher.account);
+
+			return { loggedInClient, course, courseFileName };
+		};
+
+		it('should import course', async () => {
+			const { loggedInClient, course, courseFileName } = await setup();
+
+			const response = await loggedInClient.postWithAttachment('import', 'file', course, courseFileName);
+
+			expect(response.statusCode).toEqual(201);
 		});
 	});
 });
