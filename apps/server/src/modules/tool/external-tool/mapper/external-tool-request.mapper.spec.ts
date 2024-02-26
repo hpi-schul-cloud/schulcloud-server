@@ -135,7 +135,6 @@ describe('ExternalToolRequestMapper', () => {
 				lti11ConfigParams.baseUrl = 'mockUrl';
 				lti11ConfigParams.key = 'mockKey';
 				lti11ConfigParams.secret = 'mockSecret';
-				lti11ConfigParams.resource_link_id = 'mockLink';
 				lti11ConfigParams.lti_message_type = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
 				lti11ConfigParams.privacy_permission = LtiPrivacyPermission.NAME;
 				lti11ConfigParams.launch_presentation_locale = 'de-DE';
@@ -144,7 +143,6 @@ describe('ExternalToolRequestMapper', () => {
 					privacy_permission: LtiPrivacyPermission.NAME,
 					secret: 'mockSecret',
 					key: 'mockKey',
-					resource_link_id: 'mockLink',
 					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 					type: ToolConfigType.LTI11,
 					baseUrl: 'mockUrl',
@@ -389,7 +387,6 @@ describe('ExternalToolRequestMapper', () => {
 				lti11ConfigParams.baseUrl = 'mockUrl';
 				lti11ConfigParams.key = 'mockKey';
 				lti11ConfigParams.secret = 'mockSecret';
-				lti11ConfigParams.resource_link_id = 'mockLink';
 				lti11ConfigParams.lti_message_type = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
 				lti11ConfigParams.privacy_permission = LtiPrivacyPermission.NAME;
 				lti11ConfigParams.launch_presentation_locale = 'de-DE';
@@ -398,7 +395,6 @@ describe('ExternalToolRequestMapper', () => {
 					privacy_permission: LtiPrivacyPermission.NAME,
 					secret: 'mockSecret',
 					key: 'mockKey',
-					resource_link_id: 'mockLink',
 					lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 					type: ToolConfigType.LTI11,
 					baseUrl: 'mockUrl',
