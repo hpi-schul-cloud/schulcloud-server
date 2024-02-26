@@ -434,70 +434,140 @@ describe(BoardDoRule.name, () => {
 		});
 
 		describe('when boardDoAuthorizable.board is a drawingElement', () => {
-			describe('when user is Editor', () => {
-				const setup = () => {
-					const user = userFactory.buildWithId();
-					const drawingElement = drawingElementFactory.build();
-					const boardDoAuthorizable = new BoardDoAuthorizable({
-						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
-						id: new ObjectId().toHexString(),
-						boardDo: drawingElement,
+			describe('when required permissions do not include FILESTORAGE_CREATE or FILESTORAGE_VIEW', () => {
+				describe('when user is Editor', () => {
+					const setup = () => {
+						const user = userFactory.buildWithId();
+						const drawingElement = drawingElementFactory.build();
+						const boardDoAuthorizable = new BoardDoAuthorizable({
+							users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+							id: new ObjectId().toHexString(),
+							boardDo: drawingElement,
+						});
+
+						return { user, boardDoAuthorizable };
+					};
+					it('should return true if trying to "read"', () => {
+						const { user, boardDoAuthorizable } = setup();
+
+						const res = service.hasPermission(user, boardDoAuthorizable, {
+							action: Action.read,
+							requiredPermissions: [],
+						});
+
+						expect(res).toBe(true);
 					});
+					it('should return true if trying to "write" ', () => {
+						const { user, boardDoAuthorizable } = setup();
 
-					return { user, boardDoAuthorizable };
-				};
-				it('should return true if trying to "read"', () => {
-					const { user, boardDoAuthorizable } = setup();
+						const res = service.hasPermission(user, boardDoAuthorizable, {
+							action: Action.write,
+							requiredPermissions: [],
+						});
 
-					const res = service.hasPermission(user, boardDoAuthorizable, {
-						action: Action.read,
-						requiredPermissions: [],
+						expect(res).toBe(true);
 					});
-
-					expect(res).toBe(true);
 				});
-				it('should return true if trying to "write" ', () => {
-					const { user, boardDoAuthorizable } = setup();
+				describe('when user is Reader', () => {
+					const setup = () => {
+						const user = userFactory.buildWithId();
+						const drawingElement = drawingElementFactory.build();
+						const boardDoAuthorizable = new BoardDoAuthorizable({
+							users: [{ userId: user.id, roles: [BoardRoles.READER] }],
+							id: new ObjectId().toHexString(),
+							boardDo: drawingElement,
+						});
 
-					const res = service.hasPermission(user, boardDoAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [],
+						return { user, boardDoAuthorizable };
+					};
+					it('should return true if trying to "read"', () => {
+						const { user, boardDoAuthorizable } = setup();
+
+						const res = service.hasPermission(user, boardDoAuthorizable, {
+							action: Action.read,
+							requiredPermissions: [],
+						});
+
+						expect(res).toBe(true);
 					});
+					it('should return false if trying to "write" ', () => {
+						const { user, boardDoAuthorizable } = setup();
 
-					expect(res).toBe(true);
+						const res = service.hasPermission(user, boardDoAuthorizable, {
+							action: Action.write,
+							requiredPermissions: [],
+						});
+
+						expect(res).toBe(false);
+					});
 				});
 			});
-			describe('when user is Reader', () => {
-				const setup = () => {
-					const user = userFactory.buildWithId();
-					const drawingElement = drawingElementFactory.build();
-					const boardDoAuthorizable = new BoardDoAuthorizable({
-						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
-						id: new ObjectId().toHexString(),
-						boardDo: drawingElement,
+			describe('when required permissions include FILESTORAGE_CREATE or FILESTORAGE_VIEW', () => {
+				describe('when user is Editor', () => {
+					const setup = () => {
+						const user = userFactory.asTeacher().buildWithId();
+						const drawingElement = drawingElementFactory.build();
+						const boardDoAuthorizable = new BoardDoAuthorizable({
+							users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+							id: new ObjectId().toHexString(),
+							boardDo: drawingElement,
+						});
+
+						return { user, boardDoAuthorizable };
+					};
+					it('should return true if trying to "read"', () => {
+						const { user, boardDoAuthorizable } = setup();
+
+						const res = service.hasPermission(user, boardDoAuthorizable, {
+							action: Action.read,
+							requiredPermissions: [Permission.FILESTORAGE_VIEW],
+						});
+
+						expect(res).toBe(true);
 					});
+					it('should return true if trying to "write" ', () => {
+						const { user, boardDoAuthorizable } = setup();
 
-					return { user, boardDoAuthorizable };
-				};
-				it('should return true if trying to "read"', () => {
-					const { user, boardDoAuthorizable } = setup();
+						const res = service.hasPermission(user, boardDoAuthorizable, {
+							action: Action.write,
+							requiredPermissions: [Permission.FILESTORAGE_CREATE],
+						});
 
-					const res = service.hasPermission(user, boardDoAuthorizable, {
-						action: Action.read,
-						requiredPermissions: [],
+						expect(res).toBe(true);
 					});
-
-					expect(res).toBe(true);
 				});
-				it('should ALSO return true if trying to "write" ', () => {
-					const { user, boardDoAuthorizable } = setup();
+				describe('when user is Reader', () => {
+					const setup = () => {
+						const user = userFactory.asStudent().buildWithId();
+						const drawingElement = drawingElementFactory.build();
+						const boardDoAuthorizable = new BoardDoAuthorizable({
+							users: [{ userId: user.id, roles: [BoardRoles.READER] }],
+							id: new ObjectId().toHexString(),
+							boardDo: drawingElement,
+						});
 
-					const res = service.hasPermission(user, boardDoAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [],
+						return { user, boardDoAuthorizable };
+					};
+					it('should return true if trying to "read"', () => {
+						const { user, boardDoAuthorizable } = setup();
+
+						const res = service.hasPermission(user, boardDoAuthorizable, {
+							action: Action.read,
+							requiredPermissions: [Permission.FILESTORAGE_VIEW],
+						});
+
+						expect(res).toBe(true);
 					});
+					it('should ALSO return true if trying to "write" ', () => {
+						const { user, boardDoAuthorizable } = setup();
 
-					expect(res).toBe(true);
+						const res = service.hasPermission(user, boardDoAuthorizable, {
+							action: Action.write,
+							requiredPermissions: [Permission.FILESTORAGE_CREATE],
+						});
+
+						expect(res).toBe(true);
+					});
 				});
 			});
 		});
