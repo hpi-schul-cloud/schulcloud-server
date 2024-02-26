@@ -2,9 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
-import { ForbiddenOperationError } from '@shared/common';
 import { RoleService } from '../../../role';
-import { AuthorizationService } from '../../../authorization';
+import {
+	AuthorizableReferenceType,
+	AuthorizationContextBuilder,
+	AuthorizationService,
+	ForbiddenLoggableException
+} from '../../../authorization';
 import { UsersAdminContextEnum } from '../enum';
 import { UserByIdParams, UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';
 import { AdminUsersService } from '../service';
@@ -52,7 +56,9 @@ export class AdminApiUsersUc {
 		try {
 			this.authorizationService.checkAllPermissions(currentUser, [permission]);
 		} catch (e) {
-			throw new ForbiddenOperationError(`Current user is not authorized to search for ${context.valueOf()}.`);
+			// temporary fix for the problem with checkAllPermissions method (throws UnauthorizedException instead of ForbiddenLoggableException)
+			const permissionContext = AuthorizationContextBuilder.read([permission]);
+			throw new ForbiddenLoggableException(currentUser.id, AuthorizableReferenceType.User, permissionContext);
 		}
 	}
 
