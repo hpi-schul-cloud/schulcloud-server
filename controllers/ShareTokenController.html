@@ -231,8 +231,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="40"
-                                    class="link-to-prism">apps/server/src/modules/sharing/controller/share-token.controller.ts:40</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="38"
+                                    class="link-to-prism">apps/server/src/modules/sharing/controller/share-token.controller.ts:38</a></div>
                         </td>
                     </tr>
 
@@ -321,14 +321,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@ApiOperation({summary: &#x27;Import a share token payload.&#x27;})<br />@ApiResponse({status: 201, type: CopyApiResponse})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@ApiResponse({status: 500, type: InternalServerErrorException})<br />@ApiResponse({status: 501, type: NotImplementedException})<br />@Post(&#x27;:token/import&#x27;)<br />@RequestTimeout(undefined.INCOMING_REQUEST_TIMEOUT_COPY_API)<br /></code>
+                    <code>@ApiOperation({summary: &#x27;Import a share token payload.&#x27;})<br />@ApiResponse({status: 201, type: CopyApiResponse})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@ApiResponse({status: 500, type: InternalServerErrorException})<br />@ApiResponse({status: 501, type: NotImplementedException})<br />@Post(&#x27;:token/import&#x27;)<br />@RequestTimeout(&#x27;INCOMING_REQUEST_TIMEOUT_COPY_API&#x27;)<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="86"
-                                    class="link-to-prism">apps/server/src/modules/sharing/controller/share-token.controller.ts:86</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="84"
+                                    class="link-to-prism">apps/server/src/modules/sharing/controller/share-token.controller.ts:84</a></div>
                         </td>
                     </tr>
 
@@ -433,8 +433,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="67"
-                                    class="link-to-prism">apps/server/src/modules/sharing/controller/share-token.controller.ts:67</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="65"
+                                    class="link-to-prism">apps/server/src/modules/sharing/controller/share-token.controller.ts:65</a></div>
                         </td>
                     </tr>
 
@@ -511,8 +511,6 @@ import {
 } from &#x27;@nestjs/common&#x27;;
 import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ApiValidationError, RequestTimeout } from &#x27;@shared/common&#x27;;
-// invalid import can produce dependency cycles
-import { serverConfig } from &#x27;@modules/server/server.config&#x27;;
 import { ShareTokenInfoResponseMapper, ShareTokenResponseMapper } from &#x27;../mapper&#x27;;
 import { ShareTokenUC } from &#x27;../uc&#x27;;
 import {
@@ -580,7 +578,7 @@ export class ShareTokenController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiResponse({ status: 501, type: NotImplementedException })
 	@Post(&#x27;:token/import&#x27;)
-	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
+	@RequestTimeout(&#x27;INCOMING_REQUEST_TIMEOUT_COPY_API&#x27;)
 	async importShareToken(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: ShareTokenUrlParams,

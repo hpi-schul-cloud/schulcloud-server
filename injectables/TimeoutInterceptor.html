@@ -141,6 +141,20 @@ This will not stop the running services behind the controller.</p>
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#defaultConfigKey" >defaultConfigKey</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -171,12 +185,12 @@ This will not stop the running services behind the controller.</p>
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(requestTimeout: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+<code>constructor(configService: ConfigService)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/shared/common/interceptor/timeout.interceptor.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/shared/common/interceptor/timeout.interceptor.ts:15</a></div>
                             </td>
                         </tr>
 
@@ -194,10 +208,10 @@ This will not stop the running services behind the controller.</p>
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>requestTimeout</td>
+                                                        <td>configService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                                                    <code>ConfigService</code>
                                                         </td>
                                                   
                                                     <td>
@@ -239,8 +253,8 @@ This will not stop the running services behind the controller.</p>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="14"
-                                    class="link-to-prism">apps/server/src/shared/common/interceptor/timeout.interceptor.ts:14</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="19"
+                                    class="link-to-prism">apps/server/src/shared/common/interceptor/timeout.interceptor.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -299,15 +313,49 @@ This will not stop the running services behind the controller.</p>
         </tbody>
     </table>
 </section>
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="defaultConfigKey"></a>
+                    <span class="name">
+                        <span ><b>defaultConfigKey</b></span>
+                        <a href="#defaultConfigKey"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;INCOMING_REQUEST_TIMEOUT&#x27;</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/shared/common/interceptor/timeout.interceptor.ts:15</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CallHandler, ExecutionContext, Injectable, NestInterceptor, RequestTimeoutException } from &#x27;@nestjs/common&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { Reflector } from &#x27;@nestjs/core&#x27;;
 import { Observable, throwError, TimeoutError } from &#x27;rxjs&#x27;;
 import { catchError, timeout } from &#x27;rxjs/operators&#x27;;
+import { InterceptorConfig } from &#x27;./interfaces&#x27;;
+import { TypeGuard } from &#x27;../guards&#x27;;
 
 /**
  * This interceptor leaves the request execution after a given timeout in ms.
@@ -315,14 +363,23 @@ import { catchError, timeout } from &#x27;rxjs/operators&#x27;;
  */
 @Injectable()
 export class TimeoutInterceptor implements NestInterceptor {
-	constructor(private readonly requestTimeout: number) {}
+	defaultConfigKey: keyof InterceptorConfig &#x3D; &#x27;INCOMING_REQUEST_TIMEOUT&#x27;;
+
+	constructor(private readonly configService: ConfigService) {}
 
 	intercept(context: ExecutionContext, next: CallHandler): Observable&lt;any&gt; {
 		const reflector &#x3D; new Reflector();
-		const timeoutValue &#x3D;
-			reflector.get&lt;number&gt;(&#x27;timeout&#x27;, context.getHandler()) || reflector.get&lt;number&gt;(&#x27;timeout&#x27;, context.getClass());
+		const requestTimeoutEnvironmentName &#x3D;
+			reflector.get&lt;string&gt;(&#x27;requestTimeoutEnvironmentName&#x27;, context.getHandler()) ||
+			reflector.get&lt;string&gt;(&#x27;requestTimeoutEnvironmentName&#x27;, context.getClass());
+
+		// type of requestTimeoutEnvironmentName is always invalid and can be different
+		const timeoutMS &#x3D; this.configService.getOrThrow&lt;number&gt;(requestTimeoutEnvironmentName || this.defaultConfigKey);
+
+		TypeGuard.checkNumber(timeoutMS);
+
 		return next.handle().pipe(
-			timeout(timeoutValue || this.requestTimeout),
+			timeout(timeoutMS),
 			catchError((err: Error) &#x3D;&gt; {
 				if (err instanceof TimeoutError) {
 					return throwError(() &#x3D;&gt; new RequestTimeoutException());

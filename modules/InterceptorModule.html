@@ -153,7 +153,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ClassSerializerInterceptor, Module } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { APP_INTERCEPTOR } from &#x27;@nestjs/core&#x27;;
-import { InterceptorConfig, TimeoutInterceptor } from &#x27;@shared/common&#x27;;
+import { TimeoutInterceptor } from &#x27;@shared/common&#x27;;
 
 /** *********************************************
  * Global Interceptor setup
@@ -169,11 +169,8 @@ import { InterceptorConfig, TimeoutInterceptor } from &#x27;@shared/common&#x27;
 			useClass: ClassSerializerInterceptor,
 		},
 		{
-			provide: APP_INTERCEPTOR, // TODO remove (for testing)
-			useFactory: (configService: ConfigService&lt;InterceptorConfig, true&gt;) &#x3D;&gt; {
-				const timeout &#x3D; configService.get&lt;number&gt;(&#x27;INCOMING_REQUEST_TIMEOUT&#x27;);
-				return new TimeoutInterceptor(timeout);
-			},
+			provide: APP_INTERCEPTOR,
+			useFactory: (configService: ConfigService) &#x3D;&gt; new TimeoutInterceptor(configService),
 			inject: [ConfigService],
 		},
 	],

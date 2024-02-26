@@ -230,14 +230,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;:taskId/copy&#x27;)<br />@RequestTimeout(undefined.INCOMING_REQUEST_TIMEOUT_COPY_API)<br /></code>
+                    <code>@Post(&#x27;:taskId/copy&#x27;)<br />@RequestTimeout(&#x27;INCOMING_REQUEST_TIMEOUT_COPY_API&#x27;)<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="85"
-                                    class="link-to-prism">apps/server/src/modules/task/controller/task.controller.ts:85</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="83"
+                                    class="link-to-prism">apps/server/src/modules/task/controller/task.controller.ts:83</a></div>
                         </td>
                     </tr>
 
@@ -337,8 +337,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="100"
-                                    class="link-to-prism">apps/server/src/modules/task/controller/task.controller.ts:100</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="98"
+                                    class="link-to-prism">apps/server/src/modules/task/controller/task.controller.ts:98</a></div>
                         </td>
                     </tr>
 
@@ -426,8 +426,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">apps/server/src/modules/task/controller/task.controller.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/task/controller/task.controller.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -515,8 +515,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="30"
-                                    class="link-to-prism">apps/server/src/modules/task/controller/task.controller.ts:30</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">apps/server/src/modules/task/controller/task.controller.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -597,8 +597,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="37"
-                                    class="link-to-prism">apps/server/src/modules/task/controller/task.controller.ts:37</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="35"
+                                    class="link-to-prism">apps/server/src/modules/task/controller/task.controller.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -705,8 +705,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="54"
-                                    class="link-to-prism">apps/server/src/modules/task/controller/task.controller.ts:54</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">apps/server/src/modules/task/controller/task.controller.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -794,8 +794,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="63"
-                                    class="link-to-prism">apps/server/src/modules/task/controller/task.controller.ts:63</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">apps/server/src/modules/task/controller/task.controller.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -883,8 +883,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">apps/server/src/modules/task/controller/task.controller.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">apps/server/src/modules/task/controller/task.controller.ts:70</a></div>
                         </td>
                     </tr>
 
@@ -952,8 +952,6 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from &#x27;@
 import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { RequestTimeout } from &#x27;@shared/common&#x27;;
 import { PaginationParams } from &#x27;@shared/controller/&#x27;;
-// invalid import can produce dependency cycles
-import { serverConfig } from &#x27;@modules/server/server.config&#x27;;
 import { TaskMapper } from &#x27;../mapper&#x27;;
 import { TaskCopyUC } from &#x27;../uc/task-copy.uc&#x27;;
 import { TaskUC } from &#x27;../uc/task.uc&#x27;;
@@ -1029,7 +1027,7 @@ export class TaskController {
 	}
 
 	@Post(&#x27;:taskId/copy&#x27;)
-	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
+	@RequestTimeout(&#x27;INCOMING_REQUEST_TIMEOUT_COPY_API&#x27;)
 	async copyTask(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: TaskUrlParams,

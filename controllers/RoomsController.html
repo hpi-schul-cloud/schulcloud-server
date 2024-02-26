@@ -216,14 +216,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;:roomId/copy&#x27;)<br />@RequestTimeout(undefined.INCOMING_REQUEST_TIMEOUT_COPY_API)<br /></code>
+                    <code>@Post(&#x27;:roomId/copy&#x27;)<br />@RequestTimeout(&#x27;INCOMING_REQUEST_TIMEOUT_COPY_API&#x27;)<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="67"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/rooms.controller.ts:67</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="66"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/rooms.controller.ts:66</a></div>
                         </td>
                     </tr>
 
@@ -306,14 +306,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Post(&#x27;lessons/:lessonId/copy&#x27;)<br />@RequestTimeout(undefined.INCOMING_REQUEST_TIMEOUT_COPY_API)<br /></code>
+                    <code>@Post(&#x27;lessons/:lessonId/copy&#x27;)<br />@RequestTimeout(&#x27;INCOMING_REQUEST_TIMEOUT_COPY_API&#x27;)<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="78"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/rooms.controller.ts:78</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="77"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/rooms.controller.ts:77</a></div>
                         </td>
                     </tr>
 
@@ -413,8 +413,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/rooms.controller.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/rooms.controller.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -502,8 +502,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="43"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/rooms.controller.ts:43</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/rooms.controller.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -603,8 +603,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="57"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/rooms.controller.ts:57</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="56"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/rooms.controller.ts:56</a></div>
                         </td>
                     </tr>
 
@@ -680,7 +680,6 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
 import { CopyApiResponse, CopyMapper } from &#x27;@modules/copy-helper&#x27;;
-import { serverConfig } from &#x27;@modules/server/server.config&#x27;;
 import { Body, Controller, Get, Param, Patch, Post } from &#x27;@nestjs/common&#x27;;
 import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { RequestTimeout } from &#x27;@shared/common&#x27;;
@@ -743,7 +742,7 @@ export class RoomsController {
 	}
 
 	@Post(&#x27;:roomId/copy&#x27;)
-	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
+	@RequestTimeout(&#x27;INCOMING_REQUEST_TIMEOUT_COPY_API&#x27;)
 	async copyCourse(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams
@@ -754,7 +753,7 @@ export class RoomsController {
 	}
 
 	@Post(&#x27;lessons/:lessonId/copy&#x27;)
-	@RequestTimeout(serverConfig().INCOMING_REQUEST_TIMEOUT_COPY_API)
+	@RequestTimeout(&#x27;INCOMING_REQUEST_TIMEOUT_COPY_API&#x27;)
 	async copyLesson(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: LessonUrlParams,

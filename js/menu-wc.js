@@ -5753,6 +5753,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/TriggerDeletionExecutionOptionsBuilder.html" data-type="entity-link" >TriggerDeletionExecutionOptionsBuilder</a>
                             </li>
                             <li class="link">
+                                <a href="classes/TypeGuard.html" data-type="entity-link" >TypeGuard</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/UnauthorizedLoggableException.html" data-type="entity-link" >UnauthorizedLoggableException</a>
                             </li>
                             <li class="link">
