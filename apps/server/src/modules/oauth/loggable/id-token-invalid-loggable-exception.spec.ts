@@ -13,7 +13,7 @@ describe(IdTokenInvalidLoggableException.name, () => {
 			const logMessage = exception.getLogMessage();
 
 			expect(logMessage).toEqual({
-				type: 'SSO_JWT_PROBLEM',
+				type: 'ID_TOKEN_INVALID',
 				message: 'Failed to validate idToken',
 				stack: expect.any(String),
 			});
