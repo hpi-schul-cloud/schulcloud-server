@@ -24,71 +24,71 @@
 <title>cluster_RocketChatUserModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 580,-268 580,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_RocketChatUserModule_providers</title>
-<polygon fill="none" stroke="black" points="140,-78 140,-130 572,-130 572,-78 140,-78"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_RocketChatUserModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 132,-130 132,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="456,-78 456,-130 572,-130 572,-78 456,-78"/>
 </g>
 <g id="clust4" class="cluster">
 <title>cluster_RocketChatUserModule_exports</title>
-<polygon fill="none" stroke="black" points="167,-208 167,-260 337,-260 337,-208 167,-208"/>
+<polygon fill="none" stroke="black" points="260,-208 260,-260 430,-260 430,-208 260,-208"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_RocketChatUserModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 448,-130 448,-78 16,-78"/>
 </g>
 <!-- LoggerModule -->
 <g id="node1" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="123.98,-122 120.98,-126 99.98,-126 96.98,-122 24.02,-122 24.02,-86 123.98,-86 123.98,-122"/>
-<text text-anchor="middle" x="74" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="563.98,-122 560.98,-126 539.98,-126 536.98,-122 464.02,-122 464.02,-86 563.98,-86 563.98,-122"/>
+<text text-anchor="middle" x="514" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- RocketChatUserModule -->
 <g id="node2" class="node">
 <title>RocketChatUserModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="328.07,-187 325.07,-191 304.07,-191 301.07,-187 175.93,-187 175.93,-151 328.07,-151 328.07,-187"/>
-<text text-anchor="middle" x="252" y="-164.8" font-family="Times,serif" font-size="14.00">RocketChatUserModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="421.07,-187 418.07,-191 397.07,-191 394.07,-187 268.93,-187 268.93,-151 421.07,-151 421.07,-187"/>
+<text text-anchor="middle" x="345" y="-164.8" font-family="Times,serif" font-size="14.00">RocketChatUserModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;RocketChatUserModule -->
 <g id="edge1" class="edge">
 <title>LoggerModule&#45;&gt;RocketChatUserModule</title>
-<path fill="none" stroke="black" d="M74,-122.11C74,-141.34 74,-169 74,-169 74,-169 165.74,-169 165.74,-169"/>
-<polygon fill="black" stroke="black" points="165.74,-172.5 175.74,-169 165.74,-165.5 165.74,-172.5"/>
+<path fill="none" stroke="black" d="M514,-122.11C514,-141.34 514,-169 514,-169 514,-169 431.1,-169 431.1,-169"/>
+<polygon fill="black" stroke="black" points="431.1,-165.5 421.1,-169 431.1,-172.5 431.1,-165.5"/>
 </g>
 <!-- RocketChatUserService  -->
 <g id="node3" class="node">
 <title>RocketChatUserService </title>
-<polygon fill="#fb8072" stroke="black" points="329,-252 175,-252 175,-216 329,-216 329,-252"/>
-<text text-anchor="middle" x="252" y="-229.8" font-family="Times,serif" font-size="14.00">RocketChatUserService </text>
+<polygon fill="#fb8072" stroke="black" points="422,-252 268,-252 268,-216 422,-216 422,-252"/>
+<text text-anchor="middle" x="345" y="-229.8" font-family="Times,serif" font-size="14.00">RocketChatUserService </text>
 </g>
 <!-- RocketChatUserModule&#45;&gt;RocketChatUserService  -->
 <g id="edge2" class="edge">
 <title>RocketChatUserModule&#45;&gt;RocketChatUserService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M252,-187.11C252,-187.11 252,-205.99 252,-205.99"/>
-<polygon fill="black" stroke="black" points="248.5,-205.99 252,-215.99 255.5,-205.99 248.5,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M345,-187.11C345,-187.11 345,-205.99 345,-205.99"/>
+<polygon fill="black" stroke="black" points="341.5,-205.99 345,-215.99 348.5,-205.99 341.5,-205.99"/>
 </g>
 <!-- RocketChatUserRepo -->
 <g id="node4" class="node">
 <title>RocketChatUserRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="469" cy="-104" rx="95.48" ry="18"/>
-<text text-anchor="middle" x="469" y="-99.8" font-family="Times,serif" font-size="14.00">RocketChatUserRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="345" cy="-104" rx="95.48" ry="18"/>
+<text text-anchor="middle" x="345" y="-99.8" font-family="Times,serif" font-size="14.00">RocketChatUserRepo</text>
 </g>
 <!-- RocketChatUserRepo&#45;&gt;RocketChatUserModule -->
 <g id="edge3" class="edge">
 <title>RocketChatUserRepo&#45;&gt;RocketChatUserModule</title>
-<path fill="none" stroke="black" d="M469,-122.11C469,-141.34 469,-169 469,-169 469,-169 338.2,-169 338.2,-169"/>
-<polygon fill="black" stroke="black" points="338.2,-165.5 328.2,-169 338.2,-172.5 338.2,-165.5"/>
+<path fill="none" stroke="black" d="M345,-122.11C345,-122.11 345,-140.99 345,-140.99"/>
+<polygon fill="black" stroke="black" points="341.5,-140.99 345,-150.99 348.5,-140.99 341.5,-140.99"/>
 </g>
 <!-- RocketChatUserService -->
 <g id="node5" class="node">
 <title>RocketChatUserService</title>
-<ellipse fill="#fdb462" stroke="black" cx="252" cy="-104" rx="103.63" ry="18"/>
-<text text-anchor="middle" x="252" y="-99.8" font-family="Times,serif" font-size="14.00">RocketChatUserService</text>
+<ellipse fill="#fdb462" stroke="black" cx="128" cy="-104" rx="103.63" ry="18"/>
+<text text-anchor="middle" x="128" y="-99.8" font-family="Times,serif" font-size="14.00">RocketChatUserService</text>
 </g>
 <!-- RocketChatUserService&#45;&gt;RocketChatUserModule -->
 <g id="edge4" class="edge">
 <title>RocketChatUserService&#45;&gt;RocketChatUserModule</title>
-<path fill="none" stroke="black" d="M252,-122.11C252,-122.11 252,-140.99 252,-140.99"/>
-<polygon fill="black" stroke="black" points="248.5,-140.99 252,-150.99 255.5,-140.99 248.5,-140.99"/>
+<path fill="none" stroke="black" d="M128,-122.11C128,-141.34 128,-169 128,-169 128,-169 258.8,-169 258.8,-169"/>
+<polygon fill="black" stroke="black" points="258.8,-172.5 268.8,-169 258.8,-165.5 258.8,-172.5"/>
 </g>
 </g>
 </svg>
