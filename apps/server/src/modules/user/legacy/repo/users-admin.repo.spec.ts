@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { User } from '@shared/domain/entity';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { ObjectId } from 'bson';
 import { UsersSearchQueryParams } from '../controller/dto';
 import { UsersAdminRepo } from './users-admin.repo';
 
@@ -21,6 +22,10 @@ describe('users admin repo', () => {
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
 	});
 
 	it('should be defined', () => {
@@ -81,6 +86,7 @@ describe('users admin repo', () => {
 
 			const classesLookupStage = {
 				$lookup: {
+					as: 'classes',
 					from: 'classes',
 					let: { id: '$_id' },
 					pipeline: [
@@ -88,11 +94,11 @@ describe('users admin repo', () => {
 							$match: {
 								$expr: {
 									$and: [
-										{ $eq: ['$schoolId', exampleId] },
+										{ $eq: ['$schoolId', new ObjectId(exampleId)] },
 										{
 											$and: [
 												{
-													$or: [{ $eq: ['$year', exampleId] }, { $eq: [{ $type: '$year' }, 'missing'] }],
+													$or: [{ $eq: ['$year', new ObjectId(exampleId)] }, { $eq: [{ $type: '$year' }, 'missing'] }],
 												},
 												{
 													$or: [{ $max: '$gradeLevel' }, { $eq: [{ $type: '$gradeLevel' }, 'missing'] }],
@@ -132,7 +138,6 @@ describe('users admin repo', () => {
 							},
 						},
 					],
-					as: 'classes',
 				},
 			};
 
