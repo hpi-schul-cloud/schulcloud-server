@@ -63,13 +63,18 @@ describe('SchoolFactory', () => {
 
 				const result = SchoolFactory.buildFromPartialBody(school, partialBody);
 
-				expect(result.getProps().name).toBe(partialBody.name);
-				expect(result.getProps().officialSchoolNumber).toBe(partialBody.officialSchoolNumber);
-				expect(result.getProps().logo_dataUrl).toBe(partialBody.logo_dataUrl);
-				expect(result.getProps().logo_name).toBe(partialBody.logo_name);
-				expect(result.getProps().fileStorageType).toBe(partialBody.fileStorageType);
-				expect(result.getProps().language).toBe(partialBody.language);
-				expect(result.getProps().features).toEqual(partialBody.features);
+				const props = result.getProps();
+
+				expect(props).toEqual({
+					...school.getProps(),
+					name: partialBody.name,
+					officialSchoolNumber: partialBody.officialSchoolNumber,
+					logo_dataUrl: partialBody.logo_dataUrl,
+					logo_name: partialBody.logo_name,
+					fileStorageType: partialBody.fileStorageType,
+					language: partialBody.language,
+					features: partialBody.features,
+				});
 			});
 		});
 	});

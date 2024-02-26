@@ -71,10 +71,11 @@ describe('School Controller (API)', () => {
 							const response = await loggedInClient.get(`id/123`);
 
 							expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
-							// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-							expect(response.body.validationErrors).toEqual([
-								{ errors: ['schoolId must be a mongodb id'], field: ['schoolId'] },
-							]);
+							expect(response.body).toEqual(
+								expect.objectContaining({
+									validationErrors: [{ errors: ['schoolId must be a mongodb id'], field: ['schoolId'] }],
+								})
+							);
 						});
 					});
 
@@ -99,10 +100,16 @@ describe('School Controller (API)', () => {
 							});
 
 							expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
-							// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-							expect(response.body.validationErrors).toEqual([
-								{ errors: ['fileStorageType must be one of the following values: awsS3'], field: ['fileStorageType'] },
-							]);
+							expect(response.body).toEqual(
+								expect.objectContaining({
+									validationErrors: [
+										{
+											errors: ['fileStorageType must be one of the following values: awsS3'],
+											field: ['fileStorageType'],
+										},
+									],
+								})
+							);
 						});
 					});
 
@@ -115,10 +122,13 @@ describe('School Controller (API)', () => {
 							});
 
 							expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
-							// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-							expect(response.body.validationErrors).toEqual([
-								{ errors: ['language must be one of the following values: de, en, es, uk'], field: ['language'] },
-							]);
+							expect(response.body).toEqual(
+								expect.objectContaining({
+									validationErrors: [
+										{ errors: ['language must be one of the following values: de, en, es, uk'], field: ['language'] },
+									],
+								})
+							);
 						});
 					});
 
@@ -131,15 +141,18 @@ describe('School Controller (API)', () => {
 							});
 
 							expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
-							// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-							expect(response.body.validationErrors).toEqual([
-								{
-									errors: [
-										'each value in features must be one of the following values: rocketChat, videoconference, nextcloud, studentVisibility, ldapUniventionMigrationSchool, oauthProvisioningEnabled, showOutdatedUsers, enableLdapSyncDuringMigration, isTeamCreationByStudentsEnabled',
+							expect(response.body).toEqual(
+								expect.objectContaining({
+									validationErrors: [
+										{
+											errors: [
+												'each value in features must be one of the following values: rocketChat, videoconference, nextcloud, studentVisibility, ldapUniventionMigrationSchool, oauthProvisioningEnabled, showOutdatedUsers, enableLdapSyncDuringMigration, isTeamCreationByStudentsEnabled',
+											],
+											field: ['features'],
+										},
 									],
-									field: ['features'],
-								},
-							]);
+								})
+							);
 						});
 					});
 				});
