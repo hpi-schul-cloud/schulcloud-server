@@ -41,8 +41,7 @@ export class AdminApiUsersUc {
 		const currentUser = await this.userRepo.findById(currentUserId, true);
 		this.validateAccessToContext(context, currentUser);
 		const { school } = currentUser;
-		const currentSchoolYear = school.currentYear;
-		const currentSchoolYearId = currentSchoolYear?.id;
+		const currentSchoolYearId = school.currentYear?.id;
 		const contextRole = await this.getRoleForContext(context);
 
 		return this.adminUsersService.getUserWithNestedData(contextRole?.id, school.id, currentSchoolYearId, params.id);

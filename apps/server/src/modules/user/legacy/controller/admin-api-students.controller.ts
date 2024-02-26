@@ -18,7 +18,7 @@ export class AdminApiStudentsController {
 	})
 	@ApiResponse({ status: 200, type: UserListResponse, description: 'Returns a paged list of students.' })
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
-	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Not authenticated.' })
+	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Not authorized.' })
 	async searchAccounts(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() params: UsersSearchQueryParams
@@ -30,7 +30,7 @@ export class AdminApiStudentsController {
 	@ApiOperation({ summary: 'Returns an student with given id.' })
 	@ApiResponse({ status: 200, type: UserResponse, description: 'Returns the student.' })
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
-	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Not authenticated.' })
+	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Not authorized.' })
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Student not found.' })
 	async findAccountById(
 		@CurrentUser() currentUser: ICurrentUser,
