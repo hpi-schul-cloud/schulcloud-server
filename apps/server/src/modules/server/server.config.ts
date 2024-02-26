@@ -80,28 +80,22 @@ export interface ServerConfig
 	DOCUMENT_BASE_DIR: string;
 	SC_THEME: string; // should be enum
 	SC_TITLE: string; // should be enum
-	// ----
 	FEATURE_SHOW_OUTDATED_USERS: boolean;
 	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: boolean;
 	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: boolean;
 	FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED: boolean;
 	FEATURE_SHOW_MIGRATION_WIZARD: boolean;
 	MIGRATION_WIZARD_DOCUMENTATION_LINK?: string;
-	// TODO: check what is happed with this envirements from tldraw, why they are not part of the interface?
 	FEATURE_TLDRAW_ENABLED: boolean;
 	TLDRAW__ASSETS_ENABLED: boolean;
 	TLDRAW__ASSETS_MAX_SIZE: number;
 	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST?: string;
-	// ----
-	// TODO: create Ticket to move this to config public service of h5p
 	I18N__AVAILABLE_LANGUAGES: string; // string[] / enum
 	I18N__DEFAULT_LANGUAGE: string; // should be enum
 	I18N__FALLBACK_LANGUAGE: string; // should be enum
 	I18N__DEFAULT_TIMEZONE: string; // should be enum
-	// ----
 }
 
-// TODO: each as cast should be check with type guard
 const config: ServerConfig = {
 	ACCESSIBILITY_REPORT_EMAIL: Configuration.get('ACCESSIBILITY_REPORT_EMAIL') as string,
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get('ADMIN_TABLES_DISPLAY_CONSENT_COLUMN') as boolean,
