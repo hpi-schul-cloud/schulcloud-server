@@ -482,13 +482,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/BoardModule.html" data-type="entity-link" >BoardModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-BoardModule-80a7be8018c1707faf94782ecc07b25c2b35573ee646f728f5622eb96707969515dee6caa918e2a26f1457e682584252c4cd8147a0c5ef2ccf935630217f903e"' : 'data-bs-target="#xs-injectables-links-module-BoardModule-80a7be8018c1707faf94782ecc07b25c2b35573ee646f728f5622eb96707969515dee6caa918e2a26f1457e682584252c4cd8147a0c5ef2ccf935630217f903e"' }>
+                                        'data-bs-target="#injectables-links-module-BoardModule-44544017d02f811e5caec51620ce0db6e0828e889eb3145027425bbb4c85c1c066f57fd6587654941f6037e6a1dea9ba6c7e1f6bbaf47b5a881b886dddc87d0c"' : 'data-bs-target="#xs-injectables-links-module-BoardModule-44544017d02f811e5caec51620ce0db6e0828e889eb3145027425bbb4c85c1c066f57fd6587654941f6037e6a1dea9ba6c7e1f6bbaf47b5a881b886dddc87d0c"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-BoardModule-80a7be8018c1707faf94782ecc07b25c2b35573ee646f728f5622eb96707969515dee6caa918e2a26f1457e682584252c4cd8147a0c5ef2ccf935630217f903e"' :
-                                        'id="xs-injectables-links-module-BoardModule-80a7be8018c1707faf94782ecc07b25c2b35573ee646f728f5622eb96707969515dee6caa918e2a26f1457e682584252c4cd8147a0c5ef2ccf935630217f903e"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-BoardModule-44544017d02f811e5caec51620ce0db6e0828e889eb3145027425bbb4c85c1c066f57fd6587654941f6037e6a1dea9ba6c7e1f6bbaf47b5a881b886dddc87d0c"' :
+                                        'id="xs-injectables-links-module-BoardModule-44544017d02f811e5caec51620ce0db6e0828e889eb3145027425bbb4c85c1c066f57fd6587654941f6037e6a1dea9ba6c7e1f6bbaf47b5a881b886dddc87d0c"' }>
                                         <li class="link">
                                             <a href="injectables/BoardDoAuthorizableService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BoardDoAuthorizableService</a>
                                         </li>

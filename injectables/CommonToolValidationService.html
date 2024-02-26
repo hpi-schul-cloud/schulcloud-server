@@ -159,6 +159,10 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#filterParametersForScope" >filterParametersForScope</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Public</span>
                                 <a href="#validateParameters" >validateParameters</a>
                             </li>
@@ -184,6 +188,87 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="filterParametersForScope"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>filterParametersForScope</b></span>
+                        <a href="#filterParametersForScope"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>filterParametersForScope(params: <a href="../classes/CustomParameter.html" target="_self">CustomParameter[] | undefined</a>, validatableTool: <a href="../undefineds/ValidatableTool.html" target="_self">ValidatableTool</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">apps/server/src/modules/tool/common/service/validation/common-tool-validation.service.ts:42</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>params</td>
+                                            <td>
+                                                            <code><a href="../classes/CustomParameter.html" target="_self" >CustomParameter[] | undefined</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>validatableTool</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#ValidatableTool" target="_self" >ValidatableTool</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/CustomParameter.html" target="_self" >CustomParameter[]</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="validateParameters"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -195,7 +280,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>validateParameters(loadedExternalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>, validatableTool: <a href="../undefineds/ValidatableTool.html" target="_self">ValidatableTool</a>)</code>
+                    <code>validateParameters(externalTool: <a href="../classes/ExternalTool.html" target="_self">ExternalTool</a>, validatableTool: <a href="../undefineds/ValidatableTool.html" target="_self">ValidatableTool</a>)</code>
                 </td>
             </tr>
 
@@ -224,7 +309,7 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>loadedExternalTool</td>
+                                                <td>externalTool</td>
                                             <td>
                                                             <code><a href="../classes/ExternalTool.html" target="_self" >ExternalTool</a></code>
                                             </td>
@@ -334,13 +419,12 @@ export class CommonToolValidationService {
 		new ParameterArrayEntryValidator(),
 	];
 
-	public validateParameters(loadedExternalTool: ExternalTool, validatableTool: ValidatableTool): ValidationError[] {
+	public validateParameters(externalTool: ExternalTool, validatableTool: ValidatableTool): ValidationError[] {
 		const errors: ValidationError[] &#x3D; [];
 
-		const parametersForScope: CustomParameter[] &#x3D; (loadedExternalTool.parameters ?? []).filter(
-			(param: CustomParameter) &#x3D;&gt;
-				(validatableTool instanceof SchoolExternalTool &amp;&amp; param.scope &#x3D;&#x3D;&#x3D; CustomParameterScope.SCHOOL) ||
-				(validatableTool instanceof ContextExternalTool &amp;&amp; param.scope &#x3D;&#x3D;&#x3D; CustomParameterScope.CONTEXT)
+		const parametersForScope: CustomParameter[] &#x3D; this.filterParametersForScope(
+			externalTool.parameters,
+			validatableTool
 		);
 
 		this.arrayValidators.forEach((validator: ParameterArrayValidator) &#x3D;&gt; {
@@ -350,6 +434,19 @@ export class CommonToolValidationService {
 		});
 
 		return errors;
+	}
+
+	private filterParametersForScope(
+		params: CustomParameter[] | undefined,
+		validatableTool: ValidatableTool
+	): CustomParameter[] {
+		const parametersForScope: CustomParameter[] &#x3D; (params ?? []).filter(
+			(param: CustomParameter) &#x3D;&gt;
+				(validatableTool instanceof SchoolExternalTool &amp;&amp; param.scope &#x3D;&#x3D;&#x3D; CustomParameterScope.SCHOOL) ||
+				(validatableTool instanceof ContextExternalTool &amp;&amp; param.scope &#x3D;&#x3D;&#x3D; CustomParameterScope.CONTEXT)
+		);
+
+		return parametersForScope;
 	}
 }
 </code></pre>

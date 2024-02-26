@@ -266,15 +266,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>countUsageForType(schoolExternalToolIds: string[], contextType: <a href="../undefineds/ContextExternalToolType.html" target="_self">ContextExternalToolType</a>)</code>
+                    <code>countUsageForType(contextExternalTools: ContextExternalTool[], contextType: <a href="../undefineds/ContextExternalToolType.html" target="_self">ContextExternalToolType</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="71"
-                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool-metadata.service.ts:71</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">apps/server/src/modules/tool/common/service/common-tool-metadata.service.ts:72</a></div>
                         </td>
                     </tr>
 
@@ -295,9 +295,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>schoolExternalToolIds</td>
+                                                <td>contextExternalTools</td>
                                             <td>
-                                                        <code>string[]</code>
+                                                        <code>ContextExternalTool[]</code>
                                             </td>
 
                                             <td>
@@ -591,51 +591,45 @@ export class CommonToolMetadataService {
 	}
 
 	private async getMetadata(schoolExternalToolIds: EntityId[]): Promise&lt;ExternalToolMetadata&gt; {
-		const contextExternalToolCount: Record&lt;ContextExternalToolType, number&gt; &#x3D; {
-			[ContextExternalToolType.BOARD_ELEMENT]: 0,
-			[ContextExternalToolType.COURSE]: 0,
-		};
+		const externalToolMetadata: ExternalToolMetadata &#x3D; new ExternalToolMetadata({
+			schoolExternalToolCount: schoolExternalToolIds.length,
+			contextExternalToolCountPerContext: {
+				[ContextExternalToolType.BOARD_ELEMENT]: 0,
+				[ContextExternalToolType.COURSE]: 0,
+			},
+		});
 
 		if (schoolExternalToolIds.length) {
 			await Promise.all(
 				Object.values(ToolContextType).map(async (contextType: ToolContextType): Promise&lt;void&gt; &#x3D;&gt; {
 					const type: ContextExternalToolType &#x3D; ToolContextMapper.contextMapping[contextType];
 
-					const count: number &#x3D; await this.countUsageForType(schoolExternalToolIds, type);
+					const contextExternalTools: ContextExternalTool[] &#x3D;
+						await this.contextToolRepo.findBySchoolToolIdsAndContextType(schoolExternalToolIds, type);
 
-					contextExternalToolCount[type] &#x3D; count;
+					const count: number &#x3D; await this.countUsageForType(contextExternalTools, type);
+
+					externalToolMetadata.contextExternalToolCountPerContext[type] &#x3D; count;
 				})
 			);
 		}
-
-		const externalToolMetadata: ExternalToolMetadata &#x3D; new ExternalToolMetadata({
-			schoolExternalToolCount: schoolExternalToolIds.length,
-			contextExternalToolCountPerContext: contextExternalToolCount,
-		});
 
 		return externalToolMetadata;
 	}
 
 	private async countUsageForType(
-		schoolExternalToolIds: string[],
+		contextExternalTools: ContextExternalTool[],
 		contextType: ContextExternalToolType
 	): Promise&lt;number&gt; {
-		const contextExternalTools: ContextExternalTool[] &#x3D; await this.contextToolRepo.findBySchoolToolIdsAndContextType(
-			schoolExternalToolIds,
-			contextType
-		);
-
 		let count &#x3D; 0;
-		if (contextExternalTools.length) {
-			if (contextType &#x3D;&#x3D;&#x3D; ContextExternalToolType.BOARD_ELEMENT) {
-				count &#x3D; await this.contentElementService.countBoardUsageForExternalTools(contextExternalTools);
-			} else {
-				const contextIds: EntityId[] &#x3D; contextExternalTools.map(
-					(contextExternalTool: ContextExternalTool): EntityId &#x3D;&gt; contextExternalTool.contextRef.id
-				);
+		if (contextType &#x3D;&#x3D;&#x3D; ContextExternalToolType.BOARD_ELEMENT) {
+			count &#x3D; await this.contentElementService.countBoardUsageForExternalTools(contextExternalTools);
+		} else {
+			const contextIds: EntityId[] &#x3D; contextExternalTools.map(
+				(contextExternalTool: ContextExternalTool): EntityId &#x3D;&gt; contextExternalTool.contextRef.id
+			);
 
-				count &#x3D; new Set(contextIds).size;
-			}
+			count &#x3D; new Set(contextIds).size;
 		}
 
 		return count;

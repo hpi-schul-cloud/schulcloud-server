@@ -652,15 +652,15 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ConsoleWriterModule } from &#x27;@infra/console&#x27;;
 import { FilesStorageClientModule } from &#x27;@modules/files-storage-client&#x27;;
+import { TldrawClientModule } from &#x27;@modules/tldraw-client&#x27;;
 import { ContextExternalToolModule } from &#x27;@modules/tool/context-external-tool&#x27;;
+import { ToolConfigModule } from &#x27;@modules/tool/tool-config.module&#x27;;
 import { UserModule } from &#x27;@modules/user&#x27;;
+import { HttpModule } from &#x27;@nestjs/axios&#x27;;
 import { Module } from &#x27;@nestjs/common&#x27;;
 import { ContentElementFactory } from &#x27;@shared/domain/domainobject&#x27;;
 import { CourseRepo } from &#x27;@shared/repo&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
-import { HttpModule } from &#x27;@nestjs/axios&#x27;;
-import { ToolConfigModule } from &#x27;@modules/tool/tool-config.module&#x27;;
-import { TldrawClientModule } from &#x27;@modules/tldraw-client&#x27;;
 import { BoardDoRepo, BoardNodeRepo, RecursiveDeleteVisitor } from &#x27;./repo&#x27;;
 import {
 	BoardDoAuthorizableService,
