@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/entity/testing';
+import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { ExternalToolElement } from '@shared/domain/domainobject';
 import { externalToolElementFactory, setupEntities } from '@shared/testing';
 import { ExternalToolElementNodeEntity, ExternalToolElementNodeEntityProps } from './external-tool-element-node.entity';

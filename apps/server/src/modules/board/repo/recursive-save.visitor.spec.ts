@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/entity/testing';
+import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import {
 	BoardNodeType,
 	CardNode,

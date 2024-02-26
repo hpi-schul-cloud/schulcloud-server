@@ -1,6 +1,7 @@
 import { Loaded } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
+import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ColumnBoardNode, ExternalToolElementNodeEntity, SchoolEntity } from '@shared/domain/entity';
@@ -9,10 +10,8 @@ import {
 	cleanupCollections,
 	columnBoardNodeFactory,
 	externalToolElementNodeFactory,
-	externalToolEntityFactory,
 	externalToolFactory,
 	schoolEntityFactory,
-	schoolExternalToolEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
@@ -26,9 +25,10 @@ import {
 	ToolConfigType,
 } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
-import { contextExternalToolEntityFactory } from '../../../context-external-tool/entity/testing';
+import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
 import { ExternalToolEntity } from '../../entity';
+import { externalToolEntityFactory } from '../../testing';
 import {
 	ExternalToolCreateParams,
 	ExternalToolMetadataResponse,

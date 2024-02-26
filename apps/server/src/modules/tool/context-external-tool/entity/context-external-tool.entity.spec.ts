@@ -1,25 +1,18 @@
-import {
-	externalToolEntityFactory,
-	schoolEntityFactory,
-	schoolExternalToolEntityFactory,
-	setupEntities,
-} from '@shared/testing';
-import {
-	CustomParameterLocation,
-	CustomParameterScope,
-	CustomParameterType,
-	ToolConfigType,
-} from '../../../common/enum';
+import { schoolEntityFactory, setupEntities } from '@shared/testing';
+
+import { CustomParameterLocation, CustomParameterScope, CustomParameterType, ToolConfigType } from '../../common/enum';
 
 import {
 	BasicToolConfigEntity,
 	CustomParameterEntity,
 	ExternalToolConfigEntity,
 	ExternalToolEntity,
-} from '../../../external-tool/entity';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
-import { ContextExternalToolEntity } from '../context-external-tool.entity';
-import { contextExternalToolEntityFactory } from './factory/context-external-tool-entity.factory';
+} from '../../external-tool/entity';
+import { externalToolEntityFactory } from '../../external-tool/testing';
+import { SchoolExternalToolEntity } from '../../school-external-tool/entity';
+import { schoolExternalToolEntityFactory } from '../../school-external-tool/testing';
+import { contextExternalToolEntityFactory } from '../testing';
+import { ContextExternalToolEntity } from './context-external-tool.entity';
 
 describe('ExternalToolEntity', () => {
 	beforeAll(async () => {

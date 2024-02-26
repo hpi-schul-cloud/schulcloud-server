@@ -4,9 +4,9 @@ import {
 	ContextExternalToolProperties,
 	ContextExternalToolType,
 } from '@modules/tool/context-external-tool/entity';
+import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing/school-external-tool-entity.factory';
 import { BaseFactory } from '@shared/testing/factory/base.factory';
 import { courseFactory } from '@shared/testing/factory/course.factory';
-import { schoolExternalToolEntityFactory } from '@shared/testing/factory/school-external-tool-entity.factory';
 
 export const contextExternalToolEntityFactory = BaseFactory.define<
 	ContextExternalToolEntity,

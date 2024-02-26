@@ -10,9 +10,7 @@ import {
 	boardFactory,
 	courseFactory,
 	customParameterFactory,
-	externalToolEntityFactory,
 	schoolEntityFactory,
-	schoolExternalToolEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 	userFactory,
@@ -25,9 +23,11 @@ import {
 	ToolContextType,
 } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
-import { contextExternalToolEntityFactory } from '../../../context-external-tool/entity/testing';
+import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
+import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ExternalToolEntity } from '../../entity';
+import { externalToolEntityFactory } from '../../testing';
 import {
 	ContextExternalToolConfigurationTemplateListResponse,
 	ContextExternalToolConfigurationTemplateResponse,
