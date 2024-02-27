@@ -1,8 +1,8 @@
 import { ParentConsentResponse } from './parent-consent.response';
-import { ConsentResponse } from './consent.response';
+import { UsersConsentResponse } from './users-consent.response';
 import { UserConsentResponse } from './user-consent.response';
 
-describe(ConsentResponse.name, () => {
+describe(UsersConsentResponse.name, () => {
 	describe('constructor', () => {
 		describe('When constructor is called', () => {
 			const setup = () => {
@@ -31,10 +31,10 @@ describe(ConsentResponse.name, () => {
 
 			it('should create a class by passing required properties', () => {
 				const { userConsent, parentConsent } = setup();
-				const consentResponse = new ConsentResponse({
+				const consentResponse = new UsersConsentResponse({
 					userConsent,
 					parentConsents: [parentConsent],
-				} as ConsentResponse);
+				} as UsersConsentResponse);
 
 				expect(consentResponse.userConsent).toEqual(userConsent);
 				expect(consentResponse.parentConsents?.length).toEqual(1);

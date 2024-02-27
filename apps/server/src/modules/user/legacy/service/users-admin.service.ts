@@ -7,9 +7,9 @@ import { UsersAdminRepo } from '../repo';
 import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';
 
 @Injectable()
-export class AdminUsersService {
+export class UsersAdminService {
 	constructor(private readonly usersAdminRepo: UsersAdminRepo, private readonly logger: Logger) {
-		this.logger.setContext(AdminUsersService.name);
+		this.logger.setContext(UsersAdminService.name);
 	}
 
 	async getUsersWithNestedData(

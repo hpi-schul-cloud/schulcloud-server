@@ -2,8 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { UserConsentResponse } from './user-consent.response';
 import { ParentConsentResponse } from './parent-consent.response';
 
-export class ConsentResponse {
-	constructor({ userConsent, parentConsents }: ConsentResponse) {
+export class UsersConsentResponse {
+	constructor({ userConsent, parentConsents }: UsersConsentResponse) {
 		this.userConsent = userConsent;
 		this.parentConsents = parentConsents
 			? parentConsents.map((parentConsent) => new ParentConsentResponse(parentConsent))

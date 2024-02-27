@@ -1,1 +1,1 @@
-export * from './admin-api-users.uc';
+export * from './users-admin-api.uc';

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ConsentResponse } from './consent.response';
+import { UsersConsentResponse } from './users-consent.response';
 import { ClassResponse } from './class.response';
 
 export class UserResponse {
@@ -24,7 +24,7 @@ export class UserResponse {
 		this.birthday = birthday;
 		this.preferences = preferences;
 		this.consentStatus = consentStatus;
-		this.consent = consent ? new ConsentResponse(consent) : undefined;
+		this.consent = consent ? new UsersConsentResponse(consent) : undefined;
 		this.classes = classes;
 		this.importHash = importHash;
 	}
@@ -54,7 +54,7 @@ export class UserResponse {
 	consentStatus: string;
 
 	@ApiProperty()
-	consent?: ConsentResponse;
+	consent?: UsersConsentResponse;
 
 	@ApiProperty({ type: [ClassResponse] })
 	classes?: ClassResponse[];

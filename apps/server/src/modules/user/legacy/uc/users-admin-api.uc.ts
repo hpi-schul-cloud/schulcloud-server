@@ -11,14 +11,14 @@ import {
 } from '../../../authorization';
 import { UsersAdminContextEnum } from '../enum';
 import { UserByIdParams, UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';
-import { AdminUsersService } from '../service';
+import { UsersAdminService } from '../service';
 
 @Injectable()
-export class AdminApiUsersUc {
+export class UsersAdminApiUc {
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly roleService: RoleService,
-		private readonly adminUsersService: AdminUsersService,
+		private readonly adminUsersService: UsersAdminService,
 		private readonly authorizationService: AuthorizationService
 	) {}
 

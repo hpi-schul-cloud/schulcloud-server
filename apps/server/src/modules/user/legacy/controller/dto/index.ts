@@ -1,5 +1,5 @@
 export * from './class.response';
-export * from './consent.response';
+export * from './users-consent.response';
 export * from './parent-consent.response';
 export * from './user.response';
 export * from './user-by-id.params';

@@ -4,13 +4,13 @@ import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@
 import { Authenticate, CurrentUser, ICurrentUser } from '../../../authentication';
 import { UsersAdminContextEnum } from '../enum';
 import { UserByIdParams, UserListResponse, UserResponse, UsersSearchQueryParams } from './dto';
-import { AdminApiUsersUc } from '../uc';
+import { UsersAdminApiUc } from '../uc';
 
 @ApiTags('AdminTeachers')
 @Authenticate('jwt')
 @Controller('users/admin/teachers')
 export class AdminApiTeachersController {
-	constructor(private readonly uc: AdminApiUsersUc) {}
+	constructor(private readonly uc: UsersAdminApiUc) {}
 
 	@Get()
 	@ApiOperation({

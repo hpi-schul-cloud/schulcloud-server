@@ -5,11 +5,11 @@ export interface UserSearchQuery {
 	_id?: any;
 	schoolId: ObjectID;
 	roles: ObjectID;
-	schoolYearId: ObjectID | undefined;
+	schoolYearId?: ObjectID;
 	sort?: UserSortQuery;
 	select: string[];
-	skip: number | undefined;
-	limit: number | undefined;
+	skip?: number;
+	limit?: number;
 	consentStatus?: Record<string, string[]>;
 	classes?: string[];
 	searchQuery?: string;
