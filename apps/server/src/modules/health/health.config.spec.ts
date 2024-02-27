@@ -39,10 +39,10 @@ describe(HealthConfig.name, () => {
 			});
 
 			it("'excludeMongoDB' toggle", () => {
-				const expectedHealthchecksExcludeMongoDB = true;
-				setup('HEALTH_CHECKS_EXCLUDE_MONGODB', expectedHealthchecksExcludeMongoDB);
+				const expectedHealthChecksExcludeMongoDB = true;
+				setup('HEALTH_CHECKS_EXCLUDE_MONGODB', expectedHealthChecksExcludeMongoDB);
 
-				expect(HealthConfig.instance.excludeMongoDB).toEqual(expectedHealthchecksExcludeMongoDB);
+				expect(HealthConfig.instance.excludeMongoDB).toEqual(expectedHealthChecksExcludeMongoDB);
 			});
 		});
 	});
