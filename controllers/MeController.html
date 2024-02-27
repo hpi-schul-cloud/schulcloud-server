@@ -149,6 +149,8 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#me" >me</a>
@@ -177,6 +179,8 @@
                     <a name="me"></a>
                     <span class="name">
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>me</b></span>
@@ -195,14 +199,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get()<br /></code>
+                    <code>@ApiOperation({summary: &#x27;Resolve jwt and response informations about the owner of the jwt.&#x27;})<br />@ApiResponse({status: 200, type: MeResponse})<br />@Get()<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="14"
-                                    class="link-to-prism">apps/server/src/modules/me/api/me.controller.ts:14</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="16"
+                                    class="link-to-prism">apps/server/src/modules/me/api/me.controller.ts:16</a></div>
                         </td>
                     </tr>
 
@@ -254,7 +258,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
 import { Controller, Get } from &#x27;@nestjs/common&#x27;;
-import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
+import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { MeResponse } from &#x27;./dto&#x27;;
 import { MeUc } from &#x27;./me.uc&#x27;;
 
@@ -264,6 +268,8 @@ import { MeUc } from &#x27;./me.uc&#x27;;
 export class MeController {
 	constructor(private readonly meUc: MeUc) {}
 
+	@ApiOperation({ summary: &#x27;Resolve jwt and response informations about the owner of the jwt.&#x27; })
+	@ApiResponse({ status: 200, type: MeResponse })
 	@Get()
 	public async me(@CurrentUser() currentUser: ICurrentUser): Promise&lt;MeResponse&gt; {
 		const res &#x3D; await this.meUc.getMe(currentUser.userId, currentUser.schoolId, currentUser.accountId);

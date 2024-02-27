@@ -261,6 +261,9 @@
                             <a href="../controllers/FilesStorageController.html">FilesStorageController</a>
                         </li>
                         <li class="list-group-item">
+                            <a href="../controllers/FilesStorageConfigController.html">FilesStorageConfigController</a>
+                        </li>
+                        <li class="list-group-item">
                             <a href="../controllers/FileSecurityController.html">FileSecurityController</a>
                         </li>
                     </ul>
@@ -299,7 +302,7 @@ import { Module } from &#x27;@nestjs/common&#x27;;
 import { ConfigModule } from &#x27;@nestjs/config&#x27;;
 import { createConfigModuleOptions } from &#x27;@src/config&#x27;;
 import { CoreModule } from &#x27;@src/core&#x27;;
-import { FileSecurityController, FilesStorageController } from &#x27;./controller&#x27;;
+import { FileSecurityController, FilesStorageConfigController, FilesStorageController } from &#x27;./controller&#x27;;
 import { config } from &#x27;./files-storage.config&#x27;;
 import { FilesStorageModule } from &#x27;./files-storage.module&#x27;;
 import { FilesStorageUC } from &#x27;./uc&#x27;;
@@ -313,7 +316,7 @@ import { FilesStorageUC } from &#x27;./uc&#x27;;
 		HttpModule,
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 	],
-	controllers: [FilesStorageController, FileSecurityController],
+	controllers: [FilesStorageController, FilesStorageConfigController, FileSecurityController],
 	providers: [FilesStorageUC],
 })
 export class FilesStorageApiModule {}

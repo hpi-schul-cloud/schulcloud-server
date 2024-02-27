@@ -1,0 +1,2865 @@
+<!doctype html>
+<html class="no-js" lang="">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="x-ua-compatible" content="ie=edge">
+        <title>schulcloud-server documentation</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+	   <link rel="stylesheet" href="../styles/style.css">
+        <link rel="stylesheet" href="../styles/dark.css">
+    </head>
+    <body>
+          <script>
+               // Blocking script to avaoid flickering dark mode
+               // Dark mode toggle button
+               var useDark = window.matchMedia('(prefers-color-scheme: dark)');
+               var darkModeState = useDark.matches;
+               var $darkModeToggleSwitchers = document.querySelectorAll('.dark-mode-switch input');
+               var $darkModeToggles = document.querySelectorAll('.dark-mode-switch');
+               var darkModeStateLocal = localStorage.getItem('compodoc_darkmode-state');
+
+               function checkToggle(check) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].checked = check;
+                    }
+               }
+
+               function toggleDarkMode(state) {
+                    if (window.localStorage) {
+                         localStorage.setItem('compodoc_darkmode-state', state);
+                    }
+
+                    checkToggle(state);
+
+                    const hasClass = document.body.classList.contains('dark');
+
+                    if (state) {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.add('dark');
+                         }
+                         if (!hasClass) {
+                              document.body.classList.add('dark');
+                         }
+                    } else {
+                         for (var i = 0; i < $darkModeToggles.length; i++) {
+                              $darkModeToggles[i].classList.remove('dark');
+                         }
+                         if (hasClass) {
+                              document.body.classList.remove('dark');
+                         }
+                    }
+               }
+
+               useDark.addEventListener('change', function (evt) {
+                    toggleDarkMode(evt.matches);
+               });
+               if (darkModeStateLocal) {
+                    darkModeState = darkModeStateLocal === 'true';
+               }
+               toggleDarkMode(darkModeState);
+
+               if ($darkModeToggles.length > 0) {
+                    for (var i = 0; i < $darkModeToggleSwitchers.length; i++) {
+                         $darkModeToggleSwitchers[i].addEventListener('change', function (event) {
+                              darkModeState = !darkModeState;
+                              toggleDarkMode(darkModeState);
+                         });
+                    }
+               }
+          </script>
+
+        <div class="navbar navbar-default navbar-fixed-top d-block d-sm-none">
+            <a href="../" class="navbar-brand">schulcloud-server documentation</a>
+            <button type="button" class="btn btn-default btn-menu ion-ios-menu" id="btn-menu"></button>
+        </div>
+
+        <div class="xs-menu menu" id="mobile-menu">
+                <div id="book-search-input" role="search"><input type="text" placeholder="Type to search"></div>            <compodoc-menu></compodoc-menu>
+        </div>
+
+        <div class="container-fluid main">
+           <div class="row main">
+               <div class="hidden-xs menu">
+                   <compodoc-menu mode="normal"></compodoc-menu>
+               </div>
+               <!-- START CONTENT -->
+               <div class="content class">
+                   <div class="content-data">
+
+
+
+
+
+
+
+
+
+
+
+
+<ol class="breadcrumb">
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >ConfigResponse</li>
+</ol>
+
+<ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item">
+            <a href="#info" 
+                class="nav-link"
+                class="nav-link active"
+                role="tab" id="info-tab" data-bs-toggle="tab" data-link="info">Info</a>
+        </li>
+        <li class="nav-item">
+            <a href="#source" 
+                class="nav-link"
+                
+                role="tab" id="source-tab" data-bs-toggle="tab" data-link="source">Source</a>
+        </li>
+</ul>
+
+<div class="tab-content">
+    <div class="tab-pane fade active in" id="info">
+        <p class="comment">
+            <h3>File</h3>
+        </p>
+        <p class="comment">
+            <code>apps/server/src/modules/server/api/dto/config.response.ts</code>
+        </p>
+
+
+
+
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#ACCESSIBILITY_REPORT_EMAIL" >ACCESSIBILITY_REPORT_EMAIL</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#ADMIN_TABLES_DISPLAY_CONSENT_COLUMN" >ADMIN_TABLES_DISPLAY_CONSENT_COLUMN</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#ALERT_STATUS_URL" >ALERT_STATUS_URL</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#DOCUMENT_BASE_DIR" >DOCUMENT_BASE_DIR</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED" >FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED" >FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_COLUMN_BOARD_ENABLED" >FEATURE_COLUMN_BOARD_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED" >FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED" >FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED" >FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_CONSENT_NECESSARY" >FEATURE_CONSENT_NECESSARY</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_COPY_SERVICE_ENABLED" >FEATURE_COPY_SERVICE_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_COURSE_SHARE" >FEATURE_COURSE_SHARE</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_COURSE_SHARE_NEW" >FEATURE_COURSE_SHARE_NEW</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED" >FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_CTL_TOOLS_COPY_ENABLED" >FEATURE_CTL_TOOLS_COPY_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_CTL_TOOLS_TAB_ENABLED" >FEATURE_CTL_TOOLS_TAB_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION" >FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_ES_COLLECTIONS_ENABLED" >FEATURE_ES_COLLECTIONS_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_EXTENSIONS_ENABLED" >FEATURE_EXTENSIONS_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_IMSCC_COURSE_EXPORT_ENABLED" >FEATURE_IMSCC_COURSE_EXPORT_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_LERNSTORE_ENABLED" >FEATURE_LERNSTORE_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_LESSON_SHARE" >FEATURE_LESSON_SHARE</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_LOGIN_LINK_ENABLED" >FEATURE_LOGIN_LINK_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_LTI_TOOLS_TAB_ENABLED" >FEATURE_LTI_TOOLS_TAB_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_NEST_SYSTEMS_API_ENABLED" >FEATURE_NEST_SYSTEMS_API_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED" >FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_NEXBOARD_COPY_ENABLED" >FEATURE_NEXBOARD_COPY_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_SCHOOL_POLICY_ENABLED_NEW" >FEATURE_SCHOOL_POLICY_ENABLED_NEW</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED" >FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_SCHOOL_TERMS_OF_USE_ENABLED" >FEATURE_SCHOOL_TERMS_OF_USE_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_SHOW_MIGRATION_WIZARD" >FEATURE_SHOW_MIGRATION_WIZARD</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED" >FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_SHOW_OUTDATED_USERS" >FEATURE_SHOW_OUTDATED_USERS</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_TASK_SHARE" >FEATURE_TASK_SHARE</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_TEAMS_ENABLED" >FEATURE_TEAMS_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_TLDRAW_ENABLED" >FEATURE_TLDRAW_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_USER_MIGRATION_ENABLED" >FEATURE_USER_MIGRATION_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#FEATURE_VIDEOCONFERENCE_ENABLED" >FEATURE_VIDEOCONFERENCE_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#GHOST_BASE_URL" >GHOST_BASE_URL</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#I18N__AVAILABLE_LANGUAGES" >I18N__AVAILABLE_LANGUAGES</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#I18N__DEFAULT_LANGUAGE" >I18N__DEFAULT_LANGUAGE</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#I18N__DEFAULT_TIMEZONE" >I18N__DEFAULT_TIMEZONE</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#I18N__FALLBACK_LANGUAGE" >I18N__FALLBACK_LANGUAGE</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#JWT_SHOW_TIMEOUT_WARNING_SECONDS" >JWT_SHOW_TIMEOUT_WARNING_SECONDS</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#JWT_TIMEOUT_SECONDS" >JWT_TIMEOUT_SECONDS</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#MIGRATION_END_GRACE_PERIOD_MS" >MIGRATION_END_GRACE_PERIOD_MS</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#MIGRATION_WIZARD_DOCUMENTATION_LINK" >MIGRATION_WIZARD_DOCUMENTATION_LINK</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#NOT_AUTHENTICATED_REDIRECT_URL" >NOT_AUTHENTICATED_REDIRECT_URL</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#ROCKETCHAT_SERVICE_ENABLED" >ROCKETCHAT_SERVICE_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#SC_THEME" >SC_THEME</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#SC_TITLE" >SC_TITLE</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE" >TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT" >TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#TEACHER_STUDENT_VISIBILITY__IS_VISIBLE" >TEACHER_STUDENT_VISIBILITY__IS_VISIBLE</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Optional</span>
+                                <a href="#TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST" >TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#TLDRAW__ASSETS_ENABLED" >TLDRAW__ASSETS_ENABLED</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#TLDRAW__ASSETS_MAX_SIZE" >TLDRAW__ASSETS_MAX_SIZE</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(config: <a href="../interfaces/ServerConfig.html" target="_self">ServerConfig</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="179" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:179</a></div>
+                            </td>
+                        </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>config</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/ServerConfig.html" target="_self" >ServerConfig</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
+
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ACCESSIBILITY_REPORT_EMAIL"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>ACCESSIBILITY_REPORT_EMAIL</b></span>
+                        <a href="#ACCESSIBILITY_REPORT_EMAIL"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:6</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ADMIN_TABLES_DISPLAY_CONSENT_COLUMN"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>ADMIN_TABLES_DISPLAY_CONSENT_COLUMN</b></span>
+                        <a href="#ADMIN_TABLES_DISPLAY_CONSENT_COLUMN"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="54" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:54</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ALERT_STATUS_URL"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>ALERT_STATUS_URL</b></span>
+                        <a href="#ALERT_STATUS_URL"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>string | null</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty({type: String, nullable: true})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="57" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:57</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="DOCUMENT_BASE_DIR"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>DOCUMENT_BASE_DIR</b></span>
+                        <a href="#DOCUMENT_BASE_DIR"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="173" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:173</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED</b></span>
+                        <a href="#FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="72" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:72</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED</b></span>
+                        <a href="#FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="138" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:138</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_COLUMN_BOARD_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_COLUMN_BOARD_ENABLED</b></span>
+                        <a href="#FEATURE_COLUMN_BOARD_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="96" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:96</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED</b></span>
+                        <a href="#FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="105" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:105</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED</b></span>
+                        <a href="#FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="102" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:102</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED</b></span>
+                        <a href="#FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="99" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:99</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_CONSENT_NECESSARY"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_CONSENT_NECESSARY</b></span>
+                        <a href="#FEATURE_CONSENT_NECESSARY"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="129" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:129</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_COPY_SERVICE_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_COPY_SERVICE_ENABLED</b></span>
+                        <a href="#FEATURE_COPY_SERVICE_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="126" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:126</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_COURSE_SHARE"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_COURSE_SHARE</b></span>
+                        <a href="#FEATURE_COURSE_SHARE"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="108" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:108</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_COURSE_SHARE_NEW"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_COURSE_SHARE_NEW</b></span>
+                        <a href="#FEATURE_COURSE_SHARE_NEW"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="111" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:111</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED</b></span>
+                        <a href="#FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="27" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_CTL_TOOLS_COPY_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_CTL_TOOLS_COPY_ENABLED</b></span>
+                        <a href="#FEATURE_CTL_TOOLS_COPY_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="33" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:33</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_CTL_TOOLS_TAB_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_CTL_TOOLS_TAB_ENABLED</b></span>
+                        <a href="#FEATURE_CTL_TOOLS_TAB_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:15</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION</b></span>
+                        <a href="#FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_ES_COLLECTIONS_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_ES_COLLECTIONS_ENABLED</b></span>
+                        <a href="#FEATURE_ES_COLLECTIONS_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="60" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:60</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_EXTENSIONS_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_EXTENSIONS_ENABLED</b></span>
+                        <a href="#FEATURE_EXTENSIONS_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="63" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:63</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_IMSCC_COURSE_EXPORT_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_IMSCC_COURSE_EXPORT_ENABLED</b></span>
+                        <a href="#FEATURE_IMSCC_COURSE_EXPORT_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="132" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:132</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_LERNSTORE_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_LERNSTORE_ENABLED</b></span>
+                        <a href="#FEATURE_LERNSTORE_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="69" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:69</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_LESSON_SHARE"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_LESSON_SHARE</b></span>
+                        <a href="#FEATURE_LESSON_SHARE"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="117" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:117</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_LOGIN_LINK_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_LOGIN_LINK_ENABLED</b></span>
+                        <a href="#FEATURE_LOGIN_LINK_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="114" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:114</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_LTI_TOOLS_TAB_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_LTI_TOOLS_TAB_ENABLED</b></span>
+                        <a href="#FEATURE_LTI_TOOLS_TAB_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:18</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_NEST_SYSTEMS_API_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_NEST_SYSTEMS_API_ENABLED</b></span>
+                        <a href="#FEATURE_NEST_SYSTEMS_API_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="141" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:141</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED</b></span>
+                        <a href="#FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:9</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_NEXBOARD_COPY_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_NEXBOARD_COPY_ENABLED</b></span>
+                        <a href="#FEATURE_NEXBOARD_COPY_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="90" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:90</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_SCHOOL_POLICY_ENABLED_NEW"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_SCHOOL_POLICY_ENABLED_NEW</b></span>
+                        <a href="#FEATURE_SCHOOL_POLICY_ENABLED_NEW"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="84" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:84</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED</b></span>
+                        <a href="#FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="135" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:135</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_SCHOOL_TERMS_OF_USE_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_SCHOOL_TERMS_OF_USE_ENABLED</b></span>
+                        <a href="#FEATURE_SCHOOL_TERMS_OF_USE_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="87" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:87</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_SHOW_MIGRATION_WIZARD"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_SHOW_MIGRATION_WIZARD</b></span>
+                        <a href="#FEATURE_SHOW_MIGRATION_WIZARD"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:36</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED</b></span>
+                        <a href="#FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:30</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_SHOW_OUTDATED_USERS"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_SHOW_OUTDATED_USERS</b></span>
+                        <a href="#FEATURE_SHOW_OUTDATED_USERS"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="21" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:21</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_TASK_SHARE"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_TASK_SHARE</b></span>
+                        <a href="#FEATURE_TASK_SHARE"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="120" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:120</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_TEAMS_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_TEAMS_ENABLED</b></span>
+                        <a href="#FEATURE_TEAMS_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="66" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:66</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_TLDRAW_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_TLDRAW_ENABLED</b></span>
+                        <a href="#FEATURE_TLDRAW_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:42</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_USER_MIGRATION_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_USER_MIGRATION_ENABLED</b></span>
+                        <a href="#FEATURE_USER_MIGRATION_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="123" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:123</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="FEATURE_VIDEOCONFERENCE_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>FEATURE_VIDEOCONFERENCE_ENABLED</b></span>
+                        <a href="#FEATURE_VIDEOCONFERENCE_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="93" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:93</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="GHOST_BASE_URL"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>GHOST_BASE_URL</b></span>
+                        <a href="#GHOST_BASE_URL"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="144" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:144</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="I18N__AVAILABLE_LANGUAGES"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>I18N__AVAILABLE_LANGUAGES</b></span>
+                        <a href="#I18N__AVAILABLE_LANGUAGES"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="152" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:152</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="I18N__DEFAULT_LANGUAGE"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>I18N__DEFAULT_LANGUAGE</b></span>
+                        <a href="#I18N__DEFAULT_LANGUAGE"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="155" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:155</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="I18N__DEFAULT_TIMEZONE"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>I18N__DEFAULT_TIMEZONE</b></span>
+                        <a href="#I18N__DEFAULT_TIMEZONE"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="161" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:161</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="I18N__FALLBACK_LANGUAGE"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>I18N__FALLBACK_LANGUAGE</b></span>
+                        <a href="#I18N__FALLBACK_LANGUAGE"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="158" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:158</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="JWT_SHOW_TIMEOUT_WARNING_SECONDS"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>JWT_SHOW_TIMEOUT_WARNING_SECONDS</b></span>
+                        <a href="#JWT_SHOW_TIMEOUT_WARNING_SECONDS"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="164" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:164</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="JWT_TIMEOUT_SECONDS"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>JWT_TIMEOUT_SECONDS</b></span>
+                        <a href="#JWT_TIMEOUT_SECONDS"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="167" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:167</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MIGRATION_END_GRACE_PERIOD_MS"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>MIGRATION_END_GRACE_PERIOD_MS</b></span>
+                        <a href="#MIGRATION_END_GRACE_PERIOD_MS"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:12</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="MIGRATION_WIZARD_DOCUMENTATION_LINK"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>MIGRATION_WIZARD_DOCUMENTATION_LINK</b></span>
+                        <a href="#MIGRATION_WIZARD_DOCUMENTATION_LINK"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiPropertyOptional()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:39</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="NOT_AUTHENTICATED_REDIRECT_URL"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>NOT_AUTHENTICATED_REDIRECT_URL</b></span>
+                        <a href="#NOT_AUTHENTICATED_REDIRECT_URL"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="170" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:170</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="ROCKETCHAT_SERVICE_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>ROCKETCHAT_SERVICE_ENABLED</b></span>
+                        <a href="#ROCKETCHAT_SERVICE_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="147" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:147</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SC_THEME"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>SC_THEME</b></span>
+                        <a href="#SC_THEME"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="176" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:176</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SC_TITLE"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>SC_TITLE</b></span>
+                        <a href="#SC_TITLE"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="179" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:179</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE</b></span>
+                        <a href="#TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="75" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:75</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT</b></span>
+                        <a href="#TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="78" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:78</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="TEACHER_STUDENT_VISIBILITY__IS_VISIBLE"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>TEACHER_STUDENT_VISIBILITY__IS_VISIBLE</b></span>
+                        <a href="#TEACHER_STUDENT_VISIBILITY__IS_VISIBLE"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="81" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:81</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Optional</span>
+                        <span ><b>TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST</b></span>
+                        <a href="#TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiPropertyOptional()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="51" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:51</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="TLDRAW__ASSETS_ENABLED"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>TLDRAW__ASSETS_ENABLED</b></span>
+                        <a href="#TLDRAW__ASSETS_ENABLED"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:45</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="TLDRAW__ASSETS_MAX_SIZE"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>TLDRAW__ASSETS_MAX_SIZE</b></span>
+                        <a href="#TLDRAW__ASSETS_MAX_SIZE"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @ApiProperty()<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">apps/server/src/modules/server/api/dto/config.response.ts:48</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
+
+
+
+
+
+
+
+    </div>
+
+
+    <div class="tab-pane fade  tab-source-code" id="source">
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
+import type { ServerConfig } from &#x27;../..&#x27;;
+
+export class ConfigResponse {
+	@ApiProperty()
+	ACCESSIBILITY_REPORT_EMAIL: string;
+
+	@ApiProperty()
+	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: boolean;
+
+	@ApiProperty()
+	MIGRATION_END_GRACE_PERIOD_MS: number;
+
+	@ApiProperty()
+	FEATURE_CTL_TOOLS_TAB_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_LTI_TOOLS_TAB_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_SHOW_OUTDATED_USERS: boolean;
+
+	@ApiProperty()
+	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: boolean;
+
+	@ApiProperty()
+	FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_CTL_TOOLS_COPY_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_SHOW_MIGRATION_WIZARD: boolean;
+
+	@ApiPropertyOptional()
+	MIGRATION_WIZARD_DOCUMENTATION_LINK?: string;
+
+	@ApiProperty()
+	FEATURE_TLDRAW_ENABLED: boolean;
+
+	@ApiProperty()
+	TLDRAW__ASSETS_ENABLED: boolean;
+
+	@ApiProperty()
+	TLDRAW__ASSETS_MAX_SIZE: number;
+
+	@ApiPropertyOptional()
+	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST?: string;
+
+	@ApiProperty()
+	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
+
+	@ApiProperty({ type: String, nullable: true })
+	ALERT_STATUS_URL: string | null;
+
+	@ApiProperty()
+	FEATURE_ES_COLLECTIONS_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_EXTENSIONS_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_TEAMS_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_LERNSTORE_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED: boolean;
+
+	@ApiProperty()
+	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: boolean;
+
+	@ApiProperty()
+	TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT: boolean;
+
+	@ApiProperty()
+	TEACHER_STUDENT_VISIBILITY__IS_VISIBLE: boolean;
+
+	@ApiProperty()
+	FEATURE_SCHOOL_POLICY_ENABLED_NEW: boolean;
+
+	@ApiProperty()
+	FEATURE_SCHOOL_TERMS_OF_USE_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_NEXBOARD_COPY_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_VIDEOCONFERENCE_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_COLUMN_BOARD_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_COURSE_SHARE: boolean;
+
+	@ApiProperty()
+	FEATURE_COURSE_SHARE_NEW: boolean;
+
+	@ApiProperty()
+	FEATURE_LOGIN_LINK_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_LESSON_SHARE: boolean;
+
+	@ApiProperty()
+	FEATURE_TASK_SHARE: boolean;
+
+	@ApiProperty()
+	FEATURE_USER_MIGRATION_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_COPY_SERVICE_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_CONSENT_NECESSARY: boolean;
+
+	@ApiProperty()
+	FEATURE_IMSCC_COURSE_EXPORT_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: boolean;
+
+	@ApiProperty()
+	FEATURE_NEST_SYSTEMS_API_ENABLED: boolean;
+
+	@ApiProperty()
+	GHOST_BASE_URL: string;
+
+	@ApiProperty()
+	ROCKETCHAT_SERVICE_ENABLED: boolean;
+
+	// LERNSTORE_MODE: boolean; looks like not in use anymore
+
+	@ApiProperty()
+	I18N__AVAILABLE_LANGUAGES: string; // enum &#x27;de,en,es,ua&#x27; -&gt; Configuration.get(&#x27;I18N__AVAILABLE_LANGUAGES&#x27;) as string).split(&#x27;,&#x27;)
+
+	@ApiProperty()
+	I18N__DEFAULT_LANGUAGE: string; // enum
+
+	@ApiProperty()
+	I18N__FALLBACK_LANGUAGE: string; // enum
+
+	@ApiProperty()
+	I18N__DEFAULT_TIMEZONE: string; // enum
+
+	@ApiProperty()
+	JWT_SHOW_TIMEOUT_WARNING_SECONDS: number;
+
+	@ApiProperty()
+	JWT_TIMEOUT_SECONDS: number;
+
+	@ApiProperty()
+	NOT_AUTHENTICATED_REDIRECT_URL: string;
+
+	@ApiProperty()
+	DOCUMENT_BASE_DIR: string;
+
+	@ApiProperty()
+	SC_THEME: string;
+
+	@ApiProperty()
+	SC_TITLE: string;
+
+	constructor(config: ServerConfig) {
+		this.ACCESSIBILITY_REPORT_EMAIL &#x3D; config.ACCESSIBILITY_REPORT_EMAIL;
+		this.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN &#x3D; config.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN;
+		this.ALERT_STATUS_URL &#x3D; config.ALERT_STATUS_URL;
+		this.FEATURE_ES_COLLECTIONS_ENABLED &#x3D; config.FEATURE_ES_COLLECTIONS_ENABLED;
+		this.FEATURE_EXTENSIONS_ENABLED &#x3D; config.FEATURE_EXTENSIONS_ENABLED;
+		this.FEATURE_TEAMS_ENABLED &#x3D; config.FEATURE_TEAMS_ENABLED;
+		this.FEATURE_LERNSTORE_ENABLED &#x3D; config.FEATURE_LERNSTORE_ENABLED;
+		this.FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED &#x3D;
+			config.FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED;
+		this.TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE &#x3D; config.TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE;
+		this.TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT &#x3D; config.TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT;
+		this.TEACHER_STUDENT_VISIBILITY__IS_VISIBLE &#x3D; config.TEACHER_STUDENT_VISIBILITY__IS_VISIBLE;
+		this.FEATURE_SCHOOL_POLICY_ENABLED_NEW &#x3D; config.FEATURE_SCHOOL_POLICY_ENABLED_NEW;
+		this.FEATURE_SCHOOL_TERMS_OF_USE_ENABLED &#x3D; config.FEATURE_SCHOOL_TERMS_OF_USE_ENABLED;
+		this.FEATURE_NEXBOARD_COPY_ENABLED &#x3D; config.FEATURE_NEXBOARD_COPY_ENABLED;
+		this.FEATURE_COLUMN_BOARD_ENABLED &#x3D; config.FEATURE_COLUMN_BOARD_ENABLED;
+		this.FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED &#x3D; config.FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED;
+		this.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED &#x3D; config.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED;
+		this.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED &#x3D; config.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED;
+		this.FEATURE_COURSE_SHARE &#x3D; config.FEATURE_COURSE_SHARE; // Is removed and replaced with _NEW soon! Fix it before merge!
+		this.FEATURE_COURSE_SHARE_NEW &#x3D; config.FEATURE_COURSE_SHARE_NEW;
+		this.FEATURE_LOGIN_LINK_ENABLED &#x3D; config.FEATURE_LOGIN_LINK_ENABLED;
+		this.FEATURE_LESSON_SHARE &#x3D; config.FEATURE_LESSON_SHARE;
+		this.FEATURE_TASK_SHARE &#x3D; config.FEATURE_TASK_SHARE;
+		this.FEATURE_USER_MIGRATION_ENABLED &#x3D; config.userMigrationEnabled;
+		this.FEATURE_COPY_SERVICE_ENABLED &#x3D; config.FEATURE_COPY_SERVICE_ENABLED;
+		this.FEATURE_CONSENT_NECESSARY &#x3D; config.FEATURE_CONSENT_NECESSARY;
+		this.FEATURE_IMSCC_COURSE_EXPORT_ENABLED &#x3D; config.FEATURE_IMSCC_COURSE_EXPORT_ENABLED;
+		this.FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED &#x3D; config.FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED;
+		this.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED &#x3D; config.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED;
+		this.FEATURE_NEST_SYSTEMS_API_ENABLED &#x3D; config.FEATURE_NEST_SYSTEMS_API_ENABLED;
+		this.GHOST_BASE_URL &#x3D; config.GHOST_BASE_URL;
+		this.ROCKETCHAT_SERVICE_ENABLED &#x3D; config.ROCKETCHAT_SERVICE_ENABLED;
+		this.I18N__AVAILABLE_LANGUAGES &#x3D; config.I18N__AVAILABLE_LANGUAGES;
+		this.I18N__DEFAULT_LANGUAGE &#x3D; config.I18N__DEFAULT_LANGUAGE;
+		this.I18N__FALLBACK_LANGUAGE &#x3D; config.I18N__FALLBACK_LANGUAGE;
+		this.I18N__DEFAULT_TIMEZONE &#x3D; config.I18N__DEFAULT_TIMEZONE;
+		this.JWT_SHOW_TIMEOUT_WARNING_SECONDS &#x3D; config.JWT_SHOW_TIMEOUT_WARNING_SECONDS;
+		this.JWT_TIMEOUT_SECONDS &#x3D; config.JWT_TIMEOUT_SECONDS;
+		this.NOT_AUTHENTICATED_REDIRECT_URL &#x3D; config.NOT_AUTHENTICATED_REDIRECT_URL;
+		this.DOCUMENT_BASE_DIR &#x3D; config.DOCUMENT_BASE_DIR;
+		this.SC_THEME &#x3D; config.SC_THEME;
+		this.SC_TITLE &#x3D; config.SC_TITLE;
+		this.FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED &#x3D;
+			config.FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED;
+		this.MIGRATION_END_GRACE_PERIOD_MS &#x3D; config.MIGRATION_END_GRACE_PERIOD_MS;
+		this.FEATURE_CTL_TOOLS_TAB_ENABLED &#x3D; config.ctlToolsTabEnabled;
+		this.FEATURE_LTI_TOOLS_TAB_ENABLED &#x3D; config.ltiToolsTabEnabled;
+		this.FEATURE_SHOW_OUTDATED_USERS &#x3D; config.FEATURE_SHOW_OUTDATED_USERS;
+		this.FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION &#x3D; config.FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION;
+		this.FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED &#x3D; config.contextConfigurationEnabled;
+		this.FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED &#x3D; config.FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED;
+		this.FEATURE_CTL_TOOLS_COPY_ENABLED &#x3D; config.ctlToolsCopyEnabled;
+		this.FEATURE_SHOW_MIGRATION_WIZARD &#x3D; config.FEATURE_SHOW_MIGRATION_WIZARD;
+		this.MIGRATION_WIZARD_DOCUMENTATION_LINK &#x3D; config.MIGRATION_WIZARD_DOCUMENTATION_LINK;
+		this.FEATURE_TLDRAW_ENABLED &#x3D; config.FEATURE_TLDRAW_ENABLED;
+		this.TLDRAW__ASSETS_ENABLED &#x3D; config.TLDRAW__ASSETS_ENABLED;
+		this.TLDRAW__ASSETS_MAX_SIZE &#x3D; config.TLDRAW__ASSETS_MAX_SIZE;
+		this.TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST &#x3D; config.TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST;
+		this.FEATURE_VIDEOCONFERENCE_ENABLED &#x3D; config.enabled;
+	}
+}
+</code></pre>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+                   </div><div class="search-results">
+    <div class="has-results">
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+        <ul class="search-results-list"></ul>
+    </div>
+    <div class="no-results">
+        <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+    </div>
+</div>
+</div>
+               <!-- END CONTENT -->
+           </div>
+       </div>
+
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
+       <script>
+            var COMPODOC_CURRENT_PAGE_DEPTH = 1;
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'ConfigResponse.html';
+            var MAX_SEARCH_RESULTS = 15;
+       </script>
+
+       <script src="../js/libs/custom-elements.min.js"></script>
+       <script src="../js/libs/lit-html.js"></script>
+
+       <script src="../js/menu-wc.js" defer></script>
+       <script nomodule src="../js/menu-wc_es5.js" defer></script>
+
+       <script src="../js/libs/bootstrap-native.js"></script>
+
+       <script src="../js/libs/es6-shim.min.js"></script>
+       <script src="../js/libs/EventDispatcher.js"></script>
+       <script src="../js/libs/promise.min.js"></script>
+       <script src="../js/libs/zepto.min.js"></script>
+
+       <script src="../js/compodoc.js"></script>
+
+       <script src="../js/tabs.js"></script>
+       <script src="../js/menu.js"></script>
+       <script src="../js/libs/clipboard.min.js"></script>
+       <script src="../js/libs/prism.js"></script>
+       <script src="../js/sourceCode.js"></script>
+          <script src="../js/search/search.js"></script>
+          <script src="../js/search/lunr.min.js"></script>
+          <script src="../js/search/search-lunr.js"></script>
+          <script src="../js/search/search_index.js"></script>
+       <script src="../js/lazy-load-graphs.js"></script>
+
+
+    </body>
+</html>

@@ -148,6 +148,12 @@
                         <td class="col-md-4">
                             <ul class="index-list">
                                 <li>
+                                        <a href="#FEATURE_COLUMN_BOARD_ENABLED" 
+>
+                                            FEATURE_COLUMN_BOARD_ENABLED
+                                        </a>
+                                </li>
+                                <li>
                                         <a href="#FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED" 
 >
                                             FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED
@@ -157,6 +163,12 @@
                                         <a href="#FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE" 
 >
                                             FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE
+                                        </a>
+                                </li>
+                                <li>
+                                        <a href="#FEATURE_COPY_SERVICE_ENABLED" 
+>
+                                            FEATURE_COPY_SERVICE_ENABLED
                                         </a>
                                 </li>
                             </ul>
@@ -170,6 +182,39 @@
 
             <section data-compodoc="block-properties">
                 <h3 id="inputs">Properties</h3>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="FEATURE_COLUMN_BOARD_ENABLED"></a>
+                                        <span class="name "><b>FEATURE_COLUMN_BOARD_ENABLED</b>
+                                            <a href="#FEATURE_COLUMN_BOARD_ENABLED">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>FEATURE_COLUMN_BOARD_ENABLED:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
                     <table class="table table-sm table-bordered">
                         <tbody>
                                 <tr>
@@ -236,12 +281,47 @@
 
                         </tbody>
                     </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="FEATURE_COPY_SERVICE_ENABLED"></a>
+                                        <span class="name "><b>FEATURE_COPY_SERVICE_ENABLED</b>
+                                            <a href="#FEATURE_COPY_SERVICE_ENABLED">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>FEATURE_COPY_SERVICE_ENABLED:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
             </section>
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export interface LearnroomConfig {
+	FEATURE_COLUMN_BOARD_ENABLED: boolean;
+	FEATURE_COPY_SERVICE_ENABLED: boolean;
 	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED: boolean;
 	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE: number;
 }

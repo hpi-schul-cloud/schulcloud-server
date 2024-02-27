@@ -278,6 +278,9 @@
                             <a href="#controllers" title="apps/server/src/modules/management/management.module.ts" ><b>controllers</b>&nbsp;&nbsp;&nbsp;(apps/.../management.module.ts)</a>
                         </li>
                         <li>
+                            <a href="#controllers" title="apps/server/src/modules/server/server.module.ts" ><b>controllers</b>&nbsp;&nbsp;&nbsp;(apps/.../server.module.ts)</a>
+                        </li>
+                        <li>
                             <a href="#countyEmbeddableFactory" title="apps/server/src/shared/testing/factory/county.embeddable.factory.ts" ><b>countyEmbeddableFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../county.embeddable.factory.ts)</a>
                         </li>
                         <li>
@@ -734,6 +737,9 @@
                             <a href="#providers" title="apps/server/src/modules/management/management.module.ts" ><b>providers</b>&nbsp;&nbsp;&nbsp;(apps/.../management.module.ts)</a>
                         </li>
                         <li>
+                            <a href="#providers" title="apps/server/src/modules/server/server.module.ts" ><b>providers</b>&nbsp;&nbsp;&nbsp;(apps/.../server.module.ts)</a>
+                        </li>
+                        <li>
                             <a href="#providers" title="apps/server/src/modules/tldraw/tldraw-test.module.ts" ><b>providers</b>&nbsp;&nbsp;&nbsp;(apps/.../tldraw-test.module.ts)</a>
                         </li>
                         <li>
@@ -876,6 +882,9 @@
                         </li>
                         <li>
                             <a href="#seedSchoolYears" title="apps/server/src/modules/management/seed-data/schoolyears.ts" ><b>seedSchoolYears</b>&nbsp;&nbsp;&nbsp;(apps/.../schoolyears.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#SERVER_CONFIG_TOKEN" title="apps/server/src/modules/server/server.config.ts" ><b>SERVER_CONFIG_TOKEN</b>&nbsp;&nbsp;&nbsp;(apps/.../server.config.ts)</a>
                         </li>
                         <li>
                             <a href="#serverConfig" title="apps/server/src/modules/server/server.config.ts" ><b>serverConfig</b>&nbsp;&nbsp;&nbsp;(apps/.../server.config.ts)</a>
@@ -3691,6 +3700,51 @@ This allows adding console commands to execute provider methods.</p>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>{
+	ACCESSIBILITY_REPORT_EMAIL: Configuration.get(&#x27;ACCESSIBILITY_REPORT_EMAIL&#x27;) as string,
+	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: Configuration.get(&#x27;ADMIN_TABLES_DISPLAY_CONSENT_COLUMN&#x27;) as boolean,
+	ALERT_STATUS_URL:
+		Configuration.get(&#x27;ALERT_STATUS_URL&#x27;) &#x3D;&#x3D;&#x3D; null
+			? (Configuration.get(&#x27;ALERT_STATUS_URL&#x27;) as null)
+			: (Configuration.get(&#x27;ALERT_STATUS_URL&#x27;) as string),
+	FEATURE_ES_COLLECTIONS_ENABLED: Configuration.get(&#x27;FEATURE_ES_COLLECTIONS_ENABLED&#x27;) as boolean,
+	FEATURE_EXTENSIONS_ENABLED: Configuration.get(&#x27;FEATURE_EXTENSIONS_ENABLED&#x27;) as boolean,
+	FEATURE_TEAMS_ENABLED: Configuration.get(&#x27;FEATURE_TEAMS_ENABLED&#x27;) as boolean,
+	FEATURE_LERNSTORE_ENABLED: Configuration.get(&#x27;FEATURE_LERNSTORE_ENABLED&#x27;) as boolean,
+	FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED: Configuration.get(
+		&#x27;FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED&#x27;
+	) as boolean,
+	FEATURE_COLUMN_BOARD_ENABLED: Configuration.get(&#x27;FEATURE_COLUMN_BOARD_ENABLED&#x27;) as boolean,
+	FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED: Configuration.get(&#x27;FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED&#x27;) as boolean,
+	FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED: Configuration.get(&#x27;FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED&#x27;) as boolean,
+	FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED: Configuration.get(
+		&#x27;FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED&#x27;
+	) as boolean,
+	FEATURE_COURSE_SHARE: Configuration.get(&#x27;FEATURE_COURSE_SHARE&#x27;) as boolean,
+	FEATURE_COURSE_SHARE_NEW: Configuration.get(&#x27;FEATURE_COURSE_SHARE_NEW&#x27;) as boolean,
+	FEATURE_LESSON_SHARE: Configuration.get(&#x27;FEATURE_LESSON_SHARE&#x27;) as boolean,
+	FEATURE_TASK_SHARE: Configuration.get(&#x27;FEATURE_TASK_SHARE&#x27;) as boolean,
+	FEATURE_LOGIN_LINK_ENABLED: Configuration.get(&#x27;FEATURE_LOGIN_LINK_ENABLED&#x27;) as boolean,
+	FEATURE_COPY_SERVICE_ENABLED: Configuration.get(&#x27;FEATURE_COPY_SERVICE_ENABLED&#x27;) as boolean,
+	FEATURE_CONSENT_NECESSARY: Configuration.get(&#x27;FEATURE_CONSENT_NECESSARY&#x27;) as boolean,
+	FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED: Configuration.get(
+		&#x27;FEATURE_SCHOOL_SANIS_USER_MIGRATION_ENABLED&#x27;
+	) as boolean,
+	TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT: Configuration.get(
+		&#x27;TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT&#x27;
+	) as boolean,
+	TEACHER_STUDENT_VISIBILITY__IS_VISIBLE: Configuration.get(&#x27;TEACHER_STUDENT_VISIBILITY__IS_VISIBLE&#x27;) as boolean,
+	FEATURE_SCHOOL_POLICY_ENABLED_NEW: Configuration.get(&#x27;FEATURE_SCHOOL_POLICY_ENABLED_NEW&#x27;) as boolean,
+	FEATURE_SCHOOL_TERMS_OF_USE_ENABLED: Configuration.get(&#x27;FEATURE_SCHOOL_TERMS_OF_USE_ENABLED&#x27;) as boolean,
+	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: Configuration.get(&#x27;FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED&#x27;) as boolean,
+	FEATURE_NEST_SYSTEMS_API_ENABLED: Configuration.get(&#x27;FEATURE_NEST_SYSTEMS_API_ENABLED&#x27;) as boolean,
+	GHOST_BASE_URL: Configuration.get(&#x27;GHOST_BASE_URL&#x27;) as string,
+	ROCKETCHAT_SERVICE_ENABLED: Configuration.get(&#x27;ROCKETCHAT_SERVICE_ENABLED&#x27;) as boolean,
+	JWT_SHOW_TIMEOUT_WARNING_SECONDS: Configuration.get(&#x27;JWT_SHOW_TIMEOUT_WARNING_SECONDS&#x27;) as number,
+	JWT_TIMEOUT_SECONDS: Configuration.get(&#x27;JWT_TIMEOUT_SECONDS&#x27;) as number,
+	NOT_AUTHENTICATED_REDIRECT_URL: Configuration.get(&#x27;NOT_AUTHENTICATED_REDIRECT_URL&#x27;) as string,
+	DOCUMENT_BASE_DIR: Configuration.get(&#x27;DOCUMENT_BASE_DIR&#x27;) as string,
+	SC_THEME: Configuration.get(&#x27;SC_THEME&#x27;) as string,
+	SC_TITLE: Configuration.get(&#x27;SC_TITLE&#x27;) as string,
 	SC_DOMAIN: Configuration.get(&#x27;SC_DOMAIN&#x27;) as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get(&#x27;INCOMING_REQUEST_TIMEOUT_API&#x27;) as number,
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get(&#x27;INCOMING_REQUEST_TIMEOUT_COPY_API&#x27;) as number,
@@ -3713,16 +3767,72 @@ This allows adding console commands to execute provider methods.</p>
 	BLOCKLIST_OF_EMAIL_DOMAINS: (Configuration.get(&#x27;BLOCKLIST_OF_EMAIL_DOMAINS&#x27;) as string)
 		.split(&#x27;,&#x27;)
 		.map((domain) &#x3D;&gt; domain.trim()),
+	TLDRAW__ASSETS_ENABLED: Configuration.get(&#x27;TLDRAW__ASSETS_ENABLED&#x27;) as boolean,
+	TLDRAW__ASSETS_MAX_SIZE: Configuration.get(&#x27;TLDRAW__ASSETS_MAX_SIZE&#x27;) as number,
+	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST: Configuration.has(&#x27;TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST&#x27;)
+		? (Configuration.get(&#x27;TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST&#x27;) as string)
+		: undefined,
+	FEATURE_TLDRAW_ENABLED: Configuration.get(&#x27;FEATURE_TLDRAW_ENABLED&#x27;) as boolean,
+	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: Configuration.get(
+		&#x27;FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED&#x27;
+	) as boolean,
+	MIGRATION_END_GRACE_PERIOD_MS: Configuration.get(&#x27;MIGRATION_END_GRACE_PERIOD_MS&#x27;) as number,
+	FEATURE_SHOW_OUTDATED_USERS: Configuration.get(&#x27;FEATURE_SHOW_OUTDATED_USERS&#x27;) as boolean,
+	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: Configuration.get(&#x27;FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION&#x27;) as boolean,
+	FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED: Configuration.get(&#x27;FEATURE_SHOW_NEW_CLASS_VIEW_ENABLED&#x27;) as boolean,
+	FEATURE_SHOW_MIGRATION_WIZARD: Configuration.get(&#x27;FEATURE_SHOW_MIGRATION_WIZARD&#x27;) as boolean,
 	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED: Configuration.get(
 		&#x27;FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED&#x27;
 	) as boolean,
 	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE: Configuration.get(
 		&#x27;FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE&#x27;
 	) as number,
+	MIGRATION_WIZARD_DOCUMENTATION_LINK: Configuration.has(&#x27;MIGRATION_WIZARD_DOCUMENTATION_LINK&#x27;)
+		? (Configuration.get(&#x27;MIGRATION_WIZARD_DOCUMENTATION_LINK&#x27;) as string)
+		: undefined,
+	FEATURE_NEXBOARD_COPY_ENABLED: Configuration.get(&#x27;FEATURE_NEXBOARD_COPY_ENABLED&#x27;) as boolean,
+	FEATURE_ETHERPAD_ENABLED: Configuration.get(&#x27;FEATURE_ETHERPAD_ENABLED&#x27;) as boolean,
+	ETHERPAD__PAD_URI: Configuration.has(&#x27;ETHERPAD__PAD_URI&#x27;)
+		? (Configuration.get(&#x27;ETHERPAD__PAD_URI&#x27;) as string)
+		: undefined,
+	I18N__AVAILABLE_LANGUAGES: Configuration.get(&#x27;I18N__AVAILABLE_LANGUAGES&#x27;) as string,
+	I18N__DEFAULT_LANGUAGE: Configuration.get(&#x27;I18N__DEFAULT_LANGUAGE&#x27;) as string,
+	I18N__FALLBACK_LANGUAGE: Configuration.get(&#x27;I18N__FALLBACK_LANGUAGE&#x27;) as string,
+	I18N__DEFAULT_TIMEZONE: Configuration.get(&#x27;I18N__DEFAULT_TIMEZONE&#x27;) as string,
 	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: Configuration.get(
 		&#x27;SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS&#x27;
 	) as number,
+	...getTldrawClientConfig(),
+	...ToolConfiguration.toolFeatures,
+	...VideoConferenceConfiguration.videoConference,
+	...UserImportConfiguration.userImportFeatures,
 }</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="SERVER_CONFIG_TOKEN"></a>
+                    <span class="name">
+                        <span ><b>SERVER_CONFIG_TOKEN</b></span>
+                        <a href="#SERVER_CONFIG_TOKEN"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>&#x27;SERVER_CONFIG_TOKEN&#x27;</code>
                     </td>
                 </tr>
 
@@ -4608,6 +4718,165 @@ must use</p>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>[Logger, H5PLibraryManagementService]</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/server/server.module.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="controllers"></a>
+                    <span class="name">
+                        <span ><b>controllers</b></span>
+                        <a href="#controllers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[ServerController, ServerConfigController]</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="defaultMikroOrmOptions"></a>
+                    <span class="name">
+                        <span ><b>defaultMikroOrmOptions</b></span>
+                        <a href="#defaultMikroOrmOptions"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../interfaces/Options.html" target="_self" >MikroOrmModuleSyncOptions</a></code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>{
+	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) &#x3D;&gt;
+		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+		new NotFoundException(&#x60;The requested ${entityName}: ${where} has not been found.&#x60;),
+}</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="providers"></a>
+                    <span class="name">
+                        <span ><b>providers</b></span>
+                        <a href="#providers"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[ServerUc, { provide: SERVER_CONFIG_TOKEN, useValue: serverConfig() }]</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="serverModules"></a>
+                    <span class="name">
+                        <span ><b>serverModules</b></span>
+                        <a href="#serverModules"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>[
+	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
+	CoreModule,
+	AuthenticationApiModule,
+	AccountApiModule,
+	CollaborativeStorageModule,
+	OauthApiModule,
+	MetaTagExtractorModule,
+	TaskApiModule,
+	LessonApiModule,
+	NewsModule,
+	UserApiModule,
+	SchulconnexClientModule.register({
+		apiUrl: Configuration.get(&#x27;SCHULCONNEX_CLIENT__API_URL&#x27;) as string,
+		tokenEndpoint: Configuration.get(&#x27;SCHULCONNEX_CLIENT__TOKEN_ENDPOINT&#x27;) as string,
+		clientId: Configuration.get(&#x27;SCHULCONNEX_CLIENT__CLIENT_ID&#x27;) as string,
+		clientSecret: Configuration.get(&#x27;SCHULCONNEX_CLIENT__CLIENT_SECRET&#x27;) as string,
+		personenInfoTimeoutInMs: Configuration.get(&#x27;SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS&#x27;) as number,
+	}),
+	ImportUserModule,
+	UserImportConfigModule,
+	LearnroomApiModule,
+	FilesStorageClientModule,
+	SystemApiModule,
+	MailModule.forRoot({
+		exchange: Configuration.get(&#x27;MAIL_SEND_EXCHANGE&#x27;) as string,
+		routingKey: Configuration.get(&#x27;MAIL_SEND_ROUTING_KEY&#x27;) as string,
+	}),
+	RocketChatModule.forRoot({
+		uri: Configuration.get(&#x27;ROCKET_CHAT_URI&#x27;) as string,
+		adminId: Configuration.get(&#x27;ROCKET_CHAT_ADMIN_ID&#x27;) as string,
+		adminToken: Configuration.get(&#x27;ROCKET_CHAT_ADMIN_TOKEN&#x27;) as string,
+		adminUser: Configuration.get(&#x27;ROCKET_CHAT_ADMIN_USER&#x27;) as string,
+		adminPassword: Configuration.get(&#x27;ROCKET_CHAT_ADMIN_PASSWORD&#x27;) as string,
+	}),
+	VideoConferenceApiModule,
+	OauthProviderApiModule,
+	SharingApiModule,
+	ToolApiModule,
+	UserLoginMigrationApiModule,
+	BoardApiModule,
+	GroupApiModule,
+	TeamsApiModule,
+	MetaTagExtractorApiModule,
+	PseudonymApiModule,
+	SchoolApiModule,
+	LegacySchoolApiModule,
+	MeApiModule,
+]</code>
                     </td>
                 </tr>
 
@@ -5679,113 +5948,6 @@ must use</p>
 		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 		new NotFoundException(&#x60;The requested ${entityName}: ${where} has not been found.&#x60;),
 }</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
-    <h3>apps/server/src/modules/server/server.module.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="defaultMikroOrmOptions"></a>
-                    <span class="name">
-                        <span ><b>defaultMikroOrmOptions</b></span>
-                        <a href="#defaultMikroOrmOptions"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../interfaces/Options.html" target="_self" >MikroOrmModuleSyncOptions</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>{
-	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) &#x3D;&gt;
-		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-		new NotFoundException(&#x60;The requested ${entityName}: ${where} has not been found.&#x60;),
-}</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="serverModules"></a>
-                    <span class="name">
-                        <span ><b>serverModules</b></span>
-                        <a href="#serverModules"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>    <code>[]</code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>[
-	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
-	CoreModule,
-	AuthenticationApiModule,
-	AccountApiModule,
-	CollaborativeStorageModule,
-	OauthApiModule,
-	MetaTagExtractorModule,
-	TaskApiModule,
-	LessonApiModule,
-	NewsModule,
-	UserApiModule,
-	SchulconnexClientModule.register({
-		apiUrl: Configuration.get(&#x27;SCHULCONNEX_CLIENT__API_URL&#x27;) as string,
-		tokenEndpoint: Configuration.get(&#x27;SCHULCONNEX_CLIENT__TOKEN_ENDPOINT&#x27;) as string,
-		clientId: Configuration.get(&#x27;SCHULCONNEX_CLIENT__CLIENT_ID&#x27;) as string,
-		clientSecret: Configuration.get(&#x27;SCHULCONNEX_CLIENT__CLIENT_SECRET&#x27;) as string,
-		personenInfoTimeoutInMs: Configuration.get(&#x27;SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS&#x27;) as number,
-	}),
-	ImportUserModule,
-	UserImportConfigModule,
-	LearnroomApiModule,
-	FilesStorageClientModule,
-	SystemApiModule,
-	MailModule.forRoot({
-		exchange: Configuration.get(&#x27;MAIL_SEND_EXCHANGE&#x27;) as string,
-		routingKey: Configuration.get(&#x27;MAIL_SEND_ROUTING_KEY&#x27;) as string,
-	}),
-	RocketChatModule.forRoot({
-		uri: Configuration.get(&#x27;ROCKET_CHAT_URI&#x27;) as string,
-		adminId: Configuration.get(&#x27;ROCKET_CHAT_ADMIN_ID&#x27;) as string,
-		adminToken: Configuration.get(&#x27;ROCKET_CHAT_ADMIN_TOKEN&#x27;) as string,
-		adminUser: Configuration.get(&#x27;ROCKET_CHAT_ADMIN_USER&#x27;) as string,
-		adminPassword: Configuration.get(&#x27;ROCKET_CHAT_ADMIN_PASSWORD&#x27;) as string,
-	}),
-	VideoConferenceApiModule,
-	OauthProviderApiModule,
-	SharingApiModule,
-	ToolApiModule,
-	UserLoginMigrationApiModule,
-	BoardApiModule,
-	GroupApiModule,
-	TeamsApiModule,
-	MetaTagExtractorApiModule,
-	PseudonymApiModule,
-	SchoolApiModule,
-	LegacySchoolApiModule,
-	MeApiModule,
-]</code>
                     </td>
                 </tr>
 
@@ -7139,7 +7301,6 @@ it should ensure an empty result</p>
 	return {
 		TLDRAW_ADMIN_API_CLIENT_BASE_URL: Configuration.get(&#x27;TLDRAW_ADMIN_API_CLIENT__BASE_URL&#x27;) as string,
 		TLDRAW_ADMIN_API_CLIENT_API_KEY: Configuration.get(&#x27;TLDRAW_ADMIN_API_CLIENT__API_KEY&#x27;) as string,
-		INCOMING_REQUEST_TIMEOUT: Configuration.get(&#x27;INCOMING_REQUEST_TIMEOUT_API&#x27;) as number,
 	};
 }</code>
                     </td>

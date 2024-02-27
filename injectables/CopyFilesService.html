@@ -177,7 +177,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/files-storage-client/service/copy-files.service.ts:17</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/files-storage-client/service/copy-files.service.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -254,8 +254,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/copy-files.service.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/copy-files.service.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -355,8 +355,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/copy-files.service.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/copy-files.service.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -424,8 +424,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="58"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/copy-files.service.ts:58</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/copy-files.service.ts:53</a></div>
                         </td>
                     </tr>
 
@@ -481,16 +481,11 @@
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { CopyFileDto } from &#x27;../dto&#x27;;
-import { EntityWithEmbeddedFiles } from &#x27;../interfaces&#x27;;
+import { EntityWithEmbeddedFiles, FileUrlReplacement } from &#x27;../interfaces&#x27;;
 import { CopyFilesOfParentParamBuilder, FileParamBuilder } from &#x27;../mapper&#x27;;
 import { FilesStorageClientAdapterService } from &#x27;./files-storage-client.service&#x27;;
 
 const FILE_COULD_NOT_BE_COPIED_HINT &#x3D; &#x27;fileCouldNotBeCopied&#x27;;
-
-export type FileUrlReplacement &#x3D; {
-	regex: RegExp;
-	replacement: string;
-};
 
 @Injectable()
 export class CopyFilesService {
@@ -549,6 +544,7 @@ export class CopyFilesService {
 			status: this.copyHelperService.deriveStatusFromElements(fileStatuses),
 			elements: fileStatuses,
 		};
+
 		return fileGroupStatus;
 	}
 }
