@@ -26,18 +26,20 @@ import { FileRecord, FileRecordParentType } from '../entity';
 import { ErrorType } from '../error';
 import { FileStorageAuthorizationContext } from '../files-storage.const';
 import { GetFileResponse } from '../interface';
-import { FileDtoBuilder, FilesStorageMapper } from '../mapper';
+import { ConfigResponseMapper, FileDtoBuilder, FilesStorageMapper } from '../mapper';
 import { FilesStorageService } from '../service/files-storage.service';
 import { PreviewService } from '../service/preview.service';
+import { FilesStorageConfigResponse } from '../dto/files-storage-config.response';
 
 @Injectable()
 export class FilesStorageUC {
 	constructor(
-		private logger: LegacyLogger,
+		private readonly logger: LegacyLogger,
 		private readonly authorizationReferenceService: AuthorizationReferenceService,
 		private readonly httpService: HttpService,
 		private readonly filesStorageService: FilesStorageService,
 		private readonly previewService: PreviewService,
+		// maybe better to pass the request context from controller and avoid em at this place
 		private readonly em: EntityManager
 	) {
 		this.logger.setContext(FilesStorageUC.name);
@@ -51,6 +53,14 @@ export class FilesStorageUC {
 	) {
 		const allowedType = FilesStorageMapper.mapToAllowedAuthorizationEntityType(parentType);
 		await this.authorizationReferenceService.checkPermissionByReferences(userId, allowedType, parentId, context);
+	}
+
+	public getPublicConfig(): FilesStorageConfigResponse {
+		const maxFileSize = this.filesStorageService.getMaxFileSize();
+
+		const configResponse = ConfigResponseMapper.mapToResponse(maxFileSize);
+
+		return configResponse;
 	}
 
 	// upload
