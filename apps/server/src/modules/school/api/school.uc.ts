@@ -1,8 +1,9 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
-import { SortOrder } from '@shared/domain/interface';
+import { Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { SchoolQuery, SchoolService, SchoolYearService, SchoolYearHelper } from '../domain';
+import { School, SchoolQuery, SchoolService, SchoolYear, SchoolYearHelper, SchoolYearService } from '../domain';
+import { SchoolUpdateBodyParams } from './dto/param';
 import { SchoolExistsResponse, SchoolForExternalInviteResponse, SchoolResponse } from './dto/response';
 import { SchoolForLdapLoginResponse } from './dto/response/school-for-ldap-login.response';
 import { SchoolResponseMapper } from './mapper';
@@ -26,12 +27,9 @@ export class SchoolUc {
 		const authContext = AuthorizationContextBuilder.read([]);
 		this.authorizationService.checkPermission(user, school, authContext);
 
-		const { activeYear, lastYear, nextYear } = SchoolYearHelper.computeActiveAndLastAndNextYear(school, schoolYears);
-		const yearsResponse = YearsResponseMapper.mapToResponse(schoolYears, activeYear, lastYear, nextYear);
+		const responseDto = this.mapToSchoolResponseDto(school, schoolYears);
 
-		const dto = SchoolResponseMapper.mapToResponse(school, yearsResponse);
-
-		return dto;
+		return responseDto;
 	}
 
 	public async getSchoolListForExternalInvite(
@@ -65,5 +63,31 @@ export class SchoolUc {
 		const dtos = SchoolResponseMapper.mapToListForLdapLoginResponses(schools);
 
 		return dtos;
+	}
+
+	public async updateSchool(userId: string, schoolId: string, body: SchoolUpdateBodyParams): Promise<SchoolResponse> {
+		const [school, user, schoolYears] = await Promise.all([
+			this.schoolService.getSchoolById(schoolId),
+			this.authorizationService.getUserWithPermissions(userId),
+			this.schoolYearService.getAllSchoolYears(),
+		]);
+
+		const authContext = AuthorizationContextBuilder.write([Permission.SCHOOL_EDIT]);
+		this.authorizationService.checkPermission(user, school, authContext);
+
+		const updatedSchool = await this.schoolService.updateSchool(schoolId, body);
+
+		const responseDto = this.mapToSchoolResponseDto(updatedSchool, schoolYears);
+
+		return responseDto;
+	}
+
+	private mapToSchoolResponseDto(school: School, schoolYears: SchoolYear[]): SchoolResponse {
+		const { activeYear, lastYear, nextYear } = SchoolYearHelper.computeActiveAndLastAndNextYear(school, schoolYears);
+		const yearsResponse = YearsResponseMapper.mapToResponse(schoolYears, activeYear, lastYear, nextYear);
+
+		const dto = SchoolResponseMapper.mapToResponse(school, yearsResponse);
+
+		return dto;
 	}
 }
