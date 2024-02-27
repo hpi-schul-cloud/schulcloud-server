@@ -1551,7 +1551,7 @@ export class ShareTokenUC {
 		switch (parentType) {
 			case ShareTokenParentType.Course:
 				// Configuration.get is the deprecated way to read envirment variables
-				if (!(Configuration.get(&#x27;FEATURE_COURSE_SHARE_NEW&#x27;) as boolean)) {
+				if (!(Configuration.get(&#x27;FEATURE_COURSE_SHARE&#x27;) as boolean)) {
 					throw new InternalServerErrorException(&#x27;Import Course Feature not enabled&#x27;);
 				}
 				break;
