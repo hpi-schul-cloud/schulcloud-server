@@ -1,1 +1,1 @@
-export * from './interceptor-config';
+export { InterceptorConfig } from './interceptor-config';
