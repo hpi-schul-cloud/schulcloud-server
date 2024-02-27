@@ -2,10 +2,9 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { CopyStatus } from '@modules/copy-helper';
-import { CourseCopyService } from '@modules/learnroom';
-import { CourseService } from '@modules/learnroom/service';
-import { LessonCopyService } from '@modules/lesson/service';
-import { TaskCopyService } from '@modules/task/service';
+import { CourseCopyService, CourseService } from '@modules/learnroom';
+import { LessonCopyService } from '@modules/lesson';
+import { TaskCopyService } from '@modules/task';
 import { BadRequestException, Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -233,7 +232,7 @@ export class ShareTokenUC {
 		switch (parentType) {
 			case ShareTokenParentType.Course:
 				// Configuration.get is the deprecated way to read envirment variables
-				if (!(Configuration.get('FEATURE_COURSE_SHARE_NEW') as boolean)) {
+				if (!(Configuration.get('FEATURE_COURSE_SHARE') as boolean)) {
 					throw new InternalServerErrorException('Import Course Feature not enabled');
 				}
 				break;
