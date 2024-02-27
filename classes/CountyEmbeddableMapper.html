@@ -151,6 +151,10 @@
                                     <span class="modifier">Static</span>
                                 <a href="#mapToDo" >mapToDo</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Static</span>
+                                <a href="#mapToEntity" >mapToEntity</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -192,8 +196,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="5"
-                                    class="link-to-prism">apps/server/src/modules/school/repo/mikro-orm/mapper/county.embeddable.mapper.ts:5</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="14"
+                                    class="link-to-prism">apps/server/src/modules/school/repo/mikro-orm/mapper/county.embeddable.mapper.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -239,6 +243,75 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapToEntity"></a>
+                    <span class="name">
+                            <span class="modifier">Static</span>
+                        <span ><b>mapToEntity</b></span>
+                        <a href="#mapToEntity"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapToEntity(county: <a href="../classes/County.html" target="_self">County</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="6"
+                                    class="link-to-prism">apps/server/src/modules/school/repo/mikro-orm/mapper/county.embeddable.mapper.ts:6</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>county</td>
+                                            <td>
+                                                            <code><a href="../classes/County.html" target="_self" >County</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/CountyEmbeddable.html" target="_self" >CountyEmbeddable</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
 
@@ -250,9 +323,18 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CountyEmbeddable } from &#x27;@shared/domain/entity&#x27;;
+import { ObjectId } from &#x27;mongodb&#x27;;
 import { County } from &#x27;../../../domain&#x27;;
 
 export class CountyEmbeddableMapper {
+	static mapToEntity(county: County): CountyEmbeddable {
+		const countyProps &#x3D; county.getProps();
+
+		const countyEmbeddable &#x3D; new CountyEmbeddable({ ...countyProps, _id: new ObjectId(countyProps.id) });
+
+		return countyEmbeddable;
+	}
+
 	static mapToDo(embeddable: CountyEmbeddable): County {
 		const county &#x3D; new County({
 			id: embeddable._id.toHexString(),

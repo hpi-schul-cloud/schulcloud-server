@@ -165,6 +165,12 @@
                                         getSchoolsBySystemIds
                                     </a>
                                 </li>
+                                <li>
+                                    <a href="#save" 
+>
+                                        save
+                                    </a>
+                                </li>
                             </ul>
                         </td>
                     </tr>
@@ -390,6 +396,73 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="save"></a>
+                    <span class="name">
+                        <span ><b>save</b></span>
+                        <a href="#save"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+<code>save(domainObject: <a href="../classes/School.html" target="_self">School</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="13"
+                                    class="link-to-prism">apps/server/src/modules/school/domain/interface/school.repo.interface.ts:13</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>domainObject</td>
+                                            <td>
+                                                            <code><a href="../classes/School.html" target="_self" >School</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/School.html" target="_self" >Promise&lt;School&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -407,6 +480,8 @@ export interface SchoolRepo {
 	getSchoolById(schoolId: EntityId): Promise&lt;School&gt;;
 
 	getSchoolsBySystemIds(systemIds: EntityId[]): Promise&lt;School[]&gt;;
+
+	save(domainObject: School): Promise&lt;School&gt;;
 }
 
 export const SCHOOL_REPO &#x3D; &#x27;SCHOOL_REPO&#x27;;

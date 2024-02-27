@@ -162,6 +162,15 @@
                                     <span class="modifier">Async</span>
                                 <a href="#getSchoolListForLdapLogin" >getSchoolListForLdapLogin</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#mapToSchoolResponseDto" >mapToSchoolResponseDto</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateSchool" >updateSchool</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -185,7 +194,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/school/api/school.uc.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/school/api/school.uc.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -275,8 +284,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="54"
-                                    class="link-to-prism">apps/server/src/modules/school/api/school.uc.ts:54</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">apps/server/src/modules/school/api/school.uc.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -345,8 +354,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/school/api/school.uc.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/school/api/school.uc.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -427,8 +436,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="37"
-                                    class="link-to-prism">apps/server/src/modules/school/api/school.uc.ts:37</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="35"
+                                    class="link-to-prism">apps/server/src/modules/school/api/school.uc.ts:35</a></div>
                         </td>
                     </tr>
 
@@ -509,8 +518,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">apps/server/src/modules/school/api/school.uc.ts:62</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/modules/school/api/school.uc.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -526,6 +535,181 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapToSchoolResponseDto"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>mapToSchoolResponseDto</b></span>
+                        <a href="#mapToSchoolResponseDto"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapToSchoolResponseDto(school: <a href="../classes/School.html" target="_self">School</a>, schoolYears: SchoolYear[])</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="85"
+                                    class="link-to-prism">apps/server/src/modules/school/api/school.uc.ts:85</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>school</td>
+                                            <td>
+                                                            <code><a href="../classes/School.html" target="_self" >School</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>schoolYears</td>
+                                            <td>
+                                                        <code>SchoolYear[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/SchoolResponse.html" target="_self" >SchoolResponse</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateSchool"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>updateSchool</b></span>
+                        <a href="#updateSchool"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateSchool(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, schoolId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, body: <a href="../classes/SchoolUpdateBodyParams.html" target="_self">SchoolUpdateBodyParams</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="68"
+                                    class="link-to-prism">apps/server/src/modules/school/api/school.uc.ts:68</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>schoolId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>body</td>
+                                            <td>
+                                                            <code><a href="../classes/SchoolUpdateBodyParams.html" target="_self" >SchoolUpdateBodyParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;SchoolResponse&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -534,9 +718,10 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { SortOrder } from &#x27;@shared/domain/interface&#x27;;
+import { Permission, SortOrder } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { SchoolQuery, SchoolService, SchoolYearService, SchoolYearHelper } from &#x27;../domain&#x27;;
+import { School, SchoolQuery, SchoolService, SchoolYear, SchoolYearHelper, SchoolYearService } from &#x27;../domain&#x27;;
+import { SchoolUpdateBodyParams } from &#x27;./dto/param&#x27;;
 import { SchoolExistsResponse, SchoolForExternalInviteResponse, SchoolResponse } from &#x27;./dto/response&#x27;;
 import { SchoolForLdapLoginResponse } from &#x27;./dto/response/school-for-ldap-login.response&#x27;;
 import { SchoolResponseMapper } from &#x27;./mapper&#x27;;
@@ -560,12 +745,9 @@ export class SchoolUc {
 		const authContext &#x3D; AuthorizationContextBuilder.read([]);
 		this.authorizationService.checkPermission(user, school, authContext);
 
-		const { activeYear, lastYear, nextYear } &#x3D; SchoolYearHelper.computeActiveAndLastAndNextYear(school, schoolYears);
-		const yearsResponse &#x3D; YearsResponseMapper.mapToResponse(schoolYears, activeYear, lastYear, nextYear);
+		const responseDto &#x3D; this.mapToSchoolResponseDto(school, schoolYears);
 
-		const dto &#x3D; SchoolResponseMapper.mapToResponse(school, yearsResponse);
-
-		return dto;
+		return responseDto;
 	}
 
 	public async getSchoolListForExternalInvite(
@@ -599,6 +781,32 @@ export class SchoolUc {
 		const dtos &#x3D; SchoolResponseMapper.mapToListForLdapLoginResponses(schools);
 
 		return dtos;
+	}
+
+	public async updateSchool(userId: string, schoolId: string, body: SchoolUpdateBodyParams): Promise&lt;SchoolResponse&gt; {
+		const [school, user, schoolYears] &#x3D; await Promise.all([
+			this.schoolService.getSchoolById(schoolId),
+			this.authorizationService.getUserWithPermissions(userId),
+			this.schoolYearService.getAllSchoolYears(),
+		]);
+
+		const authContext &#x3D; AuthorizationContextBuilder.write([Permission.SCHOOL_EDIT]);
+		this.authorizationService.checkPermission(user, school, authContext);
+
+		const updatedSchool &#x3D; await this.schoolService.updateSchool(schoolId, body);
+
+		const responseDto &#x3D; this.mapToSchoolResponseDto(updatedSchool, schoolYears);
+
+		return responseDto;
+	}
+
+	private mapToSchoolResponseDto(school: School, schoolYears: SchoolYear[]): SchoolResponse {
+		const { activeYear, lastYear, nextYear } &#x3D; SchoolYearHelper.computeActiveAndLastAndNextYear(school, schoolYears);
+		const yearsResponse &#x3D; YearsResponseMapper.mapToResponse(schoolYears, activeYear, lastYear, nextYear);
+
+		const dto &#x3D; SchoolResponseMapper.mapToResponse(school, yearsResponse);
+
+		return dto;
 	}
 }
 </code></pre>
