@@ -139,6 +139,7 @@ export class ServerModule {}
 		RabbitMQWrapperTestModule,
 		LoggerModule,
 	],
+	providers,
 	controllers,
 })
 export class ServerTestModule {
