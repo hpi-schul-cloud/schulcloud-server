@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons';
 import { CopyDictionary, CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CopyFilesService, FileUrlReplacement } from '@modules/files-storage-client';
-import { TaskCopyService } from '@modules/task/service/task-copy.service';
+import { TaskCopyService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import {
 	ComponentEtherpadProperties,
