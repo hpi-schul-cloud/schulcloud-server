@@ -7,6 +7,6 @@ import { UsersAdminRepo } from './repo';
 @Module({
 	imports: [LoggerModule],
 	providers: [UserRepo, AdminUsersService, UsersAdminRepo],
-	exports: [AdminUsersService, UsersAdminRepo],
+	exports: [AdminUsersService],
 })
 export class UsersAdminModule {}
