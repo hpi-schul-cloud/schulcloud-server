@@ -6,6 +6,7 @@ import {
 	TestApiClient,
 	UserAndAccountTestFactory,
 	courseFactory,
+	courseGroupFactory,
 	lessonFactory,
 	materialFactory,
 } from '@shared/testing';
@@ -298,6 +299,27 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 			const { loggedInClient, lesson } = await setup();
 			const response = await loggedInClient.get(lesson.id);
 			expect(response.status).toBe(HttpStatus.FORBIDDEN);
+		});
+	});
+
+	describe('when lesson belongs to a courseGroup', () => {
+		const setup = async () => {
+			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+			const course = courseFactory.buildWithId({ teachers: [teacherUser] });
+			const courseGroup = courseGroupFactory.buildWithId({ course });
+			const lesson = lessonFactory.build({ courseGroup });
+			await em.persistAndFlush([teacherAccount, teacherUser, course, courseGroup, lesson]);
+
+			const loggedInClient = await testApiClient.login(teacherAccount);
+
+			return { loggedInClient, lesson, courseGroup };
+		};
+		it('should return lesson with courseGroup id', async () => {
+			const { loggedInClient, lesson, courseGroup } = await setup();
+			const response = await loggedInClient.get(lesson.id);
+			expect(response.status).toBe(HttpStatus.OK);
+			const body = response.body as LessonResponse;
+			expect(body.courseGroupId).toEqual(courseGroup.id);
 		});
 	});
 });

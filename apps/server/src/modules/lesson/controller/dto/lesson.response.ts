@@ -39,7 +39,8 @@ export class LessonResponse {
 		// @deprecated _id used in legacy client
 		this._id = lesson.id;
 		this.name = lesson.name;
-		this.courseId = lesson.course.id;
+		this.courseId = lesson?.course?.id;
+		this.courseGroupId = lesson?.courseGroup?.id;
 		this.hidden = lesson.hidden;
 		this.contents = lesson
 			.getLessonComponents()
@@ -70,7 +71,13 @@ export class LessonResponse {
 		description: 'The id of the Course entity',
 		pattern: '[a-f0-9]{24}',
 	})
-	courseId: EntityId;
+	courseId?: EntityId;
+
+	@ApiProperty({
+		description: 'The id of the Course-group entity',
+		pattern: '[a-f0-9]{24}',
+	})
+	courseGroupId?: EntityId;
 
 	@ApiProperty({
 		description: 'Hidden status of the Lesson entity',
