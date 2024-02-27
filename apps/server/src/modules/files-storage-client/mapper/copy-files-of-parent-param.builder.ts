@@ -1,6 +1,5 @@
 import { EntityId } from '@shared/domain/types';
-import { FileRequestInfo } from '../interfaces';
-import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
+import { FileRequestInfo, CopyFilesRequestInfo } from '../interfaces';
 
 export class CopyFilesOfParentParamBuilder {
 	static build(userId: EntityId, source: FileRequestInfo, target: FileRequestInfo): CopyFilesRequestInfo {
