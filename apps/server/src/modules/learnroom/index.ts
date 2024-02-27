@@ -1,4 +1,3 @@
-export * from './learnroom.config';
 export * from './learnroom.module';
 export {
 	CommonCartridgeExportService,
