@@ -3,43 +3,43 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 
 import { setupEntities } from '@shared/testing';
 import { HealthService } from './health.service';
-import { HealthcheckRepo } from '../repo';
-import { Healthcheck } from '../domain';
-import { HealthcheckEntity } from '../repo/entity';
+import { HealthCheckRepo } from '../repo';
+import { HealthCheck } from '../domain';
+import { HealthCheckEntity } from '../repo/entity';
 
 describe(HealthService.name, () => {
-	const testId = 'test_healthcheck_id';
+	const testId = 'test_health_check_id';
 	const testUpdatedAt = new Date();
-	const testDO = new Healthcheck(testId, testUpdatedAt);
+	const testDO = new HealthCheck(testId, testUpdatedAt);
 
 	let module: TestingModule;
 	let service: HealthService;
-	let repo: DeepMocked<HealthcheckRepo>;
+	let repo: DeepMocked<HealthCheckRepo>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				HealthService,
 				{
-					provide: HealthcheckRepo,
-					useValue: createMock<HealthcheckRepo>(),
+					provide: HealthCheckRepo,
+					useValue: createMock<HealthCheckRepo>(),
 				},
 			],
 		}).compile();
 		service = module.get(HealthService);
-		repo = module.get(HealthcheckRepo);
+		repo = module.get(HealthCheckRepo);
 
-		await setupEntities([HealthcheckEntity]);
+		await setupEntities([HealthCheckEntity]);
 	});
 
 	afterAll(async () => {
 		await module.close();
 	});
 
-	describe('findHealthcheckById', () => {
+	describe('upsertHealthCheckById', () => {
 		describe('should call', () => {
-			it('the proper healthcheck repository method with given ID', async () => {
-				await service.upsertHealthcheckById(testId);
+			it('the proper health check repository method with given ID', async () => {
+				await service.upsertHealthCheckById(testId);
 
 				expect(repo.upsertById).toHaveBeenCalledWith(testId);
 			});
@@ -48,15 +48,15 @@ describe(HealthService.name, () => {
 		describe('should return', () => {
 			const setup = () => {
 				repo.upsertById.mockResolvedValueOnce(testDO);
-				const expectedDO = new Healthcheck(testId, testUpdatedAt);
+				const expectedDO = new HealthCheck(testId, testUpdatedAt);
 
 				return { expectedDO };
 			};
 
-			it('the upserted healthcheck domain object with given ID', async () => {
+			it('the upserted health check domain object with given ID', async () => {
 				const { expectedDO } = setup();
 
-				const foundDO = await service.upsertHealthcheckById(testId);
+				const foundDO = await service.upsertHealthCheckById(testId);
 
 				expect(foundDO).toEqual(expectedDO);
 			});

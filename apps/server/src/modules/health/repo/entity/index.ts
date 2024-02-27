@@ -1,1 +1,1 @@
-export * from './healthcheck.entity';
+export * from './health-check-entity';

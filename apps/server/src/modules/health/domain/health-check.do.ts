@@ -1,4 +1,4 @@
-export class Healthcheck {
+export class HealthCheck {
 	id: string;
 
 	updatedAt: Date;

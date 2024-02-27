@@ -40,7 +40,7 @@ describe(HealthConfig.name, () => {
 
 			it("'excludeMongoDB' toggle", () => {
 				const expectedHealthchecksExcludeMongoDB = true;
-				setup('HEALTHCHECKS_EXCLUDE_MONGODB', expectedHealthchecksExcludeMongoDB);
+				setup('HEALTH_CHECKS_EXCLUDE_MONGODB', expectedHealthchecksExcludeMongoDB);
 
 				expect(HealthConfig.instance.excludeMongoDB).toEqual(expectedHealthchecksExcludeMongoDB);
 			});

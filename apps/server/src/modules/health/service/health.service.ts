@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common';
 
-import { Healthcheck } from '../domain';
-import { HealthcheckRepo } from '../repo';
+import { HealthCheck } from '../domain';
+import { HealthCheckRepo } from '../repo';
 
 @Injectable()
 export class HealthService {
-	constructor(private readonly healthcheckRepo: HealthcheckRepo) {}
+	constructor(private readonly healthCheckRepo: HealthCheckRepo) {}
 
-	async upsertHealthcheckById(id: string): Promise<Healthcheck> {
-		return this.healthcheckRepo.upsertById(id);
+	async upsertHealthCheckById(id: string): Promise<HealthCheck> {
+		return this.healthCheckRepo.upsertById(id);
 	}
 }

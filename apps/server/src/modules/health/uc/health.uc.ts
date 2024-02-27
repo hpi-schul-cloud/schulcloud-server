@@ -41,10 +41,10 @@ export class HealthUC {
 	}
 
 	async checkOverallHealth(): Promise<HealthStatus> {
-		// The below check allows for turning off the MongoDB dependency on the healthcheck -
-		// it shouldn't be typically used, but if this healthcheck will be used e.g. in the k8s
+		// The below check allows for turning off the MongoDB dependency on the health check -
+		// it shouldn't be typically used, but if this health check will be used e.g. in the k8s
 		// liveness or readiness probes and, for any reason, there would be a need to stop
-		// including MongoDB check in the overall API health checks, the HEALTHCHECKS_EXCLUDE_MONGODB
+		// including MongoDB check in the overall API health checks, the HEALTH_CHECKS_EXCLUDE_MONGODB
 		// config var can be set to 'true' to disable it. This way, as currently only this single
 		// MongoDB check is included in the overall API health checks, the whole health check will
 		// not perform any additional checks on any of the 3rd party services and thus will behave
@@ -60,18 +60,18 @@ export class HealthUC {
 		const startTime = performance.now();
 
 		try {
-			let healthcheckID = 'db-healthcheck';
+			let healthCheckID = 'db-health-check';
 
 			// If hostname is available in the health module
-			// config, append it to the healthcheck ID.
+			// config, append it to the health check ID.
 			if (HealthConfig.instance.hostname !== '') {
-				healthcheckID += `-${HealthConfig.instance.hostname}`;
+				healthCheckID += `-${HealthConfig.instance.hostname}`;
 			}
 
-			await this.healthService.upsertHealthcheckById(healthcheckID);
+			await this.healthService.upsertHealthCheckById(healthCheckID);
 		} catch (error) {
 			// If any error occurred in the database operation execution it should be indicated
-			// as a MongoDB check failure (and thus the whole healthcheck should fail).
+			// as a MongoDB check failure (and thus the whole health check should fail).
 
 			const endTime = performance.now();
 

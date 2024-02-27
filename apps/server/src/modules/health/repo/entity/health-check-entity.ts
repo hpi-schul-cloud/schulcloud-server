@@ -6,7 +6,7 @@ export interface HealthcheckEntityProps {
 }
 
 @Entity({ tableName: 'healthchecks' })
-export class HealthcheckEntity {
+export class HealthCheckEntity {
 	[PrimaryKeyType]?: string;
 
 	@PrimaryKey({ name: '_id' })

@@ -3,25 +3,25 @@ import { TestingModule, Test } from '@nestjs/testing';
 
 import { cleanupCollections } from '@shared/testing';
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { HealthcheckEntity } from './entity';
-import { HealthcheckRepo } from './healthcheck.repo';
+import { HealthCheckEntity } from './entity';
+import { HealthCheckRepo } from './health-check.repo';
 
-describe(HealthcheckRepo.name, () => {
+describe(HealthCheckRepo.name, () => {
 	let module: TestingModule;
 	let em: EntityManager;
-	let repo: HealthcheckRepo;
+	let repo: HealthCheckRepo;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [HealthcheckEntity],
+					entities: [HealthCheckEntity],
 				}),
 			],
-			providers: [HealthcheckRepo],
+			providers: [HealthCheckRepo],
 		}).compile();
 		em = module.get(EntityManager);
-		repo = module.get(HealthcheckRepo);
+		repo = module.get(HealthCheckRepo);
 	});
 
 	afterAll(async () => {
@@ -35,7 +35,7 @@ describe(HealthcheckRepo.name, () => {
 	describe('upsertById', () => {
 		describe('when called with some ID', () => {
 			const setup = () => {
-				const testId = 'test_healthcheck_id';
+				const testId = 'test_health_check_id';
 
 				return { testId };
 			};

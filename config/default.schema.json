@@ -1591,10 +1591,10 @@
 			"type": "string",
 			"description": "Hostname. Should not be usually defined as it's expected to be taken from the process env."
 		},
-		"HEALTHCHECKS_EXCLUDE_MONGODB": {
+		"HEALTH_CHECKS_EXCLUDE_MONGODB": {
 			"type": "boolean",
 			"default": false,
-			"description": "Toggle that, when enabled, excludes MongoDB from the healthchecks."
+			"description": "Toggle that, when enabled, excludes MongoDB from the health checks."
 		}
 	},
 	"required": []

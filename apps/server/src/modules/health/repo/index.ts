@@ -1,1 +1,1 @@
-export * from './healthcheck.repo';
+export * from './health-check.repo';

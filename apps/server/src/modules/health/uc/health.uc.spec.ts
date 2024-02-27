@@ -50,7 +50,7 @@ describe(HealthUC.name, () => {
 		describe('should return', () => {
 			describe(`'${HealthStatuses.STATUS_PASS}' health status if MongoDB`, () => {
 				it('has been excluded from the checks', async () => {
-					Configuration.set('HEALTHCHECKS_EXCLUDE_MONGODB', true);
+					Configuration.set('HEALTH_CHECKS_EXCLUDE_MONGODB', true);
 					HealthConfig.reload();
 
 					const healthStatus = await uc.checkOverallHealth();
@@ -61,7 +61,7 @@ describe(HealthUC.name, () => {
 
 				it("hasn't been excluded from the checks and health service did not return any error", async () => {
 					Configuration.set('HOSTNAME', 'test-hostname');
-					Configuration.set('HEALTHCHECKS_EXCLUDE_MONGODB', false);
+					Configuration.set('HEALTH_CHECKS_EXCLUDE_MONGODB', false);
 					HealthConfig.reload();
 
 					const healthStatus = await uc.checkOverallHealth();
@@ -73,10 +73,10 @@ describe(HealthUC.name, () => {
 
 			describe(`'${HealthStatuses.STATUS_FAIL}' health status if health service returned an error which`, () => {
 				it('contains a message', async () => {
-					service.upsertHealthcheckById.mockRejectedValueOnce(new Error('some test error message...'));
+					service.upsertHealthCheckById.mockRejectedValueOnce(new Error('some test error message...'));
 
 					Configuration.set('HOSTNAME', 'test-hostname');
-					Configuration.set('HEALTHCHECKS_EXCLUDE_MONGODB', false);
+					Configuration.set('HEALTH_CHECKS_EXCLUDE_MONGODB', false);
 					HealthConfig.reload();
 
 					const healthStatus = await uc.checkOverallHealth();
@@ -86,10 +86,10 @@ describe(HealthUC.name, () => {
 				});
 
 				it("doesn't contain a message", async () => {
-					service.upsertHealthcheckById.mockRejectedValueOnce('just some plain string...');
+					service.upsertHealthCheckById.mockRejectedValueOnce('just some plain string...');
 
 					Configuration.set('HOSTNAME', 'test-hostname');
-					Configuration.set('HEALTHCHECKS_EXCLUDE_MONGODB', false);
+					Configuration.set('HEALTH_CHECKS_EXCLUDE_MONGODB', false);
 					HealthConfig.reload();
 
 					const healthStatus = await uc.checkOverallHealth();
