@@ -1,7 +1,8 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Controller, Get, Param, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { SchoolQueryParams, SchoolUrlParams } from './dto/param';
+import { Body, Controller, ForbiddenException, Get, NotFoundException, Param, Patch, Query } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiValidationError } from '@shared/common';
+import { SchoolQueryParams, SchoolUpdateBodyParams, SchoolUrlParams } from './dto/param';
 import { SchoolForExternalInviteResponse, SchoolResponse } from './dto/response';
 import { SchoolExistsResponse } from './dto/response/school-exists.response';
 import { SchoolForLdapLoginResponse } from './dto/response/school-for-ldap-login.response';
@@ -44,6 +45,23 @@ export class SchoolController {
 	@Get('/list-for-ldap-login')
 	public async getSchoolListForLadpLogin(): Promise<SchoolForLdapLoginResponse[]> {
 		const res = await this.schoolUc.getSchoolListForLdapLogin();
+
+		return res;
+	}
+
+	@ApiOperation({ summary: 'Updating school props by school administrators' })
+	@ApiResponse({ status: 200, type: SchoolResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Patch('/:schoolId')
+	@Authenticate('jwt')
+	public async updateSchool(
+		@Param() urlParams: SchoolUrlParams,
+		@Body() body: SchoolUpdateBodyParams,
+		@CurrentUser() user: ICurrentUser
+	): Promise<SchoolResponse> {
+		const res = await this.schoolUc.updateSchool(user.userId, urlParams.schoolId, body);
 
 		return res;
 	}
