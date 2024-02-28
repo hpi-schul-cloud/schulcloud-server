@@ -30,6 +30,8 @@ export class LegacySchoolDo extends BaseDO {
 	// TODO: N21-990 Refactoring: Create domain objects for schoolYear and federalState
 	federalState: FederalStateEntity;
 
+	ldapLastSync?: string;
+
 	constructor(params: LegacySchoolDo) {
 		super();
 		this.id = params.id;
@@ -44,5 +46,6 @@ export class LegacySchoolDo extends BaseDO {
 		this.systems = params.systems;
 		this.userLoginMigrationId = params.userLoginMigrationId;
 		this.federalState = params.federalState;
+		this.ldapLastSync = params.ldapLastSync;
 	}
 }

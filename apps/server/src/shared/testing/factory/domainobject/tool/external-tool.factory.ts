@@ -56,7 +56,6 @@ export const lti11ToolConfigFactory = DoBaseFactory.define<Lti11ToolConfig, Lti1
 		secret: 'secret',
 		privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
 		lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
-		resource_link_id: 'linkId',
 		launch_presentation_locale: 'de-DE',
 	};
 });

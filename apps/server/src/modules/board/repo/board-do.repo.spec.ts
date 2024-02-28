@@ -3,7 +3,9 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { DrawingElementAdapterService } from '@modules/tldraw-client';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AnyBoardDo, BoardExternalReferenceType, Card, Column, ColumnBoard } from '@shared/domain/domainobject';
@@ -17,7 +19,6 @@ import {
 	columnBoardNodeFactory,
 	columnFactory,
 	columnNodeFactory,
-	contextExternalToolEntityFactory,
 	contextExternalToolFactory,
 	courseFactory,
 	externalToolElementNodeFactory,
@@ -25,7 +26,6 @@ import {
 	richTextElementFactory,
 	richTextElementNodeFactory,
 } from '@shared/testing';
-import { DrawingElementAdapterService } from '@modules/tldraw-client';
 import { ContextExternalToolEntity } from '../../tool';
 import { ContextExternalTool } from '../../tool/context-external-tool/domain';
 import { BoardDoRepo } from './board-do.repo';
