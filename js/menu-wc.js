@@ -1297,6 +1297,43 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                             </li>
                             <li class="link">
+                                <a href="modules/HealthApiModule.html" data-type="entity-link" >HealthApiModule</a>
+                                    <li class="chapter inner">
+                                        <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                            'data-bs-target="#controllers-links-module-HealthApiModule-936ed0ff56b9f318fa83b6a80bf5a8f1664e0850eb04aba18db907ed469bc3d5ac3927325d8aa19a35ce1af3b996b408ad71ed5bcefae559ed5ae13cbfe0ac20"' : 'data-bs-target="#xs-controllers-links-module-HealthApiModule-936ed0ff56b9f318fa83b6a80bf5a8f1664e0850eb04aba18db907ed469bc3d5ac3927325d8aa19a35ce1af3b996b408ad71ed5bcefae559ed5ae13cbfe0ac20"' }>
+                                            <span class="icon ion-md-swap"></span>
+                                            <span>Controllers</span>
+                                            <span class="icon ion-ios-arrow-down"></span>
+                                        </div>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-HealthApiModule-936ed0ff56b9f318fa83b6a80bf5a8f1664e0850eb04aba18db907ed469bc3d5ac3927325d8aa19a35ce1af3b996b408ad71ed5bcefae559ed5ae13cbfe0ac20"' :
+                                            'id="xs-controllers-links-module-HealthApiModule-936ed0ff56b9f318fa83b6a80bf5a8f1664e0850eb04aba18db907ed469bc3d5ac3927325d8aa19a35ce1af3b996b408ad71ed5bcefae559ed5ae13cbfe0ac20"' }>
+                                            <li class="link">
+                                                <a href="controllers/HealthController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >HealthController</a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                <li class="chapter inner">
+                                    <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
+                                        'data-bs-target="#injectables-links-module-HealthApiModule-936ed0ff56b9f318fa83b6a80bf5a8f1664e0850eb04aba18db907ed469bc3d5ac3927325d8aa19a35ce1af3b996b408ad71ed5bcefae559ed5ae13cbfe0ac20"' : 'data-bs-target="#xs-injectables-links-module-HealthApiModule-936ed0ff56b9f318fa83b6a80bf5a8f1664e0850eb04aba18db907ed469bc3d5ac3927325d8aa19a35ce1af3b996b408ad71ed5bcefae559ed5ae13cbfe0ac20"' }>
+                                        <span class="icon ion-md-arrow-round-down"></span>
+                                        <span>Injectables</span>
+                                        <span class="icon ion-ios-arrow-down"></span>
+                                    </div>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-HealthApiModule-936ed0ff56b9f318fa83b6a80bf5a8f1664e0850eb04aba18db907ed469bc3d5ac3927325d8aa19a35ce1af3b996b408ad71ed5bcefae559ed5ae13cbfe0ac20"' :
+                                        'id="xs-injectables-links-module-HealthApiModule-936ed0ff56b9f318fa83b6a80bf5a8f1664e0850eb04aba18db907ed469bc3d5ac3927325d8aa19a35ce1af3b996b408ad71ed5bcefae559ed5ae13cbfe0ac20"' }>
+                                        <li class="link">
+                                            <a href="injectables/HealthCheckRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >HealthCheckRepo</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/HealthService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >HealthService</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/HealthUC.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >HealthUC</a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </li>
+                            <li class="link">
                                 <a href="modules/IdentityManagementModule.html" data-type="entity-link" >IdentityManagementModule</a>
                             </li>
                             <li class="link">
@@ -1353,6 +1390,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="modules/InterceptorModule.html" data-type="entity-link" >InterceptorModule</a>
+                            </li>
+                            <li class="link">
+                                <a href="modules/InternalServerModule.html" data-type="entity-link" >InternalServerModule</a>
+                            </li>
+                            <li class="link">
+                                <a href="modules/InternalServerTestModule.html" data-type="entity-link" >InternalServerTestModule</a>
                             </li>
                             <li class="link">
                                 <a href="modules/KeycloakAdministrationModule.html" data-type="entity-link" >KeycloakAdministrationModule</a>
@@ -3247,6 +3290,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="controllers/GroupController.html" data-type="entity-link" >GroupController</a>
                                 </li>
                                 <li class="link">
+                                    <a href="controllers/HealthController.html" data-type="entity-link" >HealthController</a>
+                                </li>
+                                <li class="link">
                                     <a href="controllers/LessonController.html" data-type="entity-link" >LessonController</a>
                                 </li>
                                 <li class="link">
@@ -3393,6 +3439,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 </li>
                                 <li class="link">
                                     <a href="entities/H5PContent.html" data-type="entity-link" >H5PContent</a>
+                                </li>
+                                <li class="link">
+                                    <a href="entities/HealthCheckEntity.html" data-type="entity-link" >HealthCheckEntity</a>
                                 </li>
                                 <li class="link">
                                     <a href="entities/ImportUser.html" data-type="entity-link" >ImportUser</a>
@@ -4546,6 +4595,33 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/H5PSaveResponse.html" data-type="entity-link" >H5PSaveResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/HealthCheck.html" data-type="entity-link" >HealthCheck</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/HealthCheckRepoMapper.html" data-type="entity-link" >HealthCheckRepoMapper</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/HealthConfig.html" data-type="entity-link" >HealthConfig</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/HealthStatus.html" data-type="entity-link" >HealthStatus</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/HealthStatusCheck.html" data-type="entity-link" >HealthStatusCheck</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/HealthStatusCheckResponse.html" data-type="entity-link" >HealthStatusCheckResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/HealthStatusCheckResponseMapper.html" data-type="entity-link" >HealthStatusCheckResponseMapper</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/HealthStatusResponse.html" data-type="entity-link" >HealthStatusResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/HealthStatusResponseMapper.html" data-type="entity-link" >HealthStatusResponseMapper</a>
                             </li>
                             <li class="link">
                                 <a href="classes/HydraOauthFailedLoggableException.html" data-type="entity-link" >HydraOauthFailedLoggableException</a>
@@ -6385,6 +6461,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/H5PLibraryManagementService.html" data-type="entity-link" >H5PLibraryManagementService</a>
                                 </li>
                                 <li class="link">
+                                    <a href="injectables/HealthCheckRepo.html" data-type="entity-link" >HealthCheckRepo</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/HealthService.html" data-type="entity-link" >HealthService</a>
+                                </li>
+                                <li class="link">
+                                    <a href="injectables/HealthUC.html" data-type="entity-link" >HealthUC</a>
+                                </li>
+                                <li class="link">
                                     <a href="injectables/HydraAdapter.html" data-type="entity-link" >HydraAdapter</a>
                                 </li>
                                 <li class="link">
@@ -7269,6 +7354,15 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/H5PContentResponse.html" data-type="entity-link" >H5PContentResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/HealthCheckEntityProps.html" data-type="entity-link" >HealthCheckEntityProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/HealthStatusCheckProps.html" data-type="entity-link" >HealthStatusCheckProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/HealthStatusProps.html" data-type="entity-link" >HealthStatusProps</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/HtmlMailContent.html" data-type="entity-link" >HtmlMailContent</a>
