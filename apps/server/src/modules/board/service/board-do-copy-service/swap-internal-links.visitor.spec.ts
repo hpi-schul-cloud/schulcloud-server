@@ -12,7 +12,7 @@ import {
 	submissionItemFactory,
 } from '@shared/testing';
 import { drawingElementFactory } from '@shared/testing/factory/domainobject/board/drawing-element.do.factory';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { SwapInternalLinksVisitor } from './swap-internal-links.visitor';
 
 describe('swap internal links visitor', () => {

@@ -5,7 +5,7 @@ import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, setupEntities, systemEntityFactory, userFactory } from '@shared/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountRepo } from '../repo/account.repo';
 import { AccountValidationService } from './account.validation.service';
 

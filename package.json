@@ -127,7 +127,7 @@
 		"@mikro-orm/core": "^5.9.8",
 		"@mikro-orm/migrations-mongodb": "^5.9.8",
 		"@mikro-orm/mongodb": "^5.9.8",
-		"@mikro-orm/nestjs": "^5.2.1",
+		"@mikro-orm/nestjs": "^5.2.3",
 		"@nestjs/axios": "^3.0.0",
 		"@nestjs/cache-manager": "^2.1.0",
 		"@nestjs/common": "^10.2.4",

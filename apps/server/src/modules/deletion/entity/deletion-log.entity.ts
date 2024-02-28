@@ -1,7 +1,7 @@
 import { Entity, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { DomainName, EntityId, OperationType } from '@shared/domain/types';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 
 export interface DeletionLogEntityProps {
 	id?: EntityId;

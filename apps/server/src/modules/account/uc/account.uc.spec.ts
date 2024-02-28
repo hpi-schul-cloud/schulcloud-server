@@ -13,7 +13,7 @@ import { Counted, EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, schoolEntityFactory, setupEntities, systemEntityFactory, userFactory } from '@shared/testing';
 import { BruteForcePrevention } from '@src/imports-from-feathers';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	AccountByIdBodyParams,
 	AccountByIdParams,

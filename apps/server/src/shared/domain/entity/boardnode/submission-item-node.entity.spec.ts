@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { submissionItemFactory } from '@shared/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { SubmissionItemNode } from './submission-item-node.entity';
 import { BoardDoBuilder, BoardNodeType } from './types';
 

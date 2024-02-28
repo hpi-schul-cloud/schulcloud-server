@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { KeyFactory } from './key.factory';
 
 describe('KeyFactory', () => {

@@ -1,5 +1,5 @@
 import { Account } from '@shared/domain/entity';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntityToDtoMapper } from './account-entity-to-dto.mapper';
 
 describe('AccountEntityToDtoMapper', () => {

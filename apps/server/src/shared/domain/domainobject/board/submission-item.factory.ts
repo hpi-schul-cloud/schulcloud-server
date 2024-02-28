@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { SubmissionItem } from './submission-item.do';
 
 @Injectable()
