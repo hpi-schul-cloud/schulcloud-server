@@ -1,8 +1,9 @@
+import { EntityData } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ExternalSource } from '@shared/domain/domainobject';
 import { ExternalSourceEntity, Role, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
 import { Group, GroupProps, GroupTypes, GroupUser } from '../domain';
-import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupUserEntity, GroupValidPeriodEntity } from '../entity';
+import { GroupEntity, GroupEntityTypes, GroupUserEntity, GroupValidPeriodEntity } from '../entity';
 
 const GroupEntityTypesToGroupTypesMapping: Record<GroupEntityTypes, GroupTypes> = {
 	[GroupEntityTypes.CLASS]: GroupTypes.CLASS,
@@ -17,7 +18,7 @@ export const GroupTypesToGroupEntityTypesMapping: Record<GroupTypes, GroupEntity
 };
 
 export class GroupDomainMapper {
-	static mapDomainObjectToEntityProperties(group: Group, em: EntityManager): GroupEntityProps {
+	static mapDoToEntityData(group: Group, em: EntityManager): EntityData<GroupEntity> {
 		const props: GroupProps = group.getProps();
 
 		let validPeriod: GroupValidPeriodEntity | undefined;
@@ -28,8 +29,7 @@ export class GroupDomainMapper {
 			});
 		}
 
-		const mapped: GroupEntityProps = {
-			id: props.id,
+		const mapped: EntityData<GroupEntity> = {
 			name: props.name,
 			type: GroupTypesToGroupEntityTypesMapping[props.type],
 			externalSource: props.externalSource
@@ -45,8 +45,8 @@ export class GroupDomainMapper {
 		return mapped;
 	}
 
-	static mapEntityToDomainObjectProperties(entity: GroupEntity): GroupProps {
-		const mapped: GroupProps = {
+	static mapEntityToDo(entity: GroupEntity): Group {
+		const group: Group = new Group({
 			id: entity.id,
 			users: entity.users.map((groupUser): GroupUser => this.mapGroupUserEntityToGroupUser(groupUser)),
 			validFrom: entity.validPeriod ? entity.validPeriod.from : undefined,
@@ -57,9 +57,9 @@ export class GroupDomainMapper {
 			type: GroupEntityTypesToGroupTypesMapping[entity.type],
 			name: entity.name,
 			organizationId: entity.organization?.id,
-		};
+		});
 
-		return mapped;
+		return group;
 	}
 
 	static mapExternalSourceToExternalSourceEntity(

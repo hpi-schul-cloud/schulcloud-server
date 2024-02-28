@@ -58,7 +58,7 @@ describe(CourseMikroOrmRepo.name, () => {
 				await em.persistAndFlush([entity]);
 				em.clear();
 
-				const course: Course = CourseEntityMapper.mapToDo(entity);
+				const course: Course = CourseEntityMapper.mapEntityToDo(entity);
 
 				return { course };
 			};
@@ -81,7 +81,7 @@ describe(CourseMikroOrmRepo.name, () => {
 				await em.persistAndFlush([entity.school]);
 				em.clear();
 
-				const course: Course = CourseEntityMapper.mapToDo(entity);
+				const course: Course = CourseEntityMapper.mapEntityToDo(entity);
 
 				return { course };
 			};

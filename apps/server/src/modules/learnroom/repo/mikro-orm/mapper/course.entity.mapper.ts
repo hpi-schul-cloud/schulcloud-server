@@ -7,7 +7,7 @@ import { EntityId } from '@shared/domain/types';
 import { Course, CourseProps } from '../../../domain';
 
 export class CourseEntityMapper {
-	public static mapToDo(entity: CourseEntity): Course {
+	public static mapEntityToDo(entity: CourseEntity): Course {
 		const courseGroupIds: EntityId[] = entity.courseGroups
 			.getItems()
 			.map((courseGroup: CourseGroup): EntityId => courseGroup.id);
@@ -44,7 +44,7 @@ export class CourseEntityMapper {
 		return course;
 	}
 
-	public static mapToEntityProperties(domainObject: Course, em: EntityManager): EntityData<CourseEntity> {
+	public static mapDoToEntityData(domainObject: Course, em: EntityManager): EntityData<CourseEntity> {
 		const props: CourseProps = domainObject.getProps();
 		const school: SchoolEntity = em.getReference(SchoolEntity, props.schoolId);
 		const courseGroups: CourseGroup[] = props.courseGroupIds.map(

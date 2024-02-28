@@ -11,7 +11,7 @@ export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntit
 	}
 
 	protected mapDOToEntityProperties(entityDO: Course): EntityData<CourseEntity> {
-		const entityProps: EntityData<CourseEntity> = CourseEntityMapper.mapToEntityProperties(entityDO, this.em);
+		const entityProps: EntityData<CourseEntity> = CourseEntityMapper.mapDoToEntityData(entityDO, this.em);
 
 		return entityProps;
 	}
@@ -23,7 +23,7 @@ export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntit
 			await entity.courseGroups.init();
 		}
 
-		const course: Course = CourseEntityMapper.mapToDo(entity);
+		const course: Course = CourseEntityMapper.mapEntityToDo(entity);
 
 		return course;
 	}
