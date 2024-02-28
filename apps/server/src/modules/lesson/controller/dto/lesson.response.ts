@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain/types';
 import { PaginationResponse } from '@shared/controller';
 import { ComponentProperties, LessonEntity } from '@shared/domain/entity';
@@ -39,8 +39,8 @@ export class LessonResponse {
 		// @deprecated _id used in legacy client
 		this._id = lesson.id;
 		this.name = lesson.name;
-		this.courseId = lesson?.course?.id;
-		this.courseGroupId = lesson?.courseGroup?.id;
+		this.courseId = lesson.course?.id;
+		this.courseGroupId = lesson.courseGroup?.id;
 		this.hidden = lesson.hidden;
 		this.contents = lesson
 			.getLessonComponents()
@@ -67,13 +67,13 @@ export class LessonResponse {
 	})
 	name: string;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'The id of the Course entity',
 		pattern: '[a-f0-9]{24}',
 	})
 	courseId?: EntityId;
 
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: 'The id of the Course-group entity',
 		pattern: '[a-f0-9]{24}',
 	})
