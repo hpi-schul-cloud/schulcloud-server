@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
-import { DomainOperation } from '@shared/domain/interface';
+import { DomainDeletionReport } from '@shared/domain/interface';
 import { DeletionTargetRef } from '../../interface';
 import { DeletionStatusModel } from '../../domain/types';
 
@@ -16,7 +16,7 @@ export class DeletionRequestLogResponse {
 
 	@ApiProperty()
 	@IsOptional()
-	statistics?: DomainOperation[];
+	statistics?: DomainDeletionReport[];
 
 	constructor(response: DeletionRequestLogResponse) {
 		this.targetRef = response.targetRef;

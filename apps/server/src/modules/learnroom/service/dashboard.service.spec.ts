@@ -5,7 +5,7 @@ import { setupEntities, userFactory } from '@shared/testing';
 import { DomainName, LearnroomMetadata, LearnroomTypes, OperationType } from '@shared/domain/types';
 import { DashboardEntity, GridElement } from '@shared/domain/entity';
 import { Logger } from '@src/core/logger';
-import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder';
 import { ObjectId } from 'bson';
 import { DashboardService } from '.';
 
@@ -82,7 +82,7 @@ describe(DashboardService.name, () => {
 			});
 			userRepo.findById.mockResolvedValue(user);
 
-			const expectedResult = DomainOperationBuilder.build(DomainName.DASHBOARD, OperationType.DELETE, 1, [dashboardId]);
+			const expectedResult = DomainDeletionReportBuilder.build(DomainName.DASHBOARD, OperationType.DELETE, 1, [dashboardId]);
 
 			return { dashboard, expectedResult, user };
 		};

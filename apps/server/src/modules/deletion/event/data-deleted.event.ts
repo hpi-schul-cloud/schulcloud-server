@@ -1,12 +1,12 @@
-import { DomainOperation } from '@shared/domain/interface';
+import { DomainDeletionReport } from '@shared/domain/interface';
 import { DeletionRequest } from '../domain';
 
 export class DataDeletedEvent {
 	deletionRequest: DeletionRequest;
 
-	domainOperation: DomainOperation;
+	domainOperation: DomainDeletionReport;
 
-	constructor(deletionRequest: DeletionRequest, domainOperation: DomainOperation) {
+	constructor(deletionRequest: DeletionRequest, domainOperation: DomainDeletionReport) {
 		this.deletionRequest = deletionRequest;
 		this.domainOperation = domainOperation;
 	}

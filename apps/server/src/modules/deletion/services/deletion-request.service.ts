@@ -54,6 +54,10 @@ export class DeletionRequestService {
 		return this.deletionRequestRepo.markDeletionRequestAsFailed(deletionRequestId);
 	}
 
+	async markDeletionRequestAsPending(deletionRequestId: EntityId): Promise<boolean> {
+		return this.deletionRequestRepo.markDeletionRequestAsPending(deletionRequestId);
+	}
+
 	async deleteById(deletionRequestId: EntityId): Promise<void> {
 		await this.deletionRequestRepo.deleteById(deletionRequestId);
 	}

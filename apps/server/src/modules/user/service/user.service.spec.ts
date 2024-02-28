@@ -14,7 +14,7 @@ import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { NotFoundException } from '@nestjs/common';
 import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import { UserDto } from '../uc/dto/user.dto';
@@ -437,7 +437,9 @@ describe('UserService', () => {
 				userRepo.findByIdOrNull.mockResolvedValueOnce(null);
 				userRepo.deleteUser.mockResolvedValue(0);
 
-				const expectedResult = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 0, []);
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.USER, [
+					DomainOperationReportBuilder.build(OperationType.DELETE, 0, []),
+				]);
 
 				return {
 					expectedResult,
@@ -474,7 +476,9 @@ describe('UserService', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 
-				const expectedResult = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 1, [user.id]);
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.USER, [
+					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [user.id]),
+				]);
 
 				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
 				userRepo.deleteUser.mockResolvedValue(1);

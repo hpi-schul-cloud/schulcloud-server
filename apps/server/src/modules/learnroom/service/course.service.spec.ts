@@ -4,7 +4,7 @@ import { Course } from '@shared/domain/entity';
 import { CourseRepo, UserRepo } from '@shared/repo';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder';
 import { DomainName, OperationType } from '@shared/domain/types';
 import { CourseService } from './course.service';
 
@@ -111,7 +111,7 @@ describe('CourseService', () => {
 			userRepo.findById.mockResolvedValue(user);
 			courseRepo.findAllByUserId.mockResolvedValue([allCourses, allCourses.length]);
 
-			const expectedResult = DomainOperationBuilder.build(DomainName.COURSE, OperationType.UPDATE, 3, [
+			const expectedResult = DomainDeletionReportBuilder.build(DomainName.COURSE, OperationType.UPDATE, 3, [
 				course1.id,
 				course2.id,
 				course3.id,

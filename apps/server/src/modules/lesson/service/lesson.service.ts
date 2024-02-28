@@ -5,8 +5,8 @@ import { Counted, DomainName, EntityId, OperationType, StatusModel } from '@shar
 import { AuthorizationLoaderService } from '@src/modules/authorization';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DeletionService, DomainOperation } from '@shared/domain/interface';
-import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { LessonRepo } from '../repository';
 
 @Injectable()
@@ -39,7 +39,7 @@ export class LessonService implements AuthorizationLoaderService, DeletionServic
 		return lessons;
 	}
 
-	async deleteUserData(userId: EntityId): Promise<DomainOperation> {
+	async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Lessons',
@@ -64,12 +64,13 @@ export class LessonService implements AuthorizationLoaderService, DeletionServic
 
 		const numberOfUpdatedLessons = updatedLessons.length;
 
-		const result = DomainOperationBuilder.build(
-			DomainName.LESSONS,
-			OperationType.UPDATE,
-			numberOfUpdatedLessons,
-			this.getLessonsId(updatedLessons)
-		);
+		const result = DomainDeletionReportBuilder.build(DomainName.LESSONS, [
+			DomainOperationReportBuilder.build(
+				OperationType.UPDATE,
+				numberOfUpdatedLessons,
+				this.getLessonsId(updatedLessons)
+			),
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(

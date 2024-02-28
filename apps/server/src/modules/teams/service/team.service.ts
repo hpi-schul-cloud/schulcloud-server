@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { EventsHandler, IEventHandler, EventBus } from '@nestjs/cqrs';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { TeamEntity } from '@shared/domain/entity';
-import { DeletionService, DomainOperation } from '@shared/domain/interface';
+import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
 import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
@@ -32,7 +32,7 @@ export class TeamService implements DeletionService, IEventHandler<UserDeletedEv
 		return teams;
 	}
 
-	public async deleteUserDataFromTeams(userId: EntityId): Promise<DomainOperation> {
+	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Teams',
@@ -51,52 +51,9 @@ export class TeamService implements DeletionService, IEventHandler<UserDeletedEv
 
 		const numberOfUpdatedTeams = teams.length;
 
-		const result = DomainOperationBuilder.build(
-			DomainName.TEAMS,
-			OperationType.UPDATE,
-			numberOfUpdatedTeams,
-			this.getTeamsId(teams)
-		);
-
-		this.logger.info(
-			new DataDeletionDomainOperationLoggable(
-				'Successfully deleted user data from Teams',
-				DomainName.TEAMS,
-				userId,
-				StatusModel.FINISHED,
-				numberOfUpdatedTeams,
-				0
-			)
-		);
-
-		return result;
-	}
-
-	public async deleteUserData(userId: EntityId): Promise<DomainOperation> {
-		this.logger.info(
-			new DataDeletionDomainOperationLoggable(
-				'Deleting user data from Teams',
-				DomainName.TEAMS,
-				userId,
-				StatusModel.PENDING
-			)
-		);
-		const teams = await this.teamsRepo.findByUserId(userId);
-
-		teams.forEach((team) => {
-			team.userIds = team.userIds.filter((u) => u.userId.id !== userId);
-		});
-
-		await this.teamsRepo.save(teams);
-
-		const numberOfUpdatedTeams = teams.length;
-
-		const result = DomainOperationBuilder.build(
-			DomainName.TEAMS,
-			OperationType.UPDATE,
-			numberOfUpdatedTeams,
-			this.getTeamsId(teams)
-		);
+		const result = DomainDeletionReportBuilder.build(DomainName.TEAMS, [
+			DomainOperationReportBuilder.build(OperationType.UPDATE, numberOfUpdatedTeams, this.getTeamsId(teams)),
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(

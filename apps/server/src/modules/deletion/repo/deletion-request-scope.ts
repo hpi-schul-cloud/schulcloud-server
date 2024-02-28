@@ -9,8 +9,16 @@ export class DeletionRequestScope extends Scope<DeletionRequestEntity> {
 		return this;
 	}
 
-	byStatus(): DeletionRequestScope {
+	byStatusRegisteredOrFailed(): DeletionRequestScope {
 		this.addQuery({ status: [DeletionStatusModel.REGISTERED, DeletionStatusModel.FAILED] });
+
+		return this;
+	}
+
+	byStatusPending(fifteeenMinutes: Date): DeletionRequestScope {
+		this.addQuery({
+			$and: [{ status: DeletionStatusModel.PENDING }, { updatedAt: { $lt: fifteeenMinutes } }],
+		});
 
 		return this;
 	}

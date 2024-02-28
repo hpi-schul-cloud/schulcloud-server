@@ -5,5 +5,6 @@ export * from './learnroom';
 export * from './permission.enum';
 export * from './rolename.enum';
 export * from './video-conference-scope.enum';
-export * from './domain-operation';
+export * from './domain-deletion-report';
 export * from './deletion-service';
+export * from './domain-operation-report';

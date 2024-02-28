@@ -3,8 +3,8 @@ import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { NewsRepo } from '@shared/repo';
-import { DomainOperationBuilder } from '@shared/domain/builder';
-import { DeletionService, DomainOperation } from '@shared/domain/interface';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
+import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
 import { News } from '@shared/domain/entity';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class NewsService implements DeletionService {
 		this.logger.setContext(NewsService.name);
 	}
 
-	public async deleteUserData(userId: EntityId): Promise<DomainOperation> {
+	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from News',
@@ -32,12 +32,9 @@ export class NewsService implements DeletionService {
 
 		await this.newsRepo.save(newsWithUserData);
 
-		const result = DomainOperationBuilder.build(
-			DomainName.NEWS,
-			OperationType.UPDATE,
-			counterOfNews,
-			this.getNewsId(newsWithUserData)
-		);
+		const result = DomainDeletionReportBuilder.build(DomainName.NEWS, [
+			DomainOperationReportBuilder.build(OperationType.UPDATE, counterOfNews, this.getNewsId(newsWithUserData)),
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(

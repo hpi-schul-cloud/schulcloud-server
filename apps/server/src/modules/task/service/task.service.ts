@@ -1,10 +1,10 @@
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { Task } from '@shared/domain/entity';
-import { DeletionService, DomainOperation, IFindOptions } from '@shared/domain/interface';
+import { DeletionService, DomainDeletionReport, IFindOptions } from '@shared/domain/interface';
 import { Counted, DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { TaskRepo } from '@shared/repo';
-import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { SubmissionService } from './submission.service';
@@ -48,7 +48,7 @@ export class TaskService implements DeletionService {
 		return this.taskRepo.findById(taskId);
 	}
 
-	async deleteUserData(creatorId: EntityId): Promise<DomainOperation[]> {
+	async deleteUserData(creatorId: EntityId): Promise<DomainDeletionReport[]> {
 		const [tasksDeleted, tasksModifiedByRemoveCreator, tasksModifiedByRemoveUserFromFinished] = await Promise.all([
 			this.deleteTasksByOnlyCreator(creatorId),
 			this.removeCreatorIdFromTasks(creatorId),
@@ -60,7 +60,7 @@ export class TaskService implements DeletionService {
 
 		return [
 			tasksDeleted,
-			DomainOperationBuilder.build(
+			DomainDeletionReportBuilder.build(
 				tasksModifiedByRemoveCreator.domain,
 				tasksModifiedByRemoveCreator.operation,
 				modifiedTasksCount,
@@ -69,7 +69,7 @@ export class TaskService implements DeletionService {
 		];
 	}
 
-	async deleteTasksByOnlyCreator(creatorId: EntityId): Promise<DomainOperation> {
+	async deleteTasksByOnlyCreator(creatorId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting data from Task',
@@ -86,7 +86,7 @@ export class TaskService implements DeletionService {
 			await Promise.all(promiseDeletedTasks);
 		}
 
-		const result = DomainOperationBuilder.build(
+		const result = DomainDeletionReportBuilder.build(
 			DomainName.TASK,
 			OperationType.DELETE,
 			counterOfTasksOnlyWithCreatorId,
@@ -106,7 +106,7 @@ export class TaskService implements DeletionService {
 		return result;
 	}
 
-	async removeCreatorIdFromTasks(creatorId: EntityId): Promise<DomainOperation> {
+	async removeCreatorIdFromTasks(creatorId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Task',
@@ -123,7 +123,7 @@ export class TaskService implements DeletionService {
 			await this.taskRepo.save(tasksByCreatorIdWithCoursesAndLessons);
 		}
 
-		const result = DomainOperationBuilder.build(
+		const result = DomainDeletionReportBuilder.build(
 			DomainName.TASK,
 			OperationType.UPDATE,
 			counterOfTasksWithCoursesorLessons,
@@ -142,7 +142,7 @@ export class TaskService implements DeletionService {
 		return result;
 	}
 
-	async removeUserFromFinished(userId: EntityId): Promise<DomainOperation> {
+	async removeUserFromFinished(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Task archive collection',
@@ -161,7 +161,7 @@ export class TaskService implements DeletionService {
 			await this.taskRepo.save(tasksWithUserInFinished);
 		}
 
-		const result = DomainOperationBuilder.build(
+		const result = DomainDeletionReportBuilder.build(
 			DomainName.TASK,
 			OperationType.UPDATE,
 			counterOfTasksWithUserInFinished,

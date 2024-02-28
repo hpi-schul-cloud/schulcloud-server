@@ -4,8 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
 import { Counted, DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { isEmail, validateOrReject } from 'class-validator';
-import { DeletionService, DomainOperation } from '@shared/domain/interface';
-import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { UserDeletedEvent } from '@src/modules/deletion/event';
 import { DataDeletedEvent } from '@src/modules/deletion/event/data-deleted.event';
@@ -181,16 +181,13 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return deletedAccounts;
 	}
 
-	async deleteUserData(userId: string): Promise<DomainOperation> {
+	async deleteUserData(userId: string): Promise<DomainDeletionReport> {
 		this.logger.debug(`Start deleting data for userId - ${userId} in account collection`);
 		const deletedAccounts = await this.deleteByUserId(userId);
 
-		const result = DomainOperationBuilder.build(
-			DomainName.ACCOUNT,
-			OperationType.DELETE,
-			deletedAccounts.length,
-			deletedAccounts
-		);
+		const result = DomainDeletionReportBuilder.build(DomainName.ACCOUNT, [
+			DomainOperationReportBuilder.build(OperationType.DELETE, deletedAccounts.length, deletedAccounts),
+		]);
 
 		this.logger.debug(`Deleted data for userId - ${userId} from account collection`);
 

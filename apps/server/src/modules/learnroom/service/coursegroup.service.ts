@@ -1,16 +1,27 @@
 import { Injectable } from '@nestjs/common';
+import { EventBus, IEventHandler } from '@nestjs/cqrs';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { CourseGroup } from '@shared/domain/entity';
-import { DeletionService, DomainOperation } from '@shared/domain/interface';
+import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
 import { Counted, DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { CourseGroupRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import { DataDeletedEvent, UserDeletedEvent } from '@modules/deletion/event';
 
 @Injectable()
-export class CourseGroupService implements DeletionService {
-	constructor(private readonly repo: CourseGroupRepo, private readonly logger: Logger) {
+export class CourseGroupService implements DeletionService, IEventHandler<UserDeletedEvent> {
+	constructor(
+		private readonly repo: CourseGroupRepo,
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus
+	) {
 		this.logger.setContext(CourseGroupService.name);
+	}
+
+	async handle({ deletionRequest }: UserDeletedEvent) {
+		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
 	}
 
 	public async findAllCourseGroupsByUserId(userId: EntityId): Promise<Counted<CourseGroup[]>> {
@@ -19,7 +30,7 @@ export class CourseGroupService implements DeletionService {
 		return [courseGroups, count];
 	}
 
-	public async deleteUserData(userId: EntityId): Promise<DomainOperation> {
+	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from CourseGroup',
@@ -34,12 +45,9 @@ export class CourseGroupService implements DeletionService {
 
 		await this.repo.save(courseGroups);
 
-		const result = DomainOperationBuilder.build(
-			DomainName.COURSEGROUP,
-			OperationType.UPDATE,
-			count,
-			this.getCourseGroupsId(courseGroups)
-		);
+		const result = DomainDeletionReportBuilder.build(DomainName.COURSEGROUP, [
+			DomainOperationReportBuilder.build(OperationType.UPDATE, count, this.getCourseGroupsId(courseGroups)),
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(

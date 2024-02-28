@@ -1,9 +1,9 @@
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder';
 import { Submission } from '@shared/domain/entity';
-import { DeletionService, DomainOperation } from '@shared/domain/interface';
+import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
 import { Counted, DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { SubmissionRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
@@ -32,7 +32,7 @@ export class SubmissionService implements DeletionService {
 		await this.submissionRepo.delete(submission);
 	}
 
-	async deleteUserData(userId: EntityId): Promise<DomainOperation[]> {
+	async deleteUserData(userId: EntityId): Promise<DomainDeletionReport[]> {
 		const [submissionsDeleted, submissionsModified] = await Promise.all([
 			this.deleteSingleSubmissionsOwnedByUser(userId),
 			this.removeUserReferencesFromSubmissions(userId),
@@ -41,7 +41,7 @@ export class SubmissionService implements DeletionService {
 		return [submissionsDeleted, submissionsModified];
 	}
 
-	async deleteSingleSubmissionsOwnedByUser(userId: EntityId): Promise<DomainOperation> {
+	async deleteSingleSubmissionsOwnedByUser(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting single Submissions owned by user',
@@ -61,7 +61,7 @@ export class SubmissionService implements DeletionService {
 			await this.submissionRepo.delete(submissionsEntities);
 		}
 
-		const result = DomainOperationBuilder.build(
+		const result = DomainDeletionReportBuilder.build(
 			DomainName.SUBMISSIONS,
 			OperationType.DELETE,
 			submissionsCount,
@@ -82,7 +82,7 @@ export class SubmissionService implements DeletionService {
 		return result;
 	}
 
-	async removeUserReferencesFromSubmissions(userId: EntityId): Promise<DomainOperation> {
+	async removeUserReferencesFromSubmissions(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user references from Submissions',
@@ -107,7 +107,7 @@ export class SubmissionService implements DeletionService {
 
 			await this.submissionRepo.save(submissionsEntities);
 		}
-		const result = DomainOperationBuilder.build(
+		const result = DomainDeletionReportBuilder.build(
 			DomainName.SUBMISSIONS,
 			OperationType.UPDATE,
 			submissionsCount,

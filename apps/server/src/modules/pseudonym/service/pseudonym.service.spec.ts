@@ -9,7 +9,7 @@ import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject'
 import { externalToolFactory, ltiToolDOFactory, pseudonymFactory, userDoFactory } from '@shared/testing/factory';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from 'bson';
-import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder';
 import { DomainName, OperationType } from '@shared/domain/types';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
@@ -422,7 +422,7 @@ describe('PseudonymService', () => {
 					new ObjectId().toHexString(),
 				];
 
-				const expectedResult = DomainOperationBuilder.build(
+				const expectedResult = DomainDeletionReportBuilder.build(
 					DomainName.PSEUDONYMS,
 					OperationType.DELETE,
 					pseudonymsDeleted.length + externalPseudonymsDeleted.length,

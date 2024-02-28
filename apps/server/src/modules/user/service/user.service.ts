@@ -9,12 +9,12 @@ import { ConfigService } from '@nestjs/config';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { LanguageType, User } from '@shared/domain/entity';
-import { DeletionService, DomainOperation, IFindOptions } from '@shared/domain/interface';
+import { DeletionService, DomainDeletionReport, IFindOptions } from '@shared/domain/interface';
 import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { Logger } from '@src/core/logger';
-import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { UserDeletedEvent } from '@src/modules/deletion/event';
@@ -146,7 +146,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		}
 	}
 
-	async deleteUserData(userId: EntityId): Promise<DomainOperation> {
+	async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable('Deleting user', DomainName.USER, userId, StatusModel.PENDING)
 		);
@@ -154,7 +154,9 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		const userToDelete: User | null = await this.userRepo.findByIdOrNull(userId, true);
 
 		if (userToDelete === null) {
-			const result = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 0, []);
+			const result = DomainDeletionReportBuilder.build(DomainName.USER, [
+				DomainOperationReportBuilder.build(OperationType.DELETE, 0, []),
+			]);
 
 			this.logger.info(
 				new DataDeletionDomainOperationLoggable(
@@ -176,7 +178,9 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 			throw new DeletionErrorLoggableException(`Failed to delete user '${userId}' from User collection`);
 		}
 
-		const result = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, numberOfDeletedUsers, [userId]);
+		const result = DomainDeletionReportBuilder.build(DomainName.USER, [
+			DomainOperationReportBuilder.build(OperationType.DELETE, numberOfDeletedUsers, [userId]),
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
