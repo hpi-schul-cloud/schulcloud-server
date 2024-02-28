@@ -8,4 +8,5 @@ export interface SchoolUpdateBody {
 	fileStorageType?: SchoolProps['fileStorageType'];
 	language?: SchoolProps['language'];
 	features?: SchoolProps['features'];
+	permissions?: SchoolProps['permissions'];
 }

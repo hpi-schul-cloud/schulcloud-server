@@ -1,9 +1,40 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
 import { Type } from 'class-transformer';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { FileStorageType, SchoolUpdateBody } from '../../../domain';
+import { IsBoolean, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+	FileStorageType,
+	SchoolPermissions,
+	SchoolUpdateBody,
+	StudentPermission,
+	TeacherPermission,
+} from '../../../domain';
+
+class TeacherPermissionParams implements TeacherPermission {
+	@ApiPropertyOptional()
+	@IsBoolean()
+	[Permission.STUDENT_LIST]?: boolean;
+}
+
+class StudentPermissionParams implements StudentPermission {
+	@ApiPropertyOptional()
+	@IsBoolean()
+	[Permission.LERNSTORE_VIEW]?: boolean;
+}
+
+class SchoolPermissionsParams implements SchoolPermissions {
+	@IsOptional()
+	@ValidateNested()
+	@ApiPropertyOptional()
+	teacher?: TeacherPermissionParams;
+
+	@IsOptional()
+	@ValidateNested()
+	@ApiPropertyOptional()
+	student?: StudentPermissionParams;
+}
 
 export class SchoolUpdateBodyParams implements SchoolUpdateBody {
 	@IsString()
@@ -38,7 +69,13 @@ export class SchoolUpdateBodyParams implements SchoolUpdateBody {
 
 	@IsEnum(SchoolFeature, { each: true })
 	@IsOptional()
-	@ApiPropertyOptional({ enum: SchoolFeature, isArray: true })
+	@ApiPropertyOptional({ enum: SchoolFeature, enumName: 'SchoolFeature', isArray: true })
 	@Type(() => Set)
 	features?: Set<SchoolFeature>;
+
+	@Type(() => SchoolPermissionsParams)
+	@IsOptional()
+	@ApiPropertyOptional()
+	@ValidateNested()
+	permissions?: SchoolPermissionsParams;
 }

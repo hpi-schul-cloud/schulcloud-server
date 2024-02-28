@@ -16,6 +16,7 @@ export class SchoolFactory {
 		props.fileStorageType = partialBody.fileStorageType ?? props.fileStorageType;
 		props.language = partialBody.language ?? props.language;
 		props.features = partialBody.features ?? props.features;
+		props.permissions = partialBody.permissions ?? props.permissions;
 
 		const result = SchoolFactory.build(props);
 
