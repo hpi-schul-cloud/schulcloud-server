@@ -1,8 +1,9 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Controller, Delete, Param } from '@nestjs/common';
+import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { LessonUC } from '../uc';
-import { LessonUrlParams } from './dto';
+import { LessonUrlParams, LessonsUrlParams, LessonMetadataListResponse } from './dto';
+import { LessonMapper } from './mapper/lesson.mapper';
 
 @ApiTags('Lesson')
 @Authenticate('jwt')
@@ -15,5 +16,14 @@ export class LessonController {
 		const result = await this.lessonUC.delete(currentUser.userId, urlParams.lessonId);
 
 		return result;
+	}
+
+	@Get('course/:courseId')
+	async getCourseLessons(@Param() urlParams: LessonsUrlParams, @CurrentUser() currentUser: ICurrentUser) {
+		const lessons = await this.lessonUC.getLessons(currentUser.userId, urlParams.courseId);
+
+		const dtoList = lessons.map((lesson) => LessonMapper.mapToMetadataResponse(lesson));
+		const response = new LessonMetadataListResponse(dtoList, dtoList.length);
+		return response;
 	}
 }

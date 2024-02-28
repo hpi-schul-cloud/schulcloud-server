@@ -222,7 +222,6 @@ describe('ExternalToolResponseMapper', () => {
 					type: ToolConfigType.LTI11,
 					baseUrl: 'mockUrl',
 					launch_presentation_locale: 'de-DE',
-					resource_link_id: 'linkId',
 				});
 
 				const customParameterResponse: CustomParameterResponse = new CustomParameterResponse({

@@ -42,6 +42,7 @@ export interface SchoolProperties {
 	fileStorageType?: FileStorageType;
 	language?: string;
 	timezone?: string;
+	ldapLastSync?: string;
 }
 
 @Embeddable()
@@ -76,6 +77,9 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true, fieldName: 'ldapSchoolIdentifier' })
 	externalId?: string;
+
+	@Property({ nullable: true })
+	ldapLastSync?: string;
 
 	@Property({ nullable: true })
 	previousExternalId?: string;
@@ -159,5 +163,6 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 		this.fileStorageType = props.fileStorageType;
 		this.language = props.language;
 		this.timezone = props.timezone;
+		this.ldapLastSync = props.ldapLastSync;
 	}
 }
