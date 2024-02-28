@@ -8,20 +8,19 @@ import { Permission } from '@shared/domain/interface';
 import {
 	accountFactory,
 	columnBoardNodeFactory,
-	contextExternalToolEntityFactory,
-	customParameterEntityFactory,
 	externalToolElementNodeFactory,
-	externalToolEntityFactory,
 	schoolEntityFactory,
-	schoolExternalToolEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
 import { schoolToolConfigurationStatusFactory } from '@shared/testing/factory';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
+import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
+import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
 import { SchoolExternalToolEntity } from '../../entity';
+import { schoolExternalToolEntityFactory } from '../../testing';
 import {
 	CustomParameterEntryParam,
 	SchoolExternalToolMetadataResponse,

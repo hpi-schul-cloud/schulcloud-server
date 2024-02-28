@@ -15,26 +15,32 @@ jobs:
     steps:
       - name: create ticket
         id: create_ticket
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_HTML_URL: ${{ github.event.pull_request.html_url }}
+          REPO_NAME: ${{ github.event.repository.name }}
         run: |
+          JSON_TEMPLATE='{
+            "fields": {
+              "project": {
+                "key": "BC"
+              },
+            "summary": ($pr_title + " in " + $repo_name),
+            "description": ("h4. Task:\n" + $pr_title + "\n" + $pr_html_url + "\nh4.Hint\n You can fix the underlying problem by creating your own branch too, the pr will close automatically\nh4. Acceptance criteria\n1. https://docs.dbildungscloud.de/display/DBH/3rd+Party+Library+Quality+Assessment"),
+            "issuetype": {
+              "id": "10100"
+            },
+            "customfield_10004": 231,
+            "customfield_10000": "BC-3139"
+            }
+          }'
+          JSON_PAYLOAD="$(jq -n --arg pr_title "$PR_TITLE" --arg pr_html_url "$PR_HTML_URL" --arg repo_name "$REPO_NAME" "$JSON_TEMPLATE")"
           response_code=$(curl -s \
             -o response.txt \
             -w "%{http_code}" \
             -u ${{ secrets.JIRA_USER_NAME }}:${{ secrets.JIRA_USER_PASSWORD }}\
             -H "Content-Type: application/json" \
-            -X POST --data '{
-                 "fields": {
-                   "project": {
-                     "key": "BC"
-                   },
-                   "summary": "${{ github.event.pull_request.title }} in ${{ github.event.repository.name }}",
-                   "description": "h4. Task:\n${{ github.event.pull_request.title }}\n${{ github.event.pull_request.html_url }}\nh4.Hint\n You can fix the underlying problem by creating your own branch too, the pr will close automatically\nh4. Acceptance criteria\n1. https://docs.dbildungscloud.de/display/DBH/3rd+Party+Library+Quality+Assessment",
-                   "issuetype": {
-                     "id": "10100"
-                   },
-                   "customfield_10004" : 231,
-                   "customfield_10000": "BC-3139"
-                }
-              }' \
+            -X POST --data "$JSON_PAYLOAD" \
           'https://ticketsystem.dbildungscloud.de/rest/api/2/issue/');
           if [[ $response_code == 2* ]]; then
               echo "all good";
