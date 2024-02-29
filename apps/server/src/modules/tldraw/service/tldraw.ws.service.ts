@@ -31,8 +31,6 @@ export class TldrawWsService {
 
 	private readonly pingTimeout: number;
 
-	private readonly gcEnabled: boolean;
-
 	public readonly sub: Redis;
 
 	private readonly pub: Redis;
@@ -47,7 +45,6 @@ export class TldrawWsService {
 	) {
 		this.logger.setContext(TldrawWsService.name);
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
-		this.gcEnabled = this.configService.get<boolean>('TLDRAW_GC_ENABLED');
 
 		this.sub = this.tldrawRedisFactory.build(RedisConnectionTypeEnum.SUBSCRIBE);
 		this.pub = this.tldrawRedisFactory.build(RedisConnectionTypeEnum.PUBLISH);
@@ -112,12 +109,11 @@ export class TldrawWsService {
 
 	public async getYDoc(docName: string) {
 		const wsSharedDocDo = await map.setIfUndefined(this.docs, docName, async () => {
-			const doc = new WsSharedDocDo(docName, this.gcEnabled);
+			const doc = await this.tldrawBoardRepo.getYDocFromMdb(docName);
+
 			this.registerAwarenessUpdateHandler(doc);
 			this.registerUpdateHandler(doc);
 			this.subscribeToRedisChannels(doc);
-
-			await this.loadDocument(docName, doc);
 			this.registerDatabaseUpdateHandler(doc);
 
 			this.docs.set(docName, doc);
@@ -380,15 +376,6 @@ export class TldrawWsService {
 					new WsSharedDocErrorLoggable(doc.name, 'Error while unsubscribing from Redis channels', err)
 				);
 			});
-	}
-
-	private async loadDocument(docName: string, doc: WsSharedDocDo) {
-		try {
-			await this.tldrawBoardRepo.loadDocument(docName, doc);
-		} catch (err) {
-			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while updating document', err));
-			throw err;
-		}
 	}
 
 	private publishUpdateToRedis(doc: WsSharedDocDo, update: Uint8Array, type: 'awareness' | 'document') {

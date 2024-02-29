@@ -13,10 +13,13 @@ import { TldrawConfig } from '../config';
 import { YTransaction } from '../types';
 import { TldrawRepo } from './tldraw.repo';
 import { KeyFactory } from './key.factory';
+import { WsSharedDocDo } from '@modules/tldraw/domain';
 
 @Injectable()
 export class YMongodb {
 	private readonly maxDocumentSize: number;
+
+	private readonly gcEnabled: boolean;
 
 	private readonly _transact: <T extends Promise<YTransaction>>(docName: string, fn: () => T) => T;
 
@@ -31,6 +34,7 @@ export class YMongodb {
 	) {
 		this.logger.setContext(YMongodb.name);
 
+		this.gcEnabled = this.configService.get<boolean>('TLDRAW_GC_ENABLED');
 		this.maxDocumentSize = this.configService.get<number>('TLDRAW_MAX_DOCUMENT_SIZE');
 
 		// execute a transaction on a database
@@ -71,12 +75,12 @@ export class YMongodb {
 		await this.repo.ensureIndexes();
 	}
 
-	public getYDoc(docName: string): Promise<Doc> {
-		return this._transact(docName, async (): Promise<Doc> => {
+	public getYDoc(docName: string): Promise<WsSharedDocDo> {
+		return this._transact(docName, async (): Promise<WsSharedDocDo> => {
 			const updates = await this.getMongoUpdates(docName);
 			const mergedUpdates = mergeUpdates(updates);
 
-			const ydoc = new Doc();
+			const ydoc = new WsSharedDocDo(docName, this.gcEnabled);
 			ydoc.transact(() => {
 				applyUpdate(ydoc, mergedUpdates);
 			});
