@@ -5,7 +5,7 @@ import type { AccountConfig } from '@modules/account';
 import type { AuthenticationConfig, XApiKeyConfig } from '@modules/authentication';
 import type { BoardConfig } from '@modules/board';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
-import type { CommonCartridgeConfig, LearnroomConfig } from '@modules/learnroom';
+import type { LearnroomConfig } from '@modules/learnroom';
 import type { LessonConfig } from '@modules/lesson';
 import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
@@ -34,7 +34,6 @@ export interface ServerConfig
 		FilesStorageClientConfig,
 		AccountConfig,
 		IdentityManagementConfig,
-		CommonCartridgeConfig,
 		SchoolConfig,
 		MailConfig,
 		XApiKeyConfig,
