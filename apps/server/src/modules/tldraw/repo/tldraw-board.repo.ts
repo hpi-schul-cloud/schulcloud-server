@@ -53,9 +53,8 @@ export class TldrawBoardRepo {
 	}
 
 	public async storeUpdate(docName: string, update: Uint8Array): Promise<void> {
-		await this.mdb.storeUpdateTransactional(docName, update);
+		const currentClock = await this.mdb.storeUpdateTransactional(docName, update);
 
-		const currentClock = await this.mdb.getCurrentUpdateClock(docName);
 		if (currentClock % this.compressThreshold === 0) {
 			await this.compressDocument(docName);
 		}
