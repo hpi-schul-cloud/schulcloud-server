@@ -3,7 +3,7 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 export class WebsocketErrorLoggable implements Loggable {
 	private error: Error | undefined;
 
-	constructor(private readonly type: 'onError' | 'onMessage', private readonly err: unknown) {
+	constructor(private readonly err: unknown) {
 		if (err instanceof Error) {
 			this.error = err;
 		}
@@ -11,7 +11,7 @@ export class WebsocketErrorLoggable implements Loggable {
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			message: `Websocket error in: ${this.type}`,
+			message: `Websocket error event`,
 			type: 'WEBSOCKET_ERROR',
 			error: this.error,
 		};

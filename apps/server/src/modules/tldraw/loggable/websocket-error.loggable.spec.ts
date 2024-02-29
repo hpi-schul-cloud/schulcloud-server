@@ -5,7 +5,7 @@ describe('WebsocketErrorLoggable', () => {
 		const setup = () => {
 			const error = new Error('test');
 
-			const loggable = new WebsocketErrorLoggable('onMessage', error);
+			const loggable = new WebsocketErrorLoggable(error);
 			return { loggable, error };
 		};
 
@@ -14,7 +14,7 @@ describe('WebsocketErrorLoggable', () => {
 
 			const message = loggable.getLogMessage();
 
-			expect(message).toEqual({ message: 'Websocket error in: onMessage', error, type: 'WEBSOCKET_ERROR' });
+			expect(message).toEqual({ message: 'Websocket error event', error, type: 'WEBSOCKET_ERROR' });
 		});
 	});
 });

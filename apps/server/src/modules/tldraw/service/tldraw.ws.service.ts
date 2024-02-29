@@ -169,14 +169,14 @@ export class TldrawWsService {
 		doc.connections.set(ws, new Set());
 
 		ws.on('error', (err) => {
-			this.logger.warning(new WebsocketErrorLoggable('onError', err));
+			this.logger.warning(new WebsocketErrorLoggable(err));
 		});
 
 		ws.on('message', (message: ArrayBufferLike) => {
 			try {
 				this.messageHandler(ws, doc, new Uint8Array(message));
 			} catch (err) {
-				this.logger.warning(new WebsocketErrorLoggable('onMessage', err));
+				this.logger.warning(new WebsocketMessageErrorLoggable(err));
 			}
 		});
 
