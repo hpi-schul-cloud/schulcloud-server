@@ -42,4 +42,13 @@ export class LessonUC {
 
 		return filteredLessons;
 	}
+
+	async getLesson(userId: EntityId, lessonId: EntityId): Promise<LessonEntity> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const lesson = await this.lessonService.findById(lessonId);
+
+		this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.read([Permission.TOPIC_VIEW]));
+
+		return lesson;
+	}
 }
