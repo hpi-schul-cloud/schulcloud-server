@@ -160,7 +160,7 @@ export class TldrawWsService {
 		}
 
 		if (channelId === doc.awarenessChannel) {
-			applyAwarenessUpdate(doc.awareness, update, this.sub);
+			applyAwarenessUpdate(doc.awareness, update, 'redis');
 		}
 	};
 
