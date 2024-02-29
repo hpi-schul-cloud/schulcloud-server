@@ -4,7 +4,7 @@ import WebSocket from 'ws';
 import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
 import { decoding, encoding, map } from 'lib0';
 import { readSyncMessage, writeSyncStep1, writeUpdate } from 'y-protocols/sync';
-import { applyUpdate } from 'yjs';
+import { applyUpdate, encodeStateAsUpdate } from 'yjs';
 import { Buffer } from 'node:buffer';
 import { Redis } from 'ioredis';
 import { Logger } from '@src/core/logger';
