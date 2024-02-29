@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { ConfigService } from '@nestjs/config';
-import { TldrawConfig } from '@modules/tldraw/config';
-import { MongoTransactionErrorLoggable } from '../loggable';
+import { TldrawConfig } from '../config';
 import { WsSharedDocDo } from '../domain';
 import { YMongodb } from './y-mongodb';
 
