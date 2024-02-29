@@ -29,7 +29,6 @@ import {
 import { WsSharedDocDo } from '../domain';
 import { TldrawBoardRepo } from '../repo';
 import { MetricsService } from '../metrics';
-import { TldrawFilesStorageAdapterService } from './tldraw-files-storage.service';
 
 @Injectable()
 export class TldrawWsService {
@@ -48,8 +47,7 @@ export class TldrawWsService {
 		private readonly tldrawBoardRepo: TldrawBoardRepo,
 		private readonly logger: Logger,
 		private readonly metricsService: MetricsService,
-		private readonly tldrawRedisFactory: TldrawRedisFactory,
-		private readonly filesStorageTldrawAdapterService: TldrawFilesStorageAdapterService
+		private readonly tldrawRedisFactory: TldrawRedisFactory
 	) {
 		this.logger.setContext(TldrawWsService.name);
 		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
@@ -117,7 +115,7 @@ export class TldrawWsService {
 			this.registerUpdateHandler(doc);
 			this.subscribeToRedisChannels(doc);
 
-			await this.updateDocument(docName, doc);
+			await this.loadDocument(docName, doc);
 			this.registerDatabaseUpdateHandler(doc);
 
 			this.docs.set(docName, doc);
@@ -242,10 +240,9 @@ export class TldrawWsService {
 	private async storeStateAndDestroyYDocIfPersisted(doc: WsSharedDocDo) {
 		if (doc.connections.size === 0) {
 			// if persisted, we store state and destroy yDoc
+			this.syncDocumentAssetsWithShapes(doc);
 			try {
-				const usedAssets = this.syncDocumentAssetsWithShapes(doc);
-				await this.filesStorageTldrawAdapterService.deleteUnusedFilesForDocument(doc.name, usedAssets);
-				await this.tldrawBoardRepo.flushDocument(doc.name);
+				await this.tldrawBoardRepo.compressDocument(doc.name);
 				this.unsubscribeFromRedisChannels(doc);
 				doc.destroy();
 			} catch (err) {
@@ -374,9 +371,9 @@ export class TldrawWsService {
 			});
 	}
 
-	private async updateDocument(docName: string, doc: WsSharedDocDo) {
+	private async loadDocument(docName: string, doc: WsSharedDocDo) {
 		try {
-			await this.tldrawBoardRepo.updateDocument(docName, doc);
+			await this.tldrawBoardRepo.loadDocument(docName, doc);
 		} catch (err) {
 			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while updating document', err));
 			throw err;

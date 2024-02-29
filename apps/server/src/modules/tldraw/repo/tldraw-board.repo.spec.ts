@@ -3,6 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import WebSocket from 'ws';
 import { WsAdapter } from '@nestjs/platform-ws';
 import { Doc } from 'yjs';
+import * as Yjs from 'yjs';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { Logger } from '@src/core/logger';
@@ -12,7 +13,7 @@ import { createConfigModuleOptions } from '@src/config';
 import * as YjsUtils from '../utils/ydoc-utils';
 import { TldrawBoardRepo } from './tldraw-board.repo';
 import { WsSharedDocDo } from '../domain';
-import { TldrawFilesStorageAdapterService, TldrawWsService } from '../service';
+import { TldrawWsService } from '../service';
 import { TestConnection, tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { TldrawWs } from '../controller';
@@ -20,6 +21,14 @@ import { MetricsService } from '../metrics';
 import { TldrawRepo } from './tldraw.repo';
 import { YMongodb } from './y-mongodb';
 import { TldrawRedisFactory } from '../redis';
+
+jest.mock('yjs', () => {
+	const moduleMock: unknown = {
+		__esModule: true,
+		...jest.requireActual('yjs'),
+	};
+	return moduleMock;
+});
 
 describe('TldrawBoardRepo', () => {
 	let app: INestApplication;
@@ -55,10 +64,6 @@ describe('TldrawBoardRepo', () => {
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
 				},
-				{
-					provide: TldrawFilesStorageAdapterService,
-					useValue: createMock<TldrawFilesStorageAdapterService>(),
-				},
 			],
 		}).compile();
 
@@ -84,7 +89,7 @@ describe('TldrawBoardRepo', () => {
 		expect(repo.mdb).toBeDefined();
 	});
 
-	describe('updateDocument', () => {
+	describe('loadDocument', () => {
 		describe('when document receives empty update', () => {
 			const setup = async () => {
 				const doc = new WsSharedDocDo('TEST2');
@@ -105,7 +110,7 @@ describe('TldrawBoardRepo', () => {
 			it('should not update db with diff', async () => {
 				const { doc, storeUpdateSpy, storeGetYDocSpy } = await setup();
 
-				await repo.updateDocument('TEST2', doc);
+				await repo.loadDocument('TEST2', doc);
 
 				expect(storeUpdateSpy).toHaveBeenCalledTimes(0);
 				storeUpdateSpy.mockRestore();
@@ -116,36 +121,30 @@ describe('TldrawBoardRepo', () => {
 
 		describe('when document receive update', () => {
 			const setup = async () => {
-				const clientMessageMock = 'test-message';
 				const doc = new WsSharedDocDo('TEST');
 				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 				const wsSet: Set<number> = new Set();
 				wsSet.add(0);
 				doc.connections.set(ws, wsSet);
-				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdateTransactional').mockResolvedValue(1);
+				const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdateTransactional').mockResolvedValueOnce(1);
 				const storeGetYDocSpy = jest.spyOn(repo.mdb, 'getYDoc').mockResolvedValueOnce(new WsSharedDocDo('TEST'));
-				const byteArray = new TextEncoder().encode(clientMessageMock);
-				const errorLogSpy = jest.spyOn(logger, 'warning');
+				const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValueOnce();
 
 				return {
 					doc,
-					byteArray,
 					storeUpdateSpy,
+					applyUpdateSpy,
 					storeGetYDocSpy,
-					errorLogSpy,
 				};
 			};
 
-			it('should update db with diff', async () => {
-				const { doc, byteArray, storeUpdateSpy, storeGetYDocSpy } = await setup();
+			it('should call applyUpdate', async () => {
+				const { doc, applyUpdateSpy } = await setup();
 
-				await repo.updateDocument('TEST', doc);
-				doc.emit('update', [byteArray, undefined, doc]);
+				await repo.loadDocument('TEST', doc);
 
-				expect(storeUpdateSpy).toHaveBeenCalled();
-				expect(storeUpdateSpy).toHaveBeenCalledTimes(1);
-				storeUpdateSpy.mockRestore();
-				storeGetYDocSpy.mockRestore();
+				expect(applyUpdateSpy).toHaveBeenCalled();
+				applyUpdateSpy.mockRestore();
 				ws.close();
 			});
 		});
@@ -243,17 +242,17 @@ describe('TldrawBoardRepo', () => {
 		});
 	});
 
-	describe('flushDocument', () => {
+	describe('compressDocument', () => {
 		const setup = () => {
-			const flushDocumentSpy = jest.spyOn(repo.mdb, 'flushDocumentTransactional').mockResolvedValueOnce();
+			const flushDocumentSpy = jest.spyOn(repo.mdb, 'compressDocumentTransactional').mockResolvedValueOnce();
 
 			return { flushDocumentSpy };
 		};
 
-		it('should call flush method on YMongo', async () => {
+		it('should call compress method on YMongo', async () => {
 			const { flushDocumentSpy } = setup();
 
-			await repo.flushDocument('test');
+			await repo.compressDocument('test');
 
 			expect(flushDocumentSpy).toHaveBeenCalled();
 			flushDocumentSpy.mockRestore();
@@ -263,8 +262,14 @@ describe('TldrawBoardRepo', () => {
 	describe('storeUpdate', () => {
 		const setup = () => {
 			const storeUpdateSpy = jest.spyOn(repo.mdb, 'storeUpdateTransactional');
+			const getCurrentUpdateClockSpy = jest.spyOn(repo.mdb, 'getCurrentUpdateClock').mockResolvedValue(2);
+			const compressDocumentSpy = jest.spyOn(repo.mdb, 'compressDocumentTransactional').mockResolvedValueOnce();
 
-			return { storeUpdateSpy };
+			return {
+				storeUpdateSpy,
+				getCurrentUpdateClockSpy,
+				compressDocumentSpy,
+			};
 		};
 
 		it('should call store update method on YMongo', async () => {
@@ -273,6 +278,17 @@ describe('TldrawBoardRepo', () => {
 			await repo.storeUpdate('test', new Uint8Array());
 
 			expect(storeUpdateSpy).toHaveBeenCalled();
+			storeUpdateSpy.mockRestore();
+		});
+
+		it('should call compressDocument if compress threshold was reached', async () => {
+			const { storeUpdateSpy, getCurrentUpdateClockSpy, compressDocumentSpy } = setup();
+
+			await repo.storeUpdate('test', new Uint8Array());
+
+			expect(storeUpdateSpy).toHaveBeenCalled();
+			expect(getCurrentUpdateClockSpy).toHaveBeenCalled();
+			expect(compressDocumentSpy).toHaveBeenCalled();
 			storeUpdateSpy.mockRestore();
 		});
 	});

@@ -12,7 +12,7 @@ import { TldrawRedisFactory } from '../redis';
 import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { TldrawWs } from '../controller';
-import { TldrawFilesStorageAdapterService, TldrawWsService } from '../service';
+import { TldrawWsService } from '../service';
 import { MetricsService } from '../metrics';
 import { TldrawBoardRepo } from './tldraw-board.repo';
 import { TldrawRepo } from './tldraw.repo';
@@ -53,10 +53,6 @@ describe('YMongoDb', () => {
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
-				},
-				{
-					provide: TldrawFilesStorageAdapterService,
-					useValue: createMock<TldrawFilesStorageAdapterService>(),
 				},
 			],
 		}).compile();
@@ -143,7 +139,7 @@ describe('YMongoDb', () => {
 		it('should merge multiple documents with the same name in the database into two (one main document and one with update)', async () => {
 			const { applyUpdateSpy, drawing1 } = await setup();
 
-			await mdb.flushDocumentTransactional(drawing1.docName);
+			await mdb.compressDocumentTransactional(drawing1.docName);
 			const docs = await em.findAndCount(TldrawDrawing, { docName: drawing1.docName });
 
 			expect(docs.length).toEqual(2);
@@ -173,6 +169,7 @@ describe('YMongoDb', () => {
 		describe('when getting document with well defined parts', () => {
 			const setup = async () => {
 				const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValue();
+				const mergeUpdatesSpy = jest.spyOn(Yjs, 'mergeUpdates').mockReturnValue(new Uint8Array([]));
 
 				const drawing1 = tldrawEntityFactory.build({ clock: 1, part: 1 });
 				const drawing2 = tldrawEntityFactory.build({ clock: 1, part: 2 });
@@ -183,6 +180,7 @@ describe('YMongoDb', () => {
 
 				return {
 					applyUpdateSpy,
+					mergeUpdatesSpy,
 					drawing1,
 					drawing2,
 					drawing3,

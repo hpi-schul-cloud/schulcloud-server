@@ -24,7 +24,7 @@ import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../repo';
 import { TestConnection, tldrawTestConfig } from '../testing';
 import { WsSharedDocDo } from '../domain';
 import { MetricsService } from '../metrics';
-import { TldrawFilesStorageAdapterService, TldrawWsService } from '.';
+import { TldrawWsService } from '.';
 import { TldrawAsset, TldrawShape, TldrawShapeType } from '../types';
 
 jest.mock('yjs', () => {
@@ -88,10 +88,6 @@ describe('TldrawWSService', () => {
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
-				},
-				{
-					provide: TldrawFilesStorageAdapterService,
-					useValue: createMock<TldrawFilesStorageAdapterService>(),
 				},
 			],
 		}).compile();
@@ -523,7 +519,7 @@ describe('TldrawWSService', () => {
 			const setup = async () => {
 				ws = await TestConnection.setupWs(wsUrl);
 
-				const flushDocumentSpy = jest.spyOn(boardRepo, 'flushDocument').mockResolvedValueOnce();
+				const flushDocumentSpy = jest.spyOn(boardRepo, 'compressDocument').mockResolvedValueOnce();
 				const redisUnsubscribeSpy = jest.spyOn(Ioredis.Redis.prototype, 'unsubscribe').mockResolvedValueOnce(1);
 				const closeConnSpy = jest.spyOn(service, 'closeConn');
 				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce({});
@@ -552,7 +548,7 @@ describe('TldrawWSService', () => {
 			const setup = async () => {
 				ws = await TestConnection.setupWs(wsUrl);
 
-				const flushDocumentSpy = jest.spyOn(boardRepo, 'flushDocument').mockResolvedValueOnce();
+				const flushDocumentSpy = jest.spyOn(boardRepo, 'compressDocument').mockResolvedValueOnce();
 				const redisUnsubscribeSpy = jest.spyOn(Ioredis.Redis.prototype, 'unsubscribe').mockResolvedValueOnce(1);
 				const closeConnSpy = jest.spyOn(service, 'closeConn').mockRejectedValueOnce(new Error('error'));
 				const errorLogSpy = jest.spyOn(logger, 'warning');
@@ -593,7 +589,7 @@ describe('TldrawWSService', () => {
 				const doc = TldrawWsFactory.createWsSharedDocDo();
 				doc.connections.set(ws, new Set<number>());
 
-				const flushDocumentSpy = jest.spyOn(boardRepo, 'flushDocument').mockResolvedValueOnce();
+				const flushDocumentSpy = jest.spyOn(boardRepo, 'compressDocument').mockResolvedValueOnce();
 				const redisUnsubscribeSpy = jest
 					.spyOn(Ioredis.Redis.prototype, 'unsubscribe')
 					.mockImplementationOnce((...args: unknown[]) => {
@@ -635,7 +631,7 @@ describe('TldrawWSService', () => {
 				const doc = TldrawWsFactory.createWsSharedDocDo();
 				doc.connections.set(ws, new Set<number>());
 
-				const flushDocumentSpy = jest.spyOn(boardRepo, 'flushDocument').mockResolvedValueOnce();
+				const flushDocumentSpy = jest.spyOn(boardRepo, 'compressDocument').mockResolvedValueOnce();
 				const redisUnsubscribeSpy = jest
 					.spyOn(Ioredis.Redis.prototype, 'unsubscribe')
 					.mockRejectedValue(new Error('error'));
@@ -673,7 +669,7 @@ describe('TldrawWSService', () => {
 
 				const closeConnSpy = jest.spyOn(service, 'closeConn');
 				const errorLogSpy = jest.spyOn(logger, 'warning');
-				const updateDocSpy = jest.spyOn(boardRepo, 'updateDocument');
+				const updateDocSpy = jest.spyOn(boardRepo, 'loadDocument');
 				const sendSpy = jest.spyOn(service, 'send').mockImplementation(() => {});
 
 				return {
@@ -746,7 +742,7 @@ describe('TldrawWSService', () => {
 				const sendSpy = jest.spyOn(service, 'send').mockImplementation(() => {});
 				const clearIntervalSpy = jest.spyOn(global, 'clearInterval');
 				const errorLogSpy = jest.spyOn(logger, 'warning');
-				jest.spyOn(boardRepo, 'updateDocument').mockImplementationOnce(() => Promise.resolve());
+				jest.spyOn(boardRepo, 'loadDocument').mockImplementationOnce(() => Promise.resolve());
 				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce({});
 
 				return {
@@ -825,7 +821,7 @@ describe('TldrawWSService', () => {
 				const doc = TldrawWsFactory.createWsSharedDocDo();
 				doc.connections.set(ws, new Set<number>());
 
-				const flushDocumentSpy = jest.spyOn(boardRepo, 'flushDocument');
+				const flushDocumentSpy = jest.spyOn(boardRepo, 'compressDocument');
 				const errorLogSpy = jest.spyOn(logger, 'warning');
 
 				return {

@@ -9,7 +9,7 @@ import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { MetricsService } from './metrics';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
-import { TldrawFilesStorageAdapterService, TldrawWsService } from './service';
+import { TldrawWsService } from './service';
 import { config } from './config';
 import { TldrawWs } from './controller';
 import { TldrawDrawing } from './entities';
@@ -32,7 +32,6 @@ const providers = [
 	YMongodb,
 	MetricsService,
 	TldrawRedisFactory,
-	TldrawFilesStorageAdapterService,
 ];
 @Module({
 	imports,
