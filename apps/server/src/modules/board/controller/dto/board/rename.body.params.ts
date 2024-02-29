@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
 import { SanitizeHtml } from '@shared/controller';
+import { IsString, MaxLength } from 'class-validator';
 
 export class RenameBodyParams {
 	@IsString()
@@ -9,5 +9,6 @@ export class RenameBodyParams {
 		nullable: false,
 	})
 	@SanitizeHtml()
+	@MaxLength(100)
 	title!: string;
 }
