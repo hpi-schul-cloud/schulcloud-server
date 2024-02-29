@@ -171,9 +171,9 @@ describe('FilesStorageClientAdapterService', () => {
 			it('Should call all steps.', async () => {
 				const { recordId, spy } = setup();
 
-				await service.deleteOneFile(recordId);
+				await service.deleteFiles(recordId);
 
-				expect(client.deleteOneFile).toHaveBeenCalledWith(recordId);
+				expect(client.deleteFiles).toHaveBeenCalledWith(recordId);
 				expect(spy).toBeCalled();
 
 				spy.mockRestore();
@@ -184,7 +184,7 @@ describe('FilesStorageClientAdapterService', () => {
 			const setup = () => {
 				const recordId = new ObjectId().toHexString();
 
-				client.deleteOneFile.mockRejectedValue(new Error());
+				client.deleteFiles.mockRejectedValue(new Error());
 
 				return { recordId };
 			};
@@ -192,7 +192,7 @@ describe('FilesStorageClientAdapterService', () => {
 			it('Should call error mapper if throw an error.', async () => {
 				const { recordId } = setup();
 
-				await expect(service.deleteOneFile(recordId)).rejects.toThrowError();
+				await expect(service.deleteFiles(recordId)).rejects.toThrowError();
 			});
 		});
 	});

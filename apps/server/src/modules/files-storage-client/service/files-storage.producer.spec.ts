@@ -253,7 +253,7 @@ describe('FilesStorageProducer', () => {
 			it('should call error mapper and throw with error', async () => {
 				const { recordId, spy } = setup();
 
-				await expect(service.deleteOneFile(recordId)).rejects.toThrowError();
+				await expect(service.deleteFiles(recordId)).rejects.toThrowError();
 				expect(spy).toBeCalled();
 			});
 		});
@@ -267,7 +267,7 @@ describe('FilesStorageProducer', () => {
 
 				const expectedParams = {
 					exchange: FilesStorageExchange,
-					routingKey: FilesStorageEvents.DELETE_ONE_FILE,
+					routingKey: FilesStorageEvents.DELETE_Files,
 					payload: recordId,
 					timeout,
 				};
@@ -278,7 +278,7 @@ describe('FilesStorageProducer', () => {
 			it('should call the ampqConnection.', async () => {
 				const { recordId, expectedParams } = setup();
 
-				await service.deleteOneFile(recordId);
+				await service.deleteFiles(recordId);
 
 				expect(amqpConnection.request).toHaveBeenCalledWith(expectedParams);
 			});
@@ -286,7 +286,7 @@ describe('FilesStorageProducer', () => {
 			it('should return the response message.', async () => {
 				const { recordId, message } = setup();
 
-				const res = await service.deleteOneFile(recordId);
+				const res = await service.deleteFiles(recordId);
 
 				expect(res).toEqual(message);
 			});
