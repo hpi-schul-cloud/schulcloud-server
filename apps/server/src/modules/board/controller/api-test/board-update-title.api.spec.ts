@@ -2,6 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ApiValidationError } from '@shared/common';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { ColumnBoardNode } from '@shared/domain/entity';
 import {
@@ -98,6 +99,12 @@ describe(`board update title (api)`, () => {
 
 			const response = await loggedInClient.patch(`${columnBoardNode.id}/title`, { title: newTitle });
 
+			expect((response.body as ApiValidationError).validationErrors).toEqual([
+				{
+					errors: ['title must be shorter than or equal to 100 characters'],
+					field: ['title'],
+				},
+			]);
 			expect(response.status).toEqual(400);
 		});
 	});
