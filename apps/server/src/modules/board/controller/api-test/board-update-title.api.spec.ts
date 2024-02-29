@@ -5,11 +5,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { ColumnBoardNode } from '@shared/domain/entity';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
 	courseFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 
 const baseRouteName = '/boards';
@@ -89,6 +89,16 @@ describe(`board update title (api)`, () => {
 			const result = await em.findOneOrFail(ColumnBoardNode, columnBoardNode.id);
 
 			expect(result.title).toEqual(sanitizedTitle);
+		});
+
+		it('should return status 400 when title is too long', async () => {
+			const { loggedInClient, columnBoardNode } = await setup();
+
+			const newTitle = 'a'.repeat(101);
+
+			const response = await loggedInClient.patch(`${columnBoardNode.id}/title`, { title: newTitle });
+
+			expect(response.status).toEqual(400);
 		});
 	});
 
