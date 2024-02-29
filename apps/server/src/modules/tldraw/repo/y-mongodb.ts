@@ -81,9 +81,7 @@ export class YMongodb {
 			const mergedUpdates = mergeUpdates(updates);
 
 			const ydoc = new WsSharedDocDo(docName, this.gcEnabled);
-			ydoc.transact(() => {
-				applyUpdate(ydoc, mergedUpdates);
-			});
+			applyUpdate(ydoc, mergedUpdates);
 
 			return ydoc;
 		});
@@ -99,9 +97,7 @@ export class YMongodb {
 			const mergedUpdates = mergeUpdates(updates);
 
 			const ydoc = new Doc();
-			ydoc.transact(() => {
-				applyUpdate(ydoc, mergedUpdates);
-			});
+			applyUpdate(ydoc, mergedUpdates);
 
 			const stateAsUpdate = encodeStateAsUpdate(ydoc);
 			const sv = encodeStateVector(ydoc);
