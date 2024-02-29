@@ -55,6 +55,7 @@ describe('TldrawWSService', () => {
 	let service: TldrawWsService;
 	let boardRepo: TldrawBoardRepo;
 	let logger: DeepMocked<Logger>;
+	let tldrawFilesStorageAdapterService: DeepMocked<TldrawFilesStorageAdapterService>;
 
 	const gatewayPort = 3346;
 	const wsUrl = TestConnection.getWsUrl(gatewayPort);
@@ -99,6 +100,7 @@ describe('TldrawWSService', () => {
 		service = testingModule.get(TldrawWsService);
 		boardRepo = testingModule.get(TldrawBoardRepo);
 		logger = testingModule.get(Logger);
+		tldrawFilesStorageAdapterService = testingModule.get(TldrawFilesStorageAdapterService);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
 		await app.init();
@@ -545,6 +547,34 @@ describe('TldrawWSService', () => {
 				closeConnSpy.mockRestore();
 				flushDocumentSpy.mockRestore();
 				redisUnsubscribeSpy.mockRestore();
+			});
+		});
+
+		describe('when deleteUnusedFilesForDocument fails', () => {
+			const setup = async () => {
+				ws = await TestConnection.setupWs(wsUrl);
+				const doc = TldrawWsFactory.createWsSharedDocDo();
+
+				const errorLogSpy = jest.spyOn(logger, 'warning');
+				const storageSpy = jest
+					.spyOn(tldrawFilesStorageAdapterService, 'deleteUnusedFilesForDocument')
+					.mockRejectedValueOnce(new Error('error'));
+
+				return {
+					doc,
+					errorLogSpy,
+					storageSpy,
+				};
+			};
+
+			it('should log error', async () => {
+				const { doc, errorLogSpy } = await setup();
+
+				await service.closeConn(doc, ws);
+				await delay(100);
+
+				expect(errorLogSpy).toHaveBeenCalled();
+				ws.close();
 			});
 		});
 
@@ -1017,6 +1047,23 @@ describe('TldrawWSService', () => {
 				messageHandlerSpy.mockRestore();
 				readSyncMessageSpy.mockRestore();
 				publishSpy.mockRestore();
+			});
+
+			it('should log error when messageHandler throws', async () => {
+				const { messageHandlerSpy, msg, errorLogSpy } = await setup([0, 1]);
+				messageHandlerSpy.mockImplementationOnce(() => {
+					throw new Error('error');
+				});
+
+				await service.setupWSConnection(ws, 'TEST');
+				ws.emit('message', msg);
+
+				await delay(20);
+
+				expect(errorLogSpy).toHaveBeenCalled();
+				ws.close();
+				messageHandlerSpy.mockRestore();
+				errorLogSpy.mockRestore();
 			});
 
 			it('should log error when publish to Redis throws', async () => {
