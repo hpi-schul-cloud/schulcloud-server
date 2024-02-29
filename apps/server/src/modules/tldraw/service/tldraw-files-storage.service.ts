@@ -23,7 +23,7 @@ export class TldrawFilesStorageAdapterService {
 		const fileRecordIdsForDeletion: string[] = [];
 
 		fileRecords.forEach((fileRecord) => {
-			const foundAsset = usedAssets.find((asset) => this.matchAssetWithFileRecord(asset, fileRecord));
+			const foundAsset = usedAssets.some((asset) => this.matchAssetWithFileRecord(asset, fileRecord));
 			if (!foundAsset) {
 				fileRecordIdsForDeletion.push(fileRecord.id);
 			}
