@@ -99,8 +99,9 @@ export class YMongodb {
 				applyUpdate(ydoc, mergedUpdates);
 			});
 
+			const stateAsUpdate = encodeStateAsUpdate(ydoc);
 			const sv = encodeStateVector(ydoc);
-			const clock = await this.storeUpdate(docName, mergedUpdates);
+			const clock = await this.storeUpdate(docName, stateAsUpdate);
 			await this.writeStateVector(docName, sv, clock);
 			await this.clearUpdatesRange(docName, 0, clock);
 
@@ -240,30 +241,6 @@ export class YMongodb {
 		}
 
 		return clock + 1;
-	}
-
-	/**
-	 * For now this is a helper method that creates a Y.Doc and then re-encodes a document update.
-	 * In the future this will be handled by Yjs without creating a Y.Doc (constant memory consumption).
-	 */
-	private mergeUpdates(updates: Array<Uint8Array>): { update: Uint8Array; sv: Uint8Array } {
-		const ydoc = new Doc();
-		ydoc.transact(() => {
-			for (const element of updates) {
-				applyUpdate(ydoc, element);
-			}
-		});
-		return { update: encodeStateAsUpdate(ydoc), sv: encodeStateVector(ydoc) };
-	}
-
-	/**
-	 * Merge all MongoDB documents of the same yjs document together.
-	 */
-	private async flushDocument(docName: string, stateAsUpdate: Uint8Array, stateVector: Uint8Array): Promise<number> {
-		const clock = await this.storeUpdate(docName, stateAsUpdate);
-		await this.writeStateVector(docName, stateVector, clock);
-		await this.clearUpdatesRange(docName, 0, clock);
-		return clock;
 	}
 
 	private isSameClock(doc1: TldrawDrawing, doc2: TldrawDrawing): boolean {
