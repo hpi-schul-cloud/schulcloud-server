@@ -7,9 +7,7 @@ export class TldrawFilesStorageAdapterService {
 	constructor(private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService) {}
 
 	public async deleteUnusedFilesForDocument(docName: string, usedAssets: TldrawAsset[]): Promise<void> {
-		console.log(usedAssets);
 		const fileRecords = await this.filesStorageClientAdapterService.listFilesOfParent(docName);
-		console.log(fileRecords);
 		const fileRecordIdsForDeletion = this.foundAssetsForDeletion(fileRecords, usedAssets);
 
 		if (fileRecordIdsForDeletion.length === 0) {
