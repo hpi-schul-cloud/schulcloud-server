@@ -9,17 +9,25 @@ import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
+import { IEventHandler, EventBus } from '@nestjs/cqrs';
+import { UserDeletedEvent, DataDeletedEvent } from '@src/modules/deletion/event';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 
 @Injectable()
-export class PseudonymService implements DeletionService {
+export class PseudonymService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly pseudonymRepo: PseudonymsRepo,
 		private readonly externalToolPseudonymRepo: ExternalToolPseudonymRepo,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus
 	) {
 		this.logger.setContext(PseudonymService.name);
+	}
+
+	async handle({ deletionRequest }: UserDeletedEvent) {
+		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
 	}
 
 	public async findByUserAndToolOrThrow(user: UserDO, tool: ExternalTool | LtiToolDO): Promise<Pseudonym> {

@@ -6,11 +6,22 @@ import { NewsRepo } from '@shared/repo';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
 import { News } from '@shared/domain/entity';
+import { IEventHandler, EventBus } from '@nestjs/cqrs';
+import { UserDeletedEvent, DataDeletedEvent } from '@src/modules/deletion/event';
 
 @Injectable()
-export class NewsService implements DeletionService {
-	constructor(private readonly newsRepo: NewsRepo, private readonly logger: Logger) {
+export class NewsService implements DeletionService, IEventHandler<UserDeletedEvent> {
+	constructor(
+		private readonly newsRepo: NewsRepo,
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus
+	) {
 		this.logger.setContext(NewsService.name);
+	}
+
+	async handle({ deletionRequest }: UserDeletedEvent) {
+		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
 	}
 
 	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
