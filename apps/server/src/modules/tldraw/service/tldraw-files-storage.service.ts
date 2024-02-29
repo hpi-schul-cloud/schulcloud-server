@@ -8,22 +8,22 @@ export class TldrawFilesStorageAdapterService {
 
 	public async deleteUnusedFilesForDocument(docName: string, usedAssets: TldrawAsset[]): Promise<void> {
 		const fileRecords = await this.filesStorageClientAdapterService.listFilesOfParent(docName);
-		const fileRecordIdsForDeletion: string[] = [];
-
-		fileRecords.forEach((fileRecord) => {
-			const asset = this.foundAssetsForDeletion(fileRecord, usedAssets);
-			if (asset) {
-				fileRecordIdsForDeletion.push(fileRecord.id);
-			}
-		});
+		const fileRecordIdsForDeletion = this.foundAssetsForDeletion(fileRecords, usedAssets);
 
 		await this.filesStorageClientAdapterService.deleteFiles(fileRecordIdsForDeletion);
 	}
 
-	private foundAssetsForDeletion(fileRecord: FileDto, usedAssets: TldrawAsset[]): TldrawAsset | undefined {
-		const foundAsset = usedAssets.find((asset) => this.matchAssetWithFileRecord(asset, fileRecord));
+	private foundAssetsForDeletion(fileRecords: FileDto[], usedAssets: TldrawAsset[]): string[] {
+		const fileRecordIdsForDeletion: string[] = [];
 
-		return foundAsset;
+		fileRecords.forEach((fileRecord) => {
+			const foundAsset = usedAssets.some((asset) => this.matchAssetWithFileRecord(asset, fileRecord));
+			if (foundAsset) {
+				fileRecordIdsForDeletion.push(fileRecord.id);
+			}
+		});
+
+		return fileRecordIdsForDeletion;
 	}
 
 	private matchAssetWithFileRecord(asset: TldrawAsset, fileRecord: FileDto) {
