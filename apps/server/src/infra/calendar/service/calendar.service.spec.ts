@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { HttpService } from '@nestjs/axios';
-import { InternalServerErrorException } from '@nestjs/common';
+import { HttpStatus, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@shared/testing';
 import { AxiosResponse } from 'axios';
@@ -89,6 +89,28 @@ describe('CalendarServiceSpec', () => {
 			await expect(service.findEvent('invalid userId', 'invalid eventId')).rejects.toThrow(
 				InternalServerErrorException
 			);
+		});
+	});
+
+	describe('deleteEventsByScopeId', () => {
+		describe('when calling the delete events method', () => {
+			const setup = () => {
+				httpService.delete.mockReturnValue(
+					of(
+						axiosResponseFactory.build({
+							data: '',
+							status: HttpStatus.NO_CONTENT,
+							statusText: 'OK',
+						})
+					)
+				);
+			};
+
+			it('should call axios delete method', async () => {
+				setup();
+				await service.deleteEventsByScopeId('test');
+				expect(httpService.delete).toHaveBeenCalled();
+			});
 		});
 	});
 });

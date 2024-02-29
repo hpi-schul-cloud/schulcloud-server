@@ -43,6 +43,16 @@ export class CalendarService {
 			});
 	}
 
+	deleteEventsByScopeId(scopeId: EntityId): Promise<void> {
+		return this.delete(`/scopes/${scopeId}`, {
+			headers: {
+				Authorization: scopeId,
+				Accept: 'Application/json',
+			},
+			timeout: this.timeoutMs,
+		});
+	}
+
 	private get(
 		path: string,
 		queryParams: URLSearchParams,
@@ -52,5 +62,9 @@ export class CalendarService {
 		url.pathname = path;
 		url.search = queryParams.toString();
 		return this.httpService.get(url.toString(), config);
+	}
+
+	async delete<T = unknown>(apiPath: string, config: AxiosRequestConfig): Promise<void> {
+		await firstValueFrom(this.httpService.delete<T>(`${this.baseURL}${apiPath}`, config));
 	}
 }
