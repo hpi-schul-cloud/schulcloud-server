@@ -248,13 +248,13 @@ export class TldrawWsService {
 			// if persisted, we store state and destroy yDoc
 			try {
 				const usedAssets = this.syncDocumentAssetsWithShapes(doc);
-				void this.filesStorageTldrawAdapterService.deleteUnusedFilesForDocument(doc.name, usedAssets).catch((err) => {
-					this.logger.warning(new FileStorageErrorLoggable(doc.name, err));
-				});
 
 				await this.tldrawBoardRepo.compressDocument(doc.name);
 				this.unsubscribeFromRedisChannels(doc);
 
+				void this.filesStorageTldrawAdapterService.deleteUnusedFilesForDocument(doc.name, usedAssets).catch((err) => {
+					this.logger.warning(new FileStorageErrorLoggable(doc.name, err));
+				});
 				doc.destroy();
 			} catch (err) {
 				this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while flushing doc', err));
