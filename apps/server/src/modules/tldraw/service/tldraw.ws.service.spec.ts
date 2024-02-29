@@ -74,10 +74,10 @@ describe('TldrawWSService', () => {
 			providers: [
 				TldrawWs,
 				TldrawWsService,
-				TldrawBoardRepo,
 				YMongodb,
 				MetricsService,
 				TldrawRedisFactory,
+				TldrawBoardRepo,
 				{
 					provide: TldrawRepo,
 					useValue: createMock<TldrawRepo>(),

@@ -53,13 +53,8 @@ export class TldrawWsService {
 	public async closeConn(doc: WsSharedDocDo, ws: WebSocket): Promise<void> {
 		if (doc.connections.has(ws)) {
 			const controlledIds = doc.connections.get(ws);
-			let clientsArray: number[] = [];
-			if (controlledIds) {
-				clientsArray = Array.from(controlledIds);
-			}
-
 			doc.connections.delete(ws);
-			removeAwarenessStates(doc.awareness, clientsArray, null);
+			removeAwarenessStates(doc.awareness, this.forceToArray(controlledIds), null);
 
 			await this.storeStateAndDestroyYDocIfPersisted(doc);
 			this.metricsService.decrementNumberOfUsersOnServerCounter();
@@ -129,33 +124,28 @@ export class TldrawWsService {
 	}
 
 	public messageHandler(conn: WebSocket, doc: WsSharedDocDo, message: Uint8Array): void {
-		try {
-			const encoder = encoding.createEncoder();
-			const decoder = decoding.createDecoder(message);
-			const messageType = decoding.readVarUint(decoder);
-			switch (messageType) {
-				case WSMessageType.SYNC:
-					encoding.writeVarUint(encoder, WSMessageType.SYNC);
-					readSyncMessage(decoder, encoder, doc, conn);
+		const encoder = encoding.createEncoder();
+		const decoder = decoding.createDecoder(message);
+		const messageType = decoding.readVarUint(decoder);
+		switch (messageType) {
+			case WSMessageType.SYNC:
+				encoding.writeVarUint(encoder, WSMessageType.SYNC);
+				readSyncMessage(decoder, encoder, doc, conn);
 
-					// If the `encoder` only contains the type of reply message and no
-					// message, there is no need to send the message. When `encoder` only
-					// contains the type of reply, its length is 1.
-					if (encoding.length(encoder) > 1) {
-						this.send(doc, conn, encoding.toUint8Array(encoder));
-					}
-					break;
-				case WSMessageType.AWARENESS: {
-					const update = decoding.readVarUint8Array(decoder);
-					this.publishUpdateToRedis(doc, update, 'awareness');
-					break;
+				// If the `encoder` only contains the type of reply message and no
+				// message, there is no need to send the message. When `encoder` only
+				// contains the type of reply, its length is 1.
+				if (encoding.length(encoder) > 1) {
+					this.send(doc, conn, encoding.toUint8Array(encoder));
 				}
-				default:
-					break;
+				break;
+			case WSMessageType.AWARENESS: {
+				const update = decoding.readVarUint8Array(decoder);
+				this.publishUpdateToRedis(doc, update, 'awareness');
+				break;
 			}
-		} catch (err) {
-			this.logger.warning(new WebsocketMessageErrorLoggable(err));
-			throw err;
+			default:
+				break;
 		}
 	}
 
@@ -402,5 +392,9 @@ export class TldrawWsService {
 		const result = connection.readyState === WebSocket.CLOSING || connection.readyState === WebSocket.CLOSED;
 
 		return result;
+	}
+
+	private forceToArray(connections: Set<number> | undefined): number[] {
+		return connections ? Array.from(connections) : [];
 	}
 }

@@ -7,16 +7,12 @@ import { YMongodb } from './y-mongodb';
 
 @Injectable()
 export class TldrawBoardRepo {
-	private readonly compressThreshold: number;
-
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
 		readonly mdb: YMongodb,
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(TldrawBoardRepo.name);
-
-		this.compressThreshold = this.configService.get<number>('TLDRAW_DB_COMPRESS_THRESHOLD');
 	}
 
 	public async createDbIndex(): Promise<void> {
@@ -33,9 +29,10 @@ export class TldrawBoardRepo {
 	}
 
 	public async storeUpdate(docName: string, update: Uint8Array): Promise<void> {
+		const compressThreshold = this.configService.get<number>('TLDRAW_DB_COMPRESS_THRESHOLD');
 		const currentClock = await this.mdb.storeUpdateTransactional(docName, update);
 
-		if (currentClock % this.compressThreshold === 0) {
+		if (currentClock % compressThreshold === 0) {
 			await this.compressDocument(docName);
 		}
 	}
