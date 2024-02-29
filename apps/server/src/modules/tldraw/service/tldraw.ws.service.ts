@@ -80,15 +80,18 @@ export class TldrawWsService {
 	}
 
 	public updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): void {
-		const isOriginWSConn = doc.connections.has(origin as WebSocket);
-		if (isOriginWSConn) {
+		if (this.isFromConnectedWebSocket(doc, origin)) {
 			this.publishUpdateToRedis(doc, update, 'document');
 		}
 
 		this.propagateUpdate(update, doc);
 	}
 
-	public async databaseUpdateHandler(docName: string, update: Uint8Array) {
+	public async databaseUpdateHandler(docName: string, update: Uint8Array, origin) {
+		if (this.isFromRedis(origin)) {
+			return;
+		}
+
 		await this.tldrawBoardRepo.storeUpdate(docName, update);
 	}
 
@@ -153,7 +156,7 @@ export class TldrawWsService {
 		const channelId = channel.toString();
 
 		if (channelId === doc.name) {
-			applyUpdate(doc, update, this.sub);
+			applyUpdate(doc, update, 'redis');
 		}
 
 		if (channelId === doc.awarenessChannel) {
@@ -336,7 +339,7 @@ export class TldrawWsService {
 	}
 
 	private registerDatabaseUpdateHandler(doc: WsSharedDocDo) {
-		doc.on('update', (update: Uint8Array) => this.databaseUpdateHandler(doc.name, update));
+		doc.on('update', (update: Uint8Array, origin) => this.databaseUpdateHandler(doc.name, update, origin));
 	}
 
 	private subscribeToRedisChannels(doc: WsSharedDocDo) {
@@ -389,12 +392,18 @@ export class TldrawWsService {
 	}
 
 	private isClosedOrClosing(connection: WebSocket): boolean {
-		const result = connection.readyState === WebSocket.CLOSING || connection.readyState === WebSocket.CLOSED;
-
-		return result;
+		return connection.readyState === WebSocket.CLOSING || connection.readyState === WebSocket.CLOSED;
 	}
 
 	private forceToArray(connections: Set<number> | undefined): number[] {
 		return connections ? Array.from(connections) : [];
+	}
+
+	private isFromConnectedWebSocket(doc: WsSharedDocDo, origin: unknown) {
+		return origin instanceof WebSocket && doc.connections.has(origin);
+	}
+
+	private isFromRedis(origin: unknown): boolean {
+		return typeof origin === 'string' && origin === 'redis';
 	}
 }

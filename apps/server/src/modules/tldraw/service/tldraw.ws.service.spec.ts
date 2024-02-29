@@ -911,12 +911,21 @@ describe('TldrawWSService', () => {
 			boardRepo.storeUpdate.mockResolvedValueOnce();
 		};
 
-		it('should call send method', async () => {
+		it('should call storeUpdate method', async () => {
 			await setup();
 
-			await service.databaseUpdateHandler('test', new Uint8Array());
+			await service.databaseUpdateHandler('test', new Uint8Array(), 'test');
 
 			expect(boardRepo.storeUpdate).toHaveBeenCalled();
+			ws.close();
+		});
+
+		it('should not call storeUpdate when origin is redis', async () => {
+			await setup();
+
+			await service.databaseUpdateHandler('test', new Uint8Array(), 'redis');
+
+			expect(boardRepo.storeUpdate).not.toHaveBeenCalled();
 			ws.close();
 		});
 	});
