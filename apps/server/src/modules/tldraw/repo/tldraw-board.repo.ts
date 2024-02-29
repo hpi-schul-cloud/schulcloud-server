@@ -29,16 +29,6 @@ export class TldrawBoardRepo {
 		return yDoc;
 	}
 
-	public async updateStoredDocWithDiff(docName: string, diff: Uint8Array): Promise<void> {
-		const calc = this.calculateDiff(diff);
-		if (calc > 0) {
-			await this.mdb.storeUpdateTransactional(docName, diff).catch((err) => {
-				this.logger.warning(new MongoTransactionErrorLoggable(err));
-				throw err;
-			});
-		}
-	}
-
 	public async compressDocument(docName: string): Promise<void> {
 		await this.mdb.compressDocumentTransactional(docName);
 	}
@@ -49,11 +39,5 @@ export class TldrawBoardRepo {
 		if (currentClock % this.compressThreshold === 0) {
 			await this.compressDocument(docName);
 		}
-	}
-
-	private calculateDiff(diff: Uint8Array): number {
-		const result = diff.reduce((previousValue, currentValue) => previousValue + currentValue, 0);
-
-		return result;
 	}
 }
