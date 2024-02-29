@@ -122,9 +122,10 @@ describe('YMongoDb', () => {
 		});
 	});
 
-	describe('flushDocumentTransactional', () => {
+	describe('compressDocumentTransactional', () => {
 		const setup = async () => {
-			const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValue();
+			const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValueOnce();
+			const mergeUpdatesSpy = jest.spyOn(Yjs, 'mergeUpdates').mockReturnValueOnce(new Uint8Array([]));
 
 			const drawing1 = tldrawEntityFactory.build({ clock: 1, part: undefined });
 			const drawing2 = tldrawEntityFactory.build({ clock: 2, part: undefined });
@@ -136,6 +137,7 @@ describe('YMongoDb', () => {
 
 			return {
 				applyUpdateSpy,
+				mergeUpdatesSpy,
 				drawing1,
 			};
 		};

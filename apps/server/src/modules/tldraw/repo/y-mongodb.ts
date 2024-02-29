@@ -7,7 +7,7 @@ import { Buffer } from 'buffer';
 import * as binary from 'lib0/binary';
 import * as encoding from 'lib0/encoding';
 import { BulkWriteResult } from 'mongodb';
-import { WsSharedDocDo } from '@modules/tldraw/domain';
+import { WsSharedDocDo } from '../domain';
 import { MongoTransactionErrorLoggable } from '../loggable';
 import { TldrawDrawing } from '../entities';
 import { TldrawConfig } from '../config';
