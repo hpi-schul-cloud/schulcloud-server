@@ -4729,6 +4729,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/LegacySchoolFactory.html" data-type="entity-link" >LegacySchoolFactory</a>
                             </li>
                             <li class="link">
+                                <a href="classes/LessonContentResponse.html" data-type="entity-link" >LessonContentResponse</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/LessonCopyApiParams.html" data-type="entity-link" >LessonCopyApiParams</a>
                             </li>
                             <li class="link">
@@ -4742,6 +4745,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/LessonMetadataResponse.html" data-type="entity-link" >LessonMetadataResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/LessonResponse.html" data-type="entity-link" >LessonResponse</a>
                             </li>
                             <li class="link">
                                 <a href="classes/LessonScope.html" data-type="entity-link" >LessonScope</a>
@@ -4838,6 +4844,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/MaterialFactory.html" data-type="entity-link" >MaterialFactory</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/MaterialResponse.html" data-type="entity-link" >MaterialResponse</a>
                             </li>
                             <li class="link">
                                 <a href="classes/MeAccountResponse.html" data-type="entity-link" >MeAccountResponse</a>

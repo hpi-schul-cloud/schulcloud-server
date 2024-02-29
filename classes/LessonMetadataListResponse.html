@@ -194,7 +194,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/lesson/controller/dto/lesson.response.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/lesson/controller/dto/lesson.response.ts:26</a></div>
                             </td>
                         </tr>
 
@@ -308,7 +308,7 @@
                         </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/PaginationResponse.html#source" target="_self" >PaginationResponse:30</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/PaginationResponse.html#source" target="_self" >PaginationResponse:33</a></code>
 </div>
                         </td>
                     </tr>
@@ -459,9 +459,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { PaginationResponse } from &#x27;@shared/controller&#x27;;
+import { ComponentProperties, LessonEntity } from &#x27;@shared/domain/entity&#x27;;
+import { MaterialResponse } from &#x27;./material.response&#x27;;
+import { LessonContentResponse } from &#x27;./lesson-content.response&#x27;;
 
 export class LessonMetadataResponse {
 	constructor({ _id, name }: LessonMetadataResponse) {
@@ -489,6 +492,75 @@ export class LessonMetadataListResponse extends PaginationResponse&lt;LessonMeta
 
 	@ApiProperty({ type: [LessonMetadataResponse] })
 	data: LessonMetadataResponse[];
+}
+
+export class LessonResponse {
+	constructor(lesson: LessonEntity) {
+		this.id &#x3D; lesson.id;
+		// @deprecated _id used in legacy client
+		this._id &#x3D; lesson.id;
+		this.name &#x3D; lesson.name;
+		this.courseId &#x3D; lesson.course?.id;
+		this.courseGroupId &#x3D; lesson.courseGroup?.id;
+		this.hidden &#x3D; lesson.hidden;
+		this.contents &#x3D; lesson
+			.getLessonComponents()
+			.map((content: ComponentProperties) &#x3D;&gt; new LessonContentResponse(content));
+		this.materials &#x3D; lesson.getLessonMaterials().map((material) &#x3D;&gt; new MaterialResponse(material));
+		this.position &#x3D; lesson.position;
+	}
+
+	@ApiProperty({
+		description: &#x27;The id of the Lesson entity&#x27;,
+		pattern: &#x27;[a-f0-9]{24}&#x27;,
+		deprecated: true,
+	})
+	_id: EntityId;
+
+	@ApiProperty({
+		description: &#x27;The id of the Lesson entity&#x27;,
+		pattern: &#x27;[a-f0-9]{24}&#x27;,
+	})
+	id: EntityId;
+
+	@ApiProperty({
+		description: &#x27;Name of the Lesson entity&#x27;,
+	})
+	name: string;
+
+	@ApiPropertyOptional({
+		description: &#x27;The id of the Course entity&#x27;,
+		pattern: &#x27;[a-f0-9]{24}&#x27;,
+	})
+	courseId?: EntityId;
+
+	@ApiPropertyOptional({
+		description: &#x27;The id of the Course-group entity&#x27;,
+		pattern: &#x27;[a-f0-9]{24}&#x27;,
+	})
+	courseGroupId?: EntityId;
+
+	@ApiProperty({
+		description: &#x27;Hidden status of the Lesson entity&#x27;,
+	})
+	hidden: boolean;
+
+	@ApiProperty({
+		description: &#x27;Position of the Lesson entity&#x27;,
+	})
+	position: number;
+
+	@ApiProperty({
+		description: &#x27;Contents of the Lesson entity&#x27;,
+		type: [LessonContentResponse],
+	})
+	contents: LessonContentResponse[] | [];
+
+	@ApiProperty({
+		description: &#x27;Materials of the Lesson entity&#x27;,
+		type: [MaterialResponse],
+	})
+	materials: MaterialResponse[] | [];
 }
 </code></pre>
     </div>

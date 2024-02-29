@@ -157,6 +157,11 @@
                                     <span class="modifier">Async</span>
                                 <a href="#getCourseLessons" >getCourseLessons</a>
                             </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getLesson" >getLesson</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -352,6 +357,95 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getLesson"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getLesson</b></span>
+                        <a href="#getLesson"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getLesson(urlParams: <a href="../classes/LessonUrlParams.html" target="_self">LessonUrlParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Get(&#x27;:lessonId&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">apps/server/src/modules/lesson/controller/lesson.controller.ts:31</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>urlParams</td>
+                                            <td>
+                                                            <code><a href="../classes/LessonUrlParams.html" target="_self" >LessonUrlParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>unknown</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
@@ -360,7 +454,7 @@
 import { Controller, Delete, Get, Param } from &#x27;@nestjs/common&#x27;;
 import { ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { LessonUC } from &#x27;../uc&#x27;;
-import { LessonUrlParams, LessonsUrlParams, LessonMetadataListResponse } from &#x27;./dto&#x27;;
+import { LessonUrlParams, LessonsUrlParams, LessonMetadataListResponse, LessonResponse } from &#x27;./dto&#x27;;
 import { LessonMapper } from &#x27;./mapper/lesson.mapper&#x27;;
 
 @ApiTags(&#x27;Lesson&#x27;)
@@ -382,6 +476,13 @@ export class LessonController {
 
 		const dtoList &#x3D; lessons.map((lesson) &#x3D;&gt; LessonMapper.mapToMetadataResponse(lesson));
 		const response &#x3D; new LessonMetadataListResponse(dtoList, dtoList.length);
+		return response;
+	}
+
+	@Get(&#x27;:lessonId&#x27;)
+	async getLesson(@Param() urlParams: LessonUrlParams, @CurrentUser() currentUser: ICurrentUser) {
+		const lesson &#x3D; await this.lessonUC.getLesson(currentUser.userId, urlParams.lessonId);
+		const response &#x3D; new LessonResponse(lesson);
 		return response;
 	}
 }
