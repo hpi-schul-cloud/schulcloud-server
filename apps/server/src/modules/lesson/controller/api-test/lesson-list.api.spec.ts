@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient, UserAndAccountTestFactory, courseFactory, lessonFactory } from '@shared/testing';
 import { LessonMetadataListResponse } from '../dto';
 
-describe('Lesson Controller (API) - GET /lessons', () => {
+describe('Lesson Controller (API) - GET list of lessons from course /lessons/course/:courseId', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;

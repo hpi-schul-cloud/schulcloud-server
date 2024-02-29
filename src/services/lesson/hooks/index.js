@@ -184,6 +184,7 @@ const restrictToUsersCoursesLessons = async (context) => {
 		if (context.params.query.shareToken) return context;
 		({ courseId, courseGroupId } = context.params.query);
 	} else {
+		// @deprecated - use nest endpoint instead to get lesson
 		const lesson = await context.app.service('lessons').get(context.id);
 		({ courseId, courseGroupId } = lesson);
 	}
@@ -232,12 +233,14 @@ const populateWhitelist = {
 exports.before = () => {
 	return {
 		all: [authenticate('jwt'), mapUsers],
+		// @deprecated - use nest endpoint instead to get lesson
 		find: [
 			hasPermission('TOPIC_VIEW'),
 			iff(isProvider('external'), validateLessonFind),
 			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
 			iff(isProvider('external'), restrictToUsersCoursesLessons),
 		],
+		// @deprecated - use nest endpoint instead to get lesson
 		get: [
 			hasPermission('TOPIC_VIEW'),
 			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
