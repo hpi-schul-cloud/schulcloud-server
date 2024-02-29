@@ -79,7 +79,7 @@ export class FilesStorageConsumer {
 	})
 	@UseRequestContext()
 	public async deleteFiles(@RabbitPayload() payload: EntityId[]): Promise<RpcMessage<FileDO[]>> {
-		this.logger.debug({ action: 'deleteOneFile', payload });
+		this.logger.debug({ action: 'deleteFiles', payload });
 
 		const promise = payload.map((fileRecordId) => this.filesStorageService.getFileRecord({ fileRecordId }));
 		const fileRecords = await Promise.all(promise);

@@ -151,19 +151,23 @@ describe('FilesStorageClientAdapterService', () => {
 		});
 	});
 
-	describe('deleteOneFile', () => {
-		describe('when file is deleted successfully', () => {
+	describe('deleteFiles', () => {
+		describe('when files are deleted successfully', () => {
 			const setup = () => {
 				const recordId = new ObjectId().toHexString();
 
-				const spy = jest.spyOn(FilesStorageClientMapper, 'mapFileRecordResponseToFileDto').mockImplementation(() => {
-					return {
-						id: recordId,
-						name: 'file',
-						parentId: 'parentId',
-						parentType: FileRecordParentType.BoardNode,
-					};
-				});
+				const spy = jest
+					.spyOn(FilesStorageClientMapper, 'mapfileRecordListResponseToDomainFilesDto')
+					.mockImplementation(() => {
+						return [
+							{
+								id: recordId,
+								name: 'file',
+								parentId: 'parentId',
+								parentType: FileRecordParentType.BoardNode,
+							},
+						];
+					});
 
 				return { recordId, spy };
 			};
@@ -171,9 +175,9 @@ describe('FilesStorageClientAdapterService', () => {
 			it('Should call all steps.', async () => {
 				const { recordId, spy } = setup();
 
-				await service.deleteFiles(recordId);
+				await service.deleteFiles([recordId]);
 
-				expect(client.deleteFiles).toHaveBeenCalledWith(recordId);
+				expect(client.deleteFiles).toHaveBeenCalledWith([recordId]);
 				expect(spy).toBeCalled();
 
 				spy.mockRestore();
@@ -192,7 +196,7 @@ describe('FilesStorageClientAdapterService', () => {
 			it('Should call error mapper if throw an error.', async () => {
 				const { recordId } = setup();
 
-				await expect(service.deleteFiles(recordId)).rejects.toThrowError();
+				await expect(service.deleteFiles([recordId])).rejects.toThrowError();
 			});
 		});
 	});

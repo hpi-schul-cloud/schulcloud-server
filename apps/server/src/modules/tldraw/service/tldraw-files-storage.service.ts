@@ -10,6 +10,10 @@ export class TldrawFilesStorageAdapterService {
 		const fileRecords = await this.filesStorageClientAdapterService.listFilesOfParent(docName);
 		const fileRecordIdsForDeletion = this.foundAssetsForDeletion(fileRecords, usedAssets);
 
+		if (fileRecordIdsForDeletion.length === 0) {
+			return;
+		}
+
 		await this.filesStorageClientAdapterService.deleteFiles(fileRecordIdsForDeletion);
 	}
 

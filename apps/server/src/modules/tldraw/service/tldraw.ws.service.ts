@@ -19,14 +19,7 @@ import {
 	WsSharedDocErrorLoggable,
 } from '../loggable';
 import { TldrawConfig } from '../config';
-import {
-	AwarenessConnectionsUpdate,
-	RedisConnectionTypeEnum,
-	TldrawAsset,
-	TldrawShape,
-	WSConnectionState,
-	WSMessageType,
-} from '../types';
+import { AwarenessConnectionsUpdate, RedisConnectionTypeEnum, TldrawAsset, TldrawShape, WSMessageType } from '../types';
 import { WsSharedDocDo } from '../domain';
 import { TldrawBoardRepo } from '../repo';
 import { MetricsService } from '../metrics';
@@ -62,9 +55,15 @@ export class TldrawWsService {
 
 	public async closeConn(doc: WsSharedDocDo, ws: WebSocket): Promise<void> {
 		if (doc.connections.has(ws)) {
-			const controlledIds = doc.connections.get(ws) as Set<number>;
+			const controlledIds = doc.connections.get(ws);
+			let clientsArray: number[] = [];
+			if (controlledIds) {
+				clientsArray = Array.from(controlledIds);
+			}
+
 			doc.connections.delete(ws);
-			removeAwarenessStates(doc.awareness, Array.from(controlledIds), null);
+			removeAwarenessStates(doc.awareness, clientsArray, null);
+
 			await this.storeStateAndDestroyYDocIfPersisted(doc);
 			this.metricsService.decrementNumberOfUsersOnServerCounter();
 		}
@@ -73,16 +72,16 @@ export class TldrawWsService {
 	}
 
 	public send(doc: WsSharedDocDo, conn: WebSocket, message: Uint8Array): void {
-		if (conn.readyState !== WSConnectionState.CONNECTING && conn.readyState !== WSConnectionState.OPEN) {
+		if (this.isClosedOrClosing(conn)) {
 			this.closeConn(doc, conn).catch((err) => {
-				this.logger.warning(new CloseConnectionLoggable(err));
+				this.logger.warning(new CloseConnectionLoggable('send | isClosedOrClosing', err));
 			});
 		}
 
 		conn.send(message, (err) => {
 			if (err) {
 				this.closeConn(doc, conn).catch((e) => {
-					this.logger.warning(new CloseConnectionLoggable(e));
+					this.logger.warning(new CloseConnectionLoggable('send', e));
 				});
 			}
 		});
@@ -184,11 +183,15 @@ export class TldrawWsService {
 		doc.connections.set(ws, new Set());
 
 		ws.on('error', (err) => {
-			this.logger.warning(new WebsocketErrorLoggable(err));
+			this.logger.warning(new WebsocketErrorLoggable('onError', err));
 		});
 
 		ws.on('message', (message: ArrayBufferLike) => {
-			this.messageHandler(ws, doc, new Uint8Array(message));
+			try {
+				this.messageHandler(ws, doc, new Uint8Array(message));
+			} catch (err) {
+				this.logger.warning(new WebsocketErrorLoggable('onMessage', err));
+			}
 		});
 
 		// send initial doc state to client as update
@@ -204,14 +207,14 @@ export class TldrawWsService {
 			}
 
 			this.closeConn(doc, ws).catch((err) => {
-				this.logger.warning(new CloseConnectionLoggable(err));
+				this.logger.warning(new CloseConnectionLoggable('pingInterval', err));
 			});
 			clearInterval(pingInterval);
 		}, this.pingTimeout);
 
 		ws.on('close', () => {
 			this.closeConn(doc, ws).catch((err) => {
-				this.logger.warning(new CloseConnectionLoggable(err));
+				this.logger.warning(new CloseConnectionLoggable('websocket close', err));
 			});
 			clearInterval(pingInterval);
 		});
@@ -406,5 +409,11 @@ export class TldrawWsService {
 		encoding.writeVarUint(encoder, WSMessageType.SYNC);
 		writeUpdate(encoder, encodeStateAsUpdate(doc));
 		this.send(doc, ws, encoding.toUint8Array(encoder));
+	}
+
+	private isClosedOrClosing(connection: WebSocket): boolean {
+		const result = connection.readyState === WebSocket.CLOSING || connection.readyState === WebSocket.CLOSED;
+
+		return result;
 	}
 }
