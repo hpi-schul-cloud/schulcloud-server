@@ -16,6 +16,7 @@ describe('CommonCartridgeWebLinkResourceV130', () => {
 
 			it('should return false', () => {
 				const { sut } = setup();
+
 				const result = sut.canInline();
 
 				expect(result).toBe(false);
@@ -34,6 +35,7 @@ describe('CommonCartridgeWebLinkResourceV130', () => {
 
 			it('should return the constructed file path', () => {
 				const { sut, props } = setup();
+
 				const result = sut.getFilePath();
 
 				expect(result).toBe(`${props.folder}/${props.identifier}.xml`);
@@ -57,6 +59,7 @@ describe('CommonCartridgeWebLinkResourceV130', () => {
 
 			it('should contain correct XML', async () => {
 				const { sut } = setup();
+
 				const expected = await readFile('./apps/server/test/assets/common-cartridge/v1.3.0/weblink.xml', 'utf8');
 				const result = sut.getFileContent();
 
@@ -76,6 +79,7 @@ describe('CommonCartridgeWebLinkResourceV130', () => {
 
 			it('should return the supported version', () => {
 				const { sut } = setup();
+
 				const result = sut.getSupportedVersion();
 
 				expect(result).toBe(CommonCartridgeVersion.V_1_3_0);
@@ -103,6 +107,7 @@ describe('CommonCartridgeWebLinkResourceV130', () => {
 
 			it('should return the manifest XML object', () => {
 				const { sut, props } = setup();
+
 				const result = sut.getManifestXmlObject();
 
 				expect(result).toEqual({

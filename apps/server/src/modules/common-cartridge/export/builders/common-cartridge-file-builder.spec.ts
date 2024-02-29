@@ -56,6 +56,7 @@ describe('CommonCartridgeFileBuilder', () => {
 
 			it('should have a imsmanifest.xml in archive root', async () => {
 				const { archive } = await setup();
+
 				const manifest = getFileContentAsString(archive, 'imsmanifest.xml');
 
 				expect(manifest).toBeDefined();
@@ -63,6 +64,7 @@ describe('CommonCartridgeFileBuilder', () => {
 
 			it('should have included the resource in organization folder', async () => {
 				const { archive, organizationOptions, resourceProps } = await setup();
+
 				const resource = getFileContentAsString(
 					archive,
 					`${organizationOptions.identifier}/${resourceProps.identifier}.html`
@@ -73,6 +75,7 @@ describe('CommonCartridgeFileBuilder', () => {
 
 			it('should have included the resource in sub-organization folder', async () => {
 				const { archive, organizationOptions, resourceProps } = await setup();
+
 				const resource = getFileContentAsString(
 					archive,
 					`${organizationOptions.identifier}/${organizationOptions.identifier}/${resourceProps.identifier}.html`
@@ -83,6 +86,7 @@ describe('CommonCartridgeFileBuilder', () => {
 
 			it('should have included the resource in sub-sub-organization folder', async () => {
 				const { archive, organizationOptions, resourceProps } = await setup();
+
 				const resource = getFileContentAsString(
 					archive,
 					`${organizationOptions.identifier}/${organizationOptions.identifier}/${organizationOptions.identifier}/${resourceProps.identifier}.html`

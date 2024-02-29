@@ -46,6 +46,7 @@ describe('CommonCartridgeOrganizationBuilder', () => {
 
 			it('should return a common cartridge element', () => {
 				const { sut } = setup();
+
 				const element = sut.build();
 
 				expect(element).toBeInstanceOf(CommonCartridgeElement);

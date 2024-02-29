@@ -17,6 +17,7 @@ describe('CommonCartridgeResourceFactoryV130', () => {
 		describe('when creating resources from props', () => {
 			it('should return manifest resource', () => {
 				const props = createCommonCartridgeManifestResourcePropsV130();
+
 				const result = CommonCartridgeResourceFactoryV130.createResource(props);
 
 				expect(result).toBeInstanceOf(CommonCartridgeManifestResourceV130);
@@ -24,6 +25,7 @@ describe('CommonCartridgeResourceFactoryV130', () => {
 
 			it('should return web content resource', () => {
 				const props = createCommonCartridgeWebContentResourcePropsV130();
+
 				const result = CommonCartridgeResourceFactoryV130.createResource(props);
 
 				expect(result).toBeInstanceOf(CommonCartridgeWebContentResourceV130);
@@ -31,6 +33,7 @@ describe('CommonCartridgeResourceFactoryV130', () => {
 
 			it('should return web link resource', () => {
 				const props = createCommonCartridgeWeblinkResourcePropsV130();
+
 				const result = CommonCartridgeResourceFactoryV130.createResource(props);
 
 				expect(result).toBeInstanceOf(CommonCartridgeWebLinkResourceV130);

@@ -48,6 +48,7 @@ describe('CommonCartridgeUtils', () => {
 		describe('when creating error', () => {
 			it('should return error with message', () => {
 				const resourceType = 'unsupported';
+
 				const error = createResourceTypeNotSupportedError(resourceType);
 
 				expect(error).toBeInstanceOf(InternalServerErrorException);
@@ -60,6 +61,7 @@ describe('CommonCartridgeUtils', () => {
 		describe('when creating error', () => {
 			it('should return error with message', () => {
 				const elementType = 'unsupported';
+
 				const error = createElementTypeNotSupportedError(elementType);
 
 				expect(error).toBeInstanceOf(InternalServerErrorException);

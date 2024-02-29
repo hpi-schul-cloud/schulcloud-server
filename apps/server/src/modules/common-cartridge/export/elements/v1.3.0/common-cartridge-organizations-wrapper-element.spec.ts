@@ -19,6 +19,7 @@ describe('CommonCartridgeOrganizationsWrapperElementV130', () => {
 
 			it('should return correct version', () => {
 				const { sut } = setup();
+
 				const result = sut.getSupportedVersion();
 
 				expect(result).toBe(CommonCartridgeVersion.V_1_3_0);
@@ -51,6 +52,7 @@ describe('CommonCartridgeOrganizationsWrapperElementV130', () => {
 
 			it('should return correct manifest xml object', () => {
 				const { sut, organizationProps } = setup();
+
 				const result = sut.getManifestXmlObject();
 
 				expect(result).toStrictEqual({

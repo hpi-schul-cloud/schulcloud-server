@@ -16,6 +16,7 @@ describe('CommonCartridgeResourceVersion', () => {
 		describe('when Common Cartridge version is supported', () => {
 			it('should return v1.1.0 resource', () => {
 				const props = createCommonCartridgeWebContentResourcePropsV110();
+
 				const result = CommonCartridgeResourceFactory.createResource(props);
 
 				expect(result).toBeInstanceOf(CommonCartridgeWebContentResourceV110);
@@ -23,6 +24,7 @@ describe('CommonCartridgeResourceVersion', () => {
 
 			it('should return v1.3.0 resource', () => {
 				const props = createCommonCartridgeWebContentResourcePropsV130();
+
 				const result = CommonCartridgeResourceFactory.createResource(props);
 
 				expect(result).toBeInstanceOf(CommonCartridgeWebContentResourceV130);

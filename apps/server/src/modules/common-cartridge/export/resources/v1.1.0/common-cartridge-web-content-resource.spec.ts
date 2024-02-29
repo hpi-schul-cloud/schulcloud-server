@@ -15,6 +15,7 @@ describe('CommonCartridgeWebContentResourceV110', () => {
 
 			it('should return false', () => {
 				const { sut } = setup();
+
 				const result = sut.canInline();
 
 				expect(result).toBe(false);
@@ -33,6 +34,7 @@ describe('CommonCartridgeWebContentResourceV110', () => {
 
 			it('should return the constructed file path', () => {
 				const { sut, props } = setup();
+
 				const result = sut.getFilePath();
 
 				expect(result).toBe(`${props.folder}/${props.identifier}.html`);
@@ -51,6 +53,7 @@ describe('CommonCartridgeWebContentResourceV110', () => {
 
 			it('should return the HTML', () => {
 				const { sut, props } = setup();
+
 				const result = sut.getFileContent();
 
 				expect(result).toBe(props.html);
@@ -69,6 +72,7 @@ describe('CommonCartridgeWebContentResourceV110', () => {
 
 			it('should return Common Cartridge version 1.1.0', () => {
 				const { sut } = setup();
+
 				const result = sut.getSupportedVersion();
 
 				expect(result).toBe(CommonCartridgeVersion.V_1_1_0);
@@ -98,6 +102,7 @@ describe('CommonCartridgeWebContentResourceV110', () => {
 
 			it('should return the correct XML object', () => {
 				const { sut, props } = setup();
+
 				const result = sut.getManifestXmlObject();
 
 				expect(result).toEqual({

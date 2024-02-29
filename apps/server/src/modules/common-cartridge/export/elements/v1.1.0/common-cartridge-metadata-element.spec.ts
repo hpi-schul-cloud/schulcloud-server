@@ -13,9 +13,9 @@ describe('CommonCartridgeMetadataElementV110', () => {
 				return { sut, props };
 			};
 
-			// AI next 5 lines
 			it('should return correct version', () => {
 				const { sut } = setup();
+
 				const result = sut.getSupportedVersion();
 
 				expect(result).toBe(CommonCartridgeVersion.V_1_1_0);
@@ -43,6 +43,7 @@ describe('CommonCartridgeMetadataElementV110', () => {
 
 			it('should return correct manifest xml object', () => {
 				const { sut, props } = setup();
+
 				const result = sut.getManifestXmlObject();
 
 				expect(result).toStrictEqual({

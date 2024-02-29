@@ -24,6 +24,7 @@ describe('CommonCartridgeManifestResourceV130', () => {
 
 			it('should return false', () => {
 				const { sut } = setup();
+
 				const result = sut.canInline();
 
 				expect(result).toBe(false);
@@ -42,6 +43,7 @@ describe('CommonCartridgeManifestResourceV130', () => {
 
 			it('should return constructed file path', () => {
 				const { sut } = setup();
+
 				const result = sut.getFilePath();
 
 				expect(result).toBe('imsmanifest.xml');
@@ -104,6 +106,7 @@ describe('CommonCartridgeManifestResourceV130', () => {
 
 			it('should return constructed file content', async () => {
 				const { sut } = setup();
+
 				const expected = await readFile('./apps/server/test/assets/common-cartridge/v1.3.0/manifest.xml', 'utf-8');
 				const result = sut.getFileContent();
 
@@ -123,6 +126,7 @@ describe('CommonCartridgeManifestResourceV130', () => {
 
 			it('should return supported version', () => {
 				const { sut } = setup();
+
 				const result = sut.getSupportedVersion();
 
 				expect(result).toBe(CommonCartridgeVersion.V_1_3_0);

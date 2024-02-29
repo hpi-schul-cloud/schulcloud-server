@@ -17,6 +17,7 @@ describe('CommonCartridgeElementFactoryV130', () => {
 		describe('when creating elements from props', () => {
 			it('should return metadata element', () => {
 				const props = createCommonCartridgeMetadataElementPropsV130();
+
 				const result = CommonCartridgeElementFactoryV130.createElement(props);
 
 				expect(result).toBeInstanceOf(CommonCartridgeMetadataElementV130);
@@ -24,6 +25,7 @@ describe('CommonCartridgeElementFactoryV130', () => {
 
 			it('should return organization element', () => {
 				const props = createCommonCartridgeOrganizationElementPropsV130();
+
 				const result = CommonCartridgeElementFactoryV130.createElement(props);
 
 				expect(result).toBeInstanceOf(CommonCartridgeOrganizationElementV130);
@@ -31,6 +33,7 @@ describe('CommonCartridgeElementFactoryV130', () => {
 
 			it('should return organization wrapper element', () => {
 				const props = createCommonCartridgeOrganizationsWrapperElementPropsV130();
+
 				const result = CommonCartridgeElementFactoryV130.createElement(props);
 
 				expect(result).toBeInstanceOf(CommonCartridgeOrganizationsWrapperElementV130);
@@ -38,6 +41,7 @@ describe('CommonCartridgeElementFactoryV130', () => {
 
 			it('should return resources wrapper element', () => {
 				const props = createCommonCartridgeResourcesWrapperElementPropsV130();
+
 				const result = CommonCartridgeElementFactoryV130.createElement(props);
 
 				expect(result).toBeInstanceOf(CommonCartridgeResourcesWrapperElementV130);

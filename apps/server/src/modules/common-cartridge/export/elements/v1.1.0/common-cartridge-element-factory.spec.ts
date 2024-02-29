@@ -17,6 +17,7 @@ describe('CommonCartridgeElementFactoryV110', () => {
 		describe('when creating elements from props', () => {
 			it('should return metadata element', () => {
 				const props = createCommonCartridgeMetadataElementPropsV110();
+
 				const result = CommonCartridgeElementFactoryV110.createElement(props);
 
 				expect(result).toBeInstanceOf(CommonCartridgeMetadataElementV110);
@@ -24,6 +25,7 @@ describe('CommonCartridgeElementFactoryV110', () => {
 
 			it('should return organization element', () => {
 				const props = createCommonCartridgeOrganizationElementPropsV110();
+
 				const result = CommonCartridgeElementFactoryV110.createElement(props);
 
 				expect(result).toBeInstanceOf(CommonCartridgeOrganizationElementV110);
@@ -31,6 +33,7 @@ describe('CommonCartridgeElementFactoryV110', () => {
 
 			it('should return organization wrapper element', () => {
 				const props = createCommonCartridgeOrganizationsWrapperElementPropsV110();
+
 				const result = CommonCartridgeElementFactoryV110.createElement(props);
 
 				expect(result).toBeInstanceOf(CommonCartridgeOrganizationsWrapperElementV110);
@@ -38,6 +41,7 @@ describe('CommonCartridgeElementFactoryV110', () => {
 
 			it('should return resources wrapper element', () => {
 				const props = createCommonCartridgeResourcesWrapperElementPropsV110();
+
 				const result = CommonCartridgeElementFactoryV110.createElement(props);
 
 				expect(result).toBeInstanceOf(CommonCartridgeResourcesWrapperElementV110);
@@ -46,6 +50,7 @@ describe('CommonCartridgeElementFactoryV110', () => {
 
 		describe('when element type is not supported', () => {
 			const notSupportedProps = createCommonCartridgeMetadataElementPropsV110();
+
 			notSupportedProps.type = 'not-supported' as CommonCartridgeElementType.METADATA;
 
 			it('should throw error', () => {
