@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
+import { applyUpdate, Doc, encodeStateAsUpdate } from 'yjs';
 import { Logger } from '@src/core/logger';
 import { ConfigService } from '@nestjs/config';
 import { TldrawConfig } from '@modules/tldraw/config';
@@ -43,9 +43,6 @@ export class TldrawBoardRepo {
 
 	public async loadDocument(docName: string, ydoc: WsSharedDocDo): Promise<void> {
 		const persistedYdoc = await this.getYDocFromMdb(docName);
-		const persistedStateVector = encodeStateVector(persistedYdoc);
-		const diff = encodeStateAsUpdate(ydoc, persistedStateVector);
-		await this.updateStoredDocWithDiff(docName, diff);
 		applyUpdate(ydoc, encodeStateAsUpdate(persistedYdoc));
 
 		persistedYdoc.destroy();
