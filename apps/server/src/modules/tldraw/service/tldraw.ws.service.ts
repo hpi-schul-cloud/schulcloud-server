@@ -180,9 +180,6 @@ export class TldrawWsService {
 			}
 		});
 
-		// send initial doc state to client as update
-		this.sendInitialState(ws, doc);
-
 		// check if connection is still alive
 		let pongReceived = true;
 		const pingInterval = setInterval(() => {
@@ -379,13 +376,6 @@ export class TldrawWsService {
 			.catch((err) => {
 				this.logger.warning(new RedisPublishErrorLoggable('awareness', err));
 			});
-	}
-
-	private sendInitialState(ws: WebSocket, doc: WsSharedDocDo): void {
-		const encoder = encoding.createEncoder();
-		encoding.writeVarUint(encoder, WSMessageType.SYNC);
-		writeUpdate(encoder, encodeStateAsUpdate(doc));
-		this.send(doc, ws, encoding.toUint8Array(encoder));
 	}
 
 	private isClosedOrClosing(connection: WebSocket): boolean {

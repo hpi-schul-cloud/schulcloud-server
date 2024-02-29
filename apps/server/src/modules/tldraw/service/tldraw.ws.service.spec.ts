@@ -492,7 +492,7 @@ describe('TldrawWSService', () => {
 
 				await delay(20);
 
-				expect(sendSpy).toHaveBeenCalledTimes(3);
+				expect(sendSpy).toHaveBeenCalledTimes(2);
 				ws.close();
 				messageHandlerSpy.mockRestore();
 				sendSpy.mockRestore();
