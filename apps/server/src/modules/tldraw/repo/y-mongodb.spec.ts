@@ -12,7 +12,7 @@ import { TldrawRedisFactory } from '../redis';
 import { tldrawEntityFactory, tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { TldrawWs } from '../controller';
-import { TldrawWsService } from '../service';
+import { TldrawFilesStorageAdapterService, TldrawWsService } from '../service';
 import { MetricsService } from '../metrics';
 import { TldrawBoardRepo } from './tldraw-board.repo';
 import { TldrawRepo } from './tldraw.repo';
@@ -53,6 +53,10 @@ describe('YMongoDb', () => {
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
+				},
+				{
+					provide: TldrawFilesStorageAdapterService,
+					useValue: createMock<TldrawFilesStorageAdapterService>(),
 				},
 			],
 		}).compile();

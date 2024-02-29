@@ -6,3 +6,4 @@ export * from './websocket-close-error.loggable';
 export * from './websocket-message-error.loggable';
 export * from './ws-shared-doc-error.loggable';
 export * from './close-connection.loggable';
+export * from './file-storage-error.loggable';

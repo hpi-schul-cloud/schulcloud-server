@@ -24,7 +24,7 @@ import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../repo';
 import { TestConnection, tldrawTestConfig } from '../testing';
 import { WsSharedDocDo } from '../domain';
 import { MetricsService } from '../metrics';
-import { TldrawWsService } from '.';
+import { TldrawFilesStorageAdapterService, TldrawWsService } from '.';
 import { TldrawAsset, TldrawShape, TldrawShapeType } from '../types';
 
 jest.mock('yjs', () => {
@@ -88,6 +88,10 @@ describe('TldrawWSService', () => {
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
+				},
+				{
+					provide: TldrawFilesStorageAdapterService,
+					useValue: createMock<TldrawFilesStorageAdapterService>(),
 				},
 			],
 		}).compile();

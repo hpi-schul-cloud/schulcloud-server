@@ -13,7 +13,7 @@ import { createConfigModuleOptions } from '@src/config';
 import * as YjsUtils from '../utils/ydoc-utils';
 import { TldrawBoardRepo } from './tldraw-board.repo';
 import { WsSharedDocDo } from '../domain';
-import { TldrawWsService } from '../service';
+import { TldrawFilesStorageAdapterService, TldrawWsService } from '../service';
 import { TestConnection, tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { TldrawWs } from '../controller';
@@ -63,6 +63,10 @@ describe('TldrawBoardRepo', () => {
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
+				},
+				{
+					provide: TldrawFilesStorageAdapterService,
+					useValue: createMock<TldrawFilesStorageAdapterService>(),
 				},
 			],
 		}).compile();
