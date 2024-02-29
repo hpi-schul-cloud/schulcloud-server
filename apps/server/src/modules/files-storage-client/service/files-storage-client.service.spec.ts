@@ -158,16 +158,14 @@ describe('FilesStorageClientAdapterService', () => {
 
 				const spy = jest
 					.spyOn(FilesStorageClientMapper, 'mapfileRecordListResponseToDomainFilesDto')
-					.mockImplementation(() => {
-						return [
-							{
-								id: recordId,
-								name: 'file',
-								parentId: 'parentId',
-								parentType: FileRecordParentType.BoardNode,
-							},
-						];
-					});
+					.mockImplementation(() => [
+						{
+							id: recordId,
+							name: 'file',
+							parentId: 'parentId',
+							parentType: FileRecordParentType.BoardNode,
+						},
+					]);
 
 				return { recordId, spy };
 			};
