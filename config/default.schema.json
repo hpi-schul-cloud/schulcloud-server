@@ -1412,6 +1412,11 @@
 			"default": false,
 			"description": "Enables the copying of ctl tools when copying a course."
 		},
+		"CTL_TOOLS_RELOAD_TIME_MS": {
+			"type": "number",
+			"default": 299000,
+			"description": "Sets the time before launch request data is called again from server"
+		},
 		"FEATURE_SHOW_MIGRATION_WIZARD": {
 			"type": "boolean",
 			"default": false,
