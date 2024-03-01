@@ -11,7 +11,7 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 	constructor(private readonly groupRepo: GroupRepo) {}
 
 	public async findById(id: EntityId): Promise<Group> {
-		const group: Group | null = await this.groupRepo.findById(id);
+		const group: Group | null = await this.groupRepo.findGroupById(id);
 
 		if (!group) {
 			throw new NotFoundLoggableException(Group.name, { id });
@@ -21,7 +21,7 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 	}
 
 	public async tryFindById(id: EntityId): Promise<Group | null> {
-		const group: Group | null = await this.groupRepo.findById(id);
+		const group: Group | null = await this.groupRepo.findGroupById(id);
 
 		return group;
 	}
