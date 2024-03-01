@@ -1,13 +1,11 @@
 import { Module, NotFoundException } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions, DB_PASSWORD, DB_USERNAME } from '@src/config';
-import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { AuthenticationModule } from '@src/modules/authentication/authentication.module';
-import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
-import { AuthorizationModule } from '@modules/authorization';
+import { CoreModule } from '@src/core';
 import { config, TLDRAW_DB_URL } from './config';
 import { TldrawDrawing } from './entities';
 import { TldrawController } from './controller';
@@ -23,10 +21,8 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 @Module({
 	imports: [
 		LoggerModule,
-		AuthorizationModule,
 		AuthenticationModule,
 		CoreModule,
-		RabbitMQWrapperModule,
 		MikroOrmModule.forRoot({
 			...defaultMikroOrmOptions,
 			type: 'mongo',

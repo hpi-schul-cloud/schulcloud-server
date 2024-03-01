@@ -14,7 +14,7 @@ describe('WebsocketErrorLoggable', () => {
 
 			const message = loggable.getLogMessage();
 
-			expect(message).toEqual({ message: 'Websocket error', error, type: 'WEBSOCKET_ERROR' });
+			expect(message).toEqual({ message: 'Websocket error event', error, type: 'WEBSOCKET_ERROR' });
 		});
 	});
 });
