@@ -29,6 +29,7 @@ export class ContextExternalToolScope extends Scope<ContextExternalToolEntity> {
 
 	byContextType(contextType: ToolContextType | undefined): ContextExternalToolScope {
 		if (contextType !== undefined) {
+			// type error caused by an upgrade from micro-orm 5.7.7. to 5.7.8
 			this.addQuery({ contextType });
 		}
 		return this;
