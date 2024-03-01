@@ -1,9 +1,9 @@
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
-export class WebsocketErrorLoggable implements Loggable {
+export class FileStorageErrorLoggable implements Loggable {
 	private error: Error | undefined;
 
-	constructor(private readonly err: unknown) {
+	constructor(private readonly docName: string, private readonly err: unknown) {
 		if (err instanceof Error) {
 			this.error = err;
 		}
@@ -11,8 +11,8 @@ export class WebsocketErrorLoggable implements Loggable {
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			message: 'Websocket error event',
-			type: 'WEBSOCKET_ERROR',
+			message: `Error in document ${this.docName}: assets could not be synchronized with file storage.`,
+			type: `FILE_STORAGE_GENERAL_ERROR`,
 			error: this.error,
 		};
 	}
