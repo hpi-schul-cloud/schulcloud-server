@@ -18,24 +18,18 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 	@WebSocketServer()
 	server!: Server;
 
-	private readonly apiHostUrl: string;
-
-	private readonly isTldrawEnabled: boolean;
-
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly tldrawWsService: TldrawWsService,
 		private readonly httpService: HttpService,
 		private readonly logger: Logger
-	) {
-		this.isTldrawEnabled = this.configService.get<boolean>('FEATURE_TLDRAW_ENABLED');
-		this.apiHostUrl = this.configService.get<string>('API_HOST');
-	}
+	) {}
 
 	public async handleConnection(client: WebSocket, request: Request): Promise<void> {
+		const isTldrawEnabled = this.configService.get<boolean>('FEATURE_TLDRAW_ENABLED');
 		const docName = this.getDocNameFromRequest(request);
 
-		if (!this.isTldrawEnabled || !docName) {
+		if (!isTldrawEnabled || !docName) {
 			this.closeClientAndLogError(
 				client,
 				WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE,
@@ -103,8 +97,9 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 			throw new UnauthorizedException('Token was not given');
 		}
 
+		const apiHostUrl = this.configService.get<string>('API_HOST');
 		await firstValueFrom(
-			this.httpService.get(`${this.apiHostUrl}/v3/elements/${drawingName}/permission`, {
+			this.httpService.get(`${apiHostUrl}/v3/elements/${drawingName}/permission`, {
 				headers: {
 					Accept: 'Application/json',
 					Authorization: `Bearer ${token}`,
