@@ -19,7 +19,14 @@ import {
 	WsSharedDocErrorLoggable,
 } from '../loggable';
 import { TldrawConfig } from '../config';
-import { AwarenessConnectionsUpdate, RedisConnectionTypeEnum, TldrawAsset, TldrawShape, WSMessageType } from '../types';
+import {
+	AwarenessConnectionsUpdate,
+	RedisConnectionTypeEnum,
+	TldrawAsset,
+	TldrawShape,
+	UpdateOrigin,
+	WSMessageType,
+} from '../types';
 import { WsSharedDocDo } from '../domain';
 import { TldrawBoardRepo } from '../repo';
 import { MetricsService } from '../metrics';
@@ -169,11 +176,11 @@ export class TldrawWsService {
 		const channelId = channel.toString();
 
 		if (channelId === doc.name) {
-			applyUpdate(doc, update, 'redis');
+			applyUpdate(doc, update, UpdateOrigin.REDIS);
 		}
 
 		if (channelId === doc.awarenessChannel) {
-			applyAwarenessUpdate(doc.awareness, update, 'redis');
+			applyAwarenessUpdate(doc.awareness, update, UpdateOrigin.REDIS);
 		}
 	};
 
@@ -417,6 +424,6 @@ export class TldrawWsService {
 	}
 
 	private isFromRedis(origin: unknown): boolean {
-		return typeof origin === 'string' && origin === 'redis';
+		return typeof origin === 'string' && origin === UpdateOrigin.REDIS;
 	}
 }
