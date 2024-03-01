@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { CommonCartridgeVersion } from '@modules/common-cartridge';
 import { CommonCartridgeExportService, CourseService, LearnroomConfig } from '@modules/learnroom';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
@@ -8,7 +9,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType } from '@shared/domain/entity';
 import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import AdmZip from 'adm-zip';
-import { CommonCartridgeVersion } from '../../common-cartridge/export';
 import { CommonCartridgeMapper } from '../mapper/common-cartridge.mapper';
 
 describe('CommonCartridgeExportService', () => {

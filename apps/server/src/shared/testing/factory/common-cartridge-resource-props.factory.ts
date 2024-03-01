@@ -3,7 +3,7 @@ import {
 	CommonCartridgeIntendedUseType,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
-} from '@src/modules/common-cartridge/export';
+} from '@modules/common-cartridge';
 import { CommonCartridgeElement } from '@src/modules/common-cartridge/export/interfaces/common-cartridge-element.interface';
 import { CommonCartridgeManifestResourcePropsV110 } from '@src/modules/common-cartridge/export/resources/v1.1.0/common-cartridge-manifest-resource';
 import { CommonCartridgeWebContentResourcePropsV110 } from '@src/modules/common-cartridge/export/resources/v1.1.0/common-cartridge-web-content-resource';

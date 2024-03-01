@@ -1,14 +1,14 @@
+import {
+	CommonCartridgeFileBuilder,
+	CommonCartridgeOrganizationBuilder,
+	CommonCartridgeVersion,
+} from '@modules/common-cartridge';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { ComponentProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { createIdentifier } from '@src/modules/common-cartridge/export/utils';
-import {
-	CommonCartridgeFileBuilder,
-	CommonCartridgeOrganizationBuilder,
-	CommonCartridgeVersion,
-} from '../../common-cartridge/export';
 import { CommonCartridgeMapper } from '../mapper/common-cartridge.mapper';
 import { CourseService } from './course.service';
 

@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { CommonCartridgeElementType, CommonCartridgeVersion } from '@src/modules/common-cartridge/export';
+import { CommonCartridgeElementType, CommonCartridgeVersion } from '@modules/common-cartridge';
 import { CommonCartridgeMetadataElementPropsV110 } from '@src/modules/common-cartridge/export/elements/v1.1.0/common-cartridge-metadata-element';
 import { CommonCartridgeOrganizationElementPropsV110 } from '@src/modules/common-cartridge/export/elements/v1.1.0/common-cartridge-organization-element';
 import { CommonCartridgeOrganizationsWrapperElementPropsV110 } from '@src/modules/common-cartridge/export/elements/v1.1.0/common-cartridge-organizations-wrapper-element';

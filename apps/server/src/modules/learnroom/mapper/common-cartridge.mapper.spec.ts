@@ -1,10 +1,5 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { ConfigService } from '@nestjs/config';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ComponentProperties, ComponentType } from '@shared/domain/entity';
-import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
-import { OmitVersion, createIdentifier } from '@src/modules/common-cartridge/export/utils';
 import {
 	CommonCartridgeElementProps,
 	CommonCartridgeElementType,
@@ -14,7 +9,12 @@ import {
 	CommonCartridgeResourceProps,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
-} from '../../common-cartridge/export';
+} from '@modules/common-cartridge';
+import { ConfigService } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { ComponentProperties, ComponentType } from '@shared/domain/entity';
+import { courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import { OmitVersion, createIdentifier } from '@src/modules/common-cartridge/export/utils';
 import { LearnroomConfig } from '../learnroom.config';
 import { CommonCartridgeMapper } from './common-cartridge.mapper';
 
