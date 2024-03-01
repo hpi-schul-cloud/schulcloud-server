@@ -22,13 +22,12 @@ export class CommonToolValidationService {
 		new ParameterArrayEntryValidator(),
 	];
 
-	public validateParameters(loadedExternalTool: ExternalTool, validatableTool: ValidatableTool): ValidationError[] {
+	public validateParameters(externalTool: ExternalTool, validatableTool: ValidatableTool): ValidationError[] {
 		const errors: ValidationError[] = [];
 
-		const parametersForScope: CustomParameter[] = (loadedExternalTool.parameters ?? []).filter(
-			(param: CustomParameter) =>
-				(validatableTool instanceof SchoolExternalTool && param.scope === CustomParameterScope.SCHOOL) ||
-				(validatableTool instanceof ContextExternalTool && param.scope === CustomParameterScope.CONTEXT)
+		const parametersForScope: CustomParameter[] = this.filterParametersForScope(
+			externalTool.parameters,
+			validatableTool
 		);
 
 		this.arrayValidators.forEach((validator: ParameterArrayValidator) => {
@@ -38,5 +37,18 @@ export class CommonToolValidationService {
 		});
 
 		return errors;
+	}
+
+	private filterParametersForScope(
+		params: CustomParameter[] | undefined,
+		validatableTool: ValidatableTool
+	): CustomParameter[] {
+		const parametersForScope: CustomParameter[] = (params ?? []).filter(
+			(param: CustomParameter) =>
+				(validatableTool instanceof SchoolExternalTool && param.scope === CustomParameterScope.SCHOOL) ||
+				(validatableTool instanceof ContextExternalTool && param.scope === CustomParameterScope.CONTEXT)
+		);
+
+		return parametersForScope;
 	}
 }

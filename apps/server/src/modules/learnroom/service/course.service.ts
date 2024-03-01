@@ -65,7 +65,16 @@ export class CourseService {
 		return courses;
 	}
 
+	async create(course: Course): Promise<void> {
+		await this.repo.createCourse(course);
+	}
+
 	private getCoursesId(courses: Course[]): EntityId[] {
 		return courses.map((course) => course.id);
+	}
+
+	async findOneForUser(courseId: EntityId, userId: EntityId): Promise<Course> {
+		const course = await this.repo.findOne(courseId, userId);
+		return course;
 	}
 }
