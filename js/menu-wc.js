@@ -1551,13 +1551,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/LearnroomModule.html" data-type="entity-link" >LearnroomModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-LearnroomModule-eddc80812ead407ecc895c3f769a5e0a0a00132f06d6909972e4b98cbaec880a26bbc7edbca4f8e151490adf5b9c46cddff98ea3829ba61efd8235274c4a1481"' : 'data-bs-target="#xs-injectables-links-module-LearnroomModule-eddc80812ead407ecc895c3f769a5e0a0a00132f06d6909972e4b98cbaec880a26bbc7edbca4f8e151490adf5b9c46cddff98ea3829ba61efd8235274c4a1481"' }>
+                                        'data-bs-target="#injectables-links-module-LearnroomModule-00335d0ab1027f7d3764306dd92589c4064b5a1349c83f8306ced2fbce4bbb3acb57aba909c9b3c85fc6396e0674780617f7b58b4e487b7cf8c506fff413efff"' : 'data-bs-target="#xs-injectables-links-module-LearnroomModule-00335d0ab1027f7d3764306dd92589c4064b5a1349c83f8306ced2fbce4bbb3acb57aba909c9b3c85fc6396e0674780617f7b58b4e487b7cf8c506fff413efff"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-LearnroomModule-eddc80812ead407ecc895c3f769a5e0a0a00132f06d6909972e4b98cbaec880a26bbc7edbca4f8e151490adf5b9c46cddff98ea3829ba61efd8235274c4a1481"' :
-                                        'id="xs-injectables-links-module-LearnroomModule-eddc80812ead407ecc895c3f769a5e0a0a00132f06d6909972e4b98cbaec880a26bbc7edbca4f8e151490adf5b9c46cddff98ea3829ba61efd8235274c4a1481"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-LearnroomModule-00335d0ab1027f7d3764306dd92589c4064b5a1349c83f8306ced2fbce4bbb3acb57aba909c9b3c85fc6396e0674780617f7b58b4e487b7cf8c506fff413efff"' :
+                                        'id="xs-injectables-links-module-LearnroomModule-00335d0ab1027f7d3764306dd92589c4064b5a1349c83f8306ced2fbce4bbb3acb57aba909c9b3c85fc6396e0674780617f7b58b4e487b7cf8c506fff413efff"' }>
                                         <li class="link">
                                             <a href="injectables/BoardCopyService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BoardCopyService</a>
                                         </li>
@@ -4033,6 +4033,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/CountyResponseMapper.html" data-type="entity-link" >CountyResponseMapper</a>
                             </li>
                             <li class="link">
+                                <a href="classes/Course.html" data-type="entity-link" >Course</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CourseEntityMapper.html" data-type="entity-link" >CourseEntityMapper</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/CourseFactory.html" data-type="entity-link" >CourseFactory</a>
                             </li>
                             <li class="link">
@@ -4052,6 +4058,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/CourseMetadataResponse.html" data-type="entity-link" >CourseMetadataResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CourseMikroOrmRepo.html" data-type="entity-link" >CourseMikroOrmRepo</a>
                             </li>
                             <li class="link">
                                 <a href="classes/CourseQueryParams.html" data-type="entity-link" >CourseQueryParams</a>
@@ -7008,6 +7017,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/AutoParameterStrategy.html" data-type="entity-link" >AutoParameterStrategy</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/BaseDomainObjectRepoInterface.html" data-type="entity-link" >BaseDomainObjectRepoInterface</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/BaseResponseMapper.html" data-type="entity-link" >BaseResponseMapper</a>
                             </li>
                             <li class="link">
@@ -7153,6 +7165,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/CourseProperties.html" data-type="entity-link" >CourseProperties</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CourseProps.html" data-type="entity-link" >CourseProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/CourseRepo.html" data-type="entity-link" >CourseRepo</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/CreateJwtParams.html" data-type="entity-link" >CreateJwtParams</a>

@@ -284,6 +284,12 @@
                             <a href="#countyFactory" title="apps/server/src/modules/school/testing/county.factory.ts" ><b>countyFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../county.factory.ts)</a>
                         </li>
                         <li>
+                            <a href="#COURSE_REPO" title="apps/server/src/modules/learnroom/domain/interface/course.repo.interface.ts" ><b>COURSE_REPO</b>&nbsp;&nbsp;&nbsp;(apps/.../course.repo.interface.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#courseFactory" title="apps/server/src/modules/learnroom/testing/courseFactory.ts" ><b>courseFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../courseFactory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#courseFactory" title="apps/server/src/shared/testing/factory/course.factory.ts" ><b>courseFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../course.factory.ts)</a>
                         </li>
                         <li>
@@ -4933,6 +4939,67 @@ must use</p>
 	};
 
 	return county;
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/learnroom/domain/interface/course.repo.interface.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="COURSE_REPO"></a>
+                    <span class="name">
+                        <span ><b>COURSE_REPO</b></span>
+                        <a href="#COURSE_REPO"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>Symbol(&#x27;COURSE_REPO&#x27;)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/learnroom/testing/courseFactory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="courseFactory"></a>
+                    <span class="name">
+                        <span ><b>courseFactory</b></span>
+                        <a href="#courseFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>DomainObjectFactory.define&lt;Course, CourseProps&gt;(Course, ({ sequence }) &#x3D;&gt; {
+	return {
+		id: new ObjectId().toHexString(),
+		name: &#x60;course #${sequence}&#x60;,
+		features: new Set(),
+		schoolId: new ObjectId().toHexString(),
+		studentIds: [],
+		teacherIds: [],
+		substitutionTeacherIds: [],
+		groupIds: [],
+		classIds: [],
+		courseGroupIds: [],
+		description: &#x27;description&#x27;,
+		color: &#x27;#ACACAC&#x27;,
+	};
 })</code>
                     </td>
                 </tr>

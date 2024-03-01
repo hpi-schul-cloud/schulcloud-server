@@ -193,7 +193,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="46" class="link-to-prism">apps/server/src/shared/domain/entity/course.entity.ts:46</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">apps/server/src/shared/domain/entity/course.entity.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -219,7 +219,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">apps/server/src/shared/domain/entity/course.entity.ts:44</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">apps/server/src/shared/domain/entity/course.entity.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -245,7 +245,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">apps/server/src/shared/domain/entity/course.entity.ts:48</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="49" class="link-to-prism">apps/server/src/shared/domain/entity/course.entity.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -292,6 +292,7 @@ export interface CourseProperties {
 	features?: CourseFeatures[];
 	classes?: ClassEntity[];
 	groups?: GroupEntity[];
+	syncedWithGroup?: GroupEntity;
 }
 
 // that is really really shit default handling :D constructor, getter, js default, em default...what the hell
@@ -302,7 +303,7 @@ const DEFAULT &#x3D; {
 	description: &#x27;&#x27;,
 };
 
-const enum CourseFeatures {
+export enum CourseFeatures {
 	VIDEOCONFERENCE &#x3D; &#x27;videoconference&#x27;,
 }
 
@@ -368,6 +369,9 @@ export class Course extends BaseEntityWithTimestamps implements Learnroom, Entit
 	@ManyToMany(() &#x3D;&gt; GroupEntity, undefined, { fieldName: &#x27;groupIds&#x27; })
 	groups &#x3D; new Collection&lt;GroupEntity&gt;(this);
 
+	@ManyToOne(() &#x3D;&gt; GroupEntity, { nullable: true })
+	syncedWithGroup?: GroupEntity;
+
 	constructor(props: CourseProperties) {
 		super();
 		if (props.name) this.name &#x3D; props.name;
@@ -383,6 +387,7 @@ export class Course extends BaseEntityWithTimestamps implements Learnroom, Entit
 		if (props.features) this.features &#x3D; props.features;
 		this.classes.set(props.classes || []);
 		this.groups.set(props.groups || []);
+		this.syncedWithGroup &#x3D; props.syncedWithGroup;
 	}
 
 	public getStudentIds(): EntityId[] {
