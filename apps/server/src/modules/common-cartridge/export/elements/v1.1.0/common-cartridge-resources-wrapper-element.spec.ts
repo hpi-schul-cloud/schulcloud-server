@@ -1,6 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { createCommonCartridgeResourcesWrapperElementPropsV110 } from '@shared/testing/factory/common-cartridge-element-props.factory';
-import { createCommonCartridgeWeblinkResourcePropsV110 } from '@shared/testing/factory/common-cartridge-resource-props.factory';
+import { createCommonCartridgeResourcesWrapperElementPropsV110 } from '@src/modules/common-cartridge/testing/common-cartridge-element-props.factory';
+import { createCommonCartridgeWeblinkResourcePropsV110 } from '@src/modules/common-cartridge/testing/common-cartridge-resource-props.factory';
 import { CommonCartridgeVersion } from '../../common-cartridge.enums';
 import { CommonCartridgeResourceFactory } from '../../resources/common-cartridge-resource-factory';
 import { CommonCartridgeResourcesWrapperElementV110 } from './common-cartridge-resources-wrapper-element';

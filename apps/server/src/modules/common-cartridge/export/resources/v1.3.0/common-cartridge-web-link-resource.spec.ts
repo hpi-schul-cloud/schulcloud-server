@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { createCommonCartridgeWeblinkResourcePropsV130 } from '@shared/testing/factory/common-cartridge-resource-props.factory';
+import { createCommonCartridgeWeblinkResourcePropsV130 } from '@src/modules/common-cartridge/testing/common-cartridge-resource-props.factory';
 import { readFile } from 'node:fs/promises';
 import { CommonCartridgeVersion } from '../../common-cartridge.enums';
 import { CommonCartridgeWebLinkResourceV130 } from './common-cartridge-web-link-resource';
@@ -60,7 +60,10 @@ describe('CommonCartridgeWebLinkResourceV130', () => {
 			it('should contain correct XML', async () => {
 				const { sut } = setup();
 
-				const expected = await readFile('./apps/server/test/assets/common-cartridge/v1.3.0/weblink.xml', 'utf8');
+				const expected = await readFile(
+					'./apps/server/src/modules/common-cartridge/testing/assets/v1.3.0/weblink.xml',
+					'utf8'
+				);
 				const result = sut.getFileContent();
 
 				expect(result).toEqual(expected);

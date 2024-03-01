@@ -122,7 +122,9 @@ describe('Course Controller (API)', () => {
 	describe('[POST] /courses/import', () => {
 		const setup = async () => {
 			const teacher = createTeacher();
-			const course = await readFile('./apps/server/test/assets/common-cartridge/us_history_since_1877.imscc');
+			const course = await readFile(
+				'./apps/server/src/modules/common-cartridge/testing/assets/us_history_since_1877.imscc'
+			);
 			const courseFileName = 'us_history_since_1877.imscc';
 
 			await em.persistAndFlush([teacher.account, teacher.user]);

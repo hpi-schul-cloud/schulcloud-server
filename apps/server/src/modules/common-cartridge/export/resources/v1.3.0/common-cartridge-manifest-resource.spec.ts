@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { createCommonCartridgeManifestResourcePropsV130 } from '@shared/testing/factory/common-cartridge-resource-props.factory';
+import { createCommonCartridgeManifestResourcePropsV130 } from '@src/modules/common-cartridge/testing/common-cartridge-resource-props.factory';
 import { readFile } from 'fs/promises';
 import {
 	CommonCartridgeElementType,
@@ -107,7 +107,10 @@ describe('CommonCartridgeManifestResourceV130', () => {
 			it('should return constructed file content', async () => {
 				const { sut } = setup();
 
-				const expected = await readFile('./apps/server/test/assets/common-cartridge/v1.3.0/manifest.xml', 'utf-8');
+				const expected = await readFile(
+					'./apps/server/src/modules/common-cartridge/testing/assets/v1.3.0/manifest.xml',
+					'utf-8'
+				);
 				const result = sut.getFileContent();
 
 				expect(result).toEqual(expected);

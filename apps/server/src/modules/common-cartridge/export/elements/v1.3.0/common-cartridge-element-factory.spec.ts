@@ -4,7 +4,7 @@ import {
 	createCommonCartridgeOrganizationElementPropsV130,
 	createCommonCartridgeOrganizationsWrapperElementPropsV130,
 	createCommonCartridgeResourcesWrapperElementPropsV130,
-} from '@shared/testing/factory/common-cartridge-element-props.factory';
+} from '@src/modules/common-cartridge/testing/common-cartridge-element-props.factory';
 import { CommonCartridgeElementType } from '../../common-cartridge.enums';
 import { CommonCartridgeElementFactoryV130 } from './common-cartridge-element-factory';
 import { CommonCartridgeMetadataElementV130 } from './common-cartridge-metadata-element';
