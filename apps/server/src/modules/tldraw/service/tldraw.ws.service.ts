@@ -36,8 +36,6 @@ import { TldrawFilesStorageAdapterService } from './tldraw-files-storage.service
 export class TldrawWsService {
 	public docs = new Map();
 
-	private readonly pingTimeout: number;
-
 	public readonly sub: Redis;
 
 	private readonly pub: Redis;
@@ -51,7 +49,6 @@ export class TldrawWsService {
 		private readonly filesStorageTldrawAdapterService: TldrawFilesStorageAdapterService
 	) {
 		this.logger.setContext(TldrawWsService.name);
-		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
 
 		this.sub = this.tldrawRedisFactory.build(RedisConnectionTypeEnum.SUBSCRIBE);
 		this.pub = this.tldrawRedisFactory.build(RedisConnectionTypeEnum.PUBLISH);
@@ -207,6 +204,7 @@ export class TldrawWsService {
 		this.sendInitialState(ws, doc);
 
 		// check if connection is still alive
+		const pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
 		let pongReceived = true;
 		const pingInterval = setInterval(() => {
 			if (pongReceived && doc.connections.has(ws)) {
@@ -219,7 +217,7 @@ export class TldrawWsService {
 				this.logger.warning(new CloseConnectionLoggable('pingInterval', err));
 			});
 			clearInterval(pingInterval);
-		}, this.pingTimeout);
+		}, pingTimeout);
 
 		ws.on('close', () => {
 			this.closeConn(doc, ws).catch((err) => {
@@ -261,9 +259,12 @@ export class TldrawWsService {
 				await this.tldrawBoardRepo.compressDocument(doc.name);
 				this.unsubscribeFromRedisChannels(doc);
 
-				void this.filesStorageTldrawAdapterService.deleteUnusedFilesForDocument(doc.name, usedAssets).catch((err) => {
-					this.logger.warning(new FileStorageErrorLoggable(doc.name, err));
-				});
+				if (this.configService.get<number>('TLDRAW_ASSETS_SYNC_ENABLED')) {
+					void this.filesStorageTldrawAdapterService.deleteUnusedFilesForDocument(doc.name, usedAssets).catch((err) => {
+						this.logger.warning(new FileStorageErrorLoggable(doc.name, err));
+					});
+				}
+
 				doc.destroy();
 			} catch (err) {
 				this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while flushing doc', err));
@@ -283,21 +284,21 @@ export class TldrawWsService {
 		const usedShapesAsAssets: TldrawShape[] = [];
 		const usedAssets: TldrawAsset[] = [];
 
-		shapes.forEach((shape) => {
+		for (const [_, shape] of shapes) {
 			if (shape.assetId) {
 				usedShapesAsAssets.push(shape);
 			}
-		});
+		}
 
 		doc.transact(() => {
-			assets.forEach((asset) => {
-				const foundAsset = usedShapesAsAssets.find((shape) => shape.assetId === asset.id);
+			for (const [_, asset] of assets) {
+				const foundAsset = usedShapesAsAssets.some((shape) => shape.assetId === asset.id);
 				if (!foundAsset) {
 					assets.delete(asset.id);
 				} else {
 					usedAssets.push(asset);
 				}
-			});
+			}
 		});
 
 		return usedAssets;
@@ -309,9 +310,9 @@ export class TldrawWsService {
 		writeUpdate(encoder, update);
 		const message = encoding.toUint8Array(encoder);
 
-		doc.connections.forEach((_, conn) => {
+		for (const [conn] of doc.connections) {
 			this.send(doc, conn, message);
-		});
+		}
 	}
 
 	private prepareAwarenessMessage(changedClients: number[], doc: WsSharedDocDo): Uint8Array {
@@ -323,9 +324,9 @@ export class TldrawWsService {
 	}
 
 	private sendAwarenessMessage(buff: Uint8Array, doc: WsSharedDocDo): void {
-		doc.connections.forEach((_, c) => {
-			this.send(doc, c, buff);
-		});
+		for (const [conn] of doc.connections) {
+			this.send(doc, conn, buff);
+		}
 	}
 
 	private manageClientsConnections(
@@ -337,12 +338,13 @@ export class TldrawWsService {
 		if (wsConnection !== null) {
 			const connControlledIDs = doc.connections.get(wsConnection);
 			if (connControlledIDs !== undefined) {
-				connectionsUpdate.added.forEach((clientID) => {
+				for (const clientID of connectionsUpdate.added) {
 					connControlledIDs.add(clientID);
-				});
-				connectionsUpdate.removed.forEach((clientID) => {
+				}
+
+				for (const clientID of connectionsUpdate.removed) {
 					connControlledIDs.delete(clientID);
-				});
+				}
 			}
 		}
 		return changedClients;
