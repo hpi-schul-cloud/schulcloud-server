@@ -29,7 +29,7 @@ export class GroupDomainMapper {
 			});
 		}
 
-		const mapped: EntityData<GroupEntity> = {
+		const groupEntityData: EntityData<GroupEntity> = {
 			name: props.name,
 			type: GroupTypesToGroupEntityTypesMapping[props.type],
 			externalSource: props.externalSource
@@ -42,7 +42,7 @@ export class GroupDomainMapper {
 			organization: props.organizationId ? em.getReference(SchoolEntity, props.organizationId) : undefined,
 		};
 
-		return mapped;
+		return groupEntityData;
 	}
 
 	static mapEntityToDo(entity: GroupEntity): Group {
@@ -66,38 +66,38 @@ export class GroupDomainMapper {
 		externalSource: ExternalSource,
 		em: EntityManager
 	): ExternalSourceEntity {
-		const mapped = new ExternalSourceEntity({
+		const externalSourceEntity: ExternalSourceEntity = new ExternalSourceEntity({
 			externalId: externalSource.externalId,
 			system: em.getReference(SystemEntity, externalSource.systemId),
 		});
 
-		return mapped;
+		return externalSourceEntity;
 	}
 
 	static mapExternalSourceEntityToExternalSource(entity: ExternalSourceEntity): ExternalSource {
-		const mapped = new ExternalSource({
+		const externalSource: ExternalSource = new ExternalSource({
 			externalId: entity.externalId,
 			systemId: entity.system.id,
 		});
 
-		return mapped;
+		return externalSource;
 	}
 
 	static mapGroupUserToGroupUserEntity(groupUser: GroupUser, em: EntityManager): GroupUserEntity {
-		const mapped = new GroupUserEntity({
+		const groupUserEntity: GroupUserEntity = new GroupUserEntity({
 			user: em.getReference(User, groupUser.userId),
 			role: em.getReference(Role, groupUser.roleId),
 		});
 
-		return mapped;
+		return groupUserEntity;
 	}
 
 	static mapGroupUserEntityToGroupUser(entity: GroupUserEntity): GroupUser {
-		const mapped = new GroupUser({
+		const groupUser: GroupUser = new GroupUser({
 			userId: entity.user.id,
 			roleId: entity.role.id,
 		});
 
-		return mapped;
+		return groupUser;
 	}
 }
