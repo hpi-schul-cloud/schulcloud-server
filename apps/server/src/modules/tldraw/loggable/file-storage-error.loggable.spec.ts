@@ -1,10 +1,10 @@
-import { CloseConnectionLoggable } from './close-connection.loggable';
+import { FileStorageErrorLoggable } from './file-storage-error.loggable';
 
-describe('CloseConnectionLoggable', () => {
+describe('FileStorageErrorLoggable', () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const error = new Error('test');
-			const loggable = new CloseConnectionLoggable('functionName', error);
+			const loggable = new FileStorageErrorLoggable('doc1', error);
 
 			return { loggable, error };
 		};
@@ -15,8 +15,8 @@ describe('CloseConnectionLoggable', () => {
 			const message = loggable.getLogMessage();
 
 			expect(message).toEqual({
-				message: 'Close web socket error in functionName',
-				type: 'CLOSE_WEB_SOCKET_ERROR',
+				message: 'Error in document doc1: assets could not be synchronized with file storage.',
+				type: 'FILE_STORAGE_GENERAL_ERROR',
 				error,
 			});
 		});
