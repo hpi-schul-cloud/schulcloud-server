@@ -4,9 +4,12 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { BaseEntity, baseEntityProperties } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
+import { BaseDomainObjectRepoInterface } from './base-domain-object.repo.interface';
 
 @Injectable()
-export abstract class BaseDomainObjectRepo<D extends DomainObject<AuthorizableObject>, E extends BaseEntity> {
+export abstract class BaseDomainObjectRepo<D extends DomainObject<AuthorizableObject>, E extends BaseEntity>
+	implements BaseDomainObjectRepoInterface<D>
+{
 	constructor(protected readonly em: EntityManager) {}
 
 	protected abstract get entityName(): EntityName<E>;
