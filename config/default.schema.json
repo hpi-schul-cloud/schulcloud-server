@@ -1497,7 +1497,7 @@
 				"PING_TIMEOUT",
 				"SOCKET_PORT",
 				"GC_ENABLED",
-				"DB_FLUSH_SIZE",
+				"DB_COMPRESS_THRESHOLD",
 				"MAX_DOCUMENT_SIZE",
 				"ASSETS_ENABLED",
 				"ASSETS_MAX_SIZE",
@@ -1516,9 +1516,9 @@
 					"type": "boolean",
 					"description": "If tldraw garbage collector should be enabled"
 				},
-				"DB_FLUSH_SIZE": {
+				"DB_COMPRESS_THRESHOLD": {
 					"type": "integer",
-					"description": "DB collection flushing size"
+					"description": "Mongo documents with same docName compress threshold size"
 				},
 				"MAX_DOCUMENT_SIZE": {
 					"type": "number",
@@ -1542,7 +1542,7 @@
 				"SOCKET_PORT": 3345,
 				"PING_TIMEOUT": 30000,
 				"GC_ENABLED": true,
-				"DB_FLUSH_SIZE": 400,
+				"DB_COMPRESS_THRESHOLD": 400,
 				"MAX_DOCUMENT_SIZE": 15000000,
 				"ASSETS_ENABLED": true,
 				"ASSETS_MAX_SIZE": 10485760,

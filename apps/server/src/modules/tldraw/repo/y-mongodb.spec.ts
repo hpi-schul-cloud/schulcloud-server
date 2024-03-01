@@ -122,9 +122,10 @@ describe('YMongoDb', () => {
 		});
 	});
 
-	describe('flushDocumentTransactional', () => {
+	describe('compressDocumentTransactional', () => {
 		const setup = async () => {
-			const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValue();
+			const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValueOnce();
+			const mergeUpdatesSpy = jest.spyOn(Yjs, 'mergeUpdates').mockReturnValueOnce(new Uint8Array([]));
 
 			const drawing1 = tldrawEntityFactory.build({ clock: 1, part: undefined });
 			const drawing2 = tldrawEntityFactory.build({ clock: 2, part: undefined });
@@ -136,6 +137,7 @@ describe('YMongoDb', () => {
 
 			return {
 				applyUpdateSpy,
+				mergeUpdatesSpy,
 				drawing1,
 			};
 		};
@@ -143,7 +145,7 @@ describe('YMongoDb', () => {
 		it('should merge multiple documents with the same name in the database into two (one main document and one with update)', async () => {
 			const { applyUpdateSpy, drawing1 } = await setup();
 
-			await mdb.flushDocumentTransactional(drawing1.docName);
+			await mdb.compressDocumentTransactional(drawing1.docName);
 			const docs = await em.findAndCount(TldrawDrawing, { docName: drawing1.docName });
 
 			expect(docs.length).toEqual(2);
@@ -173,6 +175,7 @@ describe('YMongoDb', () => {
 		describe('when getting document with well defined parts', () => {
 			const setup = async () => {
 				const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValue();
+				const mergeUpdatesSpy = jest.spyOn(Yjs, 'mergeUpdates').mockReturnValue(new Uint8Array([]));
 
 				const drawing1 = tldrawEntityFactory.build({ clock: 1, part: 1 });
 				const drawing2 = tldrawEntityFactory.build({ clock: 1, part: 2 });
@@ -183,6 +186,7 @@ describe('YMongoDb', () => {
 
 				return {
 					applyUpdateSpy,
+					mergeUpdatesSpy,
 					drawing1,
 					drawing2,
 					drawing3,
