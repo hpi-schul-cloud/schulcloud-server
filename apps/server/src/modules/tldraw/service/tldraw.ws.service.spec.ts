@@ -1184,6 +1184,55 @@ describe('TldrawWSService', () => {
 				expect(applyAwarenessUpdateSpy).toHaveBeenCalled();
 			});
 		});
+
+		describe('when channel name is not found as document name', () => {
+			it('should not call applyUpdate or applyAwarenessUpdate', () => {
+				const { doc, applyUpdateSpy, applyAwarenessUpdateSpy } = setup();
+				service.docs.set('TEST', doc);
+				service.redisMessageHandler(Buffer.from('NOTFOUND'), Buffer.from('message'));
+
+				expect(applyUpdateSpy).not.toHaveBeenCalled();
+				expect(applyAwarenessUpdateSpy).not.toHaveBeenCalled();
+			});
+		});
+	});
+
+	describe('updateHandler', () => {
+		describe('when update comes from connected websocket', () => {
+			const setup = async () => {
+				ws = await TestConnection.setupWs(wsUrl, 'TEST');
+
+				const doc = new WsSharedDocDo('TEST');
+				doc.connections.set(ws, new Set<number>());
+				const publishSpy = jest.spyOn(Ioredis.Redis.prototype, 'publish');
+				const errorLogSpy = jest.spyOn(logger, 'warning');
+
+				return {
+					doc,
+					publishSpy,
+					errorLogSpy,
+				};
+			};
+
+			it('should publish update to redis', async () => {
+				const { doc, publishSpy } = await setup();
+
+				service.updateHandler(new Uint8Array([]), ws, doc);
+
+				expect(publishSpy).toHaveBeenCalled();
+				ws.close();
+			});
+
+			it('should log error on failed publish', async () => {
+				const { doc, publishSpy, errorLogSpy } = await setup();
+				publishSpy.mockRejectedValueOnce(new Error('error'));
+
+				service.updateHandler(new Uint8Array([]), ws, doc);
+
+				expect(errorLogSpy).toHaveBeenCalled();
+				ws.close();
+			});
+		});
 	});
 
 	describe('awarenessUpdateHandler', () => {
