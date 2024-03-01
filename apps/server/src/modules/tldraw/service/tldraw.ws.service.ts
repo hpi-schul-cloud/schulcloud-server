@@ -132,24 +132,37 @@ export class TldrawWsService {
 		const messageType = decoding.readVarUint(decoder);
 		switch (messageType) {
 			case WSMessageType.SYNC:
-				encoding.writeVarUint(encoder, WSMessageType.SYNC);
-				readSyncMessage(decoder, encoder, doc, conn);
-
-				// If the `encoder` only contains the type of reply message and no
-				// message, there is no need to send the message. When `encoder` only
-				// contains the type of reply, its length is 1.
-				if (encoding.length(encoder) > 1) {
-					this.send(doc, conn, encoding.toUint8Array(encoder));
-				}
+				this.handleSyncMessage(doc, encoder, decoder, conn);
 				break;
 			case WSMessageType.AWARENESS: {
-				const update = decoding.readVarUint8Array(decoder);
-				this.publishUpdateToRedis(doc, update, 'awareness');
+				this.handleAwarenessMessage(doc, decoder);
 				break;
 			}
 			default:
 				break;
 		}
+	}
+
+	private handleSyncMessage(
+		doc: WsSharedDocDo,
+		encoder: encoding.Encoder,
+		decoder: decoding.Decoder,
+		conn: WebSocket
+	): void {
+		encoding.writeVarUint(encoder, WSMessageType.SYNC);
+		readSyncMessage(decoder, encoder, doc, conn);
+
+		// If the `encoder` only contains the type of reply message and no
+		// message, there is no need to send the message. When `encoder` only
+		// contains the type of reply, its length is 1.
+		if (encoding.length(encoder) > 1) {
+			this.send(doc, conn, encoding.toUint8Array(encoder));
+		}
+	}
+
+	private handleAwarenessMessage(doc: WsSharedDocDo, decoder: decoding.Decoder) {
+		const update = decoding.readVarUint8Array(decoder);
+		this.publishUpdateToRedis(doc, update, 'awareness');
 	}
 
 	public redisMessageHandler = (channel: Buffer, update: Buffer, doc: WsSharedDocDo): void => {

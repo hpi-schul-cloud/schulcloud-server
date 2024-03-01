@@ -20,12 +20,12 @@ export class TldrawFilesStorageAdapterService {
 	private foundAssetsForDeletion(fileRecords: FileDto[], usedAssets: TldrawAsset[]): string[] {
 		const fileRecordIdsForDeletion: string[] = [];
 
-		fileRecords.forEach((fileRecord) => {
+		for (const fileRecord of fileRecords) {
 			const foundAsset = usedAssets.some((asset) => this.matchAssetWithFileRecord(asset, fileRecord));
 			if (!foundAsset) {
 				fileRecordIdsForDeletion.push(fileRecord.id);
 			}
-		});
+		}
 
 		return fileRecordIdsForDeletion;
 	}
