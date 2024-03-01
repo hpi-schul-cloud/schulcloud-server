@@ -42,8 +42,7 @@ export class ColumnUc extends BaseUc {
 		this.logger.debug({ action: 'createCard', userId, columnId });
 
 		const column = await this.columnService.findById(columnId);
-		// TODO students should not be allowed to create cards
-		await this.checkPermission(userId, column, Action.read);
+		await this.checkPermission(userId, column, Action.write);
 
 		const card = await this.cardService.create(column, requiredEmptyElements);
 
