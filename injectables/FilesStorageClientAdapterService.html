@@ -148,11 +148,11 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#deleteFilesOfParent" >deleteFilesOfParent</a>
+                                <a href="#deleteFiles" >deleteFiles</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#deleteOneFile" >deleteOneFile</a>
+                                <a href="#deleteFilesOfParent" >deleteFilesOfParent</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -317,6 +317,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="deleteFiles"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteFiles</b></span>
+                        <a href="#deleteFiles"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteFiles(fileRecordIds: <a href="../undefineds/EntityId.html" target="_self">EntityId[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:41</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>fileRecordIds</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;FileDto[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="deleteFilesOfParent"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -373,75 +442,6 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;FileDto[]&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="deleteOneFile"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>deleteOneFile</b></span>
-                        <a href="#deleteOneFile"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteOneFile(fileRecordId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="41"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:41</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>fileRecordId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/File.html" target="_self" >Promise&lt;FileDto&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -704,12 +704,12 @@ export class FilesStorageClientAdapterService {
 		return fileInfos;
 	}
 
-	async deleteOneFile(fileRecordId: EntityId): Promise&lt;FileDto&gt; {
-		const response &#x3D; await this.fileStorageMQProducer.deleteOneFile(fileRecordId);
+	async deleteFiles(fileRecordIds: EntityId[]): Promise&lt;FileDto[]&gt; {
+		const response &#x3D; await this.fileStorageMQProducer.deleteFiles(fileRecordIds);
 
-		const fileInfo &#x3D; FilesStorageClientMapper.mapFileRecordResponseToFileDto(response);
+		const fileInfos &#x3D; FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response);
 
-		return fileInfo;
+		return fileInfos;
 	}
 
 	async removeCreatorIdFromFileRecords(creatorId: EntityId): Promise&lt;DomainOperation&gt; {

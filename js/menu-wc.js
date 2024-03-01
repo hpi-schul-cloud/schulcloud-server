@@ -2719,13 +2719,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/TldrawModule.html" data-type="entity-link" >TldrawModule</a>
                                     <li class="chapter inner">
                                         <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                            'data-bs-target="#controllers-links-module-TldrawModule-3d8d433e7a776172c8cc2f838855affa5120a4a436cb35054d73e883021eb44d70f7dd45a7eed04e31130c2f585327a3c971115c06ae6a567accccf4403975fa"' : 'data-bs-target="#xs-controllers-links-module-TldrawModule-3d8d433e7a776172c8cc2f838855affa5120a4a436cb35054d73e883021eb44d70f7dd45a7eed04e31130c2f585327a3c971115c06ae6a567accccf4403975fa"' }>
+                                            'data-bs-target="#controllers-links-module-TldrawModule-458e5e11bde39f8421c13875d001f25538f2c259ddeee7b6979ba33502b3784982d5dcd1852e782919f2dc20dc45f21fadf1c3cd2dc4c9f1748a5585a8be858c"' : 'data-bs-target="#xs-controllers-links-module-TldrawModule-458e5e11bde39f8421c13875d001f25538f2c259ddeee7b6979ba33502b3784982d5dcd1852e782919f2dc20dc45f21fadf1c3cd2dc4c9f1748a5585a8be858c"' }>
                                             <span class="icon ion-md-swap"></span>
                                             <span>Controllers</span>
                                             <span class="icon ion-ios-arrow-down"></span>
                                         </div>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-TldrawModule-3d8d433e7a776172c8cc2f838855affa5120a4a436cb35054d73e883021eb44d70f7dd45a7eed04e31130c2f585327a3c971115c06ae6a567accccf4403975fa"' :
-                                            'id="xs-controllers-links-module-TldrawModule-3d8d433e7a776172c8cc2f838855affa5120a4a436cb35054d73e883021eb44d70f7dd45a7eed04e31130c2f585327a3c971115c06ae6a567accccf4403975fa"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="controllers-links-module-TldrawModule-458e5e11bde39f8421c13875d001f25538f2c259ddeee7b6979ba33502b3784982d5dcd1852e782919f2dc20dc45f21fadf1c3cd2dc4c9f1748a5585a8be858c"' :
+                                            'id="xs-controllers-links-module-TldrawModule-458e5e11bde39f8421c13875d001f25538f2c259ddeee7b6979ba33502b3784982d5dcd1852e782919f2dc20dc45f21fadf1c3cd2dc4c9f1748a5585a8be858c"' }>
                                             <li class="link">
                                                 <a href="controllers/TldrawController.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawController</a>
                                             </li>
@@ -2733,13 +2733,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     </li>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-TldrawModule-3d8d433e7a776172c8cc2f838855affa5120a4a436cb35054d73e883021eb44d70f7dd45a7eed04e31130c2f585327a3c971115c06ae6a567accccf4403975fa"' : 'data-bs-target="#xs-injectables-links-module-TldrawModule-3d8d433e7a776172c8cc2f838855affa5120a4a436cb35054d73e883021eb44d70f7dd45a7eed04e31130c2f585327a3c971115c06ae6a567accccf4403975fa"' }>
+                                        'data-bs-target="#injectables-links-module-TldrawModule-458e5e11bde39f8421c13875d001f25538f2c259ddeee7b6979ba33502b3784982d5dcd1852e782919f2dc20dc45f21fadf1c3cd2dc4c9f1748a5585a8be858c"' : 'data-bs-target="#xs-injectables-links-module-TldrawModule-458e5e11bde39f8421c13875d001f25538f2c259ddeee7b6979ba33502b3784982d5dcd1852e782919f2dc20dc45f21fadf1c3cd2dc4c9f1748a5585a8be858c"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawModule-3d8d433e7a776172c8cc2f838855affa5120a4a436cb35054d73e883021eb44d70f7dd45a7eed04e31130c2f585327a3c971115c06ae6a567accccf4403975fa"' :
-                                        'id="xs-injectables-links-module-TldrawModule-3d8d433e7a776172c8cc2f838855affa5120a4a436cb35054d73e883021eb44d70f7dd45a7eed04e31130c2f585327a3c971115c06ae6a567accccf4403975fa"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-TldrawModule-458e5e11bde39f8421c13875d001f25538f2c259ddeee7b6979ba33502b3784982d5dcd1852e782919f2dc20dc45f21fadf1c3cd2dc4c9f1748a5585a8be858c"' :
+                                        'id="xs-injectables-links-module-TldrawModule-458e5e11bde39f8421c13875d001f25538f2c259ddeee7b6979ba33502b3784982d5dcd1852e782919f2dc20dc45f21fadf1c3cd2dc4c9f1748a5585a8be858c"' }>
                                         <li class="link">
                                             <a href="injectables/TldrawBoardRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >TldrawBoardRepo</a>
                                         </li>
@@ -4487,6 +4487,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/FilesStorageMapper.html" data-type="entity-link" >FilesStorageMapper</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/FileStorageErrorLoggable.html" data-type="entity-link" >FileStorageErrorLoggable</a>
                             </li>
                             <li class="link">
                                 <a href="classes/FileUrlParams.html" data-type="entity-link" >FileUrlParams</a>

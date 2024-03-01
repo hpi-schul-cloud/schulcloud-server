@@ -143,13 +143,13 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#createFileDeletionActionWhenAssetNotExists" >createFileDeletionActionWhenAssetNotExists</a>
-                            </li>
-                            <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#deleteUnusedFilesForDocument" >deleteUnusedFilesForDocument</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#foundAssetsForDeletion" >foundAssetsForDeletion</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -225,87 +225,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="createFileDeletionActionWhenAssetNotExists"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>createFileDeletionActionWhenAssetNotExists</b></span>
-                        <a href="#createFileDeletionActionWhenAssetNotExists"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createFileDeletionActionWhenAssetNotExists(fileRecord: <a href="../classes/FileDto.html" target="_self">FileDto</a>, usedAssets: <a href="../undefineds/TldrawAsset.html" target="_self">TldrawAsset[]</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw-files-storage.service.ts:19</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>fileRecord</td>
-                                            <td>
-                                                            <code><a href="../classes/FileDto.html" target="_self" >FileDto</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>usedAssets</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#TldrawAsset" target="_self" >TldrawAsset[]</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="deleteUnusedFilesForDocument"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -374,7 +293,88 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="foundAssetsForDeletion"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>foundAssetsForDeletion</b></span>
+                        <a href="#foundAssetsForDeletion"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>foundAssetsForDeletion(fileRecords: <a href="../interfaces/File.html" target="_self">FileDto[]</a>, usedAssets: <a href="../undefineds/TldrawAsset.html" target="_self">TldrawAsset[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw-files-storage.service.ts:20</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>fileRecords</td>
+                                            <td>
+                                                            <code><a href="../interfaces/File.html" target="_self" >FileDto[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>usedAssets</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#TldrawAsset" target="_self" >TldrawAsset[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>string[]</code>
 
                         </div>
                             <div class="io-description">
@@ -406,8 +406,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw-files-storage.service.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw-files-storage.service.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -479,21 +479,28 @@ import { TldrawAsset } from &#x27;../types&#x27;;
 export class TldrawFilesStorageAdapterService {
 	constructor(private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService) {}
 
-	public async deleteUnusedFilesForDocument(docName: string, usedAssets: TldrawAsset[]) {
+	public async deleteUnusedFilesForDocument(docName: string, usedAssets: TldrawAsset[]): Promise&lt;void&gt; {
 		const fileRecords &#x3D; await this.filesStorageClientAdapterService.listFilesOfParent(docName);
+		const fileRecordIdsForDeletion &#x3D; this.foundAssetsForDeletion(fileRecords, usedAssets);
 
-		const deleteFilePromises &#x3D; fileRecords.map((fileRecord) &#x3D;&gt;
-			this.createFileDeletionActionWhenAssetNotExists(fileRecord, usedAssets)
-		);
+		if (fileRecordIdsForDeletion.length &#x3D;&#x3D;&#x3D; 0) {
+			return;
+		}
 
-		await Promise.allSettled(deleteFilePromises);
+		await this.filesStorageClientAdapterService.deleteFiles(fileRecordIdsForDeletion);
 	}
 
-	private createFileDeletionActionWhenAssetNotExists(fileRecord: FileDto, usedAssets: TldrawAsset[]) {
-		const foundAsset &#x3D; usedAssets.find((asset) &#x3D;&gt; this.matchAssetWithFileRecord(asset, fileRecord));
-		const promise &#x3D; foundAsset ? Promise.resolve() : this.filesStorageClientAdapterService.deleteOneFile(fileRecord.id);
+	private foundAssetsForDeletion(fileRecords: FileDto[], usedAssets: TldrawAsset[]): string[] {
+		const fileRecordIdsForDeletion: string[] &#x3D; [];
 
-		return promise;
+		for (const fileRecord of fileRecords) {
+			const foundAsset &#x3D; usedAssets.some((asset) &#x3D;&gt; this.matchAssetWithFileRecord(asset, fileRecord));
+			if (!foundAsset) {
+				fileRecordIdsForDeletion.push(fileRecord.id);
+			}
+		}
+
+		return fileRecordIdsForDeletion;
 	}
 
 	private matchAssetWithFileRecord(asset: TldrawAsset, fileRecord: FileDto) {

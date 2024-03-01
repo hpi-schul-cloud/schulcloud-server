@@ -145,12 +145,12 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#createDbIndex" >createDbIndex</a>
+                                <a href="#compressDocument" >compressDocument</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#flushDocument" >flushDocument</a>
+                                <a href="#createDbIndex" >createDbIndex</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -161,16 +161,6 @@
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#storeUpdate" >storeUpdate</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#updateDocument" >updateDocument</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#updateStoredDocWithDiff" >updateStoredDocWithDiff</a>
                             </li>
                         </ul>
                     </td>
@@ -190,12 +180,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(mdb: <a href="../injectables/YMongodb.html" target="_self">YMongodb</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(configService: <a href="../interfaces/TldrawConfig.html" target="_self">ConfigService&lt;TldrawConfig | &gt;</a>, mdb: <a href="../injectables/YMongodb.html" target="_self">YMongodb</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw-board.repo.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw-board.repo.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -212,6 +202,18 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                                <tr>
+                                                        <td>configService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../interfaces/TldrawConfig.html" target="_self" >ConfigService&lt;TldrawConfig | &gt;</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                                 <tr>
                                                         <td>mdb</td>
                                                   
@@ -254,67 +256,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="createDbIndex"></a>
+                    <a name="compressDocument"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>createDbIndex</b></span>
-                        <a href="#createDbIndex"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>compressDocument</b></span>
+                        <a href="#compressDocument"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createDbIndex()</code>
+                    <code>compressDocument(docName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw-board.repo.ts:15</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
-
-                        </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="flushDocument"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>flushDocument</b></span>
-                        <a href="#flushDocument"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>flushDocument(docName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw-board.repo.ts:47</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw-board.repo.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -356,6 +318,46 @@
                             <div class="io-description">
                                 
                             </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createDbIndex"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>createDbIndex</b></span>
+                        <a href="#createDbIndex"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createDbIndex()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw-board.repo.ts:18</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
                 </td>
             </tr>
         </tbody>
@@ -383,8 +385,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw-board.repo.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="22"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw-board.repo.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -420,7 +422,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;Doc&gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/WsSharedDocDo.html" target="_self" >Promise&lt;WsSharedDocDo&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -453,8 +455,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="51"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw-board.repo.ts:51</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw-board.repo.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -512,170 +514,6 @@
             </tr>
         </tbody>
     </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="updateDocument"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>updateDocument</b></span>
-                        <a href="#updateDocument"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateDocument(docName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, ydoc: <a href="../classes/WsSharedDocDo.html" target="_self">WsSharedDocDo</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw-board.repo.ts:34</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>docName</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>ydoc</td>
-                                            <td>
-                                                            <code><a href="../classes/WsSharedDocDo.html" target="_self" >WsSharedDocDo</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="updateStoredDocWithDiff"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>updateStoredDocWithDiff</b></span>
-                        <a href="#updateStoredDocWithDiff"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateStoredDocWithDiff(docName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, diff: Uint8Array)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="24"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/repo/tldraw-board.repo.ts:24</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>docName</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>diff</td>
-                                            <td>
-                                                        <code>Uint8Array</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
 </section>
 
     </div>
@@ -683,16 +521,19 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from &#x27;yjs&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { MongoTransactionErrorLoggable } from &#x27;../loggable&#x27;;
-import { calculateDiff } from &#x27;../utils&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
+import { TldrawConfig } from &#x27;../config&#x27;;
 import { WsSharedDocDo } from &#x27;../domain&#x27;;
 import { YMongodb } from &#x27;./y-mongodb&#x27;;
 
 @Injectable()
 export class TldrawBoardRepo {
-	constructor(readonly mdb: YMongodb, private readonly logger: Logger) {
+	constructor(
+		private readonly configService: ConfigService&lt;TldrawConfig, true&gt;,
+		readonly mdb: YMongodb,
+		private readonly logger: Logger
+	) {
 		this.logger.setContext(TldrawBoardRepo.name);
 	}
 
@@ -700,40 +541,22 @@ export class TldrawBoardRepo {
 		await this.mdb.createIndex();
 	}
 
-	public async getYDocFromMdb(docName: string): Promise&lt;Doc&gt; {
+	public async getYDocFromMdb(docName: string): Promise&lt;WsSharedDocDo&gt; {
 		const yDoc &#x3D; await this.mdb.getYDoc(docName);
 		return yDoc;
 	}
 
-	public async updateStoredDocWithDiff(docName: string, diff: Uint8Array): Promise&lt;void&gt; {
-		const calc &#x3D; calculateDiff(diff);
-		if (calc &gt; 0) {
-			await this.mdb.storeUpdateTransactional(docName, diff).catch((err) &#x3D;&gt; {
-				this.logger.warning(new MongoTransactionErrorLoggable(err));
-				throw err;
-			});
-		}
-	}
-
-	public async updateDocument(docName: string, ydoc: WsSharedDocDo): Promise&lt;void&gt; {
-		const persistedYdoc &#x3D; await this.getYDocFromMdb(docName);
-		const persistedStateVector &#x3D; encodeStateVector(persistedYdoc);
-		const diff &#x3D; encodeStateAsUpdate(ydoc, persistedStateVector);
-		await this.updateStoredDocWithDiff(docName, diff);
-
-		applyUpdate(ydoc, encodeStateAsUpdate(persistedYdoc));
-
-		ydoc.on(&#x27;update&#x27;, (update: Uint8Array) &#x3D;&gt; this.mdb.storeUpdateTransactional(docName, update));
-
-		persistedYdoc.destroy();
-	}
-
-	public async flushDocument(docName: string): Promise&lt;void&gt; {
-		await this.mdb.flushDocumentTransactional(docName);
+	public async compressDocument(docName: string): Promise&lt;void&gt; {
+		await this.mdb.compressDocumentTransactional(docName);
 	}
 
 	public async storeUpdate(docName: string, update: Uint8Array): Promise&lt;void&gt; {
-		await this.mdb.storeUpdateTransactional(docName, update);
+		const compressThreshold &#x3D; this.configService.get&lt;number&gt;(&#x27;TLDRAW_DB_COMPRESS_THRESHOLD&#x27;);
+		const currentClock &#x3D; await this.mdb.storeUpdateTransactional(docName, update);
+
+		if (currentClock % compressThreshold &#x3D;&#x3D;&#x3D; 0) {
+			await this.compressDocument(docName);
+		}
 	}
 }
 </code></pre>

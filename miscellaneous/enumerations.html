@@ -470,6 +470,9 @@
                             <a href="#ToolLaunchDataType" title="apps/server/src/modules/tool/tool-launch/types/tool-launch-data-type.ts" ><b>ToolLaunchDataType</b>&nbsp;&nbsp;&nbsp;(apps/.../tool-launch-data-type.ts)</a>
                         </li>
                         <li>
+                            <a href="#UpdateOrigin" title="apps/server/src/modules/tldraw/types/update-origin-enum.ts" ><b>UpdateOrigin</b>&nbsp;&nbsp;&nbsp;(apps/.../update-origin-enum.ts)</a>
+                        </li>
+                        <li>
                             <a href="#UserRole" title="apps/server/src/modules/user-import/controller/dto/user-role.ts" ><b>UserRole</b>&nbsp;&nbsp;&nbsp;(apps/.../user-role.ts)</a>
                         </li>
                         <li>
@@ -492,9 +495,6 @@
                         </li>
                         <li>
                             <a href="#WsCloseMessageEnum" title="apps/server/src/modules/tldraw/types/ws-close-enum.ts" ><b>WsCloseMessageEnum</b>&nbsp;&nbsp;&nbsp;(apps/.../ws-close-enum.ts)</a>
-                        </li>
-                        <li>
-                            <a href="#WSConnectionState" title="apps/server/src/modules/tldraw/types/connection-enum.ts" ><b>WSConnectionState</b>&nbsp;&nbsp;&nbsp;(apps/.../connection-enum.ts)</a>
                         </li>
                         <li>
                             <a href="#WSMessageType" title="apps/server/src/modules/tldraw/types/connection-enum.ts" ><b>WSMessageType</b>&nbsp;&nbsp;&nbsp;(apps/.../connection-enum.ts)</a>
@@ -3344,12 +3344,12 @@
                         </tr>
                         <tr>
                             <td class="col-md-4">
-                                &nbsp;DELETE_ONE_FILE
+                                &nbsp;DELETE_FILES
                             </td>
                         </tr>
                         <tr>
                             <td class="col-md-4">
-                                <i>Value : </i><code>delete-one-file</code>
+                                <i>Value : </i><code>delete-files</code>
                             </td>
                         </tr>
             </tbody>
@@ -8443,6 +8443,29 @@
             </tbody>
         </table>
 </section>
+    <h3>apps/server/src/modules/tldraw/types/update-origin-enum.ts</h3>
+    <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="UpdateOrigin"></a>
+                        <span class="name "><b>UpdateOrigin</b><a href="#UpdateOrigin"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;REDIS
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>redis</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+</section>
     <h3>apps/server/src/modules/user-import/controller/dto/user-role.ts</h3>
     <section data-compodoc="block-enums">
         <table class="table table-sm table-bordered">
@@ -8738,31 +8761,6 @@
 </section>
     <h3>apps/server/src/modules/tldraw/types/connection-enum.ts</h3>
     <section data-compodoc="block-enums">
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <a name="WSConnectionState"></a>
-                        <span class="name "><b>WSConnectionState</b><a href="#WSConnectionState"><span class="icon ion-ios-link"></span></a></span>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;CONNECTING
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;OPEN
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>1</code>
-                            </td>
-                        </tr>
-            </tbody>
-        </table>
         <table class="table table-sm table-bordered">
             <tbody>
                 <tr>

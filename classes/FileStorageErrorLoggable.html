@@ -102,7 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >CloseConnectionLoggable</li>
+  <li class="breadcrumb-item" >FileStorageErrorLoggable</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tldraw/loggable/close-connection.loggable.ts</code>
+            <code>apps/server/src/modules/tldraw/loggable/file-storage-error.loggable.ts</code>
         </p>
 
 
@@ -189,12 +189,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(errorLocation: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, err)</code>
+<code>constructor(docName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, err)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/tldraw/loggable/close-connection.loggable.ts:4</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/tldraw/loggable/file-storage-error.loggable.ts:4</a></div>
                             </td>
                         </tr>
 
@@ -212,7 +212,7 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>errorLocation</td>
+                                                        <td>docName</td>
                                                   
                                                         <td>
                                                                         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
@@ -268,7 +268,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/tldraw/loggable/close-connection.loggable.ts:4</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/tldraw/loggable/file-storage-error.loggable.ts:4</a></div>
                         </td>
                     </tr>
 
@@ -303,7 +303,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/loggable/close-connection.loggable.ts:12</a></div>
+                                    class="link-to-prism">apps/server/src/modules/tldraw/loggable/file-storage-error.loggable.ts:12</a></div>
                         </td>
                     </tr>
 
@@ -331,10 +331,10 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
 
-export class CloseConnectionLoggable implements Loggable {
+export class FileStorageErrorLoggable implements Loggable {
 	private error: Error | undefined;
 
-	constructor(private readonly errorLocation: string, private readonly err: unknown) {
+	constructor(private readonly docName: string, private readonly err: unknown) {
 		if (err instanceof Error) {
 			this.error &#x3D; err;
 		}
@@ -342,8 +342,8 @@ export class CloseConnectionLoggable implements Loggable {
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			message: &#x60;Close web socket error in ${this.errorLocation}&#x60;,
-			type: &#x60;CLOSE_WEB_SOCKET_ERROR&#x60;,
+			message: &#x60;Error in document ${this.docName}: assets could not be synchronized with file storage.&#x60;,
+			type: &#x60;FILE_STORAGE_GENERAL_ERROR&#x60;,
 			error: this.error,
 		};
 	}
@@ -386,7 +386,7 @@ export class CloseConnectionLoggable implements Loggable {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'CloseConnectionLoggable.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'FileStorageErrorLoggable.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

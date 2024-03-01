@@ -152,11 +152,6 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Readonly</span>
-                                <a href="#gcEnabled" >gcEnabled</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Readonly</span>
                                 <a href="#pingTimeout" >pingTimeout</a>
                             </li>
                             <li>
@@ -201,9 +196,33 @@
                                 <a href="#databaseUpdateHandler" >databaseUpdateHandler</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#forceToArray" >forceToArray</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#getYDoc" >getYDoc</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#handleAwarenessMessage" >handleAwarenessMessage</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#handleSyncMessage" >handleSyncMessage</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#isClosedOrClosing" >isClosedOrClosing</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#isFromConnectedWebSocket" >isFromConnectedWebSocket</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#isFromRedis" >isFromRedis</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -272,11 +291,6 @@
                                 <a href="#unsubscribeFromRedisChannels" >unsubscribeFromRedisChannels</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#updateDocument" >updateDocument</a>
-                            </li>
-                            <li>
                                     <span class="modifier">Public</span>
                                 <a href="#updateHandler" >updateHandler</a>
                             </li>
@@ -303,7 +317,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:44</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:43</a></div>
                             </td>
                         </tr>
 
@@ -429,8 +443,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:62</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -511,8 +525,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="131"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:131</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="132"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:132</a></div>
                         </td>
                     </tr>
 
@@ -544,15 +558,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>databaseUpdateHandler(docName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, update: Uint8Array)</code>
+                    <code>databaseUpdateHandler(docName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, update: Uint8Array, origin)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="99"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:99</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="97"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:97</a></div>
                         </td>
                     </tr>
 
@@ -596,11 +610,91 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>origin</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="forceToArray"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>forceToArray</b></span>
+                        <a href="#forceToArray"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>forceToArray(connections: Set<number> | undefined)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="418"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:418</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>connections</td>
+                                            <td>
+                                                        <code>Set&lt;number&gt; | undefined</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>number[]</code>
 
                         </div>
                             <div class="io-description">
@@ -633,8 +727,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="113"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:113</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="115"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:115</a></div>
                         </td>
                     </tr>
 
@@ -684,6 +778,406 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="handleAwarenessMessage"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>handleAwarenessMessage</b></span>
+                        <a href="#handleAwarenessMessage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handleAwarenessMessage(doc: <a href="../classes/WsSharedDocDo.html" target="_self">WsSharedDocDo</a>, decoder: decoding.Decoder)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="170"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:170</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>doc</td>
+                                            <td>
+                                                            <code><a href="../classes/WsSharedDocDo.html" target="_self" >WsSharedDocDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>decoder</td>
+                                            <td>
+                                                        <code>decoding.Decoder</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handleSyncMessage"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>handleSyncMessage</b></span>
+                        <a href="#handleSyncMessage"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handleSyncMessage(doc: <a href="../classes/WsSharedDocDo.html" target="_self">WsSharedDocDo</a>, encoder: encoding.Encoder, decoder: decoding.Decoder, conn: WebSocket)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="153"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:153</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>doc</td>
+                                            <td>
+                                                            <code><a href="../classes/WsSharedDocDo.html" target="_self" >WsSharedDocDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>encoder</td>
+                                            <td>
+                                                        <code>encoding.Encoder</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>decoder</td>
+                                            <td>
+                                                        <code>decoding.Decoder</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>conn</td>
+                                            <td>
+                                                        <code>WebSocket</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isClosedOrClosing"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>isClosedOrClosing</b></span>
+                        <a href="#isClosedOrClosing"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isClosedOrClosing(connection: WebSocket)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="414"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:414</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>connection</td>
+                                            <td>
+                                                        <code>WebSocket</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isFromConnectedWebSocket"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>isFromConnectedWebSocket</b></span>
+                        <a href="#isFromConnectedWebSocket"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isFromConnectedWebSocket(doc: <a href="../classes/WsSharedDocDo.html" target="_self">WsSharedDocDo</a>, origin)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="422"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:422</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>doc</td>
+                                            <td>
+                                                            <code><a href="../classes/WsSharedDocDo.html" target="_self" >WsSharedDocDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>origin</td>
+                                            <td>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isFromRedis"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>isFromRedis</b></span>
+                        <a href="#isFromRedis"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isFromRedis(origin)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="426"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:426</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>origin</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="manageClientsConnections"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -702,8 +1196,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="314"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:314</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="331"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:331</a></div>
                         </td>
                     </tr>
 
@@ -795,8 +1289,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="135"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:135</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="136"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:136</a></div>
                         </td>
                     </tr>
 
@@ -888,8 +1382,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="300"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:300</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="317"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:317</a></div>
                         </td>
                     </tr>
 
@@ -969,8 +1463,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="289"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:289</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="306"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:306</a></div>
                         </td>
                     </tr>
 
@@ -1050,8 +1544,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="386"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:386</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="394"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:394</a></div>
                         </td>
                     </tr>
 
@@ -1143,8 +1637,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="334"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:334</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="351"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:351</a></div>
                         </td>
                     </tr>
 
@@ -1212,8 +1706,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="344"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:344</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="361"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:361</a></div>
                         </td>
                     </tr>
 
@@ -1281,8 +1775,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="340"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:340</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="357"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:357</a></div>
                         </td>
                     </tr>
 
@@ -1350,8 +1844,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="74"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:74</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="73"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:73</a></div>
                         </td>
                     </tr>
 
@@ -1443,8 +1937,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="308"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:308</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="325"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:325</a></div>
                         </td>
                     </tr>
 
@@ -1524,8 +2018,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="399"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:399</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="407"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:407</a></div>
                         </td>
                     </tr>
 
@@ -1606,8 +2100,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="178"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:178</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="187"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:187</a></div>
                         </td>
                     </tr>
 
@@ -1688,8 +2182,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="242"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:242</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="255"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:255</a></div>
                         </td>
                     </tr>
 
@@ -1757,8 +2251,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="348"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:348</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="365"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:365</a></div>
                         </td>
                     </tr>
 
@@ -1826,8 +2320,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="261"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:261</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="278"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:278</a></div>
                         </td>
                     </tr>
 
@@ -1895,8 +2389,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="361"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:361</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="378"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:378</a></div>
                         </td>
                     </tr>
 
@@ -1946,88 +2440,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="updateDocument"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>updateDocument</b></span>
-                        <a href="#updateDocument"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateDocument(docName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, doc: <a href="../classes/WsSharedDocDo.html" target="_self">WsSharedDocDo</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="377"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:377</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>docName</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>doc</td>
-                                            <td>
-                                                            <code><a href="../classes/WsSharedDocDo.html" target="_self" >WsSharedDocDo</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="updateHandler"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -2046,8 +2458,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="90"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:90</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="89"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:89</a></div>
                         </td>
                     </tr>
 
@@ -2141,7 +2553,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="103" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:103</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="105" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:105</a></div>
                         </td>
                     </tr>
 
@@ -2167,35 +2579,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:36</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="gcEnabled"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Readonly</span>
-                        <span ><b>gcEnabled</b></span>
-                        <a href="#gcEnabled"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
-
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="40" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:40</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -2223,7 +2607,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="38" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:38</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="39" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:39</a></div>
                         </td>
                     </tr>
 
@@ -2251,7 +2635,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:44</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -2277,7 +2661,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="166" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:166</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="175" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:175</a></div>
                         </td>
                     </tr>
 
@@ -2305,7 +2689,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:42</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="41" class="link-to-prism">apps/server/src/modules/tldraw/service/tldraw.ws.service.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -2332,6 +2716,7 @@ import { YMap } from &#x27;yjs/dist/src/types/YMap&#x27;;
 import { TldrawRedisFactory } from &#x27;../redis&#x27;;
 import {
 	CloseConnectionLoggable,
+	FileStorageErrorLoggable,
 	RedisPublishErrorLoggable,
 	WebsocketErrorLoggable,
 	WebsocketMessageErrorLoggable,
@@ -2343,7 +2728,7 @@ import {
 	RedisConnectionTypeEnum,
 	TldrawAsset,
 	TldrawShape,
-	WSConnectionState,
+	UpdateOrigin,
 	WSMessageType,
 } from &#x27;../types&#x27;;
 import { WsSharedDocDo } from &#x27;../domain&#x27;;
@@ -2356,8 +2741,6 @@ export class TldrawWsService {
 	public docs &#x3D; new Map();
 
 	private readonly pingTimeout: number;
-
-	private readonly gcEnabled: boolean;
 
 	public readonly sub: Redis;
 
@@ -2373,7 +2756,6 @@ export class TldrawWsService {
 	) {
 		this.logger.setContext(TldrawWsService.name);
 		this.pingTimeout &#x3D; this.configService.get&lt;number&gt;(&#x27;TLDRAW_PING_TIMEOUT&#x27;);
-		this.gcEnabled &#x3D; this.configService.get&lt;boolean&gt;(&#x27;TLDRAW_GC_ENABLED&#x27;);
 
 		this.sub &#x3D; this.tldrawRedisFactory.build(RedisConnectionTypeEnum.SUBSCRIBE);
 		this.pub &#x3D; this.tldrawRedisFactory.build(RedisConnectionTypeEnum.PUBLISH);
@@ -2381,9 +2763,10 @@ export class TldrawWsService {
 
 	public async closeConn(doc: WsSharedDocDo, ws: WebSocket): Promise&lt;void&gt; {
 		if (doc.connections.has(ws)) {
-			const controlledIds &#x3D; doc.connections.get(ws) as Set&lt;number&gt;;
+			const controlledIds &#x3D; doc.connections.get(ws);
 			doc.connections.delete(ws);
-			removeAwarenessStates(doc.awareness, Array.from(controlledIds), null);
+			removeAwarenessStates(doc.awareness, this.forceToArray(controlledIds), null);
+
 			await this.storeStateAndDestroyYDocIfPersisted(doc);
 			this.metricsService.decrementNumberOfUsersOnServerCounter();
 		}
@@ -2392,31 +2775,34 @@ export class TldrawWsService {
 	}
 
 	public send(doc: WsSharedDocDo, conn: WebSocket, message: Uint8Array): void {
-		if (conn.readyState !&#x3D;&#x3D; WSConnectionState.CONNECTING &amp;&amp; conn.readyState !&#x3D;&#x3D; WSConnectionState.OPEN) {
+		if (this.isClosedOrClosing(conn)) {
 			this.closeConn(doc, conn).catch((err) &#x3D;&gt; {
-				this.logger.warning(new CloseConnectionLoggable(err));
+				this.logger.warning(new CloseConnectionLoggable(&#x27;send | isClosedOrClosing&#x27;, err));
 			});
 		}
 
 		conn.send(message, (err) &#x3D;&gt; {
 			if (err) {
 				this.closeConn(doc, conn).catch((e) &#x3D;&gt; {
-					this.logger.warning(new CloseConnectionLoggable(e));
+					this.logger.warning(new CloseConnectionLoggable(&#x27;send&#x27;, e));
 				});
 			}
 		});
 	}
 
 	public updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): void {
-		const isOriginWSConn &#x3D; doc.connections.has(origin as WebSocket);
-		if (isOriginWSConn) {
+		if (this.isFromConnectedWebSocket(doc, origin)) {
 			this.publishUpdateToRedis(doc, update, &#x27;document&#x27;);
 		}
 
 		this.propagateUpdate(update, doc);
 	}
 
-	public async databaseUpdateHandler(docName: string, update: Uint8Array) {
+	public async databaseUpdateHandler(docName: string, update: Uint8Array, origin) {
+		if (this.isFromRedis(origin)) {
+			return;
+		}
+
 		await this.tldrawBoardRepo.storeUpdate(docName, update);
 	}
 
@@ -2432,12 +2818,11 @@ export class TldrawWsService {
 
 	public async getYDoc(docName: string) {
 		const wsSharedDocDo &#x3D; await map.setIfUndefined(this.docs, docName, async () &#x3D;&gt; {
-			const doc &#x3D; new WsSharedDocDo(docName, this.gcEnabled);
+			const doc &#x3D; await this.tldrawBoardRepo.getYDocFromMdb(docName);
+
 			this.registerAwarenessUpdateHandler(doc);
 			this.registerUpdateHandler(doc);
 			this.subscribeToRedisChannels(doc);
-
-			await this.updateDocument(docName, doc);
 			this.registerDatabaseUpdateHandler(doc);
 
 			this.docs.set(docName, doc);
@@ -2453,45 +2838,53 @@ export class TldrawWsService {
 	}
 
 	public messageHandler(conn: WebSocket, doc: WsSharedDocDo, message: Uint8Array): void {
-		try {
-			const encoder &#x3D; encoding.createEncoder();
-			const decoder &#x3D; decoding.createDecoder(message);
-			const messageType &#x3D; decoding.readVarUint(decoder);
-			switch (messageType) {
-				case WSMessageType.SYNC:
-					encoding.writeVarUint(encoder, WSMessageType.SYNC);
-					readSyncMessage(decoder, encoder, doc, conn);
-
-					// If the &#x60;encoder&#x60; only contains the type of reply message and no
-					// message, there is no need to send the message. When &#x60;encoder&#x60; only
-					// contains the type of reply, its length is 1.
-					if (encoding.length(encoder) &gt; 1) {
-						this.send(doc, conn, encoding.toUint8Array(encoder));
-					}
-					break;
-				case WSMessageType.AWARENESS: {
-					const update &#x3D; decoding.readVarUint8Array(decoder);
-					this.publishUpdateToRedis(doc, update, &#x27;awareness&#x27;);
-					break;
-				}
-				default:
-					break;
+		const encoder &#x3D; encoding.createEncoder();
+		const decoder &#x3D; decoding.createDecoder(message);
+		const messageType &#x3D; decoding.readVarUint(decoder);
+		switch (messageType) {
+			case WSMessageType.SYNC:
+				this.handleSyncMessage(doc, encoder, decoder, conn);
+				break;
+			case WSMessageType.AWARENESS: {
+				this.handleAwarenessMessage(doc, decoder);
+				break;
 			}
-		} catch (err) {
-			this.logger.warning(new WebsocketMessageErrorLoggable(err));
-			throw err;
+			default:
+				break;
 		}
+	}
+
+	private handleSyncMessage(
+		doc: WsSharedDocDo,
+		encoder: encoding.Encoder,
+		decoder: decoding.Decoder,
+		conn: WebSocket
+	): void {
+		encoding.writeVarUint(encoder, WSMessageType.SYNC);
+		readSyncMessage(decoder, encoder, doc, conn);
+
+		// If the &#x60;encoder&#x60; only contains the type of reply message and no
+		// message, there is no need to send the message. When &#x60;encoder&#x60; only
+		// contains the type of reply, its length is 1.
+		if (encoding.length(encoder) &gt; 1) {
+			this.send(doc, conn, encoding.toUint8Array(encoder));
+		}
+	}
+
+	private handleAwarenessMessage(doc: WsSharedDocDo, decoder: decoding.Decoder) {
+		const update &#x3D; decoding.readVarUint8Array(decoder);
+		this.publishUpdateToRedis(doc, update, &#x27;awareness&#x27;);
 	}
 
 	public redisMessageHandler &#x3D; (channel: Buffer, update: Buffer, doc: WsSharedDocDo): void &#x3D;&gt; {
 		const channelId &#x3D; channel.toString();
 
 		if (channelId &#x3D;&#x3D;&#x3D; doc.name) {
-			applyUpdate(doc, update, this.sub);
+			applyUpdate(doc, update, UpdateOrigin.REDIS);
 		}
 
 		if (channelId &#x3D;&#x3D;&#x3D; doc.awarenessChannel) {
-			applyAwarenessUpdate(doc.awareness, update, this.sub);
+			applyAwarenessUpdate(doc.awareness, update, UpdateOrigin.REDIS);
 		}
 	};
 
@@ -2507,7 +2900,11 @@ export class TldrawWsService {
 		});
 
 		ws.on(&#x27;message&#x27;, (message: ArrayBufferLike) &#x3D;&gt; {
-			this.messageHandler(ws, doc, new Uint8Array(message));
+			try {
+				this.messageHandler(ws, doc, new Uint8Array(message));
+			} catch (err) {
+				this.logger.warning(new WebsocketMessageErrorLoggable(err));
+			}
 		});
 
 		// send initial doc state to client as update
@@ -2523,14 +2920,14 @@ export class TldrawWsService {
 			}
 
 			this.closeConn(doc, ws).catch((err) &#x3D;&gt; {
-				this.logger.warning(new CloseConnectionLoggable(err));
+				this.logger.warning(new CloseConnectionLoggable(&#x27;pingInterval&#x27;, err));
 			});
 			clearInterval(pingInterval);
 		}, this.pingTimeout);
 
 		ws.on(&#x27;close&#x27;, () &#x3D;&gt; {
 			this.closeConn(doc, ws).catch((err) &#x3D;&gt; {
-				this.logger.warning(new CloseConnectionLoggable(err));
+				this.logger.warning(new CloseConnectionLoggable(&#x27;websocket close&#x27;, err));
 			});
 			clearInterval(pingInterval);
 		});
@@ -2564,9 +2961,13 @@ export class TldrawWsService {
 			// if persisted, we store state and destroy yDoc
 			try {
 				const usedAssets &#x3D; this.syncDocumentAssetsWithShapes(doc);
-				await this.filesStorageTldrawAdapterService.deleteUnusedFilesForDocument(doc.name, usedAssets);
-				await this.tldrawBoardRepo.flushDocument(doc.name);
+
+				await this.tldrawBoardRepo.compressDocument(doc.name);
 				this.unsubscribeFromRedisChannels(doc);
+
+				void this.filesStorageTldrawAdapterService.deleteUnusedFilesForDocument(doc.name, usedAssets).catch((err) &#x3D;&gt; {
+					this.logger.warning(new FileStorageErrorLoggable(doc.name, err));
+				});
 				doc.destroy();
 			} catch (err) {
 				this.logger.warning(new WsSharedDocErrorLoggable(doc.name, &#x27;Error while flushing doc&#x27;, err));
@@ -2662,7 +3063,7 @@ export class TldrawWsService {
 	}
 
 	private registerDatabaseUpdateHandler(doc: WsSharedDocDo) {
-		doc.on(&#x27;update&#x27;, (update: Uint8Array) &#x3D;&gt; this.databaseUpdateHandler(doc.name, update));
+		doc.on(&#x27;update&#x27;, (update: Uint8Array, origin) &#x3D;&gt; this.databaseUpdateHandler(doc.name, update, origin));
 	}
 
 	private subscribeToRedisChannels(doc: WsSharedDocDo) {
@@ -2694,15 +3095,6 @@ export class TldrawWsService {
 			});
 	}
 
-	private async updateDocument(docName: string, doc: WsSharedDocDo) {
-		try {
-			await this.tldrawBoardRepo.updateDocument(docName, doc);
-		} catch (err) {
-			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, &#x27;Error while updating document&#x27;, err));
-			throw err;
-		}
-	}
-
 	private publishUpdateToRedis(doc: WsSharedDocDo, update: Uint8Array, type: &#x27;awareness&#x27; | &#x27;document&#x27;) {
 		const channel &#x3D; type &#x3D;&#x3D;&#x3D; &#x27;awareness&#x27; ? doc.awarenessChannel : doc.name;
 		this.pub
@@ -2721,6 +3113,22 @@ export class TldrawWsService {
 		encoding.writeVarUint(encoder, WSMessageType.SYNC);
 		writeUpdate(encoder, encodeStateAsUpdate(doc));
 		this.send(doc, ws, encoding.toUint8Array(encoder));
+	}
+
+	private isClosedOrClosing(connection: WebSocket): boolean {
+		return connection.readyState &#x3D;&#x3D;&#x3D; WebSocket.CLOSING || connection.readyState &#x3D;&#x3D;&#x3D; WebSocket.CLOSED;
+	}
+
+	private forceToArray(connections: Set&lt;number&gt; | undefined): number[] {
+		return connections ? Array.from(connections) : [];
+	}
+
+	private isFromConnectedWebSocket(doc: WsSharedDocDo, origin: unknown) {
+		return origin instanceof WebSocket &amp;&amp; doc.connections.has(origin);
+	}
+
+	private isFromRedis(origin: unknown): boolean {
+		return typeof origin &#x3D;&#x3D;&#x3D; &#x27;string&#x27; &amp;&amp; origin &#x3D;&#x3D;&#x3D; UpdateOrigin.REDIS;
 	}
 }
 </code></pre>

@@ -202,9 +202,9 @@
                                         </a>
                                 </li>
                                 <li>
-                                        <a href="#TLDRAW_DB_FLUSH_SIZE" 
+                                        <a href="#TLDRAW_DB_COMPRESS_THRESHOLD" 
 >
-                                            TLDRAW_DB_FLUSH_SIZE
+                                            TLDRAW_DB_COMPRESS_THRESHOLD
                                         </a>
                                 </li>
                                 <li>
@@ -543,9 +543,9 @@
                         <tbody>
                                 <tr>
                                     <td class="col-md-4">
-                                        <a name="TLDRAW_DB_FLUSH_SIZE"></a>
-                                        <span class="name "><b>TLDRAW_DB_FLUSH_SIZE</b>
-                                            <a href="#TLDRAW_DB_FLUSH_SIZE">
+                                        <a name="TLDRAW_DB_COMPRESS_THRESHOLD"></a>
+                                        <span class="name "><b>TLDRAW_DB_COMPRESS_THRESHOLD</b>
+                                            <a href="#TLDRAW_DB_COMPRESS_THRESHOLD">
                                                 <span class="icon ion-ios-link"></span>
                                             </a>
                                         </span>
@@ -553,7 +553,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>TLDRAW_DB_FLUSH_SIZE:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                        <code>TLDRAW_DB_COMPRESS_THRESHOLD:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -715,7 +715,7 @@ export interface TldrawConfig {
 	TLDRAW_DB_URL: string;
 	NEST_LOG_LEVEL: string;
 	INCOMING_REQUEST_TIMEOUT: number;
-	TLDRAW_DB_FLUSH_SIZE: string;
+	TLDRAW_DB_COMPRESS_THRESHOLD: string;
 	CONNECTION_STRING: string;
 	FEATURE_TLDRAW_ENABLED: boolean;
 	TLDRAW_PING_TIMEOUT: number;
@@ -735,7 +735,7 @@ const tldrawConfig &#x3D; {
 	TLDRAW_DB_URL,
 	NEST_LOG_LEVEL: Configuration.get(&#x27;NEST_LOG_LEVEL&#x27;) as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get(&#x27;INCOMING_REQUEST_TIMEOUT_API&#x27;) as number,
-	TLDRAW_DB_FLUSH_SIZE: Configuration.get(&#x27;TLDRAW__DB_FLUSH_SIZE&#x27;) as number,
+	TLDRAW_DB_COMPRESS_THRESHOLD: Configuration.get(&#x27;TLDRAW__DB_COMPRESS_THRESHOLD&#x27;) as number,
 	FEATURE_TLDRAW_ENABLED: Configuration.get(&#x27;FEATURE_TLDRAW_ENABLED&#x27;) as boolean,
 	CONNECTION_STRING: Configuration.get(&#x27;TLDRAW_DB_URL&#x27;) as string,
 	TLDRAW_PING_TIMEOUT: Configuration.get(&#x27;TLDRAW__PING_TIMEOUT&#x27;) as number,

@@ -185,9 +185,6 @@
                             <a href="#bootstrap" title="apps/server/src/console/console.ts" ><b>bootstrap</b>&nbsp;&nbsp;&nbsp;(apps/.../console.ts)</a>
                         </li>
                         <li>
-                            <a href="#calculateDiff" title="apps/server/src/modules/tldraw/utils/ydoc-utils.ts" ><b>calculateDiff</b>&nbsp;&nbsp;&nbsp;(apps/.../ydoc-utils.ts)</a>
-                        </li>
-                        <li>
                             <a href="#cardFactory" title="apps/server/src/shared/testing/factory/domainobject/board/card.do.factory.ts" ><b>cardFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../card.do.factory.ts)</a>
                         </li>
                         <li>
@@ -2710,30 +2707,6 @@ This allows adding console commands to execute provider methods.</p>
         </tbody>
     </table>
 </section>
-    <h3>apps/server/src/modules/tldraw/utils/ydoc-utils.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="calculateDiff"></a>
-                    <span class="name">
-                        <span ><b>calculateDiff</b></span>
-                        <a href="#calculateDiff"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>(diff: Uint8Array): number &#x3D;&gt;
-	diff.reduce((previousValue, currentValue) &#x3D;&gt; previousValue + currentValue, 0)</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
     <h3>apps/server/src/shared/testing/factory/domainobject/board/card.do.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
@@ -3968,7 +3941,7 @@ This allows adding console commands to execute provider methods.</p>
 	TLDRAW_DB_URL,
 	NEST_LOG_LEVEL: Configuration.get(&#x27;NEST_LOG_LEVEL&#x27;) as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get(&#x27;INCOMING_REQUEST_TIMEOUT_API&#x27;) as number,
-	TLDRAW_DB_FLUSH_SIZE: Configuration.get(&#x27;TLDRAW__DB_FLUSH_SIZE&#x27;) as number,
+	TLDRAW_DB_COMPRESS_THRESHOLD: Configuration.get(&#x27;TLDRAW__DB_COMPRESS_THRESHOLD&#x27;) as number,
 	FEATURE_TLDRAW_ENABLED: Configuration.get(&#x27;FEATURE_TLDRAW_ENABLED&#x27;) as boolean,
 	CONNECTION_STRING: Configuration.get(&#x27;TLDRAW_DB_URL&#x27;) as string,
 	TLDRAW_PING_TIMEOUT: Configuration.get(&#x27;TLDRAW__PING_TIMEOUT&#x27;) as number,
@@ -12122,7 +12095,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	if (!conf.REDIS_URI) {
 		conf.REDIS_URI &#x3D; &#x27;redis://127.0.0.1:6379&#x27;;
 	}
-	conf.TLDRAW_DB_FLUSH_SIZE &#x3D; 2;
+	conf.TLDRAW_DB_COMPRESS_THRESHOLD &#x3D; 2;
 	conf.TLDRAW_PING_TIMEOUT &#x3D; 0;
 	conf.TLDRAW_MAX_DOCUMENT_SIZE &#x3D; 3;
 	return conf;

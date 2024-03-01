@@ -154,11 +154,11 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#deleteFilesOfParent" >deleteFilesOfParent</a>
+                                <a href="#deleteFiles" >deleteFiles</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#deleteOneFile" >deleteOneFile</a>
+                                <a href="#deleteFilesOfParent" >deleteFilesOfParent</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -344,6 +344,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="deleteFiles"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteFiles</b></span>
+                        <a href="#deleteFiles"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteFiles(payload: <a href="../undefineds/EntityId.html" target="_self">EntityId[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:54</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>payload</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;FileDO[]&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="deleteFilesOfParent"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -400,75 +469,6 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>    <code>Promise&lt;FileDO[]&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="deleteOneFile"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>deleteOneFile</b></span>
-                        <a href="#deleteOneFile"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteOneFile(payload: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="54"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage.producer.ts:54</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>payload</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;FileDO&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -939,11 +939,11 @@ export class FilesStorageProducer extends RpcMessageProducer {
 		return response;
 	}
 
-	async deleteOneFile(payload: EntityId): Promise&lt;FileDO&gt; {
-		this.logger.debug({ action: &#x27;deleteOneFile:started&#x27;, payload });
-		const response &#x3D; await this.request&lt;FileDO&gt;(FilesStorageEvents.DELETE_ONE_FILE, payload);
+	async deleteFiles(payload: EntityId[]): Promise&lt;FileDO[]&gt; {
+		this.logger.debug({ action: &#x27;deleteFiles:started&#x27;, payload });
+		const response &#x3D; await this.request&lt;FileDO[]&gt;(FilesStorageEvents.DELETE_FILES, payload);
 
-		this.logger.debug({ action: &#x27;deleteOneFile:finished&#x27;, payload });
+		this.logger.debug({ action: &#x27;deleteFiles:finished&#x27;, payload });
 
 		return response;
 	}
