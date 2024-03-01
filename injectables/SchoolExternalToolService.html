@@ -301,8 +301,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="86"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool.service.ts:86</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="87"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool.service.ts:87</a></div>
                         </td>
                     </tr>
 
@@ -371,8 +371,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool.service.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="57"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool.service.ts:57</a></div>
                         </td>
                     </tr>
 
@@ -453,8 +453,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool.service.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool.service.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -523,8 +523,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool.service.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool.service.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -730,8 +730,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="96"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool.service.ts:96</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="97"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool.service.ts:97</a></div>
                         </td>
                     </tr>
 
@@ -811,8 +811,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="90"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool.service.ts:90</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="91"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/service/school-external-tool.service.ts:91</a></div>
                         </td>
                     </tr>
 
@@ -892,6 +892,7 @@ export class SchoolExternalToolService {
 	async findSchoolExternalTools(query: SchoolExternalToolQuery): Promise&lt;SchoolExternalTool[]&gt; {
 		let schoolExternalTools: SchoolExternalTool[] &#x3D; await this.schoolExternalToolRepo.find({
 			schoolId: query.schoolId,
+			toolId: query.toolId,
 		});
 
 		schoolExternalTools &#x3D; await this.enrichWithDataFromExternalTools(schoolExternalTools);
