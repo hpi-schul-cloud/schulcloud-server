@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import WebSocket from 'ws';
 import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
-import { decoding, encoding, map } from 'lib0';
+import { decoding, encoding } from 'lib0';
 import { readSyncMessage, writeSyncStep1, writeUpdate } from 'y-protocols/sync';
 import { applyUpdate, encodeStateAsUpdate } from 'yjs';
 import { Buffer } from 'node:buffer';
@@ -25,6 +25,7 @@ import {
 	TldrawAsset,
 	TldrawShape,
 	UpdateOrigin,
+	UpdateType,
 	WSMessageType,
 } from '../types';
 import { WsSharedDocDo } from '../domain';
@@ -34,7 +35,7 @@ import { TldrawFilesStorageAdapterService } from './tldraw-files-storage.service
 
 @Injectable()
 export class TldrawWsService {
-	public docs = new Map();
+	public docs = new Map<string, WsSharedDocDo>();
 
 	public readonly sub: Redis;
 
@@ -52,6 +53,8 @@ export class TldrawWsService {
 
 		this.sub = this.tldrawRedisFactory.build(RedisConnectionTypeEnum.SUBSCRIBE);
 		this.pub = this.tldrawRedisFactory.build(RedisConnectionTypeEnum.PUBLISH);
+
+		this.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message));
 	}
 
 	public async closeConn(doc: WsSharedDocDo, ws: WebSocket): Promise<void> {
@@ -85,7 +88,7 @@ export class TldrawWsService {
 
 	public updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): void {
 		if (this.isFromConnectedWebSocket(doc, origin)) {
-			this.publishUpdateToRedis(doc, update, 'document');
+			this.publishUpdateToRedis(doc, update, UpdateType.DOCUMENT);
 		}
 
 		this.propagateUpdate(update, doc);
@@ -95,7 +98,6 @@ export class TldrawWsService {
 		if (this.isFromRedis(origin)) {
 			return;
 		}
-
 		await this.tldrawBoardRepo.storeUpdate(docName, update);
 	}
 
@@ -110,20 +112,21 @@ export class TldrawWsService {
 	};
 
 	public async getYDoc(docName: string) {
-		const wsSharedDocDo = await map.setIfUndefined(this.docs, docName, async () => {
-			const doc = await this.tldrawBoardRepo.getYDocFromMdb(docName);
+		const existingDoc = this.docs.get(docName);
+		if (existingDoc) {
+			return existingDoc;
+		}
 
-			this.registerAwarenessUpdateHandler(doc);
-			this.registerUpdateHandler(doc);
-			this.subscribeToRedisChannels(doc);
-			this.registerDatabaseUpdateHandler(doc);
+		const doc = await this.tldrawBoardRepo.getYDocFromMdb(docName);
 
-			this.docs.set(docName, doc);
-			this.metricsService.incrementNumberOfBoardsOnServerCounter();
-			return doc;
-		});
+		this.registerAwarenessUpdateHandler(doc);
+		this.registerUpdateHandler(doc);
+		this.subscribeToRedisChannels(doc);
+		this.registerDatabaseUpdateHandler(doc);
 
-		return wsSharedDocDo;
+		this.docs.set(docName, doc);
+		this.metricsService.incrementNumberOfBoardsOnServerCounter();
+		return doc;
 	}
 
 	public async createDbIndex(): Promise<void> {
@@ -166,18 +169,21 @@ export class TldrawWsService {
 
 	private handleAwarenessMessage(doc: WsSharedDocDo, decoder: decoding.Decoder) {
 		const update = decoding.readVarUint8Array(decoder);
-		this.publishUpdateToRedis(doc, update, 'awareness');
+		this.publishUpdateToRedis(doc, update, UpdateType.AWARENESS);
 	}
 
-	public redisMessageHandler = (channel: Buffer, update: Buffer, doc: WsSharedDocDo): void => {
+	public redisMessageHandler = (channel: Buffer, update: Buffer): void => {
 		const channelId = channel.toString();
-
-		if (channelId === doc.name) {
-			applyUpdate(doc, update, UpdateOrigin.REDIS);
+		const docName = channel.toString().split('-')[0];
+		const doc = this.docs.get(docName);
+		if (!doc) {
+			return;
 		}
 
-		if (channelId === doc.awarenessChannel) {
+		if (channelId.includes(UpdateType.AWARENESS)) {
 			applyAwarenessUpdate(doc.awareness, update, UpdateOrigin.REDIS);
+		} else {
+			applyUpdate(doc, update, UpdateOrigin.REDIS);
 		}
 	};
 
@@ -365,16 +371,9 @@ export class TldrawWsService {
 	}
 
 	private subscribeToRedisChannels(doc: WsSharedDocDo) {
-		this.sub
-			.subscribe(doc.name, doc.awarenessChannel, (err) => {
-				if (err) {
-					this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while subscribing to Redis channels', err));
-				}
-			})
-			.catch((err) => {
-				this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while subscribing to Redis channels', err));
-			});
-		this.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message, doc));
+		this.sub.subscribe(doc.name, doc.awarenessChannel).catch((err) => {
+			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while subscribing to Redis channels', err));
+		});
 	}
 
 	private unsubscribeFromRedisChannels(doc: WsSharedDocDo) {
@@ -393,17 +392,11 @@ export class TldrawWsService {
 			});
 	}
 
-	private publishUpdateToRedis(doc: WsSharedDocDo, update: Uint8Array, type: 'awareness' | 'document') {
-		const channel = type === 'awareness' ? doc.awarenessChannel : doc.name;
-		this.pub
-			.publish(channel, Buffer.from(update), (err) => {
-				if (err) {
-					this.logger.warning(new RedisPublishErrorLoggable('awareness', err));
-				}
-			})
-			.catch((err) => {
-				this.logger.warning(new RedisPublishErrorLoggable('awareness', err));
-			});
+	private publishUpdateToRedis(doc: WsSharedDocDo, update: Uint8Array, type: UpdateType) {
+		const channel = type === UpdateType.AWARENESS ? doc.awarenessChannel : doc.name;
+		this.pub.publish(channel, Buffer.from(update)).catch((err) => {
+			this.logger.warning(new RedisPublishErrorLoggable(type, err));
+		});
 	}
 
 	private sendInitialState(ws: WebSocket, doc: WsSharedDocDo): void {

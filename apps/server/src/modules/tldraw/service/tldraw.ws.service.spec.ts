@@ -1106,47 +1106,13 @@ describe('TldrawWSService', () => {
 					};
 				};
 
-				it('should register new listener', async () => {
+				it('should subscribe', async () => {
 					const { redisOnSpy, redisSubscribeSpy } = setup();
 
 					const doc = await service.getYDoc('test-redis');
 
 					expect(doc).toBeDefined();
-					expect(redisOnSpy).toHaveBeenCalled();
-					redisSubscribeSpy.mockRestore();
-					redisOnSpy.mockRestore();
-				});
-			});
-
-			describe('when subscribing to redis channel fails', () => {
-				const setup = () => {
-					const redisSubscribeSpy = jest
-						.spyOn(Ioredis.Redis.prototype, 'subscribe')
-						.mockImplementationOnce((...args: unknown[]) => {
-							args.forEach((arg) => {
-								if (typeof arg === 'function') {
-									arg(new Error('error'));
-								}
-							});
-							return Promise.resolve(0);
-						});
-					const redisOnSpy = jest.spyOn(Ioredis.Redis.prototype, 'on');
-					const errorLogSpy = jest.spyOn(logger, 'warning');
-
-					return {
-						redisOnSpy,
-						redisSubscribeSpy,
-						errorLogSpy,
-					};
-				};
-
-				it('should log error', async () => {
-					const { errorLogSpy, redisSubscribeSpy, redisOnSpy } = setup();
-
-					await service.getYDoc('test-redis-fail');
-
 					expect(redisSubscribeSpy).toHaveBeenCalled();
-					expect(errorLogSpy).toHaveBeenCalled();
 					redisSubscribeSpy.mockRestore();
 					redisOnSpy.mockRestore();
 				});
@@ -1190,7 +1156,7 @@ describe('TldrawWSService', () => {
 			const applyAwarenessUpdateSpy = jest.spyOn(AwarenessProtocol, 'applyAwarenessUpdate').mockReturnValueOnce();
 
 			const doc = new WsSharedDocDo('TEST');
-			doc.awarenessChannel = 'TEST-AWARENESS';
+			doc.awarenessChannel = 'TEST-awareness';
 
 			return {
 				doc,
@@ -1202,8 +1168,8 @@ describe('TldrawWSService', () => {
 		describe('when channel name is the same as docName', () => {
 			it('should call applyUpdate', () => {
 				const { doc, applyUpdateSpy } = setup();
-
-				service.redisMessageHandler(Buffer.from('TEST'), Buffer.from('message'), doc);
+				service.docs.set('TEST', doc);
+				service.redisMessageHandler(Buffer.from('TEST'), Buffer.from('message'));
 
 				expect(applyUpdateSpy).toHaveBeenCalled();
 			});
@@ -1212,8 +1178,8 @@ describe('TldrawWSService', () => {
 		describe('when channel name is the same as docAwarenessChannel name', () => {
 			it('should call applyAwarenessUpdate', () => {
 				const { doc, applyAwarenessUpdateSpy } = setup();
-
-				service.redisMessageHandler(Buffer.from('TEST-AWARENESS'), Buffer.from('message'), doc);
+				service.docs.set('TEST', doc);
+				service.redisMessageHandler(Buffer.from('TEST-awareness'), Buffer.from('message'));
 
 				expect(applyAwarenessUpdateSpy).toHaveBeenCalled();
 			});
