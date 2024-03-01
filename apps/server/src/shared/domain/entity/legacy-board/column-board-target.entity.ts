@@ -22,6 +22,7 @@ export class ColumnBoardTarget extends BaseEntityWithTimestamps implements Learn
 
 	publish(): void {
 		this.published = true;
+		// TODO sync with columnboard entity here?
 	}
 
 	unpublish(): void {
@@ -32,7 +33,7 @@ export class ColumnBoardTarget extends BaseEntityWithTimestamps implements Learn
 	published = false;
 
 	@Property({ fieldName: 'columnBoard' })
-	_columnBoardId: ObjectId;
+	_columnBoardId: ObjectId; // TODO why object id instead of entityId?
 
 	get columnBoardId(): EntityId {
 		return this._columnBoardId.toHexString();

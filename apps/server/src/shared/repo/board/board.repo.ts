@@ -10,6 +10,7 @@ export class BoardRepo extends BaseRepo<Board> {
 	}
 
 	async findByCourseId(courseId: EntityId): Promise<Board> {
+		// TODO this auto-creation of board should be moved to uc instead of in repo
 		const board = await this.getOrCreateCourseBoard(courseId);
 		await this.populateBoard(board);
 		return board;

@@ -53,6 +53,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			children: this.getCopiesForChildrenOf(original),
+			isVisible: original.isVisible,
 		});
 
 		this.resultMap.set(original.id, {

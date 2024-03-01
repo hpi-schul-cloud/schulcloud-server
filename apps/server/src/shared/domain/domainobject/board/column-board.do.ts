@@ -19,6 +19,14 @@ export class ColumnBoard extends BoardComposite<ColumnBoardProps> {
 		this.props.context = context;
 	}
 
+	get isVisible(): boolean {
+		return this.props.isVisible;
+	}
+
+	set isVisible(isVisible: boolean) {
+		this.props.isVisible = isVisible;
+	}
+
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
 		const allowed = domainObject instanceof Column;
 		return allowed;
@@ -36,6 +44,7 @@ export class ColumnBoard extends BoardComposite<ColumnBoardProps> {
 export interface ColumnBoardProps extends BoardCompositeProps {
 	title: string;
 	context: BoardExternalReference;
+	isVisible: boolean;
 }
 
 export function isColumnBoard(reference: unknown): reference is ColumnBoard {

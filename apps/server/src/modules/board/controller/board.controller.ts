@@ -14,7 +14,7 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { BoardUc } from '../uc';
-import { BoardResponse, BoardUrlParams, ColumnResponse, RenameBodyParams } from './dto';
+import { BoardResponse, BoardUrlParams, ColumnResponse, RenameBodyParams, VisibilityBodyParams } from './dto';
 import { BoardContextResponse } from './dto/board/board-context.reponse';
 import { BoardResponseMapper, ColumnResponseMapper } from './mapper';
 
@@ -99,5 +99,20 @@ export class BoardController {
 		const response = ColumnResponseMapper.mapToResponse(column);
 
 		return response;
+	}
+
+	@ApiOperation({ summary: 'Update the visibility of a board.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Patch(':boardId/visibility')
+	async updateVisibility(
+		@Param() urlParams: BoardUrlParams,
+		@Body() bodyParams: VisibilityBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	) {
+		await this.boardUc.updateVisibility(currentUser.userId, urlParams.boardId, bodyParams.isVisible);
 	}
 }

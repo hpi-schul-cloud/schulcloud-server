@@ -37,17 +37,12 @@ export class ColumnBoardService {
 		return ids;
 	}
 
+	// TODO why do we even have this here? Is not used except it tests, Has wrong name
+	// moved to BoardDoService
 	async findByDescendant(boardDo: AnyBoardDo): Promise<ColumnBoard> {
-		const ancestorIds: EntityId[] = await this.boardDoRepo.getAncestorIds(boardDo);
-		const idHierarchy: EntityId[] = [...ancestorIds, boardDo.id];
-		const rootId: EntityId = idHierarchy[0];
-		const rootBoardDo: AnyBoardDo = await this.boardDoRepo.findById(rootId, 1);
+		const rootboardDo = this.boardDoService.getRootBoardDo(boardDo);
 
-		if (rootBoardDo instanceof ColumnBoard) {
-			return rootBoardDo;
-		}
-
-		throw new NotFoundLoggableException(ColumnBoard.name, { id: rootId });
+		return rootboardDo;
 	}
 
 	async getBoardObjectTitlesById(boardIds: EntityId[]): Promise<Record<EntityId, string>> {
@@ -63,6 +58,7 @@ export class ColumnBoardService {
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			context,
+			isVisible: false,
 		});
 
 		await this.boardDoRepo.save(columnBoard);
@@ -106,6 +102,7 @@ export class ColumnBoardService {
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			context: courseReference,
+			isVisible: true,
 		});
 
 		const column = new Column({
@@ -167,5 +164,9 @@ export class ColumnBoardService {
 		element.text = text;
 
 		return element;
+	}
+
+	async updateBoardVisibility(id: EntityId, isVisible: boolean): Promise<void> {
+		await this.boardDoService.updateBoardVisibility(id, isVisible);
 	}
 }
