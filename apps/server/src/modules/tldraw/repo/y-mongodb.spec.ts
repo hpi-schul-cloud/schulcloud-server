@@ -81,13 +81,11 @@ describe('YMongoDb', () => {
 				await em.persistAndFlush(drawing);
 				em.clear();
 
-				const update = new Uint8Array([2, 2]);
-
-				return { drawing, update };
+				return { drawing };
 			};
 
 			it('should create new document with updates in the database', async () => {
-				const { drawing, update } = await setup();
+				const { drawing } = await setup();
 
 				await mdb.storeUpdateTransactional(drawing.docName, new Uint8Array([]));
 				const docs = await em.findAndCount(TldrawDrawing, { docName: drawing.docName });
