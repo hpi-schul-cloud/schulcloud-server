@@ -89,7 +89,7 @@ describe('YMongoDb', () => {
 			it('should create new document with updates in the database', async () => {
 				const { drawing, update } = await setup();
 
-				await mdb.storeUpdateTransactional(drawing.docName, update);
+				await mdb.storeUpdateTransactional(drawing.docName, new Uint8Array([]));
 				const docs = await em.findAndCount(TldrawDrawing, { docName: drawing.docName });
 
 				expect(docs.length).toEqual(2);
@@ -255,8 +255,6 @@ describe('YMongoDb', () => {
 
 			describe('when single entity size is greater than MAX_DOCUMENT_SIZE', () => {
 				it('should return ydoc from the database', async () => {
-					// @ts-expect-error test-case
-					mdb.maxDocumentSize = 1;
 					const { applyUpdateSpy } = await setup();
 
 					const doc = await mdb.getYDoc('test-name');

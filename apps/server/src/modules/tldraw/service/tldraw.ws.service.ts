@@ -284,14 +284,14 @@ export class TldrawWsService {
 		const usedShapesAsAssets: TldrawShape[] = [];
 		const usedAssets: TldrawAsset[] = [];
 
-		for (const [_, shape] of shapes) {
+		for (const [, shape] of shapes) {
 			if (shape.assetId) {
 				usedShapesAsAssets.push(shape);
 			}
 		}
 
 		doc.transact(() => {
-			for (const [_, asset] of assets) {
+			for (const [, asset] of assets) {
 				const foundAsset = usedShapesAsAssets.some((shape) => shape.assetId === asset.id);
 				if (!foundAsset) {
 					assets.delete(asset.id);
