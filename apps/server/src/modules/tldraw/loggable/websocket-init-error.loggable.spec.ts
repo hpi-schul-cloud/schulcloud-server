@@ -9,7 +9,7 @@ describe('WebsocketInitErrorLoggable', () => {
 			const errorMessage = WsCloseMessage.BAD_REQUEST;
 			const docName = 'test';
 
-			const loggable = new WebsocketInitErrorLoggable(error, errorCode, errorMessage, docName);
+			const loggable = new WebsocketInitErrorLoggable(errorCode, errorMessage, docName, error);
 			return { loggable, error, errorCode, errorMessage, docName };
 		};
 
