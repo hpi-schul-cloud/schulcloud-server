@@ -1,16 +1,16 @@
 import { WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection } from '@nestjs/websockets';
-import { Server, WebSocket } from 'ws';
+import WebSocket, { Server } from 'ws';
 import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import cookie from 'cookie';
-import { BadRequestException, UnauthorizedException } from '@nestjs/common';
+import { InternalServerErrorException, UnauthorizedException, NotFoundException } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
-import { AxiosError } from 'axios';
+import { isAxiosError } from 'axios';
 import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
-import { WebsocketCloseErrorLoggable } from '../loggable';
+import { WebsocketInitErrorLoggable } from '../loggable';
 import { TldrawConfig, TLDRAW_SOCKET_PORT } from '../config';
-import { WsCloseCodeEnum, WsCloseMessageEnum } from '../types';
+import { WsCloseCode, WsCloseMessage } from '../types';
 import { TldrawWsService } from '../service';
 
 @WebSocketGateway(TLDRAW_SOCKET_PORT)
@@ -26,50 +26,23 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 	) {}
 
 	public async handleConnection(client: WebSocket, request: Request): Promise<void> {
-		const isTldrawEnabled = this.configService.get<boolean>('FEATURE_TLDRAW_ENABLED');
-		const docName = this.getDocNameFromRequest(request);
+		if (!this.configService.get<boolean>('FEATURE_TLDRAW_ENABLED')) {
+			client.close(WsCloseCode.BAD_REQUEST, WsCloseMessage.FEATURE_DISABLED);
+			return;
+		}
 
-		if (!isTldrawEnabled || !docName) {
-			this.closeClientAndLogError(
-				client,
-				WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE,
-				WsCloseMessageEnum.WS_CLIENT_BAD_REQUEST_MESSAGE,
-				new BadRequestException()
-			);
+		const docName = this.getDocNameFromRequest(request);
+		if (!docName) {
+			client.close(WsCloseCode.BAD_REQUEST, WsCloseMessage.BAD_REQUEST);
 			return;
 		}
 
 		try {
 			const cookies = this.parseCookiesFromHeader(request);
 			await this.authorizeConnection(docName, cookies?.jwt);
+			await this.tldrawWsService.setupWsConnection(client, docName);
 		} catch (err) {
-			if (err instanceof AxiosError && (err.response?.status === 400 || err.response?.status === 404)) {
-				this.closeClientAndLogError(
-					client,
-					WsCloseCodeEnum.WS_CLIENT_NOT_FOUND_CODE,
-					WsCloseMessageEnum.WS_CLIENT_NOT_FOUND_MESSAGE,
-					err
-				);
-			} else {
-				this.closeClientAndLogError(
-					client,
-					WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
-					WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE,
-					err
-				);
-			}
-			return;
-		}
-
-		try {
-			await this.tldrawWsService.setupWSConnection(client, docName);
-		} catch (err) {
-			this.closeClientAndLogError(
-				client,
-				WsCloseCodeEnum.WS_CLIENT_FAILED_CONNECTION_CODE,
-				WsCloseMessageEnum.WS_CLIENT_FAILED_CONNECTION_MESSAGE,
-				err
-			);
+			this.handleError(err, client, docName);
 		}
 	}
 
@@ -87,24 +60,67 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		return parsedCookies;
 	}
 
-	private closeClientAndLogError(client: WebSocket, code: WsCloseCodeEnum, data: string, err: unknown): void {
-		client.close(code, data);
-		this.logger.warning(new WebsocketCloseErrorLoggable(err, `(${code}) ${data}`));
-	}
-
 	private async authorizeConnection(drawingName: string, token: string): Promise<void> {
 		if (!token) {
 			throw new UnauthorizedException('Token was not given');
 		}
 
-		const apiHostUrl = this.configService.get<string>('API_HOST');
-		await firstValueFrom(
-			this.httpService.get(`${apiHostUrl}/v3/elements/${drawingName}/permission`, {
-				headers: {
-					Accept: 'Application/json',
-					Authorization: `Bearer ${token}`,
-				},
-			})
+		try {
+			const apiHostUrl = this.configService.get<string>('API_HOST');
+			await firstValueFrom(
+				this.httpService.get(`${apiHostUrl}/v3/elements/${drawingName}/permission`, {
+					headers: {
+						Accept: 'Application/json',
+						Authorization: `Bearer ${token}`,
+					},
+				})
+			);
+		} catch (err) {
+			if (isAxiosError(err)) {
+				switch (err.response?.status) {
+					case 400:
+					case 404:
+						throw new NotFoundException();
+					case 401:
+					case 403:
+						throw new UnauthorizedException();
+					default:
+						throw new InternalServerErrorException();
+				}
+			}
+
+			throw new InternalServerErrorException();
+		}
+	}
+
+	private closeClientAndLog(
+		client: WebSocket,
+		code: WsCloseCode,
+		message: WsCloseMessage,
+		docName: string,
+		err?: unknown
+	): void {
+		client.close(code, message);
+		this.logger.warning(new WebsocketInitErrorLoggable(code, message, docName, err));
+	}
+
+	private handleError(err: unknown, client: WebSocket, docName: string): void {
+		if (err instanceof NotFoundException) {
+			this.closeClientAndLog(client, WsCloseCode.NOT_FOUND, WsCloseMessage.NOT_FOUND, docName);
+			return;
+		}
+
+		if (err instanceof UnauthorizedException) {
+			this.closeClientAndLog(client, WsCloseCode.UNAUTHORIZED, WsCloseMessage.UNAUTHORIZED, docName);
+			return;
+		}
+
+		this.closeClientAndLog(
+			client,
+			WsCloseCode.INTERNAL_SERVER_ERROR,
+			WsCloseMessage.INTERNAL_SERVER_ERROR,
+			docName,
+			err
 		);
 	}
 }

@@ -194,7 +194,7 @@ describe('YMongoDb', () => {
 			it('should return ydoc', async () => {
 				const { applyUpdateSpy } = await setup();
 
-				const doc = await mdb.getYDoc('test-name');
+				const doc = await mdb.getDocument('test-name');
 
 				expect(doc).toBeDefined();
 				applyUpdateSpy.mockRestore();
@@ -220,7 +220,7 @@ describe('YMongoDb', () => {
 			it('should not return ydoc', async () => {
 				const { applyUpdateSpy } = await setup();
 
-				const doc = await mdb.getYDoc('test-name');
+				const doc = await mdb.getDocument('test-name');
 
 				expect(doc).toBeUndefined();
 				applyUpdateSpy.mockRestore();
@@ -245,7 +245,7 @@ describe('YMongoDb', () => {
 			it('should return ydoc from the database', async () => {
 				const { applyUpdateSpy } = await setup();
 
-				const doc = await mdb.getYDoc('test-name');
+				const doc = await mdb.getDocument('test-name');
 
 				expect(doc).toBeDefined();
 				applyUpdateSpy.mockRestore();
@@ -255,7 +255,7 @@ describe('YMongoDb', () => {
 				it('should return ydoc from the database', async () => {
 					const { applyUpdateSpy } = await setup();
 
-					const doc = await mdb.getYDoc('test-name');
+					const doc = await mdb.getDocument('test-name');
 
 					expect(doc).toBeDefined();
 					applyUpdateSpy.mockRestore();

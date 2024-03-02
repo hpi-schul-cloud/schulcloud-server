@@ -68,7 +68,7 @@ export class YMongodb {
 		await this.repo.ensureIndexes();
 	}
 
-	public getYDoc(docName: string): Promise<WsSharedDocDo> {
+	public getDocument(docName: string): Promise<WsSharedDocDo> {
 		return this._transact(docName, async (): Promise<WsSharedDocDo> => {
 			const updates = await this.getMongoUpdates(docName);
 			const mergedUpdates = mergeUpdates(updates);
