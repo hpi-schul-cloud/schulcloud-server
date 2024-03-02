@@ -552,6 +552,29 @@ describe('TldrawWSService', () => {
 			});
 		});
 
+		describe('when there are active connections', () => {
+			const setup = async () => {
+				const doc = new WsSharedDocDo('TEST');
+				ws = await TestConnection.setupWs(wsUrl);
+				const ws2 = await TestConnection.setupWs(wsUrl);
+				doc.connections.set(ws, new Set<number>());
+				doc.connections.set(ws2, new Set<number>());
+
+				return {
+					doc,
+				};
+			};
+
+			it('should not call compressDocument', async () => {
+				const { doc } = await setup();
+
+				await service.closeConn(doc, ws);
+
+				expect(boardRepo.compressDocument).not.toHaveBeenCalled();
+				ws.close();
+			});
+		});
+
 		describe('when deleteUnusedFilesForDocument fails', () => {
 			const setup = async () => {
 				ws = await TestConnection.setupWs(wsUrl);
@@ -845,7 +868,7 @@ describe('TldrawWSService', () => {
 			});
 		});
 
-		describe('when flushDocument failed', () => {
+		describe('when compressDocument failed', () => {
 			const setup = async () => {
 				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 				const doc = TldrawWsFactory.createWsSharedDocDo();
@@ -863,7 +886,7 @@ describe('TldrawWSService', () => {
 			it('should log error', async () => {
 				const { doc, errorLogSpy } = await setup();
 
-				await expect(service.closeConn(doc, ws)).rejects.toThrow('error');
+				await service.closeConn(doc, ws);
 
 				expect(boardRepo.compressDocument).toHaveBeenCalled();
 				expect(errorLogSpy).toHaveBeenCalled();

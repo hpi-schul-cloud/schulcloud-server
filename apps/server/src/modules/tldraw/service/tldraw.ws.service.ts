@@ -63,7 +63,7 @@ export class TldrawWsService {
 			doc.connections.delete(ws);
 			removeAwarenessStates(doc.awareness, this.forceToArray(controlledIds), null);
 
-			await this.storeStateAndDestroyYDocIfPersisted(doc);
+			await this.finalizeIfNoConnections(doc);
 			this.metricsService.decrementNumberOfUsersOnServerCounter();
 		}
 
@@ -256,27 +256,25 @@ export class TldrawWsService {
 		this.metricsService.incrementNumberOfUsersOnServerCounter();
 	}
 
-	private async storeStateAndDestroyYDocIfPersisted(doc: WsSharedDocDo) {
-		if (doc.connections.size === 0) {
-			// if persisted, we store state and destroy yDoc
-			try {
-				const usedAssets = this.syncDocumentAssetsWithShapes(doc);
+	private async finalizeIfNoConnections(doc: WsSharedDocDo) {
+		if (doc.connections.size > 0) {
+			return;
+		}
 
-				await this.tldrawBoardRepo.compressDocument(doc.name);
-				this.unsubscribeFromRedisChannels(doc);
+		try {
+			const usedAssets = this.syncDocumentAssetsWithShapes(doc);
+			await this.tldrawBoardRepo.compressDocument(doc.name);
+			this.unsubscribeFromRedisChannels(doc);
 
-				if (this.configService.get<number>('TLDRAW_ASSETS_SYNC_ENABLED')) {
-					void this.filesStorageTldrawAdapterService.deleteUnusedFilesForDocument(doc.name, usedAssets).catch((err) => {
-						this.logger.warning(new FileStorageErrorLoggable(doc.name, err));
-					});
-				}
-
-				doc.destroy();
-			} catch (err) {
-				this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while flushing doc', err));
-				throw err;
+			if (this.configService.get<number>('TLDRAW_ASSETS_SYNC_ENABLED')) {
+				void this.filesStorageTldrawAdapterService.deleteUnusedFilesForDocument(doc.name, usedAssets).catch((err) => {
+					this.logger.warning(new FileStorageErrorLoggable(doc.name, err));
+				});
 			}
-
+		} catch (err) {
+			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while flushing doc', err));
+		} finally {
+			doc.destroy();
 			this.docs.delete(doc.name);
 			this.metricsService.decrementNumberOfBoardsOnServerCounter();
 		}
