@@ -1,7 +1,7 @@
 import { H5PConfig, UrlGenerator } from '@lumieducation/h5p-server';
 
 const API_BASE = '/api/v3/h5p-editor';
-const STATIC_FILES_BASE = '/h5pstatics';
+const STATIC_FILES_BASE = `${API_BASE}/h5pstatics`;
 
 export const h5pConfig = new H5PConfig(undefined);
 

@@ -1,9 +1,0 @@
-galaxy_info:
-  role_name: schulcloud-server-h5p-proxy
-  author: Schul-Cloud Verbund
-  description: h5p proxy role for the schulcloud-server
-  company: Schul-Cloud Verbund
-  license: license (AGPLv3)
-  min_ansible_version: 2.8
-  galaxy_tags: []
-dependencies: []
