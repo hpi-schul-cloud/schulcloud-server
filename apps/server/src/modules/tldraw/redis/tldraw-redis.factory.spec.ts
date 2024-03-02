@@ -44,14 +44,14 @@ describe('TldrawRedisFactory', () => {
 
 	describe('build', () => {
 		it('should throw if REDIS_URI is not set', () => {
-			const configSpy = jest.spyOn(configService, 'get').mockReturnValue(null);
+			const configSpy = jest.spyOn(configService, 'get').mockReturnValueOnce(null);
 
 			expect(() => redisFactory.build(RedisConnectionTypeEnum.PUBLISH)).toThrow('REDIS_URI is not set');
 			configSpy.mockRestore();
 		});
 
 		it('should return redis connection', () => {
-			const configSpy = jest.spyOn(configService, 'get').mockReturnValue('redis://localhost:6379');
+			const configSpy = jest.spyOn(configService, 'get').mockReturnValueOnce('redis://localhost:6379');
 			const redis = redisFactory.build(RedisConnectionTypeEnum.PUBLISH);
 
 			expect(redis).toBeDefined();
