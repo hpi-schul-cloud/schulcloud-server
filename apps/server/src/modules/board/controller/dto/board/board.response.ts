@@ -4,11 +4,12 @@ import { ColumnResponse } from './column.response';
 import { TimestampsResponse } from '../timestamps.response';
 
 export class BoardResponse {
-	constructor({ id, title, columns, timestamps }: BoardResponse) {
+	constructor({ id, title, columns, timestamps, isVisible }: BoardResponse) {
 		this.id = id;
 		this.title = title;
 		this.columns = columns;
 		this.timestamps = timestamps;
+		this.isVisible = isVisible;
 	}
 
 	@ApiProperty({
@@ -27,4 +28,7 @@ export class BoardResponse {
 
 	@ApiProperty()
 	timestamps: TimestampsResponse;
+
+	@ApiProperty()
+	isVisible: boolean;
 }

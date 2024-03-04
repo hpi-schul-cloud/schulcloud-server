@@ -23,9 +23,7 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 		this.position = props.position ?? 0;
 		this.title = props.title;
 
-		if (props.isVisible != null) {
-			this.isVisible = props.isVisible;
-		}
+		this.isVisible = props.isVisible ?? false;
 	}
 
 	@Index()
