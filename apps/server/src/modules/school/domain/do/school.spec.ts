@@ -1,6 +1,6 @@
 import { SchoolPurpose } from '@shared/domain/types';
 import { ObjectId } from 'bson';
-import { schoolFactory } from '../../testing';
+import { federalStateFactory, schoolFactory } from '../../testing';
 import { InstanceFeature } from '../type';
 
 describe('School', () => {
@@ -9,7 +9,7 @@ describe('School', () => {
 		jest.setSystemTime(new Date('2022-02-22'));
 	});
 
-	describe('addFeature', () => {
+	describe('addInstanceFeature', () => {
 		const setup = () => {
 			const feature = InstanceFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED;
 			const school = schoolFactory.build();
@@ -26,7 +26,7 @@ describe('School', () => {
 		});
 	});
 
-	describe('removeFeature', () => {
+	describe('removeInstanceFeature', () => {
 		const setup = () => {
 			const feature = InstanceFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED;
 			const school = schoolFactory.build();
@@ -44,6 +44,98 @@ describe('School', () => {
 			expect(school.instanceFeatures).not.toContain(feature);
 		});
 	});
+
+	describe('update county', () => {
+		describe('when county is not set in federal state', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+				const countyId = new ObjectId().toHexString();
+
+				return { school, countyId };
+			};
+
+			it('should throw `county not found` error', () => {
+				const { school, countyId } = setup();
+
+				expect(() => school.updateCounty(countyId)).toThrowError('County not found.');
+			});
+		});
+
+		describe('when county is already set', () => {
+			const setup = () => {
+				const federalState = federalStateFactory.build();
+				// @ts-expect-error test case
+				const county = federalState.getProps().counties[0];
+				const school = schoolFactory.build({ federalState, county });
+				const countyId = new ObjectId().toHexString();
+
+				return { school, countyId };
+			};
+
+			it('should throw `county cannot be updated, once it is set` error', () => {
+				const { school, countyId } = setup();
+
+				expect(() => school.updateCounty(countyId)).toThrowError('County cannot be updated, once it is set.');
+			});
+		});
+
+		describe('when county is not set', () => {
+			const setup = () => {
+				const federalState = federalStateFactory.build();
+				// @ts-expect-error test case
+				const county = federalState.getProps().counties[0];
+				const school = schoolFactory.build({ federalState });
+				const countyId = county.id;
+
+				return { school, countyId, county };
+			};
+
+			it('should return school with county', () => {
+				const { school, countyId, county } = setup();
+
+				school.updateCounty(countyId);
+
+				expect(school.getProps().county).toEqual(county);
+			});
+		});
+	});
+
+	describe('updateOfficialSchoolNumber', () => {
+		describe('when officialSchoolNumber is already set', () => {
+			const setup = () => {
+				const school = schoolFactory.build({ officialSchoolNumber: '123' });
+				const officialSchoolNumber = '456';
+
+				return { school, officialSchoolNumber };
+			};
+
+			it('should throw `official school number cannot be updated, once it is set` error', () => {
+				const { school, officialSchoolNumber } = setup();
+
+				expect(() => school.updateOfficialSchoolNumber(officialSchoolNumber)).toThrowError(
+					'Official school number cannot be updated, once it is set.'
+				);
+			});
+		});
+
+		describe('when officialSchoolNumber is not set', () => {
+			const setup = () => {
+				const school = schoolFactory.build({ officialSchoolNumber: undefined });
+				const officialSchoolNumber = '456';
+
+				return { school, officialSchoolNumber };
+			};
+
+			it('should return school with updated officialSchoolNumber', () => {
+				const { school, officialSchoolNumber } = setup();
+
+				school.updateOfficialSchoolNumber(officialSchoolNumber);
+
+				expect(school.getProps().officialSchoolNumber).toEqual(officialSchoolNumber);
+			});
+		});
+	});
+
 	// TODO N21-1623 add test for getPermissions
 	describe('getPermissions', () => {
 		describe('when permissions exist', () => {
