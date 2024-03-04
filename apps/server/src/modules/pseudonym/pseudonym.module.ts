@@ -1,6 +1,6 @@
 import { LearnroomModule } from '@modules/learnroom';
 import { ToolModule } from '@modules/tool';
-import { UserModule } from '@modules/user';
+import { UserModule } from '@modules/user/user.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { LegacyLogger, LoggerModule } from '@src/core/logger';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from './repo';

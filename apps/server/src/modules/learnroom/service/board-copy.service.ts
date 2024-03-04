@@ -10,17 +10,17 @@ import {
 	Board,
 	BoardElement,
 	BoardElementType,
-	ColumnBoardTarget,
 	ColumnboardBoardElement,
+	ColumnBoardTarget,
 	Course,
+	isColumnBoardTarget,
+	isLesson,
+	isTask,
 	LessonBoardElement,
 	LessonEntity,
 	Task,
 	TaskBoardElement,
 	User,
-	isColumnBoardTarget,
-	isLesson,
-	isTask,
 } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BoardRepo } from '@shared/repo';

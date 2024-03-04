@@ -456,7 +456,7 @@ describe(SchulconnexProvisioningStrategy.name, () => {
 
 				await strategy.apply(oauthData);
 
-				expect(schulconnexCourseSyncService.synchronizeCourseWithGroup).toHaveBeenCalledWith(updatedGroup);
+				expect(schulconnexCourseSyncService.synchronizeCourseWithGroup).toHaveBeenCalledWith(updatedGroup, undefined);
 			});
 		});
 	});

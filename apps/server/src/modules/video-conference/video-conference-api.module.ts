@@ -1,8 +1,8 @@
-import { Module } from '@nestjs/common';
-import { UserModule } from '@modules/user';
 import { AuthorizationModule } from '@modules/authorization';
+import { UserModule } from '@modules/user/user.module';
+import { Module } from '@nestjs/common';
 import { VideoConferenceController } from './controller';
-import { VideoConferenceCreateUc, VideoConferenceJoinUc, VideoConferenceEndUc, VideoConferenceInfoUc } from './uc';
+import { VideoConferenceCreateUc, VideoConferenceEndUc, VideoConferenceInfoUc, VideoConferenceJoinUc } from './uc';
 import { VideoConferenceModule } from './video-conference.module';
 
 @Module({

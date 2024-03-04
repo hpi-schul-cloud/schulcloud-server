@@ -1,6 +1,6 @@
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ServerTestModule } from '@modules/server';
 import { TestApiClient } from '@shared/testing';
 import { ConfigResponse } from '../dto';
 
@@ -80,6 +80,7 @@ describe('Server Controller (API)', () => {
 				'JWT_SHOW_TIMEOUT_WARNING_SECONDS',
 				'JWT_TIMEOUT_SECONDS',
 				'MIGRATION_END_GRACE_PERIOD_MS',
+				'MIGRATION_WIZARD_DOCUMENTATION_LINK',
 				'NOT_AUTHENTICATED_REDIRECT_URL',
 				'ROCKETCHAT_SERVICE_ENABLED',
 				'SC_THEME',
