@@ -8,7 +8,7 @@ import { TaskService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReference, BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import { BoardRepo } from '@shared/repo';
+import { LegacyBoardRepo } from '@shared/repo';
 import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { ColumnBoardTargetService } from './column-board-target.service';
 import { RoomsService } from './rooms.service';
@@ -18,7 +18,7 @@ describe('rooms service', () => {
 	let roomsService: RoomsService;
 	let lessonService: DeepMocked<LessonService>;
 	let taskService: DeepMocked<TaskService>;
-	let boardRepo: DeepMocked<BoardRepo>;
+	let boardRepo: DeepMocked<LegacyBoardRepo>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
 	let columnBoardTargetService: DeepMocked<ColumnBoardTargetService>;
 	let configBefore: IConfig;
@@ -42,8 +42,8 @@ describe('rooms service', () => {
 					useValue: createMock<TaskService>(),
 				},
 				{
-					provide: BoardRepo,
-					useValue: createMock<BoardRepo>(),
+					provide: LegacyBoardRepo,
+					useValue: createMock<LegacyBoardRepo>(),
 				},
 				{
 					provide: ColumnBoardService,
@@ -70,7 +70,7 @@ describe('rooms service', () => {
 		roomsService = module.get(RoomsService);
 		lessonService = module.get(LessonService);
 		taskService = module.get(TaskService);
-		boardRepo = module.get(BoardRepo);
+		boardRepo = module.get(LegacyBoardRepo);
 		columnBoardService = module.get(ColumnBoardService);
 		columnBoardTargetService = module.get(ColumnBoardTargetService);
 	});

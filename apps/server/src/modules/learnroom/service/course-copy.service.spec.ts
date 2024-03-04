@@ -7,7 +7,7 @@ import { ContextExternalToolService } from '@modules/tool/context-external-tool/
 import { ToolFeatures } from '@modules/tool/tool-config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course } from '@shared/domain/entity';
-import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
+import { LegacyBoardRepo, CourseRepo, UserRepo } from '@shared/repo';
 import {
 	boardFactory,
 	contextExternalToolFactory,
@@ -26,7 +26,7 @@ describe('course copy service', () => {
 	let module: TestingModule;
 	let service: CourseCopyService;
 	let courseRepo: DeepMocked<CourseRepo>;
-	let boardRepo: DeepMocked<BoardRepo>;
+	let boardRepo: DeepMocked<LegacyBoardRepo>;
 	let roomsService: DeepMocked<RoomsService>;
 	let boardCopyService: DeepMocked<BoardCopyService>;
 	let lessonCopyService: DeepMocked<LessonCopyService>;
@@ -53,8 +53,8 @@ describe('course copy service', () => {
 					useValue: createMock<CourseRepo>(),
 				},
 				{
-					provide: BoardRepo,
-					useValue: createMock<BoardRepo>(),
+					provide: LegacyBoardRepo,
+					useValue: createMock<LegacyBoardRepo>(),
 				},
 				{
 					provide: RoomsService,
@@ -91,7 +91,7 @@ describe('course copy service', () => {
 
 		service = module.get(CourseCopyService);
 		courseRepo = module.get(CourseRepo);
-		boardRepo = module.get(BoardRepo);
+		boardRepo = module.get(LegacyBoardRepo);
 		roomsService = module.get(RoomsService);
 		boardCopyService = module.get(BoardCopyService);
 		lessonCopyService = module.get(LessonCopyService);

@@ -6,9 +6,9 @@ import { TaskCopyService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
-import { Board } from '@shared/domain/entity';
+import { LegacyBoard } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { BoardRepo } from '@shared/repo';
+import { LegacyBoardRepo } from '@shared/repo';
 import {
 	boardFactory,
 	columnboardBoardElementFactory,
@@ -32,7 +32,7 @@ describe('board copy service', () => {
 	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let columnBoardCopyService: DeepMocked<ColumnBoardCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
-	let boardRepo: DeepMocked<BoardRepo>;
+	let boardRepo: DeepMocked<LegacyBoardRepo>;
 
 	afterAll(async () => {
 		await module.close();
@@ -60,8 +60,8 @@ describe('board copy service', () => {
 					useValue: createMock<CopyHelperService>(),
 				},
 				{
-					provide: BoardRepo,
-					useValue: createMock<BoardRepo>(),
+					provide: LegacyBoardRepo,
+					useValue: createMock<LegacyBoardRepo>(),
 				},
 				{
 					provide: LegacyLogger,
@@ -75,7 +75,7 @@ describe('board copy service', () => {
 		lessonCopyService = module.get(LessonCopyService);
 		copyHelperService = module.get(CopyHelperService);
 		columnBoardCopyService = module.get(ColumnBoardCopyService);
-		boardRepo = module.get(BoardRepo);
+		boardRepo = module.get(LegacyBoardRepo);
 		boardRepo.save = jest.fn();
 	});
 
@@ -118,7 +118,7 @@ describe('board copy service', () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
 				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
-				const board = status.copyEntity as Board;
+				const board = status.copyEntity as LegacyBoard;
 				expect(board.id).not.toEqual(originalBoard.id);
 			});
 
@@ -126,7 +126,7 @@ describe('board copy service', () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
 				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
-				const board = status.copyEntity as Board;
+				const board = status.copyEntity as LegacyBoard;
 				expect(board.course.id).toEqual(destinationCourse.id);
 			});
 		});
@@ -172,7 +172,7 @@ describe('board copy service', () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
 				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
-				const board = status.copyEntity as Board;
+				const board = status.copyEntity as LegacyBoard;
 				expect(board.getElements().length).toEqual(1);
 			});
 
@@ -223,7 +223,7 @@ describe('board copy service', () => {
 			it('should add lessonCopy to board copy', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
 				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
-				const board = status.copyEntity as Board;
+				const board = status.copyEntity as LegacyBoard;
 
 				expect(board.getElements().length).toEqual(1);
 			});
@@ -280,7 +280,7 @@ describe('board copy service', () => {
 			it('should add columnBoard copy to board copy', async () => {
 				const { destinationCourse, originalBoard, user } = setup();
 				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
-				const board = status.copyEntity as Board;
+				const board = status.copyEntity as LegacyBoard;
 
 				expect(board.getElements().length).toEqual(1);
 			});
@@ -455,7 +455,7 @@ describe('board copy service', () => {
 				const { destinationCourse, originalBoard, user } = setup();
 
 				const status = await copyService.copyBoard({ originalBoard, user, destinationCourse });
-				const board = status.copyEntity as Board;
+				const board = status.copyEntity as LegacyBoard;
 
 				expect(board.references).toHaveLength(0);
 			});

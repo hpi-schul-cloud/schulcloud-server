@@ -18,7 +18,7 @@ export type BoardProps = {
 };
 
 @Entity({ tableName: 'board' })
-export class Board extends BaseEntityWithTimestamps {
+export class LegacyBoard extends BaseEntityWithTimestamps {
 	constructor(props: BoardProps) {
 		super();
 		this.references.set(props.references);

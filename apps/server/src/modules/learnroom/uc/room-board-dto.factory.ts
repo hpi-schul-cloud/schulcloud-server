@@ -2,7 +2,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import {
-	Board,
+	LegacyBoard,
 	BoardElement,
 	BoardElementType,
 	ColumnBoardTarget,
@@ -27,7 +27,7 @@ import { RoomsAuthorisationService } from './rooms.authorisation.service';
 class DtoCreator {
 	room: Course;
 
-	board: Board;
+	board: LegacyBoard;
 
 	user: User;
 
@@ -43,7 +43,7 @@ class DtoCreator {
 		roomsAuthorisationService,
 	}: {
 		room: Course;
-		board: Board;
+		board: LegacyBoard;
 		user: User;
 		authorisationService: AuthorizationService;
 		roomsAuthorisationService: RoomsAuthorisationService;
@@ -189,7 +189,7 @@ export class RoomBoardDTOFactory {
 		private readonly roomsAuthorisationService: RoomsAuthorisationService
 	) {}
 
-	createDTO({ room, board, user }: { room: Course; board: Board; user: User }): RoomBoardDTO {
+	createDTO({ room, board, user }: { room: Course; board: LegacyBoard; user: User }): RoomBoardDTO {
 		const worker = new DtoCreator({
 			room,
 			board,

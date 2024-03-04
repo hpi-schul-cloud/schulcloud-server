@@ -4,9 +4,9 @@ import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { Board, ColumnBoardTarget } from '@shared/domain/entity';
+import { LegacyBoard, ColumnBoardTarget } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { BoardRepo } from '@shared/repo';
+import { LegacyBoardRepo } from '@shared/repo';
 import { ColumnBoardTargetService } from './column-board-target.service';
 
 @Injectable()
@@ -14,12 +14,12 @@ export class RoomsService {
 	constructor(
 		private readonly taskService: TaskService,
 		private readonly lessonService: LessonService,
-		private readonly boardRepo: BoardRepo,
+		private readonly boardRepo: LegacyBoardRepo,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly columnBoardTargetService: ColumnBoardTargetService
 	) {}
 
-	async updateBoard(board: Board, roomId: EntityId, userId: EntityId): Promise<Board> {
+	async updateBoard(board: LegacyBoard, roomId: EntityId, userId: EntityId): Promise<LegacyBoard> {
 		const [courseLessons] = await this.lessonService.findByCourseIds([roomId]);
 		const [courseTasks] = await this.taskService.findBySingleParent(userId, roomId);
 

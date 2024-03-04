@@ -45,7 +45,7 @@ export class RoomsController {
 		@Body() params: PatchVisibilityParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		await this.roomsUc.updateVisibilityOfBoardElement(
+		await this.roomsUc.updateVisibilityOfLegacyBoardElement(
 			urlParams.roomId,
 			urlParams.elementId,
 			currentUser.userId,

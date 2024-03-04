@@ -124,7 +124,7 @@ describe('rooms controller', () => {
 	describe('patchVisibility', () => {
 		it('should call uc', async () => {
 			const currentUser = { userId: 'userId' } as ICurrentUser;
-			const ucSpy = jest.spyOn(uc, 'updateVisibilityOfBoardElement').mockImplementation(() => Promise.resolve());
+			const ucSpy = jest.spyOn(uc, 'updateVisibilityOfLegacyBoardElement').mockImplementation(() => Promise.resolve());
 			await controller.patchElementVisibility(
 				{ roomId: 'roomid', elementId: 'elementId' },
 				{ visibility: true },

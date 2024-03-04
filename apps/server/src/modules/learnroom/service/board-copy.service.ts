@@ -7,7 +7,7 @@ import { getResolvedValues } from '@shared/common/utils/promise';
 import { ColumnBoard } from '@shared/domain/domainobject';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
 import {
-	Board,
+	LegacyBoard,
 	BoardElement,
 	BoardElementType,
 	ColumnBoardTarget,
@@ -23,12 +23,12 @@ import {
 	isTask,
 } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { BoardRepo } from '@shared/repo';
+import { LegacyBoardRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { sortBy } from 'lodash';
 
 type BoardCopyParams = {
-	originalBoard: Board;
+	originalBoard: LegacyBoard;
 	destinationCourse: Course;
 	user: User;
 };
@@ -37,7 +37,7 @@ type BoardCopyParams = {
 export class BoardCopyService {
 	constructor(
 		private readonly logger: LegacyLogger,
-		private readonly boardRepo: BoardRepo,
+		private readonly boardRepo: LegacyBoardRepo,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly columnBoardCopyService: ColumnBoardCopyService,
@@ -51,7 +51,7 @@ export class BoardCopyService {
 		const elements: CopyStatus[] = await this.copyBoardElements(boardElements, user, destinationCourse);
 		const references: BoardElement[] = this.extractReferences(elements);
 
-		let boardCopy: Board = new Board({ references, course: destinationCourse });
+		let boardCopy: LegacyBoard = new LegacyBoard({ references, course: destinationCourse });
 		let status: CopyStatus = {
 			title: 'board',
 			type: CopyElementType.BOARD,
@@ -63,7 +63,7 @@ export class BoardCopyService {
 
 		status = this.updateCopiedEmbeddedTasksOfLessons(status);
 		if (status.copyEntity) {
-			boardCopy = status.copyEntity as Board;
+			boardCopy = status.copyEntity as LegacyBoard;
 		}
 
 		status = await this.swapLinkedIdsInBoards(status);
@@ -182,7 +182,7 @@ export class BoardCopyService {
 		const copyDict = this.copyHelperService.buildCopyEntityDict(copyStatus);
 		copyDict.forEach((value, key) => map.set(key, value.id));
 
-		if (copyStatus.copyEntity instanceof Board && copyStatus.originalEntity instanceof Board) {
+		if (copyStatus.copyEntity instanceof LegacyBoard && copyStatus.originalEntity instanceof LegacyBoard) {
 			map.set(copyStatus.originalEntity.course.id, copyStatus.copyEntity.course.id);
 		}
 

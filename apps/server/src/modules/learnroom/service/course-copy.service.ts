@@ -5,7 +5,7 @@ import { ContextExternalToolService } from '@modules/tool/context-external-tool/
 import { Inject, Injectable } from '@nestjs/common';
 import { Course, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
+import { LegacyBoardRepo, CourseRepo, UserRepo } from '@shared/repo';
 import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
 import { BoardCopyService } from './board-copy.service';
 import { RoomsService } from './rooms.service';
@@ -21,7 +21,7 @@ export class CourseCopyService {
 	constructor(
 		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
 		private readonly courseRepo: CourseRepo,
-		private readonly boardRepo: BoardRepo,
+		private readonly boardRepo: LegacyBoardRepo,
 		private readonly roomsService: RoomsService,
 		private readonly boardCopyService: BoardCopyService,
 		private readonly copyHelperService: CopyHelperService,

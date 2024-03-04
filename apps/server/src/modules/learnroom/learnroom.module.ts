@@ -6,7 +6,7 @@ import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { ToolConfigModule } from '@modules/tool/tool-config.module';
 import { Module } from '@nestjs/common';
 import {
-	BoardRepo,
+	LegacyBoardRepo,
 	CourseGroupRepo,
 	CourseRepo,
 	DashboardElementRepo,
@@ -46,7 +46,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		DashboardElementRepo,
 		DashboardModelMapper,
 		CourseRepo,
-		BoardRepo,
+		LegacyBoardRepo,
 		UserRepo,
 		BoardCopyService,
 		CourseCopyService,

@@ -3,7 +3,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { AuthorizationService } from '@modules/authorization';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, Course, LessonEntity, Task, TaskWithStatusVo, User } from '@shared/domain/entity';
+import { LegacyBoard, Course, LessonEntity, Task, TaskWithStatusVo, User } from '@shared/domain/entity';
 import {
 	boardFactory,
 	columnboardBoardElementFactory,
@@ -91,7 +91,7 @@ describe(RoomBoardDTOFactory.name, () => {
 			let teacher: User;
 			let student: User;
 			let substitutionTeacher: User;
-			let board: Board;
+			let board: LegacyBoard;
 			let room: Course;
 			let tasks: Task[];
 
@@ -163,7 +163,7 @@ describe(RoomBoardDTOFactory.name, () => {
 			let teacher: User;
 			let student: User;
 			let substitutionTeacher: User;
-			let board: Board;
+			let board: LegacyBoard;
 			let room: Course;
 			let tasks: Task[];
 
@@ -202,7 +202,7 @@ describe(RoomBoardDTOFactory.name, () => {
 			let teacher: User;
 			let student: User;
 			let substitutionTeacher: User;
-			let board: Board;
+			let board: LegacyBoard;
 			let room: Course;
 			let lessons: LessonEntity[];
 
@@ -241,7 +241,7 @@ describe(RoomBoardDTOFactory.name, () => {
 			let teacher: User;
 			let student: User;
 			let substitutionTeacher: User;
-			let board: Board;
+			let board: LegacyBoard;
 			let room: Course;
 			let lesson: LessonEntity;
 			const inOneDay = new Date(Date.now() + 8.64e7);
@@ -323,7 +323,7 @@ describe(RoomBoardDTOFactory.name, () => {
 			let teacher: User;
 			let student: User;
 			let substitutionTeacher: User;
-			let board: Board;
+			let board: LegacyBoard;
 			let room: Course;
 			let lessons: LessonEntity[];
 

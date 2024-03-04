@@ -9,7 +9,7 @@ import { SingleColumnBoardResponse } from '@modules/learnroom/controller/dto';
 import { ServerTestModule } from '@modules/server/server.module';
 import { ExecutionContext, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, Course, Task } from '@shared/domain/entity';
+import { LegacyBoard, Course, Task } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
 	boardFactory,
@@ -227,7 +227,7 @@ describe('Rooms Controller (API)', () => {
 			const body = response.body as CopyApiResponse;
 			expect(body.id).toBeDefined();
 
-			expect(() => em.findOneOrFail(Board, { course: body.id as string })).not.toThrow();
+			expect(() => em.findOneOrFail(LegacyBoard, { course: body.id as string })).not.toThrow();
 		});
 
 		it('complete example', async () => {
