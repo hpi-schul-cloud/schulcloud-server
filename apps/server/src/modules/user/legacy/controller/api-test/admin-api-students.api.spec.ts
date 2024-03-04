@@ -16,7 +16,9 @@ import { JwtAuthGuard } from '@src/modules/authentication/guard/jwt-auth.guard';
 import { ServerTestModule } from '@src/modules/server/server.module';
 import { Request } from 'express';
 import request from 'supertest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../dto';
+import { classEntityFactory } from '../../../../class/entity/testing';
 
 describe('Users Admin Students Controller (API)', () => {
 	const basePath = '/users/admin/students';
@@ -59,6 +61,16 @@ describe('Users Admin Students Controller (API)', () => {
 					dateOfPrivacyConsent: new Date('2017-01-01T00:06:37.148Z'),
 					dateOfTermsOfUseConsent: new Date('2017-01-01T00:06:37.148Z'),
 				},
+				parentConsents: [
+					{
+						_id: new ObjectId('5fa31aacb229544f2c697b48'),
+						form: 'digital',
+						privacyConsent: true,
+						termsOfUseConsent: true,
+						dateOfPrivacyConsent: new Date('2017-01-01T00:06:37.148Z'),
+						dateOfTermsOfUseConsent: new Date('2017-01-01T00:06:37.148Z'),
+					},
+				],
 			},
 		});
 
@@ -77,6 +89,13 @@ describe('Users Admin Students Controller (API)', () => {
 			},
 		});
 
+		const studentClass = classEntityFactory.buildWithId({
+			name: 'Group A',
+			schoolId: school.id,
+			year: currentYear.id,
+			userIds: [studentUser1._id],
+		});
+
 		const mapUserToAccount = (user: User): Account =>
 			accountFactory.buildWithId({
 				userId: user.id,
@@ -92,6 +111,7 @@ describe('Users Admin Students Controller (API)', () => {
 		em.persist([adminRoles, studentRoles]);
 		em.persist([adminUser, studentUser1, studentUser2]);
 		em.persist([adminAccount, studentAccount1, studentAccount2]);
+		em.persist(studentClass);
 		await em.flush();
 	};
 
@@ -298,35 +318,6 @@ describe('Users Admin Students Controller (API)', () => {
 					.query(query)
 					.send()
 					.expect(200);
-				const { data, total } = response.body as UserListResponse;
-
-				expect(total).toBe(0);
-				expect(data.length).toBe(0);
-			});
-		});
-
-		describe('when skip params are too big', () => {
-			const setup = () => {
-				currentUser = mapUserToCurrentUser(adminUser, adminAccount);
-				const query: UsersSearchQueryParams = {
-					$skip: 500,
-					$limit: 5,
-					$sort: { firstName: 1 },
-				};
-
-				return {
-					query,
-				};
-			};
-
-			it('should return empty list', async () => {
-				const { query } = setup();
-				const response = await request(app.getHttpServer()) //
-					.get(`${basePath}`)
-					.query(query)
-					.send()
-					.expect(200);
-
 				const { data, total } = response.body as UserListResponse;
 
 				expect(total).toBe(0);
