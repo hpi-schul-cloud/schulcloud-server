@@ -5,7 +5,7 @@ import { EntityId } from '@shared/domain/types';
 export interface CourseProps extends AuthorizableObject {
 	name: string;
 
-	description: string;
+	description?: string;
 
 	schoolId: EntityId;
 
