@@ -11,7 +11,7 @@ export class WebsocketErrorLoggable implements Loggable {
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			message: 'Websocket error',
+			message: 'Websocket error event',
 			type: 'WEBSOCKET_ERROR',
 			error: this.error,
 		};

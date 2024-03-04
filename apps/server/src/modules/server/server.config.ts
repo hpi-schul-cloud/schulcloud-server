@@ -117,7 +117,6 @@ const config: ServerConfig = {
 		'FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED'
 	) as boolean,
 	FEATURE_COURSE_SHARE: Configuration.get('FEATURE_COURSE_SHARE') as boolean,
-	FEATURE_COURSE_SHARE_NEW: Configuration.get('FEATURE_COURSE_SHARE_NEW') as boolean,
 	FEATURE_LESSON_SHARE: Configuration.get('FEATURE_LESSON_SHARE') as boolean,
 	FEATURE_TASK_SHARE: Configuration.get('FEATURE_TASK_SHARE') as boolean,
 	FEATURE_LOGIN_LINK_ENABLED: Configuration.get('FEATURE_LOGIN_LINK_ENABLED') as boolean,
