@@ -24,13 +24,13 @@
 <title>cluster_LegacySchoolModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 2876,-268 2876,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_LegacySchoolModule_exports</title>
-<polygon fill="none" stroke="black" points="929,-208 929,-260 1823,-260 1823,-208 929,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_LegacySchoolModule_providers</title>
 <polygon fill="none" stroke="black" points="254,-78 254,-130 2868,-130 2868,-78 254,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_LegacySchoolModule_exports</title>
+<polygon fill="none" stroke="black" points="929,-208 929,-260 1823,-260 1823,-208 929,-208"/>
 </g>
 <g id="clust3" class="cluster">
 <title>cluster_LegacySchoolModule_imports</title>
