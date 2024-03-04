@@ -21,7 +21,7 @@ export class CourseCopyService {
 	constructor(
 		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
 		private readonly courseRepo: CourseRepo,
-		private readonly boardRepo: LegacyBoardRepo,
+		private readonly legacyBoardRepo: LegacyBoardRepo,
 		private readonly roomsService: RoomsService,
 		private readonly boardCopyService: BoardCopyService,
 		private readonly copyHelperService: CopyHelperService,
@@ -42,8 +42,8 @@ export class CourseCopyService {
 
 		// fetch original course and board
 		const originalCourse = await this.courseRepo.findById(courseId);
-		let originalBoard = await this.boardRepo.findByCourseId(courseId);
-		originalBoard = await this.roomsService.updateBoard(originalBoard, courseId, userId);
+		let originalBoard = await this.legacyBoardRepo.findByCourseId(courseId);
+		originalBoard = await this.roomsService.updateLegacyBoard(originalBoard, courseId, userId);
 
 		// handle potential name conflict
 		const [existingCourses] = await this.courseRepo.findAllByUserId(userId);

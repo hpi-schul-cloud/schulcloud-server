@@ -4,10 +4,10 @@ import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { LegacyBoard, ColumnBoardTarget } from '@shared/domain/entity';
+import { LegacyBoard, ColumnBoardNode } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '@shared/repo';
-import { ColumnBoardTargetService } from './column-board-target.service';
+import { BoardNodeRepo } from '@modules/board/repo';
 
 @Injectable()
 export class RoomsService {
@@ -16,16 +16,16 @@ export class RoomsService {
 		private readonly lessonService: LessonService,
 		private readonly boardRepo: LegacyBoardRepo,
 		private readonly columnBoardService: ColumnBoardService,
-		private readonly columnBoardTargetService: ColumnBoardTargetService
+		private readonly boardNodeRepo: BoardNodeRepo // private readonly columnBoardTargetService: ColumnBoardTargetService
 	) {}
 
-	async updateBoard(board: LegacyBoard, roomId: EntityId, userId: EntityId): Promise<LegacyBoard> {
+	async updateLegacyBoard(board: LegacyBoard, roomId: EntityId, userId: EntityId): Promise<LegacyBoard> {
 		const [courseLessons] = await this.lessonService.findByCourseIds([roomId]);
 		const [courseTasks] = await this.taskService.findBySingleParent(userId, roomId);
 
-		const courseColumnBoardTargets = await this.handleColumnBoardIntegration(roomId);
+		const columnBoards = await this.handleColumnBoardIntegration(roomId);
 
-		const boardElementTargets = [...courseLessons, ...courseTasks, ...courseColumnBoardTargets];
+		const boardElementTargets = [...courseLessons, ...courseTasks, ...columnBoards];
 
 		board.syncBoardElementReferences(boardElementTargets);
 
@@ -33,8 +33,8 @@ export class RoomsService {
 		return board;
 	}
 
-	private async handleColumnBoardIntegration(roomId: EntityId): Promise<ColumnBoardTarget[]> {
-		let courseColumnBoardTargets: ColumnBoardTarget[] = [];
+	private async handleColumnBoardIntegration(roomId: EntityId): Promise<ColumnBoardNode[]> {
+		let columnBoards: ColumnBoardNode[] = [];
 
 		if ((Configuration.get('FEATURE_COLUMN_BOARD_ENABLED') as boolean) === true) {
 			const courseReference = {
@@ -43,13 +43,16 @@ export class RoomsService {
 			};
 
 			const columnBoardIds = await this.columnBoardService.findIdsByExternalReference(courseReference);
+
 			if (columnBoardIds.length === 0) {
-				const columnBoard = await this.columnBoardService.createWelcomeColumnBoard(courseReference);
-				columnBoardIds.push(columnBoard.id);
+				await this.columnBoardService.createWelcomeColumnBoard(courseReference);
 			}
 
-			courseColumnBoardTargets = await this.columnBoardTargetService.findOrCreateTargets(columnBoardIds);
+			columnBoards = await Promise.all(
+				columnBoardIds.map(async (id) => this.boardNodeRepo.findById(id) as Promise<ColumnBoardNode>)
+			);
 		}
-		return courseColumnBoardTargets;
+
+		return columnBoards;
 	}
 }

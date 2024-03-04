@@ -5,7 +5,7 @@ import {
 	LegacyBoard,
 	BoardElement,
 	BoardElementType,
-	ColumnBoardTarget,
+	ColumnBoardNode,
 	ColumnboardBoardElement,
 	Course,
 	LessonEntity,
@@ -157,14 +157,14 @@ class DtoCreator {
 
 	private mapColumnBoardElement(element: BoardElement): RoomBoardElementDTO {
 		const type = RoomBoardElementTypes.COLUMN_BOARD;
-		const columnBoardTarget = element.target as ColumnBoardTarget;
+		const columnBoardNode = element.target as ColumnBoardNode;
 		const content: ColumnBoardMetaData = {
-			id: columnBoardTarget.id,
-			columnBoardId: columnBoardTarget.columnBoardId,
-			title: columnBoardTarget.title,
-			createdAt: columnBoardTarget.createdAt,
-			updatedAt: columnBoardTarget.updatedAt,
-			published: columnBoardTarget.published,
+			id: columnBoardNode.id,
+			columnBoardId: columnBoardNode.id,
+			title: columnBoardNode.title || '',
+			createdAt: columnBoardNode.createdAt,
+			updatedAt: columnBoardNode.updatedAt,
+			published: columnBoardNode.isVisible,
 		};
 
 		return { type, content };

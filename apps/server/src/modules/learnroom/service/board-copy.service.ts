@@ -155,10 +155,12 @@ export class BoardCopyService {
 				references.push(lessonElement);
 			}
 			if (status.copyEntity instanceof ColumnBoard) {
+				/* TODO
 				const columnBoardElement = new ColumnboardBoardElement({
 					target: new ColumnBoardTarget({ columnBoardId: status.copyEntity.id, title: status.copyEntity.title }),
 				});
 				references.push(columnBoardElement);
+				*/
 			}
 		});
 		return references;

@@ -33,7 +33,6 @@ export class RoomsController {
 		@Param() urlParams: RoomUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<SingleColumnBoardResponse> {
-		// TODO rename Board (including entity) to legacyBoard or RoomBoard or whatever
 		const board = await this.roomsUc.getBoard(urlParams.roomId, currentUser.userId);
 		const mapped = this.mapper.mapToResponse(board);
 		return mapped;

@@ -3,9 +3,10 @@ import { EntityId } from '../../types';
 import { BaseEntityWithTimestamps } from '../base.entity';
 import { LessonEntity } from '../lesson.entity';
 import { Task } from '../task.entity';
-import { ColumnBoardTarget } from './column-board-target.entity';
+// import { ColumnBoardTarget } from './column-board-target.entity';
+import { ColumnBoardNode } from '../boardnode';
 
-export type BoardElementReference = Task | LessonEntity | ColumnBoardTarget;
+export type BoardElementReference = Task | LessonEntity | ColumnBoardNode;
 
 export enum BoardElementType {
 	'Task' = 'task',

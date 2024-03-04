@@ -94,7 +94,7 @@ describe('rooms usecase', () => {
 			const syncBoardElementReferencesSpy = jest.spyOn(board, 'syncBoardElementReferences');
 			const mapperSpy = factory.createDTO.mockReturnValue(roomBoardDTO);
 			const saveSpy = legacyBoardRepo.save.mockResolvedValue();
-			roomsService.updateBoard.mockResolvedValue(board);
+			roomsService.updateLegacyBoard.mockResolvedValue(board);
 
 			return {
 				user,
@@ -146,7 +146,7 @@ describe('rooms usecase', () => {
 		it('should ensure course has uptodate board', async () => {
 			const { board, room, user } = setup();
 			await uc.getBoard(room.id, user.id);
-			expect(roomsService.updateBoard).toHaveBeenCalledWith(board, room.id, user.id);
+			expect(roomsService.updateLegacyBoard).toHaveBeenCalledWith(board, room.id, user.id);
 		});
 	});
 

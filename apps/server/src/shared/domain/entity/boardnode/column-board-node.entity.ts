@@ -1,4 +1,4 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import {
 	AnyBoardDo,
 	BoardExternalReference,
@@ -8,9 +8,10 @@ import { ObjectId } from 'bson';
 import { BoardNode, BoardNodeProps } from './boardnode.entity';
 import { BoardDoBuilder } from './types';
 import { BoardNodeType } from './types/board-node-type';
+import { LearnroomElement } from '../../interface';
 
 @Entity({ discriminatorValue: BoardNodeType.COLUMN_BOARD })
-export class ColumnBoardNode extends BoardNode {
+export class ColumnBoardNode extends BoardNode implements LearnroomElement {
 	constructor(props: ColumnBoardNodeProps) {
 		super(props);
 		this.type = BoardNodeType.COLUMN_BOARD;
@@ -40,6 +41,18 @@ export class ColumnBoardNode extends BoardNode {
 	useDoBuilder(builder: BoardDoBuilder): AnyBoardDo {
 		const domainObject = builder.buildColumnBoard(this);
 		return domainObject;
+	}
+
+	publish(): void {
+		this.isVisible = true;
+	}
+
+	unpublish(): void {
+		this.isVisible = false;
+	}
+
+	get published(): boolean {
+		return this.isVisible;
 	}
 }
 

@@ -8,9 +8,9 @@ import { LessonEntity } from '../lesson.entity';
 import { Task } from '../task.entity';
 import { BoardElement, BoardElementReference } from './boardelement.entity';
 import { ColumnboardBoardElement } from './column-board-boardelement';
-import { ColumnBoardTarget } from './column-board-target.entity';
 import { LessonBoardElement } from './lesson-boardelement.entity';
 import { TaskBoardElement } from './task-boardelement.entity';
+import { ColumnBoardNode } from '../boardnode';
 
 export type BoardProps = {
 	references: BoardElement[];
@@ -98,7 +98,7 @@ export class LegacyBoard extends BaseEntityWithTimestamps {
 		if (boardElementTarget instanceof LessonEntity) {
 			return new LessonBoardElement({ target: boardElementTarget });
 		}
-		if (boardElementTarget instanceof ColumnBoardTarget) {
+		if (boardElementTarget instanceof ColumnBoardNode) {
 			return new ColumnboardBoardElement({ target: boardElementTarget });
 		}
 		throw new Error('not a valid boardElementReference');

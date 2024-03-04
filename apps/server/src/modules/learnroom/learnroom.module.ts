@@ -17,7 +17,6 @@ import {
 import { LoggerModule } from '@src/core/logger';
 import {
 	BoardCopyService,
-	ColumnBoardTargetService,
 	CommonCartridgeExportService,
 	CommonCartridgeImportService,
 	CourseCopyService,
@@ -54,7 +53,6 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		CourseService,
 		CommonCartridgeExportService,
 		CommonCartridgeImportService,
-		ColumnBoardTargetService,
 		CourseGroupService,
 		CourseGroupRepo,
 		DashboardService,

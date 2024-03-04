@@ -24,7 +24,7 @@ export class RoomsUc {
 		const legacyBoard = await this.legacyBoardRepo.findByCourseId(roomId);
 
 		// TODO this must be rewritten. Board auto-creation must be treated separately
-		await this.roomsService.updateBoard(legacyBoard, roomId, userId);
+		await this.roomsService.updateLegacyBoard(legacyBoard, roomId, userId);
 
 		const roomBoardDTO = this.factory.createDTO({ room: course, board: legacyBoard, user });
 		return roomBoardDTO;
