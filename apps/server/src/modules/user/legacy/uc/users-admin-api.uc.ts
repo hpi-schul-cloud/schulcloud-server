@@ -9,7 +9,7 @@ import {
 	AuthorizationService,
 	ForbiddenLoggableException,
 } from '../../../authorization';
-import { UsersAdminContextEnum } from '../enum';
+import { RequestedRoleEnum } from '../enum';
 import { UserByIdParams, UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';
 import { UsersAdminService } from '../service';
 
@@ -23,7 +23,7 @@ export class UsersAdminApiUc {
 	) {}
 
 	public async findUsersByParams(
-		context: UsersAdminContextEnum,
+		context: RequestedRoleEnum,
 		currentUserId: string,
 		params: UsersSearchQueryParams
 	): Promise<UserListResponse> {
@@ -38,7 +38,7 @@ export class UsersAdminApiUc {
 	}
 
 	public async findUserById(
-		context: UsersAdminContextEnum,
+		context: RequestedRoleEnum,
 		currentUserId: string,
 		params: UserByIdParams
 	): Promise<UserResponse> {
@@ -51,7 +51,7 @@ export class UsersAdminApiUc {
 		return this.adminUsersService.getUserWithNestedData(contextRole?.id, school.id, currentSchoolYearId, params.id);
 	}
 
-	private validateAccessToContext(context: UsersAdminContextEnum, currentUser: User) {
+	private validateAccessToContext(context: RequestedRoleEnum, currentUser: User) {
 		const permission = this.getPermissionForContext(context);
 		try {
 			this.authorizationService.checkAllPermissions(currentUser, [permission]);
@@ -62,16 +62,16 @@ export class UsersAdminApiUc {
 		}
 	}
 
-	private getPermissionForContext(context: UsersAdminContextEnum) {
-		if (context === UsersAdminContextEnum.TEACHERS) {
+	private getPermissionForContext(context: RequestedRoleEnum) {
+		if (context === RequestedRoleEnum.TEACHERS) {
 			return Permission.TEACHER_LIST;
 		}
 
 		return Permission.STUDENT_LIST;
 	}
 
-	private getRoleForContext(context: UsersAdminContextEnum) {
-		if (context === UsersAdminContextEnum.TEACHERS) {
+	private getRoleForContext(context: RequestedRoleEnum) {
+		if (context === RequestedRoleEnum.TEACHERS) {
 			return this.roleService.findByName(RoleName.TEACHER);
 		}
 

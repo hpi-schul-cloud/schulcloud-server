@@ -2,7 +2,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import { EntityNotFoundError, ForbiddenOperationError, ValidationError } from '@shared/common';
 import { Authenticate, CurrentUser, ICurrentUser } from '../../../authentication';
-import { UsersAdminContextEnum } from '../enum';
+import { RequestedRoleEnum } from '../enum';
 import { UserByIdParams, UserListResponse, UserResponse, UsersSearchQueryParams } from './dto';
 import { UsersAdminApiUc } from '../uc';
 
@@ -23,7 +23,7 @@ export class AdminApiStudentsController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() params: UsersSearchQueryParams
 	): Promise<UserListResponse> {
-		return this.uc.findUsersByParams(UsersAdminContextEnum.STUDENTS, currentUser.userId, params);
+		return this.uc.findUsersByParams(RequestedRoleEnum.STUDENTS, currentUser.userId, params);
 	}
 
 	@Get(':id')
@@ -36,6 +36,6 @@ export class AdminApiStudentsController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: UserByIdParams
 	): Promise<UserResponse> {
-		return this.uc.findUserById(UsersAdminContextEnum.STUDENTS, currentUser.userId, params);
+		return this.uc.findUserById(RequestedRoleEnum.STUDENTS, currentUser.userId, params);
 	}
 }

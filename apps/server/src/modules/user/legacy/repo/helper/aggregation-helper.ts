@@ -1,20 +1,16 @@
+/* eslint-disable */
 import { ObjectId } from 'bson';
 import { UserSearchQuery } from '../../interfaces';
 
 const convertToIn = (value) => {
 	let list: any[] = [];
 	if (Array.isArray(value)) {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		list = value;
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 	} else if (Array.isArray(value.$in)) {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 		list = value.$in;
 	} else if (typeof value === 'string') {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		list = [value];
 	}
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 	return list;
 };
 
@@ -25,7 +21,6 @@ const convertToIn = (value) => {
  * @param {*} consentStatus - Array, String or Object with a $in
  */
 const stageBaseFilter = (aggregation, attr, value) => {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	aggregation.push({
 		$match: {
 			[attr]: {
@@ -40,9 +35,7 @@ const stageBaseFilter = (aggregation, attr, value) => {
  * @param {Array} select
  */
 const convertSelect = (select) =>
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-return
 	select.reduce((acc, curr) => {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 		return { ...acc, [curr]: 1 };
 	}, {});
 
@@ -55,7 +48,6 @@ const getParentReducer = (type) => {
 		$reduce: {
 			input: '$consent.parentConsents',
 			initialValue: false,
-			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 			in: { $or: ['$$value', `$$this.${type}`] },
 		},
 	};
@@ -72,7 +64,6 @@ const getParentReducer = (type) => {
  * @param {*} aggregation - current aggregation array
  */
 const stageAddConsentSortParam = (aggregation) => {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	aggregation.push({
 		$addFields: {
 			consentSortParam: {
@@ -168,15 +159,11 @@ const getConsentStatusSwitch = () => {
  * @param {Array} select
  */
 const stageAddSelectProjectWithConsentCreate = (aggregation, select) => {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const project = convertSelect(select);
 
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 	project.consentStatus = getConsentStatusSwitch();
 
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	aggregation.push({
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		$project: project,
 	});
 };
@@ -185,15 +172,12 @@ const stageAddSelectProjectWithConsentCreate = (aggregation, select) => {
  * Only select fields which are in select
  */
 const stageSimpleProject = (aggregation, select) => {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	aggregation.push({
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		$project: convertSelect(select),
 	});
 };
 
 const stageLookupClasses = (aggregation, schoolId: ObjectId, schoolYearId: ObjectId | unknown) => {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	aggregation.push({
 		$lookup: {
 			from: 'classes',
@@ -250,7 +234,6 @@ const stageLookupClasses = (aggregation, schoolId: ObjectId, schoolYearId: Objec
 			as: 'classes',
 		},
 	});
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	aggregation.push({
 		$addFields: {
 			classesSort: {
@@ -278,25 +261,19 @@ const stageSort = (aggregation, sort) => {
 	const mSort = {};
 	for (const k in sort) {
 		if (k === 'searchQuery') {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
 			mSort.score = { $meta: 'textScore' };
 		} else if (k === 'consentStatus') {
-			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 			// @ts-ignore
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,
 			mSort.consentSortParam = Number(sort[k]);
 			stageAddConsentSortParam(aggregation);
 		} else if (k === 'classes') {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			const order = Number(sort[k]);
 			mSort['classesSort.gradeLevel'] = order;
 			mSort['classesSort.name'] = order;
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		} else if ({}.hasOwnProperty.call(sort, k)) mSort[k] = Number(sort[k]);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	aggregation.push({
 		$sort: mSort,
 	});
@@ -317,16 +294,13 @@ const stageSort = (aggregation, sort) => {
  * @param {Int} skip
  */
 const stageFormatWithTotal = (aggregation, limit, skip) => {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	aggregation.push({
 		$facet: {
 			data: [
 				{
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 					$skip: skip,
 				},
 				{
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 					$limit: limit,
 				},
 			],
@@ -338,7 +312,6 @@ const stageFormatWithTotal = (aggregation, limit, skip) => {
 		},
 	});
 
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	aggregation.push({
 		$project: {
 			total: {
@@ -352,12 +325,9 @@ const stageFormatWithTotal = (aggregation, limit, skip) => {
 		},
 	});
 
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	aggregation.push({
 		$addFields: {
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			limit,
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			skip,
 		},
 	});
@@ -370,9 +340,7 @@ const stageFormatWithTotal = (aggregation, limit, skip) => {
  * @param {Number} amount
  */
 const stageFilterSearch = (aggregation, amount) => {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	aggregation.push({ $addFields: { score: { $meta: 'textScore' } } });
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	aggregation.push({ $match: { score: { $gte: amount } } });
 };
 
@@ -398,7 +366,6 @@ export const createMultiDocumentAggregation = ({
 		match._id = new ObjectId(match._id);
 	} else if (Array.isArray(match._id)) {
 		// build "$in" Query
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		const convertToObjectIds = (inArray: any[]) => inArray.map((id) => new ObjectId(id));
 		match._id = { $in: convertToObjectIds(convertToIn(match._id)) };
 	}
@@ -408,7 +375,6 @@ export const createMultiDocumentAggregation = ({
 
 	if (searchQuery) {
 		// to sort by this value, add 'searchQuery' to sort value
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		match.$text = {
 			$search: searchQuery,
@@ -417,7 +383,6 @@ export const createMultiDocumentAggregation = ({
 	}
 
 	if (match) {
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		aggregation.push({
 			$match: match,
@@ -447,7 +412,6 @@ export const createMultiDocumentAggregation = ({
 
 	stageSimpleProject(aggregation, select);
 
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 	if (!match?._id || Array.isArray(match?._id?.$in)) {
 		stageFormatWithTotal(aggregation, limit, skip);
 	}
