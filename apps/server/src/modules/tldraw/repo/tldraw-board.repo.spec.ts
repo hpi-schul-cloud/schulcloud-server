@@ -79,7 +79,7 @@ describe('TldrawBoardRepo', () => {
 	describe('getYDocFromMdb', () => {
 		describe('when taking doc data from db', () => {
 			const setup = () => {
-				const storeGetYDocSpy = jest.spyOn(repo.mdb, 'getYDoc').mockResolvedValueOnce(new WsSharedDocDo('TEST'));
+				const storeGetYDocSpy = jest.spyOn(repo.mdb, 'getDocument').mockResolvedValueOnce(new WsSharedDocDo('TEST'));
 
 				return {
 					storeGetYDocSpy,
@@ -89,7 +89,7 @@ describe('TldrawBoardRepo', () => {
 			it('should return ydoc', async () => {
 				const { storeGetYDocSpy } = setup();
 
-				const result = await repo.getYDocFromMdb('test');
+				const result = await repo.getDocumentFromDb('test');
 
 				expect(result).toBeInstanceOf(Doc);
 				storeGetYDocSpy.mockRestore();

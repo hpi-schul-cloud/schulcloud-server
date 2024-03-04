@@ -1,9 +1,10 @@
 import { RedisPublishErrorLoggable } from './redis-publish-error.loggable';
+import { UpdateType } from '../types';
 
 describe('RedisPublishErrorLoggable', () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const type = 'document';
+			const type = UpdateType.DOCUMENT;
 			const error = new Error('test');
 			const loggable = new RedisPublishErrorLoggable(type, error);
 
