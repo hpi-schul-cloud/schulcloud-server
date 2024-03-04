@@ -50,12 +50,12 @@ export class FilesStorageClientAdapterService implements DeletionService, IEvent
 		return fileInfos;
 	}
 
-	async deleteOneFile(fileRecordId: EntityId): Promise<FileDto> {
-		const response = await this.fileStorageMQProducer.deleteOneFile(fileRecordId);
+	async deleteFiles(fileRecordIds: EntityId[]): Promise<FileDto[]> {
+		const response = await this.fileStorageMQProducer.deleteFiles(fileRecordIds);
 
-		const fileInfo = FilesStorageClientMapper.mapFileRecordResponseToFileDto(response);
+		const fileInfos = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response);
 
-		return fileInfo;
+		return fileInfos;
 	}
 
 	async deleteUserData(creatorId: EntityId): Promise<DomainDeletionReport> {
