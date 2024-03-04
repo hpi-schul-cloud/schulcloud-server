@@ -12,6 +12,18 @@ import {
 	TeacherPermission,
 } from '../../../domain';
 
+export class SchoolLogo {
+	@ApiPropertyOptional()
+	@IsString()
+	@IsOptional()
+	dataUrl?: string;
+
+	@ApiPropertyOptional()
+	@IsString()
+	@IsOptional()
+	name?: string;
+}
+
 class TeacherPermissionParams implements TeacherPermission {
 	@ApiPropertyOptional()
 	@IsBoolean()
@@ -48,15 +60,10 @@ export class SchoolUpdateBodyParams implements SchoolUpdateBody {
 	@ApiPropertyOptional()
 	officialSchoolNumber?: string;
 
-	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional()
-	logo_dataUrl?: string;
-
-	@IsString()
-	@IsOptional()
-	@ApiPropertyOptional()
-	logo_name?: string;
+	@ValidateNested()
+	logo?: SchoolLogo;
 
 	@IsEnum(FileStorageType)
 	@IsOptional()

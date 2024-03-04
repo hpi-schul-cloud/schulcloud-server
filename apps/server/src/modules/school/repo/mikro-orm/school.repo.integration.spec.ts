@@ -280,8 +280,10 @@ describe('SchoolMikroOrmRepo', () => {
 					inMaintenanceSince: new Date(),
 					inUserMigration: true,
 					purpose: SchoolPurpose.EXPERT,
-					logo_dataUrl: 'new logo_dataUrl',
-					logo_name: 'new logo_name',
+					logo: {
+						dataUrl: 'new logo_dataUrl',
+						name: 'new logo_name',
+					},
 					fileStorageType: FileStorageType.AWS_S3,
 					language: 'new language',
 					timezone: 'new timezone',

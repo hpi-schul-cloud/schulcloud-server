@@ -10,8 +10,7 @@ export class SchoolFactory {
 		const {
 			name,
 			officialSchoolNumber,
-			logo_dataUrl,
-			logo_name,
+			logo,
 			fileStorageType,
 			language,
 			features,
@@ -28,8 +27,7 @@ export class SchoolFactory {
 
 		props.name = name ?? props.name;
 		props.officialSchoolNumber = officialSchoolNumber ?? props.officialSchoolNumber;
-		props.logo_dataUrl = logo_dataUrl ?? props.logo_dataUrl;
-		props.logo_name = logo_name ?? props.logo_name;
+		props.logo = logo ?? props.logo;
 		props.fileStorageType = fileStorageType ?? props.fileStorageType;
 		props.language = language ?? props.language;
 		props.features = features ?? props.features;

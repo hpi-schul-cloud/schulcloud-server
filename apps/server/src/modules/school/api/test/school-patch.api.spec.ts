@@ -297,8 +297,10 @@ describe('School Controller (API)', () => {
 							const newParams = {
 								name: 'new name',
 								officialSchoolNumber: 'new-school-number',
-								logo_dataUrl: 'new logo data url',
-								logo_name: 'new logo name',
+								logo: {
+									dataUrl: 'new logo data url',
+									name: 'new logo name',
+								},
 								fileStorageType: 'awsS3',
 								language: 'en',
 								features: ['rocketChat'],
@@ -351,8 +353,7 @@ describe('School Controller (API)', () => {
 								systemIds: systems.map((system) => system.id),
 								language: newParams.language,
 								fileStorageType: newParams.fileStorageType,
-								logo_name: newParams.logo_name,
-								logo_dataUrl: newParams.logo_dataUrl,
+								logo: newParams.logo,
 								officialSchoolNumber: newParams.officialSchoolNumber,
 								instanceFeatures: ['isTeamCreationByStudentsEnabled'],
 							};
@@ -369,7 +370,11 @@ describe('School Controller (API)', () => {
 							expect(response.body).toEqual(expectedResponse);
 
 							const updatedSchool = await em.findOne(SchoolEntity, { id: school.id });
-							expect(updatedSchool).toEqual(expect.objectContaining(newParams));
+							const { logo, ...expectedParams } = newParams;
+
+							expect(updatedSchool).toEqual(
+								expect.objectContaining({ ...expectedParams, logo_name: logo.name, logo_dataUrl: logo.dataUrl })
+							);
 						});
 
 						it('should not update school', async () => {

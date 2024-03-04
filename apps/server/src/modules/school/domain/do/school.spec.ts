@@ -279,8 +279,7 @@ describe('School', () => {
 					id: new ObjectId().toHexString(),
 					name: 'abc',
 					language: 'de',
-					logo_dataUrl: 'adsbasdh',
-					logo_name: 'logoA',
+					logo: { dataUrl: 'adsbasdh', name: 'logoA' },
 				};
 
 				const school = schoolFactory.build(expectedResult);

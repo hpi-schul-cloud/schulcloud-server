@@ -6,12 +6,16 @@ import { County } from './county';
 import { FederalState } from './federal-state';
 import { SchoolYear } from './school-year';
 
+interface SchoolLogo {
+	dataUrl?: string;
+	name?: string;
+}
+
 interface SchoolInfo {
 	id: EntityId;
 	name: string;
 	language?: string;
-	logo_dataUrl?: string;
-	logo_name?: string;
+	logo?: SchoolLogo;
 }
 
 export class School extends DomainObject<SchoolProps> {
@@ -22,8 +26,7 @@ export class School extends DomainObject<SchoolProps> {
 			id: this.props.id,
 			name: this.props.name,
 			language: this.props.language,
-			logo_dataUrl: this.props.logo_dataUrl,
-			logo_name: this.props.logo_name,
+			logo: this.props.logo,
 		};
 
 		return info;
@@ -110,14 +113,10 @@ export interface SchoolProps extends AuthorizableObject {
 	purpose?: SchoolPurpose;
 	features: SchoolFeature[];
 	systemIds?: EntityId[];
-	logo_dataUrl?: string;
-	logo_name?: string;
+	logo?: SchoolLogo;
 	fileStorageType?: FileStorageType;
 	language?: string;
 	timezone?: string;
 	permissions?: SchoolPermissions;
-	// The enableStudentTeamCreation property is for compatibility with the existing data.
-	// It can't be mapped to a feature straight-forwardly in the repo,
-	// because the config value STUDENT_TEAM_CREATION has to be taken into account.
 	enableStudentTeamCreation?: boolean;
 }
