@@ -155,7 +155,7 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#getYDocFromMdb" >getYDocFromMdb</a>
+                                <a href="#getDocumentFromDb" >getDocumentFromDb</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -366,19 +366,19 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getYDocFromMdb"></a>
+                    <a name="getDocumentFromDb"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>getYDocFromMdb</b></span>
-                        <a href="#getYDocFromMdb"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getDocumentFromDb</b></span>
+                        <a href="#getDocumentFromDb"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getYDocFromMdb(docName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>getDocumentFromDb(docName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -541,8 +541,8 @@ export class TldrawBoardRepo {
 		await this.mdb.createIndex();
 	}
 
-	public async getYDocFromMdb(docName: string): Promise&lt;WsSharedDocDo&gt; {
-		const yDoc &#x3D; await this.mdb.getYDoc(docName);
+	public async getDocumentFromDb(docName: string): Promise&lt;WsSharedDocDo&gt; {
+		const yDoc &#x3D; await this.mdb.getDocument(docName);
 		return yDoc;
 	}
 

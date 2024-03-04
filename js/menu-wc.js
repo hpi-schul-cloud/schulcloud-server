@@ -6115,10 +6115,10 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/VisibilitySettingsResponse.html" data-type="entity-link" >VisibilitySettingsResponse</a>
                             </li>
                             <li class="link">
-                                <a href="classes/WebsocketCloseErrorLoggable.html" data-type="entity-link" >WebsocketCloseErrorLoggable</a>
+                                <a href="classes/WebsocketErrorLoggable.html" data-type="entity-link" >WebsocketErrorLoggable</a>
                             </li>
                             <li class="link">
-                                <a href="classes/WebsocketErrorLoggable.html" data-type="entity-link" >WebsocketErrorLoggable</a>
+                                <a href="classes/WebsocketInitErrorLoggable.html" data-type="entity-link" >WebsocketInitErrorLoggable</a>
                             </li>
                             <li class="link">
                                 <a href="classes/WebsocketMessageErrorLoggable.html" data-type="entity-link" >WebsocketMessageErrorLoggable</a>

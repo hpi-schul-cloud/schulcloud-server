@@ -377,7 +377,7 @@
                             <a href="#ProvisioningOptionsType" title="apps/server/src/modules/legacy-school/domain/provisioning-options-type.ts" ><b>ProvisioningOptionsType</b>&nbsp;&nbsp;&nbsp;(apps/.../provisioning-options-type.ts)</a>
                         </li>
                         <li>
-                            <a href="#RedisConnectionTypeEnum" title="apps/server/src/modules/tldraw/types/redis-connection-type.enum.ts" ><b>RedisConnectionTypeEnum</b>&nbsp;&nbsp;&nbsp;(apps/.../redis-connection-type.enum.ts)</a>
+                            <a href="#RedisConnectionTypeEnum" title="apps/server/src/modules/tldraw/types/redis-connection-type-enum.ts" ><b>RedisConnectionTypeEnum</b>&nbsp;&nbsp;&nbsp;(apps/.../redis-connection-type-enum.ts)</a>
                         </li>
                         <li>
                             <a href="#RoleName" title="apps/server/src/shared/domain/interface/rolename.enum.ts" ><b>RoleName</b>&nbsp;&nbsp;&nbsp;(apps/.../rolename.enum.ts)</a>
@@ -470,7 +470,10 @@
                             <a href="#ToolLaunchDataType" title="apps/server/src/modules/tool/tool-launch/types/tool-launch-data-type.ts" ><b>ToolLaunchDataType</b>&nbsp;&nbsp;&nbsp;(apps/.../tool-launch-data-type.ts)</a>
                         </li>
                         <li>
-                            <a href="#UpdateOrigin" title="apps/server/src/modules/tldraw/types/update-origin-enum.ts" ><b>UpdateOrigin</b>&nbsp;&nbsp;&nbsp;(apps/.../update-origin-enum.ts)</a>
+                            <a href="#UpdateOrigin" title="apps/server/src/modules/tldraw/types/update-enums.ts" ><b>UpdateOrigin</b>&nbsp;&nbsp;&nbsp;(apps/.../update-enums.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#UpdateType" title="apps/server/src/modules/tldraw/types/update-enums.ts" ><b>UpdateType</b>&nbsp;&nbsp;&nbsp;(apps/.../update-enums.ts)</a>
                         </li>
                         <li>
                             <a href="#UserRole" title="apps/server/src/modules/user-import/controller/dto/user-role.ts" ><b>UserRole</b>&nbsp;&nbsp;&nbsp;(apps/.../user-role.ts)</a>
@@ -491,10 +494,10 @@
                             <a href="#WebSocketReadyStateEnum" title="apps/server/src/shared/testing/web-socket-ready-state-enum.ts" ><b>WebSocketReadyStateEnum</b>&nbsp;&nbsp;&nbsp;(apps/.../web-socket-ready-state-enum.ts)</a>
                         </li>
                         <li>
-                            <a href="#WsCloseCodeEnum" title="apps/server/src/modules/tldraw/types/ws-close-enum.ts" ><b>WsCloseCodeEnum</b>&nbsp;&nbsp;&nbsp;(apps/.../ws-close-enum.ts)</a>
+                            <a href="#WsCloseCode" title="apps/server/src/modules/tldraw/types/ws-close-enum.ts" ><b>WsCloseCode</b>&nbsp;&nbsp;&nbsp;(apps/.../ws-close-enum.ts)</a>
                         </li>
                         <li>
-                            <a href="#WsCloseMessageEnum" title="apps/server/src/modules/tldraw/types/ws-close-enum.ts" ><b>WsCloseMessageEnum</b>&nbsp;&nbsp;&nbsp;(apps/.../ws-close-enum.ts)</a>
+                            <a href="#WsCloseMessage" title="apps/server/src/modules/tldraw/types/ws-close-enum.ts" ><b>WsCloseMessage</b>&nbsp;&nbsp;&nbsp;(apps/.../ws-close-enum.ts)</a>
                         </li>
                         <li>
                             <a href="#WSMessageType" title="apps/server/src/modules/tldraw/types/connection-enum.ts" ><b>WSMessageType</b>&nbsp;&nbsp;&nbsp;(apps/.../connection-enum.ts)</a>
@@ -6749,7 +6752,7 @@
             </tbody>
         </table>
 </section>
-    <h3>apps/server/src/modules/tldraw/types/redis-connection-type.enum.ts</h3>
+    <h3>apps/server/src/modules/tldraw/types/redis-connection-type-enum.ts</h3>
     <section data-compodoc="block-enums">
         <table class="table table-sm table-bordered">
             <tbody>
@@ -8443,7 +8446,7 @@
             </tbody>
         </table>
 </section>
-    <h3>apps/server/src/modules/tldraw/types/update-origin-enum.ts</h3>
+    <h3>apps/server/src/modules/tldraw/types/update-enums.ts</h3>
     <section data-compodoc="block-enums">
         <table class="table table-sm table-bordered">
             <tbody>
@@ -8461,6 +8464,36 @@
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>redis</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="UpdateType"></a>
+                        <span class="name "><b>UpdateType</b><a href="#UpdateType"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;AWARENESS
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>awareness</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;DOCUMENT
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>document</code>
                             </td>
                         </tr>
             </tbody>
@@ -8662,13 +8695,13 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <a name="WsCloseCodeEnum"></a>
-                        <span class="name "><b>WsCloseCodeEnum</b><a href="#WsCloseCodeEnum"><span class="icon ion-ios-link"></span></a></span>
+                        <a name="WsCloseCode"></a>
+                        <span class="name "><b>WsCloseCode</b><a href="#WsCloseCode"><span class="icon ion-ios-link"></span></a></span>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                &nbsp;WS_CLIENT_BAD_REQUEST_CODE
+                                &nbsp;BAD_REQUEST
                             </td>
                         </tr>
                         <tr>
@@ -8678,7 +8711,7 @@
                         </tr>
                         <tr>
                             <td class="col-md-4">
-                                &nbsp;WS_CLIENT_UNAUTHORISED_CONNECTION_CODE
+                                &nbsp;UNAUTHORIZED
                             </td>
                         </tr>
                         <tr>
@@ -8688,7 +8721,7 @@
                         </tr>
                         <tr>
                             <td class="col-md-4">
-                                &nbsp;WS_CLIENT_NOT_FOUND_CODE
+                                &nbsp;NOT_FOUND
                             </td>
                         </tr>
                         <tr>
@@ -8698,7 +8731,7 @@
                         </tr>
                         <tr>
                             <td class="col-md-4">
-                                &nbsp;WS_CLIENT_FAILED_CONNECTION_CODE
+                                &nbsp;INTERNAL_SERVER_ERROR
                             </td>
                         </tr>
                         <tr>
@@ -8712,33 +8745,43 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-                        <a name="WsCloseMessageEnum"></a>
-                        <span class="name "><b>WsCloseMessageEnum</b><a href="#WsCloseMessageEnum"><span class="icon ion-ios-link"></span></a></span>
+                        <a name="WsCloseMessage"></a>
+                        <span class="name "><b>WsCloseMessage</b><a href="#WsCloseMessage"><span class="icon ion-ios-link"></span></a></span>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                &nbsp;WS_CLIENT_BAD_REQUEST_MESSAGE
+                                &nbsp;FEATURE_DISABLED
                             </td>
                         </tr>
                         <tr>
                             <td class="col-md-4">
-                                <i>Value : </i><code>Document name is mandatory in url or Tldraw Tool is turned off.</code>
+                                <i>Value : </i><code>Tldraw feature is disabled.</code>
                             </td>
                         </tr>
                         <tr>
                             <td class="col-md-4">
-                                &nbsp;WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE
+                                &nbsp;BAD_REQUEST
                             </td>
                         </tr>
                         <tr>
                             <td class="col-md-4">
-                                <i>Value : </i><code>Unauthorised connection - you don&#x27;t have permission to this drawing.</code>
+                                <i>Value : </i><code>Room name param not found in url.</code>
                             </td>
                         </tr>
                         <tr>
                             <td class="col-md-4">
-                                &nbsp;WS_CLIENT_NOT_FOUND_MESSAGE
+                                &nbsp;UNAUTHORIZED
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>You don&#x27;t have permission to this drawing.</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;NOT_FOUND
                             </td>
                         </tr>
                         <tr>
@@ -8748,12 +8791,12 @@
                         </tr>
                         <tr>
                             <td class="col-md-4">
-                                &nbsp;WS_CLIENT_FAILED_CONNECTION_MESSAGE
+                                &nbsp;INTERNAL_SERVER_ERROR
                             </td>
                         </tr>
                         <tr>
                             <td class="col-md-4">
-                                <i>Value : </i><code>Unable to establish websocket connection. Try again later.</code>
+                                <i>Value : </i><code>Unable to establish websocket connection.</code>
                             </td>
                         </tr>
             </tbody>

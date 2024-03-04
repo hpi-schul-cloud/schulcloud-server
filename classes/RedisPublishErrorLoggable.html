@@ -189,12 +189,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(type: "document" | "awareness", err)</code>
+<code>constructor(type: <a href="../undefineds/UpdateType.html" target="_self">UpdateType</a>, err)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/tldraw/loggable/redis-publish-error.loggable.ts:4</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/tldraw/loggable/redis-publish-error.loggable.ts:5</a></div>
                             </td>
                         </tr>
 
@@ -215,7 +215,7 @@
                                                         <td>type</td>
                                                   
                                                         <td>
-                                                                    <code>&quot;document&quot; | &quot;awareness&quot;</code>
+                                                                        <code><a href="../miscellaneous/enumerations.html#UpdateType" target="_self" >UpdateType</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -268,7 +268,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/tldraw/loggable/redis-publish-error.loggable.ts:4</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/tldraw/loggable/redis-publish-error.loggable.ts:5</a></div>
                         </td>
                     </tr>
 
@@ -302,8 +302,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/loggable/redis-publish-error.loggable.ts:12</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="13"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/loggable/redis-publish-error.loggable.ts:13</a></div>
                         </td>
                     </tr>
 
@@ -330,11 +330,12 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
+import { UpdateType } from &#x27;../types&#x27;;
 
 export class RedisPublishErrorLoggable implements Loggable {
 	private error: Error | undefined;
 
-	constructor(private readonly type: &#x27;document&#x27; | &#x27;awareness&#x27;, private readonly err: unknown) {
+	constructor(private readonly type: UpdateType, private readonly err: unknown) {
 		if (err instanceof Error) {
 			this.error &#x3D; err;
 		}

@@ -133,22 +133,6 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
-                <tr>
-                    <td class="col-md-4">
-                        <h6><b>Properties</b></h6>
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <ul class="index-list">
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Readonly</span>
-                                <a href="#redisUri" >redisUri</a>
-                            </li>
-                        </ul>
-                    </td>
-                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -185,7 +169,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/tldraw/redis/tldraw-redis.factory.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/tldraw/redis/tldraw-redis.factory.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -262,8 +246,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/redis/tldraw-redis.factory.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="15"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/redis/tldraw-redis.factory.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -310,40 +294,6 @@
         </tbody>
     </table>
 </section>
-            <section data-compodoc="block-properties">
-    
-    <h3 id="inputs">
-        Properties
-    </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="redisUri"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Readonly</span>
-                        <span ><b>redisUri</b></span>
-                        <a href="#redisUri"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/tldraw/redis/tldraw-redis.factory.ts:11</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-</section>
 
     </div>
 
@@ -359,19 +309,17 @@ import { RedisConnectionTypeEnum } from &#x27;../types&#x27;;
 
 @Injectable()
 export class TldrawRedisFactory {
-	private readonly redisUri: string;
-
 	constructor(private readonly configService: ConfigService&lt;TldrawConfig, true&gt;, private readonly logger: Logger) {
 		this.logger.setContext(TldrawRedisFactory.name);
-		this.redisUri &#x3D; this.configService.get&lt;string&gt;(&#x27;REDIS_URI&#x27;);
-
-		if (!this.redisUri) {
-			throw new Error(&#x27;REDIS_URI is not set&#x27;);
-		}
 	}
 
 	public build(connectionType: RedisConnectionTypeEnum) {
-		const redis &#x3D; new Redis(this.redisUri, {
+		const redisUri &#x3D; this.configService.get&lt;string&gt;(&#x27;REDIS_URI&#x27;);
+		if (!redisUri) {
+			throw new Error(&#x27;REDIS_URI is not set&#x27;);
+		}
+
+		const redis &#x3D; new Redis(redisUri, {
 			maxRetriesPerRequest: null,
 		});
 

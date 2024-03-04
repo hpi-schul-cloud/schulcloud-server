@@ -102,7 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >WebsocketCloseErrorLoggable</li>
+  <li class="breadcrumb-item" >WebsocketInitErrorLoggable</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/tldraw/loggable/websocket-close-error.loggable.ts</code>
+            <code>apps/server/src/modules/tldraw/loggable/websocket-init-error.loggable.ts</code>
         </p>
 
 
@@ -190,12 +190,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(err, message: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>constructor(code: <a href="../undefineds/WsCloseCode.html" target="_self">WsCloseCode</a>, message: <a href="../undefineds/WsCloseMessage.html" target="_self">WsCloseMessage</a>, docName: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, err?)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/tldraw/loggable/websocket-close-error.loggable.ts:4</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/tldraw/loggable/websocket-init-error.loggable.ts:5</a></div>
                             </td>
                         </tr>
 
@@ -213,9 +213,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>err</td>
+                                                        <td>code</td>
                                                   
                                                         <td>
+                                                                        <code><a href="../miscellaneous/enumerations.html#WsCloseCode" target="_self" >WsCloseCode</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -227,11 +228,34 @@
                                                         <td>message</td>
                                                   
                                                         <td>
+                                                                        <code><a href="../miscellaneous/enumerations.html#WsCloseMessage" target="_self" >WsCloseMessage</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>docName</td>
+                                                  
+                                                        <td>
                                                                         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                                         </td>
                                                   
                                                     <td>
                                                             No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>err</td>
+                                                  
+                                                        <td>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            Yes
                                                     </td>
                                                     
                                                 </tr>
@@ -270,7 +294,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/tldraw/loggable/websocket-close-error.loggable.ts:4</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/tldraw/loggable/websocket-init-error.loggable.ts:5</a></div>
                         </td>
                     </tr>
 
@@ -304,8 +328,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/loggable/websocket-close-error.loggable.ts:12</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/loggable/websocket-init-error.loggable.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -332,11 +356,17 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from &#x27;@src/core/logger&#x27;;
+import { WsCloseCode, WsCloseMessage } from &#x27;../types&#x27;;
 
-export class WebsocketCloseErrorLoggable implements Loggable {
+export class WebsocketInitErrorLoggable implements Loggable {
 	private readonly error: Error | undefined;
 
-	constructor(private readonly err: unknown, private readonly message: string) {
+	constructor(
+		private readonly code: WsCloseCode,
+		private readonly message: WsCloseMessage,
+		private readonly docName: string,
+		private readonly err?: unknown
+	) {
 		if (err instanceof Error) {
 			this.error &#x3D; err;
 		}
@@ -344,8 +374,8 @@ export class WebsocketCloseErrorLoggable implements Loggable {
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			message: this.message,
-			type: &#x27;WEBSOCKET_CLOSE_ERROR&#x27;,
+			message: &#x60;[${this.docName}] [${this.code}] ${this.message}&#x60;,
+			type: &#x27;WEBSOCKET_CONNECTION_INIT_ERROR&#x27;,
 			error: this.error,
 		};
 	}
@@ -388,7 +418,7 @@ export class WebsocketCloseErrorLoggable implements Loggable {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'WebsocketCloseErrorLoggable.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'WebsocketInitErrorLoggable.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

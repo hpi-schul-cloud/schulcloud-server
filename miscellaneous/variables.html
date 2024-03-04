@@ -3954,6 +3954,7 @@ This allows adding console commands to execute provider methods.</p>
 	TLDRAW_GC_ENABLED: Configuration.get(&#x27;TLDRAW__GC_ENABLED&#x27;) as boolean,
 	REDIS_URI: Configuration.has(&#x27;REDIS_URI&#x27;) ? (Configuration.get(&#x27;REDIS_URI&#x27;) as string) : null,
 	TLDRAW_ASSETS_ENABLED: Configuration.get(&#x27;TLDRAW__ASSETS_ENABLED&#x27;) as boolean,
+	TLDRAW_ASSETS_SYNC_ENABLED: Configuration.get(&#x27;TLDRAW__ASSETS_SYNC_ENABLED&#x27;) as boolean,
 	TLDRAW_ASSETS_MAX_SIZE: Configuration.get(&#x27;TLDRAW__ASSETS_MAX_SIZE&#x27;) as number,
 	ASSETS_ALLOWED_MIME_TYPES_LIST: Configuration.get(&#x27;TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST&#x27;) as string,
 	API_HOST: Configuration.get(&#x27;API_HOST&#x27;) as string,
@@ -12164,7 +12165,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	}
 	conf.TLDRAW_DB_COMPRESS_THRESHOLD &#x3D; 2;
 	conf.TLDRAW_PING_TIMEOUT &#x3D; 0;
-	conf.TLDRAW_MAX_DOCUMENT_SIZE &#x3D; 3;
+	conf.TLDRAW_MAX_DOCUMENT_SIZE &#x3D; 1;
 	return conf;
 }</code>
                     </td>
