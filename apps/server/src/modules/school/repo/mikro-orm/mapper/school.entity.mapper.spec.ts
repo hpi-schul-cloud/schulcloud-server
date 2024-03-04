@@ -34,7 +34,7 @@ describe('SchoolEntityMapper', () => {
 					timezone: entity.timezone,
 					permissions: entity.permissions,
 					enableStudentTeamCreation: entity.enableStudentTeamCreation,
-					features: new Set(entity.features),
+					features: entity.features ?? [],
 					federalState: FederalStateEntityMapper.mapToDo(entity.federalState),
 					county: entity.county && CountyEmbeddableMapper.mapToDo(entity.county),
 					currentYear: entity.currentYear && SchoolYearEntityMapper.mapToDo(entity.currentYear),

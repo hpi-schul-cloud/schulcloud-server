@@ -1,6 +1,7 @@
-import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
+import { SchoolPurpose } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { schoolFactory } from '../../testing';
+import { InstanceFeature } from '../type';
 
 describe('School', () => {
 	beforeAll(() => {
@@ -10,7 +11,7 @@ describe('School', () => {
 
 	describe('addFeature', () => {
 		const setup = () => {
-			const feature = 'test feature' as SchoolFeature;
+			const feature = InstanceFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED;
 			const school = schoolFactory.build();
 
 			return { school, feature };
@@ -19,18 +20,18 @@ describe('School', () => {
 		it('should add the given feature to the features set', () => {
 			const { school, feature } = setup();
 
-			school.addFeature(feature);
+			school.addInstanceFeature(feature);
 
-			expect(school.getProps().features).toContain(feature);
+			expect(school.instanceFeatures).toContain(feature);
 		});
 	});
 
 	describe('removeFeature', () => {
 		const setup = () => {
-			const feature = 'test feature' as SchoolFeature;
-			const school = schoolFactory.build({
-				features: new Set([feature]),
-			});
+			const feature = InstanceFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED;
+			const school = schoolFactory.build();
+
+			school.addInstanceFeature(feature);
 
 			return { school, feature };
 		};
@@ -38,9 +39,9 @@ describe('School', () => {
 		it('should remove the given feature from the features set', () => {
 			const { school, feature } = setup();
 
-			school.removeFeature(feature);
+			school.removeInstanceFeature(feature);
 
-			expect(school.getProps().features).not.toContain(feature);
+			expect(school.instanceFeatures).not.toContain(feature);
 		});
 	});
 	// TODO N21-1623 add test for getPermissions

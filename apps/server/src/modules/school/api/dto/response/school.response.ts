@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
-import { FileStorageType, SchoolPermissions } from '../../../domain';
+import { FileStorageType, InstanceFeature, SchoolPermissions } from '../../../domain';
 import { CountyResponse } from './county.response';
 import { FederalStateResponse } from './federal-state.response';
 import { SchoolYearResponse } from './school-year.response';
@@ -70,6 +70,9 @@ export class SchoolResponse {
 	@ApiProperty({ type: YearsResponse })
 	years: YearsResponse;
 
+	@ApiProperty({ enum: InstanceFeature, enumName: 'InstanceFeature', isArray: true })
+	instanceFeatures: InstanceFeature[];
+
 	constructor(props: SchoolResponse) {
 		this.id = props.id;
 		this.createdAt = props.createdAt;
@@ -92,5 +95,6 @@ export class SchoolResponse {
 		this.timezone = props.timezone;
 		this.permissions = props.permissions;
 		this.years = props.years;
+		this.instanceFeatures = props.instanceFeatures;
 	}
 }

@@ -2,14 +2,14 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	cleanupCollections,
 	countyEmbeddableFactory,
 	federalStateFactory,
 	schoolEntityFactory,
 	schoolYearFactory,
 	systemEntityFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
 } from '@shared/testing';
 import { ServerTestModule } from '@src/modules/server';
 
@@ -174,10 +174,11 @@ describe('School Controller (API)', () => {
 						lastYear: schoolYearResponses[0],
 						nextYear: schoolYearResponses[2],
 					},
+					features: [],
+					systemIds: systems.map((system) => system.id),
 					// TODO: The feature isTeamCreationByStudentsEnabled is set based on the config value STUDENT_TEAM_CREATION.
 					// We need to discuss how to go about the config in API tests!
-					features: ['isTeamCreationByStudentsEnabled'],
-					systemIds: systems.map((system) => system.id),
+					instanceFeatures: ['isTeamCreationByStudentsEnabled'],
 				};
 
 				const loggedInClient = await testApiClient.login(studentAccount);

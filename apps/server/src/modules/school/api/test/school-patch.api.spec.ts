@@ -94,7 +94,7 @@ describe('School Controller (API)', () => {
 					});
 
 					describe('when FileStorageType param is not valid', () => {
-						it('should return 404', async () => {
+						it('should return 400', async () => {
 							const { loggedInClient, school } = await setup();
 
 							const response = await loggedInClient.patch(school.id).send({
@@ -116,7 +116,7 @@ describe('School Controller (API)', () => {
 					});
 
 					describe('when language param is not valid', () => {
-						it('should return 404', async () => {
+						it('should return 400', async () => {
 							const { loggedInClient, school } = await setup();
 
 							const response = await loggedInClient.patch(school.id).send({
@@ -134,8 +134,69 @@ describe('School Controller (API)', () => {
 						});
 					});
 
+					describe('when officialSchoolNumber param is not valid', () => {
+						it('should return 400', async () => {
+							const { loggedInClient, school } = await setup();
+
+							const response = await loggedInClient.patch(school.id).send({
+								officialSchoolNumber: 'invalid school number',
+							});
+
+							expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+							expect(response.body).toEqual(
+								expect.objectContaining({
+									validationErrors: [
+										{
+											errors: ['officialSchoolNumber must match /^[a-zA-Z0-9-]+$/ regular expression'],
+											field: ['officialSchoolNumber'],
+										},
+									],
+								})
+							);
+						});
+					});
+
+					describe('when countyId in params is not a mongodb id', () => {
+						it('should return 400', async () => {
+							const { loggedInClient, school } = await setup();
+
+							const response = await loggedInClient.patch(school.id).send({
+								countyId: 'invalidId',
+							});
+
+							expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+							expect(response.body).toEqual(
+								expect.objectContaining({
+									validationErrors: [{ errors: ['countyId must be a mongodb id'], field: ['countyId'] }],
+								})
+							);
+						});
+					});
+
+					describe.skip('when enableStudentTeamCreation in params is not a boolean', () => {
+						it('should return 400', async () => {
+							const { loggedInClient, school } = await setup();
+
+							const response = await loggedInClient.patch(school.id).send({
+								enableStudentTeamCreation: '123',
+							});
+
+							expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+							expect(response.body).toEqual(
+								expect.objectContaining({
+									validationErrors: [
+										{
+											errors: ['enableStudentTeamCreation must be a boolean value'],
+											field: ['enableStudentTeamCreation'],
+										},
+									],
+								})
+							);
+						});
+					});
+
 					describe('when features param is not valid', () => {
-						it('should return 404', async () => {
+						it('should return 400', async () => {
 							const { loggedInClient, school } = await setup();
 
 							const response = await loggedInClient.patch(school.id).send({
@@ -148,9 +209,42 @@ describe('School Controller (API)', () => {
 									validationErrors: [
 										{
 											errors: [
-												'each value in features must be one of the following values: rocketChat, videoconference, nextcloud, studentVisibility, ldapUniventionMigrationSchool, oauthProvisioningEnabled, showOutdatedUsers, enableLdapSyncDuringMigration, isTeamCreationByStudentsEnabled',
+												'each value in features must be one of the following values: rocketChat, videoconference, nextcloud, studentVisibility, ldapUniventionMigrationSchool, oauthProvisioningEnabled, showOutdatedUsers, enableLdapSyncDuringMigration',
 											],
 											field: ['features'],
+										},
+									],
+								})
+							);
+						});
+					});
+
+					describe('when permissions param is not valid', () => {
+						it('should return 400', async () => {
+							const { loggedInClient, school } = await setup();
+
+							const response = await loggedInClient.patch(school.id).send({
+								permissions: {
+									teacher: {
+										invalid: 'invalid',
+									},
+									student: {
+										invalid: 'invalid',
+									},
+								},
+							});
+
+							expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+							expect(response.body).toEqual(
+								expect.objectContaining({
+									validationErrors: [
+										{
+											errors: ['STUDENT_LIST must be a boolean value'],
+											field: ['permissions', 'teacher', 'STUDENT_LIST'],
+										},
+										{
+											errors: ['LERNSTORE_VIEW must be a boolean value'],
+											field: ['permissions', 'student', 'LERNSTORE_VIEW'],
 										},
 									],
 								})
@@ -202,7 +296,7 @@ describe('School Controller (API)', () => {
 
 							const newParams = {
 								name: 'new name',
-								officialSchoolNumber: 'new school number',
+								officialSchoolNumber: 'new-school-number',
 								logo_dataUrl: 'new logo data url',
 								logo_name: 'new logo name',
 								fileStorageType: 'awsS3',
@@ -253,13 +347,14 @@ describe('School Controller (API)', () => {
 									nextYear: schoolYearResponses[2],
 								},
 								name: newParams.name,
-								features: ['rocketChat', 'isTeamCreationByStudentsEnabled'],
+								features: ['rocketChat'],
 								systemIds: systems.map((system) => system.id),
 								language: newParams.language,
 								fileStorageType: newParams.fileStorageType,
 								logo_name: newParams.logo_name,
 								logo_dataUrl: newParams.logo_dataUrl,
 								officialSchoolNumber: newParams.officialSchoolNumber,
+								instanceFeatures: ['isTeamCreationByStudentsEnabled'],
 							};
 
 							return { loggedInClient, school, expectedResponse, newParams };

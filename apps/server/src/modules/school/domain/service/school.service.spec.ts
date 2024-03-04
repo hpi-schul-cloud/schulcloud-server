@@ -85,7 +85,7 @@ describe('SchoolService', () => {
 				const result = await service.getSchoolById(id);
 
 				expect(result).toEqual(school);
-				expect(result.getProps().features).toContain('isTeamCreationByStudentsEnabled');
+				expect(result.instanceFeatures).toContain('isTeamCreationByStudentsEnabled');
 			});
 		});
 
@@ -125,7 +125,7 @@ describe('SchoolService', () => {
 				const result = await service.getSchoolById(id);
 
 				expect(result).toEqual(school);
-				expect(result.getProps().features).toContain('isTeamCreationByStudentsEnabled');
+				expect(result.instanceFeatures).toContain('isTeamCreationByStudentsEnabled');
 			});
 		});
 
@@ -185,7 +185,7 @@ describe('SchoolService', () => {
 				const result = await service.getSchoolById(id);
 
 				expect(result).toEqual(school);
-				expect(result.getProps().features).toContain('isTeamCreationByStudentsEnabled');
+				expect(result.instanceFeatures).toContain('isTeamCreationByStudentsEnabled');
 			});
 		});
 
@@ -225,7 +225,7 @@ describe('SchoolService', () => {
 				const result = await service.getSchoolById(id);
 
 				expect(result).toEqual(school);
-				expect(result.getProps().features).toContain('isTeamCreationByStudentsEnabled');
+				expect(result.instanceFeatures).toContain('isTeamCreationByStudentsEnabled');
 			});
 		});
 	});

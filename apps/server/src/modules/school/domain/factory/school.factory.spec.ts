@@ -16,7 +16,7 @@ describe('SchoolFactory', () => {
 				logo_name: 'school-logo-name',
 				fileStorageType: FileStorageType.AWS_S3,
 				language: LanguageType.DE,
-				features: new Set([SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION]),
+				features: [SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION],
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				federalState: federalStateFactory.build(),
@@ -52,7 +52,7 @@ describe('SchoolFactory', () => {
 					logo_name: 'new-school-logo-name',
 					fileStorageType: FileStorageType.AWS_S3,
 					language: LanguageType.EN,
-					features: new Set([SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED]),
+					features: [SchoolFeature.ROCKET_CHAT],
 				};
 
 				return { school, partialBody };

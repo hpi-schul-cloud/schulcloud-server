@@ -288,7 +288,7 @@ describe('SchoolMikroOrmRepo', () => {
 					permissions: {},
 					enableStudentTeamCreation: true,
 					federalState: newFederalState,
-					features: new Set([SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION]),
+					features: [SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION],
 					currentYear: newSchoolYear,
 					county: newCounty,
 					systemIds: [newSystemEntity._id.toHexString()],

@@ -1,9 +1,9 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { SchoolFeature } from '@shared/domain/types';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { Type } from 'class-transformer';
-import { IsBoolean, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsBoolean, IsEnum, IsMongoId, IsOptional, IsString, Matches, ValidateNested } from 'class-validator';
 import {
 	FileStorageType,
 	SchoolPermissions,
@@ -43,6 +43,7 @@ export class SchoolUpdateBodyParams implements SchoolUpdateBody {
 	name?: string;
 
 	@IsString()
+	@Matches(/^[a-zA-Z0-9-]+$/)
 	@IsOptional()
 	@ApiPropertyOptional()
 	officialSchoolNumber?: string;
@@ -70,12 +71,21 @@ export class SchoolUpdateBodyParams implements SchoolUpdateBody {
 	@IsEnum(SchoolFeature, { each: true })
 	@IsOptional()
 	@ApiPropertyOptional({ enum: SchoolFeature, enumName: 'SchoolFeature', isArray: true })
-	@Type(() => Set)
-	features?: Set<SchoolFeature>;
+	features?: SchoolFeature[];
 
 	@Type(() => SchoolPermissionsParams)
 	@IsOptional()
 	@ApiPropertyOptional()
 	@ValidateNested()
 	permissions?: SchoolPermissionsParams;
+
+	@IsMongoId()
+	@IsOptional()
+	@ApiPropertyOptional()
+	countyId?: EntityId;
+
+	@IsBoolean()
+	@IsOptional()
+	@ApiPropertyOptional()
+	enableStudentTeamCreation?: boolean;
 }

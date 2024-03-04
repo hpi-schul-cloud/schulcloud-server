@@ -1,4 +1,3 @@
-import { SchoolFeature } from '@shared/domain/types';
 import { BaseFactory } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { School, SchoolProps } from '../domain';
@@ -11,6 +10,6 @@ export const schoolFactory = BaseFactory.define<School, SchoolProps>(School, ({ 
 		updatedAt: new Date(),
 		name: `school #${sequence}`,
 		federalState: federalStateFactory.build(),
-		features: new Set<SchoolFeature>(),
+		features: [],
 	};
 });

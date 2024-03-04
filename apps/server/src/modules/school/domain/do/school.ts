@@ -1,6 +1,7 @@
+import { ValidationError } from '@shared/common';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId, SchoolFeature, SchoolPurpose } from '@shared/domain/types';
-import { FileStorageType, SchoolPermissions } from '../type';
+import { FileStorageType, InstanceFeature, SchoolPermissions } from '../type';
 import { County } from './county';
 import { FederalState } from './federal-state';
 import { SchoolYear } from './school-year';
@@ -14,6 +15,8 @@ interface SchoolInfo {
 }
 
 export class School extends DomainObject<SchoolProps> {
+	private _instanceFeatures: Set<InstanceFeature> = new Set();
+
 	public getInfo(): SchoolInfo {
 		const info = {
 			id: this.props.id,
@@ -26,18 +29,46 @@ export class School extends DomainObject<SchoolProps> {
 		return info;
 	}
 
-	public addFeature(feature: SchoolFeature): void {
-		this.props.features.add(feature);
-	}
-
-	public removeFeature(feature: SchoolFeature): void {
-		this.props.features.delete(feature);
-	}
-
 	public getPermissions(): SchoolPermissions | undefined {
 		const { permissions } = this.props;
 
 		return permissions;
+	}
+
+	public addInstanceFeature(feature: InstanceFeature): void {
+		this._instanceFeatures.add(feature);
+	}
+
+	public get instanceFeatures(): InstanceFeature[] {
+		return Array.from(this._instanceFeatures);
+	}
+
+	public removeInstanceFeature(feature: InstanceFeature): void {
+		this._instanceFeatures.delete(feature);
+	}
+
+	public updateCounty(countyId: EntityId): void {
+		const { county, federalState } = this.props;
+
+		if (county) {
+			throw new ValidationError('County cannot be updated, once it is set.');
+		}
+		const { counties } = federalState.getProps();
+		const countyObject = counties?.find((item) => item.id === countyId);
+
+		if (!countyObject) {
+			throw new ValidationError('County not found.');
+		}
+
+		this.props.county = countyObject;
+	}
+
+	public updateOfficialSchoolNumber(officialSchoolNumber: string): void {
+		if (this.props.officialSchoolNumber) {
+			throw new ValidationError('Official school number cannot be updated, once it is set.');
+		}
+
+		this.props.officialSchoolNumber = officialSchoolNumber;
 	}
 
 	public isInMaintenance(): boolean {
@@ -77,7 +108,7 @@ export interface SchoolProps extends AuthorizableObject {
 	federalState: FederalState;
 	county?: County;
 	purpose?: SchoolPurpose;
-	features: Set<SchoolFeature>;
+	features: SchoolFeature[];
 	systemIds?: EntityId[];
 	logo_dataUrl?: string;
 	logo_name?: string;
