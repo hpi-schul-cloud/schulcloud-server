@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EventBus, IEventHandler } from '@nestjs/cqrs';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { CourseGroup } from '@shared/domain/entity';
@@ -10,6 +10,7 @@ import { Logger } from '@src/core/logger';
 import { DataDeletedEvent, UserDeletedEvent } from '@modules/deletion/event';
 
 @Injectable()
+@EventsHandler(UserDeletedEvent)
 export class CourseGroupService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly repo: CourseGroupRepo,

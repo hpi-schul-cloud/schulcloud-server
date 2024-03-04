@@ -2,8 +2,12 @@ import { DomainDeletionReport, DomainOperationReport } from '@shared/domain/inte
 import { DomainName } from '@shared/domain/types';
 
 export class DomainDeletionReportBuilder {
-	static build(domain: DomainName, domainOperationReport: DomainOperationReport[]): DomainDeletionReport {
-		const domainDeletionReport = { domain, domainOperationReport };
+	static build(
+		domain: DomainName,
+		domainOperationReport: DomainOperationReport[],
+		subDomainReport?: DomainDeletionReport
+	): DomainDeletionReport {
+		const domainDeletionReport = { domain, domainOperationReport, subDomainReport };
 
 		return domainDeletionReport;
 	}

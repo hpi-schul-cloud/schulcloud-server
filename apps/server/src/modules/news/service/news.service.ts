@@ -6,10 +6,11 @@ import { NewsRepo } from '@shared/repo';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
 import { News } from '@shared/domain/entity';
-import { IEventHandler, EventBus } from '@nestjs/cqrs';
+import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
 import { UserDeletedEvent, DataDeletedEvent } from '@src/modules/deletion/event';
 
 @Injectable()
+@EventsHandler(UserDeletedEvent)
 export class NewsService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly newsRepo: NewsRepo,

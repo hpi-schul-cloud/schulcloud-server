@@ -2,6 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { DomainName, OperationType } from '@shared/domain/types';
 import { deletionLogFactory } from './testing/factory/deletion-log.factory';
 import { DeletionLog } from './deletion-log.do';
+import { DomainOperationReportProps } from '../entity';
 
 describe(DeletionLog.name, () => {
 	describe('constructor', () => {
@@ -33,13 +34,32 @@ describe(DeletionLog.name, () => {
 	describe('getters', () => {
 		describe('When getters are used', () => {
 			const setup = () => {
+				const deletionRequestId = new ObjectId().toHexString();
 				const props = {
 					id: new ObjectId().toHexString(),
 					domain: DomainName.USER,
-					operation: OperationType.DELETE,
-					count: 1,
-					refs: [new ObjectId().toHexString()],
-					deletionRequestId: new ObjectId().toHexString(),
+					domainOperationReport: [
+						new DomainOperationReportProps({
+							operation: OperationType.DELETE,
+							count: 1,
+							refs: [new ObjectId().toHexString()],
+						}),
+					],
+					domainDeletionReport: new DeletionLog({
+						id: new ObjectId().toHexString(),
+						domain: DomainName.REGISTRATIONPIN,
+						domainOperationReport: [
+							new DomainOperationReportProps({
+								operation: OperationType.DELETE,
+								count: 2,
+								refs: [new ObjectId().toHexString(), new ObjectId().toHexString()],
+							}),
+						],
+						deletionRequestId,
+						createdAt: new Date(),
+						updatedAt: new Date(),
+					}),
+					deletionRequestId,
 					performedAt: new Date(),
 					createdAt: new Date(),
 					updatedAt: new Date(),
@@ -55,9 +75,8 @@ describe(DeletionLog.name, () => {
 				const gettersValues = {
 					id: deletionLogDo.id,
 					domain: deletionLogDo.domain,
-					operation: deletionLogDo.operation,
-					count: deletionLogDo.count,
-					refs: deletionLogDo.refs,
+					domainOperationReport: deletionLogDo.domainOperationReport,
+					domainDeletionReport: deletionLogDo.domainDeletionReport,
 					deletionRequestId: deletionLogDo.deletionRequestId,
 					performedAt: deletionLogDo.performedAt,
 					createdAt: deletionLogDo.createdAt,

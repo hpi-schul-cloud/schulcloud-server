@@ -1,5 +1,5 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { EventBus, IEventHandler } from '@nestjs/cqrs';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
@@ -9,6 +9,7 @@ import { Logger } from '@src/core/logger';
 import { DataDeletedEvent, UserDeletedEvent } from '@src/modules/deletion/event';
 
 @Injectable()
+@EventsHandler(UserDeletedEvent)
 export class DashboardService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		@Inject('DASHBOARD_REPO') private readonly dashboardRepo: IDashboardRepo,

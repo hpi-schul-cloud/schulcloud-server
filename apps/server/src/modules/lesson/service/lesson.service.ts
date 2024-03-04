@@ -7,11 +7,12 @@ import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
-import { EventBus, IEventHandler } from '@nestjs/cqrs';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { DataDeletedEvent, UserDeletedEvent } from '@src/modules/deletion/event';
 import { LessonRepo } from '../repository';
 
 @Injectable()
+@EventsHandler(UserDeletedEvent)
 export class LessonService implements AuthorizationLoaderService, DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly lessonRepo: LessonRepo,

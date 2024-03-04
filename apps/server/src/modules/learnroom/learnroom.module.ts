@@ -15,6 +15,7 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
+import { CqrsModule } from '@nestjs/cqrs';
 import {
 	BoardCopyService,
 	ColumnBoardTargetService,
@@ -37,6 +38,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		LoggerModule,
 		ContextExternalToolModule,
 		ToolConfigModule,
+		CqrsModule,
 	],
 	providers: [
 		{

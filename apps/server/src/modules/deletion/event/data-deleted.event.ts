@@ -4,10 +4,10 @@ import { DeletionRequest } from '../domain';
 export class DataDeletedEvent {
 	deletionRequest: DeletionRequest;
 
-	domainOperation: DomainDeletionReport;
+	domainDeletionReport: DomainDeletionReport;
 
-	constructor(deletionRequest: DeletionRequest, domainOperation: DomainDeletionReport) {
+	constructor(deletionRequest: DeletionRequest, domainDeletionReport: DomainDeletionReport) {
 		this.deletionRequest = deletionRequest;
-		this.domainOperation = domainOperation;
+		this.domainDeletionReport = domainDeletionReport;
 	}
 }

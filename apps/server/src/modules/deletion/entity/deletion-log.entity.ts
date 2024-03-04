@@ -1,19 +1,34 @@
 import { Entity, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { DomainName, EntityId, OperationType } from '@shared/domain/types';
+import { DomainDeletionReport, DomainOperationReport } from '@shared/domain/interface';
+import { DomainName, EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 
 export interface DeletionLogEntityProps {
 	id?: EntityId;
 	domain: DomainName;
-	operation: OperationType;
-	count: number;
-	refs: EntityId[];
-	deletionRequestId?: ObjectId;
+	// domainOperationReport: DomainOperationReportProps[];
+	domainOperationReport: DomainOperationReport[];
+	domainDeletionReport?: DomainDeletionReport;
+	deletionRequestId: ObjectId;
 	performedAt?: Date;
 	createdAt?: Date;
 	updatedAt?: Date;
 }
+
+// export class DomainOperationReportProps {
+// 	operation: OperationType;
+
+// 	count: number;
+
+// 	refs: EntityId[];
+
+// 	constructor(props: DomainOperationReportProps) {
+// 		this.operation = props.operation;
+// 		this.count = props.count;
+// 		this.refs = props.refs;
+// 	}
+// }
 
 @Entity({ tableName: 'deletionlogs' })
 export class DeletionLogEntity extends BaseEntityWithTimestamps {
@@ -21,16 +36,13 @@ export class DeletionLogEntity extends BaseEntityWithTimestamps {
 	domain: DomainName;
 
 	@Property()
-	operation: OperationType;
-
-	@Property()
-	count: number;
-
-	@Property()
-	refs: EntityId[];
+	domainOperationReport: DomainOperationReport[];
 
 	@Property({ nullable: true })
-	deletionRequestId?: ObjectId;
+	domainDeletionReport?: DomainDeletionReport;
+
+	@Property()
+	deletionRequestId: ObjectId;
 
 	@Property({ nullable: true })
 	@Index({ options: { expireAfterSeconds: 7776000 } })
@@ -43,12 +55,11 @@ export class DeletionLogEntity extends BaseEntityWithTimestamps {
 		}
 
 		this.domain = props.domain;
-		this.operation = props.operation;
-		this.count = props.count;
-		this.refs = props.refs;
+		this.domainOperationReport = props.domainOperationReport;
+		this.deletionRequestId = props.deletionRequestId;
 
-		if (props.deletionRequestId !== undefined) {
-			this.deletionRequestId = props.deletionRequestId;
+		if (props.domainDeletionReport !== undefined) {
+			this.domainDeletionReport = props.domainDeletionReport;
 		}
 
 		if (props.createdAt !== undefined) {

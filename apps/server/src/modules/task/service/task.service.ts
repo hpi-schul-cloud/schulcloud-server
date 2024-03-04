@@ -7,11 +7,12 @@ import { TaskRepo } from '@shared/repo';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { IEventHandler, EventBus } from '@nestjs/cqrs';
+import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
 import { UserDeletedEvent, DataDeletedEvent } from '@src/modules/deletion/event';
 import { SubmissionService } from './submission.service';
 
 @Injectable()
+@EventsHandler(UserDeletedEvent)
 export class TaskService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly taskRepo: TaskRepo,

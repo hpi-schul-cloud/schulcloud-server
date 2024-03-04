@@ -2,17 +2,29 @@ import { Injectable } from '@nestjs/common';
 import { DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { FileDO } from '@src/infra/rabbitmq';
-import { DomainDeletionReport } from '@shared/domain/interface';
-import { DomainDeletionReportBuilder } from '@shared/domain/builder';
+import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
+import { EventsHandler, IEventHandler, EventBus } from '@nestjs/cqrs';
+import { UserDeletedEvent, DataDeletedEvent } from '@src/modules/deletion/event';
 import { CopyFileDto, FileDto } from '../dto';
 import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
 import { FilesStorageClientMapper } from '../mapper';
 import { FilesStorageProducer } from './files-storage.producer';
 
 @Injectable()
-export class FilesStorageClientAdapterService {
-	constructor(private logger: LegacyLogger, private readonly fileStorageMQProducer: FilesStorageProducer) {
+@EventsHandler(UserDeletedEvent)
+export class FilesStorageClientAdapterService implements DeletionService, IEventHandler<UserDeletedEvent> {
+	constructor(
+		private logger: LegacyLogger,
+		private readonly fileStorageMQProducer: FilesStorageProducer,
+		private readonly eventBus: EventBus
+	) {
 		this.logger.setContext(FilesStorageClientAdapterService.name);
+	}
+
+	async handle({ deletionRequest }: UserDeletedEvent) {
+		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
 	}
 
 	async copyFilesOfParent(param: CopyFilesRequestInfo): Promise<CopyFileDto[]> {
@@ -46,15 +58,12 @@ export class FilesStorageClientAdapterService {
 		return fileInfo;
 	}
 
-	async removeCreatorIdFromFileRecords(creatorId: EntityId): Promise<DomainDeletionReport> {
+	async deleteUserData(creatorId: EntityId): Promise<DomainDeletionReport> {
 		const response = await this.fileStorageMQProducer.removeCreatorIdFromFileRecords(creatorId);
 
-		const result = DomainDeletionReportBuilder.build(
-			DomainName.FILERECORDS,
-			OperationType.UPDATE,
-			response.length,
-			this.getFileRecordsId(response)
-		);
+		const result = DomainDeletionReportBuilder.build(DomainName.FILERECORDS, [
+			DomainOperationReportBuilder.build(OperationType.UPDATE, response.length, this.getFileRecordsId(response)),
+		]);
 
 		return result;
 	}

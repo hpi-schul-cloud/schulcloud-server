@@ -9,12 +9,13 @@ import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
-import { IEventHandler, EventBus } from '@nestjs/cqrs';
+import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
 import { UserDeletedEvent, DataDeletedEvent } from '@src/modules/deletion/event';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 
 @Injectable()
+@EventsHandler(UserDeletedEvent)
 export class PseudonymService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly pseudonymRepo: PseudonymsRepo,

@@ -4,5 +4,5 @@ import { DomainOperationReport } from './domain-operation-report';
 export interface DomainDeletionReport {
 	domain: DomainName;
 	domainOperationReport: DomainOperationReport[];
-	subDoaminReport?: DomainDeletionReport[];
+	subDomainReport?: DomainDeletionReport;
 }
