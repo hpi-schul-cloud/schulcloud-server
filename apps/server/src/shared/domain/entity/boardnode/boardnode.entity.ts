@@ -22,8 +22,6 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 		this.level = props.parent ? props.parent.level + 1 : 0;
 		this.position = props.position ?? 0;
 		this.title = props.title;
-
-		this.isVisible = props.isVisible ?? false;
 	}
 
 	@Index()
@@ -42,9 +40,6 @@ export abstract class BoardNode extends BaseEntityWithTimestamps {
 
 	@Property({ nullable: true })
 	title?: string;
-
-	@Property({ type: 'boolean', nullable: false })
-	isVisible = false;
 
 	get parentId(): EntityId | undefined {
 		const parentId = this.hasParent() ? this.ancestorIds[this.ancestorIds.length - 1] : undefined;
@@ -76,5 +71,4 @@ export interface BoardNodeProps {
 	parent?: BoardNode;
 	position?: number;
 	title?: string;
-	isVisible?: boolean;
 }

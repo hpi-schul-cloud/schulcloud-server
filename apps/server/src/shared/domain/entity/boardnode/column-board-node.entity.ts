@@ -17,6 +17,8 @@ export class ColumnBoardNode extends BoardNode {
 
 		this._contextType = props.context.type;
 		this._contextId = new ObjectId(props.context.id);
+
+		this.isVisible = props.isVisible ?? false;
 	}
 
 	@Property({ fieldName: 'contextType' })
@@ -24,6 +26,9 @@ export class ColumnBoardNode extends BoardNode {
 
 	@Property({ fieldName: 'context' })
 	_contextId: ObjectId;
+
+	@Property({ type: 'boolean', nullable: false })
+	isVisible = false;
 
 	get context(): BoardExternalReference {
 		return {
@@ -40,4 +45,5 @@ export class ColumnBoardNode extends BoardNode {
 
 export interface ColumnBoardNodeProps extends BoardNodeProps {
 	context: BoardExternalReference;
+	isVisible: boolean;
 }
