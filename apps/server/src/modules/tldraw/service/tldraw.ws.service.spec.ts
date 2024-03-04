@@ -53,8 +53,9 @@ describe('TldrawWSService', () => {
 	let app: INestApplication;
 	let ws: WebSocket;
 	let service: TldrawWsService;
-	let boardRepo: TldrawBoardRepo;
+	let boardRepo: DeepMocked<TldrawBoardRepo>;
 	let logger: DeepMocked<Logger>;
+	let tldrawFilesStorageAdapterService: DeepMocked<TldrawFilesStorageAdapterService>;
 
 	const gatewayPort = 3346;
 	const wsUrl = TestConnection.getWsUrl(gatewayPort);
@@ -73,10 +74,13 @@ describe('TldrawWSService', () => {
 			providers: [
 				TldrawWs,
 				TldrawWsService,
-				TldrawBoardRepo,
 				YMongodb,
 				MetricsService,
 				TldrawRedisFactory,
+				{
+					provide: TldrawBoardRepo,
+					useValue: createMock<TldrawBoardRepo>(),
+				},
 				{
 					provide: TldrawRepo,
 					useValue: createMock<TldrawRepo>(),
@@ -99,6 +103,7 @@ describe('TldrawWSService', () => {
 		service = testingModule.get(TldrawWsService);
 		boardRepo = testingModule.get(TldrawBoardRepo);
 		logger = testingModule.get(Logger);
+		tldrawFilesStorageAdapterService = testingModule.get(TldrawFilesStorageAdapterService);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
 		await app.init();
@@ -499,6 +504,7 @@ describe('TldrawWSService', () => {
 
 	describe('on websocket error', () => {
 		const setup = async () => {
+			boardRepo.getYDocFromMdb.mockResolvedValueOnce(new WsSharedDocDo('TEST'));
 			ws = await TestConnection.setupWs(wsUrl, 'TEST');
 			const errorLogSpy = jest.spyOn(logger, 'warning');
 
@@ -509,7 +515,6 @@ describe('TldrawWSService', () => {
 
 		it('should log error', async () => {
 			const { errorLogSpy } = await setup();
-
 			await service.setupWSConnection(ws, 'TEST');
 			ws.emit('error', new Error('error'));
 
@@ -521,38 +526,66 @@ describe('TldrawWSService', () => {
 	describe('closeConn', () => {
 		describe('when there is no error', () => {
 			const setup = async () => {
+				boardRepo.getYDocFromMdb.mockResolvedValueOnce(new WsSharedDocDo('TEST'));
 				ws = await TestConnection.setupWs(wsUrl);
 
-				const flushDocumentSpy = jest.spyOn(boardRepo, 'flushDocument').mockResolvedValueOnce();
+				boardRepo.compressDocument.mockResolvedValueOnce();
 				const redisUnsubscribeSpy = jest.spyOn(Ioredis.Redis.prototype, 'unsubscribe').mockResolvedValueOnce(1);
 				const closeConnSpy = jest.spyOn(service, 'closeConn');
 				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce({});
 
 				return {
-					flushDocumentSpy,
 					redisUnsubscribeSpy,
 					closeConnSpy,
 				};
 			};
 
 			it('should close connection', async () => {
-				const { flushDocumentSpy, redisUnsubscribeSpy, closeConnSpy } = await setup();
+				const { redisUnsubscribeSpy, closeConnSpy } = await setup();
 
 				await service.setupWSConnection(ws, 'TEST');
 
 				expect(closeConnSpy).toHaveBeenCalled();
 				ws.close();
 				closeConnSpy.mockRestore();
-				flushDocumentSpy.mockRestore();
 				redisUnsubscribeSpy.mockRestore();
+			});
+		});
+
+		describe('when deleteUnusedFilesForDocument fails', () => {
+			const setup = async () => {
+				ws = await TestConnection.setupWs(wsUrl);
+				const doc = TldrawWsFactory.createWsSharedDocDo();
+
+				const errorLogSpy = jest.spyOn(logger, 'warning');
+				const storageSpy = jest
+					.spyOn(tldrawFilesStorageAdapterService, 'deleteUnusedFilesForDocument')
+					.mockRejectedValueOnce(new Error('error'));
+
+				return {
+					doc,
+					errorLogSpy,
+					storageSpy,
+				};
+			};
+
+			it('should log error', async () => {
+				const { doc, errorLogSpy } = await setup();
+
+				await service.closeConn(doc, ws);
+				await delay(100);
+
+				expect(errorLogSpy).toHaveBeenCalled();
+				ws.close();
 			});
 		});
 
 		describe('when close connection fails', () => {
 			const setup = async () => {
+				boardRepo.getYDocFromMdb.mockResolvedValueOnce(new WsSharedDocDo('TEST'));
 				ws = await TestConnection.setupWs(wsUrl);
 
-				const flushDocumentSpy = jest.spyOn(boardRepo, 'flushDocument').mockResolvedValueOnce();
+				boardRepo.compressDocument.mockResolvedValueOnce();
 				const redisUnsubscribeSpy = jest.spyOn(Ioredis.Redis.prototype, 'unsubscribe').mockResolvedValueOnce(1);
 				const closeConnSpy = jest.spyOn(service, 'closeConn').mockRejectedValueOnce(new Error('error'));
 				const errorLogSpy = jest.spyOn(logger, 'warning');
@@ -560,7 +593,6 @@ describe('TldrawWSService', () => {
 				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce({});
 
 				return {
-					flushDocumentSpy,
 					redisUnsubscribeSpy,
 					closeConnSpy,
 					errorLogSpy,
@@ -569,7 +601,7 @@ describe('TldrawWSService', () => {
 			};
 
 			it('should log error', async () => {
-				const { flushDocumentSpy, redisUnsubscribeSpy, closeConnSpy, errorLogSpy, sendSpyError } = await setup();
+				const { redisUnsubscribeSpy, closeConnSpy, errorLogSpy, sendSpyError } = await setup();
 
 				await service.setupWSConnection(ws, 'TEST');
 
@@ -580,7 +612,6 @@ describe('TldrawWSService', () => {
 				ws.close();
 				await delay(100);
 				expect(errorLogSpy).toHaveBeenCalled();
-				flushDocumentSpy.mockRestore();
 				redisUnsubscribeSpy.mockRestore();
 				closeConnSpy.mockRestore();
 				sendSpyError.mockRestore();
@@ -593,7 +624,7 @@ describe('TldrawWSService', () => {
 				const doc = TldrawWsFactory.createWsSharedDocDo();
 				doc.connections.set(ws, new Set<number>());
 
-				const flushDocumentSpy = jest.spyOn(boardRepo, 'flushDocument').mockResolvedValueOnce();
+				boardRepo.compressDocument.mockResolvedValueOnce();
 				const redisUnsubscribeSpy = jest
 					.spyOn(Ioredis.Redis.prototype, 'unsubscribe')
 					.mockImplementationOnce((...args: unknown[]) => {
@@ -605,18 +636,16 @@ describe('TldrawWSService', () => {
 						return Promise.resolve(0);
 					});
 				const errorLogSpy = jest.spyOn(logger, 'warning');
-				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce({});
 
 				return {
 					doc,
-					flushDocumentSpy,
 					redisUnsubscribeSpy,
 					errorLogSpy,
 				};
 			};
 
 			it('should log error', async () => {
-				const { doc, errorLogSpy, flushDocumentSpy, redisUnsubscribeSpy } = await setup();
+				const { doc, errorLogSpy, redisUnsubscribeSpy } = await setup();
 
 				await service.closeConn(doc, ws);
 
@@ -624,7 +653,6 @@ describe('TldrawWSService', () => {
 
 				expect(redisUnsubscribeSpy).toHaveBeenCalled();
 				expect(errorLogSpy).toHaveBeenCalled();
-				flushDocumentSpy.mockRestore();
 				redisUnsubscribeSpy.mockRestore();
 			});
 		});
@@ -635,7 +663,7 @@ describe('TldrawWSService', () => {
 				const doc = TldrawWsFactory.createWsSharedDocDo();
 				doc.connections.set(ws, new Set<number>());
 
-				const flushDocumentSpy = jest.spyOn(boardRepo, 'flushDocument').mockResolvedValueOnce();
+				boardRepo.compressDocument.mockResolvedValueOnce();
 				const redisUnsubscribeSpy = jest
 					.spyOn(Ioredis.Redis.prototype, 'unsubscribe')
 					.mockRejectedValue(new Error('error'));
@@ -645,7 +673,6 @@ describe('TldrawWSService', () => {
 
 				return {
 					doc,
-					flushDocumentSpy,
 					redisUnsubscribeSpy,
 					closeConnSpy,
 					errorLogSpy,
@@ -653,7 +680,7 @@ describe('TldrawWSService', () => {
 			};
 
 			it('should log error', async () => {
-				const { doc, errorLogSpy, flushDocumentSpy, redisUnsubscribeSpy, closeConnSpy } = await setup();
+				const { doc, errorLogSpy, redisUnsubscribeSpy, closeConnSpy } = await setup();
 
 				await service.closeConn(doc, ws);
 				await delay(200);
@@ -662,33 +689,31 @@ describe('TldrawWSService', () => {
 				expect(closeConnSpy).toHaveBeenCalled();
 				expect(errorLogSpy).toHaveBeenCalled();
 				closeConnSpy.mockRestore();
-				flushDocumentSpy.mockRestore();
 				redisUnsubscribeSpy.mockRestore();
 			});
 		});
 
 		describe('when updating new document fails', () => {
 			const setup = async () => {
+				boardRepo.getYDocFromMdb.mockResolvedValueOnce(new WsSharedDocDo('test-update-fail'));
 				ws = await TestConnection.setupWs(wsUrl);
 
 				const closeConnSpy = jest.spyOn(service, 'closeConn');
 				const errorLogSpy = jest.spyOn(logger, 'warning');
-				const updateDocSpy = jest.spyOn(boardRepo, 'updateDocument');
 				const sendSpy = jest.spyOn(service, 'send').mockImplementation(() => {});
+				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce({});
 
 				return {
 					closeConnSpy,
 					errorLogSpy,
-					updateDocSpy,
 					sendSpy,
 				};
 			};
 
 			it('should log error', async () => {
-				const { sendSpy, errorLogSpy, updateDocSpy, closeConnSpy } = await setup();
-				updateDocSpy.mockRejectedValueOnce(new Error('error'));
+				const { sendSpy, errorLogSpy, closeConnSpy } = await setup();
 
-				await expect(service.setupWSConnection(ws, 'test-update-fail')).rejects.toThrow('error');
+				await service.setupWSConnection(ws, 'test-update-fail');
 				ws.close();
 
 				expect(errorLogSpy).toHaveBeenCalled();
@@ -700,6 +725,7 @@ describe('TldrawWSService', () => {
 
 		describe('when pong not received', () => {
 			const setup = async () => {
+				boardRepo.getYDocFromMdb.mockResolvedValueOnce(new WsSharedDocDo('TEST'));
 				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 
 				const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockReturnValueOnce();
@@ -738,6 +764,7 @@ describe('TldrawWSService', () => {
 
 		describe('when pong not received and close connection fails', () => {
 			const setup = async () => {
+				boardRepo.getYDocFromMdb.mockResolvedValueOnce(new WsSharedDocDo('TEST'));
 				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 
 				const messageHandlerSpy = jest.spyOn(service, 'messageHandler').mockReturnValueOnce();
@@ -746,7 +773,6 @@ describe('TldrawWSService', () => {
 				const sendSpy = jest.spyOn(service, 'send').mockImplementation(() => {});
 				const clearIntervalSpy = jest.spyOn(global, 'clearInterval');
 				const errorLogSpy = jest.spyOn(logger, 'warning');
-				jest.spyOn(boardRepo, 'updateDocument').mockImplementationOnce(() => Promise.resolve());
 				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce({});
 
 				return {
@@ -825,23 +851,21 @@ describe('TldrawWSService', () => {
 				const doc = TldrawWsFactory.createWsSharedDocDo();
 				doc.connections.set(ws, new Set<number>());
 
-				const flushDocumentSpy = jest.spyOn(boardRepo, 'flushDocument');
+				boardRepo.compressDocument.mockRejectedValueOnce(new Error('error'));
 				const errorLogSpy = jest.spyOn(logger, 'warning');
 
 				return {
 					doc,
-					flushDocumentSpy,
 					errorLogSpy,
 				};
 			};
 
 			it('should log error', async () => {
-				const { doc, flushDocumentSpy, errorLogSpy } = await setup();
-				flushDocumentSpy.mockRejectedValueOnce(new Error('error'));
+				const { doc, errorLogSpy } = await setup();
 
 				await expect(service.closeConn(doc, ws)).rejects.toThrow('error');
 
-				expect(flushDocumentSpy).toHaveBeenCalled();
+				expect(boardRepo.compressDocument).toHaveBeenCalled();
 				expect(errorLogSpy).toHaveBeenCalled();
 				ws.close();
 			});
@@ -884,20 +908,24 @@ describe('TldrawWSService', () => {
 	describe('databaseUpdateHandler', () => {
 		const setup = async () => {
 			ws = await TestConnection.setupWs(wsUrl);
-
-			const storeUpdateSpy = jest.spyOn(boardRepo, 'storeUpdate').mockResolvedValueOnce();
-
-			return {
-				storeUpdateSpy,
-			};
+			boardRepo.storeUpdate.mockResolvedValueOnce();
 		};
 
-		it('should call send method', async () => {
-			const { storeUpdateSpy } = await setup();
+		it('should call storeUpdate method', async () => {
+			await setup();
 
-			await service.databaseUpdateHandler('test', new Uint8Array());
+			await service.databaseUpdateHandler('test', new Uint8Array(), 'test');
 
-			expect(storeUpdateSpy).toHaveBeenCalled();
+			expect(boardRepo.storeUpdate).toHaveBeenCalled();
+			ws.close();
+		});
+
+		it('should not call storeUpdate when origin is redis', async () => {
+			await setup();
+
+			await service.databaseUpdateHandler('test', new Uint8Array(), 'redis');
+
+			expect(boardRepo.storeUpdate).not.toHaveBeenCalled();
 			ws.close();
 		});
 	});
@@ -982,6 +1010,7 @@ describe('TldrawWSService', () => {
 	describe('messageHandler', () => {
 		describe('when message is received', () => {
 			const setup = async (messageValues: number[]) => {
+				boardRepo.getYDocFromMdb.mockResolvedValueOnce(new WsSharedDocDo('TEST'));
 				ws = await TestConnection.setupWs(wsUrl, 'TEST');
 
 				const errorLogSpy = jest.spyOn(logger, 'warning');
@@ -1019,6 +1048,23 @@ describe('TldrawWSService', () => {
 				publishSpy.mockRestore();
 			});
 
+			it('should log error when messageHandler throws', async () => {
+				const { messageHandlerSpy, msg, errorLogSpy } = await setup([0, 1]);
+				messageHandlerSpy.mockImplementationOnce(() => {
+					throw new Error('error');
+				});
+
+				await service.setupWSConnection(ws, 'TEST');
+				ws.emit('message', msg);
+
+				await delay(20);
+
+				expect(errorLogSpy).toHaveBeenCalled();
+				ws.close();
+				messageHandlerSpy.mockRestore();
+				errorLogSpy.mockRestore();
+			});
+
 			it('should log error when publish to Redis throws', async () => {
 				const { errorLogSpy, publishSpy } = await setup([1, 1]);
 				publishSpy.mockRejectedValueOnce(new Error('error'));
@@ -1034,6 +1080,7 @@ describe('TldrawWSService', () => {
 	describe('getYDoc', () => {
 		describe('when getting yDoc by name', () => {
 			it('should assign to service docs map and return instance', async () => {
+				boardRepo.getYDocFromMdb.mockResolvedValueOnce(new WsSharedDocDo('get-test'));
 				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce({});
 				const docName = 'get-test';
 				const doc = await service.getYDoc(docName);
@@ -1044,9 +1091,13 @@ describe('TldrawWSService', () => {
 
 			describe('when subscribing to redis channel', () => {
 				const setup = () => {
+					boardRepo.getYDocFromMdb.mockResolvedValueOnce(new WsSharedDocDo('test-redis'));
+					const doc = new WsSharedDocDo('test-redis');
+
 					const redisSubscribeSpy = jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce(1);
 					const redisOnSpy = jest.spyOn(Ioredis.Redis.prototype, 'on');
 					const errorLogSpy = jest.spyOn(logger, 'warning');
+					boardRepo.getYDocFromMdb.mockResolvedValueOnce(doc);
 
 					return {
 						redisOnSpy,
@@ -1055,15 +1106,15 @@ describe('TldrawWSService', () => {
 					};
 				};
 
-				it('should register new listener', () => {
+				it('should register new listener', async () => {
 					const { redisOnSpy, redisSubscribeSpy } = setup();
 
-					const doc = service.getYDoc('test-redis');
+					const doc = await service.getYDoc('test-redis');
 
 					expect(doc).toBeDefined();
 					expect(redisOnSpy).toHaveBeenCalled();
 					redisSubscribeSpy.mockRestore();
-					redisSubscribeSpy.mockRestore();
+					redisOnSpy.mockRestore();
 				});
 			});
 
@@ -1104,6 +1155,7 @@ describe('TldrawWSService', () => {
 
 		describe('when subscribing to redis channel throws error', () => {
 			const setup = () => {
+				boardRepo.getYDocFromMdb.mockResolvedValueOnce(new WsSharedDocDo('test-redis-fail-2'));
 				const redisSubscribeSpy = jest
 					.spyOn(Ioredis.Redis.prototype, 'subscribe')
 					.mockRejectedValue(new Error('error'));
