@@ -112,5 +112,11 @@ describe('CalendarServiceSpec', () => {
 				expect(httpService.delete).toHaveBeenCalled();
 			});
 		});
+		it('should throw error if cannot delete a events', async () => {
+			const error = 'error';
+			httpService.delete.mockReturnValue(throwError(() => error));
+
+			await expect(service.deleteEventsByScopeId('invalid eventId')).rejects.toThrowError(InternalServerErrorException);
+		});
 	});
 });

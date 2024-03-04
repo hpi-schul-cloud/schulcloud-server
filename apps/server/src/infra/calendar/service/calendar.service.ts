@@ -50,6 +50,11 @@ export class CalendarService {
 				Accept: 'Application/json',
 			},
 			timeout: this.timeoutMs,
+		}).catch((error) => {
+			throw new InternalServerErrorException(
+				null,
+				ErrorUtils.createHttpExceptionOptions(error, 'CalendarService:deleteEvent')
+			);
 		});
 	}
 
