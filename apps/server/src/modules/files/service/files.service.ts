@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DomainOperation } from '@shared/domain/interface';
-import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainDeletionReport } from '@shared/domain/interface';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder';
 import { FileEntity } from '../entity';
 import { FilesRepo } from '../repo';
 
@@ -17,7 +17,7 @@ export class FilesService {
 		return this.repo.findByPermissionRefIdOrCreatorId(userId);
 	}
 
-	async removeUserPermissionsOrCreatorReferenceToAnyFiles(userId: EntityId): Promise<DomainOperation> {
+	async removeUserPermissionsOrCreatorReferenceToAnyFiles(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Files',
@@ -37,7 +37,7 @@ export class FilesService {
 
 		const numberOfUpdatedFiles = entities.length;
 
-		const result = DomainOperationBuilder.build(
+		const result = DomainDeletionReportBuilder.build(
 			DomainName.FILE,
 			OperationType.UPDATE,
 			numberOfUpdatedFiles,
@@ -62,7 +62,7 @@ export class FilesService {
 		return this.repo.findByOwnerUserId(userId);
 	}
 
-	async markFilesOwnedByUserForDeletion(userId: EntityId): Promise<DomainOperation> {
+	async markFilesOwnedByUserForDeletion(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Marking user files to deletion',
@@ -79,7 +79,7 @@ export class FilesService {
 
 		const numberOfMarkedForDeletionFiles = entities.length;
 
-		const result = DomainOperationBuilder.build(
+		const result = DomainDeletionReportBuilder.build(
 			DomainName.FILE,
 			OperationType.UPDATE,
 			numberOfMarkedForDeletionFiles,

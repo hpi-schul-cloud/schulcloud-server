@@ -17,7 +17,7 @@ import { RegistrationPinService } from '@modules/registration-pin';
 import { FilesStorageClientAdapterService } from '@src/modules/files-storage-client';
 import { DomainName, OperationType } from '@shared/domain/types';
 import { SubmissionService, TaskService } from '@modules/task';
-import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder';
 import { NewsService } from '@src/modules/news/service/news.service';
 import { DeletionStatusModel } from '../domain/types';
 import { DeletionLogService } from '../services/deletion-log.service';
@@ -210,55 +210,55 @@ describe(DeletionRequestUc.name, () => {
 	describe('executeDeletionRequests', () => {
 		describe('when executing deletionRequests', () => {
 			const setup = () => {
-				const accountDeleted = DomainOperationBuilder.build(DomainName.ACCOUNT, OperationType.DELETE, 1, [
+				const accountDeleted = DomainDeletionReportBuilder.build(DomainName.ACCOUNT, OperationType.DELETE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const classesUpdated = DomainOperationBuilder.build(DomainName.CLASS, OperationType.UPDATE, 1, [
+				const classesUpdated = DomainDeletionReportBuilder.build(DomainName.CLASS, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const courseGroupUpdated = DomainOperationBuilder.build(DomainName.COURSEGROUP, OperationType.UPDATE, 1, [
+				const courseGroupUpdated = DomainDeletionReportBuilder.build(DomainName.COURSEGROUP, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const courseUpdated = DomainOperationBuilder.build(DomainName.COURSE, OperationType.UPDATE, 1, [
+				const courseUpdated = DomainDeletionReportBuilder.build(DomainName.COURSE, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
 				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
 
-				const dashboardDeleted = DomainOperationBuilder.build(DomainName.DASHBOARD, OperationType.DELETE, 1, [
+				const dashboardDeleted = DomainDeletionReportBuilder.build(DomainName.DASHBOARD, OperationType.DELETE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const filesDeleted = DomainOperationBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
+				const filesDeleted = DomainDeletionReportBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const filesUpdated = DomainOperationBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
+				const filesUpdated = DomainDeletionReportBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const fileRecordsUpdated = DomainOperationBuilder.build(DomainName.FILERECORDS, OperationType.UPDATE, 1, [
+				const fileRecordsUpdated = DomainDeletionReportBuilder.build(DomainName.FILERECORDS, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const lessonsUpdated = DomainOperationBuilder.build(DomainName.LESSONS, OperationType.UPDATE, 1, [
+				const lessonsUpdated = DomainDeletionReportBuilder.build(DomainName.LESSONS, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const newsUpdated = DomainOperationBuilder.build(DomainName.LESSONS, OperationType.UPDATE, 1, [
+				const newsUpdated = DomainDeletionReportBuilder.build(DomainName.LESSONS, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
 				const parentEmail = 'parent@parent.eu';
 
-				const pseudonymsDeleted = DomainOperationBuilder.build(DomainName.PSEUDONYMS, OperationType.DELETE, 1, [
+				const pseudonymsDeleted = DomainDeletionReportBuilder.build(DomainName.PSEUDONYMS, OperationType.DELETE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const registrationPinDeleted = DomainOperationBuilder.build(
+				const registrationPinDeleted = DomainDeletionReportBuilder.build(
 					DomainName.REGISTRATIONPIN,
 					OperationType.DELETE,
 					1,
@@ -269,59 +269,59 @@ describe(DeletionRequestUc.name, () => {
 					userId: deletionRequestToExecute.targetRefId,
 				});
 
-				const rocketChatUserDeleted = DomainOperationBuilder.build(DomainName.ROCKETCHATUSER, OperationType.DELETE, 1, [
+				const rocketChatUserDeleted = DomainDeletionReportBuilder.build(DomainName.ROCKETCHATUSER, OperationType.DELETE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
 				const rocketChatServiceDeleted = { success: true };
 
-				const tasksModifiedByRemoveCreatorId = DomainOperationBuilder.build(DomainName.TASK, OperationType.UPDATE, 1, [
+				const tasksModifiedByRemoveCreatorId = DomainDeletionReportBuilder.build(DomainName.TASK, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const tasksModifiedByRemoveUserFromFinished = DomainOperationBuilder.build(
+				const tasksModifiedByRemoveUserFromFinished = DomainDeletionReportBuilder.build(
 					DomainName.TASK,
 					OperationType.UPDATE,
 					1,
 					[new ObjectId().toHexString()]
 				);
 
-				const tasksDeleted = DomainOperationBuilder.build(DomainName.TASK, OperationType.DELETE, 1, [
+				const tasksDeleted = DomainDeletionReportBuilder.build(DomainName.TASK, OperationType.DELETE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const teamsUpdated = DomainOperationBuilder.build(DomainName.TEAMS, OperationType.UPDATE, 1, [
+				const teamsUpdated = DomainDeletionReportBuilder.build(DomainName.TEAMS, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const userDeleted = DomainOperationBuilder.build(DomainName.USER, OperationType.DELETE, 1, [
+				const userDeleted = DomainDeletionReportBuilder.build(DomainName.USER, OperationType.DELETE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const submissionsDeleted = DomainOperationBuilder.build(DomainName.SUBMISSIONS, OperationType.DELETE, 1, [
+				const submissionsDeleted = DomainDeletionReportBuilder.build(DomainName.SUBMISSIONS, OperationType.DELETE, 1, [
 					new ObjectId().toHexString(),
 				]);
-				const submissionsUpdated = DomainOperationBuilder.build(DomainName.SUBMISSIONS, OperationType.UPDATE, 1, [
+				const submissionsUpdated = DomainDeletionReportBuilder.build(DomainName.SUBMISSIONS, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
 				const user = userDoFactory.buildWithId();
 
-				accountService.deleteAccountByUserId.mockResolvedValueOnce(accountDeleted);
-				registrationPinService.deleteRegistrationPinByEmail.mockResolvedValueOnce(registrationPinDeleted);
-				classService.deleteUserDataFromClasses.mockResolvedValueOnce(classesUpdated);
-				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(courseGroupUpdated);
-				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(courseUpdated);
+				accountService.deleteUserData.mockResolvedValueOnce(accountDeleted);
+				registrationPinService.deleteUserData.mockResolvedValueOnce(registrationPinDeleted);
+				classService.deleteUserData.mockResolvedValueOnce(classesUpdated);
+				courseGroupService.deleteUserData.mockResolvedValueOnce(courseGroupUpdated);
+				courseService.deleteUserData\.mockResolvedValueOnce(courseUpdated);
 				filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(filesDeleted);
 				filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles.mockResolvedValueOnce(filesUpdated);
-				lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(lessonsUpdated);
+				lessonService.deleteUserData.mockResolvedValueOnce(lessonsUpdated);
 				pseudonymService.deleteByUserId.mockResolvedValueOnce(pseudonymsDeleted);
 				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(teamsUpdated);
-				userService.deleteUser.mockResolvedValueOnce(userDeleted);
+				userService.deleteUserData.mockResolvedValueOnce(userDeleted);
 				rocketChatUserService.deleteByUserId.mockResolvedValueOnce(rocketChatUserDeleted);
 				rocketChatService.deleteUser.mockResolvedValueOnce(rocketChatServiceDeleted);
 				filesStorageClientAdapterService.removeCreatorIdFromFileRecords.mockResolvedValueOnce(fileRecordsUpdated);
-				dashboardService.deleteDashboardByUserId.mockResolvedValueOnce(dashboardDeleted);
+				dashboardService.deleteUserData.mockResolvedValueOnce(dashboardDeleted);
 				taskService.removeCreatorIdFromTasks.mockResolvedValueOnce(tasksModifiedByRemoveCreatorId);
 				taskService.removeUserFromFinished.mockResolvedValueOnce(tasksModifiedByRemoveUserFromFinished);
 				taskService.deleteTasksByOnlyCreator.mockResolvedValueOnce(tasksDeleted);
@@ -360,7 +360,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(accountService.deleteAccountByUserId).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+				expect(accountService.deleteUserData).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call registrationPinService.deleteRegistrationPinByEmail to delete user data in registrationPin module', async () => {
@@ -370,7 +370,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(registrationPinService.deleteRegistrationPinByEmail).toHaveBeenCalled();
+				expect(registrationPinService.deleteUserData).toHaveBeenCalled();
 			});
 
 			it('should call userService.findById and userService.getParentEmailsFromUser to get own email and parentEmails', async () => {
@@ -379,7 +379,7 @@ describe(DeletionRequestUc.name, () => {
 				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
 				userService.findByIdOrNull.mockResolvedValueOnce(user);
 				userService.getParentEmailsFromUser.mockRejectedValue([parentEmail]);
-				registrationPinService.deleteRegistrationPinByEmail.mockRejectedValueOnce(3);
+				registrationPinService.deleteUserData.mockRejectedValueOnce(3);
 
 				await uc.executeDeletionRequests();
 
@@ -394,7 +394,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(classService.deleteUserDataFromClasses).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+				expect(classService.deleteUserData).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call courseGroupService.deleteUserDataFromCourseGroup to delete user data in courseGroup module', async () => {
@@ -404,7 +404,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(courseGroupService.deleteUserDataFromCourseGroup).toHaveBeenCalledWith(
+				expect(courseGroupService.deleteUserData).toHaveBeenCalledWith(
 					deletionRequestToExecute.targetRefId
 				);
 			});
@@ -416,7 +416,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(courseService.deleteUserDataFromCourse).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+				expect(courseService.deleteUserData\).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call filesService.markFilesOwnedByUserForDeletion to mark users files to delete in file module', async () => {
@@ -460,7 +460,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(lessonService.deleteUserDataFromLessons).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+				expect(lessonService.deleteUserData).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call pseudonymService.deleteByUserId to delete users data in pseudonym module', async () => {
@@ -522,7 +522,7 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(dashboardService.deleteDashboardByUserId).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
+				expect(dashboardService.deleteUserData).toHaveBeenCalledWith(deletionRequestToExecute.targetRefId);
 			});
 
 			it('should call taskService.deleteTasksByOnlyCreator to delete Tasks only with creator', async () => {
@@ -604,47 +604,47 @@ describe(DeletionRequestUc.name, () => {
 			const setup = () => {
 				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
 
-				const classesUpdated = DomainOperationBuilder.build(DomainName.CLASS, OperationType.UPDATE, 1, [
+				const classesUpdated = DomainDeletionReportBuilder.build(DomainName.CLASS, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const courseGroupUpdated = DomainOperationBuilder.build(DomainName.COURSEGROUP, OperationType.UPDATE, 1, [
+				const courseGroupUpdated = DomainDeletionReportBuilder.build(DomainName.COURSEGROUP, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const courseUpdated = DomainOperationBuilder.build(DomainName.COURSE, OperationType.UPDATE, 1, [
+				const courseUpdated = DomainDeletionReportBuilder.build(DomainName.COURSE, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const filesDeleted = DomainOperationBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
+				const filesDeleted = DomainDeletionReportBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const filesUpdated = DomainOperationBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
+				const filesUpdated = DomainDeletionReportBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const lessonsUpdated = DomainOperationBuilder.build(DomainName.LESSONS, OperationType.UPDATE, 1, [
+				const lessonsUpdated = DomainDeletionReportBuilder.build(DomainName.LESSONS, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const pseudonymsDeleted = DomainOperationBuilder.build(DomainName.PSEUDONYMS, OperationType.DELETE, 1, [
+				const pseudonymsDeleted = DomainDeletionReportBuilder.build(DomainName.PSEUDONYMS, OperationType.DELETE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				const teamsUpdated = DomainOperationBuilder.build(DomainName.TEAMS, OperationType.UPDATE, 1, [
+				const teamsUpdated = DomainDeletionReportBuilder.build(DomainName.TEAMS, OperationType.UPDATE, 1, [
 					new ObjectId().toHexString(),
 				]);
 
-				classService.deleteUserDataFromClasses.mockResolvedValueOnce(classesUpdated);
-				courseGroupService.deleteUserDataFromCourseGroup.mockResolvedValueOnce(courseGroupUpdated);
-				courseService.deleteUserDataFromCourse.mockResolvedValueOnce(courseUpdated);
+				classService.deleteUserData.mockResolvedValueOnce(classesUpdated);
+				courseGroupService.deleteUserData.mockResolvedValueOnce(courseGroupUpdated);
+				courseService.deleteUserData\.mockResolvedValueOnce(courseUpdated);
 				filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(filesDeleted);
 				filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles.mockResolvedValueOnce(filesUpdated);
-				lessonService.deleteUserDataFromLessons.mockResolvedValueOnce(lessonsUpdated);
+				lessonService.deleteUserData.mockResolvedValueOnce(lessonsUpdated);
 				pseudonymService.deleteByUserId.mockResolvedValueOnce(pseudonymsDeleted);
 				teamService.deleteUserDataFromTeams.mockResolvedValueOnce(teamsUpdated);
-				userService.deleteUser.mockRejectedValueOnce(new Error());
+				userService.deleteUserData.mockRejectedValueOnce(new Error());
 
 				return {
 					deletionRequestToExecute,
@@ -673,7 +673,7 @@ describe(DeletionRequestUc.name, () => {
 					deletionRequestExecuted.targetRefDomain,
 					deletionRequestExecuted.targetRefId
 				);
-				const statistics = DomainOperationBuilder.build(
+				const statistics = DomainDeletionReportBuilder.build(
 					deletionLogExecuted.domain,
 					deletionLogExecuted.operation,
 					deletionLogExecuted.count,

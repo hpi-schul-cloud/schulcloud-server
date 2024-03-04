@@ -8,6 +8,7 @@ import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from '@sr
 import { LoggerModule } from '@src/core/logger';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@src/infra/database';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@src/infra/rabbitmq';
+import { CqrsModule } from '@nestjs/cqrs';
 import { DeletionApiModule } from '../deletion/deletion-api.module';
 import { serverConfig } from './server.config';
 import { defaultMikroOrmOptions } from './server.module';
@@ -34,6 +35,7 @@ const serverModules = [
 			entities: [...ALL_ENTITIES, FileEntity],
 			debug: true,
 		}),
+		CqrsModule,
 		LoggerModule,
 	],
 })

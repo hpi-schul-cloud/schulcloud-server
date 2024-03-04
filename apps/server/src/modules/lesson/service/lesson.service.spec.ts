@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType } from '@shared/domain/entity';
 import { lessonFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder';
 import { DomainName, OperationType } from '@shared/domain/types';
 import { LessonRepo } from '../repository';
 import { LessonService } from './lesson.service';
@@ -151,7 +151,7 @@ describe('LessonService', () => {
 
 				lessonRepo.findByUserId.mockResolvedValue([lesson1, lesson2]);
 
-				const expectedResult = DomainOperationBuilder.build(DomainName.LESSONS, OperationType.UPDATE, 2, [
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.LESSONS, OperationType.UPDATE, 2, [
 					lesson1.id,
 					lesson2.id,
 				]);
@@ -165,7 +165,7 @@ describe('LessonService', () => {
 			it('should call lessonRepo.findByUserId', async () => {
 				const { userId } = setup();
 
-				await lessonService.deleteUserDataFromLessons(userId);
+				await lessonService.deleteUserData(userId);
 
 				expect(lessonRepo.findByUserId).toBeCalledWith(userId);
 			});
@@ -173,7 +173,7 @@ describe('LessonService', () => {
 			it('should update lessons without deleted user', async () => {
 				const { expectedResult, userId } = setup();
 
-				const result = await lessonService.deleteUserDataFromLessons(userId);
+				const result = await lessonService.deleteUserData(userId);
 
 				expect(result).toEqual(expectedResult);
 			});

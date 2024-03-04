@@ -10,20 +10,26 @@ import { RocketChatUserService } from '@modules/rocketchat-user';
 import { TeamService } from '@modules/teams';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { DomainName, EntityId, OperationType } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { SubmissionService, TaskService } from '@modules/task';
-import { DomainOperation } from '@shared/domain/interface';
-import { DomainOperationBuilder } from '@shared/domain/builder/domain-operation.builder';
+import { DomainDeletionReport } from '@shared/domain/interface';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder/domain-deletion-report.builder';
 import { NewsService } from '@src/modules/news/service/news.service';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../builder';
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 import { DeletionRequest, DeletionLog } from '../domain';
 import { DeletionRequestService, DeletionLogService } from '../services';
+import { UserDeletedEvent } from '../event';
+import { DataDeletedEvent } from '../event/data-deleted.event';
 
 @Injectable()
-export class DeletionRequestUc {
+@EventsHandler(DataDeletedEvent)
+export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
+	config: string[];
+
 	constructor(
 		private readonly deletionRequestService: DeletionRequestService,
 		private readonly deletionLogService: DeletionLogService,
@@ -44,9 +50,46 @@ export class DeletionRequestUc {
 		private readonly dashboardService: DashboardService,
 		private readonly taskService: TaskService,
 		private readonly submissionService: SubmissionService,
-		private readonly newsService: NewsService
+		private readonly newsService: NewsService,
+		private readonly eventBus: EventBus
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
+		this.config = [
+			'account',
+			'class',
+			'courseGroup',
+			'course',
+			'dashboard',
+			// 'file',
+			// 'fileRecords',
+			'lessons',
+			'pseudonyms',
+			// 'registrationPin',
+			// 'rocketChatUser',
+			// 'rocketChatService',
+			'task',
+			'teams',
+			'user',
+			'submissions',
+			'news',
+		];
+	}
+
+	async handle({ deletionRequest, domainOperation }: DataDeletedEvent) {
+		// check that the domainOperation contains a count of 0 and has not previously been stored in DB
+		// if so, do not log it
+		await this.logDeletion(deletionRequest, domainOperation);
+
+		// code below should be executed by external cronjob
+		const deletionLogs: DeletionLog[] = await this.deletionLogService.findByDeletionRequestId(deletionRequest.id);
+
+		if (this.checkLogsPerDomain(deletionLogs)) {
+			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
+		}
+	}
+
+	private checkLogsPerDomain(deletionLogs: DeletionLog[]): boolean {
+		return this.config.every((domain) => deletionLogs.some((log) => log.domain === domain));
 	}
 
 	async createDeletionRequest(deletionRequest: DeletionRequestBodyProps): Promise<DeletionRequestResponse> {
@@ -84,8 +127,8 @@ export class DeletionRequestUc {
 		);
 
 		const deletionLog: DeletionLog[] = await this.deletionLogService.findByDeletionRequestId(deletionRequestId);
-		const domainOperation: DomainOperation[] = deletionLog.map((log) =>
-			DomainOperationBuilder.build(log.domain, log.operation, log.count, log.refs)
+		const domainOperation: DomainDeletionReport[] = deletionLog.map((log) =>
+			DomainDeletionReportBuilder.build(log.domain, log.operation, log.count, log.refs)
 		);
 		response = { ...response, statistics: domainOperation };
 
@@ -100,52 +143,31 @@ export class DeletionRequestUc {
 
 	private async executeDeletionRequest(deletionRequest: DeletionRequest): Promise<void> {
 		try {
-			await Promise.all([
-				this.removeAccount(deletionRequest),
-				this.removeUserFromClasses(deletionRequest),
-				this.removeUserFromCourseGroup(deletionRequest),
-				this.removeUserFromCourse(deletionRequest),
-				this.removeUsersFilesAndPermissions(deletionRequest),
-				this.removeUsersDataFromFileRecords(deletionRequest),
-				this.removeUserFromLessons(deletionRequest),
-				this.removeUsersPseudonyms(deletionRequest),
-				this.removeUserFromTeams(deletionRequest),
-				this.removeUser(deletionRequest),
-				this.removeUserFromRocketChat(deletionRequest),
-				this.removeUsersDashboard(deletionRequest),
-				this.removeUserFromTasks(deletionRequest),
-				this.removeUserFromSubmissions(deletionRequest),
-				this.removeUsersDataFromNews(deletionRequest),
-			]);
-			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
+			await this.eventBus.publish(new UserDeletedEvent(deletionRequest));
+			await this.deletionRequestService.markDeletionRequestAsPending(deletionRequest.id);
 		} catch (error) {
 			this.logger.error(`execution of deletionRequest ${deletionRequest.id} was failed`, error);
 			await this.deletionRequestService.markDeletionRequestAsFailed(deletionRequest.id);
 		}
 	}
 
-	private async logDeletion(
-		deletionRequest: DeletionRequest,
-		domainModel: DomainName,
-		operation: OperationType,
-		count: number,
-		refs: string[]
-	): Promise<void> {
-		await this.deletionLogService.createDeletionLog(deletionRequest.id, domainModel, operation, count, refs);
-	}
-
-	private async removeAccount(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: 'removeAccount', deletionRequest });
-
-		const accountDeleted = await this.accountService.deleteAccountByUserId(deletionRequest.targetRefId);
-		await this.logDeletion(
-			deletionRequest,
-			accountDeleted.domain,
-			accountDeleted.operation,
-			accountDeleted.count,
-			accountDeleted.refs
+	private async logDeletion(deletionRequest: DeletionRequest, domainOperation: DomainDeletionReport): Promise<void> {
+		await this.deletionLogService.createDeletionLog(
+			deletionRequest.id,
+			domainOperation.domain,
+			domainOperation.operation,
+			domainOperation.count,
+			domainOperation.refs
 		);
 	}
+
+	// private async removeAccount(deletionRequest: DeletionRequest) {
+	// 	this.logger.debug({ action: 'removeAccount', deletionRequest });
+
+	// 	const accountDeleted: DomainDeletionReport = await this.accountService.deleteUserData(deletionRequest.targetRefId);
+
+	// 	await this.logDeletion(deletionRequest, accountDeleted);
+	// }
 
 	private async removeUserRegistrationPin(deletionRequest: DeletionRequest): Promise<number> {
 		const userToDeletion = await this.userService.findByIdOrNull(deletionRequest.targetRefId);
@@ -156,152 +178,119 @@ export class DeletionRequestUc {
 		}
 
 		const results = await Promise.all(
-			emailsToDeletion.map((email) => this.registrationPinService.deleteRegistrationPinByEmail(email))
+			emailsToDeletion.map((email) => this.registrationPinService.deleteUserData(email))
 		);
 
 		const result = this.getDomainOperation(results);
 
-		await this.logDeletion(deletionRequest, result.domain, result.operation, result.count, result.refs);
+		await this.logDeletion(deletionRequest, result);
 
 		return result.count;
 	}
 
-	private getDomainOperation(results: DomainOperation[]) {
-		return results.reduce(
-			(acc, current) => {
-				acc.count += current.count;
-				acc.refs = [...acc.refs, ...current.refs];
+	// private getDomainOperation(results: DomainDeletionReport[]) {
+	// 	return results.reduce(
+	// 		(acc, current) => {
+	// 			acc.count += current.count;
+	// 			acc.refs = [...acc.refs, ...current.refs];
 
-				return acc;
-			},
-			{
-				domain: results[0].domain,
-				operation: results[0].operation,
-				count: 0,
-				refs: [],
-			}
-		);
-	}
+	// 			return acc;
+	// 		},
+	// 		{
+	// 			domain: results[0].domain,
+	// 			operation: results[0].operation,
+	// 			count: 0,
+	// 			refs: [],
+	// 		}
+	// 	);
+	// }
 
-	private async removeUserFromClasses(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: 'removeUserFromClasses', deletionRequest });
+	// private async removeUserFromClasses(deletionRequest: DeletionRequest) {
+	// 	this.logger.debug({ action: 'removeUserFromClasses', deletionRequest });
 
-		const classesUpdated = await this.classService.deleteUserDataFromClasses(deletionRequest.targetRefId);
-		await this.logDeletion(
-			deletionRequest,
-			classesUpdated.domain,
-			classesUpdated.operation,
-			classesUpdated.count,
-			classesUpdated.refs
-		);
-	}
+	// 	const classesUpdated: DomainDeletionReport = await this.classService.deleteUserData(deletionRequest.targetRefId);
 
-	private async removeUserFromCourseGroup(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: 'removeUserFromCourseGroup', deletionRequest });
+	// 	await this.logDeletion(deletionRequest, classesUpdated);
+	// }
 
-		const courseGroupUpdated = await this.courseGroupService.deleteUserDataFromCourseGroup(deletionRequest.targetRefId);
-		await this.logDeletion(
-			deletionRequest,
-			courseGroupUpdated.domain,
-			courseGroupUpdated.operation,
-			courseGroupUpdated.count,
-			courseGroupUpdated.refs
-		);
-	}
+	// private async removeUserFromCourseGroup(deletionRequest: DeletionRequest) {
+	// 	this.logger.debug({ action: 'removeUserFromCourseGroup', deletionRequest });
 
-	private async removeUserFromCourse(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: 'removeUserFromCourse', deletionRequest });
+	// 	const courseGroupUpdated: DomainDeletionReport = await this.courseGroupService.deleteUserData(
+	// 		deletionRequest.targetRefId
+	// 	);
 
-		const courseUpdated = await this.courseService.deleteUserDataFromCourse(deletionRequest.targetRefId);
-		await this.logDeletion(
-			deletionRequest,
-			courseUpdated.domain,
-			courseUpdated.operation,
-			courseUpdated.count,
-			courseUpdated.refs
-		);
-	}
+	// 	await this.logDeletion(deletionRequest, courseGroupUpdated);
+	// }
 
-	private async removeUsersDashboard(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: 'removeUsersDashboard', deletionRequest });
+	// private async removeUserFromCourse(deletionRequest: DeletionRequest) {
+	// 	this.logger.debug({ action: 'removeUserFromCourse', deletionRequest });
 
-		const dashboardDeleted = await this.dashboardService.deleteDashboardByUserId(deletionRequest.targetRefId);
-		await this.logDeletion(
-			deletionRequest,
-			dashboardDeleted.domain,
-			dashboardDeleted.operation,
-			dashboardDeleted.count,
-			dashboardDeleted.refs
-		);
-	}
+	// 	const courseUpdated: DomainDeletionReport = await this.courseService.deleteUserData(deletionRequest.targetRefId);
 
-	private async removeUsersFilesAndPermissions(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: 'removeUsersFilesAndPermissions', deletionRequest });
+	// 	await this.logDeletion(deletionRequest, courseUpdated);
+	// }
 
-		const filesDeleted = await this.filesService.markFilesOwnedByUserForDeletion(deletionRequest.targetRefId);
-		const filesUpdated = await this.filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles(
-			deletionRequest.targetRefId
-		);
+	// private async removeUsersDashboard(deletionRequest: DeletionRequest) {
+	// 	this.logger.debug({ action: 'removeUsersDashboard', deletionRequest });
 
-		const result = this.getDomainOperation([filesDeleted, filesUpdated]);
+	// 	const dashboardDeleted: DomainDeletionReport = await this.dashboardService.deleteUserData(deletionRequest.targetRefId);
 
-		await this.logDeletion(deletionRequest, result.domain, result.operation, result.count, result.refs);
-	}
+	// 	await this.logDeletion(deletionRequest, dashboardDeleted);
+	// }
 
-	private async removeUsersDataFromFileRecords(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: 'removeUsersDataFromFileRecords', deletionRequest });
+	// private async removeUsersFilesAndPermissions(deletionRequest: DeletionRequest) {
+	// 	this.logger.debug({ action: 'removeUsersFilesAndPermissions', deletionRequest });
 
-		const fileRecordsUpdated = await this.filesStorageClientAdapterService.removeCreatorIdFromFileRecords(
-			deletionRequest.targetRefId
-		);
+	// 	const filesDeleted = await this.filesService.markFilesOwnedByUserForDeletion(deletionRequest.targetRefId);
+	// 	const filesUpdated = await this.filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles(
+	// 		deletionRequest.targetRefId
+	// 	);
 
-		await this.logDeletion(
-			deletionRequest,
-			fileRecordsUpdated.domain,
-			fileRecordsUpdated.operation,
-			fileRecordsUpdated.count,
-			fileRecordsUpdated.refs
-		);
-	}
+	// 	const result = this.getDomainOperation([filesDeleted, filesUpdated]);
 
-	private async removeUserFromLessons(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: 'removeUserFromLessons', deletionRequest });
+	// 	await this.logDeletion(deletionRequest, result.domain, result.operation, result.count, result.refs);
+	// }
 
-		const lessonsUpdated = await this.lessonService.deleteUserDataFromLessons(deletionRequest.targetRefId);
-		await this.logDeletion(
-			deletionRequest,
-			lessonsUpdated.domain,
-			lessonsUpdated.operation,
-			lessonsUpdated.count,
-			lessonsUpdated.refs
-		);
-	}
+	// private async removeUsersDataFromFileRecords(deletionRequest: DeletionRequest) {
+	// 	this.logger.debug({ action: 'removeUsersDataFromFileRecords', deletionRequest });
 
-	private async removeUsersPseudonyms(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: 'removeUsersPseudonyms', deletionRequest });
+	// 	const fileRecordsUpdated = await this.filesStorageClientAdapterService.removeCreatorIdFromFileRecords(
+	// 		deletionRequest.targetRefId
+	// 	);
 
-		const pseudonymsDeleted = await this.pseudonymService.deleteByUserId(deletionRequest.targetRefId);
-		await this.logDeletion(
-			deletionRequest,
-			pseudonymsDeleted.domain,
-			pseudonymsDeleted.operation,
-			pseudonymsDeleted.count,
-			pseudonymsDeleted.refs
-		);
-	}
+	// 	await this.logDeletion(
+	// 		deletionRequest,
+	// 		fileRecordsUpdated.domain,
+	// 		fileRecordsUpdated.operation,
+	// 		fileRecordsUpdated.count,
+	// 		fileRecordsUpdated.refs
+	// 	);
+	// }
 
-	private async removeUserFromTeams(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: ' removeUserFromTeams', deletionRequest });
+	// private async removeUserFromLessons(deletionRequest: DeletionRequest) {
+	// 	this.logger.debug({ action: 'removeUserFromLessons', deletionRequest });
 
-		const teamsUpdated = await this.teamService.deleteUserDataFromTeams(deletionRequest.targetRefId);
-		await this.logDeletion(
-			deletionRequest,
-			teamsUpdated.domain,
-			teamsUpdated.operation,
-			teamsUpdated.count,
-			teamsUpdated.refs
-		);
-	}
+	// 	const lessonsUpdated: DomainDeletionReport = await this.lessonService.deleteUserData(deletionRequest.targetRefId);
+
+	// 	await this.logDeletion(deletionRequest, lessonsUpdated);
+	// }
+
+	// private async removeUsersPseudonyms(deletionRequest: DeletionRequest) {
+	// 	this.logger.debug({ action: 'removeUsersPseudonyms', deletionRequest });
+
+	// 	const pseudonymsDeleted: DomainDeletionReport = await this.pseudonymService.deleteUserData(deletionRequest.targetRefId);
+
+	// 	await this.logDeletion(deletionRequest, pseudonymsDeleted);
+	// }
+
+	// private async removeUserFromTeams(deletionRequest: DeletionRequest) {
+	// 	this.logger.debug({ action: ' removeUserFromTeams', deletionRequest });
+
+	// 	const teamsUpdated: DomainDeletionReport = await this.teamService.deleteUserData(deletionRequest.targetRefId);
+
+	// 	await this.logDeletion(deletionRequest, teamsUpdated);
+	// }
 
 	private async removeUser(deletionRequest: DeletionRequest) {
 		this.logger.debug({ action: 'removeUser', deletionRequest });
@@ -309,108 +298,66 @@ export class DeletionRequestUc {
 		const registrationPinDeleted = await this.removeUserRegistrationPin(deletionRequest);
 
 		if (registrationPinDeleted >= 0) {
-			const userDeleted = await this.userService.deleteUser(deletionRequest.targetRefId);
-			await this.logDeletion(
-				deletionRequest,
-				userDeleted.domain,
-				userDeleted.operation,
-				userDeleted.count,
-				userDeleted.refs
-			);
+			const userDeleted: DomainDeletionReport = await this.userService.deleteUserData(deletionRequest.targetRefId);
+			await this.logDeletion(deletionRequest, userDeleted);
 		}
 	}
 
-	private async removeUserFromRocketChat(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: 'removeUserFromRocketChat', deletionRequest });
+	// private async removeUserFromRocketChat(deletionRequest: DeletionRequest) {
+	// 	this.logger.debug({ action: 'removeUserFromRocketChat', deletionRequest });
 
-		const rocketChatUser = await this.rocketChatUserService.findByUserId(deletionRequest.targetRefId);
+	// 	const rocketChatUser = await this.rocketChatUserService.findByUserId(deletionRequest.targetRefId);
 
-		if (rocketChatUser.length > 0) {
-			const [rocketChatDeleted, rocketChatUserDeleted] = await Promise.all([
-				this.rocketChatService.deleteUser(rocketChatUser[0].username),
-				this.rocketChatUserService.deleteByUserId(rocketChatUser[0].userId),
-			]);
+	// 	if (rocketChatUser.length > 0) {
+	// 		const [rocketChatDeleted, rocketChatUserDeleted] = await Promise.all([
+	// 			this.rocketChatService.deleteUser(rocketChatUser[0].username),
+	// 			this.rocketChatUserService.deleteByUserId(rocketChatUser[0].userId),
+	// 		]);
 
-			await this.logDeletion(
-				deletionRequest,
-				rocketChatUserDeleted.domain,
-				rocketChatUserDeleted.operation,
-				rocketChatUserDeleted.count,
-				rocketChatUserDeleted.refs
-			);
+	// 		await this.logDeletion(
+	// 			deletionRequest,
+	// 			rocketChatUserDeleted.domain,
+	// 			rocketChatUserDeleted.operation,
+	// 			rocketChatUserDeleted.count,
+	// 			rocketChatUserDeleted.refs
+	// 		);
 
-			if (rocketChatDeleted) {
-				await this.logDeletion(deletionRequest, DomainName.ROCKETCHATSERVICE, OperationType.DELETE, 1, [
-					rocketChatUser[0].username,
-				]);
-			}
-		}
-	}
+	// 		if (rocketChatDeleted) {
+	// 			await this.logDeletion(deletionRequest, DomainName.ROCKETCHATSERVICE, OperationType.DELETE, 1, [
+	// 				rocketChatUser[0].username,
+	// 			]);
+	// 		}
+	// 	}
+	// }
 
-	private async removeUserFromTasks(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: 'removeUserFromTasks', deletionRequest });
+	// private async removeUserFromTasks(deletionRequest: DeletionRequest) {
+	// 	this.logger.debug({ action: 'removeUserFromTasks', deletionRequest });
 
-		const [tasksDeleted, tasksModifiedByRemoveCreator, tasksModifiedByRemoveUserFromFinished] = await Promise.all([
-			this.taskService.deleteTasksByOnlyCreator(deletionRequest.targetRefId),
-			this.taskService.removeCreatorIdFromTasks(deletionRequest.targetRefId),
-			this.taskService.removeUserFromFinished(deletionRequest.targetRefId),
-		]);
+	// 	const modifiedData: DomainDeletionReport[] = await this.taskService.deleteUserData(deletionRequest.targetRefId);
 
-		const modifiedTasksCount = tasksModifiedByRemoveCreator.count + tasksModifiedByRemoveUserFromFinished.count;
-		const modifiedTasksRef = [...tasksModifiedByRemoveCreator.refs, ...tasksModifiedByRemoveUserFromFinished.refs];
+	// 	// deleted task
+	// 	await this.logDeletion(deletionRequest, modifiedData[0]);
 
-		await this.logDeletion(
-			deletionRequest,
-			tasksDeleted.domain,
-			tasksDeleted.operation,
-			tasksDeleted.count,
-			tasksDeleted.refs
-		);
+	// 	// updated Task
+	// 	await this.logDeletion(deletionRequest, modifiedData[1]);
+	// }
 
-		await this.logDeletion(
-			deletionRequest,
-			tasksModifiedByRemoveCreator.domain,
-			tasksModifiedByRemoveCreator.operation,
-			modifiedTasksCount,
-			modifiedTasksRef
-		);
-	}
+	// private async removeUserFromSubmissions(deletionRequest: DeletionRequest) {
+	// 	this.logger.debug({ action: 'removeUserFromSubmissions', deletionRequest });
 
-	private async removeUserFromSubmissions(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: 'removeUserFromSubmissions', deletionRequest });
+	// 	const modifiedData: DomainDeletionReport[] = await this.submissionService.deleteUserData(deletionRequest.targetRefId);
 
-		const [submissionsDeleted, submissionsModified] = await Promise.all([
-			this.submissionService.deleteSingleSubmissionsOwnedByUser(deletionRequest.targetRefId),
-			this.submissionService.removeUserReferencesFromSubmissions(deletionRequest.targetRefId),
-		]);
+	// 	// deleted Submissions
+	// 	await this.logDeletion(deletionRequest, modifiedData[0]);
 
-		await this.logDeletion(
-			deletionRequest,
-			submissionsDeleted.domain,
-			submissionsDeleted.operation,
-			submissionsDeleted.count,
-			submissionsDeleted.refs
-		);
+	// 	// updated Submissions
+	// 	await this.logDeletion(deletionRequest, modifiedData[1]);
+	// }
 
-		await this.logDeletion(
-			deletionRequest,
-			submissionsModified.domain,
-			submissionsModified.operation,
-			submissionsModified.count,
-			submissionsModified.refs
-		);
-	}
+	// private async removeUsersDataFromNews(deletionRequest: DeletionRequest) {
+	// 	this.logger.debug({ action: 'removeUsersDataFromNews', deletionRequest });
+	// 	const newsModified = await this.newsService.deleteUserData(deletionRequest.targetRefId);
 
-	private async removeUsersDataFromNews(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: 'removeUsersDataFromNews', deletionRequest });
-		const newsModified = await this.newsService.deleteCreatorOrUpdaterReference(deletionRequest.targetRefId);
-
-		await this.logDeletion(
-			deletionRequest,
-			newsModified.domain,
-			newsModified.operation,
-			newsModified.count,
-			newsModified.refs
-		);
-	}
+	// 	await this.logDeletion(deletionRequest, newsModified);
+	// }
 }

@@ -4,8 +4,11 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
 import { Counted, DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { isEmail, validateOrReject } from 'class-validator';
-import { DomainOperation } from '@shared/domain/interface';
-import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import { UserDeletedEvent } from '@src/modules/deletion/event';
+import { DataDeletedEvent } from '@src/modules/deletion/event/data-deleted.event';
 import { LegacyLogger } from '../../../core/logger';
 import { ServerConfig } from '../../server/server.config';
 import { AccountServiceDb } from './account-db.service';
@@ -15,7 +18,8 @@ import { AccountValidationService } from './account.validation.service';
 import { AccountDto, AccountSaveDto } from './dto';
 
 @Injectable()
-export class AccountService extends AbstractAccountService {
+@EventsHandler(UserDeletedEvent)
+export class AccountService extends AbstractAccountService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	private readonly accountImpl: AbstractAccountService;
 
 	constructor(
@@ -23,7 +27,8 @@ export class AccountService extends AbstractAccountService {
 		private readonly accountIdm: AccountServiceIdm,
 		private readonly configService: ConfigService<ServerConfig, true>,
 		private readonly accountValidationService: AccountValidationService,
-		private readonly logger: LegacyLogger
+		private readonly logger: LegacyLogger,
+		private readonly eventBus: EventBus
 	) {
 		super();
 		this.logger.setContext(AccountService.name);
@@ -32,6 +37,11 @@ export class AccountService extends AbstractAccountService {
 		} else {
 			this.accountImpl = accountDb;
 		}
+	}
+
+	async handle({ deletionRequest }: UserDeletedEvent) {
+		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
 	}
 
 	async findById(id: string): Promise<AccountDto> {
@@ -171,15 +181,15 @@ export class AccountService extends AbstractAccountService {
 		return deletedAccounts;
 	}
 
-	async deleteAccountByUserId(userId: string): Promise<DomainOperation> {
+	async deleteUserData(userId: string): Promise<DomainDeletionReport> {
+		this.logger.debug(`Start deleting data for userId - ${userId} in account collection`);
 		const deletedAccounts = await this.deleteByUserId(userId);
 
-		const result = DomainOperationBuilder.build(
-			DomainName.ACCOUNT,
-			OperationType.DELETE,
-			deletedAccounts.length,
-			deletedAccounts
-		);
+		const result = DomainDeletionReportBuilder.build(DomainName.ACCOUNT, [
+			DomainOperationReportBuilder.build(OperationType.DELETE, deletedAccounts.length, deletedAccounts),
+		]);
+
+		this.logger.debug(`Deleted data for userId - ${userId} from account collection`);
 
 		return result;
 	}

@@ -3,23 +3,31 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
-import { DomainOperation, IFindOptions } from '@shared/domain/interface';
+import { DeletionService, DomainDeletionReport, IFindOptions } from '@shared/domain/interface';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
-import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
+import { IEventHandler, EventBus } from '@nestjs/cqrs';
+import { UserDeletedEvent, DataDeletedEvent } from '@src/modules/deletion/event';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 
 @Injectable()
-export class PseudonymService {
+export class PseudonymService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly pseudonymRepo: PseudonymsRepo,
 		private readonly externalToolPseudonymRepo: ExternalToolPseudonymRepo,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus
 	) {
 		this.logger.setContext(PseudonymService.name);
+	}
+
+	async handle({ deletionRequest }: UserDeletedEvent) {
+		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
 	}
 
 	public async findByUserAndToolOrThrow(user: UserDO, tool: ExternalTool | LtiToolDO): Promise<Pseudonym> {
@@ -79,7 +87,7 @@ export class PseudonymService {
 		return pseudonym;
 	}
 
-	public async deleteByUserId(userId: string): Promise<DomainOperation> {
+	public async deleteUserData(userId: string): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Pseudonyms',
@@ -99,12 +107,12 @@ export class PseudonymService {
 
 		const numberOfDeletedPseudonyms = deletedPseudonyms.length + deletedExternalToolPseudonyms.length;
 
-		const result = DomainOperationBuilder.build(
-			DomainName.PSEUDONYMS,
-			OperationType.DELETE,
-			numberOfDeletedPseudonyms,
-			[...deletedPseudonyms, ...deletedExternalToolPseudonyms]
-		);
+		const result = DomainDeletionReportBuilder.build(DomainName.PSEUDONYMS, [
+			DomainOperationReportBuilder.build(OperationType.DELETE, numberOfDeletedPseudonyms, [
+				...deletedPseudonyms,
+				...deletedExternalToolPseudonyms,
+			]),
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(

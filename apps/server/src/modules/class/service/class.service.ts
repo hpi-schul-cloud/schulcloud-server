@@ -2,15 +2,26 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DomainOperationBuilder } from '@shared/domain/builder';
-import { DomainOperation } from '@shared/domain/interface';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
+import { DomainDeletionReport, DeletionService } from '@shared/domain/interface';
+import { EventBus, IEventHandler } from '@nestjs/cqrs';
+import { UserDeletedEvent, DataDeletedEvent } from '@modules/deletion/event';
 import { Class } from '../domain';
 import { ClassesRepo } from '../repo';
 
 @Injectable()
-export class ClassService {
-	constructor(private readonly classesRepo: ClassesRepo, private readonly logger: Logger) {
+export class ClassService implements DeletionService, IEventHandler<UserDeletedEvent> {
+	constructor(
+		private readonly classesRepo: ClassesRepo,
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus
+	) {
 		this.logger.setContext(ClassService.name);
+	}
+
+	async handle({ deletionRequest }: UserDeletedEvent) {
+		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
 	}
 
 	public async findClassesForSchool(schoolId: EntityId): Promise<Class[]> {
@@ -25,7 +36,7 @@ export class ClassService {
 		return classes;
 	}
 
-	public async deleteUserDataFromClasses(userId: EntityId): Promise<DomainOperation> {
+	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting data from Classes',
@@ -52,12 +63,13 @@ export class ClassService {
 
 		await this.classesRepo.updateMany(updatedClasses);
 
-		const result = DomainOperationBuilder.build(
-			DomainName.CLASS,
-			OperationType.UPDATE,
-			numberOfUpdatedClasses,
-			this.getClassesId(updatedClasses)
-		);
+		const result = DomainDeletionReportBuilder.build(DomainName.CLASS, [
+			DomainOperationReportBuilder.build(
+				OperationType.UPDATE,
+				numberOfUpdatedClasses,
+				this.getClassesId(updatedClasses)
+			),
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(

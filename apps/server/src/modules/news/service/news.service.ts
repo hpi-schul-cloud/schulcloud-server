@@ -3,17 +3,28 @@ import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { NewsRepo } from '@shared/repo';
-import { DomainOperationBuilder } from '@shared/domain/builder';
-import { DomainOperation } from '@shared/domain/interface';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
+import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
 import { News } from '@shared/domain/entity';
+import { IEventHandler, EventBus } from '@nestjs/cqrs';
+import { UserDeletedEvent, DataDeletedEvent } from '@src/modules/deletion/event';
 
 @Injectable()
-export class NewsService {
-	constructor(private readonly newsRepo: NewsRepo, private readonly logger: Logger) {
+export class NewsService implements DeletionService, IEventHandler<UserDeletedEvent> {
+	constructor(
+		private readonly newsRepo: NewsRepo,
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus
+	) {
 		this.logger.setContext(NewsService.name);
 	}
 
-	public async deleteCreatorOrUpdaterReference(userId: EntityId): Promise<DomainOperation> {
+	async handle({ deletionRequest }: UserDeletedEvent) {
+		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
+	}
+
+	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from News',
@@ -32,12 +43,9 @@ export class NewsService {
 
 		await this.newsRepo.save(newsWithUserData);
 
-		const result = DomainOperationBuilder.build(
-			DomainName.NEWS,
-			OperationType.UPDATE,
-			counterOfNews,
-			this.getNewsId(newsWithUserData)
-		);
+		const result = DomainDeletionReportBuilder.build(DomainName.NEWS, [
+			DomainOperationReportBuilder.build(OperationType.UPDATE, counterOfNews, this.getNewsId(newsWithUserData)),
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(

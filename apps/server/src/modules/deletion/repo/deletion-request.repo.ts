@@ -33,7 +33,11 @@ export class DeletionRequestRepo {
 
 	async findAllItemsToExecution(limit?: number): Promise<DeletionRequest[]> {
 		const currentDate = new Date();
-		const scope = new DeletionRequestScope().byDeleteAfter(currentDate).byStatus();
+		const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
+		const scope = new DeletionRequestScope()
+			.byDeleteAfter(currentDate)
+			.byStatusRegisteredOrFailed()
+			.byStatusPending(fifteenMinutesAgo);
 		const order = { createdAt: SortOrder.desc };
 
 		const [deletionRequestEntities] = await this.em.findAndCount(DeletionRequestEntity, scope.query, {
@@ -70,6 +74,17 @@ export class DeletionRequestRepo {
 		});
 
 		deletionRequest.failed();
+		await this.em.persistAndFlush(deletionRequest);
+
+		return true;
+	}
+
+	async markDeletionRequestAsPending(deletionRequestId: EntityId): Promise<boolean> {
+		const deletionRequest: DeletionRequestEntity = await this.em.findOneOrFail(DeletionRequestEntity, {
+			id: deletionRequestId,
+		});
+
+		deletionRequest.pending();
 		await this.em.persistAndFlush(deletionRequest);
 
 		return true;

@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { FileDO } from '@src/infra/rabbitmq';
-import { DomainOperation } from '@shared/domain/interface';
-import { DomainOperationBuilder } from '@shared/domain/builder';
+import { DomainDeletionReport } from '@shared/domain/interface';
+import { DomainDeletionReportBuilder } from '@shared/domain/builder';
 import { CopyFileDto, FileDto } from '../dto';
 import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
 import { FilesStorageClientMapper } from '../mapper';
@@ -46,10 +46,10 @@ export class FilesStorageClientAdapterService {
 		return fileInfo;
 	}
 
-	async removeCreatorIdFromFileRecords(creatorId: EntityId): Promise<DomainOperation> {
+	async removeCreatorIdFromFileRecords(creatorId: EntityId): Promise<DomainDeletionReport> {
 		const response = await this.fileStorageMQProducer.removeCreatorIdFromFileRecords(creatorId);
 
-		const result = DomainOperationBuilder.build(
+		const result = DomainDeletionReportBuilder.build(
 			DomainName.FILERECORDS,
 			OperationType.UPDATE,
 			response.length,
