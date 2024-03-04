@@ -94,6 +94,7 @@ describe('Users Admin Students Controller (API)', () => {
 			schoolId: school.id,
 			year: currentYear.id,
 			userIds: [studentUser1._id],
+			gradeLevel: 12,
 		});
 
 		const mapUserToAccount = (user: User): Account =>
