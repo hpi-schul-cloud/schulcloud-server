@@ -1,9 +1,4 @@
 import { createMock } from '@golevelup/ts-jest';
-import { GroupTypes } from '@modules/group';
-import { Test, TestingModule } from '@nestjs/testing';
-import { RoleName } from '@shared/domain/interface';
-import { Logger } from '@src/core/logger';
-import { UUID } from 'bson';
 import {
 	SanisGroupRole,
 	SanisGroupType,
@@ -13,6 +8,11 @@ import {
 	SanisRole,
 	SanisSonstigeGruppenzugehoerigeResponse,
 } from '@infra/schulconnex-client';
+import { GroupTypes } from '@modules/group';
+import { Test, TestingModule } from '@nestjs/testing';
+import { RoleName } from '@shared/domain/interface';
+import { Logger } from '@src/core/logger';
+import { UUID } from 'bson';
 import { ExternalGroupDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
 import { SanisResponseMapper } from './sanis-response.mapper';
 

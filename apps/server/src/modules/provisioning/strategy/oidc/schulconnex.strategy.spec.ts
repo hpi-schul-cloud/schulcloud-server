@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Group, GroupService } from '@modules/group';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
@@ -8,6 +9,7 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import {
 	externalGroupDtoFactory,
 	externalSchoolDtoFactory,
+	groupFactory,
 	legacySchoolDoFactory,
 	userDoFactory,
 } from '@shared/testing';
@@ -21,10 +23,15 @@ import {
 	ProvisioningDto,
 	ProvisioningSystemDto,
 } from '../../dto';
-import { OidcProvisioningStrategy } from './oidc.strategy';
-import { OidcProvisioningService } from './service/oidc-provisioning.service';
+import { SchulconnexProvisioningStrategy } from './schulconnex.strategy';
+import {
+	SchulconnexCourseSyncService,
+	SchulconnexGroupProvisioningService,
+	SchulconnexSchoolProvisioningService,
+	SchulconnexUserProvisioningService,
+} from './service';
 
-class TestOidcStrategy extends OidcProvisioningStrategy {
+class TestSchulconnexStrategy extends SchulconnexProvisioningStrategy {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
 		throw new NotImplementedException();
@@ -35,20 +42,40 @@ class TestOidcStrategy extends OidcProvisioningStrategy {
 	}
 }
 
-describe('OidcStrategy', () => {
+describe(SchulconnexProvisioningStrategy.name, () => {
 	let module: TestingModule;
-	let strategy: TestOidcStrategy;
+	let strategy: TestSchulconnexStrategy;
 
-	let oidcProvisioningService: DeepMocked<OidcProvisioningService>;
+	let schulconnexSchoolProvisioningService: DeepMocked<SchulconnexSchoolProvisioningService>;
+	let schulconnexUserProvisioningService: DeepMocked<SchulconnexUserProvisioningService>;
+	let schulconnexGroupProvisioningService: DeepMocked<SchulconnexGroupProvisioningService>;
+	let schulconnexCourseSyncService: DeepMocked<SchulconnexCourseSyncService>;
+	let groupService: DeepMocked<GroupService>;
 	let provisioningFeatures: IProvisioningFeatures;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				TestOidcStrategy,
+				TestSchulconnexStrategy,
 				{
-					provide: OidcProvisioningService,
-					useValue: createMock<OidcProvisioningService>(),
+					provide: SchulconnexSchoolProvisioningService,
+					useValue: createMock<SchulconnexSchoolProvisioningService>(),
+				},
+				{
+					provide: SchulconnexUserProvisioningService,
+					useValue: createMock<SchulconnexUserProvisioningService>(),
+				},
+				{
+					provide: SchulconnexGroupProvisioningService,
+					useValue: createMock<SchulconnexGroupProvisioningService>(),
+				},
+				{
+					provide: SchulconnexCourseSyncService,
+					useValue: createMock<SchulconnexCourseSyncService>(),
+				},
+				{
+					provide: GroupService,
+					useValue: createMock<GroupService>(),
 				},
 				{
 					provide: ProvisioningFeatures,
@@ -57,14 +84,19 @@ describe('OidcStrategy', () => {
 			],
 		}).compile();
 
-		strategy = module.get(TestOidcStrategy);
-		oidcProvisioningService = module.get(OidcProvisioningService);
+		strategy = module.get(TestSchulconnexStrategy);
+		schulconnexSchoolProvisioningService = module.get(SchulconnexSchoolProvisioningService);
+		schulconnexUserProvisioningService = module.get(SchulconnexUserProvisioningService);
+		schulconnexGroupProvisioningService = module.get(SchulconnexGroupProvisioningService);
+		schulconnexCourseSyncService = module.get(SchulconnexCourseSyncService);
+		groupService = module.get(GroupService);
 		provisioningFeatures = module.get(ProvisioningFeatures);
 	});
 
 	beforeEach(() => {
 		Object.assign<IProvisioningFeatures, Partial<IProvisioningFeatures>>(provisioningFeatures, {
 			schulconnexGroupProvisioningEnabled: false,
+			schulconnexCourseSyncEnabled: false,
 		});
 	});
 
@@ -108,8 +140,8 @@ describe('OidcStrategy', () => {
 					externalId: externalSchoolId,
 				});
 
-				oidcProvisioningService.provisionExternalSchool.mockResolvedValue(school);
-				oidcProvisioningService.provisionExternalUser.mockResolvedValue(user);
+				schulconnexSchoolProvisioningService.provisionExternalSchool.mockResolvedValue(school);
+				schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValue(user);
 
 				return {
 					oauthData,
@@ -122,7 +154,7 @@ describe('OidcStrategy', () => {
 
 				await strategy.apply(oauthData);
 
-				expect(oidcProvisioningService.provisionExternalSchool).toHaveBeenCalledWith(
+				expect(schulconnexSchoolProvisioningService.provisionExternalSchool).toHaveBeenCalledWith(
 					oauthData.externalSchool,
 					oauthData.system.systemId
 				);
@@ -160,8 +192,8 @@ describe('OidcStrategy', () => {
 					externalId: externalSchoolId,
 				});
 
-				oidcProvisioningService.provisionExternalSchool.mockResolvedValue(school);
-				oidcProvisioningService.provisionExternalUser.mockResolvedValue(user);
+				schulconnexSchoolProvisioningService.provisionExternalSchool.mockResolvedValue(school);
+				schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValue(user);
 
 				return {
 					oauthData,
@@ -174,7 +206,7 @@ describe('OidcStrategy', () => {
 
 				await strategy.apply(oauthData);
 
-				expect(oidcProvisioningService.provisionExternalUser).toHaveBeenCalledWith(
+				expect(schulconnexUserProvisioningService.provisionExternalUser).toHaveBeenCalledWith(
 					oauthData.externalUser,
 					oauthData.system.systemId,
 					schoolId
@@ -212,8 +244,8 @@ describe('OidcStrategy', () => {
 					externalId: externalUserId,
 				});
 
-				oidcProvisioningService.provisionExternalUser.mockResolvedValueOnce(user);
-				oidcProvisioningService.filterExternalGroups.mockResolvedValueOnce(externalGroups);
+				schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValueOnce(user);
+				schulconnexGroupProvisioningService.filterExternalGroups.mockResolvedValueOnce(externalGroups);
 
 				return {
 					oauthData,
@@ -225,7 +257,7 @@ describe('OidcStrategy', () => {
 
 				await strategy.apply(oauthData);
 
-				expect(oidcProvisioningService.removeExternalGroupsAndAffiliation).toHaveBeenCalledWith(
+				expect(schulconnexGroupProvisioningService.removeExternalGroupsAndAffiliation).toHaveBeenCalledWith(
 					oauthData.externalUser.externalId,
 					oauthData.externalGroups,
 					oauthData.system.systemId
@@ -237,12 +269,12 @@ describe('OidcStrategy', () => {
 
 				await strategy.apply(oauthData);
 
-				expect(oidcProvisioningService.provisionExternalGroup).toHaveBeenCalledWith(
+				expect(schulconnexGroupProvisioningService.provisionExternalGroup).toHaveBeenCalledWith(
 					oauthData.externalGroups?.[0],
 					oauthData.externalSchool,
 					oauthData.system.systemId
 				);
-				expect(oidcProvisioningService.provisionExternalGroup).toHaveBeenCalledWith(
+				expect(schulconnexGroupProvisioningService.provisionExternalGroup).toHaveBeenCalledWith(
 					oauthData.externalGroups?.[1],
 					oauthData.externalSchool,
 					oauthData.system.systemId
@@ -270,7 +302,7 @@ describe('OidcStrategy', () => {
 					externalId: externalUserId,
 				});
 
-				oidcProvisioningService.provisionExternalUser.mockResolvedValue(user);
+				schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValue(user);
 
 				return {
 					oauthData,
@@ -282,7 +314,7 @@ describe('OidcStrategy', () => {
 
 				await strategy.apply(oauthData);
 
-				expect(oidcProvisioningService.removeExternalGroupsAndAffiliation).not.toHaveBeenCalled();
+				expect(schulconnexGroupProvisioningService.removeExternalGroupsAndAffiliation).not.toHaveBeenCalled();
 			});
 
 			it('should not provision groups', async () => {
@@ -290,7 +322,7 @@ describe('OidcStrategy', () => {
 
 				await strategy.apply(oauthData);
 
-				expect(oidcProvisioningService.provisionExternalGroup).not.toHaveBeenCalled();
+				expect(schulconnexGroupProvisioningService.provisionExternalGroup).not.toHaveBeenCalled();
 			});
 		});
 
@@ -314,7 +346,7 @@ describe('OidcStrategy', () => {
 					externalId: externalUserId,
 				});
 
-				oidcProvisioningService.provisionExternalUser.mockResolvedValue(user);
+				schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValue(user);
 
 				return {
 					externalUserId,
@@ -327,11 +359,104 @@ describe('OidcStrategy', () => {
 
 				await strategy.apply(oauthData);
 
-				expect(oidcProvisioningService.removeExternalGroupsAndAffiliation).toHaveBeenCalledWith(
+				expect(schulconnexGroupProvisioningService.removeExternalGroupsAndAffiliation).toHaveBeenCalledWith(
 					externalUserId,
 					[],
 					oauthData.system.systemId
 				);
+			});
+		});
+
+		describe('when syncing courses with existing groups', () => {
+			const setup = () => {
+				provisioningFeatures.schulconnexGroupProvisioningEnabled = true;
+				provisioningFeatures.schulconnexCourseSyncEnabled = true;
+
+				const externalUserId = 'externalUserId';
+				const externalGroups: ExternalGroupDto[] = externalGroupDtoFactory.buildList(2);
+				const oauthData: OauthDataDto = new OauthDataDto({
+					system: new ProvisioningSystemDto({
+						systemId: new ObjectId().toHexString(),
+						provisioningStrategy: SystemProvisioningStrategy.OIDC,
+					}),
+					externalSchool: externalSchoolDtoFactory.build(),
+					externalUser: new ExternalUserDto({
+						externalId: externalUserId,
+					}),
+					externalGroups,
+				});
+
+				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+					externalId: externalUserId,
+				});
+				const existingGroup: Group = groupFactory.build();
+				const updatedGroup: Group = groupFactory.build();
+
+				schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValueOnce(user);
+				schulconnexGroupProvisioningService.filterExternalGroups.mockResolvedValueOnce(externalGroups);
+				groupService.findByExternalSource.mockResolvedValueOnce(existingGroup);
+				schulconnexGroupProvisioningService.provisionExternalGroup.mockResolvedValueOnce(updatedGroup);
+
+				return {
+					oauthData,
+					existingGroup,
+					updatedGroup,
+				};
+			};
+
+			it('should synchronize a course with a group', async () => {
+				const { oauthData, updatedGroup, existingGroup } = setup();
+
+				await strategy.apply(oauthData);
+
+				expect(schulconnexCourseSyncService.synchronizeCourseWithGroup).toHaveBeenCalledWith(
+					updatedGroup,
+					existingGroup
+				);
+			});
+		});
+
+		describe('when syncing courses without existing groups', () => {
+			const setup = () => {
+				provisioningFeatures.schulconnexGroupProvisioningEnabled = true;
+				provisioningFeatures.schulconnexCourseSyncEnabled = true;
+
+				const externalUserId = 'externalUserId';
+				const externalGroups: ExternalGroupDto[] = externalGroupDtoFactory.buildList(2);
+				const oauthData: OauthDataDto = new OauthDataDto({
+					system: new ProvisioningSystemDto({
+						systemId: new ObjectId().toHexString(),
+						provisioningStrategy: SystemProvisioningStrategy.OIDC,
+					}),
+					externalSchool: externalSchoolDtoFactory.build(),
+					externalUser: new ExternalUserDto({
+						externalId: externalUserId,
+					}),
+					externalGroups,
+				});
+
+				const user: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).build({
+					externalId: externalUserId,
+				});
+				const updatedGroup: Group = groupFactory.build();
+
+				schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValueOnce(user);
+				schulconnexGroupProvisioningService.filterExternalGroups.mockResolvedValueOnce(externalGroups);
+				groupService.findByExternalSource.mockResolvedValueOnce(null);
+				schulconnexGroupProvisioningService.provisionExternalGroup.mockResolvedValueOnce(updatedGroup);
+
+				return {
+					oauthData,
+					updatedGroup,
+				};
+			};
+
+			it('should synchronize a course with a group', async () => {
+				const { oauthData, updatedGroup } = setup();
+
+				await strategy.apply(oauthData);
+
+				expect(schulconnexCourseSyncService.synchronizeCourseWithGroup).toHaveBeenCalledWith(updatedGroup);
 			});
 		});
 	});
