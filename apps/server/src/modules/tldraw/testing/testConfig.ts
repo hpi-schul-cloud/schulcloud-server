@@ -7,6 +7,6 @@ export const tldrawTestConfig = () => {
 	}
 	conf.TLDRAW_DB_COMPRESS_THRESHOLD = 2;
 	conf.TLDRAW_PING_TIMEOUT = 0;
-	conf.TLDRAW_MAX_DOCUMENT_SIZE = 3;
+	conf.TLDRAW_MAX_DOCUMENT_SIZE = 1;
 	return conf;
 };
