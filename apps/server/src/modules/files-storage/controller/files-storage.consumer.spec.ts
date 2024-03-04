@@ -211,7 +211,7 @@ describe('FilesStorageConsumer', () => {
 		});
 	});
 
-	describe('deleteOneFile()', () => {
+	describe('deleteFiles()', () => {
 		describe('WHEN valid file exists', () => {
 			const setup = () => {
 				const recordId = new ObjectId().toHexString();
@@ -222,22 +222,22 @@ describe('FilesStorageConsumer', () => {
 				return { recordId, fileRecord };
 			};
 
-			it('should call filesStorageService.deleteOneFile with params', async () => {
+			it('should call filesStorageService.deleteFiles with params', async () => {
 				const { recordId, fileRecord } = setup();
 
-				await service.deleteOneFile(recordId);
+				await service.deleteFiles([recordId]);
 
 				const result = [fileRecord];
 				expect(filesStorageService.getFileRecord).toBeCalledWith({ fileRecordId: recordId });
-				expect(filesStorageService.deleteFilesOfParent).toBeCalledWith(result);
+				expect(filesStorageService.delete).toBeCalledWith(result);
 			});
 
-			it('should return an instance of FileRecordResponse', async () => {
+			it('should return array instances of FileRecordResponse', async () => {
 				const { recordId } = setup();
 
-				const response = await service.deleteOneFile(recordId);
+				const response = await service.deleteFiles([recordId]);
 
-				expect(response.message).toBeInstanceOf(FileRecordResponse);
+				expect(response.message[0]).toBeInstanceOf(FileRecordResponse);
 			});
 		});
 
@@ -253,7 +253,7 @@ describe('FilesStorageConsumer', () => {
 			it('should throw', async () => {
 				const { recordId } = setup();
 
-				await expect(service.deleteOneFile(recordId)).rejects.toThrow('not found');
+				await expect(service.deleteFiles([recordId])).rejects.toThrow('not found');
 			});
 		});
 	});
