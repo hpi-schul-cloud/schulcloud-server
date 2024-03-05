@@ -6,11 +6,11 @@ import { ApiValidationError } from '@shared/common';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { ColumnBoardNode } from '@shared/domain/entity';
 import {
+	TestApiClient,
+	UserAndAccountTestFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
 	courseFactory,
-	TestApiClient,
-	UserAndAccountTestFactory,
 } from '@shared/testing';
 
 const baseRouteName = '/boards';
@@ -102,6 +102,22 @@ describe(`board update title (api)`, () => {
 			expect((response.body as ApiValidationError).validationErrors).toEqual([
 				{
 					errors: ['title must be shorter than or equal to 100 characters'],
+					field: ['title'],
+				},
+			]);
+			expect(response.status).toEqual(400);
+		});
+
+		it('should return status 400 when title is empty string', async () => {
+			const { loggedInClient, columnBoardNode } = await setup();
+
+			const newTitle = '';
+
+			const response = await loggedInClient.patch(`${columnBoardNode.id}/title`, { title: newTitle });
+
+			expect((response.body as ApiValidationError).validationErrors).toEqual([
+				{
+					errors: ['title must be longer than or equal to 1 characters'],
 					field: ['title'],
 				},
 			]);
