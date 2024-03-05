@@ -43,16 +43,18 @@ export class ColumnBoardNode extends BoardNode implements LearnroomElement {
 		return domainObject;
 	}
 
+	/**
+	 * @deprecated - this is here only for the sake of the legacy-board (lernraum)
+	 */
 	publish(): void {
 		this.isVisible = true;
 	}
 
+	/**
+	 * @deprecated - this is here only for the sake of the legacy-board (lernraum)
+	 */
 	unpublish(): void {
 		this.isVisible = false;
-	}
-
-	get published(): boolean {
-		return this.isVisible;
 	}
 }
 

@@ -1,1 +1,1 @@
-export * from './legacy-board-repo.service';
+export * from './legacy-board.repo';
