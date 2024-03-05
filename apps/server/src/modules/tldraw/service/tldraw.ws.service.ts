@@ -272,9 +272,12 @@ export class TldrawWsService {
 			this.unsubscribeFromRedisChannels(doc);
 
 			if (this.configService.get<number>('TLDRAW_ASSETS_SYNC_ENABLED')) {
-				void this.filesStorageTldrawAdapterService.deleteUnusedFilesForDocument(doc.name, usedAssets).catch((err) => {
-					this.logger.warning(new FileStorageErrorLoggable(doc.name, err));
-				});
+				void this.filesStorageTldrawAdapterService
+					.deleteUnusedFilesForDocument(doc.name, usedAssets)
+					.then(() => console.log('ASSET SYNC DONE'))
+					.catch((err) => {
+						this.logger.warning(new FileStorageErrorLoggable(doc.name, err));
+					});
 			}
 		} catch (err) {
 			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while finalizing document', err));
