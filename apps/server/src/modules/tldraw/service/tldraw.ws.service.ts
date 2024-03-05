@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import WebSocket from 'ws';
 import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
 import { decoding, encoding } from 'lib0';
-import { readSyncMessage, writeSyncStep2, writeUpdate } from 'y-protocols/sync';
+import { readSyncMessage, writeSyncStep1, writeSyncStep2, writeUpdate } from 'y-protocols/sync';
 import { applyUpdate } from 'yjs';
 import { Buffer } from 'node:buffer';
 import { Redis } from 'ioredis';
@@ -215,9 +215,6 @@ export class TldrawWsService {
 			}
 		});
 
-		// send initial doc state to client as update
-		this.sendInitialState(ws, doc);
-
 		// check if connection is still alive
 		const pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
 		let pongReceived = true;
@@ -246,10 +243,13 @@ export class TldrawWsService {
 		});
 
 		{
-			// const syncEncoder = encoding.createEncoder();
-			// encoding.writeVarUint(syncEncoder, WSMessageType.SYNC);
-			// writeSyncStep1(syncEncoder, doc);
-			// this.send(doc, ws, encoding.toUint8Array(syncEncoder));
+			// send initial doc state to client as update
+			this.sendInitialState(ws, doc);
+
+			const syncEncoder = encoding.createEncoder();
+			encoding.writeVarUint(syncEncoder, WSMessageType.SYNC);
+			writeSyncStep1(syncEncoder, doc);
+			this.send(doc, ws, encoding.toUint8Array(syncEncoder));
 
 			const awarenessStates = doc.awareness.getStates();
 			if (awarenessStates.size > 0) {
