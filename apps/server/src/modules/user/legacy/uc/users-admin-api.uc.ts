@@ -23,36 +23,36 @@ export class UsersAdminApiUc {
 	) {}
 
 	public async findUsersByParams(
-		context: RequestedRoleEnum,
+		requestedRole: RequestedRoleEnum,
 		currentUserId: string,
 		params: UsersSearchQueryParams
 	): Promise<UserListResponse> {
 		const currentUser = await this.userRepo.findById(currentUserId, true);
-		this.validateAccessToContext(context, currentUser);
+		this.validateAccessToContext(requestedRole, currentUser);
 		const { school } = currentUser;
 		const currentSchoolYear = school.currentYear;
 		const currentSchoolYearId = currentSchoolYear?.id;
-		const contextRole = await this.getRoleForContext(context);
+		const role = await this.getRoleForRequestedRole(requestedRole);
 
-		return this.adminUsersService.getUsersWithNestedData(contextRole?.id, school.id, currentSchoolYearId, params);
+		return this.adminUsersService.getUsersWithNestedData(role?.id, school.id, currentSchoolYearId, params);
 	}
 
 	public async findUserById(
-		context: RequestedRoleEnum,
+		requestedRole: RequestedRoleEnum,
 		currentUserId: string,
 		params: UserByIdParams
 	): Promise<UserResponse> {
 		const currentUser = await this.userRepo.findById(currentUserId, true);
-		this.validateAccessToContext(context, currentUser);
+		this.validateAccessToContext(requestedRole, currentUser);
 		const { school } = currentUser;
 		const currentSchoolYearId = school.currentYear?.id;
-		const contextRole = await this.getRoleForContext(context);
+		const role = await this.getRoleForRequestedRole(requestedRole);
 
-		return this.adminUsersService.getUserWithNestedData(contextRole?.id, school.id, currentSchoolYearId, params.id);
+		return this.adminUsersService.getUserWithNestedData(role?.id, school.id, currentSchoolYearId, params.id);
 	}
 
 	private validateAccessToContext(context: RequestedRoleEnum, currentUser: User) {
-		const permission = this.getPermissionForContext(context);
+		const permission = this.getPermissionForRequestedRole(context);
 		try {
 			this.authorizationService.checkAllPermissions(currentUser, [permission]);
 		} catch (e) {
@@ -62,16 +62,16 @@ export class UsersAdminApiUc {
 		}
 	}
 
-	private getPermissionForContext(context: RequestedRoleEnum) {
-		if (context === RequestedRoleEnum.TEACHERS) {
+	private getPermissionForRequestedRole(requestedRole: RequestedRoleEnum) {
+		if (requestedRole === RequestedRoleEnum.TEACHERS) {
 			return Permission.TEACHER_LIST;
 		}
 
 		return Permission.STUDENT_LIST;
 	}
 
-	private getRoleForContext(context: RequestedRoleEnum) {
-		if (context === RequestedRoleEnum.TEACHERS) {
+	private getRoleForRequestedRole(requestedRole: RequestedRoleEnum) {
+		if (requestedRole === RequestedRoleEnum.TEACHERS) {
 			return this.roleService.findByName(RoleName.TEACHER);
 		}
 
