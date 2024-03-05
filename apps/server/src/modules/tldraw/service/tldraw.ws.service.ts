@@ -72,16 +72,20 @@ export class TldrawWsService {
 
 	public send(doc: WsSharedDocDo, ws: WebSocket, message: Uint8Array): void {
 		if (this.isClosedOrClosing(ws)) {
-			this.closeConnection(doc, ws).catch((err) => {
-				this.logger.warning(new CloseConnectionLoggable('send | isClosedOrClosing', err));
-			});
+			this.closeConnection(doc, ws)
+				.then(() => console.log('closing from send isClosedOrClosing'))
+				.catch((err) => {
+					this.logger.warning(new CloseConnectionLoggable('send | isClosedOrClosing', err));
+				});
 		}
 
 		ws.send(message, (err) => {
 			if (err) {
-				this.closeConnection(doc, ws).catch((e) => {
-					this.logger.warning(new CloseConnectionLoggable('send', e));
-				});
+				this.closeConnection(doc, ws)
+					.then(() => console.log('closing from send ws.send'))
+					.catch((e) => {
+						this.logger.warning(new CloseConnectionLoggable('send', e));
+					});
 			}
 		});
 	}
@@ -225,16 +229,20 @@ export class TldrawWsService {
 				return;
 			}
 
-			this.closeConnection(doc, ws).catch((err) => {
-				this.logger.warning(new CloseConnectionLoggable('pingInterval', err));
-			});
+			this.closeConnection(doc, ws)
+				.then(() => console.log('closing from send pingTimeout'))
+				.catch((err) => {
+					this.logger.warning(new CloseConnectionLoggable('pingInterval', err));
+				});
 			clearInterval(pingInterval);
 		}, pingTimeout);
 
 		ws.on('close', () => {
-			this.closeConnection(doc, ws).catch((err) => {
-				this.logger.warning(new CloseConnectionLoggable('websocket close', err));
-			});
+			this.closeConnection(doc, ws)
+				.then(() => console.log('closing from send ws.onClose'))
+				.catch((err) => {
+					this.logger.warning(new CloseConnectionLoggable('websocket close', err));
+				});
 			clearInterval(pingInterval);
 		});
 
