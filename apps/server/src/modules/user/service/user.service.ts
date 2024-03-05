@@ -153,32 +153,30 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 			new DataDeletionDomainOperationLoggable('Deleting user', DomainName.USER, userId, StatusModel.PENDING)
 		);
 
+		const userToDelete: User | null = await this.userRepo.findByIdOrNull(userId, true);
+
+		if (userToDelete === null) {
+			const result = DomainDeletionReportBuilder.build(DomainName.USER, [
+				DomainOperationReportBuilder.build(OperationType.DELETE, 0, []),
+			]);
+
+			this.logger.info(
+				new DataDeletionDomainOperationLoggable(
+					'User already deleted',
+					DomainName.USER,
+					userId,
+					StatusModel.FINISHED,
+					0,
+					0
+				)
+			);
+
+			return result;
+		}
+
 		const registrationPinDeleted = await this.removeUserRegistrationPin(userId);
 
 		if (registrationPinDeleted) {
-			const userToDelete: User | null = await this.userRepo.findByIdOrNull(userId, true);
-
-			if (userToDelete === null) {
-				const result = DomainDeletionReportBuilder.build(
-					DomainName.USER,
-					[DomainOperationReportBuilder.build(OperationType.DELETE, 0, [])],
-					[registrationPinDeleted]
-				);
-
-				this.logger.info(
-					new DataDeletionDomainOperationLoggable(
-						'User already deleted',
-						DomainName.USER,
-						userId,
-						StatusModel.FINISHED,
-						0,
-						0
-					)
-				);
-
-				return result;
-			}
-
 			const numberOfDeletedUsers = await this.userRepo.deleteUser(userId);
 
 			if (numberOfDeletedUsers === 0) {
