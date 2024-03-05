@@ -1542,7 +1542,7 @@
 				"DB_COMPRESS_THRESHOLD": 400,
 				"MAX_DOCUMENT_SIZE": 15000000,
 				"ASSETS_ENABLED": true,
-				"ASSETS_SYNC_ENABLED": false,
+				"ASSETS_SYNC_ENABLED": true,
 				"ASSETS_MAX_SIZE": 10485760,
 				"ASSETS_ALLOWED_MIME_TYPES_LIST": "image/png,image/jpeg,image/gif,image/svg+xml"
 			}
