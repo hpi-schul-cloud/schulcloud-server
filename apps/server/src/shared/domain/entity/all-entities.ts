@@ -31,9 +31,8 @@ import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
 import { ImportUser } from './import-user.entity';
 import {
 	LegacyBoard,
-	BoardElement,
+	LegacyBoardElement,
 	ColumnboardBoardElement,
-	ColumnBoardTarget,
 	LessonBoardElement,
 	TaskBoardElement,
 } from './legacy-board';
@@ -56,12 +55,11 @@ import { VideoConference } from './video-conference.entity';
 export const ALL_ENTITIES = [
 	Account,
 	LegacyBoard,
-	BoardElement,
+	LegacyBoardElement,
 	BoardNode,
 	CardNode,
 	ColumnboardBoardElement,
 	ColumnBoardNode,
-	ColumnBoardTarget,
 	ColumnNode,
 	ClassEntity,
 	DeletionRequestEntity,

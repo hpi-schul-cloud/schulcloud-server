@@ -11,6 +11,7 @@ import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '@shared/repo';
 import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { ColumnBoardNode } from '@shared/domain/entity';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { BoardNodeRepo } from '@modules/board/repo';
 import { RoomsService } from './rooms.service';
 
