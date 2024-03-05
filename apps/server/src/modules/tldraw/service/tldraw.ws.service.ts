@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import WebSocket from 'ws';
 import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
@@ -113,7 +113,14 @@ export class TldrawWsService {
 
 	public async getDocument(docName: string) {
 		const existingDoc = this.docs.get(docName);
-		if (existingDoc) {
+
+		if (existingDoc && existingDoc.isFinalizing) {
+			// drop the connection, the client will have to reconnect
+			// and check again if the finalizing has finished
+			throw new NotAcceptableException();
+		}
+
+		if (existingDoc && !existingDoc.isFinalizing) {
 			return existingDoc;
 		}
 
@@ -258,12 +265,21 @@ export class TldrawWsService {
 
 	private async finalizeIfNoConnections(doc: WsSharedDocDo) {
 		console.log('BEFORE DELAY');
-		await this.delay(10000);
+		// wait before doing the check
+		// the only user on the pod might have lost connection for a moment
+		// or simply refreshed the page
+		await this.delay(this.configService.get<number>('TLDRAW_FINALIZE_DELAY'));
 
 		if (doc.connections.size > 0) {
 			console.log('AFTER DELAY - HAS CONNECTIONS');
 			return;
 		}
+
+		if (doc.isFinalizing) {
+			console.log('AFTER DELAY - IS ALREADY FINALIZING');
+			return;
+		}
+		doc.isFinalizing = true;
 
 		try {
 			console.log('AFTER DELAY - NO CONNECTIONS');
@@ -274,7 +290,7 @@ export class TldrawWsService {
 			if (this.configService.get<number>('TLDRAW_ASSETS_SYNC_ENABLED')) {
 				void this.filesStorageTldrawAdapterService
 					.deleteUnusedFilesForDocument(doc.name, usedAssets)
-					.then(() => console.log('ASSET SYNC DONE'))
+					.then(() => console.log('AFTER DELAY - ASSET SYNC DONE'))
 					.catch((err) => {
 						this.logger.warning(new FileStorageErrorLoggable(doc.name, err));
 					});
