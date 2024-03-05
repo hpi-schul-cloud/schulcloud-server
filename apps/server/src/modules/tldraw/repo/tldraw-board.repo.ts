@@ -32,6 +32,7 @@ export class TldrawBoardRepo {
 		const compressThreshold = this.configService.get<number>('TLDRAW_DB_COMPRESS_THRESHOLD');
 		const currentClock = await this.mdb.storeUpdateTransactional(docName, update);
 
+		console.log('storeUpdate clock', currentClock);
 		if (currentClock % compressThreshold === 0) {
 			await this.compressDocument(docName);
 		}
