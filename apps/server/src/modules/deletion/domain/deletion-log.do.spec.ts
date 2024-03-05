@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DomainName, OperationType } from '@shared/domain/types';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { deletionLogFactory } from './testing/factory/deletion-log.factory';
 import { DeletionLog } from './deletion-log.do';
-import { DomainOperationReportProps } from '../entity';
 
 describe(DeletionLog.name, () => {
 	describe('constructor', () => {
@@ -38,27 +38,15 @@ describe(DeletionLog.name, () => {
 				const props = {
 					id: new ObjectId().toHexString(),
 					domain: DomainName.USER,
-					domainOperationReport: [
-						new DomainOperationReportProps({
-							operation: OperationType.DELETE,
-							count: 1,
-							refs: [new ObjectId().toHexString()],
-						}),
+					operations: [DomainOperationReportBuilder.build(OperationType.DELETE, 1, [new ObjectId().toHexString()])],
+					subdomainOperations: [
+						DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+							DomainOperationReportBuilder.build(OperationType.DELETE, 2, [
+								new ObjectId().toHexString(),
+								new ObjectId().toHexString(),
+							]),
+						]),
 					],
-					domainDeletionReport: new DeletionLog({
-						id: new ObjectId().toHexString(),
-						domain: DomainName.REGISTRATIONPIN,
-						domainOperationReport: [
-							new DomainOperationReportProps({
-								operation: OperationType.DELETE,
-								count: 2,
-								refs: [new ObjectId().toHexString(), new ObjectId().toHexString()],
-							}),
-						],
-						deletionRequestId,
-						createdAt: new Date(),
-						updatedAt: new Date(),
-					}),
 					deletionRequestId,
 					performedAt: new Date(),
 					createdAt: new Date(),
@@ -75,8 +63,8 @@ describe(DeletionLog.name, () => {
 				const gettersValues = {
 					id: deletionLogDo.id,
 					domain: deletionLogDo.domain,
-					domainOperationReport: deletionLogDo.domainOperationReport,
-					domainDeletionReport: deletionLogDo.domainDeletionReport,
+					operations: deletionLogDo.operations,
+					subdomainOperations: deletionLogDo.subdomainOperations,
 					deletionRequestId: deletionLogDo.deletionRequestId,
 					performedAt: deletionLogDo.performedAt,
 					createdAt: deletionLogDo.createdAt,

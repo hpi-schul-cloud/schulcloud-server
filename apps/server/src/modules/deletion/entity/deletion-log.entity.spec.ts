@@ -1,7 +1,8 @@
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DomainName, OperationType } from '@shared/domain/types';
-import { DeletionLogEntity, DomainOperationReportProps } from './deletion-log.entity';
+import { DomainDeletionReport, DomainOperationReport } from '@shared/domain/interface';
+import { DeletionLogEntity } from './deletion-log.entity';
 
 describe(DeletionLogEntity.name, () => {
 	beforeAll(async () => {
@@ -14,27 +15,25 @@ describe(DeletionLogEntity.name, () => {
 				const props = {
 					id: new ObjectId().toHexString(),
 					domain: DomainName.USER,
-					domainOperationReport: [
-						new DomainOperationReportProps({
+					operations: [
+						{
 							operation: OperationType.DELETE,
 							count: 1,
 							refs: [new ObjectId().toHexString()],
-						}),
+						} as DomainOperationReport,
 					],
-					domainDeletionReport: new DeletionLogEntity({
-						id: new ObjectId().toHexString(),
-						domain: DomainName.REGISTRATIONPIN,
-						domainOperationReport: [
-							new DomainOperationReportProps({
-								operation: OperationType.DELETE,
-								count: 2,
-								refs: [new ObjectId().toHexString(), new ObjectId().toHexString()],
-							}),
-						],
-						deletionRequestId: new ObjectId(),
-						createdAt: new Date(),
-						updatedAt: new Date(),
-					}),
+					subdomainOperations: [
+						{
+							domain: DomainName.REGISTRATIONPIN,
+							operations: [
+								{
+									operation: OperationType.DELETE,
+									count: 2,
+									refs: [new ObjectId().toHexString(), new ObjectId().toHexString()],
+								} as DomainOperationReport,
+							],
+						} as unknown as DomainDeletionReport,
+					],
 					deletionRequestId: new ObjectId(),
 					createdAt: new Date(),
 					updatedAt: new Date(),
@@ -62,7 +61,8 @@ describe(DeletionLogEntity.name, () => {
 				const entityProps = {
 					id: entity.id,
 					domain: entity.domain,
-					domainOperationReport: entity.domainOperationReport,
+					operations: entity.operations,
+					subdomainOperations: entity.subdomainOperations,
 					deletionRequestId: entity.deletionRequestId,
 					performedAt: entity.performedAt,
 					createdAt: entity.createdAt,

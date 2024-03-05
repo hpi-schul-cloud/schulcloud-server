@@ -74,6 +74,8 @@ export class RocketChatUserService implements DeletionService, IEventHandler<Use
 
 				return result;
 			}
+		} else {
+			// TODO empty logs for both modules in case there is not rocketchatuser
 		}
 
 		throw new DeletionErrorLoggableException(`Failed to delete rocketChatUser for '${userId}'`);

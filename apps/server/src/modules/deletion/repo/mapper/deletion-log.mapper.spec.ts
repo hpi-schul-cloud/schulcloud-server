@@ -14,18 +14,8 @@ describe(DeletionLogMapper.name, () => {
 				const expectedDomainObject = new DeletionLog({
 					id: entity.id,
 					domain: entity.domain,
-					domainOperationReport: entity.domainOperationReport,
-					domainDeletionReport: entity.domainDeletionReport
-						? new DeletionLog({
-								id: entity.domainDeletionReport.id,
-								createdAt: entity.domainDeletionReport?.createdAt,
-								deletionRequestId: entity.domainDeletionReport?.deletionRequestId?.toHexString(),
-								domain: entity.domainDeletionReport?.domain,
-								domainOperationReport: entity.domainDeletionReport?.domainOperationReport,
-								performedAt: entity.domainDeletionReport?.performedAt,
-								updatedAt: entity.domainDeletionReport?.updatedAt,
-						  })
-						: undefined,
+					operations: entity.operations,
+					subdomainOperations: entity.subdomainOperations,
 					deletionRequestId: entity.deletionRequestId?.toHexString(),
 					performedAt: entity.performedAt,
 					createdAt: entity.createdAt,
@@ -62,18 +52,8 @@ describe(DeletionLogMapper.name, () => {
 						new DeletionLog({
 							id: entity.id,
 							domain: entity.domain,
-							domainOperationReport: entity.domainOperationReport,
-							domainDeletionReport: entity.domainDeletionReport
-								? new DeletionLog({
-										id: entity.domainDeletionReport.id,
-										createdAt: entity.domainDeletionReport?.createdAt,
-										deletionRequestId: entity.domainDeletionReport?.deletionRequestId?.toHexString(),
-										domain: entity.domainDeletionReport?.domain,
-										domainOperationReport: entity.domainDeletionReport?.domainOperationReport,
-										performedAt: entity.domainDeletionReport?.performedAt,
-										updatedAt: entity.domainDeletionReport?.updatedAt,
-								  })
-								: undefined,
+							operations: entity.operations,
+							subdomainOperations: entity.subdomainOperations,
 							deletionRequestId: entity.deletionRequestId?.toHexString(),
 							performedAt: entity.performedAt,
 							createdAt: entity.createdAt,
@@ -110,18 +90,8 @@ describe(DeletionLogMapper.name, () => {
 				const expectedEntities = new DeletionLogEntity({
 					id: domainObject.id,
 					domain: domainObject.domain,
-					domainOperationReport: domainObject.domainOperationReport,
-					domainDeletionReport: domainObject.domainDeletionReport
-						? new DeletionLogEntity({
-								id: domainObject.domainDeletionReport.id,
-								domain: domainObject.domainDeletionReport.domain,
-								domainOperationReport: domainObject.domainDeletionReport.domainOperationReport,
-								deletionRequestId: new ObjectId(domainObject.domainDeletionReport.deletionRequestId),
-								performedAt: domainObject.domainDeletionReport.performedAt,
-								createdAt: domainObject.domainDeletionReport.createdAt,
-								updatedAt: domainObject.domainDeletionReport.updatedAt,
-						  })
-						: undefined,
+					operations: domainObject.operations,
+					subdomainOperations: domainObject.subdomainOperations,
 					deletionRequestId: new ObjectId(domainObject.deletionRequestId),
 					performedAt: domainObject.performedAt,
 					createdAt: domainObject.createdAt,
@@ -168,18 +138,8 @@ describe(DeletionLogMapper.name, () => {
 						new DeletionLogEntity({
 							id: domainObject.id,
 							domain: domainObject.domain,
-							domainOperationReport: domainObject.domainOperationReport,
-							domainDeletionReport: domainObject.domainDeletionReport
-								? new DeletionLogEntity({
-										id: domainObject.domainDeletionReport.id,
-										domain: domainObject.domainDeletionReport.domain,
-										domainOperationReport: domainObject.domainDeletionReport.domainOperationReport,
-										deletionRequestId: new ObjectId(domainObject.domainDeletionReport.deletionRequestId),
-										performedAt: domainObject.domainDeletionReport.performedAt,
-										createdAt: domainObject.domainDeletionReport.createdAt,
-										updatedAt: domainObject.domainDeletionReport.updatedAt,
-								  })
-								: undefined,
+							operations: domainObject.operations,
+							subdomainOperations: domainObject.subdomainOperations,
 							deletionRequestId: new ObjectId(domainObject.deletionRequestId),
 							performedAt: domainObject.performedAt,
 							createdAt: domainObject.createdAt,

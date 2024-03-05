@@ -43,14 +43,14 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 	}
 
 	async handle({ deletionRequest, domainDeletionReport }: DataDeletedEvent) {
-		await this.logDeletion(deletionRequest, domainDeletionReport);
+		await this.deletionLogService.createDeletionLog(deletionRequest.id, domainDeletionReport);
 
 		// code below should be executed by external cronjob
-		const deletionLogs: DeletionLog[] = await this.deletionLogService.findByDeletionRequestId(deletionRequest.id);
+		// const deletionLogs: DeletionLog[] = await this.deletionLogService.findByDeletionRequestId(deletionRequest.id);
 
-		if (this.checkLogsPerDomain(deletionLogs)) {
-			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
-		}
+		// if (this.checkLogsPerDomain(deletionLogs)) {
+		// 	await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
+		// }
 	}
 
 	private checkLogsPerDomain(deletionLogs: DeletionLog[]): boolean {
@@ -79,11 +79,6 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 			// eslint-disable-next-line no-await-in-loop
 			await this.executeDeletionRequest(req);
 		}
-		// await Promise.all(
-		// 	deletionRequestToExecution.map(async (req) => {
-		// 		await this.executeDeletionRequest(req);
-		// 	})
-		// );
 	}
 
 	async findById(deletionRequestId: EntityId): Promise<DeletionRequestLogResponse> {
@@ -98,7 +93,7 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 
 		const deletionLog: DeletionLog[] = await this.deletionLogService.findByDeletionRequestId(deletionRequestId);
 		const domainOperation: DomainDeletionReport[] = deletionLog.map((log) =>
-			DomainDeletionReportBuilder.build(log.domain, log.domainOperationReport, log.domainDeletionReport)
+			DomainDeletionReportBuilder.build(log.domain, log.operations, log.subdomainOperations)
 		);
 		response = { ...response, statistics: domainOperation };
 
@@ -121,10 +116,10 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 		}
 	}
 
-	private async logDeletion(
-		deletionRequest: DeletionRequest,
-		domainDeletionReport: DomainDeletionReport
-	): Promise<void> {
-		await this.deletionLogService.createDeletionLog(deletionRequest.id, domainDeletionReport);
-	}
+	// private async logDeletion(
+	// 	deletionRequest: DeletionRequest,
+	// 	domainDeletionReport: DomainDeletionReport
+	// ): Promise<void> {
+	// 	await this.deletionLogService.createDeletionLog(deletionRequest.id, domainDeletionReport);
+	// }
 }

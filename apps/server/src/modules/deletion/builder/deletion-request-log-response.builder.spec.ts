@@ -1,5 +1,6 @@
 import { DomainName, OperationType } from '@shared/domain/types';
 import { ObjectId } from 'bson';
+import { DomainOperationReportBuilder } from '@shared/domain/builder';
 import { DeletionLogStatisticBuilder, DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '.';
 import { DeletionStatusModel } from '../domain/types';
 
@@ -13,10 +14,13 @@ describe(DeletionRequestLogResponseBuilder, () => {
 		const targetRef = DeletionTargetRefBuilder.build(targetRefDomain, targetRefId);
 		const deletionPlannedAt = new Date();
 		const status = DeletionStatusModel.SUCCESS;
-		const operation = OperationType.DELETE;
-		const count = 2;
-		const refs = [new ObjectId().toHexString(), new ObjectId().toHexString()];
-		const statistics = [DeletionLogStatisticBuilder.build(targetRefDomain, operation, count, refs)];
+		const operations = [
+			DomainOperationReportBuilder.build(OperationType.DELETE, 2, [
+				new ObjectId().toHexString(),
+				new ObjectId().toHexString(),
+			]),
+		];
+		const statistics = [DeletionLogStatisticBuilder.build(targetRefDomain, operations)];
 
 		return { deletionPlannedAt, statistics, status, targetRef };
 	};

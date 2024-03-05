@@ -60,18 +60,8 @@ describe(DeletionLogRepo.name, () => {
 				const expectedDomainObject = {
 					id: domainObject.id,
 					domain: domainObject.domain,
-					domainOperationReport: domainObject.domainOperationReport,
-					domainDeletionReport: domainObject.domainDeletionReport
-						? new DeletionLog({
-								id: domainObject.domainDeletionReport.id,
-								createdAt: domainObject.domainDeletionReport?.createdAt,
-								deletionRequestId: domainObject.domainDeletionReport?.deletionRequestId,
-								domain: domainObject.domainDeletionReport?.domain,
-								domainOperationReport: domainObject.domainDeletionReport?.domainOperationReport,
-								performedAt: domainObject.domainDeletionReport?.performedAt,
-								updatedAt: domainObject.domainDeletionReport?.updatedAt,
-						  })
-						: undefined,
+					operations: domainObject.operations,
+					subdomainOperations: domainObject.subdomainOperations,
 					deletionRequestId: domainObject.deletionRequestId,
 					performedAt: domainObject.performedAt,
 					createdAt: domainObject.createdAt,
@@ -102,18 +92,8 @@ describe(DeletionLogRepo.name, () => {
 				const expectedDeletionLog = new DeletionLog({
 					id: entity.id,
 					domain: entity.domain,
-					domainOperationReport: entity.domainOperationReport,
-					domainDeletionReport: entity.domainDeletionReport
-						? new DeletionLog({
-								id: entity.domainDeletionReport.id,
-								createdAt: entity.domainDeletionReport?.createdAt,
-								deletionRequestId: entity.domainDeletionReport?.deletionRequestId?.toHexString(),
-								domain: entity.domainDeletionReport?.domain,
-								domainOperationReport: entity.domainDeletionReport?.domainOperationReport,
-								performedAt: entity.domainDeletionReport?.performedAt,
-								updatedAt: entity.domainDeletionReport?.updatedAt,
-						  })
-						: undefined,
+					operations: entity.operations,
+					subdomainOperations: entity.subdomainOperations,
 					deletionRequestId: entity.deletionRequestId?.toHexString(),
 					performedAt: entity.performedAt,
 					createdAt: entity.createdAt,
@@ -149,59 +129,42 @@ describe(DeletionLogRepo.name, () => {
 
 		describe('when searching by deletionRequestId', () => {
 			const setup = async () => {
-				// const deletionRequest1Id = new ObjectId();
-				// const deletionRequest2Id = new ObjectId();
-				const deletionLogEntity1: DeletionLogEntity = deletionLogEntityFactory.buildWithId();
-				const deletionRequest1Id = deletionLogEntity1.deletionRequestId;
-				// const deletionLogEntity2: DeletionLogEntity = deletionLogEntityFactory.build({
-				// 	deletionRequestId: deletionRequest1Id,
-				// });
-				const deletionLogEntity3: DeletionLogEntity = deletionLogEntityFactory.buildWithId();
+				const deletionRequest1Id = new ObjectId();
+				const deletionRequest2Id = new ObjectId();
+				const deletionLogEntity1: DeletionLogEntity = deletionLogEntityFactory.build({
+					deletionRequestId: deletionRequest1Id,
+				});
+				const deletionLogEntity2: DeletionLogEntity = deletionLogEntityFactory.build({
+					deletionRequestId: deletionRequest1Id,
+				});
+				const deletionLogEntity3: DeletionLogEntity = deletionLogEntityFactory.build({
+					deletionRequestId: deletionRequest2Id,
+				});
 
-				await em.persistAndFlush([deletionLogEntity1, deletionLogEntity3]);
+				await em.persistAndFlush([deletionLogEntity1, deletionLogEntity2, deletionLogEntity3]);
 				em.clear();
 
 				const expectedArray = [
 					new DeletionLog({
 						id: deletionLogEntity1.id,
 						domain: deletionLogEntity1.domain,
-						domainOperationReport: deletionLogEntity1.domainOperationReport,
-						domainDeletionReport: deletionLogEntity1.domainDeletionReport
-							? new DeletionLog({
-									id: deletionLogEntity1.domainDeletionReport.id,
-									createdAt: deletionLogEntity1.domainDeletionReport?.createdAt,
-									deletionRequestId: deletionLogEntity1.domainDeletionReport?.deletionRequestId?.toHexString(),
-									domain: deletionLogEntity1.domainDeletionReport?.domain,
-									domainOperationReport: deletionLogEntity1.domainDeletionReport?.domainOperationReport,
-									performedAt: deletionLogEntity1.domainDeletionReport?.performedAt,
-									updatedAt: deletionLogEntity1.domainDeletionReport?.updatedAt,
-							  })
-							: undefined,
+						operations: deletionLogEntity1.operations,
+						subdomainOperations: deletionLogEntity1.subdomainOperations,
 						deletionRequestId: deletionLogEntity1.deletionRequestId?.toHexString(),
 						performedAt: deletionLogEntity1.performedAt,
 						createdAt: deletionLogEntity1.createdAt,
 						updatedAt: deletionLogEntity1.updatedAt,
 					}),
-					// {
-					// 	id: deletionLogEntity2.id,
-					// 	domain: deletionLogEntity2.domain,
-					// 	domainOperationReport: deletionLogEntity2.domainOperationReport,
-					// 	domainDeletionReport: deletionLogEntity2.domainDeletionReport
-					// 		? new DeletionLog({
-					// 				id: deletionLogEntity2.domainDeletionReport.id,
-					// 				createdAt: deletionLogEntity2.domainDeletionReport?.createdAt,
-					// 				deletionRequestId: deletionLogEntity2.domainDeletionReport?.deletionRequestId?.toHexString(),
-					// 				domain: deletionLogEntity2.domainDeletionReport?.domain,
-					// 				domainOperationReport: deletionLogEntity2.domainDeletionReport?.domainOperationReport,
-					// 				performedAt: deletionLogEntity2.domainDeletionReport?.performedAt,
-					// 				updatedAt: deletionLogEntity2.domainDeletionReport?.updatedAt,
-					// 		  })
-					// 		: undefined,
-					// 	deletionRequestId: deletionLogEntity2.deletionRequestId?.toHexString(),
-					// 	performedAt: deletionLogEntity2.performedAt,
-					// 	createdAt: deletionLogEntity2.createdAt,
-					// 	updatedAt: deletionLogEntity2.updatedAt,
-					// },
+					new DeletionLog({
+						id: deletionLogEntity2.id,
+						domain: deletionLogEntity2.domain,
+						operations: deletionLogEntity2.operations,
+						subdomainOperations: deletionLogEntity2.subdomainOperations,
+						deletionRequestId: deletionLogEntity2.deletionRequestId?.toHexString(),
+						performedAt: deletionLogEntity2.performedAt,
+						createdAt: deletionLogEntity2.createdAt,
+						updatedAt: deletionLogEntity2.updatedAt,
+					}),
 				];
 
 				return { deletionLogEntity3, deletionRequest1Id, expectedArray };
@@ -210,21 +173,18 @@ describe(DeletionLogRepo.name, () => {
 			it('should find deletionRequests with deleteAfter smaller then today', async () => {
 				const { deletionLogEntity3, deletionRequest1Id, expectedArray } = await setup();
 
-				if (deletionRequest1Id) {
-					const results = await repo.findAllByDeletionRequestId(deletionRequest1Id?.toHexString());
+				const results = await repo.findAllByDeletionRequestId(deletionRequest1Id?.toHexString());
 
-					expect(results.length).toEqual(1);
+				expect(results.length).toEqual(2);
 
-					// Verify explicit fields.
-					// expect(results).toEqual(
-					// 	expect.arrayContaining([expect.objectContaining(expectedArray[0]), expect.objectContaining(expectedArray[1])])
-					// );
-					expect(results[0]).toEqual(expect.objectContaining(expectedArray[0]));
+				// Verify explicit fields.
+				expect(results).toEqual(
+					expect.arrayContaining([expect.objectContaining(expectedArray[0]), expect.objectContaining(expectedArray[1])])
+				);
 
-					const result: DeletionLog = await repo.findById(deletionLogEntity3.id);
+				const result: DeletionLog = await repo.findById(deletionLogEntity3.id);
 
-					expect(result.id).toEqual(deletionLogEntity3.id);
-				}
+				expect(result.id).toEqual(deletionLogEntity3.id);
 			});
 		});
 	});

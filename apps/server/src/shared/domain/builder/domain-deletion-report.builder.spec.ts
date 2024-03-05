@@ -24,6 +24,6 @@ describe(DomainDeletionReportBuilder.name, () => {
 		const result = DomainDeletionReportBuilder.build(domain, [operationReport]);
 
 		expect(result.domain).toEqual(domain);
-		expect(result.domainOperationReport).toEqual([operationReport]);
+		expect(result.operations).toEqual([operationReport]);
 	});
 });

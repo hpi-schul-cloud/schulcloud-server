@@ -9,8 +9,8 @@ export class DeletionLogMapper {
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
 			domain: entity.domain,
-			domainOperationReport: entity.domainOperationReport,
-			domainDeletionReport: entity.domainDeletionReport,
+			operations: entity.operations,
+			subdomainOperations: entity.subdomainOperations,
 			deletionRequestId: entity.deletionRequestId.toHexString(),
 			performedAt: entity.performedAt,
 		});
@@ -22,8 +22,8 @@ export class DeletionLogMapper {
 			createdAt: domainObject.createdAt,
 			updatedAt: domainObject.updatedAt,
 			domain: domainObject.domain,
-			domainOperationReport: domainObject.domainOperationReport,
-			domainDeletionReport: domainObject.domainDeletionReport,
+			operations: domainObject.operations,
+			subdomainOperations: domainObject.subdomainOperations,
 			deletionRequestId: new ObjectId(domainObject.deletionRequestId),
 			performedAt: domainObject.performedAt,
 		});

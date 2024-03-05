@@ -4,10 +4,10 @@ import { DomainName } from '@shared/domain/types';
 export class DomainDeletionReportBuilder {
 	static build(
 		domain: DomainName,
-		domainOperationReport: DomainOperationReport[],
-		subDomainReport?: DomainDeletionReport
+		operations: DomainOperationReport[],
+		subdomainOperations?: DomainDeletionReport[]
 	): DomainDeletionReport {
-		const domainDeletionReport = { domain, domainOperationReport, subDomainReport };
+		const domainDeletionReport = { domain, operations, subdomainOperations: subdomainOperations || null };
 
 		return domainDeletionReport;
 	}

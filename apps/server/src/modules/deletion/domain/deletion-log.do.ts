@@ -6,8 +6,8 @@ export interface DeletionLogProps extends AuthorizableObject {
 	createdAt?: Date;
 	updatedAt?: Date;
 	domain: DomainName;
-	domainOperationReport: DomainOperationReport[];
-	domainDeletionReport?: DomainDeletionReport;
+	operations: DomainOperationReport[];
+	subdomainOperations?: DomainDeletionReport[];
 	deletionRequestId: EntityId;
 	performedAt?: Date;
 }
@@ -25,12 +25,12 @@ export class DeletionLog extends DomainObject<DeletionLogProps> {
 		return this.props.domain;
 	}
 
-	get domainOperationReport(): DomainOperationReport[] {
-		return this.props.domainOperationReport;
+	get operations(): DomainOperationReport[] {
+		return this.props.operations;
 	}
 
-	get domainDeletionReport(): DomainDeletionReport | undefined {
-		return this.props.domainDeletionReport;
+	get subdomainOperations(): DomainDeletionReport[] | undefined {
+		return this.props.subdomainOperations;
 	}
 
 	get deletionRequestId(): EntityId {

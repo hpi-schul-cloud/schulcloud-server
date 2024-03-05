@@ -1,5 +1,6 @@
 import { DomainName, OperationType } from '@shared/domain/types';
 import { ObjectId } from 'bson';
+import { DomainOperationReportBuilder } from '@shared/domain/builder';
 import { DeletionLogStatisticBuilder } from '.';
 
 describe(DeletionLogStatisticBuilder.name, () => {
@@ -8,21 +9,22 @@ describe(DeletionLogStatisticBuilder.name, () => {
 	});
 	const setup = () => {
 		const domain = DomainName.PSEUDONYMS;
-		const operation = OperationType.DELETE;
-		const count = 2;
-		const refs = [new ObjectId().toHexString(), new ObjectId().toHexString()];
+		const operations = [
+			DomainOperationReportBuilder.build(OperationType.DELETE, 2, [
+				new ObjectId().toHexString(),
+				new ObjectId().toHexString(),
+			]),
+		];
 
-		return { domain, operation, count, refs };
+		return { domain, operations };
 	};
 
 	it('should build generic deletionLogStatistic with all attributes', () => {
-		const { domain, operation, count, refs } = setup();
+		const { domain, operations } = setup();
 
-		const result = DeletionLogStatisticBuilder.build(domain, operation, count, refs);
+		const result = DeletionLogStatisticBuilder.build(domain, operations);
 
 		expect(result.domain).toEqual(domain);
-		expect(result.operation).toEqual(operation);
-		expect(result.count).toEqual(count);
-		expect(result.refs).toEqual(refs);
+		expect(result.operations).toEqual(operations);
 	});
 });

@@ -15,9 +15,10 @@ export class DeletionLogService {
 			deletionRequestId,
 			performedAt: new Date(),
 			domain: domainDeletionReport.domain,
-			domainOperationReport: domainDeletionReport.domainOperationReport,
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			domainDeletionReport: domainDeletionReport.subDomainReport ? domainDeletionReport.subDomainReport : undefined,
+			operations: domainDeletionReport.operations,
+			subdomainOperations: domainDeletionReport.subdomainOperations
+				? domainDeletionReport.subdomainOperations
+				: undefined,
 		});
 
 		await this.deletionLogRepo.create(newDeletionLog);

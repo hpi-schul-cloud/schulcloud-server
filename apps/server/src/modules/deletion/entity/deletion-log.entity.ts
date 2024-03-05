@@ -7,28 +7,13 @@ import { ObjectId } from 'bson';
 export interface DeletionLogEntityProps {
 	id?: EntityId;
 	domain: DomainName;
-	// domainOperationReport: DomainOperationReportProps[];
-	domainOperationReport: DomainOperationReport[];
-	domainDeletionReport?: DomainDeletionReport;
+	operations: DomainOperationReport[];
+	subdomainOperations?: DomainDeletionReport[];
 	deletionRequestId: ObjectId;
 	performedAt?: Date;
 	createdAt?: Date;
 	updatedAt?: Date;
 }
-
-// export class DomainOperationReportProps {
-// 	operation: OperationType;
-
-// 	count: number;
-
-// 	refs: EntityId[];
-
-// 	constructor(props: DomainOperationReportProps) {
-// 		this.operation = props.operation;
-// 		this.count = props.count;
-// 		this.refs = props.refs;
-// 	}
-// }
 
 @Entity({ tableName: 'deletionlogs' })
 export class DeletionLogEntity extends BaseEntityWithTimestamps {
@@ -36,10 +21,10 @@ export class DeletionLogEntity extends BaseEntityWithTimestamps {
 	domain: DomainName;
 
 	@Property()
-	domainOperationReport: DomainOperationReport[];
+	operations: DomainOperationReport[];
 
 	@Property({ nullable: true })
-	domainDeletionReport?: DomainDeletionReport;
+	subdomainOperations?: DomainDeletionReport[];
 
 	@Property()
 	deletionRequestId: ObjectId;
@@ -55,11 +40,11 @@ export class DeletionLogEntity extends BaseEntityWithTimestamps {
 		}
 
 		this.domain = props.domain;
-		this.domainOperationReport = props.domainOperationReport;
+		this.operations = props.operations;
 		this.deletionRequestId = props.deletionRequestId;
 
-		if (props.domainDeletionReport !== undefined) {
-			this.domainDeletionReport = props.domainDeletionReport;
+		if (props.subdomainOperations !== undefined) {
+			this.subdomainOperations = props.subdomainOperations;
 		}
 
 		if (props.createdAt !== undefined) {

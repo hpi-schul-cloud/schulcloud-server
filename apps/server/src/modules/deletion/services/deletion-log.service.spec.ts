@@ -3,6 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DomainName, OperationType } from '@shared/domain/types';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { DeletionLogRepo } from '../repo';
 import { DeletionLogService } from './deletion-log.service';
 import { deletionLogFactory } from '../domain/testing/factory/deletion-log.factory';
@@ -48,27 +49,26 @@ describe(DeletionLogService.name, () => {
 			const setup = () => {
 				const deletionRequestId = '653e4833cc39e5907a1e18d2';
 				const domain = DomainName.USER;
-				const operation = OperationType.DELETE;
-				const count = 1;
-				const refs = [new ObjectId().toHexString()];
+				const operations = [
+					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [new ObjectId().toHexString()]),
+				];
 
-				return { deletionRequestId, domain, operation, count, refs };
+				const domainDeletionReport = DomainDeletionReportBuilder.build(domain, operations);
+
+				return { deletionRequestId, domainDeletionReport, operations };
 			};
 
 			it('should call deletionRequestRepo.create', async () => {
-				const { deletionRequestId, domain, operation, count, refs } = setup();
+				const { deletionRequestId, domainDeletionReport, operations } = setup();
 
-				await service.createDeletionLog(deletionRequestId, domain, operation, count, refs);
+				await service.createDeletionLog(deletionRequestId, domainDeletionReport);
 
 				expect(deletionLogRepo.create).toHaveBeenCalledWith(
 					expect.objectContaining({
 						id: expect.any(String),
 						performedAt: expect.any(Date),
 						deletionRequestId,
-						domain,
-						operation,
-						count,
-						refs,
+						operations,
 					})
 				);
 			});

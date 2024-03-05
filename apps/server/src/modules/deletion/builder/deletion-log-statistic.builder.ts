@@ -4,10 +4,14 @@ import { DomainName } from '@shared/domain/types';
 export class DeletionLogStatisticBuilder {
 	static build(
 		domain: DomainName,
-		domainOperationReport: DomainOperationReport[],
-		subDomainReport: DomainDeletionReport
+		operations: DomainOperationReport[],
+		subdomainOperations?: DomainDeletionReport[] | null
 	): DomainDeletionReport {
-		const deletionLogStatistic: DomainDeletionReport = { domain, domainOperationReport, subDomainReport };
+		const deletionLogStatistic: DomainDeletionReport = {
+			domain,
+			operations,
+			subdomainOperations: subdomainOperations || null,
+		};
 
 		return deletionLogStatistic;
 	}
