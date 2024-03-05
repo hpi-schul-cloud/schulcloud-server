@@ -99,9 +99,11 @@ describe(RocketChatUserService.name, () => {
 				const expectedResult = DomainDeletionReportBuilder.build(
 					DomainName.ROCKETCHATUSER,
 					[DomainOperationReportBuilder.build(OperationType.DELETE, 1, [rocketChatUser.id])],
-					DomainDeletionReportBuilder.build(DomainName.ROCKETCHATSERVICE, [
-						DomainOperationReportBuilder.build(OperationType.DELETE, 1, [rocketChatUser.username]),
-					])
+					[
+						DomainDeletionReportBuilder.build(DomainName.ROCKETCHATSERVICE, [
+							DomainOperationReportBuilder.build(OperationType.DELETE, 1, [rocketChatUser.username]),
+						]),
+					]
 				);
 
 				return {

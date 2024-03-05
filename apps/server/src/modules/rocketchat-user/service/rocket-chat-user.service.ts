@@ -56,9 +56,11 @@ export class RocketChatUserService implements DeletionService, IEventHandler<Use
 				const result = DomainDeletionReportBuilder.build(
 					DomainName.ROCKETCHATUSER,
 					[DomainOperationReportBuilder.build(OperationType.DELETE, rocketChatUserDeleted, [rocketChatUser[0].id])],
-					DomainDeletionReportBuilder.build(DomainName.ROCKETCHATSERVICE, [
-						DomainOperationReportBuilder.build(OperationType.DELETE, 1, [rocketChatUser[0].username]),
-					])
+					[
+						DomainDeletionReportBuilder.build(DomainName.ROCKETCHATSERVICE, [
+							DomainOperationReportBuilder.build(OperationType.DELETE, 1, [rocketChatUser[0].username]),
+						]),
+					]
 				);
 
 				this.logger.info(

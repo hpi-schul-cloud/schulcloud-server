@@ -113,11 +113,10 @@ export class FilesService implements DeletionService, IEventHandler<UserDeletedE
 		]);
 
 		const modifiedFilesCount =
-			markedFilesForDeletion.domainOperationReport[0].count +
-			removedUserPermissionsToFiles.domainOperationReport[0].count;
+			markedFilesForDeletion.operations[0].count + removedUserPermissionsToFiles.operations[0].count;
 		const modifiedFilesRef = [
-			...markedFilesForDeletion.domainOperationReport[0].refs,
-			...removedUserPermissionsToFiles.domainOperationReport[0].refs,
+			...markedFilesForDeletion.operations[0].refs,
+			...removedUserPermissionsToFiles.operations[0].refs,
 		];
 
 		const result = DomainDeletionReportBuilder.build(DomainName.FILE, [

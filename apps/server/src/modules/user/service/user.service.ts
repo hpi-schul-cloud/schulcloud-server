@@ -162,7 +162,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 				const result = DomainDeletionReportBuilder.build(
 					DomainName.USER,
 					[DomainOperationReportBuilder.build(OperationType.DELETE, 0, [])],
-					registrationPinDeleted
+					[registrationPinDeleted]
 				);
 
 				this.logger.info(
@@ -188,7 +188,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 			const result = DomainDeletionReportBuilder.build(
 				DomainName.USER,
 				[DomainOperationReportBuilder.build(OperationType.DELETE, numberOfDeletedUsers, [userId])],
-				registrationPinDeleted
+				[registrationPinDeleted]
 			);
 
 			this.logger.info(
@@ -239,7 +239,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 
 	private extractOperationReports(reports: DomainDeletionReport[]): DomainOperationReport[] {
 		const operationReportsMap: Map<OperationType, DomainOperationReport> = reports.reduce((map, report) => {
-			report.domainOperationReport.forEach((operationReport) => {
+			report.operations.forEach((operationReport) => {
 				const { operation, count, refs } = operationReport;
 
 				if (map.has(operation)) {
