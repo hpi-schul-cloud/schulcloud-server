@@ -114,17 +114,18 @@ export class TldrawWsService {
 	public async getDocument(docName: string) {
 		const existingDoc = this.docs.get(docName);
 
-		if (existingDoc && existingDoc.isFinalizing) {
+		if (this.isFinalizingOrNotYetLoaded(existingDoc)) {
 			// drop the connection, the client will have to reconnect
-			// and check again if the finalizing has finished
+			// and check again if the finalizing or loading has finished
 			throw new NotAcceptableException();
 		}
 
-		if (existingDoc && !existingDoc.isFinalizing) {
+		if (existingDoc) {
 			return existingDoc;
 		}
 
 		const doc = await this.tldrawBoardRepo.getDocumentFromDb(docName);
+		doc.isLoaded = false;
 
 		this.registerAwarenessUpdateHandler(doc);
 		this.registerUpdateHandler(doc);
@@ -133,6 +134,7 @@ export class TldrawWsService {
 
 		this.docs.set(docName, doc);
 		this.metricsService.incrementNumberOfBoardsOnServerCounter();
+		doc.isLoaded = true;
 		return doc;
 	}
 
@@ -284,7 +286,7 @@ export class TldrawWsService {
 		try {
 			console.log('AFTER DELAY - NO CONNECTIONS');
 
-			// await this.tldrawBoardRepo.compressDocument(doc.name);
+			await this.tldrawBoardRepo.compressDocument(doc.name);
 			this.unsubscribeFromRedisChannels(doc);
 
 			if (this.configService.get<number>('TLDRAW_ASSETS_SYNC_ENABLED')) {
@@ -430,6 +432,12 @@ export class TldrawWsService {
 
 	private isFromRedis(origin: unknown): boolean {
 		return typeof origin === 'string' && origin === UpdateOrigin.REDIS;
+	}
+
+	private isFinalizingOrNotYetLoaded(doc: WsSharedDocDo | undefined): boolean {
+		const isFinalizing = doc !== undefined && doc.isFinalizing;
+		const isNotLoaded = doc !== undefined && !doc.isLoaded;
+		return isFinalizing || isNotLoaded;
 	}
 
 	private delay(ms: number) {
