@@ -20,6 +20,7 @@ import { DeletionErrorLoggableException } from '@shared/common/loggable-exceptio
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { DataDeletedEvent } from '@modules/deletion/event';
 import { EventBus } from '@nestjs/cqrs';
+import { RegistrationPinService } from '@modules/registration-pin';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
 import { UserService } from './user.service';
@@ -33,6 +34,7 @@ describe('UserService', () => {
 	let config: DeepMocked<ConfigService>;
 	let roleService: DeepMocked<RoleService>;
 	let accountService: DeepMocked<AccountService>;
+	let registrationPinService: DeepMocked<RegistrationPinService>;
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
@@ -64,6 +66,10 @@ describe('UserService', () => {
 					useValue: createMock<AccountService>(),
 				},
 				{
+					provide: RegistrationPinService,
+					useValue: createMock<RegistrationPinService>(),
+				},
+				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
@@ -82,6 +88,7 @@ describe('UserService', () => {
 		config = module.get(ConfigService);
 		roleService = module.get(RoleService);
 		accountService = module.get(AccountService);
+		registrationPinService = module.get(RegistrationPinService);
 		eventBus = module.get(EventBus);
 
 		await setupEntities();
