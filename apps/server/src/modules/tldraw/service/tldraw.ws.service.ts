@@ -257,13 +257,16 @@ export class TldrawWsService {
 	}
 
 	private async finalizeIfNoConnections(doc: WsSharedDocDo) {
+		console.log('BEFORE DELAY');
 		await this.delay(10000);
 
 		if (doc.connections.size > 0) {
+			console.log('AFTER DELAY - HAS CONNECTIONS');
 			return;
 		}
 
 		try {
+			console.log('AFTER DELAY - NO CONNECTIONS');
 			const usedAssets = this.syncDocumentAssetsWithShapes(doc);
 			await this.tldrawBoardRepo.compressDocument(doc.name);
 			this.unsubscribeFromRedisChannels(doc);
