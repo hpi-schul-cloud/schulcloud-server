@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, Property } from '@mikro-orm/core';
 import {
 	AnyBoardDo,
 	BoardExternalReference,

@@ -33,14 +33,7 @@ export class BoardDoService {
 		await this.boardDoRepo.save(targetParent.children, targetParent);
 	}
 
-	async updateBoardVisibility(id: EntityId, isVisible: boolean): Promise<void> {
-		const boardDo = await this.boardDoRepo.findById(id, 1);
-		const rootBoardDo = await this.getRootBoardDo(boardDo);
-
-		rootBoardDo.isVisible = isVisible;
-		await this.boardDoRepo.save(rootBoardDo);
-	}
-
+	// TODO there is a similar method in board-do-authorizable.service.ts
 	async getRootBoardDo(boardDo: AnyBoardDo): Promise<ColumnBoard> {
 		const ancestorIds: EntityId[] = await this.boardDoRepo.getAncestorIds(boardDo);
 		const idHierarchy: EntityId[] = [...ancestorIds, boardDo.id];

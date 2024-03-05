@@ -1,6 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Injectable } from '@nestjs/common';
-import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import {
 	AnyBoardDo,
 	BoardExternalReference,
@@ -37,8 +36,6 @@ export class ColumnBoardService {
 		return ids;
 	}
 
-	// TODO why do we even have this here? Is not used except it tests, Has wrong name
-	// moved to BoardDoService
 	async findByDescendant(boardDo: AnyBoardDo): Promise<ColumnBoard> {
 		const rootboardDo = this.boardDoService.getRootBoardDo(boardDo);
 
@@ -167,6 +164,10 @@ export class ColumnBoardService {
 	}
 
 	async updateBoardVisibility(id: EntityId, isVisible: boolean): Promise<void> {
-		await this.boardDoService.updateBoardVisibility(id, isVisible);
+		const boardDo = await this.boardDoRepo.findById(id, 1);
+		const rootBoardDo = await this.boardDoService.getRootBoardDo(boardDo);
+
+		rootBoardDo.isVisible = isVisible;
+		await this.boardDoRepo.save(rootBoardDo);
 	}
 }

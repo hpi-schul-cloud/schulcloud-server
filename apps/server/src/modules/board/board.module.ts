@@ -59,7 +59,7 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		SubmissionItemService,
 		ColumnBoardCopyService,
 		/**
-		 * @deprecated - only used for deprecated lernraum module
+		 * @deprecated - exported only deprecated learnraum module
 		 */
 		BoardNodeRepo,
 	],

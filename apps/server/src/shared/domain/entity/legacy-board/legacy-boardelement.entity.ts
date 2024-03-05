@@ -3,7 +3,7 @@ import { EntityId } from '../../types';
 import { BaseEntityWithTimestamps } from '../base.entity';
 import { LessonEntity } from '../lesson.entity';
 import { Task } from '../task.entity';
-import { ColumnBoardNode } from '../boardnode';
+import { ColumnBoardNode } from '../boardnode/column-board-node.entity';
 
 export type LegacyBoardElementReference = Task | LessonEntity | ColumnBoardNode;
 
@@ -20,6 +20,7 @@ export type LegacyBoardElementProps = {
 @Entity({
 	discriminatorColumn: 'boardElementType',
 	abstract: true,
+	tableName: 'board-element',
 })
 export abstract class LegacyBoardElement extends BaseEntityWithTimestamps {
 	/** id reference to a collection populated later with name */

@@ -10,7 +10,7 @@ import { LegacyBoardElement, LegacyBoardElementReference } from './legacy-boarde
 import { ColumnboardBoardElement } from './column-board-boardelement';
 import { LessonBoardElement } from './lesson-boardelement.entity';
 import { TaskBoardElement } from './task-boardelement.entity';
-import { ColumnBoardNode } from '../boardnode';
+import { ColumnBoardNode } from '../boardnode/column-board-node.entity';
 
 export type BoardProps = {
 	references: LegacyBoardElement[];
