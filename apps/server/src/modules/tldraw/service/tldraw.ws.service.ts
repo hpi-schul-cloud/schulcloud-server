@@ -3,8 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import WebSocket from 'ws';
 import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
 import { decoding, encoding } from 'lib0';
-import { readSyncMessage, writeSyncStep1, writeUpdate } from 'y-protocols/sync';
-import { applyUpdate, encodeStateAsUpdate } from 'yjs';
+import { readSyncMessage, writeSyncStep1, writeSyncStep2, writeUpdate } from 'y-protocols/sync';
+import { applyUpdate } from 'yjs';
 import { Buffer } from 'node:buffer';
 import { Redis } from 'ioredis';
 import { Logger } from '@src/core/logger';
@@ -414,7 +414,7 @@ export class TldrawWsService {
 	private sendInitialState(ws: WebSocket, doc: WsSharedDocDo): void {
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, WSMessageType.SYNC);
-		writeUpdate(encoder, encodeStateAsUpdate(doc));
+		writeSyncStep2(encoder, doc);
 		this.send(doc, ws, encoding.toUint8Array(encoder));
 	}
 
