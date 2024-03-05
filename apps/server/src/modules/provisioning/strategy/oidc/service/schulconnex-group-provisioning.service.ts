@@ -169,7 +169,7 @@ export class SchulconnexGroupProvisioningService {
 		externalUserId: string,
 		externalGroups: ExternalGroupDto[],
 		systemId: EntityId
-	): Promise<void> {
+	): Promise<Group[]> {
 		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
 
 		if (!user) {
@@ -191,16 +191,23 @@ export class SchulconnexGroupProvisioningService {
 			return !isUserInGroup;
 		});
 
-		await Promise.all(
-			groupsWithoutUser.map(async (group: Group) => {
+		const groupRemovePromises: Promise<Group | null>[] = groupsWithoutUser.map(
+			async (group: Group): Promise<Group | null> => {
 				group.removeUser(user);
 
 				if (group.isEmpty()) {
 					await this.groupService.delete(group);
-				} else {
-					await this.groupService.save(group);
+					return null;
 				}
-			})
+
+				return this.groupService.save(group);
+			}
 		);
+
+		const deletedAndModifiedGroups: (Group | null)[] = await Promise.all(groupRemovePromises);
+
+		const remainingGroups: Group[] = deletedAndModifiedGroups.filter((group: Group | null): group is Group => !!group);
+
+		return remainingGroups;
 	}
 }

@@ -28,8 +28,6 @@ import { ExternalGroupDto, ExternalSchoolDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
 import { SchulconnexGroupProvisioningService } from './schulconnex-group-provisioning.service';
 
-jest.mock('crypto-js');
-
 describe(SchulconnexGroupProvisioningService.name, () => {
 	let module: TestingModule;
 	let service: SchulconnexGroupProvisioningService;
@@ -737,6 +735,18 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 
 					expect(groupService.save).not.toHaveBeenCalled();
 				});
+
+				it('should not return a group', async () => {
+					const { externalGroups, systemId, externalUserId } = setup();
+
+					const result: Group[] = await service.removeExternalGroupsAndAffiliation(
+						externalUserId,
+						externalGroups,
+						systemId
+					);
+
+					expect(result).toHaveLength(0);
+				});
 			});
 
 			describe('when group is not empty after removal of the User', () => {
@@ -778,14 +788,16 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 					});
 					const externalGroups: ExternalGroupDto[] = [firstExternalGroup];
 
-					userService.findByExternalId.mockResolvedValue(user);
-					groupService.findGroupsByUserAndGroupTypes.mockResolvedValue(existingGroups);
+					userService.findByExternalId.mockResolvedValueOnce(user);
+					groupService.findGroupsByUserAndGroupTypes.mockResolvedValueOnce(existingGroups);
+					groupService.save.mockResolvedValueOnce(secondExistingGroup);
 
 					return {
 						externalGroups,
 						systemId,
 						externalUserId,
 						existingGroups,
+						secondExistingGroup,
 					};
 				};
 
@@ -803,6 +815,18 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 					await service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
 
 					expect(groupService.delete).not.toHaveBeenCalled();
+				});
+
+				it('should return the modified groups', async () => {
+					const { externalGroups, systemId, externalUserId, secondExistingGroup } = setup();
+
+					const result: Group[] = await service.removeExternalGroupsAndAffiliation(
+						externalUserId,
+						externalGroups,
+						systemId
+					);
+
+					expect(result).toEqual([secondExistingGroup]);
 				});
 			});
 		});

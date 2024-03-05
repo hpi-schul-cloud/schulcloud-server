@@ -8,8 +8,6 @@ import { federalStateFactory, legacySchoolDoFactory, schoolYearFactory } from '@
 import { ExternalSchoolDto } from '../../../dto';
 import { SchulconnexSchoolProvisioningService } from './schulconnex-school-provisioning.service';
 
-jest.mock('crypto-js');
-
 describe(SchulconnexSchoolProvisioningService.name, () => {
 	let module: TestingModule;
 	let service: SchulconnexSchoolProvisioningService;

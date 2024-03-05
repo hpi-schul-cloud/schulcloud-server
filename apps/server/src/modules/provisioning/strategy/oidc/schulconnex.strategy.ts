@@ -47,11 +47,7 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 	}
 
 	private async provisionGroups(data: OauthDataDto, school?: LegacySchoolDo): Promise<void> {
-		await this.schulconnexGroupProvisioningService.removeExternalGroupsAndAffiliation(
-			data.externalUser.externalId,
-			data.externalGroups ?? [],
-			data.system.systemId
-		);
+		await this.removeUserFromGroups(data);
 
 		if (data.externalGroups) {
 			let groups: ExternalGroupDto[] = data.externalGroups;
@@ -62,7 +58,7 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 				data.system.systemId
 			);
 
-			const groupProvisioningPromises: Promise<void>[] = groups.map(
+			const groupProvisioningPromises: Promise<unknown>[] = groups.map(
 				async (externalGroup: ExternalGroupDto): Promise<void> => {
 					const existingGroup: Group | null = await this.groupService.findByExternalSource(
 						externalGroup.externalId,
@@ -85,6 +81,25 @@ export abstract class SchulconnexProvisioningStrategy extends ProvisioningStrate
 			);
 
 			await Promise.all(groupProvisioningPromises);
+		}
+	}
+
+	private async removeUserFromGroups(data: OauthDataDto): Promise<void> {
+		const removedFromGroups: Group[] =
+			await this.schulconnexGroupProvisioningService.removeExternalGroupsAndAffiliation(
+				data.externalUser.externalId,
+				data.externalGroups ?? [],
+				data.system.systemId
+			);
+
+		if (this.provisioningFeatures.schulconnexCourseSyncEnabled) {
+			const courseSyncPromises: Promise<unknown>[] = removedFromGroups.map(
+				async (removedFromGroup: Group): Promise<void> => {
+					await this.schulconnexCourseSyncService.synchronizeCourseWithGroup(removedFromGroup, removedFromGroup);
+				}
+			);
+
+			await Promise.all(courseSyncPromises);
 		}
 	}
 }
