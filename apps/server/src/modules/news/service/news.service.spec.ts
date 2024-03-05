@@ -4,14 +4,16 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities, teamNewsFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { NewsRepo } from '@shared/repo';
-import { DomainDeletionReportBuilder } from '@shared/domain/builder';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { DomainName, OperationType } from '@shared/domain/types';
+import { EventBus } from '@nestjs/cqrs';
 import { NewsService } from './news.service';
 
 describe(NewsService.name, () => {
 	let module: TestingModule;
 	let service: NewsService;
 	let repo: DeepMocked<NewsRepo>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -25,11 +27,18 @@ describe(NewsService.name, () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
+				},
 			],
 		}).compile();
 
 		service = module.get(NewsService);
 		repo = module.get(NewsRepo);
+		eventBus = module.get(EventBus);
 
 		await setupEntities();
 	});
@@ -60,22 +69,17 @@ describe(NewsService.name, () => {
 				updater: user2,
 			});
 
-			const expectedResultWithDeletedCreator = DomainDeletionReportBuilder.build(DomainName.NEWS, OperationType.UPDATE, 2, [
-				news1.id,
-				news3.id,
+			const expectedResultWithDeletedCreator = DomainDeletionReportBuilder.build(DomainName.NEWS, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [news1.id, news3.id]),
 			]);
 
-			const expectedResultWithDeletedUpdater = DomainDeletionReportBuilder.build(DomainName.NEWS, OperationType.UPDATE, 2, [
-				news2.id,
-				news3.id,
+			const expectedResultWithDeletedUpdater = DomainDeletionReportBuilder.build(DomainName.NEWS, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [news2.id, news3.id]),
 			]);
 
-			const expectedResultWithoutUpdatedNews = DomainDeletionReportBuilder.build(
-				DomainName.NEWS,
-				OperationType.UPDATE,
-				0,
-				[]
-			);
+			const expectedResultWithoutUpdatedNews = DomainDeletionReportBuilder.build(DomainName.NEWS, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 0, []),
+			]);
 
 			return {
 				anotherUserId,
@@ -96,7 +100,7 @@ describe(NewsService.name, () => {
 
 				repo.findByCreatorOrUpdaterId.mockResolvedValueOnce([[news1, news3], 2]);
 
-				await service.deleteCreatorOrUpdaterReference(user1.id);
+				await service.deleteUserData(user1.id);
 
 				expect(news1.creator).toBeUndefined();
 				expect(news3.creator).toBeUndefined();
@@ -107,7 +111,7 @@ describe(NewsService.name, () => {
 
 				repo.findByCreatorOrUpdaterId.mockResolvedValueOnce([[news1, news3], 2]);
 
-				const result = await service.deleteCreatorOrUpdaterReference(user1.id);
+				const result = await service.deleteUserData(user1.id);
 
 				expect(result).toEqual(expectedResultWithDeletedCreator);
 			});
@@ -119,7 +123,7 @@ describe(NewsService.name, () => {
 
 				repo.findByCreatorOrUpdaterId.mockResolvedValueOnce([[news2, news3], 2]);
 
-				await service.deleteCreatorOrUpdaterReference(user2.id);
+				await service.deleteUserData(user2.id);
 
 				expect(news2.updater).toBeUndefined();
 				expect(news3.updater).toBeUndefined();
@@ -130,7 +134,7 @@ describe(NewsService.name, () => {
 
 				repo.findByCreatorOrUpdaterId.mockResolvedValueOnce([[news2, news3], 2]);
 
-				const result = await service.deleteCreatorOrUpdaterReference(user2.id);
+				const result = await service.deleteUserData(user2.id);
 
 				expect(result).toEqual(expectedResultWithDeletedUpdater);
 			});
@@ -142,7 +146,7 @@ describe(NewsService.name, () => {
 
 				repo.findByCreatorOrUpdaterId.mockResolvedValueOnce([[], 0]);
 
-				const result = await service.deleteCreatorOrUpdaterReference(anotherUserId);
+				const result = await service.deleteUserData(anotherUserId);
 
 				expect(result).toEqual(expectedResultWithoutUpdatedNews);
 			});

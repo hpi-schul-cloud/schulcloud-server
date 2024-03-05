@@ -5,8 +5,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentProperties, ComponentType } from '@shared/domain/entity';
 import { lessonFactory, setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { DomainDeletionReportBuilder } from '@shared/domain/builder';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { DomainName, OperationType } from '@shared/domain/types';
+import { EventBus } from '@nestjs/cqrs';
 import { LessonRepo } from '../repository';
 import { LessonService } from './lesson.service';
 
@@ -16,6 +17,7 @@ describe('LessonService', () => {
 
 	let lessonRepo: DeepMocked<LessonRepo>;
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -33,12 +35,19 @@ describe('LessonService', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
+				},
 			],
 		}).compile();
 		lessonService = module.get(LessonService);
 
 		lessonRepo = module.get(LessonRepo);
 		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
+		eventBus = module.get(EventBus);
 
 		await setupEntities();
 	});
@@ -151,9 +160,8 @@ describe('LessonService', () => {
 
 				lessonRepo.findByUserId.mockResolvedValue([lesson1, lesson2]);
 
-				const expectedResult = DomainDeletionReportBuilder.build(DomainName.LESSONS, OperationType.UPDATE, 2, [
-					lesson1.id,
-					lesson2.id,
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.LESSONS, [
+					DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [lesson1.id, lesson2.id]),
 				]);
 
 				return {

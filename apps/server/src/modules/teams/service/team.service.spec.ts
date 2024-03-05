@@ -3,8 +3,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TeamsRepo } from '@shared/repo';
 import { setupEntities, teamFactory, teamUserFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { DomainDeletionReportBuilder } from '@shared/domain/builder';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { DomainName, OperationType } from '@shared/domain/types';
+import { EventBus } from '@nestjs/cqrs/dist';
 import { TeamService } from './team.service';
 
 describe('TeamService', () => {
@@ -12,6 +13,7 @@ describe('TeamService', () => {
 	let service: TeamService;
 
 	let teamsRepo: DeepMocked<TeamsRepo>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -25,11 +27,18 @@ describe('TeamService', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
+				},
 			],
 		}).compile();
 
 		service = module.get(TeamService);
 		teamsRepo = module.get(TeamsRepo);
+		eventBus = module.get(EventBus);
 
 		await setupEntities();
 	});
@@ -83,9 +92,8 @@ describe('TeamService', () => {
 
 				teamsRepo.findByUserId.mockResolvedValue([team1, team2]);
 
-				const expectedResult = DomainDeletionReportBuilder.build(DomainName.TEAMS, OperationType.UPDATE, 2, [
-					team1.id,
-					team2.id,
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.TEAMS, [
+					DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [team1.id, team2.id]),
 				]);
 
 				return {
@@ -97,7 +105,7 @@ describe('TeamService', () => {
 			it('should call teamsRepo.findByUserId', async () => {
 				const { teamUser } = setup();
 
-				await service.deleteUserDataFromTeams(teamUser.user.id);
+				await service.deleteUserData(teamUser.user.id);
 
 				expect(teamsRepo.findByUserId).toBeCalledWith(teamUser.user.id);
 			});
@@ -105,7 +113,7 @@ describe('TeamService', () => {
 			it('should update teams without deleted user', async () => {
 				const { expectedResult, teamUser } = setup();
 
-				const result = await service.deleteUserDataFromTeams(teamUser.user.id);
+				const result = await service.deleteUserData(teamUser.user.id);
 
 				expect(result).toEqual(expectedResult);
 			});

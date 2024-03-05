@@ -8,6 +8,7 @@ import { SubmissionRepo } from '@shared/repo';
 import { setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from 'bson';
+import { EventBus } from '@nestjs/cqrs';
 import { SubmissionService } from './submission.service';
 
 describe('Submission Service', () => {
@@ -15,6 +16,7 @@ describe('Submission Service', () => {
 	let service: SubmissionService;
 	let submissionRepo: DeepMocked<SubmissionRepo>;
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -35,12 +37,19 @@ describe('Submission Service', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
+				},
 			],
 		}).compile();
 
 		service = module.get(SubmissionService);
 		submissionRepo = module.get(SubmissionRepo);
 		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
+		eventBus = module.get(EventBus);
 	});
 
 	afterAll(async () => {

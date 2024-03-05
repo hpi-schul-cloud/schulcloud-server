@@ -9,8 +9,9 @@ import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject'
 import { externalToolFactory, ltiToolDOFactory, pseudonymFactory, userDoFactory } from '@shared/testing/factory';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from 'bson';
-import { DomainDeletionReportBuilder } from '@shared/domain/builder';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { DomainName, OperationType } from '@shared/domain/types';
+import { EventBus } from '@nestjs/cqrs';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 import { PseudonymService } from './pseudonym.service';
@@ -21,6 +22,7 @@ describe('PseudonymService', () => {
 
 	let pseudonymRepo: DeepMocked<PseudonymsRepo>;
 	let externalToolPseudonymRepo: DeepMocked<ExternalToolPseudonymRepo>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -38,12 +40,19 @@ describe('PseudonymService', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
+				},
 			],
 		}).compile();
 
 		service = module.get(PseudonymService);
 		pseudonymRepo = module.get(PseudonymsRepo);
 		externalToolPseudonymRepo = module.get(ExternalToolPseudonymRepo);
+		eventBus = module.get(EventBus);
 	});
 
 	beforeEach(() => {
@@ -395,7 +404,7 @@ describe('PseudonymService', () => {
 		});
 	});
 
-	describe('deleteByUserId', () => {
+	describe('deleteUserData', () => {
 		describe('when user is missing', () => {
 			const setup = () => {
 				const user: UserDO = userDoFactory.build({ id: undefined });
@@ -408,7 +417,7 @@ describe('PseudonymService', () => {
 			it('should throw an error', async () => {
 				const { user } = setup();
 
-				await expect(service.deleteByUserId(user.id as string)).rejects.toThrowError(InternalServerErrorException);
+				await expect(service.deleteUserData(user.id as string)).rejects.toThrowError(InternalServerErrorException);
 			});
 		});
 
@@ -422,12 +431,13 @@ describe('PseudonymService', () => {
 					new ObjectId().toHexString(),
 				];
 
-				const expectedResult = DomainDeletionReportBuilder.build(
-					DomainName.PSEUDONYMS,
-					OperationType.DELETE,
-					pseudonymsDeleted.length + externalPseudonymsDeleted.length,
-					[...pseudonymsDeleted, ...externalPseudonymsDeleted]
-				);
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.PSEUDONYMS, [
+					DomainOperationReportBuilder.build(
+						OperationType.DELETE,
+						pseudonymsDeleted.length + externalPseudonymsDeleted.length,
+						[...pseudonymsDeleted, ...externalPseudonymsDeleted]
+					),
+				]);
 
 				pseudonymRepo.deletePseudonymsByUserId.mockResolvedValue(pseudonymsDeleted);
 				externalToolPseudonymRepo.deletePseudonymsByUserId.mockResolvedValue(externalPseudonymsDeleted);
@@ -441,7 +451,7 @@ describe('PseudonymService', () => {
 			it('should delete pseudonyms by userId', async () => {
 				const { expectedResult, user } = setup();
 
-				const result = await service.deleteByUserId(user.id as string);
+				const result = await service.deleteUserData(user.id as string);
 
 				expect(result).toEqual(expectedResult);
 			});

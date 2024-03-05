@@ -3,8 +3,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { DomainDeletionReportBuilder } from '@shared/domain/builder';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { DomainName, OperationType } from '@shared/domain/types';
+import { EventBus } from '@nestjs/cqrs';
 import { FilesService } from './files.service';
 import { FilesRepo } from '../repo';
 import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
@@ -14,6 +15,7 @@ describe(FilesService.name, () => {
 	let module: TestingModule;
 	let service: FilesService;
 	let repo: DeepMocked<FilesRepo>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -27,11 +29,18 @@ describe(FilesService.name, () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
+				},
 			],
 		}).compile();
 
 		service = module.get(FilesService);
 		repo = module.get(FilesRepo);
+		eventBus = module.get(EventBus);
 
 		await setupEntities();
 	});
@@ -136,26 +145,17 @@ describe(FilesService.name, () => {
 
 			const entities = [entity4, entity5, entity6];
 
-			const expectedResultWhenFilesNotExists = DomainDeletionReportBuilder.build(
-				DomainName.FILE,
-				OperationType.UPDATE,
-				0,
-				[]
-			);
+			const expectedResultWhenFilesNotExists = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 0, []),
+			]);
 
-			const expectedResultWhenFilesExistsWithOnlyUserId = DomainDeletionReportBuilder.build(
-				DomainName.FILE,
-				OperationType.UPDATE,
-				3,
-				[entity1.id, entity2.id, entity3.id]
-			);
+			const expectedResultWhenFilesExistsWithOnlyUserId = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [entity1.id, entity2.id, entity3.id]),
+			]);
 
-			const expectedResultWhenManyFilesExistsWithOtherUsers = DomainDeletionReportBuilder.build(
-				DomainName.FILE,
-				OperationType.UPDATE,
-				3,
-				[entity4.id, entity5.id, entity6.id]
-			);
+			const expectedResultWhenManyFilesExistsWithOtherUsers = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [entity4.id, entity5.id, entity6.id]),
+			]);
 
 			return {
 				entity1,
@@ -289,21 +289,16 @@ describe(FilesService.name, () => {
 			const entity3 = fileEntityFactory.buildWithId({ ownerId: userId });
 			const entities = [entity1, entity2, entity3];
 
-			const expectedResultWhenFilesNotExists = DomainDeletionReportBuilder.build(
-				DomainName.FILE,
-				OperationType.UPDATE,
-				0,
-				[]
-			);
-
-			const expectedResultWhenOneFileExists = DomainDeletionReportBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
-				entity1.id,
+			const expectedResultWhenFilesNotExists = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 0, []),
 			]);
 
-			const expectedResultWhenManyFilesExists = DomainDeletionReportBuilder.build(DomainName.FILE, OperationType.UPDATE, 3, [
-				entity1.id,
-				entity2.id,
-				entity3.id,
+			const expectedResultWhenOneFileExists = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 1, [entity1.id]),
+			]);
+
+			const expectedResultWhenManyFilesExists = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [entity1.id, entity2.id, entity3.id]),
 			]);
 
 			return {

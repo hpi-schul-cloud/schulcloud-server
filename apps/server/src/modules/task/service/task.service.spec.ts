@@ -3,9 +3,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TaskRepo } from '@shared/repo';
 import { courseFactory, setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { DomainName, OperationType } from '@shared/domain/types';
-import { DomainDeletionReportBuilder } from '@shared/domain/builder';
+import { OperationType } from '@shared/domain/types';
+import { DomainOperationReportBuilder } from '@shared/domain/builder';
 import { Logger } from '@src/core/logger';
+import { EventBus } from '@nestjs/cqrs';
 import { SubmissionService } from './submission.service';
 import { TaskService } from './task.service';
 
@@ -15,6 +16,7 @@ describe('TaskService', () => {
 	let taskService: TaskService;
 	let submissionService: DeepMocked<SubmissionService>;
 	let fileStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -36,6 +38,12 @@ describe('TaskService', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
+				},
 			],
 		}).compile();
 
@@ -43,6 +51,7 @@ describe('TaskService', () => {
 		taskService = module.get(TaskService);
 		submissionService = module.get(SubmissionService);
 		fileStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
+		eventBus = module.get(EventBus);
 
 		await setupEntities();
 	});
@@ -118,10 +127,7 @@ describe('TaskService', () => {
 
 				taskRepo.findByOnlyCreatorId.mockResolvedValue([[taskWithoutCourse], 1]);
 
-				const expectedResult = DomainDeletionReportBuilder.build(DomainName.TASK, OperationType.DELETE, 1, [
-					taskWithoutCourse.id,
-				]);
-
+				const expectedResult = DomainOperationReportBuilder.build(OperationType.DELETE, 1, [taskWithoutCourse.id]);
 				return { creator, expectedResult };
 			};
 
@@ -152,9 +158,7 @@ describe('TaskService', () => {
 
 				taskRepo.findByCreatorIdWithCourseAndLesson.mockResolvedValue([[taskWithCourse], 1]);
 
-				const expectedResult = DomainDeletionReportBuilder.build(DomainName.TASK, OperationType.UPDATE, 1, [
-					taskWithCourse.id,
-				]);
+				const expectedResult = DomainOperationReportBuilder.build(OperationType.UPDATE, 1, [taskWithCourse.id]);
 				const taskWithCourseToUpdate = { ...taskWithCourse, creator: undefined };
 
 				return { creator, expectedResult, taskWithCourseToUpdate };
@@ -194,9 +198,7 @@ describe('TaskService', () => {
 
 				taskRepo.findByUserIdInFinished.mockResolvedValue([[finishedTask], 1]);
 
-				const expectedResult = DomainDeletionReportBuilder.build(DomainName.TASK, OperationType.UPDATE, 1, [
-					finishedTask.id,
-				]);
+				const expectedResult = DomainOperationReportBuilder.build(OperationType.UPDATE, 1, [finishedTask.id]);
 
 				return { creator, expectedResult };
 			};

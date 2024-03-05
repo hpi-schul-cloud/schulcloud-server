@@ -5,8 +5,9 @@ import { setupEntities, userFactory } from '@shared/testing';
 import { DomainName, LearnroomMetadata, LearnroomTypes, OperationType } from '@shared/domain/types';
 import { DashboardEntity, GridElement } from '@shared/domain/entity';
 import { Logger } from '@src/core/logger';
-import { DomainDeletionReportBuilder } from '@shared/domain/builder';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { ObjectId } from 'bson';
+import { EventBus } from '@nestjs/cqrs';
 import { DashboardService } from '.';
 
 const learnroomMock = (id: string, name: string) => {
@@ -29,6 +30,7 @@ describe(DashboardService.name, () => {
 	let dashboardRepo: IDashboardRepo;
 	let dashboardElementRepo: DeepMocked<DashboardElementRepo>;
 	let dashboardService: DeepMocked<DashboardService>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -51,12 +53,19 @@ describe(DashboardService.name, () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
+				},
 			],
 		}).compile();
 		dashboardService = module.get(DashboardService);
 		userRepo = module.get(UserRepo);
 		dashboardRepo = module.get('DASHBOARD_REPO');
 		dashboardElementRepo = module.get(DashboardElementRepo);
+		eventBus = module.get(EventBus);
 	});
 
 	afterAll(async () => {
@@ -82,7 +91,9 @@ describe(DashboardService.name, () => {
 			});
 			userRepo.findById.mockResolvedValue(user);
 
-			const expectedResult = DomainDeletionReportBuilder.build(DomainName.DASHBOARD, OperationType.DELETE, 1, [dashboardId]);
+			const expectedResult = DomainDeletionReportBuilder.build(DomainName.DASHBOARD, [
+				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [dashboardId]),
+			]);
 
 			return { dashboard, expectedResult, user };
 		};

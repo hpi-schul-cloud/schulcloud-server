@@ -4,8 +4,9 @@ import { Course } from '@shared/domain/entity';
 import { CourseRepo, UserRepo } from '@shared/repo';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { DomainDeletionReportBuilder } from '@shared/domain/builder';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { DomainName, OperationType } from '@shared/domain/types';
+import { EventBus } from '@nestjs/cqrs';
 import { CourseService } from './course.service';
 
 describe('CourseService', () => {
@@ -13,6 +14,7 @@ describe('CourseService', () => {
 	let courseRepo: DeepMocked<CourseRepo>;
 	let courseService: CourseService;
 	let userRepo: DeepMocked<UserRepo>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -31,11 +33,18 @@ describe('CourseService', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
+				},
 			],
 		}).compile();
 		courseRepo = module.get(CourseRepo);
 		courseService = module.get(CourseService);
 		userRepo = module.get(UserRepo);
+		eventBus = module.get(EventBus);
 	});
 
 	afterAll(async () => {
@@ -111,10 +120,8 @@ describe('CourseService', () => {
 			userRepo.findById.mockResolvedValue(user);
 			courseRepo.findAllByUserId.mockResolvedValue([allCourses, allCourses.length]);
 
-			const expectedResult = DomainDeletionReportBuilder.build(DomainName.COURSE, OperationType.UPDATE, 3, [
-				course1.id,
-				course2.id,
-				course3.id,
+			const expectedResult = DomainDeletionReportBuilder.build(DomainName.COURSE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [course1.id, course2.id, course3.id]),
 			]);
 
 			return {
@@ -125,13 +132,13 @@ describe('CourseService', () => {
 
 		it('should call courseRepo.findAllByUserId', async () => {
 			const { user } = setup();
-			await courseService.deleteUserData\(user.id);
+			await courseService.deleteUserData(user.id);
 			expect(courseRepo.findAllByUserId).toBeCalledWith(user.id);
 		});
 
 		it('should update courses without deleted user', async () => {
 			const { expectedResult, user } = setup();
-			const result = await courseService.deleteUserData\(user.id);
+			const result = await courseService.deleteUserData(user.id);
 			expect(result).toEqual(expectedResult);
 		});
 	});

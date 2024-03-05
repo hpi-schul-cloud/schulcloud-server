@@ -6,6 +6,7 @@ import { DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
+import { EventBus } from '@nestjs/cqrs';
 import { Class } from '../domain';
 import { classFactory } from '../domain/testing';
 import { classEntityFactory } from '../entity/testing';
@@ -17,6 +18,7 @@ describe(ClassService.name, () => {
 	let module: TestingModule;
 	let service: ClassService;
 	let classesRepo: DeepMocked<ClassesRepo>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -30,11 +32,18 @@ describe(ClassService.name, () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
+				},
 			],
 		}).compile();
 
 		service = module.get(ClassService);
 		classesRepo = module.get(ClassesRepo);
+		eventBus = module.get(EventBus);
 
 		await setupEntities();
 	});

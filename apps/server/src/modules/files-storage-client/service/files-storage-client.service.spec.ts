@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { schoolEntityFactory, setupEntities, taskFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { FileRecordParentType } from '@infra/rabbitmq';
+import { EventBus } from '@nestjs/cqrs';
 import { FileParamBuilder, FilesStorageClientMapper } from '../mapper';
 import { CopyFilesOfParentParamBuilder } from '../mapper/copy-files-of-parent-param.builder';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
@@ -13,6 +14,7 @@ describe('FilesStorageClientAdapterService', () => {
 	let module: TestingModule;
 	let service: FilesStorageClientAdapterService;
 	let client: DeepMocked<FilesStorageProducer>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -28,11 +30,18 @@ describe('FilesStorageClientAdapterService', () => {
 					provide: FilesStorageProducer,
 					useValue: createMock<FilesStorageProducer>(),
 				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
+				},
 			],
 		}).compile();
 
 		service = module.get(FilesStorageClientAdapterService);
 		client = module.get(FilesStorageProducer);
+		eventBus = module.get(EventBus);
 	});
 
 	afterAll(async () => {
@@ -210,7 +219,7 @@ describe('FilesStorageClientAdapterService', () => {
 			it('Should call client.removeCreatorIdFromFileRecords', async () => {
 				const { creatorId } = setup();
 
-				await service.removeCreatorIdFromFileRecords(creatorId);
+				await service.deleteUserData(creatorId);
 
 				expect(client.removeCreatorIdFromFileRecords).toHaveBeenCalledWith(creatorId);
 			});
@@ -228,7 +237,7 @@ describe('FilesStorageClientAdapterService', () => {
 			it('Should call error mapper if throw an error.', async () => {
 				const { creatorId } = setup();
 
-				await expect(service.removeCreatorIdFromFileRecords(creatorId)).rejects.toThrowError();
+				await expect(service.deleteUserData(creatorId)).rejects.toThrowError();
 			});
 		});
 	});
