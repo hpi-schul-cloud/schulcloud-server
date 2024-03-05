@@ -26,6 +26,7 @@ export interface CourseProperties {
 	features?: CourseFeatures[];
 	classes?: ClassEntity[];
 	groups?: GroupEntity[];
+	syncedWithGroup?: GroupEntity;
 }
 
 // that is really really shit default handling :D constructor, getter, js default, em default...what the hell
@@ -36,7 +37,7 @@ const DEFAULT = {
 	description: '',
 };
 
-const enum CourseFeatures {
+export enum CourseFeatures {
 	VIDEOCONFERENCE = 'videoconference',
 }
 
@@ -102,6 +103,9 @@ export class Course extends BaseEntityWithTimestamps implements Learnroom, Entit
 	@ManyToMany(() => GroupEntity, undefined, { fieldName: 'groupIds' })
 	groups = new Collection<GroupEntity>(this);
 
+	@ManyToOne(() => GroupEntity, { nullable: true })
+	syncedWithGroup?: GroupEntity;
+
 	constructor(props: CourseProperties) {
 		super();
 		if (props.name) this.name = props.name;
@@ -117,6 +121,7 @@ export class Course extends BaseEntityWithTimestamps implements Learnroom, Entit
 		if (props.features) this.features = props.features;
 		this.classes.set(props.classes || []);
 		this.groups.set(props.groups || []);
+		this.syncedWithGroup = props.syncedWithGroup;
 	}
 
 	public getStudentIds(): EntityId[] {
