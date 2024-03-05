@@ -3,12 +3,15 @@ import { FileRecordParentType } from '@infra/rabbitmq';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Submission } from '@shared/domain/entity';
-import { Counted } from '@shared/domain/types';
+import { Counted, DomainName, OperationType } from '@shared/domain/types';
 import { SubmissionRepo } from '@shared/repo';
 import { setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from 'bson';
 import { EventBus } from '@nestjs/cqrs';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
+import { DataDeletedEvent } from '@modules/deletion/event';
 import { SubmissionService } from './submission.service';
 
 describe('Submission Service', () => {
@@ -323,6 +326,48 @@ describe('Submission Service', () => {
 				expect(submission.teamMembers[0]).toEqual(user2);
 				expect(submissionRepo.save).toBeCalledTimes(1);
 				expect(submissionRepo.save).toHaveBeenCalledWith([submission]);
+			});
+		});
+	});
+
+	describe('handle', () => {
+		const setup = () => {
+			const targetRefId = new ObjectId().toHexString();
+			const targetRefDomain = DomainName.SUBMISSIONS;
+			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
+
+			const expectedData = DomainDeletionReportBuilder.build(DomainName.SUBMISSIONS, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString(),
+				]),
+			]);
+
+			return {
+				deletionRequest,
+				expectedData,
+			};
+		};
+
+		describe('when UserDeletedEvent', () => {
+			it('should call deleteUserData in classService', async () => {
+				const { deletionRequest, expectedData } = setup();
+
+				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await service.handle({ deletionRequest });
+
+				expect(service.deleteUserData).toHaveBeenCalledWith(deletionRequest.targetRefId);
+			});
+
+			it('should call eventBus.publish', async () => {
+				const { deletionRequest, expectedData } = setup();
+
+				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await service.handle({ deletionRequest });
+
+				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequest, expectedData));
 			});
 		});
 	});
