@@ -257,6 +257,8 @@ export class TldrawWsService {
 	}
 
 	private async finalizeIfNoConnections(doc: WsSharedDocDo) {
+		await this.delay(10000);
+
 		if (doc.connections.size > 0) {
 			return;
 		}
@@ -409,5 +411,11 @@ export class TldrawWsService {
 
 	private isFromRedis(origin: unknown): boolean {
 		return typeof origin === 'string' && origin === UpdateOrigin.REDIS;
+	}
+
+	private delay(ms: number) {
+		return new Promise((resolve) => {
+			setTimeout(resolve, ms);
+		});
 	}
 }
