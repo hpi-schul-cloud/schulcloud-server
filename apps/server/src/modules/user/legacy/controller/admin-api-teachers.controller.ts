@@ -19,7 +19,7 @@ export class AdminApiTeachersController {
 	@ApiResponse({ status: 200, type: UserListResponse, description: 'Returns a paged list of teachers.' })
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Not authorized.' })
-	async searchAccounts(
+	async searchTeachers(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() params: UsersSearchQueryParams
 	): Promise<UserListResponse> {
@@ -32,7 +32,7 @@ export class AdminApiTeachersController {
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Not authorized.' })
 	@ApiResponse({ status: 404, type: EntityNotFoundError, description: 'Teacher not found.' })
-	async findAccountById(
+	async findTeacherById(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: UserByIdParams
 	): Promise<UserResponse> {
