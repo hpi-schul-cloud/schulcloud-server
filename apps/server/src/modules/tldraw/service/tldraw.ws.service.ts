@@ -63,11 +63,11 @@ export class TldrawWsService {
 			doc.connections.delete(ws);
 			removeAwarenessStates(doc.awareness, this.forceToArray(controlledIds), null);
 
-			await this.finalizeIfNoConnections(doc);
 			this.metricsService.decrementNumberOfUsersOnServerCounter();
 		}
 
 		ws.close();
+		await this.finalizeIfNoConnections(doc);
 	}
 
 	public send(doc: WsSharedDocDo, ws: WebSocket, message: Uint8Array): void {
@@ -283,12 +283,12 @@ export class TldrawWsService {
 
 		try {
 			console.log('AFTER DELAY - NO CONNECTIONS');
-			const usedAssets = this.syncDocumentAssetsWithShapes(doc);
 
-			await this.tldrawBoardRepo.compressDocument(doc.name);
+			// await this.tldrawBoardRepo.compressDocument(doc.name);
 			this.unsubscribeFromRedisChannels(doc);
 
 			if (this.configService.get<number>('TLDRAW_ASSETS_SYNC_ENABLED')) {
+				const usedAssets = this.syncDocumentAssetsWithShapes(doc);
 				void this.filesStorageTldrawAdapterService
 					.deleteUnusedFilesForDocument(doc.name, usedAssets)
 					.then(() => console.log('AFTER DELAY - ASSET SYNC DONE'))
@@ -319,16 +319,12 @@ export class TldrawWsService {
 			}
 		}
 
-		doc.transact(() => {
-			for (const [, asset] of assets) {
-				const foundAsset = usedShapesAsAssets.some((shape) => shape.assetId === asset.id);
-				if (!foundAsset) {
-					assets.delete(asset.id);
-				} else {
-					usedAssets.push(asset);
-				}
+		for (const [, asset] of assets) {
+			const foundAsset = usedShapesAsAssets.some((shape) => shape.assetId === asset.id);
+			if (foundAsset) {
+				usedAssets.push(asset);
 			}
-		});
+		}
 
 		return usedAssets;
 	}
