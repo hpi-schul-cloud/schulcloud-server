@@ -284,10 +284,7 @@ export class TldrawWsService {
 		try {
 			console.log('AFTER DELAY - NO CONNECTIONS');
 			const usedAssets = this.syncDocumentAssetsWithShapes(doc);
-			console.log(
-				'usedAssets',
-				usedAssets.map((a) => a.id)
-			);
+
 			await this.tldrawBoardRepo.compressDocument(doc.name);
 			this.unsubscribeFromRedisChannels(doc);
 
