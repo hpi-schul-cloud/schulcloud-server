@@ -7,6 +7,9 @@ import { Logger } from '@src/core/logger';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { DomainName, OperationType } from '@shared/domain/types';
 import { EventBus } from '@nestjs/cqrs';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { ObjectId } from 'bson';
+import { DataDeletedEvent } from '@modules/deletion/event';
 import { CourseService } from './course.service';
 
 describe('CourseService', () => {
@@ -174,6 +177,48 @@ describe('CourseService', () => {
 			await expect(courseService.create(course)).resolves.not.toThrow();
 
 			expect(courseRepo.createCourse).toBeCalledWith(course);
+		});
+	});
+
+	describe('handle', () => {
+		const setup = () => {
+			const targetRefId = new ObjectId().toHexString();
+			const targetRefDomain = DomainName.COURSE;
+			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
+
+			const expectedData = DomainDeletionReportBuilder.build(DomainName.COURSE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString(),
+				]),
+			]);
+
+			return {
+				deletionRequest,
+				expectedData,
+			};
+		};
+
+		describe('when UserDeletedEvent', () => {
+			it('should call deleteUserData in classService', async () => {
+				const { deletionRequest, expectedData } = setup();
+
+				jest.spyOn(courseService, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await courseService.handle({ deletionRequest });
+
+				expect(courseService.deleteUserData).toHaveBeenCalledWith(deletionRequest.targetRefId);
+			});
+
+			it('should call eventBus.publish', async () => {
+				const { deletionRequest, expectedData } = setup();
+
+				jest.spyOn(courseService, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await courseService.handle({ deletionRequest });
+
+				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequest, expectedData));
+			});
 		});
 	});
 });

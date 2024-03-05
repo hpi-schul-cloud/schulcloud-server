@@ -6,6 +6,8 @@ import { Logger } from '@src/core/logger';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { DomainName, OperationType } from '@shared/domain/types';
 import { EventBus } from '@nestjs/cqrs';
+import { deletionRequestFactory } from '@src/modules/deletion/domain/testing';
+import { DataDeletedEvent } from '@modules/deletion/event';
 import { FilesService } from './files.service';
 import { FilesRepo } from '../repo';
 import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
@@ -356,6 +358,48 @@ describe(FilesService.name, () => {
 
 				expect(repo.findByOwnerUserId).toBeCalledWith(userId);
 				expect(repo.save).toBeCalledWith(entities);
+			});
+		});
+	});
+
+	describe('handle', () => {
+		const setup = () => {
+			const targetRefId = new ObjectId().toHexString();
+			const targetRefDomain = DomainName.FILE;
+			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
+
+			const expectedData = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString(),
+				]),
+			]);
+
+			return {
+				deletionRequest,
+				expectedData,
+			};
+		};
+
+		describe('when UserDeletedEvent', () => {
+			it('should call deleteUserData in classService', async () => {
+				const { deletionRequest, expectedData } = setup();
+
+				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await service.handle({ deletionRequest });
+
+				expect(service.deleteUserData).toHaveBeenCalledWith(deletionRequest.targetRefId);
+			});
+
+			it('should call eventBus.publish', async () => {
+				const { deletionRequest, expectedData } = setup();
+
+				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await service.handle({ deletionRequest });
+
+				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequest, expectedData));
 			});
 		});
 	});

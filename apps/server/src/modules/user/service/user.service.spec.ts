@@ -17,6 +17,9 @@ import { Logger } from '@src/core/logger';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { NotFoundException } from '@nestjs/common';
 import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { DataDeletedEvent } from '@modules/deletion/event';
+import { EventBus } from '@nestjs/cqrs';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
 import { UserService } from './user.service';
@@ -30,6 +33,7 @@ describe('UserService', () => {
 	let config: DeepMocked<ConfigService>;
 	let roleService: DeepMocked<RoleService>;
 	let accountService: DeepMocked<AccountService>;
+	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -63,6 +67,12 @@ describe('UserService', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
+				},
 			],
 		}).compile();
 		service = module.get(UserService);
@@ -72,6 +82,7 @@ describe('UserService', () => {
 		config = module.get(ConfigService);
 		roleService = module.get(RoleService);
 		accountService = module.get(AccountService);
+		eventBus = module.get(EventBus);
 
 		await setupEntities();
 	});
@@ -590,6 +601,45 @@ describe('UserService', () => {
 				const result: User[] = await service.findUserBySchoolAndName(new ObjectId().toHexString(), firstName, lastName);
 
 				expect(result).toEqual(users);
+			});
+		});
+	});
+
+	describe('handle', () => {
+		const setup = () => {
+			const targetRefId = new ObjectId().toHexString();
+			const targetRefDomain = DomainName.USER;
+			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
+
+			const expectedData = DomainDeletionReportBuilder.build(DomainName.USER, [
+				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [new ObjectId().toHexString()]),
+			]);
+
+			return {
+				deletionRequest,
+				expectedData,
+			};
+		};
+
+		describe('when UserDeletedEvent', () => {
+			it('should call deleteUserData in classService', async () => {
+				const { deletionRequest, expectedData } = setup();
+
+				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await service.handle({ deletionRequest });
+
+				expect(service.deleteUserData).toHaveBeenCalledWith(deletionRequest.targetRefId);
+			});
+
+			it('should call eventBus.publish', async () => {
+				const { deletionRequest, expectedData } = setup();
+
+				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await service.handle({ deletionRequest });
+
+				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequest, expectedData));
 			});
 		});
 	});

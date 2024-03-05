@@ -8,6 +8,8 @@ import { Logger } from '@src/core/logger';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { ObjectId } from 'bson';
 import { EventBus } from '@nestjs/cqrs';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { DataDeletedEvent } from '@modules/deletion/event';
 import { DashboardService } from '.';
 
 const learnroomMock = (id: string, name: string) => {
@@ -135,6 +137,45 @@ describe(DashboardService.name, () => {
 				const result = await dashboardService.deleteUserData(user.id);
 
 				expect(result).toEqual(expectedResult);
+			});
+		});
+	});
+
+	describe('handle', () => {
+		const setup = () => {
+			const targetRefId = new ObjectId().toHexString();
+			const targetRefDomain = DomainName.DASHBOARD;
+			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
+
+			const expectedData = DomainDeletionReportBuilder.build(DomainName.DASHBOARD, [
+				DomainOperationReportBuilder.build(OperationType.DELETE, 2, [new ObjectId().toHexString()]),
+			]);
+
+			return {
+				deletionRequest,
+				expectedData,
+			};
+		};
+
+		describe('when UserDeletedEvent', () => {
+			it('should call deleteUserData in classService', async () => {
+				const { deletionRequest, expectedData } = setup();
+
+				jest.spyOn(dashboardService, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await dashboardService.handle({ deletionRequest });
+
+				expect(dashboardService.deleteUserData).toHaveBeenCalledWith(deletionRequest.targetRefId);
+			});
+
+			it('should call eventBus.publish', async () => {
+				const { deletionRequest, expectedData } = setup();
+
+				jest.spyOn(dashboardService, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await dashboardService.handle({ deletionRequest });
+
+				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequest, expectedData));
 			});
 		});
 	});
