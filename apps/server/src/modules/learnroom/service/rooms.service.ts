@@ -46,11 +46,12 @@ export class RoomsService {
 			const columnBoardIds = await this.columnBoardService.findIdsByExternalReference(courseReference);
 
 			if (columnBoardIds.length === 0) {
-				await this.columnBoardService.createWelcomeColumnBoard(courseReference);
+				const columnBoard = await this.columnBoardService.createWelcomeColumnBoard(courseReference);
+				columnBoardIds.push(columnBoard.id);
 			}
 
 			columnBoards = await Promise.all(
-				columnBoardIds.map(async (id) => this.boardNodeRepo.findById(id) as Promise<ColumnBoardNode>)
+				columnBoardIds.map(async (id) => (await this.boardNodeRepo.findById(id)) as ColumnBoardNode)
 			);
 		}
 
