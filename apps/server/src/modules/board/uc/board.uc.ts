@@ -4,8 +4,10 @@ import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { BoardExternalReference, Column, ColumnBoard } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
-import { CardService, ColumnBoardService, ColumnService } from '../service';
+import { CopyStatus, CopyStatusEnum } from '@src/modules/copy-helper';
+import { ColumnBoardService, ColumnService } from '../service';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
+import { ColumnBoardCopyService } from '../service/column-board-copy.service';
 import { BaseUc } from './base.uc';
 
 @Injectable()
@@ -14,8 +16,8 @@ export class BoardUc extends BaseUc {
 		@Inject(forwardRef(() => AuthorizationService))
 		protected readonly authorizationService: AuthorizationService,
 		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
-		private readonly cardService: CardService,
 		private readonly columnBoardService: ColumnBoardService,
+		private readonly columnBoardCopyService: ColumnBoardCopyService,
 		private readonly columnService: ColumnService,
 		private readonly logger: LegacyLogger
 	) {
@@ -84,5 +86,21 @@ export class BoardUc extends BaseUc {
 		await this.checkPermission(userId, targetBoard, Action.write);
 
 		await this.columnService.move(column, targetBoard, targetPosition);
+	}
+
+	async copyBoard(userId: EntityId, boardId: EntityId): Promise<CopyStatus> {
+		this.logger.debug({ action: 'copyBoard', userId, boardId });
+
+		const board = await this.columnBoardService.findById(boardId);
+		// Is this sufficient (because it implies that we have write access to the course)?
+		await this.checkPermission(userId, board, Action.write);
+
+		const copyStatus = await this.columnBoardCopyService.copyColumnBoard({
+			userId,
+			originalColumnBoardId: boardId,
+			destinationExternalReference: board.context,
+		});
+
+		return copyStatus;
 	}
 }

@@ -7,13 +7,8 @@ import { setupEntities, userFactory } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
 import { ObjectId } from 'bson';
-import {
-	BoardDoAuthorizableService,
-	CardService,
-	ColumnBoardService,
-	ColumnService,
-	ContentElementService,
-} from '../service';
+import { BoardDoAuthorizableService, ColumnBoardService, ColumnService, ContentElementService } from '../service';
+import { ColumnBoardCopyService } from '../service/column-board-copy.service';
 import { BoardUc } from './board.uc';
 
 describe(BoardUc.name, () => {
@@ -22,6 +17,7 @@ describe(BoardUc.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
+	let columnBoardCopyService: DeepMocked<ColumnBoardCopyService>;
 	let columnService: DeepMocked<ColumnService>;
 
 	beforeAll(async () => {
@@ -37,12 +33,12 @@ describe(BoardUc.name, () => {
 					useValue: createMock<BoardDoAuthorizableService>(),
 				},
 				{
-					provide: CardService,
-					useValue: createMock<CardService>(),
-				},
-				{
 					provide: ColumnBoardService,
 					useValue: createMock<ColumnBoardService>(),
+				},
+				{
+					provide: ColumnBoardCopyService,
+					useValue: createMock<ColumnBoardCopyService>(),
 				},
 				{
 					provide: ColumnService,
@@ -63,6 +59,7 @@ describe(BoardUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
 		columnBoardService = module.get(ColumnBoardService);
+		columnBoardCopyService = module.get(ColumnBoardCopyService);
 		columnService = module.get(ColumnService);
 		await setupEntities();
 	});
@@ -230,6 +227,18 @@ describe(BoardUc.name, () => {
 
 				expect(columnService.move).toHaveBeenCalledWith(column, board, 7);
 			});
+		});
+	});
+
+	describe('copyBoard', () => {
+		it('should call the service to copy the board', async () => {
+			const { user, board } = setup();
+
+			await uc.copyBoard(user.id, board.id);
+
+			expect(columnBoardCopyService.copyColumnBoard).toHaveBeenCalledWith(
+				expect.objectContaining({ userId: user.id, originalColumnBoardId: board.id })
+			);
 		});
 	});
 });
