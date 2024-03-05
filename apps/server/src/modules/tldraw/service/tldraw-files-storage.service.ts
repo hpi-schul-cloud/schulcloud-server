@@ -8,6 +8,10 @@ export class TldrawFilesStorageAdapterService {
 
 	public async deleteUnusedFilesForDocument(docName: string, usedAssets: TldrawAsset[]): Promise<void> {
 		const fileRecords = await this.filesStorageClientAdapterService.listFilesOfParent(docName);
+		console.log(
+			'fileRecords',
+			fileRecords.map((a) => a.name)
+		);
 		const fileRecordIdsForDeletion = this.foundAssetsForDeletion(fileRecords, usedAssets);
 
 		if (fileRecordIdsForDeletion.length === 0) {
