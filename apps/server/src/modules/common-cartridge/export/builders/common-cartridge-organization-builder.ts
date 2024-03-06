@@ -37,7 +37,7 @@ export class CommonCartridgeOrganizationBuilder {
 	): CommonCartridgeOrganizationBuilder {
 		const subOrganization = new CommonCartridgeOrganizationBuilder(
 			{ ...options, version: this.options.version, folder: this.folder },
-			this.addResourceToFileBuilder.bind(this)
+			(resource: CommonCartridgeResource) => this.addResourceToFileBuilder(resource)
 		);
 
 		this.subOrganizations.push(subOrganization);

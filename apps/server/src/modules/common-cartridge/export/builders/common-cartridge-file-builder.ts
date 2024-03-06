@@ -43,7 +43,7 @@ export class CommonCartridgeFileBuilder {
 	): CommonCartridgeOrganizationBuilder {
 		const builder = new CommonCartridgeOrganizationBuilder(
 			{ ...props, version: this.props.version },
-			this.addResource.bind(this)
+			(resource: CommonCartridgeResource) => this.resources.push(resource)
 		);
 
 		this.organizationBuilders.push(builder);
@@ -77,9 +77,5 @@ export class CommonCartridgeFileBuilder {
 		const buffer = await this.archive.toBufferPromise();
 
 		return buffer;
-	}
-
-	private addResource(resource: CommonCartridgeResource): void {
-		this.resources.push(resource);
 	}
 }
