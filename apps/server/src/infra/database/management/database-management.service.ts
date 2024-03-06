@@ -1,19 +1,19 @@
 import { MikroORM } from '@mikro-orm/core';
+import { MigrateOptions, UmzugMigration } from '@mikro-orm/migrations-mongodb';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BaseEntity } from '@shared/domain/entity';
-import { Collection, Db } from 'mongodb';
-import { MigrateOptions, UmzugMigration } from '@mikro-orm/migrations-mongodb';
 
 @Injectable()
 export class DatabaseManagementService {
 	constructor(private em: EntityManager, private readonly orm: MikroORM) {}
 
-	private get db(): Db {
-		return this.em.getConnection('write').getDb();
+	private get db() {
+		const connection = this.em.getConnection('write').getDb();
+		return connection;
 	}
 
-	getDatabaseCollection(collectionName: string): Collection {
+	getDatabaseCollection(collectionName: string) {
 		const collection = this.db.collection(collectionName);
 		return collection;
 	}
