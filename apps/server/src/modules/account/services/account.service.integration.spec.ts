@@ -13,6 +13,7 @@ import { UserRepo } from '@shared/repo';
 import { accountFactory, cleanupCollections } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { v1 } from 'uuid';
+import { EventBus } from '@nestjs/cqrs';
 import { LegacyLogger } from '../../../core/logger';
 import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
 import { AccountRepo } from '../repo/account.repo';
@@ -23,7 +24,6 @@ import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
 import { AccountDto, AccountSaveDto } from './dto';
-import { EventBus } from '@nestjs/cqrs';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;
