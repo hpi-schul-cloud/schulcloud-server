@@ -224,6 +224,92 @@ describe('TaskService', () => {
 		});
 	});
 
+	describe('deleteUserData', () => {
+		const setup = () => {
+			const creator = userFactory.buildWithId();
+			const taskWithoutCourse = taskFactory.buildWithId({ creator });
+			const course = courseFactory.build();
+			const taskWithCourse = taskFactory.buildWithId({ creator, course });
+			const finishedTask = taskFactory.finished(creator).buildWithId();
+
+			taskRepo.findByOnlyCreatorId.mockResolvedValue([[taskWithoutCourse], 1]);
+			taskRepo.findByCreatorIdWithCourseAndLesson.mockResolvedValue([[taskWithCourse], 1]);
+			taskRepo.findByUserIdInFinished.mockResolvedValue([[finishedTask], 1]);
+
+			const expectedResultByOnlyCreator = DomainOperationReportBuilder.build(OperationType.DELETE, 1, [
+				taskWithoutCourse.id,
+			]);
+
+			const expectedResultWithCreatorInTask = DomainOperationReportBuilder.build(OperationType.UPDATE, 1, [
+				taskWithCourse.id,
+			]);
+
+			const expectedResultForFinishedTask = DomainOperationReportBuilder.build(OperationType.UPDATE, 1, [
+				finishedTask.id,
+			]);
+
+			const expectedResult = DomainDeletionReportBuilder.build(DomainName.TASK, [
+				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [taskWithoutCourse.id]),
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [taskWithCourse.id, finishedTask.id]),
+			]);
+
+			return {
+				creator,
+				expectedResultByOnlyCreator,
+				expectedResultWithCreatorInTask,
+				expectedResultForFinishedTask,
+				expectedResult,
+			};
+		};
+
+		describe('when deleteUserData', () => {
+			it('should call deleteTasksByOnlyCreator with userId', async () => {
+				const { creator, expectedResultByOnlyCreator } = setup();
+				jest.spyOn(taskService, 'deleteTasksByOnlyCreator').mockResolvedValueOnce(expectedResultByOnlyCreator);
+
+				await taskService.deleteUserData(creator.id);
+
+				expect(taskService.deleteTasksByOnlyCreator).toHaveBeenCalledWith(creator.id);
+			});
+
+			it('should call removeCreatorIdFromTasks with userId', async () => {
+				const { creator, expectedResultWithCreatorInTask } = setup();
+				jest.spyOn(taskService, 'removeCreatorIdFromTasks').mockResolvedValueOnce(expectedResultWithCreatorInTask);
+
+				await taskService.deleteUserData(creator.id);
+
+				expect(taskService.removeCreatorIdFromTasks).toHaveBeenCalledWith(creator.id);
+			});
+
+			it('should call removeUserFromFinished with userId', async () => {
+				const { creator, expectedResultForFinishedTask } = setup();
+				jest.spyOn(taskService, 'removeUserFromFinished').mockResolvedValueOnce(expectedResultForFinishedTask);
+
+				await taskService.deleteUserData(creator.id);
+
+				expect(taskService.removeUserFromFinished).toHaveBeenCalledWith(creator.id);
+			});
+
+			it('should return domainOperation object with information about deleted user data', async () => {
+				const {
+					creator,
+					expectedResult,
+					expectedResultForFinishedTask,
+					expectedResultWithCreatorInTask,
+					expectedResultByOnlyCreator,
+				} = setup();
+
+				jest.spyOn(taskService, 'removeUserFromFinished').mockResolvedValueOnce(expectedResultForFinishedTask);
+				jest.spyOn(taskService, 'removeCreatorIdFromTasks').mockResolvedValueOnce(expectedResultWithCreatorInTask);
+				jest.spyOn(taskService, 'deleteTasksByOnlyCreator').mockResolvedValueOnce(expectedResultByOnlyCreator);
+
+				const result = await taskService.deleteUserData(creator.id);
+
+				expect(result).toEqual(expectedResult);
+			});
+		});
+	});
+
 	describe('handle', () => {
 		const setup = () => {
 			const targetRefId = new ObjectId().toHexString();

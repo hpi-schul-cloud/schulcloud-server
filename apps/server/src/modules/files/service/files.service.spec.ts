@@ -390,7 +390,19 @@ describe(FilesService.name, () => {
 				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [entity4.id, entity5.id, entity6.id]),
 			]);
 
+			const expectedResult = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 6, [
+					entity1.id,
+					entity2.id,
+					entity3.id,
+					entity4.id,
+					entity5.id,
+					entity6.id,
+				]),
+			]);
+
 			return {
+				expectedResult,
 				expectedResultForMarkingFiles,
 				expectedResultForRemoveUserPermission,
 				userId,
@@ -409,6 +421,7 @@ describe(FilesService.name, () => {
 
 			it('should call removeUserPermissionsOrCreatorReferenceToAnyFiles with userId', async () => {
 				const { userId, expectedResultForRemoveUserPermission } = setup();
+
 				jest
 					.spyOn(service, 'removeUserPermissionsOrCreatorReferenceToAnyFiles')
 					.mockResolvedValueOnce(expectedResultForRemoveUserPermission);
@@ -418,14 +431,19 @@ describe(FilesService.name, () => {
 				expect(service.removeUserPermissionsOrCreatorReferenceToAnyFiles).toHaveBeenCalledWith(userId);
 			});
 
-			// it('should return domainOperation object with information about deleted user data', async () => {
-			// 	const { accountId, expectedData, userId } = setup();
-			// 	jest.spyOn(accountService, 'deleteByUserId').mockResolvedValueOnce([accountId]);
+			it('should return domainOperation object with information about deleted user data', async () => {
+				const { userId, expectedResult, expectedResultForMarkingFiles, expectedResultForRemoveUserPermission } =
+					setup();
 
-			// 	const result = await accountService.deleteUserData(userId);
+				jest.spyOn(service, 'markFilesOwnedByUserForDeletion').mockResolvedValueOnce(expectedResultForMarkingFiles);
+				jest
+					.spyOn(service, 'removeUserPermissionsOrCreatorReferenceToAnyFiles')
+					.mockResolvedValueOnce(expectedResultForRemoveUserPermission);
 
-			// 	expect(result).toEqual(expectedData);
-			// });
+				const result = await service.deleteUserData(userId);
+
+				expect(result).toEqual(expectedResult);
+			});
 		});
 	});
 
