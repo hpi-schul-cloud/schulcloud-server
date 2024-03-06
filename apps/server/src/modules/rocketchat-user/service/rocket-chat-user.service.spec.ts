@@ -10,6 +10,7 @@ import { RocketChatService } from '@modules/rocketchat/rocket-chat.service';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { DataDeletedEvent } from '@modules/deletion/event';
 import { DomainDeletionReport } from '@shared/domain/interface';
+import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import { RocketChatUserService } from './rocket-chat-user.service';
 import { RocketChatUserRepo } from '../repo';
 import { rocketChatUserFactory } from '../domain/testing/rocket-chat-user.factory';
@@ -135,6 +136,7 @@ describe(RocketChatUserService.name, () => {
 				expect(rocketChatUserRepo.deleteByUserId).not.toHaveBeenCalled();
 			});
 		});
+
 		describe('when rocketChatUser exists', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
@@ -185,12 +187,38 @@ describe(RocketChatUserService.name, () => {
 				expect(rocketChatUserRepo.deleteByUserId).toBeCalledWith(rocketChatUser.userId);
 			});
 
-			it('should delete rocketChatUser by userId', async () => {
+			it('should return domainOperation object with information about deleted user', async () => {
 				const { userId, expectedResult } = setup();
 
 				const result: DomainDeletionReport = await service.deleteUserData(userId);
 
 				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when rocketChatUser exists and failed to delete this user', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const rocketChatUser: RocketChatUser = rocketChatUserFactory.build();
+
+				rocketChatUserRepo.findByUserId.mockResolvedValueOnce([rocketChatUser]);
+				rocketChatUserRepo.deleteByUserId.mockResolvedValueOnce(1);
+				rocketChatService.deleteUser.mockRejectedValueOnce(new Error());
+
+				const expectedError = `Failed to delete user data for userId '${userId}' from RocketChatUser collection / RocketChat service`;
+
+				return {
+					expectedError,
+					userId,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { expectedError, userId } = setup();
+
+				await expect(service.deleteUserData(userId)).rejects.toThrowError(
+					new DeletionErrorLoggableException(expectedError)
+				);
 			});
 		});
 	});

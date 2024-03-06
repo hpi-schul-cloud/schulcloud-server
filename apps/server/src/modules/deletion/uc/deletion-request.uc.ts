@@ -45,7 +45,6 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 	async handle({ deletionRequest, domainDeletionReport }: DataDeletedEvent) {
 		await this.deletionLogService.createDeletionLog(deletionRequest.id, domainDeletionReport);
 
-		// code below should be executed by external cronjob
 		const deletionLogs: DeletionLog[] = await this.deletionLogService.findByDeletionRequestId(deletionRequest.id);
 
 		if (this.checkLogsPerDomain(deletionLogs)) {

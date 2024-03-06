@@ -17,7 +17,6 @@ export class CourseService implements DeletionService, IEventHandler<UserDeleted
 	}
 
 	async handle({ deletionRequest }: UserDeletedEvent) {
-		console.log('xxxxxxxxxxxxxxx');
 		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
 	}
