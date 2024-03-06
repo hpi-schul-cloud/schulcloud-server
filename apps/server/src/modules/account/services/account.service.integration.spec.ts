@@ -23,6 +23,7 @@ import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
 import { AccountDto, AccountSaveDto } from './dto';
+import { EventBus } from '@nestjs/cqrs';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;
@@ -103,6 +104,12 @@ describe('AccountService Integration', () => {
 				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
+				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
 				},
 			],
 		}).compile();
