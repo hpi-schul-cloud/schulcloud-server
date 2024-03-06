@@ -11,7 +11,7 @@ import {
 	UnauthorizedException,
 } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { accountFactory } from './factory';
 import { TestApiClient } from './test-api-client';
 

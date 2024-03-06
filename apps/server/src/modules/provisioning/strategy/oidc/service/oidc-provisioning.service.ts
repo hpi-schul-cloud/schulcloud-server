@@ -17,7 +17,7 @@ import { ExternalSource, LegacySchoolDo, RoleReference, UserDO } from '@shared/d
 import { FederalStateEntity, SchoolYearEntity } from '@shared/domain/entity';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import CryptoJS from 'crypto-js';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';

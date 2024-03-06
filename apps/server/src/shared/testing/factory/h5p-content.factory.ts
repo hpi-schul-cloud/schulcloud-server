@@ -4,7 +4,7 @@ import {
 	H5PContentParentType,
 	H5PContentProperties,
 } from '@src/modules/h5p-editor/entity';
-import { ObjectID } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from './base.factory';
 
 class H5PContentFactory extends BaseFactory<H5PContent, H5PContentProperties> {}
@@ -12,9 +12,9 @@ class H5PContentFactory extends BaseFactory<H5PContent, H5PContentProperties> {}
 export const h5pContentFactory = H5PContentFactory.define(H5PContent, ({ sequence }) => {
 	return {
 		parentType: H5PContentParentType.Lesson,
-		parentId: new ObjectID().toHexString(),
-		creatorId: new ObjectID().toHexString(),
-		schoolId: new ObjectID().toHexString(),
+		parentId: new ObjectId().toHexString(),
+		creatorId: new ObjectId().toHexString(),
+		schoolId: new ObjectId().toHexString(),
 		content: {
 			[`field${sequence}`]: sequence,
 			dateField: new Date(sequence),

@@ -1,5 +1,5 @@
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { schoolFactory } from '../../testing';
 
 describe('School', () => {

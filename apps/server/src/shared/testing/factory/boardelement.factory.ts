@@ -7,7 +7,7 @@ import {
 	TaskBoardElement,
 } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from './base.factory';
 import { lessonFactory } from './lesson.factory';
 import { taskFactory } from './task.factory';

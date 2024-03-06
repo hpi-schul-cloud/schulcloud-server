@@ -1,5 +1,5 @@
 import { ConsoleWriterService } from '@infra/console';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Command, Console } from 'nestjs-console';
 import { BoardManagementUc } from '../uc/board-management.uc';
 

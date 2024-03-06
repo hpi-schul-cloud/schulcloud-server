@@ -1,5 +1,5 @@
 import { columnBoardTargetFactory, setupEntities } from '@shared/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ColumnBoardTarget } from './column-board-target.entity';
 
 describe(ColumnBoardTarget.name, () => {

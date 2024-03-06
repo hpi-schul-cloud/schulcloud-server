@@ -6,7 +6,7 @@ import { BoardDoAuthorizable, BoardRoles, ContentElementType } from '@shared/dom
 import { columnBoardFactory, columnFactory, setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardDoAuthorizableService, CardService, ContentElementService } from '../service';
 import { CardUc } from './card.uc';
 

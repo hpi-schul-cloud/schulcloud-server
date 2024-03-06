@@ -1,5 +1,5 @@
 import { DomainName, OperationType } from '@shared/domain/types';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { DeletionLogStatisticBuilder } from '.';
 
 describe(DeletionLogStatisticBuilder.name, () => {

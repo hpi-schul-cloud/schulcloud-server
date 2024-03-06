@@ -1,7 +1,7 @@
 import { GroupTypes } from '@modules/group';
 import { ExternalGroupDto } from '@modules/provisioning/dto';
 import { RoleName } from '@shared/domain/interface';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Factory } from 'fishery';
 
 export const externalGroupDtoFactory = Factory.define<ExternalGroupDto, ExternalGroupDto>(({ sequence }) => {

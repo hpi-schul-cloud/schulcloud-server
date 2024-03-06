@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardComposite, BoardCompositeProps } from './board-composite.do';
 import { AnyBoardDo } from './types';
 
