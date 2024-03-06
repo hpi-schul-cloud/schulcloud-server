@@ -181,6 +181,23 @@ describe(DeletionRequestService.name, () => {
 		});
 	});
 
+	describe('markDeletionRequestAsPending', () => {
+		describe('when mark deletionRequest as pending', () => {
+			const setup = () => {
+				const deletionRequestId = new ObjectId().toHexString();
+
+				return { deletionRequestId };
+			};
+
+			it('should call deletionRequestRepo.markDeletionRequestAsPending', async () => {
+				const { deletionRequestId } = setup();
+				await service.markDeletionRequestAsPending(deletionRequestId);
+
+				expect(deletionRequestRepo.markDeletionRequestAsPending).toBeCalledWith(deletionRequestId);
+			});
+		});
+	});
+
 	describe('deleteById', () => {
 		describe('when deleting deletionRequest', () => {
 			const setup = () => {
