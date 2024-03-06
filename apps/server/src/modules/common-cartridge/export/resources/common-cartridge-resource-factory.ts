@@ -25,7 +25,7 @@ type CommonCartridgeResourcePropsInternal =
 	| CommonCartridgeWebLinkResourcePropsV130;
 
 export class CommonCartridgeResourceFactory {
-	public static createResource(props: CommonCartridgeResourcePropsInternal): CommonCartridgeResource | never {
+	public static createResource(props: CommonCartridgeResourcePropsInternal): CommonCartridgeResource {
 		const { version } = props;
 
 		switch (version) {

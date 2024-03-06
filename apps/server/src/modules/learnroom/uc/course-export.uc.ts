@@ -29,7 +29,7 @@ export class CourseExportUc {
 		return this.courseExportService.exportCourse(courseId, userId, version);
 	}
 
-	private checkFeatureEnabled(): void | never {
+	private checkFeatureEnabled(): void {
 		if (!this.configService.get<boolean>('FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED')) {
 			throw new NotFoundException();
 		}

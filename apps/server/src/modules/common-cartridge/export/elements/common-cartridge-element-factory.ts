@@ -33,7 +33,7 @@ type CommonCartridgeElementPropsInternal =
 	| CommonCartridgeResourcesWrapperElementPropsV130;
 
 export class CommonCartridgeElementFactory {
-	public static createElement(props: CommonCartridgeElementPropsInternal): CommonCartridgeElement | never {
+	public static createElement(props: CommonCartridgeElementPropsInternal): CommonCartridgeElement {
 		const { version } = props;
 
 		switch (version) {

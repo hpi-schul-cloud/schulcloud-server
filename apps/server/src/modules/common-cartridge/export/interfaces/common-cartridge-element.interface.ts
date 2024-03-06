@@ -35,11 +35,9 @@ export abstract class CommonCartridgeElement {
 	 */
 	abstract getManifestXmlObject(): Record<string, unknown>;
 
-	private checkVersion(target: CommonCartridgeVersion): void | never {
-		if (this.getSupportedVersion() === target) {
-			return;
+	private checkVersion(target: CommonCartridgeVersion): void {
+		if (this.getSupportedVersion() !== target) {
+			throw createVersionNotSupportedError(target);
 		}
-
-		throw createVersionNotSupportedError(target);
 	}
 }
