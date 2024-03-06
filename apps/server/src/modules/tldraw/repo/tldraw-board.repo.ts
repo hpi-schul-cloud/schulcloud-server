@@ -19,8 +19,8 @@ export class TldrawBoardRepo {
 		await this.mdb.createIndex();
 	}
 
-	public async getYDocFromMdb(docName: string): Promise<WsSharedDocDo> {
-		const yDoc = await this.mdb.getYDoc(docName);
+	public async getDocumentFromDb(docName: string): Promise<WsSharedDocDo> {
+		const yDoc = await this.mdb.getDocument(docName);
 		return yDoc;
 	}
 

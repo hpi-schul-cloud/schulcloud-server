@@ -17,10 +17,6 @@ import { KeyFactory } from './key.factory';
 
 @Injectable()
 export class YMongodb {
-	private readonly maxDocumentSize: number;
-
-	private readonly gcEnabled: boolean;
-
 	private readonly _transact: <T extends Promise<YTransaction>>(docName: string, fn: () => T) => T;
 
 	// scope the queue of the transaction to each docName
@@ -33,9 +29,6 @@ export class YMongodb {
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(YMongodb.name);
-
-		this.gcEnabled = this.configService.get<boolean>('TLDRAW_GC_ENABLED');
-		this.maxDocumentSize = this.configService.get<number>('TLDRAW_MAX_DOCUMENT_SIZE');
 
 		// execute a transaction on a database
 		// this will ensure that other processes are currently not writing
@@ -75,12 +68,13 @@ export class YMongodb {
 		await this.repo.ensureIndexes();
 	}
 
-	public getYDoc(docName: string): Promise<WsSharedDocDo> {
+	public getDocument(docName: string): Promise<WsSharedDocDo> {
 		return this._transact(docName, async (): Promise<WsSharedDocDo> => {
 			const updates = await this.getMongoUpdates(docName);
 			const mergedUpdates = mergeUpdates(updates);
 
-			const ydoc = new WsSharedDocDo(docName, this.gcEnabled);
+			const gcEnabled = this.configService.get<boolean>('TLDRAW_GC_ENABLED');
+			const ydoc = new WsSharedDocDo(docName, gcEnabled);
 			applyUpdate(ydoc, mergedUpdates);
 
 			return ydoc;
@@ -215,21 +209,22 @@ export class YMongodb {
 			await this.writeStateVector(docName, sv, 0);
 		}
 
+		const maxDocumentSize = this.configService.get<number>('TLDRAW_MAX_DOCUMENT_SIZE');
 		const value = Buffer.from(update);
 		//  if our buffer exceeds maxDocumentSize, we store the update in multiple documents
-		if (value.length <= this.maxDocumentSize) {
+		if (value.length <= maxDocumentSize) {
 			const uniqueKey = KeyFactory.createForUpdate(docName, clock + 1);
 
 			await this.repo.put(uniqueKey, {
 				value,
 			});
 		} else {
-			const totalChunks = Math.ceil(value.length / this.maxDocumentSize);
+			const totalChunks = Math.ceil(value.length / maxDocumentSize);
 
 			const putPromises: Promise<TldrawDrawing | null>[] = [];
 			for (let i = 0; i < totalChunks; i += 1) {
-				const start = i * this.maxDocumentSize;
-				const end = Math.min(start + this.maxDocumentSize, value.length);
+				const start = i * maxDocumentSize;
+				const end = Math.min(start + maxDocumentSize, value.length);
 				const chunk = value.subarray(start, end);
 
 				putPromises.push(

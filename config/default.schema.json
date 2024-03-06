@@ -1528,6 +1528,10 @@
 					"type": "boolean",
 					"description": "Enables uploading assets to tldraw board"
 				},
+				"ASSETS_SYNC_ENABLED": {
+					"type": "boolean",
+					"description": "Enables synchronization of tldraw board assets with file storage"
+				},
 				"ASSETS_MAX_SIZE": {
 					"type": "integer",
 					"description": "Maximum asset size in bytes"
@@ -1545,6 +1549,7 @@
 				"DB_COMPRESS_THRESHOLD": 400,
 				"MAX_DOCUMENT_SIZE": 15000000,
 				"ASSETS_ENABLED": true,
+				"ASSETS_SYNC_ENABLED": false,
 				"ASSETS_MAX_SIZE": 10485760,
 				"ASSETS_ALLOWED_MIME_TYPES_LIST": "image/png,image/jpeg,image/gif,image/svg+xml"
 			}
