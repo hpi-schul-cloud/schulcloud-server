@@ -155,21 +155,18 @@ const deleteWholeClassFromCourse = (hook) => {
 
 const restrictChangesToSyncedCourse = async (hook) => {
 	const { app } = hook;
-	const requestBody = hook.data;
 	const courseId = hook.id;
 	const course = await app.service('courses').get(courseId);
 
-	if (!course.syncedWithGroup) {
-		return hook;
+	if (course.syncedWithGroup) {
+		hook.data.userIds = course.userIds;
+		hook.data.classIds = course.classIds;
+		hook.data.groupIds = course.groupIds;
+		hook.data.substitutionIds = course.substitutionIds;
+		hook.data.teacherIds = course.teacherIds;
+		hook.data.startDate = course.startDate;
+		hook.data.untilDate = course.untilDate;
 	}
-
-	requestBody.userIds = course.userIds;
-	requestBody.classIds = course.classIds;
-	requestBody.groupIds = course.groupIds;
-	requestBody.substitutionIds = course.substitutionIds;
-	requestBody.teacherIds = course.teacherIds;
-	requestBody.startDate = course.startDate;
-	requestBody.untilDate = course.untilDate;
 
 	return hook;
 };
