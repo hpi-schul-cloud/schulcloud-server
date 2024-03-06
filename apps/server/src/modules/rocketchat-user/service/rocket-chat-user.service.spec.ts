@@ -5,11 +5,11 @@ import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { DomainName, OperationType } from '@shared/domain/types';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
-import { DomainDeletionReport } from '@shared/domain/interface';
 import { EventBus } from '@nestjs/cqrs';
 import { RocketChatService } from '@modules/rocketchat/rocket-chat.service';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { DataDeletedEvent } from '@modules/deletion/event';
+import { DomainDeletionReport } from '@shared/domain/interface';
 import { RocketChatUserService } from './rocket-chat-user.service';
 import { RocketChatUserRepo } from '../repo';
 import { rocketChatUserFactory } from '../domain/testing/rocket-chat-user.factory';
@@ -89,7 +89,53 @@ describe(RocketChatUserService.name, () => {
 	});
 
 	describe('delete RocketChatUser', () => {
-		describe('when deleting rocketChatUser', () => {
+		describe('when rocketChatUser does not exist', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+
+				rocketChatUserRepo.findByUserId.mockResolvedValueOnce([]);
+
+				const expectedResult = DomainDeletionReportBuilder.build(
+					DomainName.ROCKETCHATUSER,
+					[DomainOperationReportBuilder.build(OperationType.DELETE, 0, [])],
+					[
+						DomainDeletionReportBuilder.build(DomainName.ROCKETCHATSERVICE, [
+							DomainOperationReportBuilder.build(OperationType.DELETE, 0, []),
+						]),
+					]
+				);
+
+				return {
+					userId,
+					expectedResult,
+				};
+			};
+
+			it('should call rocketChatUserRepo', async () => {
+				const { userId } = setup();
+
+				await service.deleteUserData(userId);
+
+				expect(rocketChatUserRepo.findByUserId).toBeCalledWith(userId);
+			});
+
+			it('should return domainOperation object with information about deleted user', async () => {
+				const { userId, expectedResult } = setup();
+
+				const result = await service.deleteUserData(userId);
+
+				expect(result).toEqual(expectedResult);
+			});
+
+			it('should Not call rocketChatUserRepo.deleteByUserId with userId', async () => {
+				const { userId } = setup();
+
+				await service.deleteUserData(userId);
+
+				expect(rocketChatUserRepo.deleteByUserId).not.toHaveBeenCalled();
+			});
+		});
+		describe('when rocketChatUser exists', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
 				const rocketChatUser: RocketChatUser = rocketChatUserFactory.build();
@@ -111,6 +157,7 @@ describe(RocketChatUserService.name, () => {
 				return {
 					userId,
 					expectedResult,
+					rocketChatUser,
 				};
 			};
 
@@ -120,6 +167,22 @@ describe(RocketChatUserService.name, () => {
 				await service.deleteUserData(userId);
 
 				expect(rocketChatUserRepo.findByUserId).toBeCalledWith(userId);
+			});
+
+			it('should call rocketChatService.deleteUser with username', async () => {
+				const { rocketChatUser, userId } = setup();
+
+				await service.deleteUserData(userId);
+
+				expect(rocketChatService.deleteUser).toBeCalledWith(rocketChatUser.username);
+			});
+
+			it('should call rocketChatUserRepo.deleteByUserId with userId', async () => {
+				const { rocketChatUser, userId } = setup();
+
+				await service.deleteUserData(userId);
+
+				expect(rocketChatUserRepo.deleteByUserId).toBeCalledWith(rocketChatUser.userId);
 			});
 
 			it('should delete rocketChatUser by userId', async () => {

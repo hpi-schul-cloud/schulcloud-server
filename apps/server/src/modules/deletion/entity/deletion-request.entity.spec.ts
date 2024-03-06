@@ -82,4 +82,15 @@ describe(DeletionRequestEntity.name, () => {
 			expect(entity.status).toEqual(DeletionStatusModel.FAILED);
 		});
 	});
+
+	describe('pending', () => {
+		it('should update status with value pending', () => {
+			const { props } = setup();
+			const entity: DeletionRequestEntity = new DeletionRequestEntity(props);
+
+			entity.pending();
+
+			expect(entity.status).toEqual(DeletionStatusModel.PENDING);
+		});
+	});
 });

@@ -75,10 +75,11 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 			limit
 		);
 
-		for (const req of deletionRequestToExecution) {
-			// eslint-disable-next-line no-await-in-loop
-			await this.executeDeletionRequest(req);
-		}
+		await Promise.all(
+			deletionRequestToExecution.map(async (req) => {
+				await this.executeDeletionRequest(req);
+			})
+		);
 	}
 
 	async findById(deletionRequestId: EntityId): Promise<DeletionRequestLogResponse> {
@@ -115,11 +116,4 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 			await this.deletionRequestService.markDeletionRequestAsFailed(deletionRequest.id);
 		}
 	}
-
-	// private async logDeletion(
-	// 	deletionRequest: DeletionRequest,
-	// 	domainDeletionReport: DomainDeletionReport
-	// ): Promise<void> {
-	// 	await this.deletionLogService.createDeletionLog(deletionRequest.id, domainDeletionReport);
-	// }
 }
