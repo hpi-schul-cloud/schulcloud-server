@@ -153,6 +153,27 @@ const deleteWholeClassFromCourse = (hook) => {
 		});
 };
 
+const restrictChangesToSyncedCourse = async (hook) => {
+	const { app } = hook;
+	const requestBody = hook.data;
+	const courseId = hook.id;
+	const course = await app.service('courses').get(courseId);
+
+	if (!course.syncedWithGroup) {
+		return hook;
+	}
+
+	requestBody.userIds = course.userIds;
+	requestBody.classIds = course.classIds;
+	requestBody.groupIds = course.groupIds;
+	requestBody.substitutionIds = course.substitutionIds;
+	requestBody.teacherIds = course.teacherIds;
+	requestBody.startDate = course.startDate;
+	requestBody.untilDate = course.untilDate;
+
+	return hook;
+};
+
 const removeColumnBoard = async (context) => {
 	const courseId = context.id;
 	await context.app.service('nest-column-board-service').deleteByCourseId(courseId);
@@ -222,4 +243,5 @@ module.exports = {
 	courseInviteHook,
 	patchPermissionHook,
 	restrictChangesToArchivedCourse,
+	restrictChangesToSyncedCourse,
 };
