@@ -13,9 +13,6 @@
 		"editor.formatOnSave": true,
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
-	"[xml]": {
-		"files.insertFinalNewline": false
-	},
 	"javascript.preferences.importModuleSpecifier": "relative",
 	"jest.autoRun": { "watch": false, "onSave": "test-file" },
 	"coverage-gutters.showLineCoverage": true,
