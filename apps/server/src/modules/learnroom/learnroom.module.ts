@@ -15,6 +15,8 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
+import { COURSE_REPO } from './domain';
+import { CourseMikroOrmRepo } from './repo/mikro-orm/course.repo';
 import {
 	BoardCopyService,
 	ColumnBoardTargetService,
@@ -46,6 +48,10 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		DashboardElementRepo,
 		DashboardModelMapper,
 		CourseRepo,
+		{
+			provide: COURSE_REPO,
+			useClass: CourseMikroOrmRepo,
+		},
 		BoardRepo,
 		UserRepo,
 		BoardCopyService,

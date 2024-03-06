@@ -8,19 +8,17 @@ import { RedisConnectionTypeEnum } from '../types';
 
 @Injectable()
 export class TldrawRedisFactory {
-	private readonly redisUri: string;
-
 	constructor(private readonly configService: ConfigService<TldrawConfig, true>, private readonly logger: Logger) {
 		this.logger.setContext(TldrawRedisFactory.name);
-		this.redisUri = this.configService.get<string>('REDIS_URI');
-
-		if (!this.redisUri) {
-			throw new Error('REDIS_URI is not set');
-		}
 	}
 
 	public build(connectionType: RedisConnectionTypeEnum) {
-		const redis = new Redis(this.redisUri, {
+		const redisUri = this.configService.get<string>('REDIS_URI');
+		if (!redisUri) {
+			throw new Error('REDIS_URI is not set');
+		}
+
+		const redis = new Redis(redisUri, {
 			maxRetriesPerRequest: null,
 		});
 

@@ -42,7 +42,7 @@ describe('GroupService', () => {
 			const setup = () => {
 				const group: Group = groupFactory.build();
 
-				groupRepo.findById.mockResolvedValue(group);
+				groupRepo.findGroupById.mockResolvedValue(group);
 
 				return {
 					group,
@@ -62,7 +62,7 @@ describe('GroupService', () => {
 			const setup = () => {
 				const group: Group = groupFactory.build();
 
-				groupRepo.findById.mockResolvedValue(null);
+				groupRepo.findGroupById.mockResolvedValue(null);
 
 				return {
 					group,
@@ -84,7 +84,7 @@ describe('GroupService', () => {
 			const setup = () => {
 				const group: Group = groupFactory.build();
 
-				groupRepo.findById.mockResolvedValue(group);
+				groupRepo.findGroupById.mockResolvedValue(group);
 
 				return {
 					group,
@@ -104,7 +104,7 @@ describe('GroupService', () => {
 			const setup = () => {
 				const group: Group = groupFactory.build();
 
-				groupRepo.findById.mockResolvedValue(null);
+				groupRepo.findGroupById.mockResolvedValue(null);
 
 				return {
 					group,
