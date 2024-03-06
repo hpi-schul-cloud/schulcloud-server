@@ -362,6 +362,73 @@ describe(FilesService.name, () => {
 		});
 	});
 
+	describe('deleteUserData', () => {
+		const setup = () => {
+			const userId = new ObjectId().toHexString();
+			const entity1 = fileEntityFactory.buildWithId({ ownerId: userId });
+			const entity2 = fileEntityFactory.buildWithId({ ownerId: userId });
+			const entity3 = fileEntityFactory.buildWithId({ ownerId: userId });
+			const userPermission = filePermissionEntityFactory.build({ refId: userId });
+
+			const entity4 = fileEntityFactory.buildWithId({
+				permissions: [userPermission],
+				creatorId: userId,
+			});
+			const entity5 = fileEntityFactory.buildWithId({
+				permissions: [userPermission],
+				creatorId: userId,
+			});
+			const entity6 = fileEntityFactory.buildWithId({
+				permissions: [userPermission],
+			});
+
+			const expectedResultForMarkingFiles = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [entity1.id, entity2.id, entity3.id]),
+			]);
+
+			const expectedResultForRemoveUserPermission = DomainDeletionReportBuilder.build(DomainName.FILE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [entity4.id, entity5.id, entity6.id]),
+			]);
+
+			return {
+				expectedResultForMarkingFiles,
+				expectedResultForRemoveUserPermission,
+				userId,
+			};
+		};
+
+		describe('when deleteUserData', () => {
+			it('should call markFilesOwnedByUserForDeletion with userId', async () => {
+				const { userId, expectedResultForMarkingFiles } = setup();
+				jest.spyOn(service, 'markFilesOwnedByUserForDeletion').mockResolvedValueOnce(expectedResultForMarkingFiles);
+
+				await service.deleteUserData(userId);
+
+				expect(service.markFilesOwnedByUserForDeletion).toHaveBeenCalledWith(userId);
+			});
+
+			it('should call removeUserPermissionsOrCreatorReferenceToAnyFiles with userId', async () => {
+				const { userId, expectedResultForRemoveUserPermission } = setup();
+				jest
+					.spyOn(service, 'removeUserPermissionsOrCreatorReferenceToAnyFiles')
+					.mockResolvedValueOnce(expectedResultForRemoveUserPermission);
+
+				await service.deleteUserData(userId);
+
+				expect(service.removeUserPermissionsOrCreatorReferenceToAnyFiles).toHaveBeenCalledWith(userId);
+			});
+
+			// it('should return domainOperation object with information about deleted user data', async () => {
+			// 	const { accountId, expectedData, userId } = setup();
+			// 	jest.spyOn(accountService, 'deleteByUserId').mockResolvedValueOnce([accountId]);
+
+			// 	const result = await accountService.deleteUserData(userId);
+
+			// 	expect(result).toEqual(expectedData);
+			// });
+		});
+	});
+
 	describe('handle', () => {
 		const setup = () => {
 			const targetRefId = new ObjectId().toHexString();
