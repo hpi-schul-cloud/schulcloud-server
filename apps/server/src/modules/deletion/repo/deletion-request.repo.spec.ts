@@ -311,6 +311,37 @@ describe(DeletionRequestRepo.name, () => {
 		});
 	});
 
+	describe('markDeletionRequestAsPending', () => {
+		describe('when mark deletionRequest as pending', () => {
+			const setup = async () => {
+				const userId = new ObjectId().toHexString();
+
+				const entity: DeletionRequestEntity = deletionRequestEntityFactory.build({ targetRefId: userId });
+				await em.persistAndFlush(entity);
+
+				return { entity };
+			};
+
+			it('should update the deletionRequest', async () => {
+				const { entity } = await setup();
+
+				const result = await repo.markDeletionRequestAsPending(entity.id);
+
+				expect(result).toBe(true);
+			});
+
+			it('should update the deletionRequest', async () => {
+				const { entity } = await setup();
+
+				await repo.markDeletionRequestAsPending(entity.id);
+
+				const result: DeletionRequest = await repo.findById(entity.id);
+
+				expect(result.status).toEqual(DeletionStatusModel.PENDING);
+			});
+		});
+	});
+
 	describe('deleteById', () => {
 		describe('when deleting deletionRequest exists', () => {
 			const setup = async () => {
