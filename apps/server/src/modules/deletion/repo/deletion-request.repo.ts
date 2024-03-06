@@ -33,9 +33,8 @@ export class DeletionRequestRepo {
 
 	async findAllItemsToExecution(limit?: number): Promise<DeletionRequest[]> {
 		const currentDate = new Date();
-		// const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000);
-		const scope = new DeletionRequestScope().byDeleteAfter(currentDate).byStatusRegisteredOrFailed();
-		// .byStatusPending(fifteenMinutesAgo);
+		const fifteenMinutesAgo = new Date(Date.now() - 1 * 60 * 1000);
+		const scope = new DeletionRequestScope().byDeleteAfter(currentDate).byStatus(fifteenMinutesAgo);
 		const order = { createdAt: SortOrder.desc };
 
 		const [deletionRequestEntities] = await this.em.findAndCount(DeletionRequestEntity, scope.query, {

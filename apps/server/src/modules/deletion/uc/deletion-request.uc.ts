@@ -30,7 +30,7 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 			'course',
 			'dashboard',
 			'files',
-			'fileRecords',
+			// 'fileRecords',
 			'lessons',
 			'pseudonyms',
 			'rocketChatUser',
@@ -46,11 +46,11 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 		await this.deletionLogService.createDeletionLog(deletionRequest.id, domainDeletionReport);
 
 		// code below should be executed by external cronjob
-		// const deletionLogs: DeletionLog[] = await this.deletionLogService.findByDeletionRequestId(deletionRequest.id);
+		const deletionLogs: DeletionLog[] = await this.deletionLogService.findByDeletionRequestId(deletionRequest.id);
 
-		// if (this.checkLogsPerDomain(deletionLogs)) {
-		// 	await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
-		// }
+		if (this.checkLogsPerDomain(deletionLogs)) {
+			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
+		}
 	}
 
 	private checkLogsPerDomain(deletionLogs: DeletionLog[]): boolean {
@@ -112,7 +112,7 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 			await this.eventBus.publish(new UserDeletedEvent(deletionRequest));
 			await this.deletionRequestService.markDeletionRequestAsPending(deletionRequest.id);
 		} catch (error) {
-			this.logger.error(`execution of deletionRequest ${deletionRequest.id} was failed`, error);
+			this.logger.error(`execution of deletionRequest ${deletionRequest.id} has failed`, error);
 			await this.deletionRequestService.markDeletionRequestAsFailed(deletionRequest.id);
 		}
 	}
