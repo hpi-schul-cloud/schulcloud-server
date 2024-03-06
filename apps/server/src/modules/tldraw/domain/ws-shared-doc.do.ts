@@ -11,6 +11,8 @@ export class WsSharedDocDo extends Doc {
 
 	public awarenessChannel: string;
 
+	public isFinalizing: boolean;
+
 	constructor(name: string, gcEnabled = true) {
 		super({ gc: gcEnabled });
 		this.name = name;
@@ -18,5 +20,6 @@ export class WsSharedDocDo extends Doc {
 		this.awareness = new Awareness(this);
 		this.awareness.setLocalState(null);
 		this.awarenessChannel = `${name}-awareness`;
+		this.isFinalizing = false;
 	}
 }
