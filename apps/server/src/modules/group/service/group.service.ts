@@ -76,6 +76,7 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		const courses: Course[] = await this.courseService.findBySyncedGroup(group);
 
 		courses.forEach((course: Course): void => {
+			course.studentIds = [];
 			course.syncedWithGroup = undefined;
 		});
 

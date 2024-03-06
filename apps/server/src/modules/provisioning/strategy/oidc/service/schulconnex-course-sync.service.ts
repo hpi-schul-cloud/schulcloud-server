@@ -32,8 +32,14 @@ export class SchulconnexCourseSyncService {
 					(user: GroupUser): boolean => user.roleId === teacherRole.id
 				);
 
-				course.studentIds = students.map((user: GroupUser): EntityId => user.userId);
-				course.teacherIds = teachers.map((user: GroupUser): EntityId => user.userId);
+				if (teachers.length >= 1) {
+					course.studentIds = students.map((user: GroupUser): EntityId => user.userId);
+					course.teacherIds = teachers.map((user: GroupUser): EntityId => user.userId);
+				} else {
+					// Remove all remaining students and break the link, when the last teacher of the group should be removed
+					course.studentIds = [];
+					course.syncedWithGroup = undefined;
+				}
 			});
 
 			await this.courseService.saveAll(courses);

@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Group } from '@modules/group';
+import { Group, GroupUser } from '@modules/group';
 import { Course } from '@modules/learnroom/domain';
 import { CourseService } from '@modules/learnroom/service/course.service';
 import { courseFactory } from '@modules/learnroom/testing';
@@ -172,6 +172,53 @@ describe(SchulconnexCourseSyncService.name, () => {
 						untilDate: newGroup.validUntil,
 						studentIds: [],
 						teacherIds: [],
+					}),
+				]);
+			});
+		});
+
+		describe('when the last teacher gets removed from a synced group', () => {
+			const setup = () => {
+				const studentUserId = new ObjectId().toHexString();
+				const teacherUserId = new ObjectId().toHexString();
+				const course: Course = courseFactory.build({ teacherIds: [teacherUserId], studentIds: [studentUserId] });
+				const studentRoleId: string = new ObjectId().toHexString();
+				const studentRole: RoleDto = roleDtoFactory.build({ id: studentRoleId });
+				const teacherRole: RoleDto = roleDtoFactory.build();
+				const newGroup: Group = groupFactory.build({
+					users: [
+						new GroupUser({
+							userId: studentUserId,
+							roleId: studentRoleId,
+						}),
+					],
+				});
+
+				courseService.findBySyncedGroup.mockResolvedValueOnce([new Course(course.getProps())]);
+				roleService.findByName.mockResolvedValueOnce(studentRole);
+				roleService.findByName.mockResolvedValueOnce(teacherRole);
+
+				return {
+					course,
+					newGroup,
+					teacherUserId,
+				};
+			};
+
+			it('should keep the last teacher, remove all students and break the sync with the group', async () => {
+				const { course, newGroup, teacherUserId } = setup();
+
+				await service.synchronizeCourseWithGroup(newGroup, newGroup);
+
+				expect(courseService.saveAll).toHaveBeenCalledWith<[Course[]]>([
+					new Course({
+						...course.getProps(),
+						name: course.name,
+						startDate: newGroup.validFrom,
+						untilDate: newGroup.validUntil,
+						studentIds: [],
+						teacherIds: [teacherUserId],
+						syncedWithGroup: undefined,
 					}),
 				]);
 			});

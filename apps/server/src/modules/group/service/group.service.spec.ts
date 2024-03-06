@@ -302,7 +302,11 @@ describe('GroupService', () => {
 		describe('when deleting a group', () => {
 			const setup = () => {
 				const group: Group = groupFactory.build();
-				const course: Course = courseFactory.build({ syncedWithGroup: group.id });
+				const course: Course = courseFactory.build({
+					syncedWithGroup: group.id,
+					teacherIds: [new ObjectId().toHexString()],
+					studentIds: [new ObjectId().toHexString()],
+				});
 
 				courseService.findBySyncedGroup.mockResolvedValueOnce([course]);
 
@@ -329,6 +333,7 @@ describe('GroupService', () => {
 					new Course({
 						...course.getProps(),
 						syncedWithGroup: undefined,
+						studentIds: [],
 					}),
 				]);
 			});
