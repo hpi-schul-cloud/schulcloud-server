@@ -6,7 +6,6 @@ export class UpdateBoardTitleParams {
 	@IsString()
 	@ApiProperty({
 		required: true,
-		nullable: false,
 	})
 	@SanitizeHtml()
 	@MaxLength(100)
