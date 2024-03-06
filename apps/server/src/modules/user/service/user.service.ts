@@ -218,7 +218,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		return users;
 	}
 
-	private async removeUserRegistrationPin(userId: EntityId): Promise<DomainDeletionReport> {
+	public async removeUserRegistrationPin(userId: EntityId): Promise<DomainDeletionReport> {
 		const userToDeletion = await this.findByIdOrNull(userId);
 		const parentEmails = await this.getParentEmailsFromUser(userId);
 		let emailsToDeletion: string[] = [];

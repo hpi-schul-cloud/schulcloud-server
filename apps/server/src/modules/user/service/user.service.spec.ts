@@ -492,10 +492,17 @@ describe('UserService', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 
-				const expectedResult = DomainDeletionReportBuilder.build(DomainName.USER, [
-					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [user.id]),
+				const registrationPinDeleted = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [new ObjectId().toHexString()]),
 				]);
 
+				const expectedResult = DomainDeletionReportBuilder.build(
+					DomainName.USER,
+					[DomainOperationReportBuilder.build(OperationType.DELETE, 1, [user.id])],
+					[registrationPinDeleted]
+				);
+
+				jest.spyOn(service, 'removeUserRegistrationPin').mockResolvedValueOnce(registrationPinDeleted);
 				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
 				userRepo.deleteUser.mockResolvedValue(1);
 
