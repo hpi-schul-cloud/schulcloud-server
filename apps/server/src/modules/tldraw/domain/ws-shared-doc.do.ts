@@ -20,6 +20,5 @@ export class WsSharedDocDo extends Doc {
 		this.awareness = new Awareness(this);
 		this.awareness.setLocalState(null);
 		this.awarenessChannel = `${name}-awareness`;
-		this.isFinalizing = false;
 	}
 }
