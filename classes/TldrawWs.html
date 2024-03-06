@@ -223,7 +223,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:24</a></div>
                             </td>
                         </tr>
 
@@ -331,7 +331,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:19</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -368,8 +368,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="49"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:49</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -408,8 +408,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="63"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:63</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="68"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:68</a></div>
                         </td>
                     </tr>
 
@@ -489,8 +489,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="96"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:96</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="101"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:101</a></div>
                         </td>
                     </tr>
 
@@ -605,8 +605,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="53"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:53</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="58"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:58</a></div>
                         </td>
                     </tr>
 
@@ -675,8 +675,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:28</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -756,8 +756,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="107"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:107</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="112"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:112</a></div>
                         </td>
                     </tr>
 
@@ -848,8 +848,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="58"
-                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:58</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="63"
+                                    class="link-to-prism">apps/server/src/modules/tldraw/controller/tldraw.ws.ts:63</a></div>
                         </td>
                     </tr>
 
@@ -910,7 +910,12 @@ import WebSocket, { Server } from &#x27;ws&#x27;;
 import { Request } from &#x27;express&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import cookie from &#x27;cookie&#x27;;
-import { InternalServerErrorException, UnauthorizedException, NotFoundException } from &#x27;@nestjs/common&#x27;;
+import {
+	InternalServerErrorException,
+	UnauthorizedException,
+	NotFoundException,
+	NotAcceptableException,
+} from &#x27;@nestjs/common&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { isAxiosError } from &#x27;axios&#x27;;
 import { firstValueFrom } from &#x27;rxjs&#x27;;
@@ -1019,6 +1024,11 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 
 		if (err instanceof UnauthorizedException) {
 			this.closeClientAndLog(client, WsCloseCode.UNAUTHORIZED, WsCloseMessage.UNAUTHORIZED, docName);
+			return;
+		}
+
+		if (err instanceof NotAcceptableException) {
+			this.closeClientAndLog(client, WsCloseCode.NOT_ACCEPTABLE, WsCloseMessage.NOT_ACCEPTABLE, docName);
 			return;
 		}
 

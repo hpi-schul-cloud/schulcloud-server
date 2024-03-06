@@ -3959,6 +3959,7 @@ This allows adding console commands to execute provider methods.</p>
 	ASSETS_ALLOWED_MIME_TYPES_LIST: Configuration.get(&#x27;TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST&#x27;) as string,
 	API_HOST: Configuration.get(&#x27;API_HOST&#x27;) as string,
 	TLDRAW_MAX_DOCUMENT_SIZE: Configuration.get(&#x27;TLDRAW__MAX_DOCUMENT_SIZE&#x27;) as number,
+	TLDRAW_FINALIZE_DELAY: Configuration.get(&#x27;TLDRAW__FINALIZE_DELAY&#x27;) as number,
 }</code>
                     </td>
                 </tr>
@@ -12165,6 +12166,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 	}
 	conf.TLDRAW_DB_COMPRESS_THRESHOLD &#x3D; 2;
 	conf.TLDRAW_PING_TIMEOUT &#x3D; 0;
+	conf.TLDRAW_FINALIZE_DELAY &#x3D; 0;
 	conf.TLDRAW_MAX_DOCUMENT_SIZE &#x3D; 1;
 	return conf;
 }</code>

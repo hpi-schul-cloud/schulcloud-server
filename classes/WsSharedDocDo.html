@@ -166,6 +166,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
+                                <a href="#isFinalizing" >isFinalizing</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#name" >name</a>
                             </li>
                         </ul>
@@ -192,7 +196,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/tldraw/domain/ws-shared-doc.do.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/tldraw/domain/ws-shared-doc.do.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -331,6 +335,32 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="isFinalizing"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>isFinalizing</b></span>
+                        <a href="#isFinalizing"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/tldraw/domain/ws-shared-doc.do.ts:14</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="name"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -378,6 +408,8 @@ export class WsSharedDocDo extends Doc {
 	public awareness: Awareness;
 
 	public awarenessChannel: string;
+
+	public isFinalizing &#x3D; false;
 
 	constructor(name: string, gcEnabled &#x3D; true) {
 		super({ gc: gcEnabled });
