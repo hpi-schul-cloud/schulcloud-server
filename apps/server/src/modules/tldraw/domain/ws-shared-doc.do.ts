@@ -11,7 +11,7 @@ export class WsSharedDocDo extends Doc {
 
 	public awarenessChannel: string;
 
-	public isFinalizing: boolean;
+	public isFinalizing = false;
 
 	constructor(name: string, gcEnabled = true) {
 		super({ gc: gcEnabled });
