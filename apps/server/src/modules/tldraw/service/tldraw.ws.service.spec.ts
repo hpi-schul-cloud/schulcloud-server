@@ -529,7 +529,6 @@ describe('TldrawWSService', () => {
 				boardRepo.getDocumentFromDb.mockResolvedValueOnce(new WsSharedDocDo('TEST'));
 				ws = await TestConnection.setupWs(wsUrl);
 
-				boardRepo.compressDocument.mockResolvedValueOnce();
 				const redisUnsubscribeSpy = jest.spyOn(Ioredis.Redis.prototype, 'unsubscribe').mockResolvedValueOnce(1);
 				const closeConnSpy = jest.spyOn(service, 'closeConnection');
 				jest.spyOn(Ioredis.Redis.prototype, 'subscribe').mockResolvedValueOnce({});
@@ -559,6 +558,7 @@ describe('TldrawWSService', () => {
 				const ws2 = await TestConnection.setupWs(wsUrl);
 				doc.connections.set(ws, new Set<number>());
 				doc.connections.set(ws2, new Set<number>());
+				boardRepo.compressDocument.mockRestore();
 
 				return {
 					doc,
@@ -989,7 +989,7 @@ describe('TldrawWSService', () => {
 		});
 	});
 
-	describe('getYDoc', () => {
+	describe('getDocument', () => {
 		describe('when getting yDoc by name', () => {
 			it('should assign to service docs map and return instance', async () => {
 				boardRepo.getDocumentFromDb.mockResolvedValueOnce(new WsSharedDocDo('get-test'));
@@ -1058,6 +1058,22 @@ describe('TldrawWSService', () => {
 				expect(errorLogSpy).toHaveBeenCalled();
 				redisSubscribeSpy.mockRestore();
 				redisOnSpy.mockRestore();
+			});
+		});
+
+		describe('when found document is still finalizing', () => {
+			const setup = () => {
+				const doc = new WsSharedDocDo('test-finalizing');
+				doc.isFinalizing = true;
+				service.docs.set('test-finalizing', doc);
+				boardRepo.getDocumentFromDb.mockResolvedValueOnce(doc);
+			};
+
+			it('should throw', async () => {
+				setup();
+
+				await expect(service.getDocument('test-finalizing')).rejects.toThrow();
+				service.docs.delete('test-finalizing');
 			});
 		});
 	});
