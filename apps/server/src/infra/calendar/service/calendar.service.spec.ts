@@ -82,7 +82,7 @@ describe('CalendarServiceSpec', () => {
 		});
 
 		it('should throw if event cannot be found, because of invalid parameters', async () => {
-			const error = 'error';
+			const error = 'error1';
 			httpService.get.mockReturnValue(throwError(() => error));
 
 			// Act & Assert
@@ -100,7 +100,7 @@ describe('CalendarServiceSpec', () => {
 						axiosResponseFactory.build({
 							data: '',
 							status: HttpStatus.NO_CONTENT,
-							statusText: 'OK',
+							statusText: 'NO_CONTENT',
 						})
 					)
 				);
@@ -112,11 +112,34 @@ describe('CalendarServiceSpec', () => {
 				expect(httpService.delete).toHaveBeenCalled();
 			});
 		});
-		it('should throw error if cannot delete a events', async () => {
-			const error = 'error';
-			httpService.delete.mockReturnValue(throwError(() => error));
+		describe('When calling the delete events method with scopeId which does not exist', () => {
+			it('should throw error if cannot delete a events', async () => {
+				const error = 'error';
+				httpService.delete.mockReturnValue(throwError(() => error));
 
-			await expect(service.deleteEventsByScopeId('invalid eventId')).rejects.toThrowError(InternalServerErrorException);
+				await expect(service.deleteEventsByScopeId('invalid eventId')).rejects.toThrowError(
+					InternalServerErrorException
+				);
+			});
+		});
+		describe('when calling the delete events method', () => {
+			const setupError = () => {
+				httpService.delete.mockReturnValueOnce(
+					of(
+						axiosResponseFactory.build({
+							data: '',
+							status: HttpStatus.CONFLICT,
+						})
+					)
+				);
+			};
+
+			it('should throw error if cannot delete a events cause of invalid response Http status', async () => {
+				setupError();
+				await expect(service.deleteEventsByScopeId('scopeId')).rejects.toThrow(
+					new Error('invalid HTTP status code in a response from the server instead of 204')
+				);
+			});
 		});
 	});
 });
