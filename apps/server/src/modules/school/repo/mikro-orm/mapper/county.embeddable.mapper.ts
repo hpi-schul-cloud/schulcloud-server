@@ -1,5 +1,5 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CountyEmbeddable } from '@shared/domain/entity';
-import { ObjectId } from 'mongodb';
 import { County } from '../../../domain';
 
 export class CountyEmbeddableMapper {

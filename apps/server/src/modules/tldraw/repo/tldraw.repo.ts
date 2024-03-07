@@ -1,7 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { BulkWriteResult, Collection, Sort } from 'mongodb';
+import { Sort } from 'mongodb';
 import { TldrawDrawing } from '../entities';
 
 @Injectable()
@@ -32,7 +32,7 @@ export class TldrawRepo {
 		return this.get(query);
 	}
 
-	public del(query: object): Promise<BulkWriteResult> {
+	public del(query: object) {
 		const collection = this.getCollection();
 		const bulk = collection.initializeOrderedBulkOp();
 		bulk.find(query).delete();
@@ -49,7 +49,7 @@ export class TldrawRepo {
 		return curs.toArray();
 	}
 
-	public getCollection(): Collection<TldrawDrawing> {
+	public getCollection() {
 		return this.em.getCollection(TldrawDrawing);
 	}
 

@@ -56,7 +56,7 @@ const helpers = {
 
 		return {
 			withID(id?: number) {
-				const objectId = new ObjectID(id);
+				const objectId = new ObjectId(id);
 				h5pContent._id = objectId;
 				h5pContent.id = objectId.toString();
 

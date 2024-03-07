@@ -2,10 +2,10 @@ import { HeadObjectCommandOutput } from '@aws-sdk/client-s3';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { IContentMetadata, ILibraryName, IUser, LibraryName } from '@lumieducation/h5p-server';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IEntity } from '@shared/domain/interface';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { Readable } from 'stream';
 import { GetH5PFileResponse } from '../controller/dto';
 import { H5PContent, H5PContentParentType, H5PContentProperties } from '../entity';
@@ -52,7 +52,7 @@ const helpers = {
 
 		return {
 			withID(id?: number) {
-				const objectId = new ObjectID(id);
+				const objectId = new ObjectId(id);
 				h5pContent._id = objectId;
 				h5pContent.id = objectId.toString();
 

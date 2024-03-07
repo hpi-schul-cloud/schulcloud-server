@@ -72,7 +72,7 @@ export class DashboardModelEntity extends BaseEntityWithTimestamps {
 		if (props.gridElements) this.gridElements.set(props.gridElements);
 	}
 
-	@OneToMany('DashboardGridElementModel', 'dashboard')
+	@OneToMany('DashboardGridElementModel', 'dashboard', { orphanRemoval: true })
 	gridElements: Collection<DashboardGridElementModel> = new Collection<DashboardGridElementModel>(this);
 
 	// userId
