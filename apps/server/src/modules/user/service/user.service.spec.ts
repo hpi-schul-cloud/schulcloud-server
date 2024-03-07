@@ -16,7 +16,6 @@ import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/
 import { Logger } from '@src/core/logger';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { NotFoundException } from '@nestjs/common';
-import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { DataDeletedEvent } from '@modules/deletion/event';
 import { EventBus } from '@nestjs/cqrs';
