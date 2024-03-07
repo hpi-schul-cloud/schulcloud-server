@@ -4,7 +4,7 @@ import { LegacyLogger } from '@src/core/logger';
 import { FileDO } from '@src/infra/rabbitmq';
 import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
-import { IEventHandler, EventBus } from '@nestjs/cqrs';
+import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
 import { UserDeletedEvent, DataDeletedEvent } from '@src/modules/deletion/event';
 import { CopyFileDto, FileDto } from '../dto';
 import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
@@ -12,7 +12,7 @@ import { FilesStorageClientMapper } from '../mapper';
 import { FilesStorageProducer } from './files-storage.producer';
 
 @Injectable()
-// @EventsHandler(UserDeletedEvent)
+@EventsHandler(UserDeletedEvent)
 export class FilesStorageClientAdapterService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private logger: LegacyLogger,
