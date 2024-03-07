@@ -2,7 +2,7 @@ import { WsAdapter } from '@nestjs/platform-ws';
 import { Test } from '@nestjs/testing';
 import WebSocket from 'ws';
 import { TextEncoder } from 'util';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, NotAcceptableException } from '@nestjs/common';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { createConfigModuleOptions } from '@src/config';
 import { Logger } from '@src/core/logger';
@@ -355,6 +355,30 @@ describe('WebSocketController (WsAdapter)', () => {
 				WsCloseCode.INTERNAL_SERVER_ERROR,
 				Buffer.from(WsCloseMessage.INTERNAL_SERVER_ERROR)
 			);
+
+			wsCloseSpy.mockRestore();
+			setupConnectionSpy.mockRestore();
+			ws.close();
+		});
+
+		it('should close after setup connection throws NotAcceptableException', async () => {
+			const { setupConnectionSpy, wsCloseSpy } = setup();
+			const { buffer } = getMessage();
+
+			const httpGetCallSpy = jest.spyOn(httpService, 'get');
+			const axiosResponse: AxiosResponse = axiosResponseFactory.build({
+				data: '',
+			});
+			httpGetCallSpy.mockReturnValueOnce(of(axiosResponse));
+			setupConnectionSpy.mockImplementationOnce(() => {
+				throw new NotAcceptableException();
+			});
+
+			ws = await TestConnection.setupWs(wsUrl, 'TEST', { cookie: 'jwt=jwt-mocked' });
+			ws.send(buffer);
+
+			expect(setupConnectionSpy).toHaveBeenCalledWith(expect.anything(), 'TEST');
+			expect(wsCloseSpy).toHaveBeenCalledWith(WsCloseCode.NOT_ACCEPTABLE, Buffer.from(WsCloseMessage.NOT_ACCEPTABLE));
 
 			wsCloseSpy.mockRestore();
 			setupConnectionSpy.mockRestore();
