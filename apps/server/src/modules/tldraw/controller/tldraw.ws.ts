@@ -3,7 +3,12 @@ import WebSocket, { Server } from 'ws';
 import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import cookie from 'cookie';
-import { InternalServerErrorException, UnauthorizedException, NotFoundException } from '@nestjs/common';
+import {
+	InternalServerErrorException,
+	UnauthorizedException,
+	NotFoundException,
+	NotAcceptableException,
+} from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { isAxiosError } from 'axios';
 import { firstValueFrom } from 'rxjs';
@@ -112,6 +117,11 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 
 		if (err instanceof UnauthorizedException) {
 			this.closeClientAndLog(client, WsCloseCode.UNAUTHORIZED, WsCloseMessage.UNAUTHORIZED, docName);
+			return;
+		}
+
+		if (err instanceof NotAcceptableException) {
+			this.closeClientAndLog(client, WsCloseCode.NOT_ACCEPTABLE, WsCloseMessage.NOT_ACCEPTABLE, docName);
 			return;
 		}
 

@@ -14,7 +14,7 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { BoardUc } from '../uc';
-import { BoardResponse, BoardUrlParams, ColumnResponse, RenameBodyParams } from './dto';
+import { BoardResponse, BoardUrlParams, ColumnResponse, UpdateBoardTitleParams } from './dto';
 import { BoardContextResponse } from './dto/board/board-context.reponse';
 import { BoardResponseMapper, ColumnResponseMapper } from './mapper';
 
@@ -67,7 +67,7 @@ export class BoardController {
 	@Patch(':boardId/title')
 	async updateBoardTitle(
 		@Param() urlParams: BoardUrlParams,
-		@Body() bodyParams: RenameBodyParams,
+		@Body() bodyParams: UpdateBoardTitleParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.boardUc.updateBoardTitle(currentUser.userId, urlParams.boardId, bodyParams.title);

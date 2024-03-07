@@ -196,6 +196,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 			id: this.id,
 			firstName: this.firstName,
 			lastName: this.lastName,
+			language: this.language,
 			customAvatarBackgroundColor: this.customAvatarBackgroundColor,
 		};
 
