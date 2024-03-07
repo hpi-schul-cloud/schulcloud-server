@@ -615,7 +615,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateBoardTitle(urlParams: <a href="../classes/BoardUrlParams.html" target="_self">BoardUrlParams</a>, bodyParams: <a href="../classes/RenameBodyParams.html" target="_self">RenameBodyParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                    <code>updateBoardTitle(urlParams: <a href="../classes/BoardUrlParams.html" target="_self">BoardUrlParams</a>, bodyParams: <a href="../classes/UpdateBoardTitleParams.html" target="_self">UpdateBoardTitleParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
                 </td>
             </tr>
 
@@ -665,7 +665,7 @@
                                         <tr>
                                                 <td>bodyParams</td>
                                             <td>
-                                                            <code><a href="../classes/RenameBodyParams.html" target="_self" >RenameBodyParams</a></code>
+                                                            <code><a href="../classes/UpdateBoardTitleParams.html" target="_self" >UpdateBoardTitleParams</a></code>
                                             </td>
 
                                             <td>
@@ -720,7 +720,7 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ApiValidationError } from &#x27;@shared/common&#x27;;
 import { BoardUc } from &#x27;../uc&#x27;;
-import { BoardResponse, BoardUrlParams, ColumnResponse, RenameBodyParams } from &#x27;./dto&#x27;;
+import { BoardResponse, BoardUrlParams, ColumnResponse, UpdateBoardTitleParams } from &#x27;./dto&#x27;;
 import { BoardContextResponse } from &#x27;./dto/board/board-context.reponse&#x27;;
 import { BoardResponseMapper, ColumnResponseMapper } from &#x27;./mapper&#x27;;
 
@@ -773,7 +773,7 @@ export class BoardController {
 	@Patch(&#x27;:boardId/title&#x27;)
 	async updateBoardTitle(
 		@Param() urlParams: BoardUrlParams,
-		@Body() bodyParams: RenameBodyParams,
+		@Body() bodyParams: UpdateBoardTitleParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise&lt;void&gt; {
 		await this.boardUc.updateBoardTitle(currentUser.userId, urlParams.boardId, bodyParams.title);

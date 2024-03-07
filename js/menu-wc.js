@@ -5920,6 +5920,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/UnknownQueryTypeLoggableException.html" data-type="entity-link" >UnknownQueryTypeLoggableException</a>
                             </li>
                             <li class="link">
+                                <a href="classes/UpdateBoardTitleParams.html" data-type="entity-link" >UpdateBoardTitleParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/UpdateElementContentBodyParams.html" data-type="entity-link" >UpdateElementContentBodyParams</a>
                             </li>
                             <li class="link">
