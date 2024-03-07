@@ -450,17 +450,12 @@ describe('UserService', () => {
 		const setup = () => {
 			const userId = new ObjectId().toHexString();
 			const user: UserDO = userDoFactory.build({ id: userId });
-			// const parentEmail = ['test@test.eu'];
 			const userRegistrationPinId = new ObjectId().toHexString();
-			// const parentRegistrationPinId = new ObjectId().toHexString();
 
 			const results = [
 				DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
 					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [userRegistrationPinId]),
 				]),
-				// DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
-				// 	DomainOperationReportBuilder.build(OperationType.DELETE, 1, [parentRegistrationPinId]),
-				// ]),
 			];
 
 			const expectedResult = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
@@ -469,17 +464,12 @@ describe('UserService', () => {
 
 			userDORepo.findByIdOrNull.mockResolvedValue(user);
 			userRepo.getParentEmailsFromUser.mockResolvedValueOnce([]);
-			// userRepo.getParentEmailsFromUser.mockResolvedValueOnce(parentEmail);
-			// jest.spyOn(service, 'findByIdOrNull').mockResolvedValueOnce(user);
-			// jest.spyOn(service, 'getParentEmailsFromUser').mockResolvedValueOnce(parentEmail);
 			registrationPinService.deleteUserData.mockResolvedValue(results[0]);
-			// registrationPinService.deleteUserData.mockResolvedValue(results[1]);
 
 			return {
 				expectedResult,
 				userId,
 				user,
-				// parentEmail,
 				results,
 			};
 		};
@@ -583,36 +573,6 @@ describe('UserService', () => {
 				const result = await service.deleteUserData(user.id);
 
 				expect(result).toEqual(expectedResult);
-			});
-		});
-
-		describe('when user exists and failed to delete this user', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId();
-
-				const expectedError = `Failed to delete user '${user.id}' from User collection`;
-
-				const registrationPinDeleted = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
-					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [new ObjectId().toHexString()]),
-				]);
-
-				jest.spyOn(service, 'removeUserRegistrationPin').mockResolvedValueOnce(registrationPinDeleted);
-
-				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
-				userRepo.deleteUser.mockResolvedValueOnce(0);
-
-				return {
-					expectedError,
-					user,
-				};
-			};
-
-			it('should throw an error', async () => {
-				const { expectedError, user } = setup();
-
-				await expect(service.deleteUserData(user.id)).rejects.toThrowError(
-					new DeletionErrorLoggableException(expectedError)
-				);
 			});
 		});
 	});

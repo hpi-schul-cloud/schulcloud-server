@@ -176,34 +176,30 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 
 		const registrationPinDeleted = await this.removeUserRegistrationPin(userId);
 
-		if (registrationPinDeleted) {
-			const numberOfDeletedUsers = await this.userRepo.deleteUser(userId);
+		const numberOfDeletedUsers = await this.userRepo.deleteUser(userId);
 
-			if (numberOfDeletedUsers === 0) {
-				throw new DeletionErrorLoggableException(`Failed to delete user '${userId}' from User collection`);
-			}
-
-			const result = DomainDeletionReportBuilder.build(
-				DomainName.USER,
-				[DomainOperationReportBuilder.build(OperationType.DELETE, numberOfDeletedUsers, [userId])],
-				[registrationPinDeleted]
-			);
-
-			this.logger.info(
-				new DataDeletionDomainOperationLoggable(
-					'Successfully deleted user',
-					DomainName.USER,
-					userId,
-					StatusModel.FINISHED,
-					0,
-					numberOfDeletedUsers
-				)
-			);
-
-			return result;
+		if (numberOfDeletedUsers === 0) {
+			throw new DeletionErrorLoggableException(`Failed to delete user '${userId}' from User collection`);
 		}
 
-		throw new DeletionErrorLoggableException(`Failed to delete user '${userId}' from User collection`);
+		const result = DomainDeletionReportBuilder.build(
+			DomainName.USER,
+			[DomainOperationReportBuilder.build(OperationType.DELETE, numberOfDeletedUsers, [userId])],
+			[registrationPinDeleted]
+		);
+
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully deleted user',
+				DomainName.USER,
+				userId,
+				StatusModel.FINISHED,
+				0,
+				numberOfDeletedUsers
+			)
+		);
+
+		return result;
 	}
 
 	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
