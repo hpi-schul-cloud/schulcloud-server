@@ -1488,11 +1488,13 @@
 			"description": "Configuration of tldraw related settings",
 			"required": [
 				"PING_TIMEOUT",
+				"FINALIZE_DELAY",
 				"SOCKET_PORT",
 				"GC_ENABLED",
 				"DB_COMPRESS_THRESHOLD",
 				"MAX_DOCUMENT_SIZE",
 				"ASSETS_ENABLED",
+				"ASSETS_SYNC_ENABLED",
 				"ASSETS_MAX_SIZE",
 				"ASSETS_ALLOWED_MIME_TYPES_LIST"
 			],
@@ -1503,7 +1505,11 @@
 				},
 				"PING_TIMEOUT": {
 					"type": "number",
-					"description": "Max time for waiting between calls for tldraw"
+					"description": "Websocket ping timeout in ms"
+				},
+				"FINALIZE_DELAY": {
+					"type": "number",
+					"description": "Delay in milliseconds before checking if can finalize a tldraw board"
 				},
 				"GC_ENABLED": {
 					"type": "boolean",
@@ -1538,6 +1544,7 @@
 			"default": {
 				"SOCKET_PORT": 3345,
 				"PING_TIMEOUT": 30000,
+				"FINALIZE_DELAY": 5000,
 				"GC_ENABLED": true,
 				"DB_COMPRESS_THRESHOLD": 400,
 				"MAX_DOCUMENT_SIZE": 15000000,
