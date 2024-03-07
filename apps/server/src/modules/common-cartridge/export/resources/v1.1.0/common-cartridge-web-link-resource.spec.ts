@@ -1,6 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { createCommonCartridgeWeblinkResourcePropsV110 } from '@src/modules/common-cartridge/testing/common-cartridge-resource-props.factory';
 import { readFile } from 'fs/promises';
+import { createCommonCartridgeWeblinkResourcePropsV110 } from '../../../testing/common-cartridge-resource-props.factory';
 import { CommonCartridgeVersion } from '../../common-cartridge.enums';
 import { CommonCartridgeWebLinkResourceV110 } from './common-cartridge-web-link-resource';
 

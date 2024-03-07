@@ -1,6 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { createCommonCartridgeManifestResourcePropsV110 } from '@src/modules/common-cartridge/testing/common-cartridge-resource-props.factory';
 import { readFile } from 'fs/promises';
+import { createCommonCartridgeManifestResourcePropsV110 } from '../../../testing/common-cartridge-resource-props.factory';
 import {
 	CommonCartridgeElementType,
 	CommonCartridgeIntendedUseType,

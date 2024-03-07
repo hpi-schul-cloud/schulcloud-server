@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { createCommonCartridgeMetadataElementPropsV110 } from '@src/modules/common-cartridge/testing/common-cartridge-element-props.factory';
+import { createCommonCartridgeMetadataElementPropsV110 } from '../../../testing/common-cartridge-element-props.factory';
 import { CommonCartridgeVersion } from '../../common-cartridge.enums';
 import { CommonCartridgeMetadataElementV110 } from './common-cartridge-metadata-element';
 

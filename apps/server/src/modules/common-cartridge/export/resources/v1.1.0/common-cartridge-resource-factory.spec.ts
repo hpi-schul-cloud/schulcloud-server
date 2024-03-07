@@ -3,7 +3,7 @@ import {
 	createCommonCartridgeManifestResourcePropsV110,
 	createCommonCartridgeWebContentResourcePropsV110,
 	createCommonCartridgeWeblinkResourcePropsV110,
-} from '@src/modules/common-cartridge/testing/common-cartridge-resource-props.factory';
+} from '../../../testing/common-cartridge-resource-props.factory';
 import { CommonCartridgeManifestResourceV110 } from './common-cartridge-manifest-resource';
 import { CommonCartridgeResourceFactoryV110 } from './common-cartridge-resource-factory';
 import { CommonCartridgeWebContentResourceV110 } from './common-cartridge-web-content-resource';

@@ -2,7 +2,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import {
 	createCommonCartridgeMetadataElementPropsV110,
 	createCommonCartridgeMetadataElementPropsV130,
-} from '@src/modules/common-cartridge/testing/common-cartridge-element-props.factory';
+} from '../../testing/common-cartridge-element-props.factory';
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeElementFactory } from './common-cartridge-element-factory';
 import {

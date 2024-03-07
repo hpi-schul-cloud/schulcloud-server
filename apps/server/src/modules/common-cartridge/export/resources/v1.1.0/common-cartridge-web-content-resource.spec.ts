@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { createCommonCartridgeWebContentResourcePropsV110 } from '@src/modules/common-cartridge/testing/common-cartridge-resource-props.factory';
+import { createCommonCartridgeWebContentResourcePropsV110 } from '../../../testing/common-cartridge-resource-props.factory';
 import { CommonCartridgeVersion } from '../../common-cartridge.enums';
 import { CommonCartridgeWebContentResourceV110 } from './common-cartridge-web-content-resource';
 
