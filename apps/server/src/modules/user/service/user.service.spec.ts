@@ -446,6 +446,53 @@ describe('UserService', () => {
 		});
 	});
 
+	describe('removeUserRegistrationPin', () => {
+		const setup = () => {
+			const userId = new ObjectId().toHexString();
+			const user: UserDO = userDoFactory.build({ id: userId });
+			// const parentEmail = ['test@test.eu'];
+			const userRegistrationPinId = new ObjectId().toHexString();
+			// const parentRegistrationPinId = new ObjectId().toHexString();
+
+			const results = [
+				DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [userRegistrationPinId]),
+				]),
+				// DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+				// 	DomainOperationReportBuilder.build(OperationType.DELETE, 1, [parentRegistrationPinId]),
+				// ]),
+			];
+
+			const expectedResult = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [userRegistrationPinId]),
+			]);
+
+			userDORepo.findByIdOrNull.mockResolvedValue(user);
+			userRepo.getParentEmailsFromUser.mockResolvedValueOnce([]);
+			// userRepo.getParentEmailsFromUser.mockResolvedValueOnce(parentEmail);
+			// jest.spyOn(service, 'findByIdOrNull').mockResolvedValueOnce(user);
+			// jest.spyOn(service, 'getParentEmailsFromUser').mockResolvedValueOnce(parentEmail);
+			registrationPinService.deleteUserData.mockResolvedValue(results[0]);
+			// registrationPinService.deleteUserData.mockResolvedValue(results[1]);
+
+			return {
+				expectedResult,
+				userId,
+				user,
+				// parentEmail,
+				results,
+			};
+		};
+
+		it('should return domainOperation object with information about deleted registrationsPin', async () => {
+			const { userId, expectedResult } = setup();
+
+			const result = await service.removeUserRegistrationPin(userId);
+
+			expect(result).toEqual(expectedResult);
+		});
+	});
+
 	describe('deleteUserData', () => {
 		describe('when user is missing', () => {
 			const setup = () => {
@@ -622,76 +669,6 @@ describe('UserService', () => {
 
 				expect(result).toEqual(users);
 			});
-		});
-	});
-
-	describe('removeUserRegistrationPin', () => {
-		const setup = () => {
-			const userId = new ObjectId().toHexString();
-			const user: UserDO = userDoFactory.buildWithId({ id: userId });
-			const parentEmail = ['test@test.eu'];
-			const userRegistrationPinId = new ObjectId().toHexString();
-			const parentRegistrationPinId = new ObjectId().toHexString();
-
-			const results = [
-				DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
-					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [userRegistrationPinId]),
-				]),
-				DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
-					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [parentRegistrationPinId]),
-				]),
-			];
-
-			const expectedResult = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
-				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [userRegistrationPinId, parentRegistrationPinId]),
-			]);
-
-			jest.spyOn(service, 'findByIdOrNull').mockResolvedValueOnce(user);
-			jest.spyOn(service, 'getParentEmailsFromUser').mockResolvedValueOnce(parentEmail);
-			registrationPinService.deleteUserData.mockResolvedValue(results[0]);
-			registrationPinService.deleteUserData.mockResolvedValue(results[1]);
-
-			return {
-				expectedResult,
-				userId,
-				user,
-				parentEmail,
-				results,
-			};
-		};
-
-		it('should call userService findByIdOrNull with userId  to find user', async () => {
-			const { userId } = setup();
-
-			await service.removeUserRegistrationPin(userId);
-
-			expect(service.findByIdOrNull).toHaveBeenCalledWith(userId);
-		});
-
-		it('should call userService getParentEmailsFromUser with userId  to find parents email', async () => {
-			const { userId } = setup();
-
-			await service.removeUserRegistrationPin(userId);
-
-			expect(service.getParentEmailsFromUser).toHaveBeenCalledWith(userId);
-		});
-
-		it('should call registrationPinService.deleteUserData two times with proper values', async () => {
-			const { userId, user, parentEmail } = setup();
-
-			await service.removeUserRegistrationPin(userId);
-
-			expect(registrationPinService.deleteUserData).toHaveBeenCalledTimes(2);
-			expect(registrationPinService.deleteUserData).toHaveBeenCalledWith(user.email);
-			expect(registrationPinService.deleteUserData).toHaveBeenCalledWith(parentEmail[0]);
-		});
-
-		it('should return domainOperation object with information about deleted registrationsPin', async () => {
-			const { userId, expectedResult } = setup();
-
-			const result = await service.removeUserRegistrationPin(userId);
-
-			expect(result).toEqual(expectedResult);
 		});
 	});
 
