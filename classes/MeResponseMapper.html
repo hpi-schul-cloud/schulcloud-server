@@ -433,8 +433,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/modules/me/api/mapper/me.response.mapper.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="34"
+                                    class="link-to-prism">apps/server/src/modules/me/api/mapper/me.response.mapper.ts:34</a></div>
                         </td>
                     </tr>
 
@@ -589,15 +589,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapUser(user: <a href="../interfaces/User.html" target="_self">User</a>, school: <a href="../classes/School.html" target="_self">School</a>)</code>
+                    <code>mapUser(user: <a href="../interfaces/User.html" target="_self">User</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="49"
-                                    class="link-to-prism">apps/server/src/modules/me/api/mapper/me.response.mapper.ts:49</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">apps/server/src/modules/me/api/mapper/me.response.mapper.ts:51</a></div>
                         </td>
                     </tr>
 
@@ -621,18 +621,6 @@
                                                 <td>user</td>
                                             <td>
                                                             <code><a href="../interfaces/User.html" target="_self" >User</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>school</td>
-                                            <td>
-                                                            <code><a href="../classes/School.html" target="_self" >School</a></code>
                                             </td>
 
                                             <td>
@@ -750,9 +738,10 @@ import {
 export class MeResponseMapper {
 	public static mapToResponse(school: School, user: User, accountId: EntityId): MeResponse {
 		const schoolResponse &#x3D; MeResponseMapper.mapSchool(school);
-		const userResponse &#x3D; MeResponseMapper.mapUser(user, school);
+		const userResponse &#x3D; MeResponseMapper.mapUser(user);
 		const rolesResponse &#x3D; MeResponseMapper.mapUserRoles(user);
 		const permissionsResponse &#x3D; MeResponseMapper.mapPermissions(user);
+		const language &#x3D; user.getInfo().language || school.getInfo().language;
 		const accountResponse &#x3D; MeResponseMapper.mapAccount(accountId);
 
 		const res &#x3D; new MeResponse({
@@ -760,6 +749,7 @@ export class MeResponseMapper {
 			user: userResponse,
 			roles: rolesResponse,
 			permissions: permissionsResponse,
+			language,
 			account: accountResponse,
 		});
 
@@ -783,15 +773,13 @@ export class MeResponseMapper {
 		return schoolResponse;
 	}
 
-	private static mapUser(user: User, school: School): MeUserResponse {
+	private static mapUser(user: User): MeUserResponse {
 		const userInfo &#x3D; user.getInfo();
-		const schoolInfoProps &#x3D; school.getInfo();
 
 		const userResponse &#x3D; new MeUserResponse({
 			id: userInfo.id,
 			firstName: userInfo.firstName,
 			lastName: userInfo.lastName,
-			language: userInfo.language || schoolInfoProps.language,
 			customAvatarBackgroundColor: userInfo.customAvatarBackgroundColor,
 		});
 
