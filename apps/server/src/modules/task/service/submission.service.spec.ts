@@ -330,6 +330,73 @@ describe('Submission Service', () => {
 		});
 	});
 
+	describe('deleteUserData', () => {
+		const setup = () => {
+			const user1 = userFactory.buildWithId();
+			const user2 = userFactory.buildWithId();
+			const submission1 = submissionFactory.buildWithId({ student: user1, teamMembers: [user1] });
+			const submission2 = submissionFactory.buildWithId({
+				student: user1,
+				teamMembers: [user1, user2],
+			});
+
+			submissionRepo.findAllByUserId.mockResolvedValueOnce([[submission1, submission2], 2]);
+
+			const expectedResultForOwner = DomainOperationReportBuilder.build(OperationType.DELETE, 1, [submission1.id]);
+
+			const expectedResultForUsersPermission = DomainOperationReportBuilder.build(OperationType.DELETE, 1, [
+				submission2.id,
+			]);
+
+			const expectedResult = DomainDeletionReportBuilder.build(DomainName.SUBMISSIONS, [
+				expectedResultForOwner,
+				expectedResultForUsersPermission,
+			]);
+
+			return {
+				user1,
+				expectedResultForOwner,
+				expectedResultForUsersPermission,
+				expectedResult,
+			};
+		};
+
+		describe('when deleteUserData', () => {
+			it('should call deleteSingleSubmissionsOwnedByUser with userId', async () => {
+				const { user1, expectedResultForOwner } = setup();
+				jest.spyOn(service, 'deleteSingleSubmissionsOwnedByUser').mockResolvedValueOnce(expectedResultForOwner);
+
+				await service.deleteUserData(user1.id);
+
+				expect(service.deleteSingleSubmissionsOwnedByUser).toHaveBeenCalledWith(user1.id);
+			});
+
+			it('should call removeUserReferencesFromSubmissions with userId', async () => {
+				const { user1, expectedResultForUsersPermission } = setup();
+				jest
+					.spyOn(service, 'removeUserReferencesFromSubmissions')
+					.mockResolvedValueOnce(expectedResultForUsersPermission);
+
+				await service.deleteUserData(user1.id);
+
+				expect(service.removeUserReferencesFromSubmissions).toHaveBeenCalledWith(user1.id);
+			});
+
+			it('should return domainOperation object with information about deleted user data', async () => {
+				const { user1, expectedResultForOwner, expectedResultForUsersPermission, expectedResult } = setup();
+
+				jest.spyOn(service, 'deleteSingleSubmissionsOwnedByUser').mockResolvedValueOnce(expectedResultForOwner);
+				jest
+					.spyOn(service, 'removeUserReferencesFromSubmissions')
+					.mockResolvedValueOnce(expectedResultForUsersPermission);
+
+				const result = await service.deleteUserData(user1.id);
+
+				expect(result).toEqual(expectedResult);
+			});
+		});
+	});
+
 	describe('handle', () => {
 		const setup = () => {
 			const targetRefId = new ObjectId().toHexString();

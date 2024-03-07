@@ -136,15 +136,15 @@ describe(DeletionRequestUc.name, () => {
 	});
 
 	describe('executeDeletionRequests', () => {
-		const setup = () => {
-			const deletionRequest = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
-
-			return {
-				deletionRequest,
-			};
-		};
-
 		describe('when executing deletionRequests', () => {
+			const setup = () => {
+				const deletionRequest = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
+
+				return {
+					deletionRequest,
+				};
+			};
+
 			it('should call deletionRequestService.findAllItemsToExecute', async () => {
 				await uc.executeDeletionRequests();
 
@@ -172,67 +172,26 @@ describe(DeletionRequestUc.name, () => {
 			});
 		});
 
-		// describe('when an error occurred', () => {
-		// 	const setup = () => {
-		// 		const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
+		describe('when an error occurred', () => {
+			const setup = () => {
+				const deletionRequestToExecute = deletionRequestFactory.build({ deleteAfter: new Date('2023-01-01') });
 
-		// 		const classesUpdated = DomainDeletionReportBuilder.build(DomainName.CLASS, OperationType.UPDATE, 1, [
-		// 			new ObjectId().toHexString(),
-		// 		]);
+				deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
+				eventBus.publish.mockRejectedValueOnce(new Error());
 
-		// 		const courseGroupUpdated = DomainDeletionReportBuilder.build(DomainName.COURSEGROUP, OperationType.UPDATE, 1, [
-		// 			new ObjectId().toHexString(),
-		// 		]);
+				return {
+					deletionRequestToExecute,
+				};
+			};
 
-		// 		const courseUpdated = DomainDeletionReportBuilder.build(DomainName.COURSE, OperationType.UPDATE, 1, [
-		// 			new ObjectId().toHexString(),
-		// 		]);
+			it('should throw an arror', async () => {
+				const { deletionRequestToExecute } = setup();
 
-		// 		const filesDeleted = DomainDeletionReportBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
-		// 			new ObjectId().toHexString(),
-		// 		]);
+				await uc.executeDeletionRequests();
 
-		// 		const filesUpdated = DomainDeletionReportBuilder.build(DomainName.FILE, OperationType.UPDATE, 1, [
-		// 			new ObjectId().toHexString(),
-		// 		]);
-
-		// 		const lessonsUpdated = DomainDeletionReportBuilder.build(DomainName.LESSONS, OperationType.UPDATE, 1, [
-		// 			new ObjectId().toHexString(),
-		// 		]);
-
-		// 		const pseudonymsDeleted = DomainDeletionReportBuilder.build(DomainName.PSEUDONYMS, OperationType.DELETE, 1, [
-		// 			new ObjectId().toHexString(),
-		// 		]);
-
-		// 		const teamsUpdated = DomainDeletionReportBuilder.build(DomainName.TEAMS, OperationType.UPDATE, 1, [
-		// 			new ObjectId().toHexString(),
-		// 		]);
-
-		// 		classService.deleteUserData.mockResolvedValueOnce(classesUpdated);
-		// 		courseGroupService.deleteUserData.mockResolvedValueOnce(courseGroupUpdated);
-		// 		courseService.deleteUserData\.mockResolvedValueOnce(courseUpdated);
-		// 		filesService.markFilesOwnedByUserForDeletion.mockResolvedValueOnce(filesDeleted);
-		// 		filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles.mockResolvedValueOnce(filesUpdated);
-		// 		lessonService.deleteUserData.mockResolvedValueOnce(lessonsUpdated);
-		// 		pseudonymService.deleteByUserId.mockResolvedValueOnce(pseudonymsDeleted);
-		// 		teamService.deleteUserDataFromTeams.mockResolvedValueOnce(teamsUpdated);
-		// 		userService.deleteUserData.mockRejectedValueOnce(new Error());
-
-		// 		return {
-		// 			deletionRequestToExecute,
-		// 		};
-		// 	};
-
-		// 	it('should throw an arror', async () => {
-		// 		const { deletionRequestToExecute } = setup();
-
-		// 		deletionRequestService.findAllItemsToExecute.mockResolvedValueOnce([deletionRequestToExecute]);
-
-		// 		await uc.executeDeletionRequests();
-
-		// 		expect(deletionRequestService.markDeletionRequestAsFailed).toHaveBeenCalledWith(deletionRequestToExecute.id);
-		// 	});
-		// });
+				expect(deletionRequestService.markDeletionRequestAsFailed).toHaveBeenCalledWith(deletionRequestToExecute.id);
+			});
+		});
 	});
 
 	describe('findById', () => {
