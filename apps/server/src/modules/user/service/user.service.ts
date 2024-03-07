@@ -235,24 +235,17 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		return result;
 	}
 
-	private extractOperationReports(reports: DomainDeletionReport[]): DomainOperationReport[] {
-		const operationReportsMap: Map<OperationType, DomainOperationReport> = reports.reduce((map, report) => {
-			report.operations.forEach((operationReport) => {
-				const { operation, count, refs } = operationReport;
+	public extractOperationReports(reports: DomainDeletionReport[]): DomainOperationReport[] {
+		const operationReports: { [key in OperationType]?: DomainOperationReport } = {};
 
-				if (map.has(operation)) {
-					const existingReport = map.get(operation)!;
-					existingReport.count += count;
+		for (const { operations } of reports) {
+			for (const { operation, count, refs } of operations) {
+				operationReports[operation] = operationReports[operation] || { operation, count: 0, refs: [] };
+				operationReports[operation]!.count += count;
+				operationReports[operation]!.refs.push(...refs);
+			}
+		}
 
-					existingReport.refs = [...new Set([...existingReport.refs, ...refs])];
-				} else {
-					map.set(operation, { operation, count, refs: [...refs] });
-				}
-			});
-
-			return map;
-		}, new Map<OperationType, DomainOperationReport>());
-
-		return Array.from(operationReportsMap.values());
+		return Object.values(operationReports).filter((report) => report !== undefined);
 	}
 }

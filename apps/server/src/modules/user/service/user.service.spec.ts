@@ -34,6 +34,7 @@ describe('UserService', () => {
 	let config: DeepMocked<ConfigService>;
 	let roleService: DeepMocked<RoleService>;
 	let accountService: DeepMocked<AccountService>;
+	// let registrationPinService: DeepMocked<RegistrationPinService>;
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
@@ -87,6 +88,7 @@ describe('UserService', () => {
 		config = module.get(ConfigService);
 		roleService = module.get(RoleService);
 		accountService = module.get(AccountService);
+		// registrationPinService = module.get(RegistrationPinService);
 		eventBus = module.get(EventBus);
 
 		await setupEntities();
@@ -614,6 +616,109 @@ describe('UserService', () => {
 
 				expect(result).toEqual(users);
 			});
+		});
+	});
+
+	// describe('removeUserRegistrationPin', () => {
+	// 	const setup = () => {
+	// 		const userId = new ObjectId().toHexString();
+	// 		const user: UserDO = userDoFactory.buildWithId({ id: userId });
+	// 		const parentEmail = ['test@test.eu'];
+	// 		const userRegistrationPinId = new ObjectId().toHexString();
+	// 		const parentRegistrationPinId = new ObjectId().toHexString();
+
+	// 		const results = [
+	// 			DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+	// 				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [userRegistrationPinId]),
+	// 			]),
+	// 			DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+	// 				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [parentRegistrationPinId]),
+	// 			]),
+	// 		];
+
+	// 		const expectedResult = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+	// 			DomainOperationReportBuilder.build(OperationType.DELETE, 2, [userRegistrationPinId, parentRegistrationPinId]),
+	// 		]);
+
+	// 		jest.spyOn(service, 'findByIdOrNull').mockResolvedValueOnce(user);
+	// 		jest.spyOn(service, 'getParentEmailsFromUser').mockResolvedValueOnce(parentEmail);
+	// 		registrationPinService.deleteUserData.mockResolvedValue(results[0]);
+	// 		registrationPinService.deleteUserData.mockResolvedValue(results[1]);
+
+	// 		return {
+	// 			expectedResult,
+	// 			userId,
+	// 			user,
+	// 			parentEmail,
+	// 			results,
+	// 		};
+	// 	};
+
+	// 	it('should call userService findByIdOrNull with userId  to find user', async () => {
+	// 		const { userId } = setup();
+
+	// 		await service.removeUserRegistrationPin(userId);
+
+	// 		expect(service.findByIdOrNull).toHaveBeenCalledWith(userId);
+	// 	});
+
+	// 	it('should call userService getParentEmailsFromUser with userId  to find parents email', async () => {
+	// 		const { userId } = setup();
+
+	// 		await service.removeUserRegistrationPin(userId);
+
+	// 		expect(service.getParentEmailsFromUser).toHaveBeenCalledWith(userId);
+	// 	});
+
+	// 	it('should call registrationPinService.deleteUserData two times with proper values', async () => {
+	// 		const { userId, user, parentEmail } = setup();
+
+	// 		await service.removeUserRegistrationPin(userId);
+
+	// 		expect(registrationPinService.deleteUserData).toHaveBeenCalledTimes(2);
+	// 		expect(registrationPinService.deleteUserData).toHaveBeenCalledWith(user.email);
+	// 		expect(registrationPinService.deleteUserData).toHaveBeenCalledWith(parentEmail[0]);
+	// 	});
+
+	// 	it('should return domainOperation object with information about deleted registrationsPin', async () => {
+	// 		const { userId, expectedResult } = setup();
+
+	// 		const result = await service.removeUserRegistrationPin(userId);
+
+	// 		expect(result).toEqual(expectedResult);
+	// 	});
+	// });
+
+	describe('extractOperationReports', () => {
+		const setup = () => {
+			const userRegistrationPinId = new ObjectId().toHexString();
+			const parentRegistrationPinId = new ObjectId().toHexString();
+
+			const domainReport1 = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [userRegistrationPinId]),
+			]);
+			const domainReport2 = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [parentRegistrationPinId]),
+			]);
+
+			const expectedResult = DomainOperationReportBuilder.build(OperationType.DELETE, 2, [
+				userRegistrationPinId,
+				parentRegistrationPinId,
+			]);
+
+			return {
+				domainReport1,
+				domainReport2,
+				expectedResult,
+			};
+		};
+
+		it('should transform domainDeletionReports into one domainDeletionReport with proper values', () => {
+			const { domainReport1, domainReport2, expectedResult } = setup();
+
+			const result = service.extractOperationReports([domainReport1, domainReport2]);
+
+			expect(result).toEqual([expectedResult]);
 		});
 	});
 
