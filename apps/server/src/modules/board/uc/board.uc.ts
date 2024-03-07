@@ -3,6 +3,7 @@ import { AuthorizationService } from '@modules/authorization/domain';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { BoardExternalReference, Column, ColumnBoard } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
+import { CourseRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { CardService, ColumnBoardService, ColumnService } from '../service';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
@@ -17,10 +18,28 @@ export class BoardUc extends BaseUc {
 		private readonly cardService: CardService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly columnService: ColumnService,
-		private readonly logger: LegacyLogger
+		private readonly logger: LegacyLogger,
+		private readonly courseRepo: CourseRepo
 	) {
 		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(BoardUc.name);
+	}
+
+	async createBoard(userId: EntityId, title: string, context: BoardExternalReference): Promise<ColumnBoard> {
+		this.logger.debug({ action: 'createBoard', userId, title, context });
+
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const course = await this.courseRepo.findById(context.id);
+		// Check if context is course?
+
+		this.authorizationService.checkPermission(user, course, {
+			action: Action.write,
+			requiredPermissions: [],
+		});
+
+		const board = await this.columnBoardService.create(context, title);
+
+		return board;
 	}
 
 	async findBoard(userId: EntityId, boardId: EntityId): Promise<ColumnBoard> {
