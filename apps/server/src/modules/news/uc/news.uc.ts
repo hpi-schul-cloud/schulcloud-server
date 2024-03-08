@@ -122,6 +122,7 @@ export class NewsUc {
 				news[key] = value;
 			}
 		}
+		news.setUpdaterAndDisplayUpdateAt(userId);
 
 		await this.newsRepo.save(news);
 

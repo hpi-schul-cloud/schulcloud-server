@@ -11,14 +11,14 @@ export interface NewsProperties {
 	title: string;
 	content: string;
 	displayAt: Date;
+	displayUpdateAt?: Date;
 	school: EntityId | SchoolEntity;
 	creator?: EntityId | User;
 	target: EntityId | NewsTarget;
-
 	externalId?: string;
 	source?: 'internal' | 'rss';
 	sourceDescription?: string;
-	updater?: User;
+	updater?: EntityId | User;
 }
 
 @Entity({
@@ -41,6 +41,10 @@ export abstract class News extends BaseEntityWithTimestamps {
 	@Property()
 	@Index()
 	displayAt: Date;
+
+	@Property({ nullable: true })
+	@Index()
+	displayUpdateAt?: Date | undefined;
 
 	@Property({ nullable: true })
 	externalId?: string;
@@ -79,6 +83,11 @@ export abstract class News extends BaseEntityWithTimestamps {
 		if (updaterId === this.updater?.id) {
 			this.updater = undefined;
 		}
+	}
+
+	public setUpdaterAndDisplayUpdateAt(updaterId: EntityId) {
+		Object.assign(this, { updater: updaterId });
+		this.displayUpdateAt = new Date();
 	}
 
 	constructor(props: NewsProperties) {

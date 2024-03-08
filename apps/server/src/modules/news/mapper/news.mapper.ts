@@ -16,6 +16,7 @@ export class NewsMapper {
 			title: news.title,
 			content: news.content,
 			displayAt: news.displayAt,
+			displayUpdateAt: news.displayUpdateAt,
 			source: news.source,
 			sourceDescription: news.sourceDescription,
 			targetId: news.target.id,
