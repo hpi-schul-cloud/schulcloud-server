@@ -33,9 +33,8 @@ export class BoardUc extends BaseUc {
 	async createBoard(userId: EntityId, params: CreateBoardBodyParams): Promise<ColumnBoard> {
 		this.logger.debug({ action: 'createBoard', userId, title: params.title });
 
-		const user = await this.authorizationService.getUserWithPermissions(userId);
 		await this.authorizationReferenceService.checkPermissionByReferences(
-			user.id,
+			userId,
 			AuthorizableReferenceType.Course,
 			params.parentId,
 			AuthorizationContextBuilder.write([Permission.COURSE_EDIT])
