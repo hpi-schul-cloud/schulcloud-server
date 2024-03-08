@@ -42,10 +42,6 @@ export abstract class News extends BaseEntityWithTimestamps {
 	displayAt: Date;
 
 	@Property({ nullable: true })
-	@Index()
-	displayUpdateAt?: Date | undefined;
-
-	@Property({ nullable: true })
 	externalId?: string;
 
 	@Property({ nullable: true })
@@ -82,10 +78,6 @@ export abstract class News extends BaseEntityWithTimestamps {
 		if (updaterId === this.updater?.id) {
 			this.updater = undefined;
 		}
-	}
-
-	public setUpdater(updaterId: EntityId) {
-		Object.assign(this, { updater: updaterId });
 	}
 
 	constructor(props: NewsProperties) {
