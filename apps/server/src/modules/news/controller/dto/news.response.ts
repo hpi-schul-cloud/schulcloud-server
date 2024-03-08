@@ -15,7 +15,6 @@ export class NewsResponse {
 		title,
 		content,
 		displayAt,
-		displayUpdateAt,
 		source,
 		sourceDescription,
 		targetModel,
@@ -32,7 +31,6 @@ export class NewsResponse {
 		this.title = title;
 		this.content = content;
 		this.displayAt = displayAt;
-		this.displayUpdateAt = displayUpdateAt;
 		this.source = source;
 		this.sourceDescription = sourceDescription;
 		this.targetModel = targetModel;
@@ -66,11 +64,6 @@ export class NewsResponse {
 		description: 'The point in time from when the News entity schould be displayed',
 	})
 	displayAt: Date;
-
-	@ApiPropertyOptional({
-		description: 'The point in time from when the News entity update should be displayed',
-	})
-	displayUpdateAt?: Date;
 
 	@ApiPropertyOptional({
 		type: 'string',

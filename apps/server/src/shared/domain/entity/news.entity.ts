@@ -11,14 +11,13 @@ export interface NewsProperties {
 	title: string;
 	content: string;
 	displayAt: Date;
-	displayUpdateAt?: Date;
 	school: EntityId | SchoolEntity;
 	creator?: EntityId | User;
 	target: EntityId | NewsTarget;
 	externalId?: string;
 	source?: 'internal' | 'rss';
 	sourceDescription?: string;
-	updater?: EntityId | User;
+	updater?: User;
 }
 
 @Entity({
@@ -85,9 +84,8 @@ export abstract class News extends BaseEntityWithTimestamps {
 		}
 	}
 
-	public setUpdaterAndDisplayUpdateAt(updaterId: EntityId) {
+	public setUpdater(updaterId: EntityId) {
 		Object.assign(this, { updater: updaterId });
-		this.displayUpdateAt = new Date();
 	}
 
 	constructor(props: NewsProperties) {
