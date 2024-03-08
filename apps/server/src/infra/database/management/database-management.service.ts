@@ -1,4 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
+import { Collection } from '@mikro-orm/mongodb/node_modules/mongodb';
 import { MigrateOptions, UmzugMigration } from '@mikro-orm/migrations-mongodb';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
@@ -13,7 +14,7 @@ export class DatabaseManagementService {
 		return connection;
 	}
 
-	getDatabaseCollection(collectionName: string) {
+	getDatabaseCollection(collectionName: string): Collection {
 		const collection = this.db.collection(collectionName);
 		return collection;
 	}
