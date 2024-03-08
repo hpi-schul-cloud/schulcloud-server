@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AuthorizationService } from '@modules/authorization';
+import { AuthorizationReferenceService, AuthorizationService } from '@modules/authorization';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, BoardRoles, ContentElementType } from '@shared/domain/domainobject';
@@ -31,6 +31,10 @@ describe(BoardUc.name, () => {
 				{
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
+				},
+				{
+					provide: AuthorizationReferenceService,
+					useValue: createMock<AuthorizationReferenceService>(),
 				},
 				{
 					provide: BoardDoAuthorizableService,
