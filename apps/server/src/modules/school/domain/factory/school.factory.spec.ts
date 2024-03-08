@@ -18,7 +18,7 @@ describe('SchoolFactory', () => {
 				},
 				fileStorageType: FileStorageType.AWS_S3,
 				language: LanguageType.DE,
-				features: [SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION],
+				features: new Set([SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION]),
 				createdAt: new Date(),
 				updatedAt: new Date(),
 				federalState: federalStateFactory.build(),
@@ -56,7 +56,7 @@ describe('SchoolFactory', () => {
 					},
 					fileStorageType: FileStorageType.AWS_S3,
 					language: LanguageType.EN,
-					features: [SchoolFeature.ROCKET_CHAT],
+					features: new Set([SchoolFeature.ROCKET_CHAT]),
 				};
 
 				return { school, partialBody };

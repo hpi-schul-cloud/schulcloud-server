@@ -2,7 +2,7 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
-import { SortOrder } from '@shared/domain/interface';
+import { LanguageType, SortOrder } from '@shared/domain/interface';
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import {
 	cleanupCollections,
@@ -285,12 +285,12 @@ describe('SchoolMikroOrmRepo', () => {
 						name: 'new logo_name',
 					},
 					fileStorageType: FileStorageType.AWS_S3,
-					language: 'new language',
+					language: LanguageType.EN,
 					timezone: 'new timezone',
 					permissions: {},
 					enableStudentTeamCreation: true,
 					federalState: newFederalState,
-					features: [SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION],
+					features: new Set([SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION]),
 					currentYear: newSchoolYear,
 					county: newCounty,
 					systemIds: [newSystemEntity._id.toHexString()],

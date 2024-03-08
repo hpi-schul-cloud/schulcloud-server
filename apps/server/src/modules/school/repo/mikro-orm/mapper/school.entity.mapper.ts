@@ -12,7 +12,7 @@ export class SchoolEntityMapper {
 	public static mapToDo(entity: SchoolEntity): School {
 		const currentYear = entity.currentYear && SchoolYearEntityMapper.mapToDo(entity.currentYear);
 		const federalState = FederalStateEntityMapper.mapToDo(entity.federalState);
-		const features = entity.features ?? [];
+		const features = new Set(entity.features);
 		const county = entity.county && CountyEmbeddableMapper.mapToDo(entity.county);
 		const systemIds = entity.systems.getItems().map((system) => system.id);
 		const logo = entity.logo_dataUrl ? { dataUrl: entity.logo_dataUrl, name: entity.logo_name } : undefined;

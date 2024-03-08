@@ -112,7 +112,7 @@ export interface SchoolProps extends AuthorizableObject {
 	federalState: FederalState;
 	county?: County;
 	purpose?: SchoolPurpose;
-	features: SchoolFeature[];
+	features: Set<SchoolFeature>;
 	systemIds?: EntityId[];
 	logo?: SchoolLogo;
 	fileStorageType?: FileStorageType;

@@ -1,3 +1,4 @@
+import { LanguageType } from '@shared/domain/interface';
 import { SchoolPurpose } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { federalStateFactory, schoolFactory } from '../../testing';
@@ -370,7 +371,7 @@ describe('School', () => {
 				const expectedResult = {
 					id: new ObjectId().toHexString(),
 					name: 'abc',
-					language: 'de',
+					language: LanguageType.DE,
 					logo: { dataUrl: 'adsbasdh', name: 'logoA' },
 				};
 
