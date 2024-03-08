@@ -23,7 +23,7 @@ describe('School', () => {
 
 			school.addInstanceFeature(feature);
 
-			expect(school.instanceFeatures).toContain(feature);
+			expect(school.getProps().instanceFeatures).toContain(feature);
 		});
 	});
 
@@ -42,7 +42,7 @@ describe('School', () => {
 
 			school.removeInstanceFeature(feature);
 
-			expect(school.instanceFeatures).not.toContain(feature);
+			expect(school.getProps().instanceFeatures).not.toContain(feature);
 		});
 	});
 

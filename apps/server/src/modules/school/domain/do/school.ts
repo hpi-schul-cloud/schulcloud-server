@@ -20,8 +20,6 @@ interface SchoolInfo {
 }
 
 export class School extends DomainObject<SchoolProps> {
-	private _instanceFeatures: Set<InstanceFeature> = new Set();
-
 	public getInfo(): SchoolInfo {
 		const info = {
 			id: this.props.id,
@@ -40,15 +38,18 @@ export class School extends DomainObject<SchoolProps> {
 	}
 
 	public addInstanceFeature(feature: InstanceFeature): void {
-		this._instanceFeatures.add(feature);
-	}
-
-	public get instanceFeatures(): InstanceFeature[] {
-		return Array.from(this._instanceFeatures);
+		if (!this.props.instanceFeatures) {
+			this.props.instanceFeatures = new Set();
+		}
+		this.props.instanceFeatures.add(feature);
 	}
 
 	public removeInstanceFeature(feature: InstanceFeature): void {
-		this._instanceFeatures.delete(feature);
+		if (!this.props.instanceFeatures) {
+			return;
+		}
+
+		this.props.instanceFeatures.delete(feature);
 	}
 
 	public updateCounty(countyId: EntityId): void {
@@ -113,6 +114,7 @@ export interface SchoolProps extends AuthorizableObject {
 	county?: County;
 	purpose?: SchoolPurpose;
 	features: Set<SchoolFeature>;
+	instanceFeatures?: Set<InstanceFeature>;
 	systemIds?: EntityId[];
 	logo?: SchoolLogo;
 	fileStorageType?: FileStorageType;

@@ -9,17 +9,16 @@ import { SystemResponseMapper } from './system.response.mapper';
 export class SchoolResponseMapper {
 	public static mapToResponse(school: School, years: YearsResponse): SchoolResponse {
 		const schoolProps = school.getProps();
-		const { instanceFeatures } = school;
 
 		const federalState = FederalStateResponseMapper.mapToResponse(schoolProps.federalState);
 		const currentYear = schoolProps.currentYear && SchoolYearResponseMapper.mapToResponse(schoolProps.currentYear);
 		const features = Array.from(schoolProps.features);
 		const county = schoolProps.county && CountyResponseMapper.mapToResponse(schoolProps.county);
 		const systemIds = schoolProps.systemIds ?? [];
+		const instanceFeatures = Array.from(schoolProps.instanceFeatures ?? []);
 
 		const dto = new SchoolResponse({
 			...schoolProps,
-			instanceFeatures,
 			currentYear,
 			federalState,
 			features,
@@ -29,6 +28,7 @@ export class SchoolResponseMapper {
 			inMaintenance: school.isInMaintenance(),
 			isExternal: school.isExternal(),
 			years,
+			instanceFeatures,
 		});
 
 		return dto;
