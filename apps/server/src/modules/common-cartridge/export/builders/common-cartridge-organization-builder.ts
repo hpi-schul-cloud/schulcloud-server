@@ -72,7 +72,7 @@ export class CommonCartridgeOrganizationBuilder {
 
 	private buildItems(): (CommonCartridgeElement | CommonCartridgeResource)[] {
 		if (this.resources.length === 1 && this.subOrganizations.length === 0) {
-			return this.resources;
+			return [...this.resources];
 		}
 
 		const items = [...this.resources, ...this.subOrganizations.map((subOrganization) => subOrganization.build())];
