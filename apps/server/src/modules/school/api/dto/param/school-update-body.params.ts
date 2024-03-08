@@ -1,6 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { LanguageType } from '@shared/domain/entity';
-import { Permission } from '@shared/domain/interface';
+import { LanguageType, Permission } from '@shared/domain/interface';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { Type } from 'class-transformer';
 import { IsBoolean, IsEnum, IsMongoId, IsOptional, IsString, Matches, ValidateNested } from 'class-validator';

@@ -1,5 +1,6 @@
 import { ValidationError } from '@shared/common';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { LanguageType } from '@shared/domain/interface';
 import { EntityId, SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { FileStorageType, InstanceFeature, SchoolPermissions } from '../type';
 import { County } from './county';
@@ -115,7 +116,7 @@ export interface SchoolProps extends AuthorizableObject {
 	systemIds?: EntityId[];
 	logo?: SchoolLogo;
 	fileStorageType?: FileStorageType;
-	language?: string;
+	language?: LanguageType;
 	timezone?: string;
 	permissions?: SchoolPermissions;
 	enableStudentTeamCreation?: boolean;

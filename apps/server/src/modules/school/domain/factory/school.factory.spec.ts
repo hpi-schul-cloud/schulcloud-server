@@ -1,4 +1,4 @@
-import { LanguageType } from '@shared/domain/entity';
+import { LanguageType } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
 import { federalStateFactory } from '../../testing';
 import { School } from '../do';
