@@ -1,10 +1,9 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ColumnBoardService } from '@modules/board';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Injectable } from '@nestjs/common';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
-import { Board, ColumnBoardTarget } from '@shared/domain/entity';
+import { Board } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BoardRepo } from '@shared/repo';
 import { ColumnBoardTargetService } from './column-board-target.service';
@@ -22,8 +21,11 @@ export class RoomsService {
 	async updateBoard(board: Board, roomId: EntityId, userId: EntityId): Promise<Board> {
 		const [courseLessons] = await this.lessonService.findByCourseIds([roomId]);
 		const [courseTasks] = await this.taskService.findBySingleParent(userId, roomId);
-
-		const courseColumnBoardTargets = await this.handleColumnBoardIntegration(roomId);
+		const columnBoardIds = await this.columnBoardService.findIdsByExternalReference({
+			type: BoardExternalReferenceType.Course,
+			id: roomId,
+		});
+		const courseColumnBoardTargets = await this.columnBoardTargetService.findOrCreateTargets(columnBoardIds);
 
 		const boardElementTargets = [...courseLessons, ...courseTasks, ...courseColumnBoardTargets];
 
@@ -31,25 +33,5 @@ export class RoomsService {
 
 		await this.boardRepo.save(board);
 		return board;
-	}
-
-	private async handleColumnBoardIntegration(roomId: EntityId): Promise<ColumnBoardTarget[]> {
-		let courseColumnBoardTargets: ColumnBoardTarget[] = [];
-
-		if ((Configuration.get('FEATURE_COLUMN_BOARD_ENABLED') as boolean) === true) {
-			const courseReference = {
-				type: BoardExternalReferenceType.Course,
-				id: roomId,
-			};
-
-			const columnBoardIds = await this.columnBoardService.findIdsByExternalReference(courseReference);
-			if (columnBoardIds.length === 0) {
-				const columnBoard = await this.columnBoardService.createWelcomeColumnBoard(courseReference);
-				columnBoardIds.push(columnBoard.id);
-			}
-
-			courseColumnBoardTargets = await this.columnBoardTargetService.findOrCreateTargets(columnBoardIds);
-		}
-		return courseColumnBoardTargets;
 	}
 }
