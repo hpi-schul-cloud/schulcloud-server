@@ -1,11 +1,16 @@
-import { Action } from '@modules/authorization';
-import { AuthorizationService } from '@modules/authorization/domain';
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+	Action,
+	AuthorizableReferenceType,
+	AuthorizationContextBuilder,
+	AuthorizationReferenceService,
+	AuthorizationService,
+} from '@modules/authorization';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { BoardExternalReference, Column, ColumnBoard } from '@shared/domain/domainobject';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { CourseRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { CardService, ColumnBoardService, ColumnService } from '../service';
+import { ColumnBoardService, ColumnService } from '../service';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
 import { BaseUc } from './base.uc';
 
@@ -15,11 +20,10 @@ export class BoardUc extends BaseUc {
 		@Inject(forwardRef(() => AuthorizationService))
 		protected readonly authorizationService: AuthorizationService,
 		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
-		private readonly cardService: CardService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly columnService: ColumnService,
 		private readonly logger: LegacyLogger,
-		private readonly courseRepo: CourseRepo
+		private readonly authorizationReferenceService: AuthorizationReferenceService
 	) {
 		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(BoardUc.name);
@@ -29,13 +33,12 @@ export class BoardUc extends BaseUc {
 		this.logger.debug({ action: 'createBoard', userId, title, context });
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const course = await this.courseRepo.findById(context.id);
-		// Check if context is course?
-
-		this.authorizationService.checkPermission(user, course, {
-			action: Action.write,
-			requiredPermissions: [],
-		});
+		await this.authorizationReferenceService.checkPermissionByReferences(
+			user.id,
+			AuthorizableReferenceType.Course,
+			context.id,
+			AuthorizationContextBuilder.write([Permission.COURSE_EDIT])
+		);
 
 		const board = await this.columnBoardService.create(context, title);
 

@@ -1,6 +1,6 @@
 import { AuthorizationModule } from '@modules/authorization';
+import { AuthorizationReferenceModule } from '@modules/authorization/authorization-reference.module';
 import { forwardRef, Module } from '@nestjs/common';
-import { CourseRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { BoardModule } from './board.module';
 import {
@@ -15,8 +15,8 @@ import { ElementUc } from './uc/element.uc';
 import { SubmissionItemUc } from './uc/submission-item.uc';
 
 @Module({
-	imports: [BoardModule, LoggerModule, forwardRef(() => AuthorizationModule)],
+	imports: [BoardModule, LoggerModule, forwardRef(() => AuthorizationModule), AuthorizationReferenceModule],
 	controllers: [BoardController, ColumnController, CardController, ElementController, BoardSubmissionController],
-	providers: [BoardUc, ColumnUc, CardUc, ElementUc, SubmissionItemUc, CourseRepo],
+	providers: [BoardUc, ColumnUc, CardUc, ElementUc, SubmissionItemUc],
 })
 export class BoardApiModule {}
