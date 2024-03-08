@@ -167,16 +167,16 @@ const restrictChangesToSyncedCourse = async (hook) => {
 
 	if (course.syncedWithGroup) {
 		const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]';
-		const courseStartDate = moment.utc(course.startDate).format(dateFormat);
-		const courseUntilDate = moment.utc(course.untilDate).format(dateFormat);
+		const courseStartDate = course.startDate ? moment.utc(course.startDate).format(dateFormat) : undefined;
+		const courseUntilDate = course.untilDate ? moment.utc(course.untilDate).format(dateFormat) : undefined;
 
 		if (
 			compareIdArr(course.classIds, hook.data.classIds) &&
 			compareIdArr(course.groupIds, hook.data.groupIds) &&
 			compareIdArr(course.substitutionIds, hook.data.substitutionIds) &&
 			compareIdArr(course.teacherIds, hook.data.teacherIds) &&
-			hook.data.startDate === courseStartDate &&
-			hook.data.untilDate === courseUntilDate
+			courseStartDate === hook.data.startDate &&
+			courseUntilDate === hook.data.untilDate
 		) {
 			return hook;
 		}
