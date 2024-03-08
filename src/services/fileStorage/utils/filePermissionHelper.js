@@ -1,9 +1,42 @@
 const { NotFound } = require('../../../errors');
 const { FileModel } = require('../model');
 const { userModel } = require('../../user/model');
+const RoleModel = require('../../role/model');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const getFile = (id) => FileModel.findOne({ _id: id }).populate('owner').lean().exec();
+
+const checkTeamPermission = async ({ user, file, permission }) => {
+	let teamRoles;
+	const roleIndex = {};
+
+	try {
+		teamRoles = await RoleModel.find({ name: /^team/ }).lean().exec();
+		teamRoles.forEach((role) => {
+			roleIndex[role._id] = role;
+		});
+	} catch (error) {
+		return Promise.reject(error);
+	}
+
+	return new Promise((resolve, reject) => {
+		const { role } = user;
+		const { permissions } = file;
+		let rolePermissions;
+
+		let rolesToTest = [role];
+		while (rolesToTest.length > 0 && rolePermissions === undefined) {
+			const roleId = rolesToTest.pop().toString();
+			rolePermissions = permissions.find((perm) => equalIds(perm.refId, roleId));
+			rolesToTest = rolesToTest.concat(roleIndex[roleId].roles || []);
+		}
+
+		if (rolePermissions[permission]) {
+			resolve(true);
+		}
+		reject();
+	});
+};
 
 const checkMemberStatus = ({ file, user }) => {
 	const {
@@ -58,7 +91,11 @@ const checkPermissions = (permission) => async (user, file) => {
 		return Promise.reject();
 	}
 
-	return Promise.resolve(true);
+	return checkTeamPermission({
+		permission,
+		file: fileObject,
+		user: isMember,
+	});
 };
 
 module.exports = {
