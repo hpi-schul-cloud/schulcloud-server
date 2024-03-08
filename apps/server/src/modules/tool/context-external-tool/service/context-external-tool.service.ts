@@ -20,6 +20,7 @@ export class ContextExternalToolService {
 		private readonly commonToolService: CommonToolService
 	) {}
 
+	// TODO: we would have expected the ContextExternalToolQuery to be defined in the domain folder
 	public async findContextExternalTools(query: ContextExternalToolQuery): Promise<ContextExternalTool[]> {
 		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolRepo.find(query);
 
@@ -78,10 +79,12 @@ export class ContextExternalToolService {
 		}
 	}
 
+	// TODO: it might make sense to return a CopyStatus
 	public async copyContextExternalTool(
 		contextExternalTool: ContextExternalTool,
 		contextCopyId: EntityId
 	): Promise<ContextExternalTool> {
+		// TODO: we should create a new Tool with the data of the original, instead of manipulating the same reference
 		contextExternalTool.id = undefined;
 		contextExternalTool.contextRef.id = contextCopyId;
 

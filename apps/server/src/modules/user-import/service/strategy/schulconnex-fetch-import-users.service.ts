@@ -9,6 +9,7 @@ import { SchulconnexImportUserMapper } from '../../mapper';
 
 @Injectable()
 export class SchulconnexFetchImportUsersService {
+	// TODO: either actually implement a strategy pattern, or just move this up into the service folder.
 	constructor(
 		private readonly schulconnexRestClient: SchulconnexRestClient,
 		private readonly userService: UserService

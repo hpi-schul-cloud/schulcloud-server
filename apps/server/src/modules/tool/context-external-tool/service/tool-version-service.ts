@@ -25,6 +25,7 @@ export class ToolVersionService {
 		contextExternalTool: ContextExternalTool
 	): ContextExternalToolConfigurationStatus {
 		// TODO N21-1337 remove if statement, when feature flag is removed
+		// TODO: you could also extract the if branches in different functions, then it gets a bit cleaner :)
 		if (this.toolFeatures.toolStatusWithoutVersions) {
 			const configurationStatus: ContextExternalToolConfigurationStatus = new ContextExternalToolConfigurationStatus({
 				isOutdatedOnScopeContext: false,

@@ -41,6 +41,7 @@ export class ToolReferenceService {
 			status
 		);
 		toolReference.logoUrl = this.externalToolLogoService.buildLogoUrl(
+			// TODO: this hardcoded string should not be here :)
 			'/v3/tools/external-tools/{id}/logo',
 			externalTool
 		);

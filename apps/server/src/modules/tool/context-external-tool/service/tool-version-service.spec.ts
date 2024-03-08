@@ -92,6 +92,7 @@ describe('ToolVersionService', () => {
 			});
 		});
 
+		// TODO: you can nest describes... so you dont have to write "when FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED is true and" a dozen times so the rest of the condition runs out of the screen... like this comment does
 		describe('when FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED is true and validation runs through', () => {
 			const setup = () => {
 				const externalTool = externalToolFactory.buildWithId();

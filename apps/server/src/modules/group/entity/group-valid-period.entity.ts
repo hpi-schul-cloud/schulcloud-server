@@ -7,6 +7,7 @@ export interface GroupValidPeriodEntityProps {
 }
 
 @Embeddable()
+// TODO: should not be named as entity (remember to change filename too.)
 export class GroupValidPeriodEntity {
 	@Property()
 	from: Date;

@@ -237,6 +237,7 @@ describe('ContextExternalToolService', () => {
 
 				const result: ContextExternalTool | null = await service.findById('unknownContextExternalToolId');
 
+				// TODO: this is not a NotFoundException... (see description :D)
 				expect(result).toBeNull();
 			});
 		});

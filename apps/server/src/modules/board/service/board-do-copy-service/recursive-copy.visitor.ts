@@ -243,7 +243,12 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 	}
 
 	async visitExternalToolElementAsync(original: ExternalToolElement): Promise<void> {
+		// TODO: success as default is a bit of a smell :P
 		let status: CopyStatusEnum = CopyStatusEnum.SUCCESS;
+
+		// TODO: this seems strange. We first create a copy, then we call copyContextExternalTool with it, where its ID is being reset again...
+		// maybe it makes more sense to move the creation of this copy into the copyContextExternalTool
+		// In general, since this file is so cramped already, it best to move as much of this function into copyContextExternalTool as possible ;)
 
 		const copy = new ExternalToolElement({
 			id: new ObjectId().toHexString(),
@@ -253,6 +258,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			updatedAt: new Date(),
 		});
 
+		// TODO: Is it a requirement to add empty tools to the board copy when the flag is false?
 		if (this.toolFeatures.ctlToolsCopyEnabled && original.contextExternalToolId) {
 			const tool: ContextExternalTool | null = await this.contextExternalToolService.findById(
 				original.contextExternalToolId

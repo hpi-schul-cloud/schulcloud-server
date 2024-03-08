@@ -8,6 +8,7 @@ export interface ExternalSourceEntityProps {
 }
 
 @Embeddable()
+// TODO: this should not be named as entity. (remember to change filename too.)
 export class ExternalSourceEntity {
 	@Property()
 	externalId: string;

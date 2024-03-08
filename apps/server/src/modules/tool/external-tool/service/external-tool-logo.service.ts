@@ -35,6 +35,8 @@ export class ExternalToolLogoService {
 		const { logo, id } = externalTool;
 		const backendUrl = this.toolFeatures.backEndUrl;
 
+		// TODO: you always call this with the same url. just put the url in here, then you dont have to do regex magic but can just use a template string
+
 		if (logo) {
 			const filledTemplate = template.replace(/\{id\}/g, id || '');
 			return `${backendUrl}${filledTemplate}`;

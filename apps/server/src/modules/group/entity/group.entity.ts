@@ -29,6 +29,13 @@ export interface GroupEntityProps {
 	organization?: SchoolEntity;
 }
 
+/* TODO: we should talk a bit about this. "Group" is a very, very general term.
+When we introduce them, we need to ensure they are as clean, and as dependency free, as possible.
+We have talked about introducing groups as an interface, maybe also as a backend entity before, but this is already way to complex.
+Alone the dependency to Courses via synced courses is already a lot.
+Also, we should be very careful about how to sync these groups with external systems...
+
+Its a very complex issue, that we should be very careful about.*/
 @Entity({ tableName: 'groups' })
 export class GroupEntity extends BaseEntityWithTimestamps {
 	@Property()

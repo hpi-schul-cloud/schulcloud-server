@@ -12,6 +12,6 @@ export class UserImportConfiguration {
 	static userImportFeatures: IUserImportFeatures = {
 		userMigrationEnabled: Configuration.get('FEATURE_USER_MIGRATION_ENABLED') as boolean,
 		userMigrationSystemId: Configuration.get('FEATURE_USER_MIGRATION_SYSTEM_ID') as string,
-		instance: Configuration.get('SC_THEME') as string,
+		instance: Configuration.get('SC_THEME') as string, // TODO: theme is for different visuals in the frontend. please dont use in backend. (you probably want to introduce a feature flag instead.)
 	};
 }

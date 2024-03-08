@@ -9,6 +9,7 @@ export interface GroupUserEntityProps {
 }
 
 @Embeddable()
+// TODO: should not be named as entity (remember to change filename too.)
 export class GroupUserEntity {
 	@ManyToOne(() => User)
 	user: User;

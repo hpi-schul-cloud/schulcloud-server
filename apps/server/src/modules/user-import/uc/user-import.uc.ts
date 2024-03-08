@@ -395,6 +395,7 @@ export class UserImportUc {
 		}
 	}
 
+	// TODO: dont make decisions based on instance. Introduce another feature variable instead
 	private isNbc(): boolean {
 		return this.userImportFeatures.instance === 'n21';
 	}
