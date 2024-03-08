@@ -32,8 +32,7 @@ export class SchoolFactory {
 		props.language = language ?? props.language;
 		props.features = features ?? props.features;
 		props.permissions = permissions ?? props.permissions;
-		props.enableStudentTeamCreation =
-			enableStudentTeamCreation !== undefined ? enableStudentTeamCreation : props.enableStudentTeamCreation;
+		props.enableStudentTeamCreation = enableStudentTeamCreation ?? props.enableStudentTeamCreation;
 
 		const result = SchoolFactory.build(props);
 
