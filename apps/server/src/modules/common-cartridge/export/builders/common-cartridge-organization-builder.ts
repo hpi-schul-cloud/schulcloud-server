@@ -70,11 +70,9 @@ export class CommonCartridgeOrganizationBuilder {
 		return organizationElement;
 	}
 
-	private buildItems(): CommonCartridgeResource | (CommonCartridgeElement | CommonCartridgeResource)[] {
+	private buildItems(): (CommonCartridgeElement | CommonCartridgeResource)[] {
 		if (this.resources.length === 1 && this.subOrganizations.length === 0) {
-			const [resource] = this.resources;
-
-			return resource;
+			return this.resources;
 		}
 
 		const items = [...this.resources, ...this.subOrganizations.map((subOrganization) => subOrganization.build())];
