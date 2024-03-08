@@ -15,6 +15,8 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
+import { COURSE_REPO } from './domain';
+import { CourseMikroOrmRepo } from './repo/mikro-orm/course.repo';
 import {
 	BoardCopyService,
 	CommonCartridgeExportService,
@@ -30,12 +32,12 @@ import { BoardNodeRepo } from '../board/repo';
 
 @Module({
 	imports: [
-		LessonModule,
-		TaskModule,
-		CopyHelperModule,
 		BoardModule,
-		LoggerModule,
+		CopyHelperModule,
 		ContextExternalToolModule,
+		LessonModule,
+		LoggerModule,
+		TaskModule,
 		ToolConfigModule,
 	],
 	providers: [
@@ -52,6 +54,10 @@ import { BoardNodeRepo } from '../board/repo';
 		CourseGroupRepo,
 		CourseGroupService,
 		CourseRepo,
+		{
+			provide: COURSE_REPO,
+			useClass: CourseMikroOrmRepo,
+		},
 		CourseService,
 		DashboardElementRepo,
 		DashboardModelMapper,

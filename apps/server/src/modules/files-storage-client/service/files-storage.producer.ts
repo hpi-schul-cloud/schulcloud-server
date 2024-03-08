@@ -51,11 +51,11 @@ export class FilesStorageProducer extends RpcMessageProducer {
 		return response;
 	}
 
-	async deleteOneFile(payload: EntityId): Promise<FileDO> {
-		this.logger.debug({ action: 'deleteOneFile:started', payload });
-		const response = await this.request<FileDO>(FilesStorageEvents.DELETE_ONE_FILE, payload);
+	async deleteFiles(payload: EntityId[]): Promise<FileDO[]> {
+		this.logger.debug({ action: 'deleteFiles:started', payload });
+		const response = await this.request<FileDO[]>(FilesStorageEvents.DELETE_FILES, payload);
 
-		this.logger.debug({ action: 'deleteOneFile:finished', payload });
+		this.logger.debug({ action: 'deleteFiles:finished', payload });
 
 		return response;
 	}
