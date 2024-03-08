@@ -30,7 +30,7 @@ export class DeletionRequestUc implements IEventHandler<DataDeletedEvent> {
 			'course',
 			'dashboard',
 			'files',
-			// 'fileRecords',
+			'fileRecords',
 			'lessons',
 			'pseudonyms',
 			'rocketChatUser',

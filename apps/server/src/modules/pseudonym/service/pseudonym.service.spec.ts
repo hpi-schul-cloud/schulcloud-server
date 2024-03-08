@@ -587,7 +587,7 @@ describe('PseudonymService', () => {
 			};
 		};
 
-		describe('when UserDeletedEvent', () => {
+		describe('when UserDeletedEvent is received', () => {
 			it('should call deleteUserData in classService', async () => {
 				const { deletionRequest, expectedData } = setup();
 
@@ -598,7 +598,7 @@ describe('PseudonymService', () => {
 				expect(service.deleteUserData).toHaveBeenCalledWith(deletionRequest.targetRefId);
 			});
 
-			it('should call eventBus.publish', async () => {
+			it('should call eventBus.publish with DataDeletedEvent', async () => {
 				const { deletionRequest, expectedData } = setup();
 
 				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);

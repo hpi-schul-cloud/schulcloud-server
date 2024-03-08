@@ -578,7 +578,7 @@ describe('AccountService', () => {
 			};
 		};
 
-		describe('when UserDeletedEvent', () => {
+		describe('when UserDeletedEvent is received', () => {
 			it('should call deleteUserData in accountService', async () => {
 				const { deletionRequest, expectedData } = setup();
 
@@ -589,7 +589,7 @@ describe('AccountService', () => {
 				expect(accountService.deleteUserData).toHaveBeenCalledWith(deletionRequest.targetRefId);
 			});
 
-			it('should call deleteByUserId in accountService', async () => {
+			it('should call eventBus.publish with DataDeletedEvent', async () => {
 				const { deletionRequest, expectedData } = setup();
 
 				jest.spyOn(accountService, 'deleteUserData').mockResolvedValueOnce(expectedData);

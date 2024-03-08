@@ -124,7 +124,7 @@ describe(DeletionRequestUc.name, () => {
 			};
 		};
 
-		describe('when DataDeletedEvent', () => {
+		describe('when DataDeletedEvent is received', () => {
 			it('should call logDeletion', async () => {
 				const { deletionRequest, domainDeletionReport } = setup();
 
