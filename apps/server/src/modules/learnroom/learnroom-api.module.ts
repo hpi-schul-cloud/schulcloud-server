@@ -12,6 +12,7 @@ import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
 import {
 	CourseCopyUC,
 	CourseExportUc,
+	CourseImportUc,
 	CourseUc,
 	DashboardUc,
 	LessonCopyUC,
@@ -33,6 +34,7 @@ import {
 		CourseCopyUC,
 		RoomsAuthorisationService,
 		CourseExportUc,
+		CourseImportUc,
 		// FIXME Refactor UCs to use services and remove these imports
 		{
 			provide: 'DASHBOARD_REPO',

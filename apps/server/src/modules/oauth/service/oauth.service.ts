@@ -15,7 +15,6 @@ import { LegacyLogger } from '@src/core/logger';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { OAuthTokenDto } from '../interface';
 import {
-	AuthCodeFailureLoggableException,
 	IdTokenInvalidLoggableException,
 	OauthConfigMissingLoggableException,
 	UserNotFoundAfterProvisioningLoggableException,
@@ -39,23 +38,15 @@ export class OAuthService {
 		this.logger.setContext(OAuthService.name);
 	}
 
-	async authenticateUser(
-		systemId: string,
-		redirectUri: string,
-		authCode?: string,
-		errorCode?: string
-	): Promise<OAuthTokenDto> {
-		if (errorCode || !authCode) {
-			throw new AuthCodeFailureLoggableException(errorCode);
-		}
-
+	async authenticateUser(systemId: string, redirectUri: string, code: string): Promise<OAuthTokenDto> {
 		const system: SystemDto = await this.systemService.findById(systemId);
+
 		if (!system.oauthConfig) {
 			throw new OauthConfigMissingLoggableException(systemId);
 		}
 		const { oauthConfig } = system;
 
-		const oauthTokens: OAuthTokenDto = await this.requestToken(authCode, oauthConfig, redirectUri);
+		const oauthTokens: OAuthTokenDto = await this.requestToken(code, oauthConfig, redirectUri);
 
 		await this.validateToken(oauthTokens.idToken, oauthConfig);
 

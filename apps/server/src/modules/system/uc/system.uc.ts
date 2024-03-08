@@ -1,11 +1,13 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { LegacySchoolService } from '@modules/legacy-school';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { SystemEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { EntityId, SystemType, SystemTypeEnum } from '@shared/domain/types';
-import { System } from '../domain';
+import { EntityId, SystemTypeEnum } from '@shared/domain/types';
+import { System, SystemType } from '../domain';
 import { LegacySystemService, SystemDto, SystemService } from '../service';
 
 @Injectable()
@@ -13,10 +15,11 @@ export class SystemUc {
 	constructor(
 		private readonly legacySystemService: LegacySystemService,
 		private readonly systemService: SystemService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly schoolService: LegacySchoolService
 	) {}
 
-	async findByFilter(type?: SystemType, onlyOauth = false): Promise<SystemDto[]> {
+	async findByFilter(type?: SystemTypeEnum, onlyOauth = false): Promise<SystemDto[]> {
 		let systems: SystemDto[];
 
 		if (onlyOauth) {
@@ -40,7 +43,7 @@ export class SystemUc {
 		return system;
 	}
 
-	async delete(userId: EntityId, systemId: EntityId): Promise<void> {
+	async delete(userId: EntityId, schoolId: EntityId, systemId: EntityId): Promise<void> {
 		const system: System | null = await this.systemService.findById(systemId);
 
 		if (!system) {
@@ -55,5 +58,20 @@ export class SystemUc {
 		);
 
 		await this.systemService.delete(system);
+
+		await this.removeSystemFromSchool(schoolId, system);
+	}
+
+	private async removeSystemFromSchool(schoolId: string, system: System) {
+		const school: LegacySchoolDo = await this.schoolService.getSchoolById(schoolId);
+
+		school.systems = school.systems?.filter((schoolSystemId: string) => schoolSystemId !== system.id);
+		school.ldapLastSync = undefined;
+
+		if (system.type === SystemType.LDAP && school.systems?.length === 0) {
+			school.externalId = undefined;
+		}
+
+		await this.schoolService.save(school);
 	}
 }

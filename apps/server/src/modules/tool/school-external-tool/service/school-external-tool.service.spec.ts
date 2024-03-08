@@ -3,15 +3,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { SchoolExternalToolRepo } from '@shared/repo';
 import {
+	externalToolFactory,
 	schoolExternalToolFactory,
 	schoolToolConfigurationStatusFactory,
-	externalToolFactory,
 } from '@shared/testing/factory';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
 import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { SchoolExternalToolConfigurationStatus } from '../controller/domain/school-external-tool-configuration-status';
 import { SchoolExternalTool } from '../domain';
+import { SchoolExternalToolQuery } from '../uc/dto/school-external-tool.types';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
 import { SchoolExternalToolService } from './school-external-tool.service';
 
@@ -78,7 +79,10 @@ describe('SchoolExternalToolService', () => {
 
 				await service.findSchoolExternalTools(schoolExternalTool);
 
-				expect(schoolExternalToolRepo.find).toHaveBeenCalledWith({ schoolId: schoolExternalTool.schoolId });
+				expect(schoolExternalToolRepo.find).toHaveBeenCalledWith<[Required<SchoolExternalToolQuery>]>({
+					schoolId: schoolExternalTool.schoolId,
+					toolId: schoolExternalTool.toolId,
+				});
 			});
 
 			it('should return schoolExternalTool array', async () => {

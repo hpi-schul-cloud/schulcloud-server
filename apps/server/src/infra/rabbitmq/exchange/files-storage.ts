@@ -8,7 +8,7 @@ export enum FilesStorageEvents {
 	'LIST_FILES_OF_PARENT' = 'list-files-of-parent',
 	'DELETE_FILES_OF_PARENT' = 'delete-files-of-parent',
 	'REMOVE_CREATORID_OF_FILES' = 'remove-creatorId-of-files',
-	'DELETE_ONE_FILE' = 'delete-one-file',
+	'DELETE_FILES' = 'delete-files',
 }
 
 export enum ScanStatus {

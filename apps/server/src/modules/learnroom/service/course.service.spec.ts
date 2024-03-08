@@ -152,4 +152,21 @@ describe('CourseService', () => {
 			expect(courseRepo.findAllByUserId).toBeCalledWith(userId);
 		});
 	});
+
+	describe('create', () => {
+		const setup = () => {
+			const course = courseFactory.buildWithId();
+			courseRepo.createCourse.mockResolvedValueOnce();
+
+			return { course };
+		};
+
+		it('should call createCourse from course repository', async () => {
+			const { course } = setup();
+
+			await expect(courseService.create(course)).resolves.not.toThrow();
+
+			expect(courseRepo.createCourse).toBeCalledWith(course);
+		});
+	});
 });

@@ -26,6 +26,7 @@ export class SchoolExternalToolService {
 	async findSchoolExternalTools(query: SchoolExternalToolQuery): Promise<SchoolExternalTool[]> {
 		let schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolRepo.find({
 			schoolId: query.schoolId,
+			toolId: query.toolId,
 		});
 
 		schoolExternalTools = await this.enrichWithDataFromExternalTools(schoolExternalTools);
