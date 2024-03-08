@@ -16,6 +16,7 @@ export interface TldrawConfig {
 	ASSETS_ALLOWED_MIME_TYPES_LIST: string;
 	API_HOST: number;
 	TLDRAW_MAX_DOCUMENT_SIZE: number;
+	TLDRAW_FINALIZE_DELAY: number;
 }
 
 export const TLDRAW_DB_URL: string = Configuration.get('TLDRAW_DB_URL') as string;
@@ -37,6 +38,7 @@ const tldrawConfig = {
 	ASSETS_ALLOWED_MIME_TYPES_LIST: Configuration.get('TLDRAW__ASSETS_ALLOWED_MIME_TYPES_LIST') as string,
 	API_HOST: Configuration.get('API_HOST') as string,
 	TLDRAW_MAX_DOCUMENT_SIZE: Configuration.get('TLDRAW__MAX_DOCUMENT_SIZE') as number,
+	TLDRAW_FINALIZE_DELAY: Configuration.get('TLDRAW__FINALIZE_DELAY') as number,
 };
 
 export const config = () => tldrawConfig;
