@@ -1,12 +1,12 @@
 const _ = require('lodash');
 const { Configuration } = require('@hpi-schul-cloud/commons/lib');
-const { service } = require('../../../utils/feathers-mongoose');
+const moment = require('moment');
 
-const { BadRequest } = require('../../../errors');
+const { BadRequest, Forbidden } = require('../../../errors');
 const globalHooks = require('../../../hooks');
 const ClassModel = require('../model').classModel;
 const CourseModel = require('../model').courseModel;
-const { equal: equalIds } = require('../../../helper/compare').ObjectId;
+const { equal: equalIds, toString: toStringId } = require('../../../helper/compare').ObjectId;
 
 const restrictToCurrentSchool = globalHooks.ifNotLocal(globalHooks.restrictToCurrentSchool);
 const restrictToUsersOwnCourses = globalHooks.ifNotLocal(globalHooks.restrictToUsersOwnCourses);
@@ -153,21 +153,35 @@ const deleteWholeClassFromCourse = (hook) => {
 		});
 };
 
+const compareIdArr = (arr1, arr2) => {
+	if (arr1.length !== arr2.length) {
+		return false;
+	}
+	return arr1.every((element) => arr2.includes(toStringId(element)));
+};
+
 const restrictChangesToSyncedCourse = async (hook) => {
 	const { app } = hook;
 	const courseId = hook.id;
 	const course = await app.service('courses').get(courseId);
 
 	if (course.syncedWithGroup) {
-		hook.data.userIds = course.userIds;
-		hook.data.classIds = course.classIds;
-		hook.data.groupIds = course.groupIds;
-		hook.data.substitutionIds = course.substitutionIds;
-		hook.data.teacherIds = course.teacherIds;
-		hook.data.startDate = course.startDate;
-		hook.data.untilDate = course.untilDate;
-	}
+		const dateFormat = 'YYYY-MM-DDTHH:mm:ss.SSS[Z]';
+		const courseStartDate = moment.utc(course.startDate).format(dateFormat);
+		const courseUntilDate = moment.utc(course.untilDate).format(dateFormat);
 
+		if (
+			compareIdArr(course.classIds, hook.data.classIds) &&
+			compareIdArr(course.groupIds, hook.data.groupIds) &&
+			compareIdArr(course.substitutionIds, hook.data.substitutionIds) &&
+			compareIdArr(course.teacherIds, hook.data.teacherIds) &&
+			hook.data.startDate === courseStartDate &&
+			hook.data.untilDate === courseUntilDate
+		) {
+			return hook;
+		}
+		throw new Forbidden("The entered course doesn't match the synchronized course");
+	}
 	return hook;
 };
 
