@@ -20,7 +20,7 @@ import {
 	ColumnResponse,
 	CreateBoardBodyParams,
 	CreateBoardResponse,
-	RenameBodyParams,
+	UpdateBoardTitleParams,
 } from './dto';
 import { BoardContextResponse } from './dto/board/board-context.reponse';
 import { BoardResponseMapper, ColumnResponseMapper, CreateBoardResponseMapper } from './mapper';
@@ -95,7 +95,7 @@ export class BoardController {
 	@Patch(':boardId/title')
 	async updateBoardTitle(
 		@Param() urlParams: BoardUrlParams,
-		@Body() bodyParams: RenameBodyParams,
+		@Body() bodyParams: UpdateBoardTitleParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.boardUc.updateBoardTitle(currentUser.userId, urlParams.boardId, bodyParams.title);

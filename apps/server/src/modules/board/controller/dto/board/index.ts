@@ -9,3 +9,4 @@ export * from './create-board.response';
 export * from './move-card.body.params';
 export * from './move-column.body.params';
 export * from './rename.body.params';
+export * from './update-board-title.body.params';
