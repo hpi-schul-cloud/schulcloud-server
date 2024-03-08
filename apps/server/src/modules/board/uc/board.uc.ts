@@ -10,6 +10,7 @@ import { BoardExternalReference, Column, ColumnBoard } from '@shared/domain/doma
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
+import { CreateBoardBodyParams } from '../controller/dto';
 import { ColumnBoardService, ColumnService } from '../service';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
 import { BaseUc } from './base.uc';
@@ -29,18 +30,19 @@ export class BoardUc extends BaseUc {
 		this.logger.setContext(BoardUc.name);
 	}
 
-	async createBoard(userId: EntityId, title: string, context: BoardExternalReference): Promise<ColumnBoard> {
-		this.logger.debug({ action: 'createBoard', userId, title, context });
+	async createBoard(userId: EntityId, params: CreateBoardBodyParams): Promise<ColumnBoard> {
+		this.logger.debug({ action: 'createBoard', userId, title: params.title });
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		await this.authorizationReferenceService.checkPermissionByReferences(
 			user.id,
 			AuthorizableReferenceType.Course,
-			context.id,
+			params.parentId,
 			AuthorizationContextBuilder.write([Permission.COURSE_EDIT])
 		);
 
-		const board = await this.columnBoardService.create(context, title);
+		const context = { type: params.parentType, id: params.parentId };
+		const board = await this.columnBoardService.create(context, params.title);
 
 		return board;
 	}

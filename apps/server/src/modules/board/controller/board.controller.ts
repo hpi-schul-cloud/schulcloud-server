@@ -41,11 +41,7 @@ export class BoardController {
 		@Body() bodyParams: CreateBoardBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<CreateBoardResponse> {
-		const context = {
-			id: bodyParams.parentId,
-			type: bodyParams.parentType,
-		};
-		const board = await this.boardUc.createBoard(currentUser.userId, bodyParams.title, context);
+		const board = await this.boardUc.createBoard(currentUser.userId, bodyParams);
 
 		const response = CreateBoardResponseMapper.mapToResponse(board);
 
