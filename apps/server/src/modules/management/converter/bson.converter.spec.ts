@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { ObjectId } from 'mongodb';
 import { BsonConverter } from './bson.converter';
 
 describe('BsonConverter', () => {
