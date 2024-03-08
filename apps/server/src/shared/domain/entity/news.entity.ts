@@ -14,6 +14,7 @@ export interface NewsProperties {
 	school: EntityId | SchoolEntity;
 	creator?: EntityId | User;
 	target: EntityId | NewsTarget;
+
 	externalId?: string;
 	source?: 'internal' | 'rss';
 	sourceDescription?: string;
