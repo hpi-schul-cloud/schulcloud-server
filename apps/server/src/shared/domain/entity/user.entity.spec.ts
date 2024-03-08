@@ -3,7 +3,7 @@ import { roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@s
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Role } from '.';
 import { Permission } from '../interface';
-import { User } from './user.entity';
+import { LanguageType, User } from './user.entity';
 
 describe('User Entity', () => {
 	let orm: MikroORM;
@@ -118,6 +118,7 @@ describe('User Entity', () => {
 				firstName: 'a',
 				lastName: 'b',
 				id: '',
+				language: LanguageType.EN,
 			};
 
 			const user = userFactory.buildWithId(expectedResult);

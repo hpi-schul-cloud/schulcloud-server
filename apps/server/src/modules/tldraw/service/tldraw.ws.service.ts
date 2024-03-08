@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import WebSocket from 'ws';
 import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
 import { decoding, encoding } from 'lib0';
-import { readSyncMessage, writeSyncStep1, writeUpdate } from 'y-protocols/sync';
-import { applyUpdate, encodeStateAsUpdate } from 'yjs';
+import { readSyncMessage, writeSyncStep1, writeSyncStep2, writeUpdate } from 'y-protocols/sync';
+import { applyUpdate } from 'yjs';
 import { Buffer } from 'node:buffer';
 import { Redis } from 'ioredis';
 import { Logger } from '@src/core/logger';
@@ -63,11 +63,11 @@ export class TldrawWsService {
 			doc.connections.delete(ws);
 			removeAwarenessStates(doc.awareness, this.forceToArray(controlledIds), null);
 
-			await this.finalizeIfNoConnections(doc);
 			this.metricsService.decrementNumberOfUsersOnServerCounter();
 		}
 
 		ws.close();
+		await this.finalizeIfNoConnections(doc);
 	}
 
 	public send(doc: WsSharedDocDo, ws: WebSocket, message: Uint8Array): void {
@@ -113,11 +113,19 @@ export class TldrawWsService {
 
 	public async getDocument(docName: string) {
 		const existingDoc = this.docs.get(docName);
+
+		if (this.isFinalizingOrNotYetLoaded(existingDoc)) {
+			// drop the connection, the client will have to reconnect
+			// and check again if the finalizing or loading has finished
+			throw new NotAcceptableException();
+		}
+
 		if (existingDoc) {
 			return existingDoc;
 		}
 
 		const doc = await this.tldrawBoardRepo.getDocumentFromDb(docName);
+		doc.isLoaded = false;
 
 		this.registerAwarenessUpdateHandler(doc);
 		this.registerUpdateHandler(doc);
@@ -126,6 +134,7 @@ export class TldrawWsService {
 
 		this.docs.set(docName, doc);
 		this.metricsService.incrementNumberOfBoardsOnServerCounter();
+		doc.isLoaded = true;
 		return doc;
 	}
 
@@ -206,9 +215,6 @@ export class TldrawWsService {
 			}
 		});
 
-		// send initial doc state to client as update
-		this.sendInitialState(ws, doc);
-
 		// check if connection is still alive
 		const pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
 		let pongReceived = true;
@@ -237,6 +243,9 @@ export class TldrawWsService {
 		});
 
 		{
+			// send initial doc state to client as update
+			this.sendInitialState(ws, doc);
+
 			const syncEncoder = encoding.createEncoder();
 			encoding.writeVarUint(syncEncoder, WSMessageType.SYNC);
 			writeSyncStep1(syncEncoder, doc);
@@ -257,16 +266,26 @@ export class TldrawWsService {
 	}
 
 	private async finalizeIfNoConnections(doc: WsSharedDocDo) {
+		// wait before doing the check
+		// the only user on the pod might have lost connection for a moment
+		// or simply refreshed the page
+		await this.delay(this.configService.get<number>('TLDRAW_FINALIZE_DELAY'));
+
 		if (doc.connections.size > 0) {
 			return;
 		}
 
+		if (doc.isFinalizing) {
+			return;
+		}
+		doc.isFinalizing = true;
+
 		try {
-			const usedAssets = this.syncDocumentAssetsWithShapes(doc);
-			await this.tldrawBoardRepo.compressDocument(doc.name);
 			this.unsubscribeFromRedisChannels(doc);
+			await this.tldrawBoardRepo.compressDocument(doc.name);
 
 			if (this.configService.get<number>('TLDRAW_ASSETS_SYNC_ENABLED')) {
+				const usedAssets = this.syncDocumentAssetsWithShapes(doc);
 				void this.filesStorageTldrawAdapterService.deleteUnusedFilesForDocument(doc.name, usedAssets).catch((err) => {
 					this.logger.warning(new FileStorageErrorLoggable(doc.name, err));
 				});
@@ -391,8 +410,20 @@ export class TldrawWsService {
 	private sendInitialState(ws: WebSocket, doc: WsSharedDocDo): void {
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, WSMessageType.SYNC);
-		writeUpdate(encoder, encodeStateAsUpdate(doc));
+		writeSyncStep2(encoder, doc);
 		this.send(doc, ws, encoding.toUint8Array(encoder));
+	}
+
+	private isFinalizingOrNotYetLoaded(doc: WsSharedDocDo | undefined): boolean {
+		const isFinalizing = doc !== undefined && doc.isFinalizing;
+		const isNotLoaded = doc !== undefined && !doc.isLoaded;
+		return isFinalizing || isNotLoaded;
+	}
+
+	private delay(ms: number) {
+		return new Promise((resolve) => {
+			setTimeout(resolve, ms);
+		});
 	}
 
 	private isClosedOrClosing(ws: WebSocket): boolean {
