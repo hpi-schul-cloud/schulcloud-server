@@ -1,6 +1,5 @@
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import { CommonCartridgeElement } from '../../interfaces/common-cartridge-element.interface';
-import { CommonCartridgeResource } from '../../interfaces/common-cartridge-resource.interface';
+import { CommonCartridgeElement, CommonCartridgeResource } from '../../interfaces';
 import { createIdentifier } from '../../utils';
 
 export type CommonCartridgeOrganizationElementPropsV110 = {

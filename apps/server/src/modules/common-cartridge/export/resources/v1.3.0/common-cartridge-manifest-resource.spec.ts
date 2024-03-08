@@ -8,7 +8,7 @@ import {
 	CommonCartridgeVersion,
 } from '../../common-cartridge.enums';
 import { CommonCartridgeElementFactory } from '../../elements/common-cartridge-element-factory';
-import { CommonCartridgeElementFactoryV130 } from '../../elements/v1.3.0/common-cartridge-element-factory';
+import { CommonCartridgeElementFactoryV130 } from '../../elements/v1.3.0';
 import { CommonCartridgeResourceFactory } from '../common-cartridge-resource-factory';
 import { CommonCartridgeManifestResourceV130 } from './common-cartridge-manifest-resource';
 

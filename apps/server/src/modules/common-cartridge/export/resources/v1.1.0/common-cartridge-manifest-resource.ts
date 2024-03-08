@@ -4,8 +4,7 @@ import {
 	CommonCartridgeVersion,
 } from '../../common-cartridge.enums';
 import { CommonCartridgeElementFactory } from '../../elements/common-cartridge-element-factory';
-import { CommonCartridgeElement } from '../../interfaces/common-cartridge-element.interface';
-import { CommonCartridgeResource } from '../../interfaces/common-cartridge-resource.interface';
+import { CommonCartridgeElement, CommonCartridgeResource } from '../../interfaces';
 import { buildXmlString } from '../../utils';
 
 export type CommonCartridgeManifestResourcePropsV110 = {

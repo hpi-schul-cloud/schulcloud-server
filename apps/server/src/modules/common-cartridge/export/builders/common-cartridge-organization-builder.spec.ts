@@ -1,8 +1,7 @@
 import { faker } from '@faker-js/faker/locale/af_ZA';
 import { createCommonCartridgeWebContentResourcePropsV110 } from '../../testing/common-cartridge-resource-props.factory';
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
-import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.interface';
-import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
+import { CommonCartridgeElement, CommonCartridgeResource } from '../interfaces';
 import {
 	CommonCartridgeOrganizationBuilder,
 	CommonCartridgeOrganizationBuilderOptions,

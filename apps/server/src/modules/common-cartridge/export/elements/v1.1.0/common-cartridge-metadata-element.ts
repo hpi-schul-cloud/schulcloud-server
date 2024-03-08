@@ -1,5 +1,5 @@
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
-import { CommonCartridgeElement } from '../../interfaces/common-cartridge-element.interface';
+import { CommonCartridgeElement } from '../../interfaces';
 
 export type CommonCartridgeMetadataElementPropsV110 = {
 	type: CommonCartridgeElementType.METADATA;

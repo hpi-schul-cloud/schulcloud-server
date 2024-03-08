@@ -5,11 +5,8 @@ import {
 } from '../../testing/common-cartridge-resource-props.factory';
 import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeResourceFactory } from './common-cartridge-resource-factory';
-import {
-	CommonCartridgeWebContentResourcePropsV110,
-	CommonCartridgeWebContentResourceV110,
-} from './v1.1.0/common-cartridge-web-content-resource';
-import { CommonCartridgeWebContentResourceV130 } from './v1.3.0/common-cartridge-web-content-resource';
+import { CommonCartridgeWebContentResourcePropsV110, CommonCartridgeWebContentResourceV110 } from './v1.1.0';
+import { CommonCartridgeWebContentResourceV130 } from './v1.3.0';
 
 describe('CommonCartridgeResourceVersion', () => {
 	describe('createResource', () => {

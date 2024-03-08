@@ -1,5 +1,5 @@
 import { CommonCartridgeElementType } from '../../common-cartridge.enums';
-import { CommonCartridgeElement } from '../../interfaces/common-cartridge-element.interface';
+import { CommonCartridgeElement } from '../../interfaces';
 import { createElementTypeNotSupportedError } from '../../utils';
 import {
 	CommonCartridgeMetadataElementPropsV110,

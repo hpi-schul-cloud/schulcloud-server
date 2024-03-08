@@ -5,11 +5,8 @@ import {
 } from '../../testing/common-cartridge-element-props.factory';
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeElementFactory } from './common-cartridge-element-factory';
-import {
-	CommonCartridgeMetadataElementPropsV110,
-	CommonCartridgeMetadataElementV110,
-} from './v1.1.0/common-cartridge-metadata-element';
-import { CommonCartridgeMetadataElementV130 } from './v1.3.0/common-cartridge-metadata-element';
+import { CommonCartridgeMetadataElementPropsV110, CommonCartridgeMetadataElementV110 } from './v1.1.0';
+import { CommonCartridgeMetadataElementV130 } from './v1.3.0';
 
 describe('CommonCartridgeElementFactory', () => {
 	describe('createElement', () => {

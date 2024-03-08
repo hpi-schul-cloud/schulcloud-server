@@ -3,10 +3,11 @@ import {
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 } from '../../common-cartridge.enums';
-import { CommonCartridgeOrganizationsWrapperElementV130 } from '../../elements/v1.3.0/common-cartridge-organizations-wrapper-element';
-import { CommonCartridgeResourcesWrapperElementV130 } from '../../elements/v1.3.0/common-cartridge-resources-wrapper-element';
-import { CommonCartridgeElement } from '../../interfaces/common-cartridge-element.interface';
-import { CommonCartridgeResource } from '../../interfaces/common-cartridge-resource.interface';
+import {
+	CommonCartridgeOrganizationsWrapperElementV130,
+	CommonCartridgeResourcesWrapperElementV130,
+} from '../../elements/v1.3.0';
+import { CommonCartridgeElement, CommonCartridgeResource } from '../../interfaces';
 import { buildXmlString } from '../../utils';
 
 export type CommonCartridgeManifestResourcePropsV130 = {

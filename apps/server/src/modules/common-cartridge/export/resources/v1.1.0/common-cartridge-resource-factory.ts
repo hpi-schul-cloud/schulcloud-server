@@ -1,5 +1,5 @@
 import { CommonCartridgeResourceType } from '../../common-cartridge.enums';
-import { CommonCartridgeResource } from '../../interfaces/common-cartridge-resource.interface';
+import { CommonCartridgeResource } from '../../interfaces';
 import { createResourceTypeNotSupportedError } from '../../utils';
 import {
 	CommonCartridgeManifestResourcePropsV110,

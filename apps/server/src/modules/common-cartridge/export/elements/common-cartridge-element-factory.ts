@@ -1,16 +1,20 @@
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
-import { CommonCartridgeElement } from '../interfaces/common-cartridge-element.interface';
+import { CommonCartridgeElement } from '../interfaces';
 import { OmitVersionAndFolder, createVersionNotSupportedError } from '../utils';
-import { CommonCartridgeElementFactoryV110 } from './v1.1.0/common-cartridge-element-factory';
-import { CommonCartridgeMetadataElementPropsV110 } from './v1.1.0/common-cartridge-metadata-element';
-import { CommonCartridgeOrganizationElementPropsV110 } from './v1.1.0/common-cartridge-organization-element';
-import { CommonCartridgeOrganizationsWrapperElementPropsV110 } from './v1.1.0/common-cartridge-organizations-wrapper-element';
-import { CommonCartridgeResourcesWrapperElementPropsV110 } from './v1.1.0/common-cartridge-resources-wrapper-element';
-import { CommonCartridgeElementFactoryV130 } from './v1.3.0/common-cartridge-element-factory';
-import { CommonCartridgeMetadataElementPropsV130 } from './v1.3.0/common-cartridge-metadata-element';
-import { CommonCartridgeOrganizationElementPropsV130 } from './v1.3.0/common-cartridge-organization-element';
-import { CommonCartridgeOrganizationsWrapperElementPropsV130 } from './v1.3.0/common-cartridge-organizations-wrapper-element';
-import { CommonCartridgeResourcesWrapperElementPropsV130 } from './v1.3.0/common-cartridge-resources-wrapper-element';
+import {
+	CommonCartridgeElementFactoryV110,
+	CommonCartridgeMetadataElementPropsV110,
+	CommonCartridgeOrganizationElementPropsV110,
+	CommonCartridgeOrganizationsWrapperElementPropsV110,
+	CommonCartridgeResourcesWrapperElementPropsV110,
+} from './v1.1.0';
+import {
+	CommonCartridgeElementFactoryV130,
+	CommonCartridgeMetadataElementPropsV130,
+	CommonCartridgeOrganizationElementPropsV130,
+	CommonCartridgeOrganizationsWrapperElementPropsV130,
+	CommonCartridgeResourcesWrapperElementPropsV130,
+} from './v1.3.0';
 
 export type CommonCartridgeElementProps =
 	| OmitVersionAndFolder<CommonCartridgeMetadataElementPropsV110>

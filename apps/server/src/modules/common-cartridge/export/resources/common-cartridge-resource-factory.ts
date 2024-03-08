@@ -1,14 +1,18 @@
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
-import { CommonCartridgeResource } from '../interfaces/common-cartridge-resource.interface';
+import { CommonCartridgeResource } from '../interfaces';
 import { OmitVersionAndFolder, createVersionNotSupportedError } from '../utils';
-import { CommonCartridgeManifestResourcePropsV110 } from './v1.1.0/common-cartridge-manifest-resource';
-import { CommonCartridgeResourceFactoryV110 } from './v1.1.0/common-cartridge-resource-factory';
-import { CommonCartridgeWebContentResourcePropsV110 } from './v1.1.0/common-cartridge-web-content-resource';
-import { CommonCartridgeWebLinkResourcePropsV110 } from './v1.1.0/common-cartridge-web-link-resource';
-import { CommonCartridgeManifestResourcePropsV130 } from './v1.3.0/common-cartridge-manifest-resource';
-import { CommonCartridgeResourceFactoryV130 } from './v1.3.0/common-cartridge-resource-factory';
-import { CommonCartridgeWebContentResourcePropsV130 } from './v1.3.0/common-cartridge-web-content-resource';
-import { CommonCartridgeWebLinkResourcePropsV130 } from './v1.3.0/common-cartridge-web-link-resource';
+import {
+	CommonCartridgeManifestResourcePropsV110,
+	CommonCartridgeResourceFactoryV110,
+	CommonCartridgeWebContentResourcePropsV110,
+	CommonCartridgeWebLinkResourcePropsV110,
+} from './v1.1.0';
+import {
+	CommonCartridgeManifestResourcePropsV130,
+	CommonCartridgeResourceFactoryV130,
+	CommonCartridgeWebContentResourcePropsV130,
+	CommonCartridgeWebLinkResourcePropsV130,
+} from './v1.3.0';
 
 export type CommonCartridgeResourceProps =
 	| OmitVersionAndFolder<CommonCartridgeWebContentResourcePropsV110>
