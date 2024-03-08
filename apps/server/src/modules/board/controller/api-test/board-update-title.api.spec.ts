@@ -2,6 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server/server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ApiValidationError } from '@shared/common';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { ColumnBoardNode } from '@shared/domain/entity';
 import {
@@ -89,6 +90,38 @@ describe(`board update title (api)`, () => {
 			const result = await em.findOneOrFail(ColumnBoardNode, columnBoardNode.id);
 
 			expect(result.title).toEqual(sanitizedTitle);
+		});
+
+		it('should return status 400 when title is too long', async () => {
+			const { loggedInClient, columnBoardNode } = await setup();
+
+			const newTitle = 'a'.repeat(101);
+
+			const response = await loggedInClient.patch(`${columnBoardNode.id}/title`, { title: newTitle });
+
+			expect((response.body as ApiValidationError).validationErrors).toEqual([
+				{
+					errors: ['title must be shorter than or equal to 100 characters'],
+					field: ['title'],
+				},
+			]);
+			expect(response.status).toEqual(400);
+		});
+
+		it('should return status 400 when title is empty string', async () => {
+			const { loggedInClient, columnBoardNode } = await setup();
+
+			const newTitle = '';
+
+			const response = await loggedInClient.patch(`${columnBoardNode.id}/title`, { title: newTitle });
+
+			expect((response.body as ApiValidationError).validationErrors).toEqual([
+				{
+					errors: ['title must be longer than or equal to 1 characters'],
+					field: ['title'],
+				},
+			]);
+			expect(response.status).toEqual(400);
 		});
 	});
 
