@@ -24,6 +24,7 @@ export class CreateBoardBodyParams {
 		description: 'The type of the parent',
 		required: true,
 		enum: BoardExternalReferenceType,
+		enumName: 'BoardParentType',
 	})
 	@IsEnum(BoardExternalReferenceType)
 	parentType!: BoardExternalReferenceType;
