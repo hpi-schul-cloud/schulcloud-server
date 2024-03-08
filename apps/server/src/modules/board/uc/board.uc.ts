@@ -90,6 +90,6 @@ export class BoardUc extends BaseUc {
 		const board = await this.columnBoardService.findById(boardId);
 		await this.checkPermission(userId, board, Action.write);
 
-		await this.columnBoardService.updateBoardVisibility(boardId, isVisible);
+		await this.columnBoardService.updateBoardVisibility(board, isVisible);
 	}
 }

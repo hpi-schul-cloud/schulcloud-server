@@ -163,11 +163,8 @@ export class ColumnBoardService {
 		return element;
 	}
 
-	async updateBoardVisibility(id: EntityId, isVisible: boolean): Promise<void> {
-		const boardDo = await this.boardDoRepo.findById(id, 1);
-		const rootBoardDo = await this.boardDoService.getRootBoardDo(boardDo);
-
-		rootBoardDo.isVisible = isVisible;
-		await this.boardDoRepo.save(rootBoardDo);
+	async updateBoardVisibility(board: ColumnBoard, isVisible: boolean): Promise<void> {
+		board.isVisible = isVisible;
+		await this.boardDoRepo.save(board);
 	}
 }

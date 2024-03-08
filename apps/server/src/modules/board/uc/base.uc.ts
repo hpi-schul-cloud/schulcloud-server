@@ -1,6 +1,7 @@
 import { Action, AuthorizationService } from '@modules/authorization';
 import { AnyBoardDo, BoardRoles, UserWithBoardRoles } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
+import { Permission } from '@shared/domain/interface';
 import { BoardDoAuthorizableService } from '../service';
 
 export abstract class BaseUc {
@@ -10,12 +11,11 @@ export abstract class BaseUc {
 	) {}
 
 	protected async checkPermission(userId: EntityId, anyBoardDo: AnyBoardDo, action: Action): Promise<void> {
+		const requiredPermissions: Permission[] = [];
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardDoAuthorizable = await this.boardDoAuthorizableService.getBoardAuthorizable(anyBoardDo);
 
-		const context = { action, requiredPermissions: [] };
-
-		return this.authorizationService.checkPermission(user, boardDoAuthorizable, context);
+		this.authorizationService.checkPermission(user, boardDoAuthorizable, { action, requiredPermissions });
 	}
 
 	protected isUserBoardEditor(userId: EntityId, userBoardRoles: UserWithBoardRoles[]): boolean {

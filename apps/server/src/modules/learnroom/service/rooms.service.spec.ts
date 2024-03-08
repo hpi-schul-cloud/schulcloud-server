@@ -201,14 +201,6 @@ describe('rooms service', () => {
 						);
 					});
 				});
-
-				it('should use the service to find or create targets', async () => {
-					const { user, boardWithColumnBoard: board, columnBoardId } = setupWithEnvVariables();
-
-					await roomsService.updateLegacyBoard(board, board.course.id, user.id);
-
-					expect(columnBoardTargetService.findOrCreateTargets).toBeCalledWith([columnBoardId]);
-				});
 			});
 
 			describe('when ColumnBoard-feature and COLUMN_BOARD_HELP_LINK is enabled', () => {
@@ -270,14 +262,6 @@ describe('rooms service', () => {
 
 						expect(columnBoardService.createWelcomeColumnBoard).not.toBeCalled();
 					});
-				});
-
-				it('should NOT use the service to find or create targets', async () => {
-					const { user, boardWithColumnBoard: board } = setupWithEnvVariables();
-
-					await roomsService.updateLegacyBoard(board, board.course.id, user.id);
-
-					expect(columnBoardTargetService.findOrCreateTargets).not.toBeCalled();
 				});
 			});
 		});

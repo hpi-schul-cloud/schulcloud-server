@@ -9,11 +9,12 @@ import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/ty
 import { LegacyBoard } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '@shared/repo';
+import { BoardNodeRepo } from '@modules/board/repo';
 import {
 	boardFactory,
 	columnboardBoardElementFactory,
 	columnBoardFactory,
-	columnBoardTargetFactory,
+	columnBoardNodeFactory,
 	courseFactory,
 	lessonBoardElementFactory,
 	lessonFactory,
@@ -33,6 +34,7 @@ describe('board copy service', () => {
 	let columnBoardCopyService: DeepMocked<ColumnBoardCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let boardRepo: DeepMocked<LegacyBoardRepo>;
+	let boardNodeRepo: DeepMocked<BoardNodeRepo>;
 
 	afterAll(async () => {
 		await module.close();
@@ -67,6 +69,10 @@ describe('board copy service', () => {
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
 				},
+				{
+					provide: BoardNodeRepo,
+					useValue: createMock<BoardNodeRepo>(),
+				},
 			],
 		}).compile();
 
@@ -76,6 +82,7 @@ describe('board copy service', () => {
 		copyHelperService = module.get(CopyHelperService);
 		columnBoardCopyService = module.get(ColumnBoardCopyService);
 		boardRepo = module.get(LegacyBoardRepo);
+		boardNodeRepo = module.get(BoardNodeRepo);
 		boardRepo.save = jest.fn();
 	});
 
@@ -240,8 +247,7 @@ describe('board copy service', () => {
 		describe('when board contains column board', () => {
 			const setup = () => {
 				const originalColumnBoard = columnBoardFactory.build();
-				const columnBoardTarget = columnBoardTargetFactory.build({
-					columnBoardId: originalColumnBoard.id,
+				const columnBoardTarget = columnBoardNodeFactory.build({
 					title: originalColumnBoard.title,
 				});
 				const columBoardElement = columnboardBoardElementFactory.build({ target: columnBoardTarget });
@@ -258,14 +264,14 @@ describe('board copy service', () => {
 					title: copyOfColumnBoard.title,
 				});
 
-				return { destinationCourse, originalBoard, user, originalColumnBoard };
+				return { destinationCourse, originalBoard, user, originalColumnBoard, columnBoardTarget };
 			};
 
 			it('should call columnBoardCopyService with original columnBoard', async () => {
-				const { destinationCourse, originalBoard, user, originalColumnBoard } = setup();
+				const { destinationCourse, originalBoard, user, columnBoardTarget } = setup();
 
 				const expected = {
-					originalColumnBoardId: originalColumnBoard.id,
+					originalColumnBoardId: columnBoardTarget.id,
 					destinationExternalReference: {
 						type: BoardExternalReferenceType.Course,
 						id: destinationCourse.id,
@@ -318,8 +324,8 @@ describe('board copy service', () => {
 				lessonCopyService.updateCopiedEmbeddedTasks = jest.fn().mockImplementation((status: CopyStatus) => status);
 
 				const originalColumnBoard = columnBoardFactory.build();
-				const columnBoardTarget = columnBoardTargetFactory.buildWithId({
-					columnBoardId: originalColumnBoard.id,
+				const columnBoardTarget = columnBoardNodeFactory.buildWithId({
+					id: originalColumnBoard.id,
 					title: originalColumnBoard.title,
 				});
 				const columnBoardElement = columnboardBoardElementFactory.buildWithId({ target: columnBoardTarget });

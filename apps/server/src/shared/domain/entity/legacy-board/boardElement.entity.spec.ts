@@ -1,4 +1,4 @@
-import { columnBoardTargetFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
+import { columnBoardNodeFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
 import { LegacyBoardElementType } from './legacy-boardelement.entity';
 import { ColumnboardBoardElement } from './column-board-boardelement';
 import { LessonBoardElement } from './lesson-boardelement.entity';
@@ -43,7 +43,7 @@ describe('ColumnboardBoardElementEntity', () => {
 
 	describe('constructor', () => {
 		it('should have correct type', () => {
-			const columnBoardTarget = columnBoardTargetFactory.build({ title: 'target', published: true });
+			const columnBoardTarget = columnBoardNodeFactory.build({ title: 'target' });
 
 			const boardElement = new ColumnboardBoardElement({ target: columnBoardTarget });
 

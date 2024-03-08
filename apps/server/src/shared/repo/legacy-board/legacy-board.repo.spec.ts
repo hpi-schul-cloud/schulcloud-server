@@ -12,7 +12,7 @@ import {
 
 import { MongoMemoryDatabaseModule } from '@infra/database';
 
-import { LegacyBoardRepo } from './legacy-board-repo.service';
+import { LegacyBoardRepo } from './legacy-board.repo';
 
 describe('LegacyRoomBoardRepo', () => {
 	let module: TestingModule;

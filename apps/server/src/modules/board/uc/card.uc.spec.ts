@@ -74,7 +74,12 @@ describe(CardUc.name, () => {
 				const cardIds = cards.map((c) => c.id);
 
 				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString(), boardDo: cards[0] })
+					new BoardDoAuthorizable({
+						users: [],
+						id: new ObjectId().toHexString(),
+						boardDo: cards[0],
+						rootDo: columnBoardFactory.build(),
+					})
 				);
 
 				return { user, cards, cardIds };
@@ -111,7 +116,8 @@ describe(CardUc.name, () => {
 			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
 				users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 				id: board.id,
-				boardDo: board,
+				boardDo: card,
+				rootDo: board,
 			});
 			const createCardBodyParams = {
 				requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
@@ -154,7 +160,8 @@ describe(CardUc.name, () => {
 			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
 				users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 				id: board.id,
-				boardDo: board,
+				boardDo: card,
+				rootDo: board,
 			});
 			const createCardBodyParams = {
 				requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
@@ -207,8 +214,9 @@ describe(CardUc.name, () => {
 
 			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
 				users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
-				id: board.id,
-				boardDo: board,
+				id: card.id,
+				boardDo: card,
+				rootDo: board,
 			});
 			const createCardBodyParams = {
 				requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
@@ -251,7 +259,12 @@ describe(CardUc.name, () => {
 				elementService.create.mockResolvedValueOnce(element);
 
 				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString(), boardDo: card })
+					new BoardDoAuthorizable({
+						users: [],
+						id: new ObjectId().toHexString(),
+						boardDo: card,
+						rootDo: columnBoardFactory.build(),
+					})
 				);
 
 				return { user, card, element };
@@ -310,6 +323,7 @@ describe(CardUc.name, () => {
 					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 					id: element.id,
 					boardDo: element,
+					rootDo: columnBoardFactory.build(),
 				});
 
 				boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);

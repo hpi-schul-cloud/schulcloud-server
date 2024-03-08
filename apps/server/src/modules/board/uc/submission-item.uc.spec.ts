@@ -9,6 +9,7 @@ import {
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, BoardRoles, ContentElementType } from '@shared/domain/domainobject';
 import {
+	columnBoardFactory,
 	fileElementFactory,
 	richTextElementFactory,
 	setupEntities,
@@ -95,6 +96,7 @@ describe(SubmissionItemUc.name, () => {
 						],
 						id: submissionContainerEl.id,
 						boardDo: submissionContainerEl,
+						rootDo: columnBoardFactory.build(),
 					})
 				);
 
@@ -139,6 +141,7 @@ describe(SubmissionItemUc.name, () => {
 						],
 						id: submissionContainerEl.id,
 						boardDo: submissionContainerEl,
+						rootDo: columnBoardFactory.build(),
 					})
 				);
 
@@ -183,13 +186,14 @@ describe(SubmissionItemUc.name, () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
 
+			const columnBoard = columnBoardFactory.build();
 			const submissionItem = submissionItemFactory.build({
 				userId: user.id,
 			});
 
 			submissionItemService.findById.mockResolvedValueOnce(submissionItem);
 
-			return { submissionItem, user, boardDoAuthorizableService };
+			return { submissionItem, columnBoard, user, boardDoAuthorizableService };
 		};
 
 		it('should call service to find the submission item ', async () => {
@@ -199,13 +203,14 @@ describe(SubmissionItemUc.name, () => {
 		});
 
 		it('should authorize', async () => {
-			const { submissionItem, user } = setup();
+			const { submissionItem, user, columnBoard } = setup();
 
 			boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
 				new BoardDoAuthorizable({
 					users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 					id: submissionItem.id,
 					boardDo: submissionItem,
+					rootDo: columnBoard,
 				})
 			);
 			const boardDoAuthorizable = await boardDoAuthorizableService.getBoardAuthorizable(submissionItem);
@@ -238,6 +243,7 @@ describe(SubmissionItemUc.name, () => {
 						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
 						id: submissionItem.id,
 						boardDo: submissionItem,
+						rootDo: columnBoardFactory.build(),
 					})
 				);
 

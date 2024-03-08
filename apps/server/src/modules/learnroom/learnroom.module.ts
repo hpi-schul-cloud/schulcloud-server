@@ -26,6 +26,7 @@ import {
 	RoomsService,
 } from './service';
 import { CommonCartridgeFileValidatorPipe } from './utils';
+import { BoardNodeRepo } from '../board/repo';
 
 @Module({
 	imports: [
@@ -42,21 +43,22 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 			provide: 'DASHBOARD_REPO',
 			useClass: DashboardRepo,
 		},
+		BoardCopyService,
+		BoardNodeRepo,
+		CommonCartridgeExportService,
+		CommonCartridgeFileValidatorPipe,
+		CommonCartridgeImportService,
+		CourseCopyService,
+		CourseGroupRepo,
+		CourseGroupService,
+		CourseRepo,
+		CourseService,
 		DashboardElementRepo,
 		DashboardModelMapper,
-		CourseRepo,
-		LegacyBoardRepo,
-		UserRepo,
-		BoardCopyService,
-		CourseCopyService,
-		RoomsService,
-		CourseService,
-		CommonCartridgeExportService,
-		CommonCartridgeImportService,
-		CourseGroupService,
-		CourseGroupRepo,
 		DashboardService,
-		CommonCartridgeFileValidatorPipe,
+		LegacyBoardRepo,
+		RoomsService,
+		UserRepo,
 	],
 	exports: [
 		CourseCopyService,

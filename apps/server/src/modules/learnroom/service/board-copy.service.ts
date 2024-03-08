@@ -25,6 +25,7 @@ import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { sortBy } from 'lodash';
+
 import { BoardNodeRepo } from '@modules/board/repo';
 
 type BoardCopyParams = {

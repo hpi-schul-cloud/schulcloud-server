@@ -30,7 +30,7 @@ describe('rooms controller', () => {
 						getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
 							throw new Error('please write mock for RoomsUc.getBoard');
 						},
-						updateVisibilityOfBoardElement(
+						updateVisibilityOfLegacyBoardElement(
 							roomId: EntityId, // eslint-disable-line @typescript-eslint/no-unused-vars
 							elementId: EntityId, // eslint-disable-line @typescript-eslint/no-unused-vars
 							userId: EntityId, // eslint-disable-line @typescript-eslint/no-unused-vars

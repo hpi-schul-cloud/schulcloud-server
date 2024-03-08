@@ -1,6 +1,13 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { cardFactory, columnFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
+import {
+	cardFactory,
+	columnBoardFactory,
+	columnFactory,
+	richTextElementFactory,
+} from '@shared/testing/factory/domainobject';
+import { ColumnBoard } from '@shared/domain/domainobject';
+import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 
@@ -182,6 +189,71 @@ describe(BoardDoService.name, () => {
 				await service.deleteWithDescendants(element);
 
 				expect(boardDoRepo.save).toHaveBeenCalledWith(expectedElements, card);
+			});
+		});
+	});
+
+	describe('getRootBoardDo', () => {
+		describe('when searching a board for an element', () => {
+			const setup2 = () => {
+				const element = richTextElementFactory.build();
+				const board = columnBoardFactory.build({ children: [element] });
+
+				boardDoRepo.getAncestorIds.mockResolvedValue([board.id]);
+				boardDoRepo.findById.mockResolvedValue(board);
+
+				return {
+					element,
+					board,
+				};
+			};
+
+			it('should return the board', async () => {
+				const { element, board } = setup2();
+
+				const result = await service.getRootBoardDo(element);
+
+				expect(result).toEqual(board);
+			});
+		});
+
+		describe('when searching a board by itself', () => {
+			const setup2 = () => {
+				const board: ColumnBoard = columnBoardFactory.build({ children: [] });
+
+				boardDoRepo.getAncestorIds.mockResolvedValue([]);
+				boardDoRepo.findById.mockResolvedValue(board);
+
+				return {
+					board,
+				};
+			};
+
+			it('should return the board', async () => {
+				const { board } = setup2();
+
+				const result = await service.getRootBoardDo(board);
+
+				expect(result).toEqual(board);
+			});
+		});
+
+		describe('when the root node is not a board', () => {
+			const setup2 = () => {
+				const element = richTextElementFactory.build();
+
+				boardDoRepo.getAncestorIds.mockResolvedValue([]);
+				boardDoRepo.findById.mockResolvedValue(element);
+
+				return {
+					element,
+				};
+			};
+
+			it('should throw a NotFoundLoggableException', async () => {
+				const { element } = setup2();
+
+				await expect(service.getRootBoardDo(element)).rejects.toThrow(NotFoundLoggableException);
 			});
 		});
 	});

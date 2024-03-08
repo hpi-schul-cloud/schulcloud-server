@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AuthorizationService } from '@modules/authorization';
+import { Action, AuthorizationService } from '@modules/authorization';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, BoardRoles, ContentElementType } from '@shared/domain/domainobject';
@@ -75,7 +75,7 @@ describe(BoardUc.name, () => {
 		jest.clearAllMocks();
 	});
 
-	const setup = () => {
+	const globalSetup = () => {
 		jest.clearAllMocks();
 		const user = userFactory.buildWithId();
 		const board = columnBoardFactory.build();
@@ -86,7 +86,8 @@ describe(BoardUc.name, () => {
 		const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
 			users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 			id: board.id,
-			boardDo: board,
+			boardDo: column,
+			rootDo: board,
 		});
 		const createCardBodyParams = {
 			requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
@@ -100,7 +101,7 @@ describe(BoardUc.name, () => {
 	describe('findBoard', () => {
 		describe('when loading a board and having required permission', () => {
 			it('should call the service', async () => {
-				const { user, boardId } = setup();
+				const { user, boardId } = globalSetup();
 
 				await uc.findBoard(user.id, boardId);
 
@@ -108,7 +109,7 @@ describe(BoardUc.name, () => {
 			});
 
 			it('should return the column board object', async () => {
-				const { user, board } = setup();
+				const { user, board } = globalSetup();
 				columnBoardService.findById.mockResolvedValueOnce(board);
 
 				const result = await uc.findBoard(user.id, board.id);
@@ -119,7 +120,7 @@ describe(BoardUc.name, () => {
 
 		describe('when loading a board without having permissions', () => {
 			it('should return the column board object', async () => {
-				const { board } = setup();
+				const { board } = globalSetup();
 				columnBoardService.findById.mockResolvedValueOnce(board);
 
 				const fakeUserId = new ObjectId().toHexString();
@@ -135,7 +136,7 @@ describe(BoardUc.name, () => {
 	describe('deleteBoard', () => {
 		describe('when deleting a board', () => {
 			it('should call the service to find the board', async () => {
-				const { user, board } = setup();
+				const { user, board } = globalSetup();
 
 				await uc.deleteBoard(user.id, board.id);
 
@@ -143,7 +144,7 @@ describe(BoardUc.name, () => {
 			});
 
 			it('should call the service to delete the board', async () => {
-				const { user, board } = setup();
+				const { user, board } = globalSetup();
 
 				await uc.deleteBoard(user.id, board.id);
 
@@ -155,7 +156,7 @@ describe(BoardUc.name, () => {
 	describe('updateBoardTitle', () => {
 		describe('when updating a board title', () => {
 			it('should call the service to find the board', async () => {
-				const { user, board } = setup();
+				const { user, board } = globalSetup();
 
 				await uc.updateBoardTitle(user.id, board.id, 'new title');
 
@@ -163,7 +164,7 @@ describe(BoardUc.name, () => {
 			});
 
 			it('should call the service to update the board title', async () => {
-				const { user, board } = setup();
+				const { user, board } = globalSetup();
 				const newTitle = 'new title';
 
 				await uc.updateBoardTitle(user.id, board.id, newTitle);
@@ -176,7 +177,7 @@ describe(BoardUc.name, () => {
 	describe('createColumn', () => {
 		describe('when creating a column', () => {
 			it('should call the service to find the board', async () => {
-				const { user, board } = setup();
+				const { user, board } = globalSetup();
 
 				await uc.createColumn(user.id, board.id);
 
@@ -184,7 +185,7 @@ describe(BoardUc.name, () => {
 			});
 
 			it('should call the service to create the column', async () => {
-				const { user, board } = setup();
+				const { user, board } = globalSetup();
 				columnBoardService.findById.mockResolvedValueOnce(board);
 
 				await uc.createColumn(user.id, board.id);
@@ -193,7 +194,7 @@ describe(BoardUc.name, () => {
 			});
 
 			it('should return the column board object', async () => {
-				const { user, board, column } = setup();
+				const { user, board, column } = globalSetup();
 				columnService.create.mockResolvedValueOnce(column);
 
 				const result = await uc.createColumn(user.id, board.id);
@@ -206,7 +207,7 @@ describe(BoardUc.name, () => {
 	describe('moveColumn', () => {
 		describe('when moving a column', () => {
 			it('should call the service to find the column', async () => {
-				const { user, board, column } = setup();
+				const { user, board, column } = globalSetup();
 
 				await uc.moveColumn(user.id, column.id, board.id, 7);
 
@@ -214,7 +215,7 @@ describe(BoardUc.name, () => {
 			});
 
 			it('should call the service to find the target board', async () => {
-				const { user, board, column } = setup();
+				const { user, board, column } = globalSetup();
 
 				await uc.moveColumn(user.id, column.id, board.id, 7);
 
@@ -222,7 +223,7 @@ describe(BoardUc.name, () => {
 			});
 
 			it('should call the service to move the column', async () => {
-				const { user, board, column } = setup();
+				const { user, board, column } = globalSetup();
 				columnService.findById.mockResolvedValueOnce(column);
 				columnBoardService.findById.mockResolvedValueOnce(board);
 
@@ -230,6 +231,50 @@ describe(BoardUc.name, () => {
 
 				expect(columnService.move).toHaveBeenCalledWith(column, board, 7);
 			});
+		});
+	});
+
+	describe('updateVisibility', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const board = columnBoardFactory.build();
+
+			return { user, board };
+		};
+
+		it('should call the service to find the board', async () => {
+			const { user, board } = setup();
+
+			await uc.updateVisibility(user.id, board.id, true);
+
+			expect(columnBoardService.findById).toHaveBeenCalledWith(board.id);
+		});
+
+		it('should authorize', async () => {
+			const { user, board } = setup();
+
+			columnBoardService.findById.mockResolvedValueOnce(board);
+			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+			const mockAuthorizable = new BoardDoAuthorizable({
+				users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+				id: board.id,
+				boardDo: board,
+				rootDo: board,
+			});
+			boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(mockAuthorizable);
+
+			await uc.updateVisibility(user.id, board.id, true);
+
+			const context = { action: Action.write, requiredPermissions: [] };
+			expect(authorizationService.checkPermission).toBeCalledWith(user, mockAuthorizable, context);
+		});
+
+		it('should call the service to update the board visibility', async () => {
+			const { user, board } = setup();
+
+			await uc.updateVisibility(user.id, board.id, true);
+
+			expect(columnBoardService.updateBoardVisibility).toHaveBeenCalledWith(board.id, true);
 		});
 	});
 });

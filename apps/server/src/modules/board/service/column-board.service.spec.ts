@@ -109,83 +109,30 @@ describe(ColumnBoardService.name, () => {
 	});
 
 	describe('findByDescendant', () => {
-		describe('when searching a board for an element', () => {
-			const setup2 = () => {
-				const element = richTextElementFactory.build();
-				const board: ColumnBoard = columnBoardFactory.build({ children: [element] });
-
-				boardDoRepo.getAncestorIds.mockResolvedValue([board.id]);
-				boardDoRepo.findById.mockResolvedValue(board);
-
-				return {
-					element,
-					board,
-				};
+		const setup2 = () => {
+			const element = richTextElementFactory.build();
+			const board = columnBoardFactory.build({ children: [element] });
+			boardDoService.getRootBoardDo.mockResolvedValue(board);
+			return {
+				element,
+				board,
 			};
+		};
 
-			it('should search by the root id', async () => {
-				const { element, board } = setup2();
+		it('should call board-do service to get the rootDo', async () => {
+			const { element } = setup2();
 
-				await service.findByDescendant(element);
+			await service.findByDescendant(element);
 
-				expect(boardDoRepo.findById).toHaveBeenCalledWith(board.id, 1);
-			});
-
-			it('should return the board', async () => {
-				const { element, board } = setup2();
-
-				const result = await service.findByDescendant(element);
-
-				expect(result).toEqual(board);
-			});
+			expect(boardDoService.getRootBoardDo).toHaveBeenCalledWith(element);
 		});
 
-		describe('when searching a board by itself', () => {
-			const setup2 = () => {
-				const board: ColumnBoard = columnBoardFactory.build({ children: [] });
+		it('should return the root boardDo', async () => {
+			const { element, board } = setup2();
 
-				boardDoRepo.getAncestorIds.mockResolvedValue([]);
-				boardDoRepo.findById.mockResolvedValue(board);
+			const result = await service.findByDescendant(element);
 
-				return {
-					board,
-				};
-			};
-
-			it('should search by the root id', async () => {
-				const { board } = setup2();
-
-				await service.findByDescendant(board);
-
-				expect(boardDoRepo.findById).toHaveBeenCalledWith(board.id, 1);
-			});
-
-			it('should return the board', async () => {
-				const { board } = setup2();
-
-				const result = await service.findByDescendant(board);
-
-				expect(result).toEqual(board);
-			});
-		});
-
-		describe('when the root node is not a board', () => {
-			const setup2 = () => {
-				const element = richTextElementFactory.build();
-
-				boardDoRepo.getAncestorIds.mockResolvedValue([]);
-				boardDoRepo.findById.mockResolvedValue(element);
-
-				return {
-					element,
-				};
-			};
-
-			it('should throw a NotFoundLoggableException', async () => {
-				const { element } = setup2();
-
-				await expect(service.findByDescendant(element)).rejects.toThrow(NotFoundLoggableException);
-			});
+			expect(result).toEqual(board);
 		});
 	});
 
