@@ -170,17 +170,20 @@ const restrictChangesToSyncedCourse = async (hook) => {
 		const courseStartDate = course.startDate ? moment.utc(course.startDate).format(dateFormat) : undefined;
 		const courseUntilDate = course.untilDate ? moment.utc(course.untilDate).format(dateFormat) : undefined;
 
-		if (
-			compareIdArr(course.classIds, hook.data.classIds) &&
-			compareIdArr(course.groupIds, hook.data.groupIds) &&
-			compareIdArr(course.substitutionIds, hook.data.substitutionIds) &&
-			compareIdArr(course.teacherIds, hook.data.teacherIds) &&
-			courseStartDate === hook.data.startDate &&
-			courseUntilDate === hook.data.untilDate
-		) {
+		const classesValid = compareIdArr(course.classIds, hook.data.classIds);
+		const groupsValid = compareIdArr(course.groupIds, hook.data.groupIds);
+		const substitutionValid = compareIdArr(course.substitutionIds, hook.data.substitutionIds);
+		const teachersValid = compareIdArr(course.teacherIds, hook.data.teacherIds);
+		const startDateValid = courseStartDate === hook.data.startDate;
+		const untilDateValid = courseUntilDate === hook.data.untilDate;
+
+		if (classesValid && groupsValid && substitutionValid && teachersValid && startDateValid && untilDateValid) {
 			return hook;
 		}
-		throw new Forbidden("The course doesn't match the synchronized course");
+
+		throw new Forbidden(
+			`The entered course doesn't match the synchronized course! classes:${classesValid} groups:${groupsValid} substitution:${substitutionValid} teacher:${teachersValid} startDate:${startDateValid} untilDate:${untilDateValid}`
+		);
 	}
 	return hook;
 };
