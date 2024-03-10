@@ -180,7 +180,7 @@ const restrictChangesToSyncedCourse = async (hook) => {
 		) {
 			return hook;
 		}
-		throw new Forbidden("The entered course doesn't match the synchronized course");
+		throw new Forbidden("The course doesn't match the synchronized course");
 	}
 	return hook;
 };
