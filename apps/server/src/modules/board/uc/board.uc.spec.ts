@@ -3,6 +3,7 @@ import { AuthorizationService } from '@modules/authorization';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, BoardRoles, ContentElementType } from '@shared/domain/domainobject';
+import { CourseRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
@@ -47,6 +48,10 @@ describe(BoardUc.name, () => {
 				{
 					provide: ColumnService,
 					useValue: createMock<ColumnService>(),
+				},
+				{
+					provide: CourseRepo,
+					useValue: createMock<CourseRepo>(),
 				},
 				{
 					provide: LegacyLogger,
