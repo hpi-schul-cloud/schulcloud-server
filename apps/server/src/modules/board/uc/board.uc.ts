@@ -1,14 +1,9 @@
-import {
-	Action,
-	AuthorizableReferenceType,
-	AuthorizationContextBuilder,
-	AuthorizationReferenceService,
-	AuthorizationService,
-} from '@modules/authorization';
+import { Action, AuthorizationService } from '@modules/authorization';
 import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { BoardExternalReference, Column, ColumnBoard } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { CourseRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { CreateBoardBodyParams } from '../controller/dto';
 import { ColumnBoardService, ColumnService } from '../service';
@@ -24,7 +19,7 @@ export class BoardUc extends BaseUc {
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly columnService: ColumnService,
 		private readonly logger: LegacyLogger,
-		private readonly authorizationReferenceService: AuthorizationReferenceService
+		private readonly courseRepo: CourseRepo
 	) {
 		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(BoardUc.name);
@@ -33,12 +28,13 @@ export class BoardUc extends BaseUc {
 	async createBoard(userId: EntityId, params: CreateBoardBodyParams): Promise<ColumnBoard> {
 		this.logger.debug({ action: 'createBoard', userId, title: params.title });
 
-		await this.authorizationReferenceService.checkPermissionByReferences(
-			userId,
-			AuthorizableReferenceType.Course,
-			params.parentId,
-			AuthorizationContextBuilder.write([Permission.COURSE_EDIT])
-		);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const course = await this.courseRepo.findById(params.parentId);
+
+		this.authorizationService.checkPermission(user, course, {
+			action: Action.write,
+			requiredPermissions: [Permission.COURSE_EDIT],
+		});
 
 		const context = { type: params.parentType, id: params.parentId };
 		const board = await this.columnBoardService.create(context, params.title);

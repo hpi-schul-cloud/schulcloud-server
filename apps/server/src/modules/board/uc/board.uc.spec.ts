@@ -1,8 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AuthorizationReferenceService, AuthorizationService } from '@modules/authorization';
+import { AuthorizationService } from '@modules/authorization';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardDoAuthorizable, BoardRoles, ContentElementType } from '@shared/domain/domainobject';
+import { CourseRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
@@ -33,10 +34,6 @@ describe(BoardUc.name, () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: AuthorizationReferenceService,
-					useValue: createMock<AuthorizationReferenceService>(),
-				},
-				{
 					provide: BoardDoAuthorizableService,
 					useValue: createMock<BoardDoAuthorizableService>(),
 				},
@@ -51,6 +48,10 @@ describe(BoardUc.name, () => {
 				{
 					provide: ColumnService,
 					useValue: createMock<ColumnService>(),
+				},
+				{
+					provide: CourseRepo,
+					useValue: createMock<CourseRepo>(),
 				},
 				{
 					provide: LegacyLogger,
