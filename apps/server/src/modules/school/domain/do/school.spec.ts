@@ -11,28 +11,45 @@ describe('School', () => {
 	});
 
 	describe('addInstanceFeature', () => {
-		const setup = () => {
-			const feature = InstanceFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED;
-			const school = schoolFactory.build();
+		describe('when instanceFeatures is already initialized', () => {
+			const setup = () => {
+				const feature = InstanceFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED;
+				const school = schoolFactory.build({ instanceFeatures: new Set() });
 
-			return { school, feature };
-		};
+				return { school, feature };
+			};
 
-		it('should add the given feature to the features set', () => {
-			const { school, feature } = setup();
+			it('should add the given feature to the set', () => {
+				const { school, feature } = setup();
 
-			school.addInstanceFeature(feature);
+				school.addInstanceFeature(feature);
 
-			expect(school.getProps().instanceFeatures).toContain(feature);
+				expect(school.getProps().instanceFeatures).toContain(feature);
+			});
+		});
+
+		describe('when instanceFeatures is not initialized', () => {
+			const setup = () => {
+				const feature = InstanceFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED;
+				const school = schoolFactory.build({ instanceFeatures: undefined });
+
+				return { school, feature };
+			};
+
+			it('should initialize it and add the given feature to the set', () => {
+				const { school, feature } = setup();
+
+				school.addInstanceFeature(feature);
+
+				expect(school.getProps().instanceFeatures).toContain(feature);
+			});
 		});
 	});
 
 	describe('removeInstanceFeature', () => {
 		const setup = () => {
 			const feature = InstanceFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED;
-			const school = schoolFactory.build();
-
-			school.addInstanceFeature(feature);
+			const school = schoolFactory.build({ instanceFeatures: new Set([feature]) });
 
 			return { school, feature };
 		};
