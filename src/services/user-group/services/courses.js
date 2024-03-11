@@ -29,6 +29,7 @@ const {
 	patchPermissionHook,
 	restrictChangesToArchivedCourse,
 	removeSubstitutionDuplicates,
+	restrictChangesToSyncedCourse,
 } = require('../hooks/courses');
 
 const { checkScopePermissions } = require('../../helpers/scopePermissions/hooks');
@@ -112,6 +113,7 @@ const courseHooks = {
 			restrictToCurrentSchoolIfNotLocal,
 			restrictChangesToArchivedCourse,
 			permitGroupOperation,
+			restrictChangesToSyncedCourse,
 			splitClassIdsInGroupsAndClasses,
 			removeSubstitutionDuplicates,
 			deleteWholeClassFromCourse,
