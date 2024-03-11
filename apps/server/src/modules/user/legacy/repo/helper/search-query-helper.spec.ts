@@ -55,7 +55,7 @@ describe('Search query helper', () => {
 
 			expect(query.searchQuery).toEqual('test t te tes est');
 			expect(query.searchFilterGate).toEqual(9);
-			expect(query.sort).toEqual({ firstName: 1, searchQuery: 1 });
+			expect(query.sort).toEqual({ firstName: 1, sortBySearchQueryResult: 1 });
 		});
 	});
 });
