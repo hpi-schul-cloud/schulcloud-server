@@ -1,6 +1,6 @@
-import { School } from '@src/modules/school';
 import { Role, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
+import { School } from '@src/modules/school';
 import {
 	MeAccountResponse,
 	MeResponse,
@@ -33,10 +33,11 @@ export class MeResponseMapper {
 
 	private static mapSchool(school: School): MeSchoolResponse {
 		const schoolInfoProps = school.getInfo();
+		const { dataUrl: url, name } = schoolInfoProps.logo || {};
 
 		const logo = new MeSchoolLogoResponse({
-			url: schoolInfoProps.logo_dataUrl,
-			name: schoolInfoProps.logo_name,
+			url,
+			name,
 		});
 
 		const schoolResponse = new MeSchoolResponse({

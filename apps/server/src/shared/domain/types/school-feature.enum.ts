@@ -8,5 +8,4 @@ export enum SchoolFeature {
 	OAUTH_PROVISIONING_ENABLED = 'oauthProvisioningEnabled',
 	SHOW_OUTDATED_USERS = 'showOutdatedUsers',
 	ENABLE_LDAP_SYNC_DURING_MIGRATION = 'enableLdapSyncDuringMigration',
-	IS_TEAM_CREATION_BY_STUDENTS_ENABLED = 'isTeamCreationByStudentsEnabled',
 }

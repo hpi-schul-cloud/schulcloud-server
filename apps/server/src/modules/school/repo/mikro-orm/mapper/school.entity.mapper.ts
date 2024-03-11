@@ -15,6 +15,7 @@ export class SchoolEntityMapper {
 		const features = new Set(entity.features);
 		const county = entity.county && CountyEmbeddableMapper.mapToDo(entity.county);
 		const systemIds = entity.systems.getItems().map((system) => system.id);
+		const logo = entity.logo_dataUrl ? { dataUrl: entity.logo_dataUrl, name: entity.logo_name } : undefined;
 
 		const school = SchoolFactory.build({
 			id: entity.id,
@@ -27,8 +28,7 @@ export class SchoolEntityMapper {
 			inMaintenanceSince: entity.inMaintenanceSince,
 			inUserMigration: entity.inUserMigration,
 			purpose: entity.purpose,
-			logo_dataUrl: entity.logo_dataUrl,
-			logo_name: entity.logo_name,
+			logo,
 			fileStorageType: entity.fileStorageType,
 			language: entity.language,
 			timezone: entity.timezone,
@@ -66,8 +66,8 @@ export class SchoolEntityMapper {
 			inMaintenanceSince: props.inMaintenanceSince,
 			inUserMigration: props.inUserMigration,
 			purpose: props.purpose,
-			logo_dataUrl: props.logo_dataUrl,
-			logo_name: props.logo_name,
+			logo_dataUrl: props.logo?.dataUrl,
+			logo_name: props.logo?.name,
 			fileStorageType: props.fileStorageType,
 			language: props.language,
 			timezone: props.timezone,

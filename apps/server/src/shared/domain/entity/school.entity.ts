@@ -15,6 +15,7 @@ import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { UserLoginMigrationEntity } from '@shared/domain/entity/user-login-migration.entity';
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { FileStorageType } from '@src/modules/school/domain/type/file-storage-type.enum';
+import { LanguageType } from '../interface';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
 import { SchoolYearEntity } from './schoolyear.entity';
@@ -40,7 +41,7 @@ export interface SchoolProperties {
 	logo_dataUrl?: string;
 	logo_name?: string;
 	fileStorageType?: FileStorageType;
-	language?: string;
+	language?: LanguageType;
 	timezone?: string;
 	ldapLastSync?: string;
 }
@@ -131,7 +132,7 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 	fileStorageType?: FileStorageType;
 
 	@Property({ nullable: true })
-	language?: string;
+	language?: LanguageType;
 
 	@Property({ nullable: true })
 	timezone?: string;
