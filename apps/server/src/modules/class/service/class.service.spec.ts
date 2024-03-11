@@ -2,13 +2,18 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DomainName, EntityId, OperationType } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { EventBus } from '@nestjs/cqrs';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { DataDeletedEvent } from '@modules/deletion';
+import {
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	deletionRequestFactory,
+	DataDeletedEvent,
+} from '@src/modules/deletion';
 import { Class } from '../domain';
 import { classFactory } from '../domain/testing';
 import { classEntityFactory } from '../entity/testing';

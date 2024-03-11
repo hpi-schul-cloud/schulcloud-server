@@ -1,7 +1,6 @@
-import { DomainDeletionReport } from '@shared/domain/interface';
 import { DeletionRequestLogResponse } from '../controller/dto';
 import { DeletionStatusModel } from '../domain/types';
-import { DeletionTargetRef } from '../interface';
+import { DeletionTargetRef, DomainDeletionReport } from '../interface';
 
 export class DeletionRequestLogResponseBuilder {
 	static build(

@@ -1,6 +1,7 @@
 import { ObjectId } from 'bson';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '.';
 import { DomainName, OperationType } from '../types';
+import { DomainDeletionReportBuilder } from './domain-deletion-report.builder';
+import { DomainOperationReportBuilder } from './domain-operation-report.builder';
 
 describe(DomainDeletionReportBuilder.name, () => {
 	afterAll(() => {

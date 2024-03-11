@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DomainName, OperationType } from '@shared/domain/types';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { deletionLogFactory } from './testing/factory/deletion-log.factory';
 import { DeletionLog } from './deletion-log.do';
+import { DomainOperationReportBuilder, DomainDeletionReportBuilder } from '../builder';
+import { DomainName, OperationType } from '../types';
 
 describe(DeletionLog.name, () => {
 	describe('constructor', () => {

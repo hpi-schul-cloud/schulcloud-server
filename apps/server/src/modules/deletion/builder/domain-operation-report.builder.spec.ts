@@ -1,6 +1,6 @@
-import { OperationType } from '@shared/domain/types';
 import { ObjectId } from 'bson';
-import { DomainOperationReportBuilder } from '.';
+import { OperationType } from '../types';
+import { DomainOperationReportBuilder } from './domain-operation-report.builder';
 
 describe(DomainOperationReportBuilder.name, () => {
 	afterAll(() => {

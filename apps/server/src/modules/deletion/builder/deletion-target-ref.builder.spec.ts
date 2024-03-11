@@ -1,4 +1,4 @@
-import { DomainName } from '@shared/domain/types';
+import { DomainName } from '../types';
 import { DeletionTargetRefBuilder } from './index';
 
 describe(DeletionTargetRefBuilder.name, () => {

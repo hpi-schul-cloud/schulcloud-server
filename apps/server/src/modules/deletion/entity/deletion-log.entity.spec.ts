@@ -1,8 +1,8 @@
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DomainName, OperationType } from '@shared/domain/types';
-import { DomainDeletionReport, DomainOperationReport } from '@shared/domain/interface';
 import { DeletionLogEntity } from './deletion-log.entity';
+import { DomainOperationReport, DomainDeletionReport } from '../interface';
+import { DomainName, OperationType } from '../types';
 
 describe(DeletionLogEntity.name, () => {
 	beforeAll(async () => {

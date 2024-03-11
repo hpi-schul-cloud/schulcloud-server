@@ -1,11 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { DomainName, EntityId, OperationType } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { FileDO } from '@src/infra/rabbitmq';
-import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
-import { UserDeletedEvent, DataDeletedEvent } from '@modules/deletion';
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+} from '@src/modules/deletion';
 import { CopyFileDto, FileDto } from '../dto';
 import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
 import { FilesStorageClientMapper } from '../mapper';

@@ -1,6 +1,7 @@
-import { DomainName, EntityId } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { DeletionStatusModel } from './types';
+import { DomainName } from '../types';
 
 export interface DeletionRequestProps extends AuthorizableObject {
 	createdAt?: Date;

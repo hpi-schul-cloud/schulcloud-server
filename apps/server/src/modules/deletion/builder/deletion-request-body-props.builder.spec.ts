@@ -1,6 +1,6 @@
 import { ObjectId } from 'bson';
-import { DomainName } from '@shared/domain/types';
 import { DeletionRequestBodyPropsBuilder } from './deletion-request-body-props.builder';
+import { DomainName } from '../types';
 
 describe(DeletionRequestBodyPropsBuilder.name, () => {
 	afterAll(() => {

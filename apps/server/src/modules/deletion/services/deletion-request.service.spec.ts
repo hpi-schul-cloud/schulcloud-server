@@ -2,11 +2,11 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
-import { DomainName } from '@shared/domain/types';
 import { DeletionRequestService } from './deletion-request.service';
 import { DeletionRequestRepo } from '../repo';
 import { deletionRequestFactory } from '../domain/testing/factory/deletion-request.factory';
 import { DeletionStatusModel } from '../domain/types';
+import { DomainName } from '../types';
 
 describe(DeletionRequestService.name, () => {
 	let module: TestingModule;

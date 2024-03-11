@@ -1,7 +1,7 @@
 import { DoBaseFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DomainName, OperationType } from '@shared/domain/types';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
+import { DomainOperationReportBuilder, DomainDeletionReportBuilder } from '../../../builder';
+import { DomainName, OperationType } from '../../../types';
 import { DeletionLog, DeletionLogProps } from '../../deletion-log.do';
 
 export const deletionLogFactory = DoBaseFactory.define<DeletionLog, DeletionLogProps>(DeletionLog, () => {

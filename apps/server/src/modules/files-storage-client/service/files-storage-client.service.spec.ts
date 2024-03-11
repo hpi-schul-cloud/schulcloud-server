@@ -5,10 +5,14 @@ import { schoolEntityFactory, setupEntities, taskFactory } from '@shared/testing
 import { LegacyLogger } from '@src/core/logger';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { EventBus } from '@nestjs/cqrs';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { DomainName, OperationType } from '@shared/domain/types';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
-import { DataDeletedEvent } from '@modules/deletion';
+import {
+	DomainName,
+	deletionRequestFactory,
+	DomainDeletionReportBuilder,
+	DomainOperationReportBuilder,
+	OperationType,
+	DataDeletedEvent,
+} from '@src/modules/deletion';
 import { FileParamBuilder, FilesStorageClientMapper } from '../mapper';
 import { CopyFilesOfParentParamBuilder } from '../mapper/copy-files-of-parent-param.builder';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';

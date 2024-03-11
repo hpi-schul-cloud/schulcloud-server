@@ -3,11 +3,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
-import { DomainName, OperationType } from '@shared/domain/types';
 import { EventBus } from '@nestjs/cqrs';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { DataDeletedEvent } from '@modules/deletion';
+import {
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	deletionRequestFactory,
+	DataDeletedEvent,
+} from '@src/modules/deletion';
 import { FilesService } from './files.service';
 import { FilesRepo } from '../repo';
 import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';

@@ -2,12 +2,19 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
-import { Counted, DomainName, EntityId, OperationType } from '@shared/domain/types';
+import { Counted, EntityId } from '@shared/domain/types';
 import { isEmail, validateOrReject } from 'class-validator';
-import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { DataDeletedEvent, UserDeletedEvent } from '@modules/deletion';
+import {
+	DataDeletedEvent,
+	DeletionService,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	UserDeletedEvent,
+} from '@modules/deletion';
 import { LegacyLogger } from '../../../core/logger';
 import { ServerConfig } from '../../server/server.config';
 import { AccountServiceDb } from './account-db.service';

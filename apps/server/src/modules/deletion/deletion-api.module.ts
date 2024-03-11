@@ -17,10 +17,10 @@ import { RegistrationPinModule } from '@modules/registration-pin';
 import { TaskModule } from '@modules/task';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { CqrsModule } from '@nestjs/cqrs';
+import { NewsModule } from '@modules/news';
 import { DeletionRequestsController } from './controller/deletion-requests.controller';
 import { DeletionExecutionsController } from './controller/deletion-executions.controller';
 import { DeletionRequestUc } from './uc';
-import { NewsModule } from '../news';
 
 @Module({
 	imports: [

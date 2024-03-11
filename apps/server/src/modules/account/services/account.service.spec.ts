@@ -3,11 +3,15 @@ import { ServerConfig } from '@modules/server';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ObjectId } from 'bson';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
-import { DomainName, OperationType } from '@shared/domain/types';
 import { EventBus } from '@nestjs/cqrs';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { DataDeletedEvent } from '@modules/deletion';
+import {
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	DataDeletedEvent,
+	deletionRequestFactory,
+} from '@src/modules/deletion';
 import { LegacyLogger } from '../../../core/logger';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';

@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@shared/testing';
-import { DomainName, OperationType } from '@shared/domain/types';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
-import { DeletionLogEntity, DeletionLogEntityProps } from '../../deletion-log.entity';
+import { DeletionLogEntity, DeletionLogEntityProps } from '../..';
+import { DomainOperationReportBuilder, DomainDeletionReportBuilder } from '../../../builder';
+import { DomainName, OperationType } from '../../../types';
 
 export const deletionLogEntityFactory = BaseFactory.define<DeletionLogEntity, DeletionLogEntityProps>(
 	DeletionLogEntity,

@@ -1,5 +1,6 @@
-import { DomainOperationReport } from '@shared/domain/interface';
-import { EntityId, OperationType } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
+import { OperationType } from '../types';
+import { DomainOperationReport } from '../interface';
 
 export class DomainOperationReportBuilder {
 	static build(operation: OperationType, count: number, refs: EntityId[]): DomainOperationReport {

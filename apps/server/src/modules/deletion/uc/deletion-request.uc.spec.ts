@@ -2,19 +2,23 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
-import { DomainName, OperationType } from '@shared/domain/types';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { EventBus } from '@nestjs/cqrs';
 import { LegacyLogger } from '@src/core/logger';
-import { DeletionStatusModel } from '../domain/types';
-import { DeletionLogService } from '../services/deletion-log.service';
-import { DeletionRequestService } from '../services';
-import { DeletionRequestUc } from './deletion-request.uc';
-import { deletionRequestFactory } from '../domain/testing/factory/deletion-request.factory';
-import { deletionLogFactory } from '../domain/testing';
+import {
+	DomainDeletionReportBuilder,
+	DomainOperationReportBuilder,
+	DeletionTargetRefBuilder,
+	DeletionRequestLogResponseBuilder,
+	DeletionLogStatisticBuilder,
+} from '../builder';
 import { DeletionRequestBodyProps } from '../controller/dto';
-import { DeletionLogStatisticBuilder, DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../builder';
+import { deletionRequestFactory, deletionLogFactory } from '../domain/testing';
+import { DeletionStatusModel } from '../domain/types';
 import { UserDeletedEvent } from '../event';
+import { DeletionRequestService, DeletionLogService } from '../services';
+import { DomainName, OperationType } from '../types';
+import { DeletionRequestUc } from './deletion-request.uc';
+import { DomainDeletionReport } from '..';
 
 describe(DeletionRequestUc.name, () => {
 	let module: TestingModule;
@@ -207,7 +211,7 @@ describe(DeletionRequestUc.name, () => {
 					deletionRequestExecuted.targetRefDomain,
 					deletionRequestExecuted.targetRefId
 				);
-				const statistics = DomainDeletionReportBuilder.build(
+				const statistics: DomainDeletionReport = DomainDeletionReportBuilder.build(
 					deletionLogExecuted.domain,
 					deletionLogExecuted.operations,
 					deletionLogExecuted.subdomainOperations

@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DomainName } from '@shared/domain/types';
 import { DeletionRequest } from './deletion-request.do';
 import { DeletionStatusModel } from './types';
 import { deletionRequestFactory } from './testing/factory/deletion-request.factory';
+import { DomainName } from '../types';
 
 describe(DeletionRequest.name, () => {
 	describe('constructor', () => {

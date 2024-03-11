@@ -2,11 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DomainName, OperationType } from '@shared/domain/types';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { DeletionLogRepo } from '../repo';
 import { DeletionLogService } from './deletion-log.service';
 import { deletionLogFactory } from '../domain/testing/factory/deletion-log.factory';
+import { DomainOperationReportBuilder, DomainDeletionReportBuilder } from '../builder';
+import { DomainName, OperationType } from '../types';
 
 describe(DeletionLogService.name, () => {
 	let module: TestingModule;

@@ -1,8 +1,12 @@
-import { DomainName, OperationType } from '@shared/domain/types';
 import { ObjectId } from 'bson';
-import { DomainOperationReportBuilder } from '@shared/domain/builder';
-import { DeletionLogStatisticBuilder, DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '.';
+import {
+	DeletionLogStatisticBuilder,
+	DeletionRequestLogResponseBuilder,
+	DeletionTargetRefBuilder,
+	DomainOperationReportBuilder,
+} from '.';
 import { DeletionStatusModel } from '../domain/types';
+import { DomainName, OperationType } from '../types';
 
 describe(DeletionRequestLogResponseBuilder, () => {
 	afterAll(() => {

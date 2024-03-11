@@ -1,11 +1,18 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { EntityId, StatusModel } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
-import { DomainDeletionReport, DeletionService } from '@shared/domain/interface';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { UserDeletedEvent, DataDeletedEvent } from '@modules/deletion';
+import {
+	UserDeletedEvent,
+	DataDeletedEvent,
+	DeletionService,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+} from '@modules/deletion';
 import { Class } from '../domain';
 import { ClassesRepo } from '../repo';
 
