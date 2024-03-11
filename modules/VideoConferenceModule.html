@@ -459,24 +459,24 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module } from &#x27;@nestjs/common&#x27;;
-import { HttpModule } from &#x27;@nestjs/axios&#x27;;
-import { CalendarModule } from &#x27;@infra/calendar&#x27;;
-import { VideoConferenceRepo } from &#x27;@shared/repo/videoconference/video-conference.repo&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CalendarModule } from &#x27;@infra/calendar&#x27;;
 import { AuthorizationModule } from &#x27;@modules/authorization&#x27;;
 import { AuthorizationReferenceModule } from &#x27;@modules/authorization/authorization-reference.module&#x27;;
-import { TeamsRepo } from &#x27;@shared/repo&#x27;;
 import { LegacySchoolModule } from &#x27;@modules/legacy-school&#x27;;
-import { LoggerModule } from &#x27;@src/core/logger&#x27;;
+import { UserModule } from &#x27;@modules/user/user.module&#x27;;
+import { HttpModule } from &#x27;@nestjs/axios&#x27;;
+import { Module } from &#x27;@nestjs/common&#x27;;
 import { ConverterUtil } from &#x27;@shared/common&#x27;;
-import { UserModule } from &#x27;@modules/user&#x27;;
+import { TeamsRepo } from &#x27;@shared/repo&#x27;;
+import { VideoConferenceRepo } from &#x27;@shared/repo/videoconference/video-conference.repo&#x27;;
+import { LoggerModule } from &#x27;@src/core/logger&#x27;;
+import { LearnroomModule } from &#x27;../learnroom&#x27;;
 import { BBBService, BbbSettings } from &#x27;./bbb&#x27;;
+import { VideoConferenceDeprecatedController } from &#x27;./controller&#x27;;
+import { VideoConferenceSettings } from &#x27;./interface&#x27;;
 import { VideoConferenceService } from &#x27;./service&#x27;;
 import { VideoConferenceDeprecatedUc } from &#x27;./uc&#x27;;
-import { VideoConferenceDeprecatedController } from &#x27;./controller&#x27;;
 import VideoConferenceConfiguration from &#x27;./video-conference-config&#x27;;
-import { VideoConferenceSettings } from &#x27;./interface&#x27;;
-import { LearnroomModule } from &#x27;../learnroom&#x27;;
 
 @Module({
 	imports: [

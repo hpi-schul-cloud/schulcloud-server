@@ -162,6 +162,11 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#findBySyncedGroup" >findBySyncedGroup</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#findCourseById" >findCourseById</a>
                             </li>
                             <li>
@@ -230,6 +235,76 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="findBySyncedGroup"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>findBySyncedGroup</b></span>
+                        <a href="#findBySyncedGroup"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findBySyncedGroup(group: <a href="../interfaces/Group.html" target="_self">Group</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/repo/mikro-orm/course.repo.ts:32</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>group</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Group.html" target="_self" >Group</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Course.html" target="_self" >Promise&lt;Course[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findCourseById"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -249,8 +324,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/repo/mikro-orm/course.repo.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/repo/mikro-orm/course.repo.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -324,7 +399,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDomainObjectRepo.html#source" target="_self" >BaseDomainObjectRepo:13</a></code>
+                                <div class="io-line">Defined in         <code><a href="../injectables/BaseDomainObjectRepo.html#source" target="_self" >BaseDomainObjectRepo:14</a></code>
 </div>
                         </td>
                     </tr>
@@ -850,7 +925,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/learnroom/repo/mikro-orm/course.repo.ts:9</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/learnroom/repo/mikro-orm/course.repo.ts:10</a></div>
                                 </td>
                             </tr>
 
@@ -862,6 +937,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityData, EntityName } from &#x27;@mikro-orm/core&#x27;;
+import { Group } from &#x27;@modules/group&#x27;;
 import { Course as CourseEntity } from &#x27;@shared/domain/entity&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { BaseDomainObjectRepo } from &#x27;@shared/repo/base-domain-object.repo&#x27;;
@@ -889,6 +965,22 @@ export class CourseMikroOrmRepo extends BaseDomainObjectRepo&lt;Course, CourseEn
 		const course: Course &#x3D; CourseEntityMapper.mapEntityToDo(entity);
 
 		return course;
+	}
+
+	public async findBySyncedGroup(group: Group): Promise&lt;Course[]&gt; {
+		const entities: CourseEntity[] &#x3D; await this.em.find(CourseEntity, { syncedWithGroup: group.id });
+
+		await Promise.all(
+			entities.map(async (entity: CourseEntity): Promise&lt;void&gt; &#x3D;&gt; {
+				if (!entity.courseGroups.isInitialized()) {
+					await entity.courseGroups.init();
+				}
+			})
+		);
+
+		const courses: Course[] &#x3D; entities.map((entity: CourseEntity): Course &#x3D;&gt; CourseEntityMapper.mapEntityToDo(entity));
+
+		return courses;
 	}
 }
 </code></pre>

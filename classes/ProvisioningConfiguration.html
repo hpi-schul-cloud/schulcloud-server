@@ -191,12 +191,13 @@
                     <td class="col-md-4">
                         <i>Default value : </i><code>{
 		schulconnexGroupProvisioningEnabled: Configuration.get(&#x27;FEATURE_SANIS_GROUP_PROVISIONING_ENABLED&#x27;) as boolean,
+		schulconnexCourseSyncEnabled: Configuration.get(&#x27;FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED&#x27;) as boolean,
 	}</code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/provisioning/config/provisioning-config.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/provisioning/config/provisioning-config.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -221,11 +222,13 @@ export const ProvisioningFeatures &#x3D; Symbol(&#x27;ProvisioningFeatures&#x27;
 
 export interface IProvisioningFeatures {
 	schulconnexGroupProvisioningEnabled: boolean;
+	schulconnexCourseSyncEnabled: boolean;
 }
 
 export class ProvisioningConfiguration {
 	static provisioningFeatures: IProvisioningFeatures &#x3D; {
 		schulconnexGroupProvisioningEnabled: Configuration.get(&#x27;FEATURE_SANIS_GROUP_PROVISIONING_ENABLED&#x27;) as boolean,
+		schulconnexCourseSyncEnabled: Configuration.get(&#x27;FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED&#x27;) as boolean,
 	};
 }
 </code></pre>

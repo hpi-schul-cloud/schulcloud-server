@@ -173,6 +173,11 @@
                                 <a href="#findGroupsByUserAndGroupTypes" >findGroupsByUserAndGroupTypes</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#removeCourseSyncReference" >removeCourseSyncReference</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#save" >save</a>
@@ -200,12 +205,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(groupRepo: <a href="../injectables/GroupRepo.html" target="_self">GroupRepo</a>)</code>
+<code>constructor(groupRepo: <a href="../injectables/GroupRepo.html" target="_self">GroupRepo</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -227,6 +232,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/GroupRepo.html" target="_self" >GroupRepo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>courseService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/CourseService.html" target="_self" >CourseService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -271,8 +288,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="67"
-                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:67</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="69"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -341,8 +358,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="29"
-                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:29</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:31</a></div>
                         </td>
                     </tr>
 
@@ -423,8 +440,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="13"
-                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:13</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="15"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:15</a></div>
                         </td>
                     </tr>
 
@@ -493,8 +510,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="41"
-                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:41</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -575,8 +592,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:47</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -669,8 +686,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="35"
-                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:35</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -732,6 +749,76 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="removeCourseSyncReference"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>removeCourseSyncReference</b></span>
+                        <a href="#removeCourseSyncReference"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>removeCourseSyncReference(group: <a href="../interfaces/Group.html" target="_self">Group</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:75</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>group</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Group.html" target="_self" >Group</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="save"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -751,8 +838,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="61"
-                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:61</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="63"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:63</a></div>
                         </td>
                     </tr>
 
@@ -821,8 +908,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="25"
+                                    class="link-to-prism">apps/server/src/modules/group/service/group.service.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -875,6 +962,8 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationLoaderServiceGeneric } from &#x27;@modules/authorization&#x27;;
+import { Course } from &#x27;@modules/learnroom/domain&#x27;;
+import { CourseService } from &#x27;@modules/learnroom/service/course.service&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { NotFoundLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
 import { type UserDO } from &#x27;@shared/domain/domainobject&#x27;;
@@ -884,7 +973,7 @@ import { GroupRepo } from &#x27;../repo&#x27;;
 
 @Injectable()
 export class GroupService implements AuthorizationLoaderServiceGeneric&lt;Group&gt; {
-	constructor(private readonly groupRepo: GroupRepo) {}
+	constructor(private readonly groupRepo: GroupRepo, private readonly courseService: CourseService) {}
 
 	public async findById(id: EntityId): Promise&lt;Group&gt; {
 		const group: Group | null &#x3D; await this.groupRepo.findGroupById(id);
@@ -942,6 +1031,19 @@ export class GroupService implements AuthorizationLoaderServiceGeneric&lt;Group&
 
 	public async delete(group: Group): Promise&lt;void&gt; {
 		await this.groupRepo.delete(group);
+
+		await this.removeCourseSyncReference(group);
+	}
+
+	private async removeCourseSyncReference(group: Group) {
+		const courses: Course[] &#x3D; await this.courseService.findBySyncedGroup(group);
+
+		courses.forEach((course: Course): void &#x3D;&gt; {
+			course.studentIds &#x3D; [];
+			course.syncedWithGroup &#x3D; undefined;
+		});
+
+		await this.courseService.saveAll(courses);
 	}
 }
 </code></pre>

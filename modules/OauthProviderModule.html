@@ -128,13 +128,13 @@
 <title>cluster_OauthProviderModule_providers</title>
 <polygon fill="none" stroke="black" points="955,-78 955,-130 1546,-130 1546,-78 955,-78"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_OauthProviderModule_exports</title>
-<polygon fill="none" stroke="black" points="490,-208 490,-260 839,-260 839,-208 490,-208"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_OauthProviderModule_imports</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 947,-130 947,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_OauthProviderModule_exports</title>
+<polygon fill="none" stroke="black" points="490,-208 490,-260 839,-260 839,-208 490,-208"/>
 </g>
 <!-- LoggerModule -->
 <g id="node1" class="node">
@@ -395,15 +395,15 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module } from &#x27;@nestjs/common&#x27;;
-import { OauthProviderServiceModule } from &#x27;@infra/oauth-provider&#x27;;
-import { TeamsRepo } from &#x27;@shared/repo&#x27;;
-import { LoggerModule } from &#x27;@src/core/logger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { OauthProviderServiceModule } from &#x27;@infra/oauth-provider&#x27;;
 import { LtiToolModule } from &#x27;@modules/lti-tool&#x27;;
 import { PseudonymModule } from &#x27;@modules/pseudonym&#x27;;
 import { ToolModule } from &#x27;@modules/tool&#x27;;
 import { ToolConfigModule } from &#x27;@modules/tool/tool-config.module&#x27;;
-import { UserModule } from &#x27;@modules/user&#x27;;
+import { UserModule } from &#x27;@modules/user/user.module&#x27;;
+import { Module } from &#x27;@nestjs/common&#x27;;
+import { TeamsRepo } from &#x27;@shared/repo&#x27;;
+import { LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { IdTokenService } from &#x27;./service/id-token.service&#x27;;
 import { OauthProviderLoginFlowService } from &#x27;./service/oauth-provider.login-flow.service&#x27;;
 

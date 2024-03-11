@@ -193,7 +193,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">apps/server/src/shared/domain/entity/course.entity.ts:47</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="46" class="link-to-prism">apps/server/src/shared/domain/entity/course.entity.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -219,7 +219,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="45" class="link-to-prism">apps/server/src/shared/domain/entity/course.entity.ts:45</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">apps/server/src/shared/domain/entity/course.entity.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -245,7 +245,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="49" class="link-to-prism">apps/server/src/shared/domain/entity/course.entity.ts:49</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">apps/server/src/shared/domain/entity/course.entity.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -300,7 +300,6 @@ export interface CourseProperties {
 const DEFAULT &#x3D; {
 	color: &#x27;#ACACAC&#x27;,
 	name: &#x27;Kurse&#x27;,
-	description: &#x27;&#x27;,
 };
 
 export enum CourseFeatures {
@@ -318,10 +317,10 @@ export class UsersList {
 @Entity({ tableName: &#x27;courses&#x27; })
 export class Course extends BaseEntityWithTimestamps implements Learnroom, EntityWithSchool, TaskParent, LessonParent {
 	@Property()
-	name: string &#x3D; DEFAULT.name;
+	name: string;
 
-	@Property()
-	description: string &#x3D; DEFAULT.description;
+	@Property({ nullable: true })
+	description?: string;
 
 	@Index()
 	@ManyToOne(() &#x3D;&gt; SchoolEntity, { fieldName: &#x27;schoolId&#x27; })
@@ -374,7 +373,7 @@ export class Course extends BaseEntityWithTimestamps implements Learnroom, Entit
 
 	constructor(props: CourseProperties) {
 		super();
-		if (props.name) this.name &#x3D; props.name;
+		this.name &#x3D; props.name ?? DEFAULT.name;
 		if (props.description) this.description &#x3D; props.description;
 		this.school &#x3D; props.school;
 		this.students.set(props.students || []);

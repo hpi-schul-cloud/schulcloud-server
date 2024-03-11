@@ -554,6 +554,14 @@ export class Group extends DomainObject&lt;GroupProps&gt; {
 		return this.props.type;
 	}
 
+	get validFrom(): Date | undefined {
+		return this.props.validFrom;
+	}
+
+	get validUntil(): Date | undefined {
+		return this.props.validUntil;
+	}
+
 	removeUser(user: UserDO): void {
 		this.props.users &#x3D; this.props.users.filter((groupUser: GroupUser): boolean &#x3D;&gt; groupUser.userId !&#x3D;&#x3D; user.id);
 	}
@@ -563,7 +571,7 @@ export class Group extends DomainObject&lt;GroupProps&gt; {
 	}
 
 	addUser(user: GroupUser): void {
-		if (!this.users.find((u) &#x3D;&gt; u.userId &#x3D;&#x3D;&#x3D; user.userId)) {
+		if (!this.users.find((u: GroupUser): boolean &#x3D;&gt; u.userId &#x3D;&#x3D;&#x3D; user.userId)) {
 			this.users.push(user);
 		}
 	}

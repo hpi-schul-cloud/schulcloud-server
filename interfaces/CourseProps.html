@@ -179,6 +179,7 @@
                                         </a>
                                 </li>
                                 <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#description" 
 >
                                             description
@@ -429,6 +430,11 @@
                                         </td>
                                     </tr>
 
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
 
 
 
@@ -830,7 +836,7 @@ import { EntityId } from &#x27;@shared/domain/types&#x27;;
 export interface CourseProps extends AuthorizableObject {
 	name: string;
 
-	description: string;
+	description?: string;
 
 	schoolId: EntityId;
 
@@ -861,7 +867,35 @@ export interface CourseProps extends AuthorizableObject {
 	syncedWithGroup?: EntityId;
 }
 
-export class Course extends DomainObject&lt;CourseProps&gt; {}
+export class Course extends DomainObject&lt;CourseProps&gt; {
+	get name(): string {
+		return this.props.name;
+	}
+
+	set name(value: string) {
+		this.props.name &#x3D; value;
+	}
+
+	set studentIds(value: EntityId[]) {
+		this.props.studentIds &#x3D; value;
+	}
+
+	set teacherIds(value: EntityId[]) {
+		this.props.teacherIds &#x3D; value;
+	}
+
+	set startDate(value: Date | undefined) {
+		this.props.startDate &#x3D; value;
+	}
+
+	set untilDate(value: Date | undefined) {
+		this.props.untilDate &#x3D; value;
+	}
+
+	set syncedWithGroup(value: EntityId | undefined) {
+		this.props.syncedWithGroup &#x3D; value;
+	}
+}
 </code></pre>
     </div>
 </div>

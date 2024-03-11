@@ -131,7 +131,7 @@
                 <h3>Extends</h3>
             </p>
             <p class="comment">
-                            <code><a href="../injectables/OidcProvisioningStrategy.html" target="_self" >OidcProvisioningStrategy</a></code>
+                            <code><a href="../injectables/SchulconnexProvisioningStrategy.html" target="_self" >SchulconnexProvisioningStrategy</a></code>
             </p>
 
 
@@ -178,6 +178,16 @@
                                     <span class="modifier">Async</span>
                                 <a href="#apply" >apply</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#provisionGroups" >provisionGroups</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#removeUserFromGroups" >removeUserFromGroups</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -196,12 +206,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(provisioningFeatures: <a href="../interfaces/IProvisioningFeatures.html" target="_self">IProvisioningFeatures</a>, oidcProvisioningService: <a href="../injectables/OidcProvisioningService.html" target="_self">OidcProvisioningService</a>, responseMapper: <a href="../injectables/SanisResponseMapper.html" target="_self">SanisResponseMapper</a>, httpService: HttpService)</code>
+<code>constructor(provisioningFeatures: <a href="../interfaces/IProvisioningFeatures.html" target="_self">IProvisioningFeatures</a>, schulconnexSchoolProvisioningService: <a href="../injectables/SchulconnexSchoolProvisioningService.html" target="_self">SchulconnexSchoolProvisioningService</a>, schulconnexUserProvisioningService: <a href="../injectables/SchulconnexUserProvisioningService.html" target="_self">SchulconnexUserProvisioningService</a>, schulconnexGroupProvisioningService: <a href="../injectables/SchulconnexGroupProvisioningService.html" target="_self">SchulconnexGroupProvisioningService</a>, schulconnexCourseSyncService: <a href="../injectables/SchulconnexCourseSyncService.html" target="_self">SchulconnexCourseSyncService</a>, groupService: <a href="../injectables/GroupService.html" target="_self">GroupService</a>, responseMapper: <a href="../injectables/SanisResponseMapper.html" target="_self">SanisResponseMapper</a>, httpService: HttpService)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:24</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:30</a></div>
                             </td>
                         </tr>
 
@@ -231,10 +241,58 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>oidcProvisioningService</td>
+                                                        <td>schulconnexSchoolProvisioningService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/OidcProvisioningService.html" target="_self" >OidcProvisioningService</a></code>
+                                                                        <code><a href="../injectables/SchulconnexSchoolProvisioningService.html" target="_self" >SchulconnexSchoolProvisioningService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>schulconnexUserProvisioningService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SchulconnexUserProvisioningService.html" target="_self" >SchulconnexUserProvisioningService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>schulconnexGroupProvisioningService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SchulconnexGroupProvisioningService.html" target="_self" >SchulconnexGroupProvisioningService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>schulconnexCourseSyncService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SchulconnexCourseSyncService.html" target="_self" >SchulconnexCourseSyncService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>groupService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/GroupService.html" target="_self" >GroupService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -302,8 +360,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="131"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:131</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="148"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:148</a></div>
                         </td>
                     </tr>
 
@@ -372,8 +430,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="119"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:119</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="136"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:136</a></div>
                         </td>
                     </tr>
 
@@ -460,7 +518,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:38</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:55</a></code>
 </div>
                         </td>
                     </tr>
@@ -533,7 +591,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:34</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:51</a></code>
 </div>
                         </td>
                     </tr>
@@ -572,8 +630,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="115"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:115</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="132"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:132</a></div>
                         </td>
                     </tr>
 
@@ -637,8 +695,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="89"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:89</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="106"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis.strategy.ts:106</a></div>
                         </td>
                     </tr>
 
@@ -713,7 +771,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:17</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/ProvisioningStrategy.html#source" target="_self" >ProvisioningStrategy:27</a></code>
 </div>
                         </td>
                     </tr>
@@ -760,13 +818,179 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="provisionGroups"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>provisionGroups</b></span>
+                        <a href="#provisionGroups"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>provisionGroups(data: <a href="../classes/OauthDataDto.html" target="_self">OauthDataDto</a>, school?: <a href="../classes/LegacySchoolDo.html" target="_self">LegacySchoolDo</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Inherited from         <code><a href="../injectables/SchulconnexProvisioningStrategy.html" target="_self" >SchulconnexProvisioningStrategy</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/SchulconnexProvisioningStrategy.html#source" target="_self" >SchulconnexProvisioningStrategy:49</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/OauthDataDto.html" target="_self" >OauthDataDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>school</td>
+                                            <td>
+                                                            <code><a href="../classes/LegacySchoolDo.html" target="_self" >LegacySchoolDo</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="removeUserFromGroups"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>removeUserFromGroups</b></span>
+                        <a href="#removeUserFromGroups"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>removeUserFromGroups(data: <a href="../classes/OauthDataDto.html" target="_self">OauthDataDto</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Inherited from         <code><a href="../injectables/SchulconnexProvisioningStrategy.html" target="_self" >SchulconnexProvisioningStrategy</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../injectables/SchulconnexProvisioningStrategy.html#source" target="_self" >SchulconnexProvisioningStrategy:87</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>data</td>
+                                            <td>
+                                                            <code><a href="../classes/OauthDataDto.html" target="_self" >OauthDataDto</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { HttpService } from &#x27;@nestjs/axios&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SanisGruppenResponse, SanisResponse, SanisResponseValidationGroups } from &#x27;@infra/schulconnex-client/response&#x27;;
+import { GroupService } from &#x27;@modules/group&#x27;;
+import { HttpService } from &#x27;@nestjs/axios&#x27;;
 import { Inject, Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { ValidationErrorLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
 import { RoleName } from &#x27;@shared/domain/interface&#x27;;
@@ -775,7 +999,6 @@ import { AxiosRequestConfig, AxiosResponse } from &#x27;axios&#x27;;
 import { plainToClass } from &#x27;class-transformer&#x27;;
 import { validate, ValidationError } from &#x27;class-validator&#x27;;
 import { firstValueFrom } from &#x27;rxjs&#x27;;
-import { SanisGruppenResponse, SanisResponse, SanisResponseValidationGroups } from &#x27;@infra/schulconnex-client/response&#x27;;
 import { IProvisioningFeatures, ProvisioningFeatures } from &#x27;../../config&#x27;;
 import {
 	ExternalGroupDto,
@@ -784,19 +1007,35 @@ import {
 	OauthDataDto,
 	OauthDataStrategyInputDto,
 } from &#x27;../../dto&#x27;;
-import { OidcProvisioningStrategy } from &#x27;../oidc/oidc.strategy&#x27;;
-import { OidcProvisioningService } from &#x27;../oidc/service/oidc-provisioning.service&#x27;;
+import { SchulconnexProvisioningStrategy } from &#x27;../oidc&#x27;;
+import {
+	SchulconnexCourseSyncService,
+	SchulconnexGroupProvisioningService,
+	SchulconnexSchoolProvisioningService,
+	SchulconnexUserProvisioningService,
+} from &#x27;../oidc/service&#x27;;
 import { SanisResponseMapper } from &#x27;./sanis-response.mapper&#x27;;
 
 @Injectable()
-export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
+export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 	constructor(
 		@Inject(ProvisioningFeatures) protected readonly provisioningFeatures: IProvisioningFeatures,
-		protected readonly oidcProvisioningService: OidcProvisioningService,
+		protected readonly schulconnexSchoolProvisioningService: SchulconnexSchoolProvisioningService,
+		protected readonly schulconnexUserProvisioningService: SchulconnexUserProvisioningService,
+		protected readonly schulconnexGroupProvisioningService: SchulconnexGroupProvisioningService,
+		protected readonly schulconnexCourseSyncService: SchulconnexCourseSyncService,
+		protected readonly groupService: GroupService,
 		private readonly responseMapper: SanisResponseMapper,
 		private readonly httpService: HttpService
 	) {
-		super(provisioningFeatures, oidcProvisioningService);
+		super(
+			provisioningFeatures,
+			schulconnexSchoolProvisioningService,
+			schulconnexUserProvisioningService,
+			schulconnexGroupProvisioningService,
+			schulconnexCourseSyncService,
+			groupService
+		);
 	}
 
 	getType(): SystemProvisioningStrategy {

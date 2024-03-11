@@ -212,6 +212,12 @@
                                 <li>
                                     <a href="#type" >type</a>
                                 </li>
+                                <li>
+                                    <a href="#validFrom" >validFrom</a>
+                                </li>
+                                <li>
+                                    <a href="#validUntil" >validUntil</a>
+                                </li>
                             </ul>
                         </td>
                     </tr>
@@ -286,8 +292,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="58"
-                                    class="link-to-prism">apps/server/src/modules/group/domain/group.ts:58</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="66"
+                                    class="link-to-prism">apps/server/src/modules/group/domain/group.ts:66</a></div>
                         </td>
                     </tr>
 
@@ -353,8 +359,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="54"
-                                    class="link-to-prism">apps/server/src/modules/group/domain/group.ts:54</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/modules/group/domain/group.ts:62</a></div>
                         </td>
                     </tr>
 
@@ -390,8 +396,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="50"
-                                    class="link-to-prism">apps/server/src/modules/group/domain/group.ts:50</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="58"
+                                    class="link-to-prism">apps/server/src/modules/group/domain/group.ts:58</a></div>
                         </td>
                     </tr>
 
@@ -649,6 +655,50 @@
 
             </tbody>
         </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="validFrom"></a>
+                        <span class="name"><b>validFrom</b><a href="#validFrom"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>validFrom()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="50" class="link-to-prism">apps/server/src/modules/group/domain/group.ts:50</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="validUntil"></a>
+                        <span class="name"><b>validUntil</b><a href="#validUntil"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>validUntil()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="54" class="link-to-prism">apps/server/src/modules/group/domain/group.ts:54</a></div>
+                                </td>
+                            </tr>
+
+            </tbody>
+        </table>
 </section>
     </div>
 
@@ -703,6 +753,14 @@ export class Group extends DomainObject&lt;GroupProps&gt; {
 		return this.props.type;
 	}
 
+	get validFrom(): Date | undefined {
+		return this.props.validFrom;
+	}
+
+	get validUntil(): Date | undefined {
+		return this.props.validUntil;
+	}
+
 	removeUser(user: UserDO): void {
 		this.props.users &#x3D; this.props.users.filter((groupUser: GroupUser): boolean &#x3D;&gt; groupUser.userId !&#x3D;&#x3D; user.id);
 	}
@@ -712,7 +770,7 @@ export class Group extends DomainObject&lt;GroupProps&gt; {
 	}
 
 	addUser(user: GroupUser): void {
-		if (!this.users.find((u) &#x3D;&gt; u.userId &#x3D;&#x3D;&#x3D; user.userId)) {
+		if (!this.users.find((u: GroupUser): boolean &#x3D;&gt; u.userId &#x3D;&#x3D;&#x3D; user.userId)) {
 			this.users.push(user);
 		}
 	}

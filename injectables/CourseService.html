@@ -165,12 +165,22 @@
                                 <a href="#findById" >findById</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#findBySyncedGroup" >findBySyncedGroup</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#findOneForUser" >findOneForUser</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
                                 <a href="#getCoursesId" >getCoursesId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#saveAll" >saveAll</a>
                             </li>
                         </ul>
                     </td>
@@ -190,12 +200,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(repo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(repo: <a href="../injectables/CourseRepo.html" target="_self">LegacyCourseRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -216,7 +226,7 @@
                                                         <td>repo</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/CourseRepo.html" target="_self" >CourseRepo</a></code>
+                                                                        <code><a href="../injectables/CourseRepo.html" target="_self" >LegacyCourseRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -229,6 +239,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/Logger.html" target="_self" >Logger</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>courseRepo</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/CourseRepo.html" target="_self" >CourseRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -265,15 +287,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>create(course: <a href="../classes/Course.html" target="_self">Course</a>)</code>
+                    <code>create(course: <a href="../classes/Course.html" target="_self">CourseEntity</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="68"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:68</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="74"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:74</a></div>
                         </td>
                     </tr>
 
@@ -296,7 +318,7 @@
                                         <tr>
                                                 <td>course</td>
                                             <td>
-                                                            <code><a href="../classes/Course.html" target="_self" >Course</a></code>
+                                                            <code><a href="../classes/Course.html" target="_self" >CourseEntity</a></code>
                                             </td>
 
                                             <td>
@@ -342,8 +364,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -411,8 +433,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:62</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="68"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:68</a></div>
                         </td>
                     </tr>
 
@@ -448,7 +470,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/Course.html" target="_self" >Promise&lt;Course[]&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Course.html" target="_self" >Promise&lt;CourseEntity[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -481,8 +503,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:20</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="26"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:26</a></div>
                         </td>
                     </tr>
 
@@ -518,7 +540,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/Course.html" target="_self" >Promise&lt;Counted&lt;Course[]&gt;&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Course.html" target="_self" >Promise&lt;Counted&lt;CourseEntity[]&gt;&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -550,8 +572,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="22"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -587,7 +609,77 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/Course.html" target="_self" >Promise&lt;Course&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Course.html" target="_self" >Promise&lt;CourseEntity&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findBySyncedGroup"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>findBySyncedGroup</b></span>
+                        <a href="#findBySyncedGroup"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findBySyncedGroup(group: <a href="../interfaces/Group.html" target="_self">Group</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="93"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:93</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>group</td>
+                                            <td>
+                                                            <code><a href="../interfaces/Group.html" target="_self" >Group</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Course.html" target="_self" >Promise&lt;Course[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -619,8 +711,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="76"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:76</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:82</a></div>
                         </td>
                     </tr>
 
@@ -668,7 +760,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/Course.html" target="_self" >Promise&lt;Course&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Course.html" target="_self" >Promise&lt;CourseEntity&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -693,15 +785,85 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getCoursesId(courses: <a href="../classes/Course.html" target="_self">Course[]</a>)</code>
+                    <code>getCoursesId(courses: <a href="../classes/Course.html" target="_self">CourseEntity[]</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="78"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:78</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>courses</td>
+                                            <td>
+                                                            <code><a href="../classes/Course.html" target="_self" >CourseEntity[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId[]</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="saveAll"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>saveAll</b></span>
+                        <a href="#saveAll"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>saveAll(courses: <a href="../classes/Course.html" target="_self">Course[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="87"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/course.service.ts:87</a></div>
                         </td>
                     </tr>
 
@@ -737,7 +899,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId[]</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/Course.html" target="_self" >Promise&lt;Course[]&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -753,26 +915,32 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import { DataDeletionDomainOperationLoggable } from &#x27;@shared/common/loggable&#x27;;
 import { DomainOperationBuilder } from &#x27;@shared/domain/builder&#x27;;
-import { Course } from &#x27;@shared/domain/entity&#x27;;
+import { Course as CourseEntity } from &#x27;@shared/domain/entity&#x27;;
 import { DomainOperation } from &#x27;@shared/domain/interface&#x27;;
 import { Counted, DomainName, EntityId, OperationType, StatusModel } from &#x27;@shared/domain/types&#x27;;
-import { CourseRepo } from &#x27;@shared/repo&#x27;;
+import { CourseRepo as LegacyCourseRepo } from &#x27;@shared/repo&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
+import { Group } from &#x27;@src/modules/group/domain&#x27;;
+import { Course, COURSE_REPO, CourseRepo } from &#x27;../domain&#x27;;
 
 @Injectable()
 export class CourseService {
-	constructor(private readonly repo: CourseRepo, private readonly logger: Logger) {
+	constructor(
+		private readonly repo: LegacyCourseRepo,
+		private readonly logger: Logger,
+		@Inject(COURSE_REPO) private readonly courseRepo: CourseRepo
+	) {
 		this.logger.setContext(CourseService.name);
 	}
 
-	async findById(courseId: EntityId): Promise&lt;Course&gt; {
+	async findById(courseId: EntityId): Promise&lt;CourseEntity&gt; {
 		return this.repo.findById(courseId);
 	}
 
-	public async findAllCoursesByUserId(userId: EntityId): Promise&lt;Counted&lt;Course[]&gt;&gt; {
+	public async findAllCoursesByUserId(userId: EntityId): Promise&lt;Counted&lt;CourseEntity[]&gt;&gt; {
 		const [courses, count] &#x3D; await this.repo.findAllByUserId(userId);
 
 		return [courses, count];
@@ -789,7 +957,7 @@ export class CourseService {
 		);
 		const [courses, count] &#x3D; await this.repo.findAllByUserId(userId);
 
-		courses.forEach((course: Course) &#x3D;&gt; course.removeUser(userId));
+		courses.forEach((course: CourseEntity) &#x3D;&gt; course.removeUser(userId));
 
 		await this.repo.save(courses);
 
@@ -814,23 +982,35 @@ export class CourseService {
 		return result;
 	}
 
-	async findAllByUserId(userId: EntityId): Promise&lt;Course[]&gt; {
+	async findAllByUserId(userId: EntityId): Promise&lt;CourseEntity[]&gt; {
 		const [courses] &#x3D; await this.repo.findAllByUserId(userId);
 
 		return courses;
 	}
 
-	async create(course: Course): Promise&lt;void&gt; {
+	async create(course: CourseEntity): Promise&lt;void&gt; {
 		await this.repo.createCourse(course);
 	}
 
-	private getCoursesId(courses: Course[]): EntityId[] {
+	private getCoursesId(courses: CourseEntity[]): EntityId[] {
 		return courses.map((course) &#x3D;&gt; course.id);
 	}
 
-	async findOneForUser(courseId: EntityId, userId: EntityId): Promise&lt;Course&gt; {
+	async findOneForUser(courseId: EntityId, userId: EntityId): Promise&lt;CourseEntity&gt; {
 		const course &#x3D; await this.repo.findOne(courseId, userId);
 		return course;
+	}
+
+	public async saveAll(courses: Course[]): Promise&lt;Course[]&gt; {
+		const savedCourses: Course[] &#x3D; await this.courseRepo.saveAll(courses);
+
+		return savedCourses;
+	}
+
+	public async findBySyncedGroup(group: Group): Promise&lt;Course[]&gt; {
+		const courses: Course[] &#x3D; await this.courseRepo.findBySyncedGroup(group);
+
+		return courses;
 	}
 }
 </code></pre>

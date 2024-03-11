@@ -364,15 +364,15 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module } from &#x27;@nestjs/common&#x27;;
-import { AuthorizationModule } from &#x27;@modules/authorization&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationModule } from &#x27;@modules/authorization&#x27;;
 import { ClassModule } from &#x27;@modules/class&#x27;;
-import { RoleModule } from &#x27;@modules/role&#x27;;
 import { LegacySchoolModule } from &#x27;@modules/legacy-school&#x27;;
-import { SystemModule } from &#x27;@modules/system&#x27;;
-import { UserModule } from &#x27;@modules/user&#x27;;
-import { LoggerModule } from &#x27;@src/core/logger&#x27;;
+import { RoleModule } from &#x27;@modules/role&#x27;;
 import { SchoolModule } from &#x27;@modules/school&#x27;;
+import { SystemModule } from &#x27;@modules/system&#x27;;
+import { UserModule } from &#x27;@modules/user/user.module&#x27;;
+import { Module } from &#x27;@nestjs/common&#x27;;
+import { LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { GroupController } from &#x27;./controller&#x27;;
 import { GroupModule } from &#x27;./group.module&#x27;;
 import { GroupUc } from &#x27;./uc&#x27;;
