@@ -85,7 +85,7 @@ describe('SchoolService', () => {
 				const result = await service.getSchoolById(id);
 
 				expect(result).toEqual(school);
-				expect(result.getProps().features).toContain('isTeamCreationByStudentsEnabled');
+				expect(result.getProps().instanceFeatures).toContain('isTeamCreationByStudentsEnabled');
 			});
 		});
 
@@ -125,7 +125,7 @@ describe('SchoolService', () => {
 				const result = await service.getSchoolById(id);
 
 				expect(result).toEqual(school);
-				expect(result.getProps().features).toContain('isTeamCreationByStudentsEnabled');
+				expect(result.getProps().instanceFeatures).toContain('isTeamCreationByStudentsEnabled');
 			});
 		});
 
@@ -185,7 +185,7 @@ describe('SchoolService', () => {
 				const result = await service.getSchoolById(id);
 
 				expect(result).toEqual(school);
-				expect(result.getProps().features).toContain('isTeamCreationByStudentsEnabled');
+				expect(result.getProps().instanceFeatures).toContain('isTeamCreationByStudentsEnabled');
 			});
 		});
 
@@ -225,7 +225,7 @@ describe('SchoolService', () => {
 				const result = await service.getSchoolById(id);
 
 				expect(result).toEqual(school);
-				expect(result.getProps().features).toContain('isTeamCreationByStudentsEnabled');
+				expect(result.getProps().instanceFeatures).toContain('isTeamCreationByStudentsEnabled');
 			});
 		});
 	});
@@ -459,7 +459,7 @@ describe('SchoolService', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
 				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
-				configService.get.mockReturnValueOnce('enabled');
+				configService.get.mockReturnValue('enabled');
 
 				return { school, id: school.id };
 			};
