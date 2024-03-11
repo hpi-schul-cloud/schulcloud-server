@@ -2,14 +2,19 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DashboardElementRepo, IDashboardRepo, UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
-import { DomainName, LearnroomMetadata, LearnroomTypes, OperationType } from '@shared/domain/types';
+import { LearnroomMetadata, LearnroomTypes } from '@shared/domain/types';
 import { DashboardEntity, GridElement } from '@shared/domain/entity';
 import { Logger } from '@src/core/logger';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { ObjectId } from 'bson';
 import { EventBus } from '@nestjs/cqrs';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { DataDeletedEvent } from '@modules/deletion';
+import {
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	deletionRequestFactory,
+	DataDeletedEvent,
+} from '@modules/deletion';
 import { DashboardService } from '.';
 
 const learnroomMock = (id: string, name: string) => {

@@ -175,7 +175,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		});
 	}
 
-	async deleteByUserId(userId: string): Promise<EntityId[]> {
+	public async deleteByUserId(userId: string): Promise<EntityId[]> {
 		const deletedAccounts = await this.accountDb.deleteByUserId(userId);
 		await this.executeIdmMethod(async () => {
 			this.logger.debug(`Deleting account with userId ${userId} ...`);
@@ -187,7 +187,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return deletedAccounts;
 	}
 
-	async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
+	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.debug(`Start deleting data for userId - ${userId} in account collection`);
 		const deletedAccounts = await this.deleteByUserId(userId);
 

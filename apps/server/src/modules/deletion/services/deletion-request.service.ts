@@ -2,9 +2,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { DeletionRequest } from '../domain/deletion-request.do';
-import { DeletionStatusModel } from '../domain/types';
 import { DeletionRequestRepo } from '../repo/deletion-request.repo';
-import { DomainName } from '../types';
+import { DomainName, StatusModel } from '../types';
 
 @Injectable()
 export class DeletionRequestService {
@@ -23,7 +22,7 @@ export class DeletionRequestService {
 			targetRefDomain,
 			deleteAfter: dateOfDeletion,
 			targetRefId,
-			status: DeletionStatusModel.REGISTERED,
+			status: StatusModel.REGISTERED,
 		});
 
 		await this.deletionRequestRepo.create(newDeletionRequest);

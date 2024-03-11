@@ -1,4 +1,4 @@
-import { BaseEntityWithTimestamps } from '@shared/domain/entity';
+import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { Entity, Property, Index } from '@mikro-orm/core';

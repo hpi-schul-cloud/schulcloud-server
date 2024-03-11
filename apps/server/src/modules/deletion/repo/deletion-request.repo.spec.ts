@@ -9,7 +9,7 @@ import { DeletionRequestEntity } from '../entity';
 import { DeletionRequest } from '../domain/deletion-request.do';
 import { deletionRequestEntityFactory } from '../entity/testing/factory/deletion-request.entity.factory';
 import { deletionRequestFactory } from '../domain/testing/factory/deletion-request.factory';
-import { DeletionStatusModel } from '../domain/types';
+import { StatusModel } from '../types';
 
 describe(DeletionRequestRepo.name, () => {
 	let module: TestingModule;
@@ -118,13 +118,13 @@ describe(DeletionRequestRepo.name, () => {
 					createdAt: new Date(2023, 7, 1),
 					updatedAt: new Date(2023, 8, 2),
 					deleteAfter: new Date(2023, 8, 1),
-					status: DeletionStatusModel.SUCCESS,
+					status: StatusModel.SUCCESS,
 				});
 				const deletionRequestEntity2: DeletionRequestEntity = deletionRequestEntityFactory.build({
 					createdAt: new Date(2023, 7, 1),
 					updatedAt: new Date(2023, 8, 2),
 					deleteAfter: new Date(2023, 8, 1),
-					status: DeletionStatusModel.FAILED,
+					status: StatusModel.FAILED,
 				});
 				const deletionRequestEntity3: DeletionRequestEntity = deletionRequestEntityFactory.build({
 					createdAt: new Date(2023, 8, 1),
@@ -231,7 +231,7 @@ describe(DeletionRequestRepo.name, () => {
 				await em.persistAndFlush(entity);
 
 				// Arrange expected DeletionRequestEntity after changing status
-				entity.status = DeletionStatusModel.SUCCESS;
+				entity.status = StatusModel.SUCCESS;
 				const deletionRequestToUpdate = DeletionRequestMapper.mapToDO(entity);
 
 				return {
@@ -278,7 +278,7 @@ describe(DeletionRequestRepo.name, () => {
 
 				const result: DeletionRequest = await repo.findById(entity.id);
 
-				expect(result.status).toEqual(DeletionStatusModel.FAILED);
+				expect(result.status).toEqual(StatusModel.FAILED);
 			});
 		});
 	});
@@ -309,7 +309,7 @@ describe(DeletionRequestRepo.name, () => {
 
 				const result: DeletionRequest = await repo.findById(entity.id);
 
-				expect(result.status).toEqual(DeletionStatusModel.SUCCESS);
+				expect(result.status).toEqual(StatusModel.SUCCESS);
 			});
 		});
 	});
@@ -340,7 +340,7 @@ describe(DeletionRequestRepo.name, () => {
 
 				const result: DeletionRequest = await repo.findById(entity.id);
 
-				expect(result.status).toEqual(DeletionStatusModel.PENDING);
+				expect(result.status).toEqual(StatusModel.PENDING);
 			});
 		});
 	});

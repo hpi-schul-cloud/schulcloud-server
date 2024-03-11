@@ -12,7 +12,7 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 	DataDeletedEvent,
-} from '@src/modules/deletion';
+} from '@modules/deletion';
 import { FileParamBuilder, FilesStorageClientMapper } from '../mapper';
 import { CopyFilesOfParentParamBuilder } from '../mapper/copy-files-of-parent-param.builder';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';

@@ -1,8 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DeletionRequest } from './deletion-request.do';
-import { DeletionStatusModel } from './types';
 import { deletionRequestFactory } from './testing/factory/deletion-request.factory';
-import { DomainName } from '../types';
+import { DomainName, StatusModel } from '../types';
 
 describe(DeletionRequest.name, () => {
 	describe('constructor', () => {
@@ -39,7 +38,7 @@ describe(DeletionRequest.name, () => {
 					targetRefDomain: DomainName.USER,
 					deleteAfter: new Date(),
 					targetRefId: new ObjectId().toHexString(),
-					status: DeletionStatusModel.REGISTERED,
+					status: StatusModel.REGISTERED,
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				};

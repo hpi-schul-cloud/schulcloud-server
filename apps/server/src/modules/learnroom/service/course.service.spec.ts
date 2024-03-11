@@ -4,12 +4,16 @@ import { Course } from '@shared/domain/entity';
 import { CourseRepo, UserRepo } from '@shared/repo';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
-import { DomainName, OperationType } from '@shared/domain/types';
 import { EventBus } from '@nestjs/cqrs';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { ObjectId } from 'bson';
-import { DataDeletedEvent } from '@modules/deletion/event';
+import {
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	deletionRequestFactory,
+	DataDeletedEvent,
+} from '@modules/deletion';
 import { CourseService } from './course.service';
 
 describe('CourseService', () => {

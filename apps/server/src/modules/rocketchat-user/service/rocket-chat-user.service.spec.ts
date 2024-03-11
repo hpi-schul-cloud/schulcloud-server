@@ -3,14 +3,18 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { DomainName, OperationType } from '@shared/domain/types';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { EventBus } from '@nestjs/cqrs';
 import { RocketChatService } from '@modules/rocketchat/rocket-chat.service';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { DataDeletedEvent } from '@modules/deletion';
-import { DomainDeletionReport } from '@shared/domain/interface';
 import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
+import {
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	DomainDeletionReport,
+	deletionRequestFactory,
+	DataDeletedEvent,
+} from '@modules/deletion';
 import { RocketChatUserService } from './rocket-chat-user.service';
 import { RocketChatUserRepo } from '../repo';
 import { rocketChatUserFactory } from '../domain/testing/rocket-chat-user.factory';

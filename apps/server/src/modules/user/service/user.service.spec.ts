@@ -9,17 +9,22 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { LanguageType, Role, User } from '@shared/domain/entity';
 import { IFindOptions, Permission, RoleName, SortOrder } from '@shared/domain/interface';
-import { DomainName, EntityId, OperationType } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { NotFoundException } from '@nestjs/common';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { DataDeletedEvent } from '@modules/deletion';
 import { EventBus } from '@nestjs/cqrs';
 import { RegistrationPinService } from '@modules/registration-pin';
+import {
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	deletionRequestFactory,
+	DataDeletedEvent,
+} from '@modules/deletion';
 import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
 import { UserService } from './user.service';

@@ -9,16 +9,25 @@ import { ConfigService } from '@nestjs/config';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { LanguageType, User } from '@shared/domain/entity';
-import { DeletionService, DomainDeletionReport, DomainOperationReport, IFindOptions } from '@shared/domain/interface';
-import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { IFindOptions } from '@shared/domain/interface';
+import { EntityId, StatusModel } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { Logger } from '@src/core/logger';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
-import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { DataDeletedEvent, UserDeletedEvent } from '@modules/deletion';
 import { RegistrationPinService } from '@modules/registration-pin';
+import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DomainName,
+	DomainDeletionReportBuilder,
+	DomainOperationReportBuilder,
+	OperationType,
+	DomainOperationReport,
+} from '@modules/deletion';
 import { UserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';
 import { UserDto } from '../uc/dto/user.dto';
@@ -147,7 +156,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		}
 	}
 
-	async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
+	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable('Deleting user', DomainName.USER, userId, StatusModel.PENDING)
 		);
@@ -201,7 +210,7 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		return result;
 	}
 
-	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
+	public async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
 		const parentEmails = this.userRepo.getParentEmailsFromUser(userId);
 
 		return parentEmails;

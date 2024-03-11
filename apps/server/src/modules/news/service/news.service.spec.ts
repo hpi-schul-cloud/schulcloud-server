@@ -4,11 +4,15 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities, teamNewsFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { NewsRepo } from '@shared/repo';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
-import { DomainName, OperationType } from '@shared/domain/types';
 import { EventBus } from '@nestjs/cqrs';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { DataDeletedEvent } from '@modules/deletion';
+import {
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	deletionRequestFactory,
+	DataDeletedEvent,
+} from '@modules/deletion';
 import { NewsService } from './news.service';
 
 describe(NewsService.name, () => {

@@ -13,7 +13,7 @@ import {
 	OperationType,
 	deletionRequestFactory,
 	DataDeletedEvent,
-} from '@src/modules/deletion';
+} from '@modules/deletion';
 import { Class } from '../domain';
 import { classFactory } from '../domain/testing';
 import { classEntityFactory } from '../entity/testing';

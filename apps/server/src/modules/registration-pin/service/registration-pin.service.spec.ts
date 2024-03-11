@@ -2,9 +2,13 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userDoFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
-import { DomainName, OperationType } from '@shared/domain/types';
 import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
+import {
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+} from '@modules/deletion';
 import { RegistrationPinRepo } from '../repo';
 import { RegistrationPinService } from '.';
 import { registrationPinEntityFactory } from '../entity/testing';

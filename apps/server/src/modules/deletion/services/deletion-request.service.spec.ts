@@ -5,8 +5,7 @@ import { setupEntities } from '@shared/testing';
 import { DeletionRequestService } from './deletion-request.service';
 import { DeletionRequestRepo } from '../repo';
 import { deletionRequestFactory } from '../domain/testing/factory/deletion-request.factory';
-import { DeletionStatusModel } from '../domain/types';
-import { DomainName } from '../types';
+import { DomainName, StatusModel } from '../types';
 
 describe(DeletionRequestService.name, () => {
 	let module: TestingModule;
@@ -64,7 +63,7 @@ describe(DeletionRequestService.name, () => {
 						targetRefDomain,
 						deleteAfter: expect.any(Date),
 						targetRefId,
-						status: DeletionStatusModel.REGISTERED,
+						status: StatusModel.REGISTERED,
 					})
 				);
 			});

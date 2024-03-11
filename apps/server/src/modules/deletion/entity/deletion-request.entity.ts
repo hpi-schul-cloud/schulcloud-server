@@ -1,8 +1,7 @@
 import { Entity, Index, Property, Unique } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
-import { DeletionStatusModel } from '../domain/types';
-import { DomainName } from '../types';
+import { DomainName, StatusModel } from '../types';
 
 const SECONDS_OF_90_DAYS = 90 * 24 * 60 * 60;
 export interface DeletionRequestEntityProps {
@@ -10,7 +9,7 @@ export interface DeletionRequestEntityProps {
 	targetRefDomain: DomainName;
 	deleteAfter: Date;
 	targetRefId: EntityId;
-	status: DeletionStatusModel;
+	status: StatusModel;
 	createdAt?: Date;
 	updatedAt?: Date;
 }
@@ -29,7 +28,7 @@ export class DeletionRequestEntity extends BaseEntityWithTimestamps {
 	targetRefDomain: DomainName;
 
 	@Property()
-	status: DeletionStatusModel;
+	status: StatusModel;
 
 	constructor(props: DeletionRequestEntityProps) {
 		super();
@@ -52,14 +51,14 @@ export class DeletionRequestEntity extends BaseEntityWithTimestamps {
 	}
 
 	public executed(): void {
-		this.status = DeletionStatusModel.SUCCESS;
+		this.status = StatusModel.SUCCESS;
 	}
 
 	public failed(): void {
-		this.status = DeletionStatusModel.FAILED;
+		this.status = StatusModel.FAILED;
 	}
 
 	public pending(): void {
-		this.status = DeletionStatusModel.PENDING;
+		this.status = StatusModel.PENDING;
 	}
 }

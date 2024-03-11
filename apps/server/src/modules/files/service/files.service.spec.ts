@@ -11,7 +11,7 @@ import {
 	OperationType,
 	deletionRequestFactory,
 	DataDeletedEvent,
-} from '@src/modules/deletion';
+} from '@modules/deletion';
 import { FilesService } from './files.service';
 import { FilesRepo } from '../repo';
 import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';

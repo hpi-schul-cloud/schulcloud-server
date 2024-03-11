@@ -1,7 +1,6 @@
 import { EntityId } from '@shared/domain/types';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { DeletionStatusModel } from './types';
-import { DomainName } from '../types';
+import { DomainName, StatusModel } from '../types';
 
 export interface DeletionRequestProps extends AuthorizableObject {
 	createdAt?: Date;
@@ -9,7 +8,7 @@ export interface DeletionRequestProps extends AuthorizableObject {
 	targetRefDomain: DomainName;
 	deleteAfter: Date;
 	targetRefId: EntityId;
-	status: DeletionStatusModel;
+	status: StatusModel;
 }
 
 export class DeletionRequest extends DomainObject<DeletionRequestProps> {
@@ -33,7 +32,7 @@ export class DeletionRequest extends DomainObject<DeletionRequestProps> {
 		return this.props.targetRefId;
 	}
 
-	get status(): DeletionStatusModel {
+	get status(): StatusModel {
 		return this.props.status;
 	}
 }

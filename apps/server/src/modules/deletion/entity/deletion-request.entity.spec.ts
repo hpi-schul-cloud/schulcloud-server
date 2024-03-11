@@ -1,8 +1,7 @@
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DeletionStatusModel } from '../domain/types';
 import { DeletionRequestEntity } from '.';
-import { DomainName } from '../types';
+import { DomainName, StatusModel } from '../types';
 
 describe(DeletionRequestEntity.name, () => {
 	beforeAll(async () => {
@@ -19,7 +18,7 @@ describe(DeletionRequestEntity.name, () => {
 			targetRefDomain: DomainName.USER,
 			deleteAfter: new Date(),
 			targetRefId: new ObjectId().toHexString(),
-			status: DeletionStatusModel.REGISTERED,
+			status: StatusModel.REGISTERED,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
@@ -68,7 +67,7 @@ describe(DeletionRequestEntity.name, () => {
 
 			entity.executed();
 
-			expect(entity.status).toEqual(DeletionStatusModel.SUCCESS);
+			expect(entity.status).toEqual(StatusModel.SUCCESS);
 		});
 	});
 
@@ -79,7 +78,7 @@ describe(DeletionRequestEntity.name, () => {
 
 			entity.failed();
 
-			expect(entity.status).toEqual(DeletionStatusModel.FAILED);
+			expect(entity.status).toEqual(StatusModel.FAILED);
 		});
 	});
 
@@ -90,7 +89,7 @@ describe(DeletionRequestEntity.name, () => {
 
 			entity.pending();
 
-			expect(entity.status).toEqual(DeletionStatusModel.PENDING);
+			expect(entity.status).toEqual(StatusModel.PENDING);
 		});
 	});
 });

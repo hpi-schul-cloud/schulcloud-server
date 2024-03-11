@@ -3,15 +3,20 @@ import { FileRecordParentType } from '@infra/rabbitmq';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Submission } from '@shared/domain/entity';
-import { Counted, DomainName, OperationType } from '@shared/domain/types';
+import { Counted } from '@shared/domain/types';
 import { SubmissionRepo } from '@shared/repo';
 import { setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { ObjectId } from 'bson';
 import { EventBus } from '@nestjs/cqrs';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
-import { DataDeletedEvent } from '@modules/deletion';
+import {
+	DomainOperationReportBuilder,
+	OperationType,
+	DomainDeletionReportBuilder,
+	DomainName,
+	deletionRequestFactory,
+	DataDeletedEvent,
+} from '@modules/deletion';
 import { SubmissionService } from './submission.service';
 
 describe('Submission Service', () => {

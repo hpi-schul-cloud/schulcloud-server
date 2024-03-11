@@ -1,6 +1,6 @@
 import { Scope } from '@shared/repo';
 import { DeletionRequestEntity } from '../entity';
-import { DeletionStatusModel } from '../domain/types';
+import { StatusModel } from '../types';
 
 export class DeletionRequestScope extends Scope<DeletionRequestEntity> {
 	byDeleteAfter(currentDate: Date): DeletionRequestScope {
@@ -12,10 +12,10 @@ export class DeletionRequestScope extends Scope<DeletionRequestEntity> {
 	byStatus(fifteenMinutesAgo: Date): DeletionRequestScope {
 		this.addQuery({
 			$or: [
-				{ status: DeletionStatusModel.FAILED },
+				{ status: StatusModel.FAILED },
 				{
 					$and: [
-						{ status: [DeletionStatusModel.REGISTERED, DeletionStatusModel.PENDING] },
+						{ status: [StatusModel.REGISTERED, StatusModel.PENDING] },
 						{ updatedAt: { $lt: fifteenMinutesAgo } },
 					],
 				},

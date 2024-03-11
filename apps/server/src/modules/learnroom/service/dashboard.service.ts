@@ -1,12 +1,19 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
-import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
-import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { EntityId, StatusModel } from '@shared/domain/types';
 import { IDashboardRepo, DashboardElementRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { DataDeletedEvent, UserDeletedEvent } from '@modules/deletion';
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DomainName,
+	DomainDeletionReportBuilder,
+	DomainOperationReportBuilder,
+	OperationType,
+} from '@modules/deletion';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -25,7 +32,7 @@ export class DashboardService implements DeletionService, IEventHandler<UserDele
 		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
-	async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
+	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Dashboard',

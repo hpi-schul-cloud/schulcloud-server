@@ -3,12 +3,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CourseGroupRepo, UserRepo } from '@shared/repo';
 import { courseGroupFactory, setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
-import { DomainName, OperationType } from '@shared/domain/types';
 import { EventBus } from '@nestjs/cqrs';
 import { ObjectId } from 'bson';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { DataDeletedEvent } from '@modules/deletion';
+import {
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	deletionRequestFactory,
+	DataDeletedEvent,
+} from '@modules/deletion';
 import { CourseGroupService } from './coursegroup.service';
 
 describe('CourseGroupService', () => {

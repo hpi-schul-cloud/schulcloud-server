@@ -3,12 +3,16 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TeamsRepo } from '@shared/repo';
 import { setupEntities, teamFactory, teamUserFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
-import { DomainName, OperationType } from '@shared/domain/types';
 import { EventBus } from '@nestjs/cqrs/dist';
 import { ObjectId } from 'bson';
-import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { DataDeletedEvent } from '@modules/deletion';
+import {
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	deletionRequestFactory,
+	DataDeletedEvent,
+} from '@modules/deletion';
 import { TeamService } from './team.service';
 
 describe('TeamService', () => {

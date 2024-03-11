@@ -1,5 +1,5 @@
 import { DeletionRequestScope } from '.';
-import { DeletionStatusModel } from '../domain/types';
+import { StatusModel } from '../types';
 
 describe(DeletionRequestScope.name, () => {
 	let scope: DeletionRequestScope;
@@ -37,10 +37,10 @@ describe(DeletionRequestScope.name, () => {
 			const fifteenMinutesAgo = new Date(Date.now() - 15 * 60 * 1000); // 15 minutes ago
 			const expectedQuery = {
 				$or: [
-					{ status: DeletionStatusModel.FAILED },
+					{ status: StatusModel.FAILED },
 					{
 						$and: [
-							{ status: [DeletionStatusModel.REGISTERED, DeletionStatusModel.PENDING] },
+							{ status: [StatusModel.REGISTERED, StatusModel.PENDING] },
 							{ updatedAt: { $lt: fifteenMinutesAgo } },
 						],
 					},
