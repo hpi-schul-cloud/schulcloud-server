@@ -119,5 +119,8 @@ export interface SchoolProps extends AuthorizableObject {
 	language?: LanguageType;
 	timezone?: string;
 	permissions?: SchoolPermissions;
+	// The enableStudentTeamCreation property is for compatibility with the existing data.
+	// It can't be mapped to a feature straight-forwardly,
+	// because the config value STUDENT_TEAM_CREATION has to be taken into account.
 	enableStudentTeamCreation?: boolean;
 }
