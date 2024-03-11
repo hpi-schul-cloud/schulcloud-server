@@ -8,16 +8,16 @@ describe(ColumnBoardNode.name, () => {
 
 	describe('publish', () => {
 		it('should set isVisible to true', () => {
-			const column = columnBoardNodeFactory.build();
-			column.publish();
-			expect(column.isVisible).toBe(true);
+			const columnBoard = columnBoardNodeFactory.build();
+			columnBoard.publish();
+			expect(columnBoard.isVisible).toBe(true);
 		});
 	});
 	describe('unpublish', () => {
 		it('should set isVisible to false', () => {
-			const column = columnBoardNodeFactory.build();
-			column.unpublish();
-			expect(column.isVisible).toBe(false);
+			const columnBoard = columnBoardNodeFactory.build();
+			columnBoard.unpublish();
+			expect(columnBoard.isVisible).toBe(false);
 		});
 	});
 });
