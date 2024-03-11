@@ -5449,6 +5449,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SchoolInUserMigrationStartLoggable.html" data-type="entity-link" >SchoolInUserMigrationStartLoggable</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SchoolLogo.html" data-type="entity-link" >SchoolLogo</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SchoolMigrationDatabaseOperationFailedLoggableException.html" data-type="entity-link" >SchoolMigrationDatabaseOperationFailedLoggableException</a>
                             </li>
                             <li class="link">
@@ -5465,6 +5468,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolNumberMissingLoggableException.html" data-type="entity-link" >SchoolNumberMissingLoggableException</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchoolPermissionsParams.html" data-type="entity-link" >SchoolPermissionsParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolQueryParams.html" data-type="entity-link" >SchoolQueryParams</a>
@@ -5629,6 +5635,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/StringValidator.html" data-type="entity-link" >StringValidator</a>
                             </li>
                             <li class="link">
+                                <a href="classes/StudentPermissionParams.html" data-type="entity-link" >StudentPermissionParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/Submission.html" data-type="entity-link" >Submission</a>
                             </li>
                             <li class="link">
@@ -5771,6 +5780,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/TaskWithStatusVo.html" data-type="entity-link" >TaskWithStatusVo</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/TeacherPermissionParams.html" data-type="entity-link" >TeacherPermissionParams</a>
                             </li>
                             <li class="link">
                                 <a href="classes/TeamDto.html" data-type="entity-link" >TeamDto</a>
@@ -7725,6 +7737,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/SchoolInfo.html" data-type="entity-link" >SchoolInfo</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/SchoolLogo.html" data-type="entity-link" >SchoolLogo</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/SchoolPermissions.html" data-type="entity-link" >SchoolPermissions</a>
                             </li>
                             <li class="link">
@@ -7791,6 +7806,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/StorageProviderProperties.html" data-type="entity-link" >StorageProviderProperties</a>
                             </li>
                             <li class="link">
+                                <a href="interfaces/StudentPermission.html" data-type="entity-link" >StudentPermission</a>
+                            </li>
+                            <li class="link">
                                 <a href="interfaces/SubmissionContainerElementProps.html" data-type="entity-link" >SubmissionContainerElementProps</a>
                             </li>
                             <li class="link">
@@ -7837,6 +7855,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/TaskUpdate.html" data-type="entity-link" >TaskUpdate</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/TeacherPermission.html" data-type="entity-link" >TeacherPermission</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/TeamProperties.html" data-type="entity-link" >TeamProperties</a>

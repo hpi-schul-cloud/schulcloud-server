@@ -184,10 +184,6 @@
                                 <a href="#mapToSchoolForLdapLogin" >mapToSchoolForLdapLogin</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#removeInstanceFeatures" >removeInstanceFeatures</a>
-                            </li>
-                            <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#updateSchool" >updateSchool</a>
@@ -304,8 +300,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="127"
-                                    class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:127</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="126"
+                                    class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:126</a></div>
                         </td>
                     </tr>
 
@@ -373,8 +369,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="103"
-                                    class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:103</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="102"
+                                    class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:102</a></div>
                         </td>
                     </tr>
 
@@ -466,8 +462,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="143"
-                                    class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:143</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="134"
+                                    class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:134</a></div>
                         </td>
                     </tr>
 
@@ -897,8 +893,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="89"
-                                    class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:89</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="88"
+                                    class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:88</a></div>
                         </td>
                     </tr>
 
@@ -947,75 +943,6 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="../classes/SchoolForLdapLogin.html" target="_self" >SchoolForLdapLogin</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="removeInstanceFeatures"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>removeInstanceFeatures</b></span>
-                        <a href="#removeInstanceFeatures"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeInstanceFeatures(school: <a href="../classes/School.html" target="_self">School</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="135"
-                                    class="link-to-prism">apps/server/src/modules/school/domain/service/school.service.ts:135</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>school</td>
-                                            <td>
-                                                            <code><a href="../classes/School.html" target="_self" >School</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/School.html" target="_self" >School</a></code>
 
                         </div>
                             <div class="io-description">
@@ -1116,7 +1043,6 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
 import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { IFindOptions } from &#x27;@shared/domain/interface/find-options&#x27;;
-import { SchoolFeature } from &#x27;@shared/domain/types&#x27;;
 import { EntityId } from &#x27;@shared/domain/types/entity-id&#x27;;
 import { System, SystemService } from &#x27;@src/modules/system&#x27;;
 import { SchoolConfig } from &#x27;../../school.config&#x27;;
@@ -1125,6 +1051,7 @@ import { SchoolForLdapLogin, SchoolForLdapLoginProps } from &#x27;../do/school-f
 import { SchoolFactory } from &#x27;../factory&#x27;;
 import { SCHOOL_REPO, SchoolRepo, SchoolUpdateBody } from &#x27;../interface&#x27;;
 import { SchoolQuery } from &#x27;../query&#x27;;
+import { InstanceFeature } from &#x27;../type&#x27;;
 
 @Injectable()
 export class SchoolService {
@@ -1135,17 +1062,17 @@ export class SchoolService {
 	) {}
 
 	public async getSchoolById(schoolId: EntityId): Promise&lt;School&gt; {
-		const school &#x3D; await this.schoolRepo.getSchoolById(schoolId);
+		let school &#x3D; await this.schoolRepo.getSchoolById(schoolId);
 
-		this.addInstanceFeatures(school);
+		school &#x3D; this.addInstanceFeatures(school);
 
 		return school;
 	}
 
 	public async getSchools(query: SchoolQuery &#x3D; {}, options?: IFindOptions&lt;SchoolProps&gt;): Promise&lt;School[]&gt; {
-		const schools &#x3D; await this.schoolRepo.getSchools(query, options);
+		let schools &#x3D; await this.schoolRepo.getSchools(query, options);
 
-		schools.forEach((school) &#x3D;&gt; this.addInstanceFeatures(school));
+		schools &#x3D; schools.map((school) &#x3D;&gt; this.addInstanceFeatures(school));
 
 		return schools;
 	}
@@ -1190,13 +1117,12 @@ export class SchoolService {
 	}
 
 	public async updateSchool(schoolId: string, body: SchoolUpdateBody) {
-		const school &#x3D; await this.schoolRepo.getSchoolById(schoolId);
+		const school &#x3D; await this.getSchoolById(schoolId);
 
 		const fullSchoolObject &#x3D; SchoolFactory.buildFromPartialBody(school, body);
-		this.removeInstanceFeatures(fullSchoolObject);
 
-		const updatedSchool &#x3D; await this.schoolRepo.save(fullSchoolObject);
-		this.addInstanceFeatures(updatedSchool);
+		let updatedSchool &#x3D; await this.schoolRepo.save(fullSchoolObject);
+		updatedSchool &#x3D; this.addInstanceFeatures(updatedSchool);
 
 		return updatedSchool;
 	}
@@ -1241,15 +1167,7 @@ export class SchoolService {
 	// But it has to be discussed, how to implement that. Thus we leave the logic here for now.
 	private addInstanceFeatures(school: School): School {
 		if (this.canStudentCreateTeam(school)) {
-			school.addFeature(SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
-		}
-
-		return school;
-	}
-
-	private removeInstanceFeatures(school: School): School {
-		if (this.canStudentCreateTeam(school)) {
-			school.removeFeature(SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
+			school.addInstanceFeature(InstanceFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
 		}
 
 		return school;

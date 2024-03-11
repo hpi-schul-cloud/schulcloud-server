@@ -205,7 +205,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="54" class="link-to-prism">apps/server/src/shared/domain/entity/school.entity.ts:54</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="55" class="link-to-prism">apps/server/src/shared/domain/entity/school.entity.ts:55</a></div>
                         </td>
                     </tr>
 
@@ -242,7 +242,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="51" class="link-to-prism">apps/server/src/shared/domain/entity/school.entity.ts:51</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="52" class="link-to-prism">apps/server/src/shared/domain/entity/school.entity.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -278,6 +278,7 @@ import { SchoolSystemOptionsEntity } from &#x27;@modules/legacy-school/entity&#x
 import { UserLoginMigrationEntity } from &#x27;@shared/domain/entity/user-login-migration.entity&#x27;;
 import { SchoolFeature, SchoolPurpose } from &#x27;@shared/domain/types&#x27;;
 import { FileStorageType } from &#x27;@src/modules/school/domain/type/file-storage-type.enum&#x27;;
+import { LanguageType } from &#x27;../interface&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
 import { CountyEmbeddable, FederalStateEntity } from &#x27;./federal-state.entity&#x27;;
 import { SchoolYearEntity } from &#x27;./schoolyear.entity&#x27;;
@@ -303,7 +304,7 @@ export interface SchoolProperties {
 	logo_dataUrl?: string;
 	logo_name?: string;
 	fileStorageType?: FileStorageType;
-	language?: string;
+	language?: LanguageType;
 	timezone?: string;
 	ldapLastSync?: string;
 }
@@ -394,7 +395,7 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 	fileStorageType?: FileStorageType;
 
 	@Property({ nullable: true })
-	language?: string;
+	language?: LanguageType;
 
 	@Property({ nullable: true })
 	timezone?: string;

@@ -211,8 +211,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="41"
-                                    class="link-to-prism">apps/server/src/modules/school/api/mapper/school.response.mapper.ts:41</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">apps/server/src/modules/school/api/mapper/school.response.mapper.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -281,8 +281,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="58"
-                                    class="link-to-prism">apps/server/src/modules/school/api/mapper/school.response.mapper.ts:58</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/modules/school/api/mapper/school.response.mapper.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -350,8 +350,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="35"
-                                    class="link-to-prism">apps/server/src/modules/school/api/mapper/school.response.mapper.ts:35</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">apps/server/src/modules/school/api/mapper/school.response.mapper.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -419,8 +419,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="52"
-                                    class="link-to-prism">apps/server/src/modules/school/api/mapper/school.response.mapper.ts:52</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/modules/school/api/mapper/school.response.mapper.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -574,6 +574,7 @@ export class SchoolResponseMapper {
 		const features &#x3D; Array.from(schoolProps.features);
 		const county &#x3D; schoolProps.county &amp;&amp; CountyResponseMapper.mapToResponse(schoolProps.county);
 		const systemIds &#x3D; schoolProps.systemIds ?? [];
+		const instanceFeatures &#x3D; Array.from(schoolProps.instanceFeatures ?? []);
 
 		const dto &#x3D; new SchoolResponse({
 			...schoolProps,
@@ -586,6 +587,7 @@ export class SchoolResponseMapper {
 			inMaintenance: school.isInMaintenance(),
 			isExternal: school.isExternal(),
 			years,
+			instanceFeatures,
 		});
 
 		return dto;

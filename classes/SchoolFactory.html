@@ -343,15 +343,32 @@ export class SchoolFactory {
 	}
 
 	static buildFromPartialBody(school: School, partialBody: SchoolUpdateBody) {
+		const {
+			name,
+			officialSchoolNumber,
+			logo,
+			fileStorageType,
+			language,
+			features,
+			permissions,
+			countyId,
+			enableStudentTeamCreation,
+		} &#x3D; partialBody;
+
+		if (countyId) {
+			school.updateCounty(countyId);
+		}
+
 		const props &#x3D; school.getProps();
 
-		props.name &#x3D; partialBody.name ?? props.name;
-		props.officialSchoolNumber &#x3D; partialBody.officialSchoolNumber ?? props.officialSchoolNumber;
-		props.logo_dataUrl &#x3D; partialBody.logo_dataUrl ?? props.logo_dataUrl;
-		props.logo_name &#x3D; partialBody.logo_name ?? props.logo_name;
-		props.fileStorageType &#x3D; partialBody.fileStorageType ?? props.fileStorageType;
-		props.language &#x3D; partialBody.language ?? props.language;
-		props.features &#x3D; partialBody.features ?? props.features;
+		props.name &#x3D; name ?? props.name;
+		props.officialSchoolNumber &#x3D; officialSchoolNumber ?? props.officialSchoolNumber;
+		props.logo &#x3D; logo ?? props.logo;
+		props.fileStorageType &#x3D; fileStorageType ?? props.fileStorageType;
+		props.language &#x3D; language ?? props.language;
+		props.features &#x3D; features ?? props.features;
+		props.permissions &#x3D; permissions ?? props.permissions;
+		props.enableStudentTeamCreation &#x3D; enableStudentTeamCreation ?? props.enableStudentTeamCreation;
 
 		const result &#x3D; SchoolFactory.build(props);
 

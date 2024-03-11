@@ -28,13 +28,13 @@
 <title>cluster_H5PEditorModule_providers</title>
 <polygon fill="none" stroke="black" points="915,-78 915,-130 2000,-130 2000,-78 915,-78"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_H5PEditorModule_exports</title>
-<polygon fill="none" stroke="black" points="900,-208 900,-260 1144,-260 1144,-208 900,-208"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_H5PEditorModule_imports</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 907,-130 907,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_H5PEditorModule_exports</title>
+<polygon fill="none" stroke="black" points="900,-208 900,-260 1144,-260 1144,-208 900,-208"/>
 </g>
 <!-- AuthenticationModule -->
 <g id="node1" class="node">
