@@ -6,12 +6,9 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
-	Card,
 	ColumnBoard,
 	ContentElementFactory,
-	RichTextElement,
 } from '@shared/domain/domainobject';
-import { InputFormat } from '@shared/domain/types';
 import { columnBoardNodeFactory, setupEntities } from '@shared/testing';
 import { columnBoardFactory, columnFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
 import { ObjectId } from 'bson';
@@ -24,7 +21,6 @@ describe(ColumnBoardService.name, () => {
 	let service: ColumnBoardService;
 	let boardDoRepo: DeepMocked<BoardDoRepo>;
 	let boardDoService: DeepMocked<BoardDoService>;
-	let contentElementFactory: DeepMocked<ContentElementFactory>;
 	let configBefore: IConfig;
 
 	beforeAll(async () => {
@@ -49,7 +45,6 @@ describe(ColumnBoardService.name, () => {
 		service = module.get(ColumnBoardService);
 		boardDoRepo = module.get(BoardDoRepo);
 		boardDoService = module.get(BoardDoService);
-		contentElementFactory = module.get(ContentElementFactory);
 		configBefore = Configuration.toObject({ plainSecrets: true });
 		await setupEntities();
 	});
@@ -279,100 +274,6 @@ describe(ColumnBoardService.name, () => {
 						updatedAt: expect.any(Date),
 					})
 				);
-			});
-		});
-	});
-
-	describe('createWelcomeColumnBoard', () => {
-		beforeEach(() => {
-			contentElementFactory.build.mockImplementation(() => richTextElementFactory.build());
-		});
-
-		it('should create a column board with initial content', async () => {
-			const { externalReference } = setup();
-
-			const columnBoard = await service.createWelcomeColumnBoard(externalReference);
-
-			const column = columnBoard.children[0];
-			const card = column.children[0] as Card;
-			const element = card.children[0] as RichTextElement;
-			expect(card.title).not.toHaveLength(0);
-			expect(element).toEqual(
-				expect.objectContaining({
-					text: expect.any(String),
-					inputFormat: InputFormat.RICH_TEXT_CK5,
-				})
-			);
-		});
-
-		describe('when a help link is configured', () => {
-			beforeEach(() => {
-				Configuration.set('COLUMN_BOARD_HELP_LINK', 'http://example.com/help');
-			});
-
-			it('should add a text element containing the link url', async () => {
-				const { externalReference } = setup();
-
-				const columnBoard = await service.createWelcomeColumnBoard(externalReference);
-
-				const column = columnBoard.children[0];
-				const card = column.children[0] as Card;
-				const element = card.children[1] as RichTextElement;
-
-				expect(element.text).toEqual(expect.stringContaining(Configuration.get('COLUMN_BOARD_HELP_LINK') as string));
-			});
-		});
-
-		describe('when a feedback link is configured', () => {
-			beforeEach(() => {
-				Configuration.set('COLUMN_BOARD_FEEDBACK_LINK', 'http://example.com/feedback');
-			});
-
-			it('should add a text element containing the link url', async () => {
-				const { externalReference } = setup();
-
-				const columnBoard = await service.createWelcomeColumnBoard(externalReference);
-
-				const column = columnBoard.children[0];
-				const card = column.children[0] as Card;
-				const element = card.children[2] as RichTextElement;
-
-				expect(element.text).toEqual(
-					expect.stringContaining(Configuration.get('COLUMN_BOARD_FEEDBACK_LINK') as string)
-				);
-			});
-		});
-
-		describe('contact link text element', () => {
-			it('should add a text element containing the link url when theme is not default', async () => {
-				Configuration.set('SC_THEME', 'brb');
-				const { externalReference } = setup();
-
-				const clientUrl = Configuration.get('HOST') as string;
-				const expectedContactUrl = `${clientUrl}/help/contact/`;
-
-				const columnBoard = await service.createWelcomeColumnBoard(externalReference);
-
-				const column = columnBoard.children[0];
-				const card = column.children[0] as Card;
-				const element = card.children.find((child) => (child as RichTextElement).text.includes(clientUrl));
-
-				expect((element as RichTextElement).text).toEqual(expect.stringContaining(expectedContactUrl));
-			});
-
-			it('should not add a text element when theme is default', async () => {
-				Configuration.set('SC_THEME', 'default');
-				const { externalReference } = setup();
-
-				const clientUrl = Configuration.get('HOST') as string;
-
-				const columnBoard = await service.createWelcomeColumnBoard(externalReference);
-
-				const column = columnBoard.children[0];
-				const card = column.children[0] as Card;
-				const element = card.children.find((child) => (child as RichTextElement).text.includes(clientUrl));
-
-				expect(element).toBeUndefined();
 			});
 		});
 	});
