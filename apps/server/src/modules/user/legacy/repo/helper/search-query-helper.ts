@@ -12,7 +12,7 @@ export class SearchQueryHelper {
 			// recreating sort here, to set searchQuery as first (main) parameter of sorting
 			query.sort = {
 				...query.sort,
-				searchQuery: 1,
+				sortBySearchQueryResult: 1,
 			};
 		}
 	}

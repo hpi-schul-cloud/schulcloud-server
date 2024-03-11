@@ -65,7 +65,7 @@ describe('Aggregation helper', () => {
 			const query: UserSearchQuery = {
 				skip: 0,
 				limit: 5,
-				sort: { firstName: 1, searchQuery: 1 },
+				sort: { firstName: 1, sortBySearchQueryResult: 1 },
 				searchQuery: 'test',
 				searchFilterGate: 9,
 				schoolId: new ObjectId(exampleId),

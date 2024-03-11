@@ -261,7 +261,7 @@ const stageLookupClasses = (aggregation, schoolId: ObjectId, schoolYearId: Objec
 const stageSort = (aggregation, sort) => {
 	const mSort = {};
 	for (const k in sort) {
-		if (k === 'searchQuery') {
+		if (k === 'sortBySearchQueryResult') {
 			// @ts-ignore
 			mSort.score = { $meta: 'textScore' };
 		} else if (k === 'consentStatus') {
