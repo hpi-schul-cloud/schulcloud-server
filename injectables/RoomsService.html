@@ -143,11 +143,6 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#handleColumnBoardIntegration" >handleColumnBoardIntegration</a>
-                            </li>
-                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#updateBoard" >updateBoard</a>
                             </li>
@@ -174,7 +169,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -269,76 +264,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="handleColumnBoardIntegration"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>handleColumnBoardIntegration</b></span>
-                        <a href="#handleColumnBoardIntegration"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>handleColumnBoardIntegration(roomId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:36</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>roomId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;ColumnBoardTarget[]&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="updateBoard"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -357,8 +282,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="21"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:21</a></div>
                         </td>
                     </tr>
 
@@ -434,13 +359,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
-import { ColumnBoardService } from &#x27;@modules/board&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ColumnBoardService } from &#x27;@modules/board&#x27;;
 import { LessonService } from &#x27;@modules/lesson&#x27;;
 import { TaskService } from &#x27;@modules/task&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { BoardExternalReferenceType } from &#x27;@shared/domain/domainobject&#x27;;
-import { Board, ColumnBoardTarget } from &#x27;@shared/domain/entity&#x27;;
+import { Board } from &#x27;@shared/domain/entity&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { BoardRepo } from &#x27;@shared/repo&#x27;;
 import { ColumnBoardTargetService } from &#x27;./column-board-target.service&#x27;;
@@ -458,8 +382,11 @@ export class RoomsService {
 	async updateBoard(board: Board, roomId: EntityId, userId: EntityId): Promise&lt;Board&gt; {
 		const [courseLessons] &#x3D; await this.lessonService.findByCourseIds([roomId]);
 		const [courseTasks] &#x3D; await this.taskService.findBySingleParent(userId, roomId);
-
-		const courseColumnBoardTargets &#x3D; await this.handleColumnBoardIntegration(roomId);
+		const columnBoardIds &#x3D; await this.columnBoardService.findIdsByExternalReference({
+			type: BoardExternalReferenceType.Course,
+			id: roomId,
+		});
+		const courseColumnBoardTargets &#x3D; await this.columnBoardTargetService.findOrCreateTargets(columnBoardIds);
 
 		const boardElementTargets &#x3D; [...courseLessons, ...courseTasks, ...courseColumnBoardTargets];
 
@@ -467,26 +394,6 @@ export class RoomsService {
 
 		await this.boardRepo.save(board);
 		return board;
-	}
-
-	private async handleColumnBoardIntegration(roomId: EntityId): Promise&lt;ColumnBoardTarget[]&gt; {
-		let courseColumnBoardTargets: ColumnBoardTarget[] &#x3D; [];
-
-		if ((Configuration.get(&#x27;FEATURE_COLUMN_BOARD_ENABLED&#x27;) as boolean) &#x3D;&#x3D;&#x3D; true) {
-			const courseReference &#x3D; {
-				type: BoardExternalReferenceType.Course,
-				id: roomId,
-			};
-
-			const columnBoardIds &#x3D; await this.columnBoardService.findIdsByExternalReference(courseReference);
-			if (columnBoardIds.length &#x3D;&#x3D;&#x3D; 0) {
-				const columnBoard &#x3D; await this.columnBoardService.createWelcomeColumnBoard(courseReference);
-				columnBoardIds.push(columnBoard.id);
-			}
-
-			courseColumnBoardTargets &#x3D; await this.columnBoardTargetService.findOrCreateTargets(columnBoardIds);
-		}
-		return courseColumnBoardTargets;
 	}
 }
 </code></pre>

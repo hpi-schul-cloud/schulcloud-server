@@ -155,6 +155,16 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
+                                <a href="#createBoard" >createBoard</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
                                 <a href="#createColumn" >createColumn</a>
                             </li>
                             <li>
@@ -220,6 +230,100 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="createBoard"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>createBoard</b></span>
+                        <a href="#createBoard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createBoard(bodyParams: <a href="../classes/CreateBoardBodyParams.html" target="_self">CreateBoardBodyParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@ApiOperation({summary: &#x27;Create a new board.&#x27;})<br />@ApiResponse({status: 201, type: CreateBoardResponse})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@Post()<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:40</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>bodyParams</td>
+                                            <td>
+                                                            <code><a href="../classes/CreateBoardBodyParams.html" target="_self" >CreateBoardBodyParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../entitys/Board.html" target="_self" >Promise&lt;CreateBoardResponse&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="createColumn"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -251,8 +355,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="93"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:93</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="117"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:117</a></div>
                         </td>
                     </tr>
 
@@ -346,8 +450,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="83"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:83</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="107"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:107</a></div>
                         </td>
                     </tr>
 
@@ -440,8 +544,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="50"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:50</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="74"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:74</a></div>
                         </td>
                     </tr>
 
@@ -534,8 +638,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="57"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:57</a></div>
                         </td>
                     </tr>
 
@@ -629,8 +733,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="68"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:68</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="92"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:92</a></div>
                         </td>
                     </tr>
 
@@ -720,15 +824,39 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ApiValidationError } from &#x27;@shared/common&#x27;;
 import { BoardUc } from &#x27;../uc&#x27;;
-import { BoardResponse, BoardUrlParams, ColumnResponse, UpdateBoardTitleParams } from &#x27;./dto&#x27;;
+import {
+	BoardResponse,
+	BoardUrlParams,
+	ColumnResponse,
+	CreateBoardBodyParams,
+	CreateBoardResponse,
+	UpdateBoardTitleParams,
+} from &#x27;./dto&#x27;;
 import { BoardContextResponse } from &#x27;./dto/board/board-context.reponse&#x27;;
-import { BoardResponseMapper, ColumnResponseMapper } from &#x27;./mapper&#x27;;
+import { BoardResponseMapper, ColumnResponseMapper, CreateBoardResponseMapper } from &#x27;./mapper&#x27;;
 
 @ApiTags(&#x27;Board&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
 @Controller(&#x27;boards&#x27;)
 export class BoardController {
 	constructor(private readonly boardUc: BoardUc) {}
+
+	@ApiOperation({ summary: &#x27;Create a new board.&#x27; })
+	@ApiResponse({ status: 201, type: CreateBoardResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Post()
+	async createBoard(
+		@Body() bodyParams: CreateBoardBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise&lt;CreateBoardResponse&gt; {
+		const board &#x3D; await this.boardUc.createBoard(currentUser.userId, bodyParams);
+
+		const response &#x3D; CreateBoardResponseMapper.mapToResponse(board);
+
+		return response;
+	}
 
 	@ApiOperation({ summary: &#x27;Get the skeleton of a a board.&#x27; })
 	@ApiResponse({ status: 200, type: BoardResponse })

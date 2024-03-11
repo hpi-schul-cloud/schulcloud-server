@@ -150,6 +150,10 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#createBoard" >createBoard</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#createColumn" >createColumn</a>
                             </li>
                             <li>
@@ -203,12 +207,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, boardDoAuthorizableService: <a href="../injectables/BoardDoAuthorizableService.html" target="_self">BoardDoAuthorizableService</a>, cardService: <a href="../injectables/CardService.html" target="_self">CardService</a>, columnBoardService: <a href="../injectables/ColumnBoardService.html" target="_self">ColumnBoardService</a>, columnService: <a href="../injectables/ColumnService.html" target="_self">ColumnService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
+<code>constructor(authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, boardDoAuthorizableService: <a href="../injectables/BoardDoAuthorizableService.html" target="_self">BoardDoAuthorizableService</a>, columnBoardService: <a href="../injectables/ColumnBoardService.html" target="_self">ColumnBoardService</a>, columnService: <a href="../injectables/ColumnService.html" target="_self">ColumnService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -242,18 +246,6 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/BoardDoAuthorizableService.html" target="_self" >BoardDoAuthorizableService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>cardService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/CardService.html" target="_self" >CardService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -297,6 +289,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>courseRepo</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/CourseRepo.html" target="_self" >CourseRepo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -311,6 +315,87 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createBoard"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>createBoard</b></span>
+                        <a href="#createBoard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createBoard(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, params: <a href="../classes/CreateBoardBodyParams.html" target="_self">CreateBoardBodyParams</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:28</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>params</td>
+                                            <td>
+                                                            <code><a href="../classes/CreateBoardBodyParams.html" target="_self" >CreateBoardBodyParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../entitys/Board.html" target="_self" >Promise&lt;ColumnBoard&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -333,8 +418,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:62</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="81"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:81</a></div>
                         </td>
                     </tr>
 
@@ -414,8 +499,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="44"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:44</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="63"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:63</a></div>
                         </td>
                     </tr>
 
@@ -495,8 +580,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -576,8 +661,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="35"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:35</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -657,8 +742,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="91"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:91</a></div>
                         </td>
                     </tr>
 
@@ -762,8 +847,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="53"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:53</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/board.uc.ts:72</a></div>
                         </td>
                     </tr>
 
@@ -1113,13 +1198,15 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Action } from &#x27;@modules/authorization&#x27;;
-import { AuthorizationService } from &#x27;@modules/authorization/domain&#x27;;
-import { forwardRef, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Action, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { Inject, Injectable, forwardRef } from &#x27;@nestjs/common&#x27;;
 import { BoardExternalReference, Column, ColumnBoard } from &#x27;@shared/domain/domainobject&#x27;;
+import { Permission } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { CourseRepo } from &#x27;@shared/repo&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { CardService, ColumnBoardService, ColumnService } from &#x27;../service&#x27;;
+import { CreateBoardBodyParams } from &#x27;../controller/dto&#x27;;
+import { ColumnBoardService, ColumnService } from &#x27;../service&#x27;;
 import { BoardDoAuthorizableService } from &#x27;../service/board-do-authorizable.service&#x27;;
 import { BaseUc } from &#x27;./base.uc&#x27;;
 
@@ -1129,13 +1216,30 @@ export class BoardUc extends BaseUc {
 		@Inject(forwardRef(() &#x3D;&gt; AuthorizationService))
 		protected readonly authorizationService: AuthorizationService,
 		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
-		private readonly cardService: CardService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly columnService: ColumnService,
-		private readonly logger: LegacyLogger
+		private readonly logger: LegacyLogger,
+		private readonly courseRepo: CourseRepo
 	) {
 		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(BoardUc.name);
+	}
+
+	async createBoard(userId: EntityId, params: CreateBoardBodyParams): Promise&lt;ColumnBoard&gt; {
+		this.logger.debug({ action: &#x27;createBoard&#x27;, userId, title: params.title });
+
+		const user &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		const course &#x3D; await this.courseRepo.findById(params.parentId);
+
+		this.authorizationService.checkPermission(user, course, {
+			action: Action.write,
+			requiredPermissions: [Permission.COURSE_EDIT],
+		});
+
+		const context &#x3D; { type: params.parentType, id: params.parentId };
+		const board &#x3D; await this.columnBoardService.create(context, params.title);
+
+		return board;
 	}
 
 	async findBoard(userId: EntityId, boardId: EntityId): Promise&lt;ColumnBoard&gt; {
