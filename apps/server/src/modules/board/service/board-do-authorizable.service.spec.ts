@@ -171,6 +171,17 @@ describe(BoardDoAuthorizableService.name, () => {
 
 				expect(boardDoAuthorizable.parentDo).toEqual(column);
 			});
+
+			it('should return the rootDo', async () => {
+				const { board } = setup();
+				const column = columnFactory.build();
+				boardDoRepo.getAncestorIds.mockResolvedValueOnce([column.id, board.id]);
+				boardDoRepo.findById.mockResolvedValueOnce(board);
+
+				const boardDoAuthorizable = await service.getBoardAuthorizable(board);
+
+				expect(boardDoAuthorizable.rootDo).toEqual(board);
+			});
 		});
 
 		describe('when trying to create a boardDoAuthorizable on a column without a columnboard as root', () => {

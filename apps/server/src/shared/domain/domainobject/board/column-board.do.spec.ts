@@ -45,4 +45,14 @@ describe(ColumnBoard.name, () => {
 			expect(columnBoard.context).toEqual(context);
 		});
 	});
+
+	describe('set isVisible', () => {
+		it('should store isVisible', () => {
+			const columnBoard = columnBoardFactory.build();
+
+			columnBoard.isVisible = true;
+
+			expect(columnBoard.isVisible).toBe(true);
+		});
+	});
 });

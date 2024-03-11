@@ -322,5 +322,23 @@ describe(ColumnBoardService.name, () => {
 				expect(element).toBeUndefined();
 			});
 		});
+
+		describe('updateBoardVisibility', () => {
+			it('should call the boardDoRepo.save with the updated board', async () => {
+				const board = columnBoardFactory.build();
+				const isVisible = true;
+
+				await service.updateBoardVisibility(board, isVisible);
+
+				expect(boardDoRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: board.id,
+						isVisible,
+						createdAt: expect.any(Date),
+						updatedAt: expect.any(Date),
+					})
+				);
+			});
+		});
 	});
 });
