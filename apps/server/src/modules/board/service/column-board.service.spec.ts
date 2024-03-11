@@ -2,7 +2,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { Test, TestingModule } from '@nestjs/testing';
-import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import {
 	BoardExternalReference,
 	BoardExternalReferenceType,

@@ -34,7 +34,6 @@ describe('board copy service', () => {
 	let columnBoardCopyService: DeepMocked<ColumnBoardCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let boardRepo: DeepMocked<LegacyBoardRepo>;
-	let boardNodeRepo: DeepMocked<BoardNodeRepo>;
 
 	afterAll(async () => {
 		await module.close();
@@ -82,7 +81,6 @@ describe('board copy service', () => {
 		copyHelperService = module.get(CopyHelperService);
 		columnBoardCopyService = module.get(ColumnBoardCopyService);
 		boardRepo = module.get(LegacyBoardRepo);
-		boardNodeRepo = module.get(BoardNodeRepo);
 		boardRepo.save = jest.fn();
 	});
 

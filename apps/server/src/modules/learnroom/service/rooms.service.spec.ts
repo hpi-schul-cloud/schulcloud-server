@@ -22,8 +22,6 @@ describe('rooms service', () => {
 	let taskService: DeepMocked<TaskService>;
 	let legacyBoardRepo: DeepMocked<LegacyBoardRepo>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
-	let columnBoardNode: DeepMocked<ColumnBoardNode>;
-	let boardNodeRepo: DeepMocked<BoardNodeRepo>;
 
 	let configBefore: IConfig;
 
@@ -80,8 +78,6 @@ describe('rooms service', () => {
 		taskService = module.get(TaskService);
 		legacyBoardRepo = module.get(LegacyBoardRepo);
 		columnBoardService = module.get(ColumnBoardService);
-		columnBoardNode = module.get(ColumnBoardNode);
-		boardNodeRepo = module.get(BoardNodeRepo);
 	});
 
 	afterEach(() => {
