@@ -416,9 +416,5 @@ export const createMultiDocumentAggregation = ({
 		stageFormatWithTotal(aggregation, limit, skip);
 	}
 
-	// @ts-ignore
-	aggregation[0].forEach((el) => {
-		console.log(el);
-	})
 	return aggregation;
 };
