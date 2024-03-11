@@ -8,7 +8,7 @@ import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { DataDeletedEvent, UserDeletedEvent } from '@src/modules/deletion/event';
+import { DataDeletedEvent, UserDeletedEvent } from '@modules/deletion';
 import { LessonRepo } from '../repository';
 
 @Injectable()
@@ -23,9 +23,9 @@ export class LessonService implements AuthorizationLoaderService, DeletionServic
 		this.logger.setContext(LessonService.name);
 	}
 
-	async handle({ deletionRequest }: UserDeletedEvent) {
-		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	async deleteLesson(lesson: LessonEntity): Promise<void> {

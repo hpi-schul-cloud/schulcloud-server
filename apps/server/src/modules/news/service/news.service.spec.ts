@@ -158,38 +158,43 @@ describe(NewsService.name, () => {
 	describe('handle', () => {
 		const setup = () => {
 			const targetRefId = new ObjectId().toHexString();
-			const targetRefDomain = DomainName.NEWS;
+			const targetRefDomain = DomainName.FILERECORDS;
 			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
+			const deletionRequestId = deletionRequest.id;
 
-			const expectedData = DomainDeletionReportBuilder.build(DomainName.NEWS, [
-				DomainOperationReportBuilder.build(OperationType.UPDATE, 1, [new ObjectId().toHexString()]),
+			const expectedData = DomainDeletionReportBuilder.build(DomainName.FILERECORDS, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString(),
+				]),
 			]);
 
 			return {
-				deletionRequest,
+				deletionRequestId,
 				expectedData,
+				targetRefId,
 			};
 		};
 
 		describe('when UserDeletedEvent is received', () => {
 			it('should call deleteUserData in classService', async () => {
-				const { deletionRequest, expectedData } = setup();
+				const { deletionRequestId, expectedData, targetRefId } = setup();
 
 				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
 
-				await service.handle({ deletionRequest });
+				await service.handle({ deletionRequestId, targetRefId });
 
-				expect(service.deleteUserData).toHaveBeenCalledWith(deletionRequest.targetRefId);
+				expect(service.deleteUserData).toHaveBeenCalledWith(targetRefId);
 			});
 
 			it('should call eventBus.publish with DataDeletedEvent', async () => {
-				const { deletionRequest, expectedData } = setup();
+				const { deletionRequestId, expectedData, targetRefId } = setup();
 
 				jest.spyOn(service, 'deleteUserData').mockResolvedValueOnce(expectedData);
 
-				await service.handle({ deletionRequest });
+				await service.handle({ deletionRequestId, targetRefId });
 
-				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequest, expectedData));
+				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
 			});
 		});
 	});

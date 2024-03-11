@@ -26,9 +26,9 @@ export class PseudonymService implements DeletionService, IEventHandler<UserDele
 		this.logger.setContext(PseudonymService.name);
 	}
 
-	async handle({ deletionRequest }: UserDeletedEvent) {
-		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	public async findByUserAndToolOrThrow(user: UserDO, tool: ExternalTool | LtiToolDO): Promise<Pseudonym> {

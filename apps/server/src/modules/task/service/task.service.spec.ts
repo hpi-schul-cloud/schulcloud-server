@@ -313,10 +313,11 @@ describe('TaskService', () => {
 	describe('handle', () => {
 		const setup = () => {
 			const targetRefId = new ObjectId().toHexString();
-			const targetRefDomain = DomainName.TASK;
+			const targetRefDomain = DomainName.FILERECORDS;
 			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
+			const deletionRequestId = deletionRequest.id;
 
-			const expectedData = DomainDeletionReportBuilder.build(DomainName.TASK, [
+			const expectedData = DomainDeletionReportBuilder.build(DomainName.FILERECORDS, [
 				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [
 					new ObjectId().toHexString(),
 					new ObjectId().toHexString(),
@@ -324,30 +325,31 @@ describe('TaskService', () => {
 			]);
 
 			return {
-				deletionRequest,
+				deletionRequestId,
 				expectedData,
+				targetRefId,
 			};
 		};
 
 		describe('when UserDeletedEventis received', () => {
 			it('should call deleteUserData in classService', async () => {
-				const { deletionRequest, expectedData } = setup();
+				const { deletionRequestId, expectedData, targetRefId } = setup();
 
 				jest.spyOn(taskService, 'deleteUserData').mockResolvedValueOnce(expectedData);
 
-				await taskService.handle({ deletionRequest });
+				await taskService.handle({ deletionRequestId, targetRefId });
 
-				expect(taskService.deleteUserData).toHaveBeenCalledWith(deletionRequest.targetRefId);
+				expect(taskService.deleteUserData).toHaveBeenCalledWith(targetRefId);
 			});
 
 			it('should call eventBus.publish with DataDeletedEvent', async () => {
-				const { deletionRequest, expectedData } = setup();
+				const { deletionRequestId, expectedData, targetRefId } = setup();
 
 				jest.spyOn(taskService, 'deleteUserData').mockResolvedValueOnce(expectedData);
 
-				await taskService.handle({ deletionRequest });
+				await taskService.handle({ deletionRequestId, targetRefId });
 
-				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequest, expectedData));
+				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
 			});
 		});
 	});

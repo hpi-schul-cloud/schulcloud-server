@@ -38,9 +38,9 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		}
 	}
 
-	async handle({ deletionRequest }: UserDeletedEvent) {
-		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	async findById(id: string): Promise<AccountDto> {
@@ -180,7 +180,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		return deletedAccounts;
 	}
 
-	async deleteUserData(userId: string): Promise<DomainDeletionReport> {
+	async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.debug(`Start deleting data for userId - ${userId} in account collection`);
 		const deletedAccounts = await this.deleteByUserId(userId);
 

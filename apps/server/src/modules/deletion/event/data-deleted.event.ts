@@ -1,13 +1,13 @@
 import { DomainDeletionReport } from '@shared/domain/interface';
-import { DeletionRequest } from '../domain';
+import { EntityId } from '@shared/domain/types';
 
 export class DataDeletedEvent {
-	deletionRequest: DeletionRequest;
+	deletionRequestId: EntityId;
 
 	domainDeletionReport: DomainDeletionReport;
 
-	constructor(deletionRequest: DeletionRequest, domainDeletionReport: DomainDeletionReport) {
-		this.deletionRequest = deletionRequest;
+	constructor(deletionRequestId: EntityId, domainDeletionReport: DomainDeletionReport) {
+		this.deletionRequestId = deletionRequestId;
 		this.domainDeletionReport = domainDeletionReport;
 	}
 }

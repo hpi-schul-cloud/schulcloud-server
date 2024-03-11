@@ -6,7 +6,7 @@ import { ObjectId } from 'bson';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { DomainName, OperationType } from '@shared/domain/types';
 import { EventBus } from '@nestjs/cqrs';
-import { deletionRequestFactory } from '@src/modules/deletion/domain/testing';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { DataDeletedEvent } from '@modules/deletion';
 import { LegacyLogger } from '../../../core/logger';
 import { AccountServiceDb } from './account-db.service';
@@ -566,37 +566,39 @@ describe('AccountService', () => {
 			const targetRefId = new ObjectId().toHexString();
 			const targetRefDomain = DomainName.ACCOUNT;
 			const accountId = new ObjectId().toHexString();
-			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
+			const deletionRequest = deletionRequestFactory.buildWithId({ targetRefId, targetRefDomain });
+			const deletionRequestId = deletionRequest.id;
 
 			const expectedData = DomainDeletionReportBuilder.build(DomainName.ACCOUNT, [
 				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [accountId]),
 			]);
 
 			return {
-				deletionRequest,
+				deletionRequestId,
 				expectedData,
+				targetRefId,
 			};
 		};
 
 		describe('when UserDeletedEvent is received', () => {
 			it('should call deleteUserData in accountService', async () => {
-				const { deletionRequest, expectedData } = setup();
+				const { deletionRequestId, expectedData, targetRefId } = setup();
 
 				jest.spyOn(accountService, 'deleteUserData').mockResolvedValueOnce(expectedData);
 
-				await accountService.handle({ deletionRequest });
+				await accountService.handle({ deletionRequestId, targetRefId });
 
-				expect(accountService.deleteUserData).toHaveBeenCalledWith(deletionRequest.targetRefId);
+				expect(accountService.deleteUserData).toHaveBeenCalledWith(targetRefId);
 			});
 
 			it('should call eventBus.publish with DataDeletedEvent', async () => {
-				const { deletionRequest, expectedData } = setup();
+				const { deletionRequestId, expectedData, targetRefId } = setup();
 
 				jest.spyOn(accountService, 'deleteUserData').mockResolvedValueOnce(expectedData);
 
-				await accountService.handle({ deletionRequest });
+				await accountService.handle({ deletionRequestId, targetRefId });
 
-				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequest, expectedData));
+				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
 			});
 		});
 	});

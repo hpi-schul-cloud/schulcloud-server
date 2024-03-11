@@ -112,25 +112,26 @@ describe(DeletionRequestUc.name, () => {
 			const targetRefId = new ObjectId().toHexString();
 			const targetRefDomain = DomainName.ACCOUNT;
 			const accountId = new ObjectId().toHexString();
-			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
+			const deletionRequest = deletionRequestFactory.buildWithId({ targetRefId, targetRefDomain });
+			const deletionRequestId = deletionRequest.id;
 
 			const domainDeletionReport = DomainDeletionReportBuilder.build(DomainName.ACCOUNT, [
 				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [accountId]),
 			]);
 
 			return {
-				deletionRequest,
+				deletionRequestId,
 				domainDeletionReport,
 			};
 		};
 
 		describe('when DataDeletedEvent is received', () => {
 			it('should call logDeletion', async () => {
-				const { deletionRequest, domainDeletionReport } = setup();
+				const { deletionRequestId, domainDeletionReport } = setup();
 
-				await uc.handle({ deletionRequest, domainDeletionReport });
+				await uc.handle({ deletionRequestId, domainDeletionReport });
 
-				expect(deletionLogService.createDeletionLog).toHaveBeenCalledWith(deletionRequest.id, domainDeletionReport);
+				expect(deletionLogService.createDeletionLog).toHaveBeenCalledWith(deletionRequestId, domainDeletionReport);
 			});
 		});
 	});
@@ -168,7 +169,9 @@ describe(DeletionRequestUc.name, () => {
 
 				await uc.executeDeletionRequests();
 
-				expect(eventBus.publish).toHaveBeenCalledWith(new UserDeletedEvent(deletionRequest));
+				expect(eventBus.publish).toHaveBeenCalledWith(
+					new UserDeletedEvent(deletionRequest.id, deletionRequest.targetRefId)
+				);
 			});
 		});
 

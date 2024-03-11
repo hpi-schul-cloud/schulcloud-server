@@ -40,9 +40,9 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		this.logger.setContext(UserService.name);
 	}
 
-	async handle({ deletionRequest }: UserDeletedEvent) {
-		const dataDeleted = await this.deleteUserData(deletionRequest.targetRefId);
-		await this.eventBus.publish(new DataDeletedEvent(deletionRequest, dataDeleted));
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	async getUserEntityWithRoles(userId: EntityId): Promise<User> {

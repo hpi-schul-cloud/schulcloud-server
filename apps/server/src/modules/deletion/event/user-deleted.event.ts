@@ -1,9 +1,12 @@
-import { DeletionRequest } from '../domain';
+import { EntityId } from '@shared/domain/types';
 
 export class UserDeletedEvent {
-	deletionRequest: DeletionRequest;
+	deletionRequestId: EntityId;
 
-	constructor(deletionRequest: DeletionRequest) {
-		this.deletionRequest = deletionRequest;
+	targetRefId: EntityId;
+
+	constructor(deletionRequestId: EntityId, targetRefId: EntityId) {
+		this.deletionRequestId = deletionRequestId;
+		this.targetRefId = targetRefId;
 	}
 }
