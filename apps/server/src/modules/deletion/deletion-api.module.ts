@@ -1,26 +1,26 @@
 import { Module } from '@nestjs/common';
 import { DeletionModule } from '@modules/deletion';
+import { AccountModule } from '@modules/account';
+import { ClassModule } from '@modules/class';
+import { LearnroomModule } from '@modules/learnroom';
+import { FilesModule } from '@modules/files';
+import { PseudonymModule } from '@modules/pseudonym';
+import { LessonModule } from '@modules/lesson';
+import { TeamsModule } from '@modules/teams';
+import { UserModule } from '@modules/user';
 import { LoggerModule } from '@src/core/logger';
-import { CqrsModule } from '@nestjs/cqrs';
+import { AuthenticationModule } from '@modules/authentication';
+import { RocketChatUserModule } from '@modules/rocketchat-user';
 import { Configuration } from '@hpi-schul-cloud/commons';
-import { DeletionRequestUc } from './uc';
-import { DeletionExecutionsController } from './controller/deletion-executions.controller';
+import { RocketChatModule } from '@modules/rocketchat';
+import { RegistrationPinModule } from '@modules/registration-pin';
+import { TaskModule } from '@modules/task';
+import { FilesStorageClientModule } from '@modules/files-storage-client';
+import { CqrsModule } from '@nestjs/cqrs';
 import { DeletionRequestsController } from './controller/deletion-requests.controller';
-import { AccountModule } from '../account';
-import { AuthenticationModule } from '../authentication';
-import { ClassModule } from '../class';
-import { FilesModule } from '../files';
-import { FilesStorageClientModule } from '../files-storage-client';
-import { LearnroomModule } from '../learnroom';
-import { LessonModule } from '../lesson';
+import { DeletionExecutionsController } from './controller/deletion-executions.controller';
+import { DeletionRequestUc } from './uc';
 import { NewsModule } from '../news';
-import { PseudonymModule } from '../pseudonym';
-import { RegistrationPinModule } from '../registration-pin';
-import { RocketChatModule } from '../rocketchat';
-import { RocketChatUserModule } from '../rocketchat-user';
-import { TaskModule } from '../task';
-import { TeamsModule } from '../teams';
-import { UserModule } from '../user';
 
 @Module({
 	imports: [
