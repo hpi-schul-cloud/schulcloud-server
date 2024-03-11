@@ -371,18 +371,15 @@ export const createMultiDocumentAggregation = ({
 		match._id = { $in: convertToObjectIds(convertToIn(match._id)) };
 	}
 
-	const selectSortDiff = Object.getOwnPropertyNames(sort || {}).filter((s) => !select.includes(s) && s !== 'sortBySearchQueryResult');
+	const selectSortDiff = Object.getOwnPropertyNames(sort || {}).filter((s) => !select.includes(s));
 	const aggregation = [];
 
 	if (searchQuery) {
 		// to sort by this value, add 'searchQuery' to sort value
 		// @ts-ignore
 		match.$text = {
-			$search: searchQuery,
-			$language: 'de',
+			$search: searchQuery
 		};
-
-		selectSortDiff.push('searchQuery');
 	}
 
 	if (match) {
@@ -419,5 +416,9 @@ export const createMultiDocumentAggregation = ({
 		stageFormatWithTotal(aggregation, limit, skip);
 	}
 
+	// @ts-ignore
+	aggregation[0].forEach((el) => {
+		console.log(el);
+	})
 	return aggregation;
 };
