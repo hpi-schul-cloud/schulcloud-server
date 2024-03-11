@@ -32,23 +32,26 @@ export class BoardDoAuthorizable extends DomainObject<BoardDoAuthorizableProps> 
 		return this.props.boardDo;
 	}
 
-	set boardDo(value: AnyBoardDo) {
-		this.props.boardDo = value;
-	}
+	// TODO: check if needed
+	// set boardDo(value: AnyBoardDo) {
+	// 	this.props.boardDo = value;
+	// }
 
 	get parentDo(): AnyBoardDo | undefined {
 		return this.props.parentDo;
 	}
 
-	set parentDo(value: AnyBoardDo | undefined) {
-		this.props.parentDo = value;
-	}
+	// TODO: check if needed
+	// set parentDo(value: AnyBoardDo | undefined) {
+	//	this.props.parentDo = value;
+	// }
 
 	get rootDo(): ColumnBoard {
 		return this.props.rootDo;
 	}
 
-	set rootDo(value: ColumnBoard) {
-		this.props.rootDo = value;
-	}
+	// TODO: check if needed
+	// set rootDo(value: ColumnBoard) {
+	//	this.props.rootDo = value;
+	// }
 }
