@@ -45,11 +45,9 @@ export class School extends DomainObject<SchoolProps> {
 	}
 
 	public removeInstanceFeature(feature: InstanceFeature): void {
-		if (!this.props.instanceFeatures) {
-			return;
+		if (this.props.instanceFeatures) {
+			this.props.instanceFeatures.delete(feature);
 		}
-
-		this.props.instanceFeatures.delete(feature);
 	}
 
 	public updateCounty(countyId: EntityId): void {
