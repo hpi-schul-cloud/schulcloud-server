@@ -25,5 +25,14 @@
 		"created_at": {
 			"$date": "2024-02-21T13:38:14.058Z"
 		}
+	},
+	{
+		"_id": {
+			"$oid": "65eecc9abaf077b6f9fdb878"
+		},
+		"name": "Migration20240304123509",
+		"created_at": {
+			"$date": "2024-03-11T09:19:22.532Z"
+		}
 	}
 ]

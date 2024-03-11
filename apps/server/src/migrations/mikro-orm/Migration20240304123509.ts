@@ -48,9 +48,10 @@ export class Migration20240304123509 extends Migration {
 		}
 		console.info(`Updated ${affectedRows} records in column-element`);
 
-		await this.getCollection('column-board-target').drop();
+		// TODO remove this collection at a later time. We keep it for now in case is needed to restore
+		// await this.getCollection('column-board-target').drop();
 
-		console.info(`Collection colum-board-target was removed`);
+		// console.info(`Collection colum-board-target was NOT removed`);
 	}
 
 	async down(): Promise<void> {
