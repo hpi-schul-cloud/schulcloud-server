@@ -371,7 +371,7 @@ export const createMultiDocumentAggregation = ({
 		match._id = { $in: convertToObjectIds(convertToIn(match._id)) };
 	}
 
-	const selectSortDiff = Object.getOwnPropertyNames(sort || {}).filter((s) => !select.includes(s));
+	const selectSortDiff = Object.getOwnPropertyNames(sort || {}).filter((s) => !select.includes(s) && s !== 'sortBySearchQueryResult');
 	const aggregation = [];
 
 	if (searchQuery) {
@@ -381,6 +381,8 @@ export const createMultiDocumentAggregation = ({
 			$search: searchQuery,
 			$language: 'de',
 		};
+
+		selectSortDiff.push('searchQuery');
 	}
 
 	if (match) {
