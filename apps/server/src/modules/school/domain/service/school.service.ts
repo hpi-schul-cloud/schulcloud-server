@@ -1,7 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { IFindOptions } from '@shared/domain/interface/find-options';
-import { SchoolFeature } from '@shared/domain/types';
 import { EntityId } from '@shared/domain/types/entity-id';
 import { System, SystemService } from '@src/modules/system';
 import { SchoolConfig } from '../../school.config';
@@ -10,6 +9,7 @@ import { SchoolForLdapLogin, SchoolForLdapLoginProps } from '../do/school-for-ld
 import { SchoolFactory } from '../factory';
 import { SCHOOL_REPO, SchoolRepo, SchoolUpdateBody } from '../interface';
 import { SchoolQuery } from '../query';
+import { InstanceFeature } from '../type';
 
 @Injectable()
 export class SchoolService {
@@ -20,17 +20,17 @@ export class SchoolService {
 	) {}
 
 	public async getSchoolById(schoolId: EntityId): Promise<School> {
-		const school = await this.schoolRepo.getSchoolById(schoolId);
+		let school = await this.schoolRepo.getSchoolById(schoolId);
 
-		this.addInstanceFeatures(school);
+		school = this.addInstanceFeatures(school);
 
 		return school;
 	}
 
 	public async getSchools(query: SchoolQuery = {}, options?: IFindOptions<SchoolProps>): Promise<School[]> {
-		const schools = await this.schoolRepo.getSchools(query, options);
+		let schools = await this.schoolRepo.getSchools(query, options);
 
-		schools.forEach((school) => this.addInstanceFeatures(school));
+		schools = schools.map((school) => this.addInstanceFeatures(school));
 
 		return schools;
 	}
@@ -75,13 +75,12 @@ export class SchoolService {
 	}
 
 	public async updateSchool(schoolId: string, body: SchoolUpdateBody) {
-		const school = await this.schoolRepo.getSchoolById(schoolId);
+		const school = await this.getSchoolById(schoolId);
 
 		const fullSchoolObject = SchoolFactory.buildFromPartialBody(school, body);
-		this.removeInstanceFeatures(fullSchoolObject);
 
-		const updatedSchool = await this.schoolRepo.save(fullSchoolObject);
-		this.addInstanceFeatures(updatedSchool);
+		let updatedSchool = await this.schoolRepo.save(fullSchoolObject);
+		updatedSchool = this.addInstanceFeatures(updatedSchool);
 
 		return updatedSchool;
 	}
@@ -126,15 +125,7 @@ export class SchoolService {
 	// But it has to be discussed, how to implement that. Thus we leave the logic here for now.
 	private addInstanceFeatures(school: School): School {
 		if (this.canStudentCreateTeam(school)) {
-			school.addFeature(SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
-		}
-
-		return school;
-	}
-
-	private removeInstanceFeatures(school: School): School {
-		if (this.canStudentCreateTeam(school)) {
-			school.removeFeature(SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
+			school.addInstanceFeature(InstanceFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED);
 		}
 
 		return school;

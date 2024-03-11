@@ -3,7 +3,7 @@ import { H5PAjaxEndpoint, H5PEditor, H5PPlayer, H5pError } from '@lumieducation/
 import { HttpException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
-import { LanguageType } from '@shared/domain/entity';
+import { LanguageType } from '@shared/domain/interface';
 import { setupEntities } from '@shared/testing';
 import { AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { UserService } from '@src/modules/user';

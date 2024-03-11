@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
-import { FileStorageType, SchoolPermissions } from '../../../domain';
+import { FileStorageType, InstanceFeature, SchoolPermissions } from '../../../domain';
+import { SchoolLogo } from '../param';
 import { CountyResponse } from './county.response';
 import { FederalStateResponse } from './federal-state.response';
 import { SchoolYearResponse } from './school-year.response';
@@ -50,10 +51,7 @@ export class SchoolResponse {
 	isExternal: boolean;
 
 	@ApiPropertyOptional()
-	logo_dataUrl?: string;
-
-	@ApiPropertyOptional()
-	logo_name?: string;
+	logo?: SchoolLogo;
 
 	@ApiPropertyOptional({ enum: FileStorageType, enumName: 'FileStorageType' })
 	fileStorageType?: FileStorageType;
@@ -70,6 +68,9 @@ export class SchoolResponse {
 	@ApiProperty({ type: YearsResponse })
 	years: YearsResponse;
 
+	@ApiProperty({ enum: InstanceFeature, enumName: 'InstanceFeature', isArray: true })
+	instanceFeatures: InstanceFeature[];
+
 	constructor(props: SchoolResponse) {
 		this.id = props.id;
 		this.createdAt = props.createdAt;
@@ -85,12 +86,12 @@ export class SchoolResponse {
 		this.inUserMigration = props.inUserMigration;
 		this.inMaintenance = props.inMaintenance;
 		this.isExternal = props.isExternal;
-		this.logo_dataUrl = props.logo_dataUrl;
-		this.logo_name = props.logo_name;
+		this.logo = props.logo;
 		this.fileStorageType = props.fileStorageType;
 		this.language = props.language;
 		this.timezone = props.timezone;
 		this.permissions = props.permissions;
 		this.years = props.years;
+		this.instanceFeatures = props.instanceFeatures;
 	}
 }

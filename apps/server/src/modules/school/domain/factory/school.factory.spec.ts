@@ -1,4 +1,4 @@
-import { LanguageType } from '@shared/domain/entity';
+import { LanguageType } from '@shared/domain/interface';
 import { SchoolFeature } from '@shared/domain/types';
 import { federalStateFactory } from '../../testing';
 import { School } from '../do';
@@ -12,8 +12,10 @@ describe('SchoolFactory', () => {
 				id: 'school-id',
 				name: 'school-name',
 				officialSchoolNumber: 'school-number',
-				logo_dataUrl: 'school-logo-dataUrl',
-				logo_name: 'school-logo-name',
+				logo: {
+					dataUrl: 'school-logo-dataUrl',
+					name: 'school-logo-name',
+				},
 				fileStorageType: FileStorageType.AWS_S3,
 				language: LanguageType.DE,
 				features: new Set([SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION]),
@@ -48,11 +50,13 @@ describe('SchoolFactory', () => {
 				const partialBody = {
 					name: 'new-school-name',
 					officialSchoolNumber: 'new-school-number',
-					logo_dataUrl: 'new-school-logo-dataUrl',
-					logo_name: 'new-school-logo-name',
+					logo: {
+						dataUrl: 'new-school-logo-dataUrl',
+						name: 'new-school-logo-name',
+					},
 					fileStorageType: FileStorageType.AWS_S3,
 					language: LanguageType.EN,
-					features: new Set([SchoolFeature.IS_TEAM_CREATION_BY_STUDENTS_ENABLED]),
+					features: new Set([SchoolFeature.ROCKET_CHAT]),
 				};
 
 				return { school, partialBody };
@@ -69,8 +73,7 @@ describe('SchoolFactory', () => {
 					...school.getProps(),
 					name: partialBody.name,
 					officialSchoolNumber: partialBody.officialSchoolNumber,
-					logo_dataUrl: partialBody.logo_dataUrl,
-					logo_name: partialBody.logo_name,
+					logo: partialBody.logo,
 					fileStorageType: partialBody.fileStorageType,
 					language: partialBody.language,
 					features: partialBody.features,

@@ -15,7 +15,7 @@ describe('SchoolEntityMapper', () => {
 				const system = new SystemEntity({
 					type: 'type',
 				});
-				const entity = schoolEntityFactory.build({ systems: [system] });
+				const entity = schoolEntityFactory.build({ systems: [system], logo_dataUrl: 'dataUrl', logo_name: 'name' });
 				const expected = new School({
 					id: entity.id,
 					createdAt: entity.createdAt,
@@ -27,8 +27,10 @@ describe('SchoolEntityMapper', () => {
 					inMaintenanceSince: entity.inMaintenanceSince,
 					inUserMigration: entity.inUserMigration,
 					purpose: entity.purpose,
-					logo_dataUrl: entity.logo_dataUrl,
-					logo_name: entity.logo_name,
+					logo: {
+						dataUrl: entity.logo_dataUrl,
+						name: entity.logo_name,
+					},
 					fileStorageType: entity.fileStorageType,
 					language: entity.language,
 					timezone: entity.timezone,

@@ -7,15 +7,32 @@ export class SchoolFactory {
 	}
 
 	static buildFromPartialBody(school: School, partialBody: SchoolUpdateBody) {
+		const {
+			name,
+			officialSchoolNumber,
+			logo,
+			fileStorageType,
+			language,
+			features,
+			permissions,
+			countyId,
+			enableStudentTeamCreation,
+		} = partialBody;
+
+		if (countyId) {
+			school.updateCounty(countyId);
+		}
+
 		const props = school.getProps();
 
-		props.name = partialBody.name ?? props.name;
-		props.officialSchoolNumber = partialBody.officialSchoolNumber ?? props.officialSchoolNumber;
-		props.logo_dataUrl = partialBody.logo_dataUrl ?? props.logo_dataUrl;
-		props.logo_name = partialBody.logo_name ?? props.logo_name;
-		props.fileStorageType = partialBody.fileStorageType ?? props.fileStorageType;
-		props.language = partialBody.language ?? props.language;
-		props.features = partialBody.features ?? props.features;
+		props.name = name ?? props.name;
+		props.officialSchoolNumber = officialSchoolNumber ?? props.officialSchoolNumber;
+		props.logo = logo ?? props.logo;
+		props.fileStorageType = fileStorageType ?? props.fileStorageType;
+		props.language = language ?? props.language;
+		props.features = features ?? props.features;
+		props.permissions = permissions ?? props.permissions;
+		props.enableStudentTeamCreation = enableStudentTeamCreation ?? props.enableStudentTeamCreation;
 
 		const result = SchoolFactory.build(props);
 
