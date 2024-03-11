@@ -9,7 +9,7 @@ import { DomainName, OperationType } from '@shared/domain/types';
 import { EventBus } from '@nestjs/cqrs';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { ObjectId } from 'bson';
-import { DataDeletedEvent } from '@modules/deletion/event';
+import { DataDeletedEvent } from '@modules/deletion';
 import { CourseService } from './course.service';
 
 describe('CourseService', () => {

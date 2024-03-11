@@ -17,7 +17,7 @@ import { Logger } from '@src/core/logger';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { NotFoundException } from '@nestjs/common';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { DataDeletedEvent } from '@modules/deletion/event';
+import { DataDeletedEvent } from '@modules/deletion';
 import { EventBus } from '@nestjs/cqrs';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { UserDto } from '../uc/dto/user.dto';

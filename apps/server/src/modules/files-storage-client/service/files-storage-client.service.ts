@@ -5,7 +5,7 @@ import { FileDO } from '@src/infra/rabbitmq';
 import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
-import { UserDeletedEvent, DataDeletedEvent } from '@src/modules/deletion/event';
+import { UserDeletedEvent, DataDeletedEvent } from '@modules/deletion';
 import { CopyFileDto, FileDto } from '../dto';
 import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
 import { FilesStorageClientMapper } from '../mapper';

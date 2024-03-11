@@ -9,7 +9,7 @@ import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shar
 import { ObjectId } from 'bson';
 import { EventBus } from '@nestjs/cqrs';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { DataDeletedEvent } from '@modules/deletion/event';
+import { DataDeletedEvent } from '@modules/deletion';
 import { DashboardService } from '.';
 
 const learnroomMock = (id: string, name: string) => {

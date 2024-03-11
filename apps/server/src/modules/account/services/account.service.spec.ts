@@ -7,7 +7,7 @@ import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shar
 import { DomainName, OperationType } from '@shared/domain/types';
 import { EventBus } from '@nestjs/cqrs';
 import { deletionRequestFactory } from '@src/modules/deletion/domain/testing';
-import { DataDeletedEvent } from '@src/modules/deletion/event';
+import { DataDeletedEvent } from '@modules/deletion';
 import { LegacyLogger } from '../../../core/logger';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';

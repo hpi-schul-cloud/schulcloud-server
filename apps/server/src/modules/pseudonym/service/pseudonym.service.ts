@@ -10,7 +10,7 @@ import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
-import { UserDeletedEvent, DataDeletedEvent } from '@src/modules/deletion/event';
+import { UserDeletedEvent, DataDeletedEvent } from '@modules/deletion';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 

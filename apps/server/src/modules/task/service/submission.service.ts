@@ -8,7 +8,7 @@ import { DeletionService, DomainDeletionReport, DomainOperationReport } from '@s
 import { Counted, DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { SubmissionRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { UserDeletedEvent, DataDeletedEvent } from '@src/modules/deletion/event';
+import { UserDeletedEvent, DataDeletedEvent } from '@modules/deletion';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)

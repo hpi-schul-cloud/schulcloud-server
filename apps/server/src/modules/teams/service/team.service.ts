@@ -7,8 +7,7 @@ import { DeletionService, DomainDeletionReport } from '@shared/domain/interface'
 import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { UserDeletedEvent } from '@src/modules/deletion/event';
-import { DataDeletedEvent } from '@src/modules/deletion/event/data-deleted.event';
+import { DataDeletedEvent, UserDeletedEvent } from '@modules/deletion';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)

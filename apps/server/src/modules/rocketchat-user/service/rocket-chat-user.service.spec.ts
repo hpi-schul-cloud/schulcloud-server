@@ -8,7 +8,7 @@ import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shar
 import { EventBus } from '@nestjs/cqrs';
 import { RocketChatService } from '@modules/rocketchat/rocket-chat.service';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { DataDeletedEvent } from '@modules/deletion/event';
+import { DataDeletedEvent } from '@modules/deletion';
 import { DomainDeletionReport } from '@shared/domain/interface';
 import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import { RocketChatUserService } from './rocket-chat-user.service';

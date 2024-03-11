@@ -5,7 +5,7 @@ import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
 import { EventsHandler, IEventHandler, EventBus } from '@nestjs/cqrs';
-import { UserDeletedEvent, DataDeletedEvent } from '@src/modules/deletion/event';
+import { UserDeletedEvent, DataDeletedEvent } from '@modules/deletion';
 import { RocketChatService } from '@modules/rocketchat';
 import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import { RocketChatUser } from '../domain';

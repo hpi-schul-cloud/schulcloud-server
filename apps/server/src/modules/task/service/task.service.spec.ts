@@ -9,7 +9,7 @@ import { Logger } from '@src/core/logger';
 import { EventBus } from '@nestjs/cqrs';
 import { ObjectId } from 'bson';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { DataDeletedEvent } from '@modules/deletion/event';
+import { DataDeletedEvent } from '@modules/deletion';
 import { TaskService } from './task.service';
 import { SubmissionService } from './submission.service';
 

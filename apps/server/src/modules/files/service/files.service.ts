@@ -5,7 +5,7 @@ import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { DataDeletedEvent, UserDeletedEvent } from '@src/modules/deletion/event';
+import { DataDeletedEvent, UserDeletedEvent } from '@modules/deletion';
 import { FileEntity } from '../entity';
 import { FilesRepo } from '../repo';
 

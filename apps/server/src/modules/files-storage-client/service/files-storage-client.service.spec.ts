@@ -8,7 +8,7 @@ import { EventBus } from '@nestjs/cqrs';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { DomainName, OperationType } from '@shared/domain/types';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
-import { DataDeletedEvent } from '@modules/deletion/event';
+import { DataDeletedEvent } from '@modules/deletion';
 import { FileParamBuilder, FilesStorageClientMapper } from '../mapper';
 import { CopyFilesOfParentParamBuilder } from '../mapper/copy-files-of-parent-param.builder';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';

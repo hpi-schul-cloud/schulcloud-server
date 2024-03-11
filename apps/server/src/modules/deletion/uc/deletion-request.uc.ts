@@ -8,8 +8,7 @@ import { DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from '../
 import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
 import { DeletionRequest, DeletionLog } from '../domain';
 import { DeletionRequestService, DeletionLogService } from '../services';
-import { UserDeletedEvent } from '../event';
-import { DataDeletedEvent } from '../event/data-deleted.event';
+import { DataDeletedEvent, UserDeletedEvent } from '../event';
 
 @Injectable()
 @EventsHandler(DataDeletedEvent)

@@ -7,7 +7,7 @@ import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shar
 import { DeletionService, DomainDeletionReport } from '@shared/domain/interface';
 import { News } from '@shared/domain/entity';
 import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
-import { UserDeletedEvent, DataDeletedEvent } from '@src/modules/deletion/event';
+import { UserDeletedEvent, DataDeletedEvent } from '@modules/deletion';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)

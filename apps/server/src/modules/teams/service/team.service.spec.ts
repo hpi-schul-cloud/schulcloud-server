@@ -8,7 +8,7 @@ import { DomainName, OperationType } from '@shared/domain/types';
 import { EventBus } from '@nestjs/cqrs/dist';
 import { ObjectId } from 'bson';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
-import { DataDeletedEvent } from '@modules/deletion/event';
+import { DataDeletedEvent } from '@modules/deletion';
 import { TeamService } from './team.service';
 
 describe('TeamService', () => {

@@ -11,7 +11,7 @@ import { ObjectId } from 'bson';
 import { EventBus } from '@nestjs/cqrs';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '@shared/domain/builder';
-import { DataDeletedEvent } from '@modules/deletion/event';
+import { DataDeletedEvent } from '@modules/deletion';
 import { SubmissionService } from './submission.service';
 
 describe('Submission Service', () => {
