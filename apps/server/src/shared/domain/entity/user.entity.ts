@@ -1,18 +1,11 @@
 import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { EntityWithSchool } from '../interface';
+import { EntityWithSchool, LanguageType } from '../interface';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
 import { Role } from './role.entity';
 import { SchoolEntity } from './school.entity';
 import { UserParentsEntity } from './user-parents.entity';
-
-export enum LanguageType {
-	DE = 'de',
-	EN = 'en',
-	ES = 'es',
-	UK = 'uk',
-}
 
 export interface Consent {
 	userConsent?: UserConsent;
