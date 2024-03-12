@@ -1,9 +1,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { deletionLogEntityFactory } from '../../entity/testing/factory/deletion-log.entity.factory';
-import { DeletionLogMapper } from './deletion-log.mapper';
-import { DeletionLog } from '../../domain/deletion-log.do';
-import { deletionLogFactory } from '../../domain/testing/factory/deletion-log.factory';
+import { DeletionLog } from '../../domain';
+import { deletionLogFactory } from '../../domain/testing';
 import { DeletionLogEntity } from '../../entity';
+import { deletionLogEntityFactory } from '../../entity/testing';
+import { DeletionLogMapper } from './deletion-log.mapper';
 
 describe(DeletionLogMapper.name, () => {
 	describe('mapToDO', () => {

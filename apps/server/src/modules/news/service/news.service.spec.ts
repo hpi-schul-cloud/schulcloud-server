@@ -10,9 +10,9 @@ import {
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	deletionRequestFactory,
 	DataDeletedEvent,
 } from '@modules/deletion';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { NewsService } from './news.service';
 
 describe(NewsService.name, () => {

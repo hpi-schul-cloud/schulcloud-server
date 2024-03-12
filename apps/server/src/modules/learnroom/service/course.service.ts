@@ -1,22 +1,21 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Course as CourseEntity } from '@shared/domain/entity';
-import { Counted, EntityId } from '@shared/domain/types';
+import { Counted, EntityId, StatusModel } from '@shared/domain/types';
 import { CourseRepo as LegacyCourseRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import { Group } from '@modules/group/domain';
 import {
 	UserDeletedEvent,
 	DeletionService,
 	DataDeletedEvent,
 	DomainDeletionReport,
+	DataDeletionDomainOperationLoggable,
 	DomainName,
 	DomainDeletionReportBuilder,
 	DomainOperationReportBuilder,
 	OperationType,
-	DataDeletionDomainOperationLoggable,
-	StatusModel,
-} from '@modules/deletion';
-import { Group } from '@modules/group/domain';
+} from '@src/modules/deletion';
 import { Course, COURSE_REPO, CourseRepo } from '../domain';
 
 @Injectable()

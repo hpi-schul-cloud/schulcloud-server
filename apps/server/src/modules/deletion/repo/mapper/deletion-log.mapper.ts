@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DeletionLogEntity } from '../../entity/deletion-log.entity';
-import { DeletionLog } from '../../domain/deletion-log.do';
+import { DeletionLog } from '../../domain';
+import { DeletionLogEntity } from '../../entity';
 
 export class DeletionLogMapper {
 	static mapToDO(entity: DeletionLogEntity): DeletionLog {

@@ -6,15 +6,15 @@ import { Counted, EntityId } from '@shared/domain/types';
 import { isEmail, validateOrReject } from 'class-validator';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import {
-	DataDeletedEvent,
+	UserDeletedEvent,
 	DeletionService,
+	DataDeletedEvent,
 	DomainDeletionReport,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	UserDeletedEvent,
-} from '@modules/deletion';
+} from '@src/modules/deletion';
 import { LegacyLogger } from '../../../core/logger';
 import { ServerConfig } from '../../server/server.config';
 import { AccountServiceDb } from './account-db.service';

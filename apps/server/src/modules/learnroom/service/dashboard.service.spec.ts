@@ -12,9 +12,9 @@ import {
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	deletionRequestFactory,
 	DataDeletedEvent,
 } from '@modules/deletion';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { DashboardService } from '.';
 
 const learnroomMock = (id: string, name: string) => {

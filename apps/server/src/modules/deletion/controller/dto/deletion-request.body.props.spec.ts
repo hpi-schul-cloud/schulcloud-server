@@ -1,4 +1,4 @@
-import { DeletionRequestBodyProps } from './deletion-request.body.params';
+import { DeletionRequestBodyProps } from './deletion-request.body.props';
 
 describe(DeletionRequestBodyProps.name, () => {
 	describe('constructor', () => {

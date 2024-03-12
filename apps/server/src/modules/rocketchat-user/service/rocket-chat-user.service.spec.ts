@@ -11,10 +11,10 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 	DomainDeletionReport,
-	deletionRequestFactory,
 	DataDeletedEvent,
 	DeletionErrorLoggableException,
 } from '@modules/deletion';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { RocketChatUserService } from './rocket-chat-user.service';
 import { RocketChatUserRepo } from '../repo';
 import { rocketChatUserFactory } from '../domain/testing/rocket-chat-user.factory';

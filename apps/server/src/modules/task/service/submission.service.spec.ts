@@ -14,9 +14,9 @@ import {
 	OperationType,
 	DomainDeletionReportBuilder,
 	DomainName,
-	deletionRequestFactory,
 	DataDeletedEvent,
 } from '@modules/deletion';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { SubmissionService } from './submission.service';
 
 describe('Submission Service', () => {

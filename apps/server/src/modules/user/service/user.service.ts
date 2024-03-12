@@ -7,32 +7,31 @@ import { RoleDto, RoleService } from '@modules/role';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
-import { EntityId } from '@shared/domain/types';
+import { EntityId, StatusModel } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { Logger } from '@src/core/logger';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { RegistrationPinService } from '@modules/registration-pin';
+import { User } from '@shared/domain/entity';
+import { IFindOptions, LanguageType } from '@shared/domain/interface';
 import {
 	UserDeletedEvent,
 	DeletionService,
 	DataDeletedEvent,
 	DomainDeletionReport,
+	DataDeletionDomainOperationLoggable,
 	DomainName,
 	DomainDeletionReportBuilder,
 	DomainOperationReportBuilder,
 	OperationType,
-	DomainOperationReport,
-	DataDeletionDomainOperationLoggable,
 	DeletionErrorLoggableException,
-	StatusModel,
+	DomainOperationReport,
 } from '@modules/deletion';
-import { User } from '@shared/domain/entity';
-import { IFindOptions, LanguageType } from '@shared/domain/interface';
-import { UserConfig } from '../interfaces';
-import { UserMapper } from '../mapper/user.mapper';
-import { UserDto } from '../uc/dto/user.dto';
 import { UserQuery } from './user-query.type';
+import { UserDto } from '../uc/dto/user.dto';
+import { UserMapper } from '../mapper/user.mapper';
+import { UserConfig } from '../interfaces';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)

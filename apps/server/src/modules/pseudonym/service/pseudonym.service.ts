@@ -5,7 +5,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from '@src/core/logger';
-import { EntityId } from '@shared/domain/types';
+import { EntityId, StatusModel } from '@shared/domain/types';
 import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
 import { IFindOptions } from '@shared/domain/interface';
 import {
@@ -13,15 +13,14 @@ import {
 	DeletionService,
 	DataDeletedEvent,
 	DomainDeletionReport,
+	DataDeletionDomainOperationLoggable,
 	DomainName,
 	DomainDeletionReportBuilder,
 	DomainOperationReportBuilder,
 	OperationType,
-	DataDeletionDomainOperationLoggable,
-	StatusModel,
 } from '@modules/deletion';
-import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
+import { PseudonymSearchQuery } from '../domain';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)

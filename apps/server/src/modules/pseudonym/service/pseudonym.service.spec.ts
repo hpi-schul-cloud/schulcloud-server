@@ -14,9 +14,9 @@ import {
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	deletionRequestFactory,
 	DataDeletedEvent,
 } from '@modules/deletion';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
 import { PseudonymService } from './pseudonym.service';

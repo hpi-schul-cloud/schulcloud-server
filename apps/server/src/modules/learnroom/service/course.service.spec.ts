@@ -6,18 +6,18 @@ import { courseFactory as courseEntityFactory, groupFactory, setupEntities, user
 import { Logger } from '@src/core/logger';
 import { EventBus } from '@nestjs/cqrs';
 import { ObjectId } from 'bson';
+import { Group } from '@modules/group';
 import {
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	deletionRequestFactory,
 	DataDeletedEvent,
 } from '@modules/deletion';
-import { Group } from '@modules/group';
-import { Course, COURSE_REPO, CourseRepo } from '../domain';
-import { courseFactory } from '../testing';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { CourseService } from './course.service';
+import { courseFactory } from '../testing';
+import { Course, COURSE_REPO, CourseRepo } from '../domain';
 
 describe('CourseService', () => {
 	let module: TestingModule;

@@ -11,11 +11,11 @@ import {
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	deletionRequestFactory,
 	DataDeletedEvent,
 } from '@modules/deletion';
-import { LessonRepo } from '../repository';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { LessonService } from './lesson.service';
+import { LessonRepo } from '../repository';
 
 describe('LessonService', () => {
 	let lessonService: LessonService;

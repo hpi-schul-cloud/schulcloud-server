@@ -1,19 +1,18 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
-import { EntityId } from '@shared/domain/types';
+import { EntityId, StatusModel } from '@shared/domain/types';
 import {
 	DeletionService,
 	DomainDeletionReport,
+	DataDeletionDomainOperationLoggable,
 	DomainName,
+	DeletionErrorLoggableException,
 	DomainDeletionReportBuilder,
 	DomainOperationReportBuilder,
 	OperationType,
-	DataDeletionDomainOperationLoggable,
-	DeletionErrorLoggableException,
-	StatusModel,
 } from '@modules/deletion';
-import { RegistrationPinRepo } from '../repo';
 import { RegistrationPinEntity } from '../entity';
+import { RegistrationPinRepo } from '../repo';
 
 @Injectable()
 export class RegistrationPinService implements DeletionService {

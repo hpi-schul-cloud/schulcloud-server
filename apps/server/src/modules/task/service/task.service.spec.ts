@@ -11,11 +11,11 @@ import {
 	OperationType,
 	DomainDeletionReportBuilder,
 	DomainName,
-	deletionRequestFactory,
 	DataDeletedEvent,
 } from '@modules/deletion';
-import { TaskService } from './task.service';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { SubmissionService } from './submission.service';
+import { TaskService } from './task.service';
 
 describe('TaskService', () => {
 	let module: TestingModule;

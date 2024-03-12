@@ -22,12 +22,12 @@ import {
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	deletionRequestFactory,
 	DataDeletedEvent,
 } from '@modules/deletion';
-import { UserDto } from '../uc/dto/user.dto';
-import { UserQuery } from './user-query.type';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { UserService } from './user.service';
+import { UserQuery } from './user-query.type';
+import { UserDto } from '../uc/dto/user.dto';
 
 describe('UserService', () => {
 	let service: UserService;

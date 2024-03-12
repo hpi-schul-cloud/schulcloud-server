@@ -3,11 +3,11 @@ import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder, DomainDeletionReportBuilder } from '../builder';
-import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from '../controller/dto';
-import { DeletionRequest, DeletionLog } from '../domain';
-import { DeletionRequestService, DeletionLogService } from '../services';
+import { DeletionRequestBodyProps, DeletionRequestResponse, DeletionRequestLogResponse } from '../controller/dto';
+import { DeletionLog, DeletionRequest } from '../domain';
 import { DataDeletedEvent, UserDeletedEvent } from '../event';
 import { DomainDeletionReport } from '../interface';
+import { DeletionRequestService, DeletionLogService } from '../services';
 
 @Injectable()
 @EventsHandler(DataDeletedEvent)

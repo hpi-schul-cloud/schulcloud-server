@@ -14,10 +14,10 @@ import {
 import { DeletionRequestBodyProps } from '../controller/dto';
 import { deletionRequestFactory, deletionLogFactory } from '../domain/testing';
 import { UserDeletedEvent } from '../event';
+import { DomainDeletionReport } from '../interface';
 import { DeletionRequestService, DeletionLogService } from '../services';
-import { StatusModel, DomainName, OperationType } from '../types';
+import { DomainName, OperationType, StatusModel } from '../types';
 import { DeletionRequestUc } from './deletion-request.uc';
-import { DomainDeletionReport } from '..';
 
 describe(DeletionRequestUc.name, () => {
 	let module: TestingModule;

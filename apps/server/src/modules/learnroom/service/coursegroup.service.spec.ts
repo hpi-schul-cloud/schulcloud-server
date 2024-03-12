@@ -10,9 +10,9 @@ import {
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	deletionRequestFactory,
 	DataDeletedEvent,
 } from '@modules/deletion';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { CourseGroupService } from './coursegroup.service';
 
 describe('CourseGroupService', () => {

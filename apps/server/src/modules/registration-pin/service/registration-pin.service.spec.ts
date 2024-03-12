@@ -3,15 +3,15 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userDoFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import {
-	DeletionErrorLoggableException,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
+	DeletionErrorLoggableException,
 } from '@modules/deletion';
-import { RegistrationPinRepo } from '../repo';
-import { RegistrationPinService } from '.';
 import { registrationPinEntityFactory } from '../entity/testing';
+import { RegistrationPinService } from '.';
+import { RegistrationPinRepo } from '../repo';
 
 describe(RegistrationPinService.name, () => {
 	let module: TestingModule;

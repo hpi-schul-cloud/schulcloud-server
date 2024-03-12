@@ -1,6 +1,6 @@
 import { EntityId } from '@shared/domain/types';
-import { OperationType } from '../types';
-import { DomainOperationReport } from '../interface';
+import { OperationType } from '../types/operation-type.enum';
+import { DomainOperationReport } from '../interface/domain-operation-report';
 
 export class DomainOperationReportBuilder {
 	static build(operation: OperationType, count: number, refs: EntityId[]): DomainOperationReport {

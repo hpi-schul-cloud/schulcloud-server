@@ -13,10 +13,10 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 } from '@modules/deletion';
-import { CopyFileDto, FileDto } from '../dto';
-import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
-import { FilesStorageClientMapper } from '../mapper';
 import { FilesStorageProducer } from './files-storage.producer';
+import { FilesStorageClientMapper } from '../mapper';
+import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
+import { CopyFileDto, FileDto } from '../dto';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)

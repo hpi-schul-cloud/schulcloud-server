@@ -7,12 +7,12 @@ import { FileRecordParentType } from '@infra/rabbitmq';
 import { EventBus } from '@nestjs/cqrs';
 import {
 	DomainName,
-	deletionRequestFactory,
 	DomainDeletionReportBuilder,
 	DomainOperationReportBuilder,
 	OperationType,
 	DataDeletedEvent,
 } from '@modules/deletion';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { FileParamBuilder, FilesStorageClientMapper } from '../mapper';
 import { CopyFilesOfParentParamBuilder } from '../mapper/copy-files-of-parent-param.builder';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
