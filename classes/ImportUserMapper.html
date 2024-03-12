@@ -434,7 +434,7 @@ export class ImportUserMapper {
 			loginName: importUser.loginName || &#x27;&#x27;,
 			firstName: importUser.firstName,
 			lastName: importUser.lastName,
-			roleNames: importUser.roleNames.map((role) &#x3D;&gt; RoleNameMapper.mapToResponse(role)),
+			roleNames: importUser.roleNames?.map((role) &#x3D;&gt; RoleNameMapper.mapToResponse(role)),
 			classNames: importUser.classNames,
 			flagged: importUser.flagged,
 		});
