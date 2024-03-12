@@ -37,7 +37,7 @@ export class ImportUserMapper {
 			loginName: importUser.loginName || '',
 			firstName: importUser.firstName,
 			lastName: importUser.lastName,
-			roleNames: importUser.roleNames.map((role) => RoleNameMapper.mapToResponse(role)),
+			roleNames: importUser.roleNames?.map((role) => RoleNameMapper.mapToResponse(role)),
 			classNames: importUser.classNames,
 			flagged: importUser.flagged,
 		});
