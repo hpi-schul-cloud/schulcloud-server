@@ -7,11 +7,7 @@ import { DeletionExecutionsController } from './controller/deletion-executions.c
 import { DeletionRequestUc } from './uc';
 
 @Module({
-	imports: [
-		CqrsModule,
-		DeletionModule,
-		LoggerModule,
-	],
+	imports: [CqrsModule, DeletionModule, LoggerModule],
 	controllers: [DeletionRequestsController, DeletionExecutionsController],
 	providers: [DeletionRequestUc],
 })
