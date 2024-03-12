@@ -4,7 +4,6 @@ import { Injectable } from '@nestjs/common';
 import { BaseEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { BaseDORepo } from './base.do.repo';
 
 /**
  * This repo will be replaced in the future by a more domain driven repo, which is currently discussed in the arc chapter.

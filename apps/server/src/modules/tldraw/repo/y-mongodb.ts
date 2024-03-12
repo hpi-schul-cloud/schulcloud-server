@@ -1,3 +1,4 @@
+import { BulkWriteResult } from '@mikro-orm/mongodb/node_modules/mongodb';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@src/core/logger';
@@ -119,7 +120,7 @@ export class YMongodb {
 		return clock;
 	}
 
-	private async clearUpdatesRange(docName: string, from: number, to: number) {
+	private async clearUpdatesRange(docName: string, from: number, to: number): Promise<BulkWriteResult> {
 		return this.repo.del({
 			docName,
 			clock: {
