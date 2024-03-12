@@ -213,6 +213,9 @@
                                 <li>
                                     <a href="#context" >context</a>
                                 </li>
+                                <li>
+                                    <a href="#isVisible" >isVisible</a>
+                                </li>
                             </ul>
                         </td>
                     </tr>
@@ -293,7 +296,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:27</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:35</a></code>
 </div>
                         </td>
                     </tr>
@@ -368,7 +371,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:31</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:39</a></code>
 </div>
                         </td>
                     </tr>
@@ -441,7 +444,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:22</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BoardComposite.html#source" target="_self" >BoardComposite:30</a></code>
 </div>
                         </td>
                     </tr>
@@ -912,6 +915,75 @@
                     </tr>
             </tbody>
         </table>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="isVisible"></a>
+                        <span class="name"><b>isVisible</b><a href="#isVisible"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>get</b><code>isVisible()</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/column-board.do.ts:22</a></div>
+                                </td>
+                            </tr>
+
+                <tr>
+                    <td class="col-md-4">
+                        <span class="accessor"><b>set</b><code>isVisible(isVisible: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code></span>
+                    </td>
+                </tr>
+                            <tr>
+                                <td class="col-md-4">
+                                    <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/shared/domain/domainobject/board/column-board.do.ts:26</a></div>
+                                </td>
+                            </tr>
+                    <tr>
+                        <td class="col-md-4">
+
+                                <div class="io-description">
+                                        <b>Parameters :</b>
+                                        <table class="params">
+                                            <thead>
+                                                <tr>
+                                                    <td>Name</td>
+                                                        <td>Type</td>
+                                                    <td>Optional</td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                    <tr>
+                                                            <td>isVisible</td>
+                                                    
+                                                            <td>
+                                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+                                                            </td>
+                                                    
+                                                        <td>
+                                                                No
+                                                        </td>
+                                                        
+                                                    </tr>
+                                            </tbody>
+                                        </table>
+                                </div>
+                                <div>
+                                </div>
+                                <div class="io-description">
+                                    <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                                </div>
+                        </td>
+                    </tr>
+            </tbody>
+        </table>
 </section>
     </div>
 
@@ -938,6 +1010,14 @@ export class ColumnBoard extends BoardComposite&lt;ColumnBoardProps&gt; {
 		this.props.context &#x3D; context;
 	}
 
+	get isVisible(): boolean {
+		return this.props.isVisible;
+	}
+
+	set isVisible(isVisible: boolean) {
+		this.props.isVisible &#x3D; isVisible;
+	}
+
 	isAllowedAsChild(domainObject: AnyBoardDo): boolean {
 		const allowed &#x3D; domainObject instanceof Column;
 		return allowed;
@@ -955,6 +1035,7 @@ export class ColumnBoard extends BoardComposite&lt;ColumnBoardProps&gt; {
 export interface ColumnBoardProps extends BoardCompositeProps {
 	title: string;
 	context: BoardExternalReference;
+	isVisible: boolean;
 }
 
 export function isColumnBoard(reference: unknown): reference is ColumnBoard {

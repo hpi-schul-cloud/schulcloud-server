@@ -146,6 +146,10 @@
                                     <span class="modifier"></span>
                                 <a href="#_contextType" >_contextType</a>
                             </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                <a href="#isVisible" >isVisible</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -193,7 +197,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/column-board-node.entity.ts:26</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/column-board-node.entity.ts:29</a></div>
                         </td>
                     </tr>
 
@@ -229,7 +233,42 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/column-board-node.entity.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/column-board-node.entity.ts:26</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isVisible"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                        <span ><b>isVisible</b></span>
+                        <a href="#isVisible"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>false</code>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @Property({type: &#x27;boolean&#x27;, nullable: false})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="32" class="link-to-prism">apps/server/src/shared/domain/entity/boardnode/column-board-node.entity.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -251,15 +290,18 @@ import { ObjectId } from &#x27;bson&#x27;;
 import { BoardNode, BoardNodeProps } from &#x27;./boardnode.entity&#x27;;
 import { BoardDoBuilder } from &#x27;./types&#x27;;
 import { BoardNodeType } from &#x27;./types/board-node-type&#x27;;
+import { LearnroomElement } from &#x27;../../interface&#x27;;
 
 @Entity({ discriminatorValue: BoardNodeType.COLUMN_BOARD })
-export class ColumnBoardNode extends BoardNode {
+export class ColumnBoardNode extends BoardNode implements LearnroomElement {
 	constructor(props: ColumnBoardNodeProps) {
 		super(props);
 		this.type &#x3D; BoardNodeType.COLUMN_BOARD;
 
 		this._contextType &#x3D; props.context.type;
 		this._contextId &#x3D; new ObjectId(props.context.id);
+
+		this.isVisible &#x3D; props.isVisible ?? false;
 	}
 
 	@Property({ fieldName: &#x27;contextType&#x27; })
@@ -267,6 +309,9 @@ export class ColumnBoardNode extends BoardNode {
 
 	@Property({ fieldName: &#x27;context&#x27; })
 	_contextId: ObjectId;
+
+	@Property({ type: &#x27;boolean&#x27;, nullable: false })
+	isVisible &#x3D; false;
 
 	get context(): BoardExternalReference {
 		return {
@@ -279,10 +324,25 @@ export class ColumnBoardNode extends BoardNode {
 		const domainObject &#x3D; builder.buildColumnBoard(this);
 		return domainObject;
 	}
+
+	/**
+	 * @deprecated - this is here only for the sake of the legacy-board (lernraum)
+	 */
+	publish(): void {
+		this.isVisible &#x3D; true;
+	}
+
+	/**
+	 * @deprecated - this is here only for the sake of the legacy-board (lernraum)
+	 */
+	unpublish(): void {
+		this.isVisible &#x3D; false;
+	}
 }
 
 export interface ColumnBoardNodeProps extends BoardNodeProps {
 	context: BoardExternalReference;
+	isVisible: boolean;
 }
 </code></pre>
     </div>

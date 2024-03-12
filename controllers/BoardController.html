@@ -209,6 +209,17 @@
                                     <span class="modifier">Async</span>
                                 <a href="#updateBoardTitle" >updateBoardTitle</a>
                             </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Async</span>
+                                <a href="#updateVisibility" >updateVisibility</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -261,8 +272,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="40"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:40</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -310,7 +321,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Board.html" target="_self" >Promise&lt;CreateBoardResponse&gt;</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;CreateBoardResponse&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -355,8 +366,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="117"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:117</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="118"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:118</a></div>
                         </td>
                     </tr>
 
@@ -450,8 +461,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="107"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:107</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="108"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:108</a></div>
                         </td>
                     </tr>
 
@@ -544,8 +555,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="74"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:74</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:75</a></div>
                         </td>
                     </tr>
 
@@ -638,8 +649,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="57"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:57</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="58"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:58</a></div>
                         </td>
                     </tr>
 
@@ -733,8 +744,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="92"
-                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:92</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="93"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:93</a></div>
                         </td>
                     </tr>
 
@@ -804,6 +815,113 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="updateVisibility"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Async</span>
+                        <span ><b>updateVisibility</b></span>
+                        <a href="#updateVisibility"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>updateVisibility(urlParams: <a href="../classes/BoardUrlParams.html" target="_self">BoardUrlParams</a>, bodyParams: <a href="../classes/VisibilityBodyParams.html" target="_self">VisibilityBodyParams</a>, currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@ApiOperation({summary: &#x27;Update the visibility of a board.&#x27;})<br />@ApiResponse({status: 204})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@HttpCode(204)<br />@Patch(&#x27;:boardId/visibility&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="136"
+                                    class="link-to-prism">apps/server/src/modules/board/controller/board.controller.ts:136</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>urlParams</td>
+                                            <td>
+                                                            <code><a href="../classes/BoardUrlParams.html" target="_self" >BoardUrlParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>bodyParams</td>
+                                            <td>
+                                                            <code><a href="../classes/VisibilityBodyParams.html" target="_self" >VisibilityBodyParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
@@ -831,6 +949,7 @@ import {
 	CreateBoardBodyParams,
 	CreateBoardResponse,
 	UpdateBoardTitleParams,
+	VisibilityBodyParams,
 } from &#x27;./dto&#x27;;
 import { BoardContextResponse } from &#x27;./dto/board/board-context.reponse&#x27;;
 import { BoardResponseMapper, ColumnResponseMapper, CreateBoardResponseMapper } from &#x27;./mapper&#x27;;
@@ -933,6 +1052,21 @@ export class BoardController {
 		const response &#x3D; ColumnResponseMapper.mapToResponse(column);
 
 		return response;
+	}
+
+	@ApiOperation({ summary: &#x27;Update the visibility of a board.&#x27; })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Patch(&#x27;:boardId/visibility&#x27;)
+	async updateVisibility(
+		@Param() urlParams: BoardUrlParams,
+		@Body() bodyParams: VisibilityBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	) {
+		await this.boardUc.updateVisibility(currentUser.userId, urlParams.boardId, bodyParams.isVisible);
 	}
 }
 </code></pre>

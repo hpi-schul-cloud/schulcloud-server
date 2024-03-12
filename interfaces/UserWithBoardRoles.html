@@ -274,7 +274,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>roles:         <code><a href="../miscellaneous/typealiases.html#Role" target="_self" >BoardRoles[]</a></code>
+                                        <code>roles:         <code><a href="../entitys/Role.html" target="_self" >BoardRoles[]</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -282,7 +282,7 @@
 
                                     <tr>
                                         <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#Role" target="_self" >BoardRoles[]</a></code>
+                                            <i>Type : </i>        <code><a href="../entitys/Role.html" target="_self" >BoardRoles[]</a></code>
 
                                         </td>
                                     </tr>
@@ -334,6 +334,7 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizableObject, DomainObject } from &#x27;@shared/domain/domain-object&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { AnyBoardDo } from &#x27;./any-board-do&#x27;;
+import { ColumnBoard } from &#x27;../column-board.do&#x27;;
 
 export enum BoardRoles {
 	EDITOR &#x3D; &#x27;editor&#x27;,
@@ -351,6 +352,7 @@ export interface BoardDoAuthorizableProps extends AuthorizableObject {
 	id: EntityId;
 	users: UserWithBoardRoles[];
 	boardDo: AnyBoardDo;
+	rootDo: ColumnBoard;
 	parentDo?: AnyBoardDo;
 }
 
@@ -373,6 +375,10 @@ export class BoardDoAuthorizable extends DomainObject&lt;BoardDoAuthorizableProp
 
 	set parentDo(value: AnyBoardDo | undefined) {
 		this.props.parentDo &#x3D; value;
+	}
+
+	get rootDo(): ColumnBoard {
+		return this.props.rootDo;
 	}
 }
 </code></pre>

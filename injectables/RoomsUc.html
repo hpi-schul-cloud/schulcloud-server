@@ -152,7 +152,7 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#updateVisibilityOfBoardElement" >updateVisibilityOfBoardElement</a>
+                                <a href="#updateVisibilityOfLegacyBoardElement" >updateVisibilityOfLegacyBoardElement</a>
                             </li>
                         </ul>
                     </td>
@@ -172,7 +172,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, boardRepo: <a href="../injectables/BoardRepo.html" target="_self">BoardRepo</a>, factory: <a href="../injectables/RoomBoardDTOFactory.html" target="_self">RoomBoardDTOFactory</a>, authorisationService: <a href="../injectables/RoomsAuthorisationService.html" target="_self">RoomsAuthorisationService</a>, roomsService: <a href="../injectables/RoomsService.html" target="_self">RoomsService</a>)</code>
+<code>constructor(courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, legacyBoardRepo: <a href="../injectables/LegacyBoardRepo.html" target="_self">LegacyBoardRepo</a>, factory: <a href="../injectables/RoomBoardDTOFactory.html" target="_self">RoomBoardDTOFactory</a>, authorisationService: <a href="../injectables/RoomsAuthorisationService.html" target="_self">RoomsAuthorisationService</a>, roomsService: <a href="../injectables/RoomsService.html" target="_self">RoomsService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -219,10 +219,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>boardRepo</td>
+                                                        <td>legacyBoardRepo</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/BoardRepo.html" target="_self" >BoardRepo</a></code>
+                                                                        <code><a href="../injectables/LegacyBoardRepo.html" target="_self" >LegacyBoardRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -351,7 +351,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Board.html" target="_self" >Promise&lt;RoomBoardDTO&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#RoomBoardDTO" target="_self" >Promise&lt;RoomBoardDTO&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -383,8 +383,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="52"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/rooms.uc.ts:52</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="67"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/rooms.uc.ts:67</a></div>
                         </td>
                     </tr>
 
@@ -458,26 +458,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="updateVisibilityOfBoardElement"></a>
+                    <a name="updateVisibilityOfLegacyBoardElement"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
-                        <span ><b>updateVisibilityOfBoardElement</b></span>
-                        <a href="#updateVisibilityOfBoardElement"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>updateVisibilityOfLegacyBoardElement</b></span>
+                        <a href="#updateVisibilityOfLegacyBoardElement"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateVisibilityOfBoardElement(roomId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, elementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, visibility: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
+                    <code>updateVisibilityOfLegacyBoardElement(roomId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, elementId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, visibility: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank">boolean</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/rooms.uc.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="33"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/rooms.uc.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -567,7 +567,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ForbiddenException, Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { BoardRepo, CourseRepo, UserRepo } from &#x27;@shared/repo&#x27;;
+import { LegacyBoardRepo, CourseRepo, UserRepo } from &#x27;@shared/repo&#x27;;
 import { RoomsService } from &#x27;../service/rooms.service&#x27;;
 import { RoomBoardDTO } from &#x27;../types&#x27;;
 import { RoomBoardDTOFactory } from &#x27;./room-board-dto.factory&#x27;;
@@ -578,7 +578,7 @@ export class RoomsUc {
 	constructor(
 		private readonly courseRepo: CourseRepo,
 		private readonly userRepo: UserRepo,
-		private readonly boardRepo: BoardRepo,
+		private readonly legacyBoardRepo: LegacyBoardRepo,
 		private readonly factory: RoomBoardDTOFactory,
 		private readonly authorisationService: RoomsAuthorisationService,
 		private readonly roomsService: RoomsService
@@ -586,16 +586,18 @@ export class RoomsUc {
 
 	async getBoard(roomId: EntityId, userId: EntityId): Promise&lt;RoomBoardDTO&gt; {
 		const user &#x3D; await this.userRepo.findById(userId, true);
+		// TODO no authorisation check here?
 		const course &#x3D; await this.courseRepo.findOne(roomId, userId);
-		const board &#x3D; await this.boardRepo.findByCourseId(roomId);
+		const legacyBoard &#x3D; await this.legacyBoardRepo.findByCourseId(roomId);
 
-		await this.roomsService.updateBoard(board, roomId, userId);
+		// TODO this must be rewritten. Board auto-creation must be treated separately
+		await this.roomsService.updateLegacyBoard(legacyBoard, roomId, userId);
 
-		const roomBoardDTO &#x3D; this.factory.createDTO({ room: course, board, user });
+		const roomBoardDTO &#x3D; this.factory.createDTO({ room: course, board: legacyBoard, user });
 		return roomBoardDTO;
 	}
 
-	async updateVisibilityOfBoardElement(
+	async updateVisibilityOfLegacyBoardElement(
 		roomId: EntityId,
 		elementId: EntityId,
 		userId: EntityId,
@@ -606,25 +608,38 @@ export class RoomsUc {
 		if (!this.authorisationService.hasCourseWritePermission(user, course)) {
 			throw new ForbiddenException(&#x27;you are not allowed to edit this&#x27;);
 		}
-		const board &#x3D; await this.boardRepo.findByCourseId(course.id);
-		const element &#x3D; board.getByTargetId(elementId);
+		const legacyBoard &#x3D; await this.legacyBoardRepo.findByCourseId(course.id);
+		const element &#x3D; legacyBoard.getByTargetId(elementId);
 		if (visibility) {
 			element.publish();
 		} else {
 			element.unpublish();
 		}
-		await this.boardRepo.save(board);
+
+		await this.legacyBoardRepo.save(legacyBoard);
+		// TODO if the element is a columnboard, then the visibility must be in sync with it
+		// TODO call columnBoard service to update the visibility of the columnboard, based on reference
+
+		// if (element instanceof ColumnboardBoardElement) {
+		// await this.updateColumnBoardVisibility(element.target._columnBoardId, visibility);
+		// }
 	}
 
+	/*
+	private async updateColumnBoardVisibility(columbBoardId: EntityId, visibility: boolean) {
+		// TODO
+		// await this.columnBoardService.updateBoardVisibility(columbBoardId, visibility);
+	}
+*/
 	async reorderBoardElements(roomId: EntityId, userId: EntityId, orderedList: EntityId[]): Promise&lt;void&gt; {
 		const user &#x3D; await this.userRepo.findById(userId);
 		const course &#x3D; await this.courseRepo.findOne(roomId, userId);
 		if (!this.authorisationService.hasCourseWritePermission(user, course)) {
 			throw new ForbiddenException(&#x27;you are not allowed to edit this&#x27;);
 		}
-		const board &#x3D; await this.boardRepo.findByCourseId(course.id);
-		board.reorderElements(orderedList);
-		await this.boardRepo.save(board);
+		const legacyBoard &#x3D; await this.legacyBoardRepo.findByCourseId(course.id);
+		legacyBoard.reorderElements(orderedList);
+		await this.legacyBoardRepo.save(legacyBoard);
 	}
 }
 </code></pre>

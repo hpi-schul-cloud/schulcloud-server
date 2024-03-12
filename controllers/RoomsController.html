@@ -462,7 +462,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Board.html" target="_self" >Promise&lt;SingleColumnBoardResponse&gt;</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;SingleColumnBoardResponse&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -724,7 +724,7 @@ export class RoomsController {
 		@Body() params: PatchVisibilityParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise&lt;void&gt; {
-		await this.roomsUc.updateVisibilityOfBoardElement(
+		await this.roomsUc.updateVisibilityOfLegacyBoardElement(
 			urlParams.roomId,
 			urlParams.elementId,
 			currentUser.userId,

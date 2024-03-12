@@ -151,7 +151,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier">Async</span>
-                                <a href="#createSchool" >createSchool</a>
+                                <a href="#createUser" >createUser</a>
                             </li>
                         </ul>
                     </td>
@@ -174,20 +174,20 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="createSchool"></a>
+                    <a name="createUser"></a>
                     <span class="name">
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier">Async</span>
-                        <span ><b>createSchool</b></span>
-                        <a href="#createSchool"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>createUser</b></span>
+                        <a href="#createUser"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createSchool(body: <a href="../classes/AdminApiUserCreateBodyParams.html" target="_self">AdminApiUserCreateBodyParams</a>)</code>
+                    <code>createUser(body: <a href="../classes/AdminApiUserCreateBodyParams.html" target="_self">AdminApiUserCreateBodyParams</a>)</code>
                 </td>
             </tr>
 
@@ -269,7 +269,7 @@ export class AdminApiUsersController {
 	@ApiOperation({
 		summary: &#x27;create a user together with an account&#x27;,
 	})
-	async createSchool(@Body() body: AdminApiUserCreateBodyParams): Promise&lt;AdminApiUserCreateResponse&gt; {
+	async createUser(@Body() body: AdminApiUserCreateBodyParams): Promise&lt;AdminApiUserCreateResponse&gt; {
 		const result &#x3D; await this.uc.createUserAndAccount(body);
 		const mapped &#x3D; new AdminApiUserCreateResponse(result);
 		return Promise.resolve(mapped);

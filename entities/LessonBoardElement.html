@@ -203,13 +203,13 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, ManyToOne } from &#x27;@mikro-orm/core&#x27;;
 import { LessonEntity } from &#x27;../lesson.entity&#x27;;
-import { BoardElement, BoardElementType } from &#x27;./boardelement.entity&#x27;;
+import { LegacyBoardElement, LegacyBoardElementType } from &#x27;./legacy-boardelement.entity&#x27;;
 
-@Entity({ discriminatorValue: BoardElementType.Lesson })
-export class LessonBoardElement extends BoardElement {
+@Entity({ discriminatorValue: LegacyBoardElementType.Lesson })
+export class LessonBoardElement extends LegacyBoardElement {
 	constructor(props: { target: LessonEntity }) {
 		super(props);
-		this.boardElementType &#x3D; BoardElementType.Lesson;
+		this.boardElementType &#x3D; LegacyBoardElementType.Lesson;
 	}
 
 	@ManyToOne(&#x27;LessonEntity&#x27;)

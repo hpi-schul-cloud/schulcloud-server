@@ -178,7 +178,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(toolFeatures: <a href="../interfaces/IToolFeatures.html" target="_self">IToolFeatures</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>, boardRepo: <a href="../injectables/BoardRepo.html" target="_self">BoardRepo</a>, roomsService: <a href="../injectables/RoomsService.html" target="_self">RoomsService</a>, boardCopyService: <a href="../injectables/BoardCopyService.html" target="_self">BoardCopyService</a>, copyHelperService: <a href="../injectables/CopyHelperService.html" target="_self">CopyHelperService</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>)</code>
+<code>constructor(toolFeatures: <a href="../interfaces/IToolFeatures.html" target="_self">IToolFeatures</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>, legacyBoardRepo: <a href="../injectables/LegacyBoardRepo.html" target="_self">LegacyBoardRepo</a>, roomsService: <a href="../injectables/RoomsService.html" target="_self">RoomsService</a>, boardCopyService: <a href="../injectables/BoardCopyService.html" target="_self">BoardCopyService</a>, copyHelperService: <a href="../injectables/CopyHelperService.html" target="_self">CopyHelperService</a>, userRepo: <a href="../injectables/UserRepo.html" target="_self">UserRepo</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -225,10 +225,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>boardRepo</td>
+                                                        <td>legacyBoardRepo</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/BoardRepo.html" target="_self" >BoardRepo</a></code>
+                                                                        <code><a href="../injectables/LegacyBoardRepo.html" target="_self" >LegacyBoardRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -624,7 +624,7 @@ import { ContextExternalToolService } from &#x27;@modules/tool/context-external-
 import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import { Course, User } from &#x27;@shared/domain/entity&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { BoardRepo, CourseRepo, UserRepo } from &#x27;@shared/repo&#x27;;
+import { LegacyBoardRepo, CourseRepo, UserRepo } from &#x27;@shared/repo&#x27;;
 import { IToolFeatures, ToolFeatures } from &#x27;@modules/tool/tool-config&#x27;;
 import { BoardCopyService } from &#x27;./board-copy.service&#x27;;
 import { RoomsService } from &#x27;./rooms.service&#x27;;
@@ -640,7 +640,7 @@ export class CourseCopyService {
 	constructor(
 		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
 		private readonly courseRepo: CourseRepo,
-		private readonly boardRepo: BoardRepo,
+		private readonly legacyBoardRepo: LegacyBoardRepo,
 		private readonly roomsService: RoomsService,
 		private readonly boardCopyService: BoardCopyService,
 		private readonly copyHelperService: CopyHelperService,
@@ -661,8 +661,8 @@ export class CourseCopyService {
 
 		// fetch original course and board
 		const originalCourse &#x3D; await this.courseRepo.findById(courseId);
-		let originalBoard &#x3D; await this.boardRepo.findByCourseId(courseId);
-		originalBoard &#x3D; await this.roomsService.updateBoard(originalBoard, courseId, userId);
+		let originalBoard &#x3D; await this.legacyBoardRepo.findByCourseId(courseId);
+		originalBoard &#x3D; await this.roomsService.updateLegacyBoard(originalBoard, courseId, userId);
 
 		// handle potential name conflict
 		const [existingCourses] &#x3D; await this.courseRepo.findAllByUserId(userId);

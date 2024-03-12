@@ -403,8 +403,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="76"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:76</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="77"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:77</a></div>
                         </td>
                     </tr>
 
@@ -473,8 +473,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="81"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:81</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="83"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:83</a></div>
                         </td>
                     </tr>
 
@@ -510,7 +510,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Board.html" target="_self" >Promise&lt;ColumnBoard&gt;</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;ColumnBoard&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -542,8 +542,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">apps/server/src/modules/board/service/board-do-authorizable.service.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -625,16 +625,17 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 	}
 
 	async getBoardAuthorizable(boardDo: AnyBoardDo): Promise&lt;BoardDoAuthorizable&gt; {
-		const rootBoardDo &#x3D; await this.getRootBoardDo(boardDo);
+		const rootDo &#x3D; await this.getRootBoardDo(boardDo);
+		// TODO used only for SubmissionItem; for rest BoardDo avoid extra call to improve performance
 		const parentDo &#x3D; await this.getParentDo(boardDo);
 		let users: UserWithBoardRoles[] &#x3D; [];
 
-		if (rootBoardDo.context?.type &#x3D;&#x3D;&#x3D; BoardExternalReferenceType.Course) {
-			const course &#x3D; await this.courseRepo.findById(rootBoardDo.context.id);
+		if (rootDo.context?.type &#x3D;&#x3D;&#x3D; BoardExternalReferenceType.Course) {
+			const course &#x3D; await this.courseRepo.findById(rootDo.context.id);
 			users &#x3D; this.mapCourseUsersToUserBoardRoles(course);
 		}
 
-		const boardDoAuthorizable &#x3D; new BoardDoAuthorizable({ users, id: boardDo.id, boardDo, parentDo });
+		const boardDoAuthorizable &#x3D; new BoardDoAuthorizable({ users, id: boardDo.id, boardDo, rootDo, parentDo });
 
 		return boardDoAuthorizable;
 	}
@@ -675,6 +676,7 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 		return parentDo;
 	}
 
+	// TODO there is a similar method in board-do.service.ts
 	private async getRootBoardDo(boardDo: AnyBoardDo): Promise&lt;ColumnBoard&gt; {
 		const ancestorIds &#x3D; await this.boardDoRepo.getAncestorIds(boardDo);
 		const ids &#x3D; [...ancestorIds, boardDo.id];

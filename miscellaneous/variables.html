@@ -212,9 +212,6 @@
                             <a href="#columnBoardNodeFactory" title="apps/server/src/shared/testing/factory/boardnode/column-board-node.factory.ts" ><b>columnBoardNodeFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../column-board-node.factory.ts)</a>
                         </li>
                         <li>
-                            <a href="#columnBoardTargetFactory" title="apps/server/src/shared/testing/factory/boardelement.factory.ts" ><b>columnBoardTargetFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../boardelement.factory.ts)</a>
-                        </li>
-                        <li>
                             <a href="#columnFactory" title="apps/server/src/shared/testing/factory/domainobject/board/column.do.factory.ts" ><b>columnFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../column.do.factory.ts)</a>
                         </li>
                         <li>
@@ -1709,13 +1706,12 @@
                     <td class="col-md-4">
                         <i>Default value : </i><code>[
 	Account,
-	Board,
-	BoardElement,
+	LegacyBoard,
+	LegacyBoardElement,
 	BoardNode,
 	CardNode,
 	ColumnboardBoardElement,
 	ColumnBoardNode,
-	ColumnBoardTarget,
 	ColumnNode,
 	ClassEntity,
 	DeletionRequestEntity,
@@ -2636,10 +2632,13 @@
                         <i>Default value : </i><code>DomainObjectFactory.define&lt;BoardDoAuthorizable, BoardDoAuthorizableProps&gt;(
 	BoardDoAuthorizable,
 	() &#x3D;&gt; {
+		const boardDo &#x3D; columnFactory.build();
+		const rootDo &#x3D; columnBoardFactory.build({ children: [boardDo] });
 		return {
 			id: new ObjectId().toHexString(),
 			users: [],
-			boardDo: columnFactory.build(),
+			boardDo,
+			rootDo,
 		};
 	}
 )</code>
@@ -2665,7 +2664,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;Board, BoardProps&gt;(Board, () &#x3D;&gt; {
+                        <i>Default value : </i><code>BaseFactory.define&lt;LegacyBoard, BoardProps&gt;(LegacyBoard, () &#x3D;&gt; {
 	return {
 		references: [],
 		course: courseFactory.build(),
@@ -2946,42 +2945,13 @@ This allows adding console commands to execute provider methods.</p>
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;
+                        <i>Default value : </i><code>BaseFactory.define&lt;ColumnboardBoardElement, { target: ColumnBoardNode }&gt;(
 	ColumnboardBoardElement,
-	{ target: ColumnBoardTarget }
-&gt;(ColumnboardBoardElement, () &#x3D;&gt; {
-	const target &#x3D; columnBoardTargetFactory.build();
-	return { target };
-})</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="columnBoardTargetFactory"></a>
-                    <span class="name">
-                        <span ><b>columnBoardTargetFactory</b></span>
-                        <a href="#columnBoardTargetFactory"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>BaseFactory.define&lt;
-	ColumnBoardTarget,
-	{ columnBoardId: EntityId; title: string; published: boolean }
-&gt;(ColumnBoardTarget, ({ sequence }) &#x3D;&gt; {
-	return {
-		columnBoardId: new ObjectId().toHexString(),
-		title: &#x60;columnBoardTarget #${sequence}&#x60;,
-		published: false,
-	};
-})</code>
+	() &#x3D;&gt; {
+		const target &#x3D; columnBoardNodeFactory.build();
+		return { target };
+	}
+)</code>
                     </td>
                 </tr>
 
@@ -3064,6 +3034,7 @@ This allows adding console commands to execute provider methods.</p>
 			type: BoardExternalReferenceType.Course,
 			id: new ObjectId().toHexString(),
 		},
+		isVisible: true,
 	};
 })</code>
                     </td>
@@ -3097,6 +3068,7 @@ This allows adding console commands to execute provider methods.</p>
 				type: BoardExternalReferenceType.Course,
 				id: new ObjectId().toHexString(),
 			},
+			isVisible: true,
 		};
 	}
 )</code>

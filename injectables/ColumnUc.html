@@ -487,8 +487,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="53"
-                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:53</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">apps/server/src/modules/board/uc/column.uc.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -692,7 +692,7 @@
                     </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:12</a></code>
+                                <div class="io-line">Defined in         <code><a href="../classes/BaseUc.html#source" target="_self" >BaseUc:13</a></code>
 </div>
                         </td>
                     </tr>
@@ -987,8 +987,7 @@ export class ColumnUc extends BaseUc {
 		this.logger.debug({ action: &#x27;createCard&#x27;, userId, columnId });
 
 		const column &#x3D; await this.columnService.findById(columnId);
-		// TODO students should not be allowed to create cards
-		await this.checkPermission(userId, column, Action.read);
+		await this.checkPermission(userId, column, Action.write);
 
 		const card &#x3D; await this.cardService.create(column, requiredEmptyElements);
 

@@ -144,7 +144,7 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#updateBoard" >updateBoard</a>
+                                <a href="#updateLegacyBoard" >updateLegacyBoard</a>
                             </li>
                         </ul>
                     </td>
@@ -164,12 +164,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(taskService: <a href="../injectables/TaskService.html" target="_self">TaskService</a>, lessonService: <a href="../injectables/LessonService.html" target="_self">LessonService</a>, boardRepo: <a href="../injectables/BoardRepo.html" target="_self">BoardRepo</a>, columnBoardService: <a href="../injectables/ColumnBoardService.html" target="_self">ColumnBoardService</a>, columnBoardTargetService: <a href="../injectables/ColumnBoardTargetService.html" target="_self">ColumnBoardTargetService</a>)</code>
+<code>constructor(taskService: <a href="../injectables/TaskService.html" target="_self">TaskService</a>, lessonService: <a href="../injectables/LessonService.html" target="_self">LessonService</a>, boardRepo: <a href="../injectables/LegacyBoardRepo.html" target="_self">LegacyBoardRepo</a>, columnBoardService: <a href="../injectables/ColumnBoardService.html" target="_self">ColumnBoardService</a>, boardNodeRepo: <a href="../injectables/BoardNodeRepo.html" target="_self">BoardNodeRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -214,7 +214,7 @@
                                                         <td>boardRepo</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/BoardRepo.html" target="_self" >BoardRepo</a></code>
+                                                                        <code><a href="../injectables/LegacyBoardRepo.html" target="_self" >LegacyBoardRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -235,10 +235,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>columnBoardTargetService</td>
+                                                        <td>boardNodeRepo</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/ColumnBoardTargetService.html" target="_self" >ColumnBoardTargetService</a></code>
+                                                                        <code><a href="../injectables/BoardNodeRepo.html" target="_self" >BoardNodeRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -264,26 +264,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="updateBoard"></a>
+                    <a name="updateLegacyBoard"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
-                        <span ><b>updateBoard</b></span>
-                        <a href="#updateBoard"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>updateLegacyBoard</b></span>
+                        <a href="#updateLegacyBoard"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateBoard(board: <a href="../entitys/Board.html" target="_self">Board</a>, roomId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>updateLegacyBoard(board: <a href="../entitys/LegacyBoard.html" target="_self">LegacyBoard</a>, roomId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="21"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:21</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="22"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/rooms.service.ts:22</a></div>
                         </td>
                     </tr>
 
@@ -306,7 +306,7 @@
                                         <tr>
                                                 <td>board</td>
                                             <td>
-                                                            <code><a href="../entitys/Board.html" target="_self" >Board</a></code>
+                                                            <code><a href="../entitys/LegacyBoard.html" target="_self" >LegacyBoard</a></code>
                                             </td>
 
                                             <td>
@@ -343,7 +343,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../entitys/Board.html" target="_self" >Promise&lt;Board&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../entitys/LegacyBoard.html" target="_self" >Promise&lt;LegacyBoard&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -364,31 +364,36 @@ import { LessonService } from &#x27;@modules/lesson&#x27;;
 import { TaskService } from &#x27;@modules/task&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { BoardExternalReferenceType } from &#x27;@shared/domain/domainobject&#x27;;
-import { Board } from &#x27;@shared/domain/entity&#x27;;
+import { LegacyBoard, ColumnBoardNode } from &#x27;@shared/domain/entity&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { BoardRepo } from &#x27;@shared/repo&#x27;;
-import { ColumnBoardTargetService } from &#x27;./column-board-target.service&#x27;;
+import { LegacyBoardRepo } from &#x27;@shared/repo&#x27;;
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { BoardNodeRepo } from &#x27;@modules/board/repo&#x27;;
 
 @Injectable()
 export class RoomsService {
 	constructor(
 		private readonly taskService: TaskService,
 		private readonly lessonService: LessonService,
-		private readonly boardRepo: BoardRepo,
+		private readonly boardRepo: LegacyBoardRepo,
 		private readonly columnBoardService: ColumnBoardService,
-		private readonly columnBoardTargetService: ColumnBoardTargetService
+		private readonly boardNodeRepo: BoardNodeRepo
 	) {}
 
-	async updateBoard(board: Board, roomId: EntityId, userId: EntityId): Promise&lt;Board&gt; {
+	async updateLegacyBoard(board: LegacyBoard, roomId: EntityId, userId: EntityId): Promise&lt;LegacyBoard&gt; {
 		const [courseLessons] &#x3D; await this.lessonService.findByCourseIds([roomId]);
 		const [courseTasks] &#x3D; await this.taskService.findBySingleParent(userId, roomId);
+
 		const columnBoardIds &#x3D; await this.columnBoardService.findIdsByExternalReference({
 			type: BoardExternalReferenceType.Course,
 			id: roomId,
 		});
-		const courseColumnBoardTargets &#x3D; await this.columnBoardTargetService.findOrCreateTargets(columnBoardIds);
 
-		const boardElementTargets &#x3D; [...courseLessons, ...courseTasks, ...courseColumnBoardTargets];
+		const columnBoards &#x3D; await Promise.all(
+			columnBoardIds.map(async (id) &#x3D;&gt; (await this.boardNodeRepo.findById(id)) as ColumnBoardNode)
+		);
+
+		const boardElementTargets &#x3D; [...courseLessons, ...courseTasks, ...columnBoards];
 
 		board.syncBoardElementReferences(boardElementTargets);
 

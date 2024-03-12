@@ -316,7 +316,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="../entitys/Board.html" target="_self" >Board</a></code>
+                        <i>Type : </i>        <code><a href="../entitys/LegacyBoard.html" target="_self" >LegacyBoard</a></code>
 
                     </td>
                 </tr>
@@ -567,7 +567,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>filterByPermission(elements: BoardElement[])</code>
+                    <code>filterByPermission(elements: LegacyBoardElement[])</code>
                 </td>
             </tr>
 
@@ -598,7 +598,7 @@
                                         <tr>
                                                 <td>elements</td>
                                             <td>
-                                                        <code>BoardElement[]</code>
+                                                        <code>LegacyBoardElement[]</code>
                                             </td>
 
                                             <td>
@@ -751,7 +751,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapColumnBoardElement(element: <a href="../entitys/BoardElement.html" target="_self">BoardElement</a>)</code>
+                    <code>mapColumnBoardElement(element: <a href="../entitys/LegacyBoardElement.html" target="_self">LegacyBoardElement</a>)</code>
                 </td>
             </tr>
 
@@ -782,7 +782,7 @@
                                         <tr>
                                                 <td>element</td>
                                             <td>
-                                                            <code><a href="../entitys/BoardElement.html" target="_self" >BoardElement</a></code>
+                                                            <code><a href="../entitys/LegacyBoardElement.html" target="_self" >LegacyBoardElement</a></code>
                                             </td>
 
                                             <td>
@@ -820,7 +820,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapLessonElement(element: <a href="../entitys/BoardElement.html" target="_self">BoardElement</a>)</code>
+                    <code>mapLessonElement(element: <a href="../entitys/LegacyBoardElement.html" target="_self">LegacyBoardElement</a>)</code>
                 </td>
             </tr>
 
@@ -851,7 +851,7 @@
                                         <tr>
                                                 <td>element</td>
                                             <td>
-                                                            <code><a href="../entitys/BoardElement.html" target="_self" >BoardElement</a></code>
+                                                            <code><a href="../entitys/LegacyBoardElement.html" target="_self" >LegacyBoardElement</a></code>
                                             </td>
 
                                             <td>
@@ -889,7 +889,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapTaskElement(element: <a href="../entitys/BoardElement.html" target="_self">BoardElement</a>)</code>
+                    <code>mapTaskElement(element: <a href="../entitys/LegacyBoardElement.html" target="_self">LegacyBoardElement</a>)</code>
                 </td>
             </tr>
 
@@ -920,7 +920,7 @@
                                         <tr>
                                                 <td>element</td>
                                             <td>
-                                                            <code><a href="../entitys/BoardElement.html" target="_self" >BoardElement</a></code>
+                                                            <code><a href="../entitys/LegacyBoardElement.html" target="_self" >LegacyBoardElement</a></code>
                                             </td>
 
                                             <td>
@@ -958,7 +958,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToElementDTOs(elements: BoardElement[])</code>
+                    <code>mapToElementDTOs(elements: LegacyBoardElement[])</code>
                 </td>
             </tr>
 
@@ -989,7 +989,7 @@
                                         <tr>
                                                 <td>elements</td>
                                             <td>
-                                                        <code>BoardElement[]</code>
+                                                        <code>LegacyBoardElement[]</code>
                                             </td>
 
                                             <td>
@@ -1026,10 +1026,10 @@
 import { Action, AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import {
-	Board,
-	BoardElement,
-	BoardElementType,
-	ColumnBoardTarget,
+	LegacyBoard,
+	LegacyBoardElement,
+	LegacyBoardElementType,
+	ColumnBoardNode,
 	ColumnboardBoardElement,
 	Course,
 	LessonEntity,
@@ -1051,7 +1051,7 @@ import { RoomsAuthorisationService } from &#x27;./rooms.authorisation.service&#x
 class DtoCreator {
 	room: Course;
 
-	board: Board;
+	board: LegacyBoard;
 
 	user: User;
 
@@ -1067,7 +1067,7 @@ class DtoCreator {
 		roomsAuthorisationService,
 	}: {
 		room: Course;
-		board: Board;
+		board: LegacyBoard;
 		user: User;
 		authorisationService: AuthorizationService;
 		roomsAuthorisationService: RoomsAuthorisationService;
@@ -1088,14 +1088,14 @@ class DtoCreator {
 		return dto;
 	}
 
-	private filterByPermission(elements: BoardElement[]) {
+	private filterByPermission(elements: LegacyBoardElement[]) {
 		const filtered &#x3D; elements.filter((element) &#x3D;&gt; {
 			let result &#x3D; false;
-			if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.Task) {
+			if (element.boardElementType &#x3D;&#x3D;&#x3D; LegacyBoardElementType.Task) {
 				result &#x3D; this.roomsAuthorisationService.hasTaskReadPermission(this.user, element.target as Task);
 			}
 
-			if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.Lesson) {
+			if (element.boardElementType &#x3D;&#x3D;&#x3D; LegacyBoardElementType.Lesson) {
 				result &#x3D; this.roomsAuthorisationService.hasLessonReadPermission(this.user, element.target as LessonEntity);
 			}
 
@@ -1123,18 +1123,18 @@ class DtoCreator {
 		return false;
 	}
 
-	private mapToElementDTOs(elements: BoardElement[]) {
+	private mapToElementDTOs(elements: LegacyBoardElement[]) {
 		const results: RoomBoardElementDTO[] &#x3D; [];
 		elements.forEach((element) &#x3D;&gt; {
-			if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.Task) {
+			if (element.boardElementType &#x3D;&#x3D;&#x3D; LegacyBoardElementType.Task) {
 				const mapped &#x3D; this.mapTaskElement(element);
 				results.push(mapped);
 			}
-			if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.Lesson) {
+			if (element.boardElementType &#x3D;&#x3D;&#x3D; LegacyBoardElementType.Lesson) {
 				const mapped &#x3D; this.mapLessonElement(element);
 				results.push(mapped);
 			}
-			if (element.boardElementType &#x3D;&#x3D;&#x3D; BoardElementType.ColumnBoard) {
+			if (element.boardElementType &#x3D;&#x3D;&#x3D; LegacyBoardElementType.ColumnBoard) {
 				const mapped &#x3D; this.mapColumnBoardElement(element);
 				results.push(mapped);
 			}
@@ -1142,7 +1142,7 @@ class DtoCreator {
 		return results;
 	}
 
-	private mapTaskElement(element: BoardElement): RoomBoardElementDTO {
+	private mapTaskElement(element: LegacyBoardElement): RoomBoardElementDTO {
 		const task &#x3D; element.target as Task;
 		const status &#x3D; this.createTaskStatus(task);
 
@@ -1160,7 +1160,7 @@ class DtoCreator {
 		return status;
 	}
 
-	private mapLessonElement(element: BoardElement): RoomBoardElementDTO {
+	private mapLessonElement(element: LegacyBoardElement): RoomBoardElementDTO {
 		const type &#x3D; RoomBoardElementTypes.LESSON;
 		const lesson &#x3D; element.target as LessonEntity;
 		const content: LessonMetaData &#x3D; {
@@ -1179,16 +1179,16 @@ class DtoCreator {
 		return { type, content };
 	}
 
-	private mapColumnBoardElement(element: BoardElement): RoomBoardElementDTO {
+	private mapColumnBoardElement(element: LegacyBoardElement): RoomBoardElementDTO {
 		const type &#x3D; RoomBoardElementTypes.COLUMN_BOARD;
-		const columnBoardTarget &#x3D; element.target as ColumnBoardTarget;
+		const columnBoardNode &#x3D; element.target as ColumnBoardNode;
 		const content: ColumnBoardMetaData &#x3D; {
-			id: columnBoardTarget.id,
-			columnBoardId: columnBoardTarget.columnBoardId,
-			title: columnBoardTarget.title,
-			createdAt: columnBoardTarget.createdAt,
-			updatedAt: columnBoardTarget.updatedAt,
-			published: columnBoardTarget.published,
+			id: columnBoardNode.id,
+			columnBoardId: columnBoardNode.id,
+			title: columnBoardNode.title || &#x27;&#x27;,
+			createdAt: columnBoardNode.createdAt,
+			updatedAt: columnBoardNode.updatedAt,
+			published: columnBoardNode.isVisible,
 		};
 
 		return { type, content };
@@ -1213,7 +1213,7 @@ export class RoomBoardDTOFactory {
 		private readonly roomsAuthorisationService: RoomsAuthorisationService
 	) {}
 
-	createDTO({ room, board, user }: { room: Course; board: Board; user: User }): RoomBoardDTO {
+	createDTO({ room, board, user }: { room: Course; board: LegacyBoard; user: User }): RoomBoardDTO {
 		const worker &#x3D; new DtoCreator({
 			room,
 			board,
