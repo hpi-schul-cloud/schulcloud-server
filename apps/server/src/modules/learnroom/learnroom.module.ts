@@ -4,7 +4,7 @@ import { LessonModule } from '@modules/lesson';
 import { TaskModule } from '@modules/task';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { ToolConfigModule } from '@modules/tool/tool-config.module';
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import {
 	BoardRepo,
 	CourseGroupRepo,
@@ -15,8 +15,8 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { CommonCartridgeMapper } from './mapper/common-cartridge.mapper';
 import { COURSE_REPO } from './domain';
+import { CommonCartridgeMapper } from './mapper/common-cartridge.mapper';
 import { CourseMikroOrmRepo } from './repo/mikro-orm/course.repo';
 import {
 	BoardCopyService,
@@ -36,7 +36,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		LessonModule,
 		TaskModule,
 		CopyHelperModule,
-		BoardModule,
+		forwardRef(() => BoardModule),
 		LoggerModule,
 		ContextExternalToolModule,
 		ToolConfigModule,
