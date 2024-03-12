@@ -6,14 +6,7 @@ import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacyBoardRepo } from '@shared/repo';
-import {
-	boardFactory,
-	courseFactory,
-	lessonFactory,
-	setupEntities,
-	taskFactory,
-	userFactory,
-} from '@shared/testing';
+import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { ColumnBoardNode } from '@shared/domain/entity';
 import { BoardNodeRepo } from '@modules/board/repo';
 import { RoomsService } from './rooms.service';
