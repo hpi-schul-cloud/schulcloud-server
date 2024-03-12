@@ -1,10 +1,12 @@
 import { Action, AuthorizationService } from '@modules/authorization';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { BoardExternalReference, Column, ColumnBoard } from '@shared/domain/domainobject';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
 import { CopyStatus } from '@src/modules/copy-helper';
+import { CreateBoardBodyParams } from '../controller/dto';
 import { ColumnBoardService, ColumnService } from '../service';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
 import { ColumnBoardCopyService } from '../service/column-board-copy.service';
@@ -24,6 +26,23 @@ export class BoardUc extends BaseUc {
 	) {
 		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(BoardUc.name);
+	}
+
+	async createBoard(userId: EntityId, params: CreateBoardBodyParams): Promise<ColumnBoard> {
+		this.logger.debug({ action: 'createBoard', userId, title: params.title });
+
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const course = await this.courseRepo.findById(params.parentId);
+
+		this.authorizationService.checkPermission(user, course, {
+			action: Action.write,
+			requiredPermissions: [Permission.COURSE_EDIT],
+		});
+
+		const context = { type: params.parentType, id: params.parentId };
+		const board = await this.columnBoardService.create(context, params.title);
+
+		return board;
 	}
 
 	async findBoard(userId: EntityId, boardId: EntityId): Promise<ColumnBoard> {
@@ -109,5 +128,12 @@ export class BoardUc extends BaseUc {
 		});
 
 		return copyStatus;
+	}
+
+	async updateVisibility(userId: EntityId, boardId: EntityId, isVisible: boolean): Promise<void> {
+		const board = await this.columnBoardService.findById(boardId);
+		await this.checkPermission(userId, board, Action.write);
+
+		await this.columnBoardService.updateBoardVisibility(board, isVisible);
 	}
 }

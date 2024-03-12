@@ -3,7 +3,7 @@ import {
 	boardFactory,
 	columnboardBoardElementFactory,
 	columnBoardFactory,
-	columnBoardTargetFactory,
+	columnBoardNodeFactory,
 	courseFactory,
 	lessonBoardElementFactory,
 	lessonFactory,
@@ -175,7 +175,7 @@ describe('Board Entity', () => {
 		});
 
 		it('should add columnboards to board', () => {
-			const columnBoardTarget = columnBoardTargetFactory.buildWithId();
+			const columnBoardTarget = columnBoardNodeFactory.buildWithId();
 			const board = boardFactory.buildWithId({ references: [] });
 
 			board.syncBoardElementReferences([columnBoardTarget]);
@@ -184,7 +184,7 @@ describe('Board Entity', () => {
 		});
 
 		it('should NOT add columnboards to board that is already there', () => {
-			const target = columnBoardTargetFactory.buildWithId();
+			const target = columnBoardNodeFactory.buildWithId();
 			const boardElement = columnboardBoardElementFactory.buildWithId({ target });
 			const board = boardFactory.buildWithId({ references: [boardElement] });
 
@@ -194,8 +194,8 @@ describe('Board Entity', () => {
 		});
 
 		it('should add new columnboards to the beginning of the list', () => {
-			const newTarget = columnBoardTargetFactory.buildWithId();
-			const existingTarget = columnBoardTargetFactory.buildWithId();
+			const newTarget = columnBoardNodeFactory.buildWithId();
+			const existingTarget = columnBoardNodeFactory.buildWithId();
 			const existingElement = columnboardBoardElementFactory.buildWithId({ target: existingTarget });
 			const board = boardFactory.buildWithId({ references: [existingElement] });
 
