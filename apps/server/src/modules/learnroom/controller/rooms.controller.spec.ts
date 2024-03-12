@@ -30,7 +30,7 @@ describe('rooms controller', () => {
 						getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
 							throw new Error('please write mock for RoomsUc.getBoard');
 						},
-						updateVisibilityOfBoardElement(
+						updateVisibilityOfLegacyBoardElement(
 							roomId: EntityId, // eslint-disable-line @typescript-eslint/no-unused-vars
 							elementId: EntityId, // eslint-disable-line @typescript-eslint/no-unused-vars
 							userId: EntityId, // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -124,7 +124,7 @@ describe('rooms controller', () => {
 	describe('patchVisibility', () => {
 		it('should call uc', async () => {
 			const currentUser = { userId: 'userId' } as ICurrentUser;
-			const ucSpy = jest.spyOn(uc, 'updateVisibilityOfBoardElement').mockImplementation(() => Promise.resolve());
+			const ucSpy = jest.spyOn(uc, 'updateVisibilityOfLegacyBoardElement').mockImplementation(() => Promise.resolve());
 			await controller.patchElementVisibility(
 				{ roomId: 'roomid', elementId: 'elementId' },
 				{ visibility: true },

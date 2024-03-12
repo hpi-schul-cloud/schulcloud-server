@@ -3,33 +3,34 @@ import { EntityId } from '../../types';
 import { BaseEntityWithTimestamps } from '../base.entity';
 import { LessonEntity } from '../lesson.entity';
 import { Task } from '../task.entity';
-import { ColumnBoardTarget } from './column-board-target.entity';
+import { ColumnBoardNode } from '../boardnode/column-board-node.entity';
 
-export type BoardElementReference = Task | LessonEntity | ColumnBoardTarget;
+export type LegacyBoardElementReference = Task | LessonEntity | ColumnBoardNode;
 
-export enum BoardElementType {
+export enum LegacyBoardElementType {
 	'Task' = 'task',
 	'Lesson' = 'lesson',
 	'ColumnBoard' = 'columnboard',
 }
 
-export type BoardElementProps = {
-	target: EntityId | BoardElementReference;
+export type LegacyBoardElementProps = {
+	target: EntityId | LegacyBoardElementReference;
 };
 
 @Entity({
 	discriminatorColumn: 'boardElementType',
 	abstract: true,
+	tableName: 'board-element',
 })
-export abstract class BoardElement extends BaseEntityWithTimestamps {
+export abstract class LegacyBoardElement extends BaseEntityWithTimestamps {
 	/** id reference to a collection populated later with name */
-	target!: BoardElementReference;
+	target!: LegacyBoardElementReference;
 
 	/** name of a collection which is referenced in target */
 	@Enum()
-	boardElementType!: BoardElementType;
+	boardElementType!: LegacyBoardElementType;
 
-	constructor(props: BoardElementProps) {
+	constructor(props: LegacyBoardElementProps) {
 		super();
 		Object.assign(this, { target: props.target });
 	}

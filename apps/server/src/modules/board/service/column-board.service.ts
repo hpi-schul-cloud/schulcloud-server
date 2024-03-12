@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import {
 	AnyBoardDo,
 	BoardExternalReference,
@@ -33,16 +32,9 @@ export class ColumnBoardService {
 	}
 
 	async findByDescendant(boardDo: AnyBoardDo): Promise<ColumnBoard> {
-		const ancestorIds: EntityId[] = await this.boardDoRepo.getAncestorIds(boardDo);
-		const idHierarchy: EntityId[] = [...ancestorIds, boardDo.id];
-		const rootId: EntityId = idHierarchy[0];
-		const rootBoardDo: AnyBoardDo = await this.boardDoRepo.findById(rootId, 1);
+		const rootboardDo = this.boardDoService.getRootBoardDo(boardDo);
 
-		if (rootBoardDo instanceof ColumnBoard) {
-			return rootBoardDo;
-		}
-
-		throw new NotFoundLoggableException(ColumnBoard.name, { id: rootId });
+		return rootboardDo;
 	}
 
 	async getBoardObjectTitlesById(boardIds: EntityId[]): Promise<Record<EntityId, string>> {
@@ -58,6 +50,7 @@ export class ColumnBoardService {
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			context,
+			isVisible: false,
 		});
 
 		await this.boardDoRepo.save(columnBoard);
@@ -90,6 +83,11 @@ export class ColumnBoardService {
 
 	async updateTitle(board: ColumnBoard, title: string): Promise<void> {
 		board.title = title;
+		await this.boardDoRepo.save(board);
+	}
+
+	async updateBoardVisibility(board: ColumnBoard, isVisible: boolean): Promise<void> {
+		board.isVisible = isVisible;
 		await this.boardDoRepo.save(board);
 	}
 }
