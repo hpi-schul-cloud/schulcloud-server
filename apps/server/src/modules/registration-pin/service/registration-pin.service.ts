@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
-import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { EntityId, StatusModel } from '@shared/domain/types';
-import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import {
 	DeletionService,
 	DomainDeletionReport,
@@ -10,6 +8,8 @@ import {
 	DomainDeletionReportBuilder,
 	DomainOperationReportBuilder,
 	OperationType,
+	DataDeletionDomainOperationLoggable,
+	DeletionErrorLoggableException,
 } from '@modules/deletion';
 import { RegistrationPinRepo } from '../repo';
 import { RegistrationPinEntity } from '../entity';

@@ -4,7 +4,6 @@ import { ComponentProperties, LessonEntity } from '@shared/domain/entity';
 import { Counted, EntityId, StatusModel } from '@shared/domain/types';
 import { AuthorizationLoaderService } from '@src/modules/authorization';
 import { Logger } from '@src/core/logger';
-import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import {
 	UserDeletedEvent,
@@ -15,6 +14,7 @@ import {
 	DomainDeletionReportBuilder,
 	DomainOperationReportBuilder,
 	OperationType,
+	DataDeletionDomainOperationLoggable,
 } from '@modules/deletion';
 import { LessonRepo } from '../repository';
 

@@ -6,7 +6,6 @@ import { CurrentUserMapper } from '@modules/authentication/mapper';
 import { RoleService, RoleDto } from '@modules/role';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { LanguageType, User } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
@@ -16,7 +15,6 @@ import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { Logger } from '@src/core/logger';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { RegistrationPinService } from '@modules/registration-pin';
-import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import {
 	UserDeletedEvent,
 	DeletionService,
@@ -27,6 +25,8 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 	DomainOperationReport,
+	DataDeletionDomainOperationLoggable,
+	DeletionErrorLoggableException,
 } from '@modules/deletion';
 import { UserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';

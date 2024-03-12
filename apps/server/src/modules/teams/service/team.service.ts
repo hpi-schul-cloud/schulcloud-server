@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { EventsHandler, IEventHandler, EventBus } from '@nestjs/cqrs';
-import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { TeamEntity } from '@shared/domain/entity';
 import { EntityId, StatusModel } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo';
@@ -14,6 +13,7 @@ import {
 	DomainDeletionReportBuilder,
 	DomainOperationReportBuilder,
 	OperationType,
+	DataDeletionDomainOperationLoggable,
 } from '@modules/deletion';
 
 @Injectable()

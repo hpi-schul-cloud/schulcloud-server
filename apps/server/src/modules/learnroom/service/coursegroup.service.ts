@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { CourseGroup } from '@shared/domain/entity';
 import { Counted, EntityId, StatusModel } from '@shared/domain/types';
 import { CourseGroupRepo } from '@shared/repo';
@@ -14,6 +13,7 @@ import {
 	DomainDeletionReportBuilder,
 	DomainOperationReportBuilder,
 	OperationType,
+	DataDeletionDomainOperationLoggable,
 } from '@modules/deletion';
 
 @Injectable()

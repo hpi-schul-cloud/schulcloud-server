@@ -6,3 +6,5 @@ export * from './builder';
 export * from './types';
 export * from './interface';
 export * from './domain';
+export * from './loggable';
+export * from './loggable-exception';

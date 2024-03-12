@@ -5,7 +5,6 @@ import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId, StatusModel } from '@shared/domain/types';
 import { TaskRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
 import {
 	UserDeletedEvent,
@@ -17,6 +16,7 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 	DomainOperationReport,
+	DataDeletionDomainOperationLoggable,
 } from '@modules/deletion';
 import { SubmissionService } from './submission.service';
 
