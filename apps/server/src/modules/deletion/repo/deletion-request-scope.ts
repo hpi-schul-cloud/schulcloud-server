@@ -3,13 +3,13 @@ import { DeletionRequestEntity } from '../entity';
 import { StatusModel } from '../types';
 
 export class DeletionRequestScope extends Scope<DeletionRequestEntity> {
-	byDeleteAfter(currentDate: Date): DeletionRequestScope {
+	byDeleteAfter(currentDate: Date): this {
 		this.addQuery({ deleteAfter: { $lt: currentDate } });
 
 		return this;
 	}
 
-	byStatus(fifteenMinutesAgo: Date): DeletionRequestScope {
+	byStatus(fifteenMinutesAgo: Date): this {
 		this.addQuery({
 			$or: [
 				{ status: StatusModel.FAILED },

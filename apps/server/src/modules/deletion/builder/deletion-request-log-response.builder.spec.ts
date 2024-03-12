@@ -5,8 +5,7 @@ import {
 	DeletionTargetRefBuilder,
 	DomainOperationReportBuilder,
 } from '.';
-import { DeletionStatusModel } from '../domain/types';
-import { DomainName, OperationType } from '../types';
+import { DomainName, OperationType, StatusModel } from '../types';
 
 describe(DeletionRequestLogResponseBuilder, () => {
 	afterAll(() => {
@@ -17,7 +16,7 @@ describe(DeletionRequestLogResponseBuilder, () => {
 		const targetRefId = '653e4833cc39e5907a1e18d2';
 		const targetRef = DeletionTargetRefBuilder.build(targetRefDomain, targetRefId);
 		const deletionPlannedAt = new Date();
-		const status = DeletionStatusModel.SUCCESS;
+		const status = StatusModel.SUCCESS;
 		const operations = [
 			DomainOperationReportBuilder.build(OperationType.DELETE, 2, [
 				new ObjectId().toHexString(),
