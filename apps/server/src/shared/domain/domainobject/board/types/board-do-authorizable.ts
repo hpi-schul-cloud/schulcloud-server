@@ -47,8 +47,4 @@ export class BoardDoAuthorizable extends DomainObject<BoardDoAuthorizableProps> 
 	get rootDo(): ColumnBoard {
 		return this.props.rootDo;
 	}
-
-	set rootDo(value: ColumnBoard) {
-		this.props.rootDo = value;
-	}
 }
