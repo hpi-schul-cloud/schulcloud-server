@@ -1,7 +1,7 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { PseudonymModule } from '@modules/pseudonym';
 import { ToolModule } from '@modules/tool';
-import { UserModule } from '@modules/user';
+import { UserModule } from '@modules/user/user.module';
 import { HttpModule } from '@nestjs/axios';
 import { Module, Provider } from '@nestjs/common';
 import { LtiToolRepo } from '@shared/repo/ltitool/';
