@@ -5,9 +5,9 @@ import { AuthGuard } from '@nestjs/passport';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { TestXApiKeyClient } from '@shared/testing';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.module';
-import { DomainName } from '@shared/domain/types';
 import { DeletionRequestBodyProps, DeletionRequestResponse } from '../dto';
 import { DeletionRequestEntity } from '../../entity';
+import { DomainName } from '../../types';
 
 const baseRouteName = '/deletionRequests';
 

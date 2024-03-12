@@ -1,7 +1,7 @@
 import { ObjectId } from 'bson';
 import { EntityId } from '@shared/domain/types';
-import { DomainName, StatusModel } from '@modules/deletion';
 import { DataDeletionDomainOperationLoggable } from './data-deletion-domain-operation-loggable';
+import { DomainName, StatusModel } from '../types';
 
 describe(DataDeletionDomainOperationLoggable.name, () => {
 	describe('getLogMessage', () => {

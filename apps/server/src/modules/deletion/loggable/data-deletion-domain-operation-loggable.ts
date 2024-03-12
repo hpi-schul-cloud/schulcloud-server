@@ -1,6 +1,6 @@
 import { EntityId } from '@shared/domain/types';
 import { ErrorLogMessage, LogMessage, Loggable, ValidationErrorLogMessage } from '@src/core/logger';
-import { DomainName, StatusModel } from '@modules/deletion';
+import { DomainName, StatusModel } from '../types';
 
 export class DataDeletionDomainOperationLoggable implements Loggable {
 	constructor(

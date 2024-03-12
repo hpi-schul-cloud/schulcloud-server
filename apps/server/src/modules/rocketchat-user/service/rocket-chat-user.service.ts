@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, StatusModel } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { EventsHandler, IEventHandler, EventBus } from '@nestjs/cqrs';
 import { RocketChatService } from '@modules/rocketchat';
@@ -14,6 +14,7 @@ import {
 	OperationType,
 	DataDeletionDomainOperationLoggable,
 	DeletionErrorLoggableException,
+	StatusModel,
 } from '@modules/deletion';
 import { RocketChatUser } from '../domain';
 import { RocketChatUserRepo } from '../repo';

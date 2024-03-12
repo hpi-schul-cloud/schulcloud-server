@@ -9,7 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { LanguageType, User } from '@shared/domain/entity';
 import { IFindOptions } from '@shared/domain/interface';
-import { EntityId, StatusModel } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { Logger } from '@src/core/logger';
@@ -27,6 +27,7 @@ import {
 	DomainOperationReport,
 	DataDeletionDomainOperationLoggable,
 	DeletionErrorLoggableException,
+	StatusModel,
 } from '@modules/deletion';
 import { UserConfig } from '../interfaces';
 import { UserMapper } from '../mapper/user.mapper';

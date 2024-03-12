@@ -12,7 +12,7 @@ import {
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-} from '@src/modules/deletion';
+} from '@modules/deletion';
 import { CopyFileDto, FileDto } from '../dto';
 import { CopyFilesRequestInfo } from '../interfaces/copy-file-request-info';
 import { FilesStorageClientMapper } from '../mapper';

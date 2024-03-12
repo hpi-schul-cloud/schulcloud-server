@@ -14,10 +14,7 @@ export class DeletionRequestScope extends Scope<DeletionRequestEntity> {
 			$or: [
 				{ status: StatusModel.FAILED },
 				{
-					$and: [
-						{ status: [StatusModel.REGISTERED, StatusModel.PENDING] },
-						{ updatedAt: { $lt: fifteenMinutesAgo } },
-					],
+					$and: [{ status: [StatusModel.REGISTERED, StatusModel.PENDING] }, { updatedAt: { $lt: fifteenMinutesAgo } }],
 				},
 			],
 		});

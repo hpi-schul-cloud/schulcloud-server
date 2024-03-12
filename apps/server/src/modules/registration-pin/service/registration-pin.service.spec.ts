@@ -2,8 +2,8 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userDoFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import {
+	DeletionErrorLoggableException,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,

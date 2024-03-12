@@ -5,7 +5,6 @@ import { setupEntities } from '@shared/testing';
 import { Logger } from '@src/core/logger';
 import { EventBus } from '@nestjs/cqrs';
 import { RocketChatService } from '@modules/rocketchat/rocket-chat.service';
-import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
 import {
 	DomainDeletionReportBuilder,
 	DomainName,
@@ -14,6 +13,7 @@ import {
 	DomainDeletionReport,
 	deletionRequestFactory,
 	DataDeletedEvent,
+	DeletionErrorLoggableException,
 } from '@modules/deletion';
 import { RocketChatUserService } from './rocket-chat-user.service';
 import { RocketChatUserRepo } from '../repo';
