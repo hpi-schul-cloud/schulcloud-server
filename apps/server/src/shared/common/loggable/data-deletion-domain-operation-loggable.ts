@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { DomainName, EntityId, StatusModel } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { ErrorLogMessage, LogMessage, Loggable, ValidationErrorLogMessage } from '@src/core/logger';
+import { DomainName, StatusModel } from '@modules/deletion';
 
 export class DataDeletionDomainOperationLoggable implements Loggable {
 	constructor(

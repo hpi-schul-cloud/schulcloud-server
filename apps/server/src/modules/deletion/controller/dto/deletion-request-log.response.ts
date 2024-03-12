@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsOptional } from 'class-validator';
-import { DomainDeletionReport } from '@shared/domain/interface';
-import { DeletionTargetRef } from '../../interface';
-import { DeletionStatusModel } from '../../domain/types';
+import { DeletionTargetRef, DomainDeletionReport } from '../../interface';
+import { StatusModel } from '../../types';
 
 export class DeletionRequestLogResponse {
 	@ApiProperty()
@@ -12,7 +11,7 @@ export class DeletionRequestLogResponse {
 	deletionPlannedAt: Date;
 
 	@ApiProperty()
-	status: DeletionStatusModel;
+	status: StatusModel;
 
 	@ApiProperty()
 	@IsOptional()
