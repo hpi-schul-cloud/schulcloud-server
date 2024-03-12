@@ -1,4 +1,4 @@
-import { BoardModule } from '@modules/board';
+import { BoardModule } from '@modules/board/board.module';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { LessonModule } from '@modules/lesson';
 import { TaskModule } from '@modules/task';

@@ -14,15 +14,40 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common';
 import { BoardUc } from '../uc';
-import { BoardResponse, BoardUrlParams, ColumnResponse, UpdateBoardTitleParams, VisibilityBodyParams } from './dto';
+import {
+	BoardResponse,
+	BoardUrlParams,
+	ColumnResponse,
+	CreateBoardBodyParams,
+	CreateBoardResponse,
+	UpdateBoardTitleParams,
+	VisibilityBodyParams,
+} from './dto';
 import { BoardContextResponse } from './dto/board/board-context.reponse';
-import { BoardResponseMapper, ColumnResponseMapper } from './mapper';
+import { BoardResponseMapper, ColumnResponseMapper, CreateBoardResponseMapper } from './mapper';
 
 @ApiTags('Board')
 @Authenticate('jwt')
 @Controller('boards')
 export class BoardController {
 	constructor(private readonly boardUc: BoardUc) {}
+
+	@ApiOperation({ summary: 'Create a new board.' })
+	@ApiResponse({ status: 201, type: CreateBoardResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Post()
+	async createBoard(
+		@Body() bodyParams: CreateBoardBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<CreateBoardResponse> {
+		const board = await this.boardUc.createBoard(currentUser.userId, bodyParams);
+
+		const response = CreateBoardResponseMapper.mapToResponse(board);
+
+		return response;
+	}
 
 	@ApiOperation({ summary: 'Get the skeleton of a a board.' })
 	@ApiResponse({ status: 200, type: BoardResponse })

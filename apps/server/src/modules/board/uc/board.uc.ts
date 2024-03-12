@@ -1,10 +1,12 @@
-import { Action } from '@modules/authorization';
-import { AuthorizationService } from '@modules/authorization/domain';
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Action, AuthorizationService } from '@modules/authorization';
+import { Inject, Injectable, forwardRef } from '@nestjs/common';
 import { BoardExternalReference, Column, ColumnBoard } from '@shared/domain/domainobject';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { CourseRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
-import { CardService, ColumnBoardService, ColumnService } from '../service';
+import { CreateBoardBodyParams } from '../controller/dto';
+import { ColumnBoardService, ColumnService } from '../service';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
 import { BaseUc } from './base.uc';
 
@@ -14,13 +16,30 @@ export class BoardUc extends BaseUc {
 		@Inject(forwardRef(() => AuthorizationService))
 		protected readonly authorizationService: AuthorizationService,
 		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
-		private readonly cardService: CardService,
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly columnService: ColumnService,
-		private readonly logger: LegacyLogger
+		private readonly logger: LegacyLogger,
+		private readonly courseRepo: CourseRepo
 	) {
 		super(authorizationService, boardDoAuthorizableService);
 		this.logger.setContext(BoardUc.name);
+	}
+
+	async createBoard(userId: EntityId, params: CreateBoardBodyParams): Promise<ColumnBoard> {
+		this.logger.debug({ action: 'createBoard', userId, title: params.title });
+
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const course = await this.courseRepo.findById(params.parentId);
+
+		this.authorizationService.checkPermission(user, course, {
+			action: Action.write,
+			requiredPermissions: [Permission.COURSE_EDIT],
+		});
+
+		const context = { type: params.parentType, id: params.parentId };
+		const board = await this.columnBoardService.create(context, params.title);
+
+		return board;
 	}
 
 	async findBoard(userId: EntityId, boardId: EntityId): Promise<ColumnBoard> {

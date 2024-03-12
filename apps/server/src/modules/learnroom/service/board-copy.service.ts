@@ -7,11 +7,12 @@ import { getResolvedValues } from '@shared/common/utils/promise';
 import { ColumnBoard } from '@shared/domain/domainobject';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
 import {
+	ColumnboardBoardElement,
+	ColumnBoardNode,
+	Course,
 	LegacyBoard,
 	LegacyBoardElement,
 	LegacyBoardElementType,
-	ColumnboardBoardElement,
-	Course,
 	LessonBoardElement,
 	LessonEntity,
 	Task,
@@ -19,7 +20,6 @@ import {
 	User,
 	isLesson,
 	isTask,
-	ColumnBoardNode,
 } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { LegacyBoardRepo } from '@shared/repo';

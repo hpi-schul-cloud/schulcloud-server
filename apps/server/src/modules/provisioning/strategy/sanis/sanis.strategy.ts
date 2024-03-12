@@ -1,3 +1,5 @@
+import { SanisGruppenResponse, SanisResponse, SanisResponseValidationGroups } from '@infra/schulconnex-client/response';
+import { GroupService } from '@modules/group';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ValidationErrorLoggableException } from '@shared/common/loggable-exception';
@@ -7,7 +9,6 @@ import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
 import { firstValueFrom } from 'rxjs';
-import { SanisGruppenResponse, SanisResponse, SanisResponseValidationGroups } from '@infra/schulconnex-client/response';
 import { IProvisioningFeatures, ProvisioningFeatures } from '../../config';
 import {
 	ExternalGroupDto,
@@ -16,19 +17,35 @@ import {
 	OauthDataDto,
 	OauthDataStrategyInputDto,
 } from '../../dto';
-import { OidcProvisioningStrategy } from '../oidc/oidc.strategy';
-import { OidcProvisioningService } from '../oidc/service/oidc-provisioning.service';
+import { SchulconnexProvisioningStrategy } from '../oidc';
+import {
+	SchulconnexCourseSyncService,
+	SchulconnexGroupProvisioningService,
+	SchulconnexSchoolProvisioningService,
+	SchulconnexUserProvisioningService,
+} from '../oidc/service';
 import { SanisResponseMapper } from './sanis-response.mapper';
 
 @Injectable()
-export class SanisProvisioningStrategy extends OidcProvisioningStrategy {
+export class SanisProvisioningStrategy extends SchulconnexProvisioningStrategy {
 	constructor(
 		@Inject(ProvisioningFeatures) protected readonly provisioningFeatures: IProvisioningFeatures,
-		protected readonly oidcProvisioningService: OidcProvisioningService,
+		protected readonly schulconnexSchoolProvisioningService: SchulconnexSchoolProvisioningService,
+		protected readonly schulconnexUserProvisioningService: SchulconnexUserProvisioningService,
+		protected readonly schulconnexGroupProvisioningService: SchulconnexGroupProvisioningService,
+		protected readonly schulconnexCourseSyncService: SchulconnexCourseSyncService,
+		protected readonly groupService: GroupService,
 		private readonly responseMapper: SanisResponseMapper,
 		private readonly httpService: HttpService
 	) {
-		super(provisioningFeatures, oidcProvisioningService);
+		super(
+			provisioningFeatures,
+			schulconnexSchoolProvisioningService,
+			schulconnexUserProvisioningService,
+			schulconnexGroupProvisioningService,
+			schulconnexCourseSyncService,
+			groupService
+		);
 	}
 
 	getType(): SystemProvisioningStrategy {
