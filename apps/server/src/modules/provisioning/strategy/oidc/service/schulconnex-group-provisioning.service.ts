@@ -1,144 +1,31 @@
-import { AccountSaveDto, AccountService } from '@modules/account';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService, GroupTypes, GroupUser } from '@modules/group';
 import {
-	FederalStateService,
 	LegacySchoolService,
 	SchoolSystemOptionsService,
-	SchoolYearService,
 	SchulConneXProvisioningOptions,
 } from '@modules/legacy-school';
-import { FederalStateNames } from '@modules/legacy-school/types';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { UserService } from '@modules/user';
-import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { ExternalSource, LegacySchoolDo, RoleReference, UserDO } from '@shared/domain/domainobject';
-import { FederalStateEntity, SchoolYearEntity } from '@shared/domain/entity';
-import { EntityId, SchoolFeature } from '@shared/domain/types';
+import { ExternalSource, LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
+import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { ObjectId } from '@mikro-orm/mongodb';
-import CryptoJS from 'crypto-js';
-import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto, ExternalUserDto } from '../../../dto';
+import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
 
 @Injectable()
-export class OidcProvisioningService {
+export class SchulconnexGroupProvisioningService {
 	constructor(
 		private readonly userService: UserService,
 		private readonly schoolService: LegacySchoolService,
-		private readonly groupService: GroupService,
 		private readonly roleService: RoleService,
-		private readonly accountService: AccountService,
-		private readonly schoolYearService: SchoolYearService,
-		private readonly federalStateService: FederalStateService,
+		private readonly groupService: GroupService,
 		private readonly schoolSystemOptionsService: SchoolSystemOptionsService,
 		private readonly logger: Logger
 	) {}
-
-	public async provisionExternalSchool(externalSchool: ExternalSchoolDto, systemId: EntityId): Promise<LegacySchoolDo> {
-		const existingSchool: LegacySchoolDo | null = await this.schoolService.getSchoolByExternalId(
-			externalSchool.externalId,
-			systemId
-		);
-		let school: LegacySchoolDo;
-		if (existingSchool) {
-			school = existingSchool;
-			school.name = this.getSchoolName(externalSchool);
-			school.officialSchoolNumber = externalSchool.officialSchoolNumber ?? existingSchool.officialSchoolNumber;
-			if (!school.systems) {
-				school.systems = [systemId];
-			} else if (!school.systems.includes(systemId)) {
-				school.systems.push(systemId);
-			}
-		} else {
-			const schoolYear: SchoolYearEntity = await this.schoolYearService.getCurrentSchoolYear();
-			const federalState: FederalStateEntity = await this.federalStateService.findFederalStateByName(
-				FederalStateNames.NIEDERSACHEN
-			);
-
-			school = new LegacySchoolDo({
-				externalId: externalSchool.externalId,
-				name: this.getSchoolName(externalSchool),
-				officialSchoolNumber: externalSchool.officialSchoolNumber,
-				systems: [systemId],
-				features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
-				// TODO: N21-990 Refactoring: Create domain objects for schoolYear and federalState
-				schoolYear,
-				federalState,
-			});
-		}
-
-		const savedSchool: LegacySchoolDo = await this.schoolService.save(school, true);
-
-		return savedSchool;
-	}
-
-	private getSchoolName(externalSchool: ExternalSchoolDto): string {
-		const schoolName: string = externalSchool.location
-			? `${externalSchool.name} (${externalSchool.location})`
-			: externalSchool.name;
-
-		return schoolName;
-	}
-
-	public async provisionExternalUser(
-		externalUser: ExternalUserDto,
-		systemId: EntityId,
-		schoolId?: string
-	): Promise<UserDO> {
-		let roleRefs: RoleReference[] | undefined;
-		if (externalUser.roles) {
-			const roles: RoleDto[] = await this.roleService.findByNames(externalUser.roles);
-			roleRefs = roles.map((role: RoleDto): RoleReference => new RoleReference({ id: role.id || '', name: role.name }));
-		}
-
-		const existingUser: UserDO | null = await this.userService.findByExternalId(externalUser.externalId, systemId);
-		let user: UserDO;
-		let createNewAccount = false;
-		if (existingUser) {
-			user = existingUser;
-			user.firstName = externalUser.firstName ?? existingUser.firstName;
-			user.lastName = externalUser.lastName ?? existingUser.lastName;
-			user.email = externalUser.email ?? existingUser.email;
-			user.roles = roleRefs ?? existingUser.roles;
-			user.schoolId = schoolId ?? existingUser.schoolId;
-			user.birthday = externalUser.birthday ?? existingUser.birthday;
-		} else {
-			createNewAccount = true;
-
-			if (!schoolId) {
-				throw new UnprocessableEntityException(
-					`Unable to create new external user ${externalUser.externalId} without a school`
-				);
-			}
-
-			user = new UserDO({
-				externalId: externalUser.externalId,
-				firstName: externalUser.firstName ?? '',
-				lastName: externalUser.lastName ?? '',
-				email: externalUser.email ?? '',
-				roles: roleRefs ?? [],
-				schoolId,
-				birthday: externalUser.birthday,
-			});
-		}
-
-		const savedUser: UserDO = await this.userService.save(user);
-
-		if (createNewAccount) {
-			await this.accountService.saveWithValidation(
-				new AccountSaveDto({
-					userId: savedUser.id,
-					username: CryptoJS.SHA256(savedUser.id as string).toString(CryptoJS.enc.Base64),
-					systemId,
-					activated: true,
-				})
-			);
-		}
-
-		return savedUser;
-	}
 
 	public async filterExternalGroups(
 		externalGroups: ExternalGroupDto[],
@@ -190,7 +77,7 @@ export class OidcProvisioningService {
 		externalGroup: ExternalGroupDto,
 		externalSchool: ExternalSchoolDto | undefined,
 		systemId: EntityId
-	): Promise<void> {
+	): Promise<Group | null> {
 		let organizationId: string | undefined;
 		if (externalSchool) {
 			const existingSchool: LegacySchoolDo | null = await this.schoolService.getSchoolByExternalId(
@@ -200,7 +87,7 @@ export class OidcProvisioningService {
 
 			if (!existingSchool || !existingSchool.id) {
 				this.logger.info(new SchoolForGroupNotFoundLoggable(externalGroup, externalSchool));
-				return;
+				return null;
 			}
 
 			organizationId = existingSchool.id;
@@ -239,7 +126,9 @@ export class OidcProvisioningService {
 
 		group.addUser(self);
 
-		await this.groupService.save(group);
+		const savedGroup: Group = await this.groupService.save(group);
+
+		return savedGroup;
 	}
 
 	private async getFilteredGroupUsers(externalGroup: ExternalGroupDto, systemId: string): Promise<GroupUser[]> {
@@ -280,7 +169,7 @@ export class OidcProvisioningService {
 		externalUserId: string,
 		externalGroups: ExternalGroupDto[],
 		systemId: EntityId
-	): Promise<void> {
+	): Promise<Group[]> {
 		const user: UserDO | null = await this.userService.findByExternalId(externalUserId, systemId);
 
 		if (!user) {
@@ -302,16 +191,23 @@ export class OidcProvisioningService {
 			return !isUserInGroup;
 		});
 
-		await Promise.all(
-			groupsWithoutUser.map(async (group: Group) => {
+		const groupRemovePromises: Promise<Group | null>[] = groupsWithoutUser.map(
+			async (group: Group): Promise<Group | null> => {
 				group.removeUser(user);
 
 				if (group.isEmpty()) {
 					await this.groupService.delete(group);
-				} else {
-					await this.groupService.save(group);
+					return null;
 				}
-			})
+
+				return this.groupService.save(group);
+			}
 		);
+
+		const deletedAndModifiedGroups: (Group | null)[] = await Promise.all(groupRemovePromises);
+
+		const remainingGroups: Group[] = deletedAndModifiedGroups.filter((group: Group | null): group is Group => !!group);
+
+		return remainingGroups;
 	}
 }

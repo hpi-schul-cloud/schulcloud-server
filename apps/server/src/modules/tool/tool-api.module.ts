@@ -1,11 +1,11 @@
 import { AuthorizationModule } from '@modules/authorization';
+import { BoardModule } from '@modules/board/board.module';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { SchoolModule } from '@modules/school';
-import { UserModule } from '@modules/user';
+import { UserModule } from '@modules/user/user.module';
 import { Module } from '@nestjs/common';
 import { LtiToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { BoardModule } from '../board';
 import { LearnroomModule } from '../learnroom';
 import { CommonToolModule } from './common';
 import { ToolPermissionHelper } from './common/uc/tool-permission-helper';
