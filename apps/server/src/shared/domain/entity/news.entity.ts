@@ -43,7 +43,6 @@ export abstract class News extends BaseEntityWithTimestamps {
 	displayAt: Date;
 
 	@Property({ nullable: true })
-	@Index()
 	displayUpdateAt?: Date;
 
 	@Property({ nullable: true })
