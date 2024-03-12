@@ -8,7 +8,6 @@ import { CourseGroup } from './coursegroup.entity';
 const DEFAULT = {
 	color: '#ACACAC',
 	name: 'Kurse',
-	description: '',
 };
 
 describe('CourseEntity', () => {
@@ -37,7 +36,7 @@ describe('CourseEntity', () => {
 			const course = new Course({ school });
 
 			expect(course.name).toEqual(DEFAULT.name);
-			expect(course.description).toEqual(DEFAULT.description);
+			expect(course.description).toEqual(undefined);
 			expect(course.color).toEqual(DEFAULT.color);
 		});
 	});
