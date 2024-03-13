@@ -61,6 +61,18 @@ export class SchoolService {
 		}
 	}
 
+	public async getSchoolSystems(school: School): Promise<System[]> {
+		const { systemIds } = school.getProps();
+
+		if (!Array.isArray(systemIds) || systemIds.length === 0) {
+			return [];
+		}
+
+		const schoolSystems = await this.systemService.getSystems(systemIds);
+
+		return schoolSystems;
+	}
+
 	public async getSchoolsForLdapLogin(): Promise<SchoolForLdapLogin[]> {
 		const ldapLoginSystems = await this.systemService.findAllForLdapLogin();
 		const ldapLoginSystemsIds = ldapLoginSystems.map((system) => system.id);

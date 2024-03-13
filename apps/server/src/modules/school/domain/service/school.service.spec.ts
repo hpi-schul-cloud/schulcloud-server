@@ -529,4 +529,60 @@ describe('SchoolService', () => {
 			});
 		});
 	});
+
+	describe('getSchoolSystems', () => {
+		describe('when school has systems', () => {
+			const setup = () => {
+				const school = schoolFactory.build({ systemIds: ['1', '2'] });
+				const systems = systemFactory.buildList(2);
+
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+				systemService.getSystems.mockResolvedValueOnce(systems);
+
+				return { school, systems };
+			};
+
+			it('should call systemService.getSystems with expected props', async () => {
+				const { school } = setup();
+
+				await service.getSchoolSystems(school);
+
+				expect(systemService.getSystems).toBeCalledWith(['1', '2']);
+			});
+
+			it('should return these systems', async () => {
+				const { school, systems } = setup();
+
+				const result = await service.getSchoolSystems(school);
+
+				expect(result).toEqual(systems);
+			});
+		});
+
+		describe('when school has no systems', () => {
+			const setup = () => {
+				const school = schoolFactory.build({ systemIds: [] });
+
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+
+				return { school };
+			};
+
+			it('should dont call systemService.getSystems', async () => {
+				const { school } = setup();
+
+				await service.getSchoolSystems(school);
+
+				expect(systemService.getSystems).not.toBeCalled();
+			});
+
+			it('should return empty array', async () => {
+				const { school } = setup();
+
+				const result = await service.getSchoolSystems(school);
+
+				expect(result).toEqual([]);
+			});
+		});
+	});
 });
