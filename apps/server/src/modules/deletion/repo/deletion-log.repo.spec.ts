@@ -3,11 +3,11 @@ import { Test } from '@nestjs/testing';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { cleanupCollections } from '@shared/testing';
-import { DeletionLog } from '../domain';
+import { DeletionLog } from '../domain/do';
 import { deletionLogFactory } from '../domain/testing';
-import { DeletionLogEntity } from '../entity';
-import { deletionLogEntityFactory } from '../entity/testing';
 import { DeletionLogRepo } from './deletion-log.repo';
+import { DeletionLogEntity } from './entity';
+import { deletionLogEntityFactory } from './entity/testing';
 import { DeletionLogMapper } from './mapper';
 
 describe(DeletionLogRepo.name, () => {

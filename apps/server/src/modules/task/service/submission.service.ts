@@ -2,7 +2,7 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client'
 import { Injectable } from '@nestjs/common';
 import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
 import { Submission } from '@shared/domain/entity';
-import { Counted, EntityId, StatusModel } from '@shared/domain/types';
+import { Counted, EntityId } from '@shared/domain/types';
 import { SubmissionRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
 import {
@@ -16,6 +16,7 @@ import {
 	DataDeletionDomainOperationLoggable,
 	DomainOperationReportBuilder,
 	OperationType,
+	StatusModel,
 } from '@modules/deletion';
 
 @Injectable()

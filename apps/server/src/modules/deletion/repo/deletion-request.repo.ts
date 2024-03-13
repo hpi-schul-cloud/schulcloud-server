@@ -2,10 +2,10 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { DeletionRequest } from '../domain';
-import { DeletionRequestEntity } from '../entity';
-import { DeletionRequestScope } from './deletion-request-scope';
+import { DeletionRequest } from '../domain/do';
+import { DeletionRequestEntity } from './entity';
 import { DeletionRequestMapper } from './mapper';
+import { DeletionRequestScope } from './scope';
 
 @Injectable()
 export class DeletionRequestRepo {

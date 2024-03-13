@@ -9,8 +9,8 @@ import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
 import { TldrawDrawing } from '@modules/tldraw/entities';
-import { DeletionLogEntity } from '@modules/deletion/entity/deletion-log.entity';
-import { DeletionRequestEntity } from '@modules/deletion/entity/deletion-request.entity';
+import { DeletionLogEntity } from '@src/modules/deletion/repo/entity/deletion-log.entity';
+import { DeletionRequestEntity } from '@src/modules/deletion/repo/entity/deletion-request.entity';
 import { Account } from './account.entity';
 import {
 	BoardNode,

@@ -1,8 +1,8 @@
-import { ObjectId } from '@mikro-orm/mongodb';
-import { DeletionLog } from '../../domain';
+import { ObjectId } from 'bson';
+import { DeletionLog } from '../../domain/do';
 import { deletionLogFactory } from '../../domain/testing';
-import { DeletionLogEntity } from '../../entity';
-import { deletionLogEntityFactory } from '../../entity/testing';
+import { DeletionLogEntity } from '../entity';
+import { deletionLogEntityFactory } from '../entity/testing';
 import { DeletionLogMapper } from './deletion-log.mapper';
 
 describe(DeletionLogMapper.name, () => {

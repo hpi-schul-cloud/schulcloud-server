@@ -1,7 +1,8 @@
 export { DeletionModule } from './deletion.module';
-export { DataDeletedEvent, UserDeletedEvent } from './event';
-export { DomainDeletionReportBuilder, DomainOperationReportBuilder } from './builder';
-export { DomainName, OperationType, StatusModel } from './types';
-export { DeletionService, DomainDeletionReport, DomainOperationReport } from './interface';
-export { DataDeletionDomainOperationLoggable } from './loggable';
-export { DeletionErrorLoggableException } from './loggable-exception';
+export { DataDeletedEvent, UserDeletedEvent } from './domain/event';
+export { DomainDeletionReportBuilder, DomainOperationReportBuilder } from './domain/builder';
+export { DomainName, OperationType, StatusModel } from './domain/types';
+export { DeletionService, DomainDeletionReport, DomainOperationReport } from './domain/interface';
+export { DataDeletionDomainOperationLoggable } from './domain/loggable';
+export { DeletionErrorLoggableException } from './domain/loggable-exception';
+export { OperationReportHelper } from './domain/helper';

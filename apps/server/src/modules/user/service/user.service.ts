@@ -7,7 +7,7 @@ import { RoleDto, RoleService } from '@modules/role';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
-import { EntityId, StatusModel } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { Logger } from '@src/core/logger';
@@ -27,6 +27,8 @@ import {
 	OperationType,
 	DeletionErrorLoggableException,
 	DomainOperationReport,
+	StatusModel,
+	OperationReportHelper,
 } from '@modules/deletion';
 import { UserQuery } from './user-query.type';
 import { UserDto } from '../uc/dto/user.dto';
@@ -233,23 +235,16 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		const results = await Promise.all(
 			emailsToDeletion.map((email) => this.registrationPinService.deleteUserData(email))
 		);
+		let extractedOperationReport: DomainOperationReport[] = [];
 
-		const result = DomainDeletionReportBuilder.build(results[0].domain, this.extractOperationReports(results));
-
-		return result;
-	}
-
-	public extractOperationReports(reports: DomainDeletionReport[]): DomainOperationReport[] {
-		const operationReports: { [key in OperationType]?: DomainOperationReport } = {};
-
-		for (const { operations } of reports) {
-			for (const { operation, count, refs } of operations) {
-				operationReports[operation] = operationReports[operation] || { operation, count: 0, refs: [] };
-				operationReports[operation]!.count += count;
-				operationReports[operation]!.refs.push(...refs);
-			}
+		if (results.length !== 0) {
+			extractedOperationReport = OperationReportHelper.extractOperationReports(results);
+		} else {
+			extractedOperationReport = [DomainOperationReportBuilder.build(OperationType.DELETE, 0, [])];
 		}
 
-		return Object.values(operationReports).filter((report) => report !== undefined);
+		const result = DomainDeletionReportBuilder.build(results[0].domain, extractedOperationReport);
+
+		return result;
 	}
 }

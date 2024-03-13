@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, StatusModel } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import {
@@ -12,6 +12,7 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 	UserDeletedEvent,
+	StatusModel,
 } from '@modules/deletion';
 import { FileEntity } from '../entity';
 import { FilesRepo } from '../repo';

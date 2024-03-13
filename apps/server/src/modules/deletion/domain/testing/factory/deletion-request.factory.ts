@@ -1,8 +1,8 @@
 import { DoBaseFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DeepPartial } from 'fishery';
-import { DeletionRequest, DeletionRequestProps } from '../../deletion-request.do';
-import { DomainName, StatusModel } from '../../../types';
+import { DeletionRequest, DeletionRequestProps } from '../../do';
+import { DomainName, StatusModel } from '../../types';
 
 class DeletionRequestFactory extends DoBaseFactory<DeletionRequest, DeletionRequestProps> {
 	withUserIds(id: string): this {

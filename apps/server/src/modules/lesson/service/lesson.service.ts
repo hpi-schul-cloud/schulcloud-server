@@ -1,7 +1,7 @@
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { ComponentProperties, LessonEntity } from '@shared/domain/entity';
-import { Counted, EntityId, StatusModel } from '@shared/domain/types';
+import { Counted, EntityId } from '@shared/domain/types';
 import { AuthorizationLoaderService } from '@src/modules/authorization';
 import { Logger } from '@src/core/logger';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
@@ -15,6 +15,7 @@ import {
 	DomainDeletionReportBuilder,
 	DomainOperationReportBuilder,
 	OperationType,
+	StatusModel,
 } from '@modules/deletion';
 import { LessonRepo } from '../repository';
 

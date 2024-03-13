@@ -1,14 +1,15 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { ObjectId } from 'bson';
 import { Test } from '@nestjs/testing';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { cleanupCollections } from '@shared/testing';
-import { DeletionRequest } from '../domain';
+import { DeletionRequest } from '../domain/do';
 import { deletionRequestFactory } from '../domain/testing';
-import { DeletionRequestEntity } from '../entity';
-import { deletionRequestEntityFactory } from '../entity/testing';
-import { StatusModel } from '../types';
+import { StatusModel } from '../domain/types';
 import { DeletionRequestRepo } from './deletion-request.repo';
+import { DeletionRequestEntity } from './entity';
+import { deletionRequestEntityFactory } from './entity/testing';
 import { DeletionRequestMapper } from './mapper';
 
 describe(DeletionRequestRepo.name, () => {
