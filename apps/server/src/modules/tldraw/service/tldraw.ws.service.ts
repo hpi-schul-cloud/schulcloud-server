@@ -12,7 +12,6 @@ import { YMap } from 'yjs/dist/src/types/YMap';
 import { TldrawRedisFactory } from '../redis';
 import {
 	CloseConnectionLoggable,
-	FileStorageErrorLoggable,
 	RedisPublishErrorLoggable,
 	WebsocketErrorLoggable,
 	WebsocketMessageErrorLoggable,
@@ -31,7 +30,6 @@ import {
 import { WsSharedDocDo } from '../domain';
 import { TldrawBoardRepo } from '../repo';
 import { MetricsService } from '../metrics';
-import { TldrawFilesStorageAdapterService } from './tldraw-files-storage.service';
 
 @Injectable()
 export class TldrawWsService {
@@ -46,8 +44,7 @@ export class TldrawWsService {
 		private readonly tldrawBoardRepo: TldrawBoardRepo,
 		private readonly logger: Logger,
 		private readonly metricsService: MetricsService,
-		private readonly tldrawRedisFactory: TldrawRedisFactory,
-		private readonly filesStorageTldrawAdapterService: TldrawFilesStorageAdapterService
+		private readonly tldrawRedisFactory: TldrawRedisFactory
 	) {
 		this.logger.setContext(TldrawWsService.name);
 
@@ -286,9 +283,6 @@ export class TldrawWsService {
 
 			if (this.configService.get<number>('TLDRAW_ASSETS_SYNC_ENABLED')) {
 				const usedAssets = this.syncDocumentAssetsWithShapes(doc);
-				void this.filesStorageTldrawAdapterService.deleteUnusedFilesForDocument(doc.name, usedAssets).catch((err) => {
-					this.logger.warning(new FileStorageErrorLoggable(doc.name, err));
-				});
 			}
 		} catch (err) {
 			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while finalizing document', err));

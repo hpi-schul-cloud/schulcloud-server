@@ -24,7 +24,7 @@ import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../repo';
 import { TestConnection, tldrawTestConfig } from '../testing';
 import { WsSharedDocDo } from '../domain';
 import { MetricsService } from '../metrics';
-import { TldrawFilesStorageAdapterService, TldrawWsService } from '.';
+import { TldrawWsService } from '.';
 import { TldrawAsset, TldrawShape, TldrawShapeType } from '../types';
 
 jest.mock('yjs', () => {
@@ -55,7 +55,6 @@ describe('TldrawWSService', () => {
 	let service: TldrawWsService;
 	let boardRepo: DeepMocked<TldrawBoardRepo>;
 	let logger: DeepMocked<Logger>;
-	let tldrawFilesStorageAdapterService: DeepMocked<TldrawFilesStorageAdapterService>;
 
 	const gatewayPort = 3346;
 	const wsUrl = TestConnection.getWsUrl(gatewayPort);
@@ -93,17 +92,12 @@ describe('TldrawWSService', () => {
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
 				},
-				{
-					provide: TldrawFilesStorageAdapterService,
-					useValue: createMock<TldrawFilesStorageAdapterService>(),
-				},
 			],
 		}).compile();
 
 		service = testingModule.get(TldrawWsService);
 		boardRepo = testingModule.get(TldrawBoardRepo);
 		logger = testingModule.get(Logger);
-		tldrawFilesStorageAdapterService = testingModule.get(TldrawFilesStorageAdapterService);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
 		await app.init();
@@ -571,35 +565,6 @@ describe('TldrawWSService', () => {
 				await service.closeConnection(doc, ws);
 
 				expect(boardRepo.compressDocument).not.toHaveBeenCalled();
-				ws.close();
-			});
-		});
-
-		describe('when deleteUnusedFilesForDocument fails', () => {
-			const setup = async () => {
-				ws = await TestConnection.setupWs(wsUrl);
-				const doc = TldrawWsFactory.createWsSharedDocDo();
-				doc.connections.set(ws, new Set<number>());
-
-				const errorLogSpy = jest.spyOn(logger, 'warning');
-				const storageSpy = jest
-					.spyOn(tldrawFilesStorageAdapterService, 'deleteUnusedFilesForDocument')
-					.mockRejectedValueOnce(new Error('error'));
-
-				return {
-					doc,
-					errorLogSpy,
-					storageSpy,
-				};
-			};
-
-			it('should log error', async () => {
-				const { doc, errorLogSpy } = await setup();
-
-				await service.closeConnection(doc, ws);
-				await delay(100);
-
-				expect(errorLogSpy).toHaveBeenCalled();
 				ws.close();
 			});
 		});
