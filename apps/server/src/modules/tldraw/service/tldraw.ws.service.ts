@@ -278,12 +278,9 @@ export class TldrawWsService {
 		doc.isFinalizing = true;
 
 		try {
+			this.syncDocumentAssetsWithShapes(doc);
 			this.unsubscribeFromRedisChannels(doc);
 			await this.tldrawBoardRepo.compressDocument(doc.name);
-
-			if (this.configService.get<number>('TLDRAW_ASSETS_SYNC_ENABLED')) {
-				const usedAssets = this.syncDocumentAssetsWithShapes(doc);
-			}
 		} catch (err) {
 			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while finalizing document', err));
 		} finally {
