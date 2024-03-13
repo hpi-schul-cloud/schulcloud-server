@@ -13,6 +13,7 @@ export const columnBoardNodeFactory = BaseFactory.define<ColumnBoardNode, Column
 				type: BoardExternalReferenceType.Course,
 				id: new ObjectId().toHexString(),
 			},
+			isVisible: true,
 		};
 	}
 );
