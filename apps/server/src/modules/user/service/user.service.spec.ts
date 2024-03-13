@@ -23,6 +23,7 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 	DataDeletedEvent,
+	DeletionErrorLoggableException,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { UserService } from './user.service';
@@ -451,39 +452,68 @@ describe('UserService', () => {
 	});
 
 	describe('removeUserRegistrationPin', () => {
-		const setup = () => {
-			const userId = new ObjectId().toHexString();
-			const user: UserDO = userDoFactory.build({ id: userId });
-			const userRegistrationPinId = new ObjectId().toHexString();
+		describe('when registrationPinService.deleteUserData return DomainDeletionReport', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const userId = user.id;
+				const userRegistrationPinId = new ObjectId().toHexString();
 
-			const results = [
-				DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+				const results = [
+					DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+						DomainOperationReportBuilder.build(OperationType.DELETE, 1, [userRegistrationPinId]),
+					]),
+				];
+
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
 					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [userRegistrationPinId]),
-				]),
-			];
+				]);
 
-			const expectedResult = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
-				DomainOperationReportBuilder.build(OperationType.DELETE, 1, [userRegistrationPinId]),
-			]);
+				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
+				userRepo.getParentEmailsFromUser.mockResolvedValueOnce([]);
+				registrationPinService.deleteUserData.mockResolvedValue(results[0]);
 
-			userDORepo.findByIdOrNull.mockResolvedValue(user);
-			userRepo.getParentEmailsFromUser.mockResolvedValueOnce([]);
-			registrationPinService.deleteUserData.mockResolvedValue(results[0]);
-
-			return {
-				expectedResult,
-				userId,
-				user,
-				results,
+				return {
+					expectedResult,
+					userId,
+					user,
+				};
 			};
-		};
 
-		it('should return domainOperation object with information about deleted registrationsPin', async () => {
-			const { userId, expectedResult } = setup();
+			it('should return domainOperation object with information about deleted registrationsPin', async () => {
+				const { userId, expectedResult } = setup();
 
-			const result = await service.removeUserRegistrationPin(userId);
+				const result = await service.removeUserRegistrationPin(userId);
 
-			expect(result).toEqual(expectedResult);
+				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when no emails for registrationPin found', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId({ email: undefined });
+				const userId = user.id;
+
+				const expectedResult = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+					DomainOperationReportBuilder.build(OperationType.DELETE, 0, []),
+				]);
+
+				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
+				userRepo.getParentEmailsFromUser.mockResolvedValueOnce([]);
+
+				return {
+					expectedResult,
+					userId,
+					user,
+				};
+			};
+
+			it('should return domainOperation object with proper information: count=0, and empty refs array', async () => {
+				const { userId, expectedResult } = setup();
+
+				const result = await service.removeUserRegistrationPin(userId);
+
+				expect(result).toEqual(expectedResult);
+			});
 		});
 	});
 
@@ -577,6 +607,35 @@ describe('UserService', () => {
 				const result = await service.deleteUserData(user.id);
 
 				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when user exists but userRepo.deleteUser return 0', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+
+				const registrationPinDeleted = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+					DomainOperationReportBuilder.build(OperationType.DELETE, 1, [new ObjectId().toHexString()]),
+				]);
+
+				jest.spyOn(service, 'removeUserRegistrationPin').mockResolvedValueOnce(registrationPinDeleted);
+				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
+				userRepo.deleteUser.mockResolvedValue(0);
+
+				const expectedError = new DeletionErrorLoggableException(
+					`Failed to delete user '${user.id}' from User collection`
+				);
+
+				return {
+					expectedError,
+					user,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { expectedError, user } = setup();
+
+				await expect(service.deleteUserData(user.id)).rejects.toThrowError(expectedError);
 			});
 		});
 	});

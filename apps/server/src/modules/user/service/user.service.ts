@@ -225,26 +225,24 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 	}
 
 	public async removeUserRegistrationPin(userId: EntityId): Promise<DomainDeletionReport> {
-		const userToDeletion = await this.findByIdOrNull(userId);
+		const userToDeletion = await this.userRepo.findByIdOrNull(userId);
 		const parentEmails = await this.getParentEmailsFromUser(userId);
 		let emailsToDeletion: string[] = [];
-		if (userToDeletion !== null) {
+		if (userToDeletion && userToDeletion.email) {
 			emailsToDeletion = [userToDeletion.email, ...parentEmails];
 		}
 
-		const results = await Promise.all(
-			emailsToDeletion.map((email) => this.registrationPinService.deleteUserData(email))
-		);
 		let extractedOperationReport: DomainOperationReport[] = [];
+		if (emailsToDeletion.length > 0) {
+			const results = await Promise.all(
+				emailsToDeletion.map((email) => this.registrationPinService.deleteUserData(email))
+			);
 
-		if (results.length !== 0) {
 			extractedOperationReport = OperationReportHelper.extractOperationReports(results);
 		} else {
 			extractedOperationReport = [DomainOperationReportBuilder.build(OperationType.DELETE, 0, [])];
 		}
 
-		const result = DomainDeletionReportBuilder.build(results[0].domain, extractedOperationReport);
-
-		return result;
+		return DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, extractedOperationReport);
 	}
 }

@@ -13,7 +13,7 @@ import {
 	DomainDeletionReportBuilder,
 	DomainOperationReportBuilder,
 	OperationType,
-	StatusModel
+	StatusModel,
 } from '@modules/deletion';
 
 @Injectable()
