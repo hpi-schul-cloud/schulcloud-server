@@ -1,7 +1,7 @@
 import { ObjectId } from 'bson';
 import { UserSearchQuery } from '../../interfaces';
 import { SearchQueryHelper } from '.';
-import {RangeType, UsersSearchQueryParams} from '../../controller/dto';
+import { RangeType, UsersSearchQueryParams } from '../../controller/dto';
 
 describe('Search query helper', () => {
 	afterEach(() => {
