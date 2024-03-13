@@ -1,7 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
-import { Collection } from '@mikro-orm/mongodb/node_modules/mongodb';
 import { MigrateOptions, UmzugMigration } from '@mikro-orm/migrations-mongodb';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { Collection, Db } from '@mikro-orm/mongodb/node_modules/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BaseEntity } from '@shared/domain/entity';
 
@@ -9,7 +9,7 @@ import { BaseEntity } from '@shared/domain/entity';
 export class DatabaseManagementService {
 	constructor(private em: EntityManager, private readonly orm: MikroORM) {}
 
-	private get db() {
+	private get db(): Db {
 		const connection = this.em.getConnection('write').getDb();
 		return connection;
 	}
