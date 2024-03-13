@@ -9,7 +9,7 @@ import { config, TLDRAW_DB_URL } from './config';
 import { TldrawDrawing } from './entities';
 import { TldrawController } from './controller';
 import { TldrawService } from './service';
-import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
+import { TldrawRepo } from './repo';
 import { XApiKeyStrategy } from '../authentication/strategy/x-api-key.strategy';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
