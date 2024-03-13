@@ -23,5 +23,6 @@ export const columnBoardFactory = ColumnBoardFactory.define(ColumnBoard, ({ sequ
 			type: BoardExternalReferenceType.Course,
 			id: new ObjectId().toHexString(),
 		},
+		isVisible: true,
 	};
 });

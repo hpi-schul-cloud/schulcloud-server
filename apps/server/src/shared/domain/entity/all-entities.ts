@@ -30,10 +30,9 @@ import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.mod
 import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
 import { ImportUser } from './import-user.entity';
 import {
-	Board,
-	BoardElement,
+	LegacyBoard,
+	LegacyBoardElement,
 	ColumnboardBoardElement,
-	ColumnBoardTarget,
 	LessonBoardElement,
 	TaskBoardElement,
 } from './legacy-board';
@@ -55,13 +54,12 @@ import { VideoConference } from './video-conference.entity';
 
 export const ALL_ENTITIES = [
 	Account,
-	Board,
-	BoardElement,
+	LegacyBoard,
+	LegacyBoardElement,
 	BoardNode,
 	CardNode,
 	ColumnboardBoardElement,
 	ColumnBoardNode,
-	ColumnBoardTarget,
 	ColumnNode,
 	ClassEntity,
 	DeletionRequestEntity,

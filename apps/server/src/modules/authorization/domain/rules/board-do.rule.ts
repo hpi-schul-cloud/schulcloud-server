@@ -33,6 +33,10 @@ export class BoardDoRule implements Rule {
 			return false;
 		}
 
+		if (boardDoAuthorizable.rootDo.isVisible !== true && !this.isBoardEditor(userWithBoardRoles)) {
+			return false;
+		}
+
 		if (this.shouldProcessSubmissionItem(boardDoAuthorizable)) {
 			return this.hasPermissionForSubmissionItem(user, userWithBoardRoles, boardDoAuthorizable, context);
 		}
