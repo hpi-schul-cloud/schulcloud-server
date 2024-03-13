@@ -1,3 +1,5 @@
+import { SanisErreichbarkeitenResponse } from '@infra/schulconnex-client/response/sanis-erreichbarkeiten-response';
+import { SanisGeburtResponse } from '@infra/schulconnex-client/response/sanis-geburt-response';
 import { Type } from 'class-transformer';
 import { IsArray, IsEnum, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { SanisGruppenResponse } from './sanis-gruppen-response';
@@ -22,4 +24,10 @@ export class SanisPersonenkontextResponse {
 	@ValidateNested({ each: true, groups: [SanisResponseValidationGroups.GROUPS] })
 	@Type(() => SanisGruppenResponse)
 	gruppen?: SanisGruppenResponse[];
+
+	@IsOptional()
+	@IsArray()
+	@ValidateNested()
+	@Type(() => SanisGeburtResponse)
+	erreichbarkeiten?: SanisErreichbarkeitenResponse[];
 }

@@ -60,6 +60,9 @@ export class SanisResponseMapper {
 			roles: [SanisResponseMapper.mapSanisRoleToRoleName(source)],
 			externalId: source.pid,
 			birthday: source.person.geburt?.datum ? new Date(source.person.geburt?.datum) : undefined,
+			email: source.personenkontexte[0].erreichbarkeiten
+				? source.personenkontexte[0].erreichbarkeiten[0].kennung
+				: undefined,
 		});
 
 		return mapped;

@@ -12,3 +12,4 @@ export * from './sanis-person-response';
 export * from './sanis-sonstige-gruppenzugehoerige-response';
 export * from './sanis-anschrift-response';
 export * from './sanis-response-validation-groups';
+export { SanisErreichbarkeitenResponse } from './sanis-erreichbarkeiten-response';
