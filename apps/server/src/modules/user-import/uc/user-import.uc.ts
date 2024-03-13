@@ -361,7 +361,7 @@ export class UserImportUc {
 				username: user.email,
 			});
 
-			await this.accountService.saveWithValidation(newAccount);
+			await this.accountService.save(newAccount);
 
 			account = await this.accountService.findByUserIdOrFail(user.id);
 		}
