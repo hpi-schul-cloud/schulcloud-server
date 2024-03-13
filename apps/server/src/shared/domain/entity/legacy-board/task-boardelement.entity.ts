@@ -1,12 +1,12 @@
 import { Entity, ManyToOne } from '@mikro-orm/core';
 import { Task } from '../task.entity';
-import { BoardElement, BoardElementType } from './boardelement.entity';
+import { LegacyBoardElement, LegacyBoardElementType } from './legacy-boardelement.entity';
 
-@Entity({ discriminatorValue: BoardElementType.Task })
-export class TaskBoardElement extends BoardElement {
+@Entity({ discriminatorValue: LegacyBoardElementType.Task })
+export class TaskBoardElement extends LegacyBoardElement {
 	constructor(props: { target: Task }) {
 		super(props);
-		this.boardElementType = BoardElementType.Task;
+		this.boardElementType = LegacyBoardElementType.Task;
 	}
 
 	// FIXME Due to a weird behaviour in the mikro-orm validation we have to

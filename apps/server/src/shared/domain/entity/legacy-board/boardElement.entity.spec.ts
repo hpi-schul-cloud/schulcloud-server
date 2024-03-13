@@ -1,5 +1,5 @@
-import { columnBoardTargetFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
-import { BoardElementType } from './boardelement.entity';
+import { columnBoardNodeFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
+import { LegacyBoardElementType } from './legacy-boardelement.entity';
 import { ColumnboardBoardElement } from './column-board-boardelement';
 import { LessonBoardElement } from './lesson-boardelement.entity';
 import { TaskBoardElement } from './task-boardelement.entity';
@@ -15,7 +15,7 @@ describe('TaskBoardElementEntity', () => {
 
 			const boardElement = new TaskBoardElement({ target: task });
 
-			expect(boardElement.boardElementType).toEqual(BoardElementType.Task);
+			expect(boardElement.boardElementType).toEqual(LegacyBoardElementType.Task);
 		});
 	});
 });
@@ -31,7 +31,7 @@ describe('LessonBoardElementEntity', () => {
 
 			const boardElement = new LessonBoardElement({ target: lesson });
 
-			expect(boardElement.boardElementType).toEqual(BoardElementType.Lesson);
+			expect(boardElement.boardElementType).toEqual(LegacyBoardElementType.Lesson);
 		});
 	});
 });
@@ -43,11 +43,11 @@ describe('ColumnboardBoardElementEntity', () => {
 
 	describe('constructor', () => {
 		it('should have correct type', () => {
-			const columnBoardTarget = columnBoardTargetFactory.build({ title: 'target', published: true });
+			const columnBoardTarget = columnBoardNodeFactory.build({ title: 'target' });
 
 			const boardElement = new ColumnboardBoardElement({ target: columnBoardTarget });
 
-			expect(boardElement.boardElementType).toEqual(BoardElementType.ColumnBoard);
+			expect(boardElement.boardElementType).toEqual(LegacyBoardElementType.ColumnBoard);
 		});
 	});
 });

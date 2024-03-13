@@ -6,7 +6,7 @@ import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { ToolConfigModule } from '@modules/tool/tool-config.module';
 import { Module } from '@nestjs/common';
 import {
-	BoardRepo,
+	LegacyBoardRepo,
 	CourseGroupRepo,
 	CourseRepo,
 	DashboardElementRepo,
@@ -20,7 +20,6 @@ import { COURSE_REPO } from './domain';
 import { CourseMikroOrmRepo } from './repo/mikro-orm/course.repo';
 import {
 	BoardCopyService,
-	ColumnBoardTargetService,
 	CommonCartridgeExportService,
 	CommonCartridgeImportService,
 	CourseCopyService,
@@ -30,15 +29,16 @@ import {
 	RoomsService,
 } from './service';
 import { CommonCartridgeFileValidatorPipe } from './utils';
+import { BoardNodeRepo } from '../board/repo';
 
 @Module({
 	imports: [
-		LessonModule,
-		TaskModule,
-		CopyHelperModule,
 		BoardModule,
-		LoggerModule,
+		CopyHelperModule,
 		ContextExternalToolModule,
+		LessonModule,
+		LoggerModule,
+		TaskModule,
 		ToolConfigModule,
 		CqrsModule,
 	],
@@ -47,26 +47,26 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 			provide: 'DASHBOARD_REPO',
 			useClass: DashboardRepo,
 		},
-		DashboardElementRepo,
-		DashboardModelMapper,
+		BoardCopyService,
+		BoardNodeRepo,
+		CommonCartridgeExportService,
+		CommonCartridgeFileValidatorPipe,
+		CommonCartridgeImportService,
+		CourseCopyService,
+		CourseGroupRepo,
+		CourseGroupService,
 		CourseRepo,
 		{
 			provide: COURSE_REPO,
 			useClass: CourseMikroOrmRepo,
 		},
-		BoardRepo,
-		UserRepo,
-		BoardCopyService,
-		CourseCopyService,
-		RoomsService,
 		CourseService,
-		CommonCartridgeExportService,
-		CommonCartridgeImportService,
-		ColumnBoardTargetService,
-		CourseGroupService,
-		CourseGroupRepo,
+		DashboardElementRepo,
+		DashboardModelMapper,
 		DashboardService,
-		CommonCartridgeFileValidatorPipe,
+		LegacyBoardRepo,
+		RoomsService,
+		UserRepo,
 	],
 	exports: [
 		CourseCopyService,
