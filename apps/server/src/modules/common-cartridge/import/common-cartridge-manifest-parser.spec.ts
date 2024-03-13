@@ -88,4 +88,28 @@ describe('CommonCartridgeManifestParser', () => {
 			});
 		});
 	});
+
+	describe('getOrganizations', () => {
+		describe('when organizations are present', () => {
+			const setup = async () => setupFile(true);
+
+			it('should return the organization', async () => {
+				const { sut } = await setup();
+				const result = sut.getOrganizations();
+
+				expect(result).toBe('201510-AMH-2020-70C-12218-US History Since 1877');
+			});
+		});
+
+		describe('when organizations are not present', () => {
+			const setup = async () => setupFile(false);
+
+			it('should return empty list', async () => {
+				const { sut } = await setup();
+				const result = sut.getOrganizations();
+
+				expect(result).toBe([]);
+			});
+		});
+	});
 });
