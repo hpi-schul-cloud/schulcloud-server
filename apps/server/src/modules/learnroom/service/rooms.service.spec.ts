@@ -5,17 +5,18 @@ import { CardService, ColumnBoardService, ColumnService, ContentElementService }
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardRepo } from '@shared/repo';
+import { LegacyBoardRepo } from '@shared/repo';
 import {
 	boardFactory,
-	columnBoardTargetFactory,
+	columnBoardNodeFactory,
 	courseFactory,
 	lessonFactory,
 	setupEntities,
 	taskFactory,
 	userFactory,
 } from '@shared/testing';
-import { ColumnBoardTargetService } from './column-board-target.service';
+import { ColumnBoardNode } from '@shared/domain/entity';
+import { BoardNodeRepo } from '@modules/board/repo';
 import { RoomsService } from './rooms.service';
 
 describe('rooms service', () => {
@@ -23,9 +24,9 @@ describe('rooms service', () => {
 	let roomsService: RoomsService;
 	let lessonService: DeepMocked<LessonService>;
 	let taskService: DeepMocked<TaskService>;
-	let boardRepo: DeepMocked<BoardRepo>;
+	let legacyBoardRepo: DeepMocked<LegacyBoardRepo>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
-	let columnBoardTargetService: DeepMocked<ColumnBoardTargetService>;
+	let boardNodeRepo: DeepMocked<BoardNodeRepo>;
 	let configBefore: IConfig;
 
 	afterAll(async () => {
@@ -47,8 +48,8 @@ describe('rooms service', () => {
 					useValue: createMock<TaskService>(),
 				},
 				{
-					provide: BoardRepo,
-					useValue: createMock<BoardRepo>(),
+					provide: LegacyBoardRepo,
+					useValue: createMock<LegacyBoardRepo>(),
 				},
 				{
 					provide: ColumnBoardService,
@@ -67,17 +68,21 @@ describe('rooms service', () => {
 					useValue: createMock<ContentElementService>(),
 				},
 				{
-					provide: ColumnBoardTargetService,
-					useValue: createMock<ColumnBoardTargetService>(),
+					provide: ColumnBoardNode,
+					useValue: createMock<ColumnBoardNode>(),
+				},
+				{
+					provide: BoardNodeRepo,
+					useValue: createMock<BoardNodeRepo>(),
 				},
 			],
 		}).compile();
 		roomsService = module.get(RoomsService);
 		lessonService = module.get(LessonService);
 		taskService = module.get(TaskService);
-		boardRepo = module.get(BoardRepo);
+		legacyBoardRepo = module.get(LegacyBoardRepo);
 		columnBoardService = module.get(ColumnBoardService);
-		columnBoardTargetService = module.get(ColumnBoardTargetService);
+		boardNodeRepo = module.get(BoardNodeRepo);
 	});
 
 	afterEach(() => {
@@ -85,79 +90,81 @@ describe('rooms service', () => {
 		Configuration.reset(configBefore);
 	});
 
-	describe('updateBoard', () => {
+	describe('updateLegacyBoard', () => {
 		describe('for lessons, tasks and column boards', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const room = courseFactory.buildWithId({ students: [user] });
 				const tasks = taskFactory.buildList(3, { course: room });
 				const lessons = lessonFactory.buildList(3, { course: room });
-				const board = boardFactory.buildWithId({ course: room });
-				const columnBoardTarget = columnBoardTargetFactory.build();
-				const columnBoardTargetId = 'testid';
+				const legacyBoard = boardFactory.buildWithId({ course: room });
 
-				board.syncBoardElementReferences([...tasks, ...lessons]);
+				const columnBoardNode = columnBoardNodeFactory.build();
+
+				// TODO what is this doing here?
+				legacyBoard.syncBoardElementReferences([...tasks, ...lessons, columnBoardNode]);
 
 				const tasksSpy = taskService.findBySingleParent.mockResolvedValue([tasks, 3]);
 				const lessonsSpy = lessonService.findByCourseIds.mockResolvedValue([lessons, 3]);
-				const columnBoardIdsSpy = columnBoardService.findIdsByExternalReference.mockResolvedValue([
-					columnBoardTargetId,
-				]);
-				const columnBoardTargetsSpy = columnBoardTargetService.findOrCreateTargets.mockResolvedValue([
-					columnBoardTarget,
-				]);
-				const syncBoardElementReferencesSpy = jest.spyOn(board, 'syncBoardElementReferences');
-				const saveSpy = boardRepo.save.mockResolvedValue();
+
+				columnBoardService.findIdsByExternalReference.mockResolvedValue([columnBoardNode.id]);
+				boardNodeRepo.findById.mockResolvedValue(columnBoardNode);
+
+				const syncBoardElementReferencesSpy = jest.spyOn(legacyBoard, 'syncBoardElementReferences');
+				const saveSpy = legacyBoardRepo.save.mockResolvedValue();
 
 				return {
 					user,
-					board,
+					board: legacyBoard,
 					room,
 					tasks,
 					lessons,
-					columnBoardTarget,
 					lessonsSpy,
 					tasksSpy,
 					syncBoardElementReferencesSpy,
 					saveSpy,
-					columnBoardIdsSpy,
-					columnBoardTargetsSpy,
+
+					columnBoardNode,
 				};
 			};
 
 			it('should fetch all lessons of room', async () => {
 				const { board, room, user, lessonsSpy } = setup();
-				await roomsService.updateBoard(board, room.id, user.id);
+				await roomsService.updateLegacyBoard(board, room.id, user.id);
 				expect(lessonsSpy).toHaveBeenCalledWith([room.id]);
 			});
 
 			it('should fetch all tasks of room', async () => {
 				const { board, room, user, tasksSpy } = setup();
-				await roomsService.updateBoard(board, room.id, user.id);
+				await roomsService.updateLegacyBoard(board, room.id, user.id);
 				expect(tasksSpy).toHaveBeenCalledWith(user.id, room.id);
 			});
 
-			it('should fetch all column boards', async () => {
+			it('should fetch all column boardIds for course', async () => {
 				const { board, room, user } = setup();
 
-				await roomsService.updateBoard(board, room.id, user.id);
+				await roomsService.updateLegacyBoard(board, room.id, user.id);
 
 				expect(columnBoardService.findIdsByExternalReference).toHaveBeenCalledWith({
 					type: 'course',
 					id: room.id,
 				});
-				expect(columnBoardTargetService.findOrCreateTargets).toHaveBeenCalledWith(['testid']);
+			});
+			it('should fetch all column boards', async () => {
+				const { board, room, user, columnBoardNode } = setup();
+				await roomsService.updateLegacyBoard(board, room.id, user.id);
+				expect(boardNodeRepo.findById).toHaveBeenCalledWith(columnBoardNode.id);
 			});
 
-			it('should sync boards lessons with fetched tasks and lessons', async () => {
-				const { board, room, user, tasks, lessons, columnBoardTarget, syncBoardElementReferencesSpy } = setup();
-				await roomsService.updateBoard(board, room.id, user.id);
-				expect(syncBoardElementReferencesSpy).toHaveBeenCalledWith([...lessons, ...tasks, columnBoardTarget]);
+			it('should sync legacy boards lessons with fetched tasks and lessons and columnBoards', async () => {
+				const { board, room, user, tasks, lessons, columnBoardNode, syncBoardElementReferencesSpy } = setup();
+				await roomsService.updateLegacyBoard(board, room.id, user.id);
+				expect(syncBoardElementReferencesSpy).toHaveBeenCalledWith([...lessons, ...tasks, columnBoardNode]);
 			});
 
 			it('should persist board', async () => {
 				const { board, room, user, saveSpy } = setup();
-				await roomsService.updateBoard(board, room.id, user.id);
+				await roomsService.updateLegacyBoard(board, room.id, user.id);
 				expect(saveSpy).toHaveBeenCalledWith(board);
 			});
 		});

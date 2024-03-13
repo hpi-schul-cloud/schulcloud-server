@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Account, Board, Course, SchoolEntity, User } from '@shared/domain/entity';
+import { Account, LegacyBoard, Course, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
 	accountFactory,
@@ -127,7 +127,7 @@ describe('ToolConfigurationController (API)', () => {
 				]);
 
 				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser], school });
-				const board: Board = boardFactory.buildWithId({ course });
+				const board: LegacyBoard = boardFactory.buildWithId({ course });
 
 				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({

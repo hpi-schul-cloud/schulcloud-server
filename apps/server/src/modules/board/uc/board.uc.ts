@@ -104,4 +104,11 @@ export class BoardUc extends BaseUc {
 
 		await this.columnService.move(column, targetBoard, targetPosition);
 	}
+
+	async updateVisibility(userId: EntityId, boardId: EntityId, isVisible: boolean): Promise<void> {
+		const board = await this.columnBoardService.findById(boardId);
+		await this.checkPermission(userId, board, Action.write);
+
+		await this.columnBoardService.updateBoardVisibility(board, isVisible);
+	}
 }

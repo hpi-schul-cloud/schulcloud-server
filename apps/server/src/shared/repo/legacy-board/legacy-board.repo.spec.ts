@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, LessonEntity, Task } from '@shared/domain/entity';
+import { LegacyBoard, LessonEntity, Task } from '@shared/domain/entity';
 import {
 	boardFactory,
 	cleanupCollections,
@@ -12,19 +12,19 @@ import {
 
 import { MongoMemoryDatabaseModule } from '@infra/database';
 
-import { BoardRepo } from './board.repo';
+import { LegacyBoardRepo } from './legacy-board.repo';
 
-describe('BoardRepo', () => {
+describe('LegacyRoomBoardRepo', () => {
 	let module: TestingModule;
-	let repo: BoardRepo;
+	let repo: LegacyBoardRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [BoardRepo],
+			providers: [LegacyBoardRepo],
 		}).compile();
-		repo = module.get(BoardRepo);
+		repo = module.get(LegacyBoardRepo);
 		em = module.get(EntityManager);
 	});
 
@@ -34,11 +34,11 @@ describe('BoardRepo', () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
-		await em.nativeDelete(Board, {});
+		await em.nativeDelete(LegacyBoard, {});
 	});
 
 	it('should implement entityName getter', () => {
-		expect(repo.entityName).toBe(Board);
+		expect(repo.entityName).toBe(LegacyBoard);
 	});
 
 	describe('findByCourseId', () => {
@@ -77,7 +77,7 @@ describe('BoardRepo', () => {
 
 		em.clear();
 
-		const result = await em.findOneOrFail(Board, { id: board.id });
+		const result = await em.findOneOrFail(LegacyBoard, { id: board.id });
 		expect(result.id).toEqual(board.id);
 	});
 

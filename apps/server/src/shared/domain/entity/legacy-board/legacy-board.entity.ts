@@ -6,19 +6,19 @@ import { BaseEntityWithTimestamps } from '../base.entity';
 import type { Course } from '../course.entity';
 import { LessonEntity } from '../lesson.entity';
 import { Task } from '../task.entity';
-import { BoardElement, BoardElementReference } from './boardelement.entity';
+import { LegacyBoardElement, LegacyBoardElementReference } from './legacy-boardelement.entity';
 import { ColumnboardBoardElement } from './column-board-boardelement';
-import { ColumnBoardTarget } from './column-board-target.entity';
 import { LessonBoardElement } from './lesson-boardelement.entity';
 import { TaskBoardElement } from './task-boardelement.entity';
+import { ColumnBoardNode } from '../boardnode/column-board-node.entity';
 
 export type BoardProps = {
-	references: BoardElement[];
+	references: LegacyBoardElement[];
 	course: Course;
 };
 
 @Entity({ tableName: 'board' })
-export class Board extends BaseEntityWithTimestamps {
+export class LegacyBoard extends BaseEntityWithTimestamps {
 	constructor(props: BoardProps) {
 		super();
 		this.references.set(props.references);
@@ -28,8 +28,8 @@ export class Board extends BaseEntityWithTimestamps {
 	@OneToOne({ type: 'Course', fieldName: 'courseId', wrappedReference: true, unique: true, owner: true })
 	course: IdentifiedReference<Course>;
 
-	@ManyToMany('BoardElement', undefined, { fieldName: 'referenceIds' })
-	references = new Collection<BoardElement>(this);
+	@ManyToMany('LegacyBoardElement', undefined, { fieldName: 'referenceIds' })
+	references = new Collection<LegacyBoardElement>(this);
 
 	getByTargetId(id: EntityId): LearnroomElement {
 		const element = this.getElementByTargetId(id);
@@ -64,41 +64,41 @@ export class Board extends BaseEntityWithTimestamps {
 		return isEqual;
 	}
 
-	private getElementByTargetId(id: EntityId): BoardElement {
+	private getElementByTargetId(id: EntityId): LegacyBoardElement {
 		const element = this.getElements().find((el) => el.target.id === id);
 		if (!element) throw new NotFoundException('board does not contain such element');
 		return element;
 	}
 
-	syncBoardElementReferences(boardElementTargets: BoardElementReference[]) {
+	syncBoardElementReferences(boardElementTargets: LegacyBoardElementReference[]) {
 		this.removeDeletedReferences(boardElementTargets);
 		this.appendNotContainedBoardElements(boardElementTargets);
 	}
 
-	private removeDeletedReferences(boardElementTargets: BoardElementReference[]) {
+	private removeDeletedReferences(boardElementTargets: LegacyBoardElementReference[]) {
 		const references = this.references.getItems();
 		const onlyExistingReferences = references.filter((ref) => boardElementTargets.includes(ref.target));
 		this.references.set(onlyExistingReferences);
 	}
 
-	private appendNotContainedBoardElements(boardElementTargets: BoardElementReference[]): void {
+	private appendNotContainedBoardElements(boardElementTargets: LegacyBoardElementReference[]): void {
 		const references = this.references.getItems();
-		const isNotContained = (element: BoardElementReference) => !references.some((ref) => ref.target === element);
-		const mapToBoardElement = (target: BoardElementReference) => this.createBoardElementFor(target);
+		const isNotContained = (element: LegacyBoardElementReference) => !references.some((ref) => ref.target === element);
+		const mapToBoardElement = (target: LegacyBoardElementReference) => this.createBoardElementFor(target);
 
 		const elementsToAdd = boardElementTargets.filter(isNotContained).map(mapToBoardElement);
 		const newList = [...elementsToAdd, ...references];
 		this.references.set(newList);
 	}
 
-	private createBoardElementFor(boardElementTarget: BoardElementReference): BoardElement {
+	private createBoardElementFor(boardElementTarget: LegacyBoardElementReference): LegacyBoardElement {
 		if (boardElementTarget instanceof Task) {
 			return new TaskBoardElement({ target: boardElementTarget });
 		}
 		if (boardElementTarget instanceof LessonEntity) {
 			return new LessonBoardElement({ target: boardElementTarget });
 		}
-		if (boardElementTarget instanceof ColumnBoardTarget) {
+		if (boardElementTarget instanceof ColumnBoardNode) {
 			return new ColumnboardBoardElement({ target: boardElementTarget });
 		}
 		throw new Error('not a valid boardElementReference');
