@@ -65,7 +65,37 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		return domainObjects;
 	}
 
+	public async findAvailableByUserAndGroupTypes(user: UserDO, groupTypes?: GroupTypes[]): Promise<Group[]> {
+		let groupEntityTypes: GroupEntityTypes[] | undefined;
+		if (groupTypes) {
+			groupEntityTypes = groupTypes.map((type: GroupTypes) => GroupTypesToGroupEntityTypesMapping[type]);
+		}
+
+		const scope: Scope<GroupEntity> = new GroupScope().byUserId(user.id).byTypes(groupEntityTypes);
+
+		const entities: GroupEntity[] = await this.em.find(GroupEntity, scope.query);
+
+		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
+
+		return domainObjects;
+	}
+
 	public async findBySchoolIdAndGroupTypes(schoolId: EntityId, groupTypes?: GroupTypes[]): Promise<Group[]> {
+		let groupEntityTypes: GroupEntityTypes[] | undefined;
+		if (groupTypes) {
+			groupEntityTypes = groupTypes.map((type: GroupTypes) => GroupTypesToGroupEntityTypesMapping[type]);
+		}
+
+		const scope: Scope<GroupEntity> = new GroupScope().byOrganizationId(schoolId).byTypes(groupEntityTypes);
+
+		const entities: GroupEntity[] = await this.em.find(GroupEntity, scope.query);
+
+		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
+
+		return domainObjects;
+	}
+
+	public async findAvailableBySchoolIdAndGroupTypes(schoolId: EntityId, groupTypes?: GroupTypes[]): Promise<Group[]> {
 		let groupEntityTypes: GroupEntityTypes[] | undefined;
 		if (groupTypes) {
 			groupEntityTypes = groupTypes.map((type: GroupTypes) => GroupTypesToGroupEntityTypesMapping[type]);

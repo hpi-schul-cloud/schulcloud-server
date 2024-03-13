@@ -4,3 +4,4 @@ export * from './external-source.response';
 export * from './group.response';
 export * from './group-type.response';
 export * from './group-user.response';
+export { GroupEntryResponse } from './group-entry.response';

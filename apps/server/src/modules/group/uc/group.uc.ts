@@ -1,6 +1,7 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
+import { GroupDto } from '@modules/group/uc/dto/group.dto';
 import { SchoolYearService } from '@modules/legacy-school';
 import { RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school/domain';
@@ -344,5 +345,59 @@ export class GroupUc {
 			group,
 			AuthorizationContextBuilder.read([Permission.GROUP_VIEW])
 		);
+	}
+
+	public async getAllGroups(userId: EntityId, schoolId: EntityId, availablesyncedGroups?: boolean) {
+		const school: School = await this.schoolService.getSchoolById(schoolId);
+
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+		this.authorizationService.checkPermission(user, school, AuthorizationContextBuilder.read([Permission.GROUP_VIEW]));
+
+		const canSeeFullList: boolean = this.authorizationService.hasAllPermissions(user, [Permission.GROUP_FULL_ADMIN]);
+
+		let groups: GroupDto[];
+		if (canSeeFullList) {
+			groups = await this.getGroupsForSchool(schoolId, availablesyncedGroups);
+		} else {
+			groups = await this.getGroupsForUser(userId, availablesyncedGroups);
+		}
+
+		return groups;
+		// TODO: test
+	}
+
+	private async getGroupsForSchool(schoolId: EntityId, availableSyncedGroups?: boolean): Promise<GroupDto[]> {
+		let foundGroups: Group[];
+		if (availableSyncedGroups) {
+			// TODO: implement query
+			foundGroups = await this.groupService.findAvailableGroupsBySchoolIdAndGroupTypes(
+				schoolId,
+				this.ALLOWED_GROUP_TYPES
+			);
+		} else {
+			foundGroups = await this.groupService.findGroupsBySchoolIdAndGroupTypes(schoolId, this.ALLOWED_GROUP_TYPES);
+		}
+
+		const groups: GroupDto[] = foundGroups.map(
+			(group: Group): GroupDto => new GroupDto({ id: group.id, name: group.name })
+		);
+
+		return groups;
+	}
+
+	private async getGroupsForUser(userId: EntityId, availableSyncedGroups?: boolean): Promise<GroupDto[]> {
+		let foundGroups: Group[];
+		const user: UserDO = await this.userService.findById(userId);
+		if (availableSyncedGroups) {
+			// TODO: implement query
+			foundGroups = await this.groupService.findAvailableGroupsByUserAndGroupTypes(user, this.ALLOWED_GROUP_TYPES);
+		} else {
+			foundGroups = await this.groupService.findGroupsByUserAndGroupTypes(user, this.ALLOWED_GROUP_TYPES);
+		}
+		const groups: GroupDto[] = foundGroups.map(
+			(group: Group): GroupDto => new GroupDto({ id: group.id, name: group.name })
+		);
+
+		return groups;
 	}
 }
