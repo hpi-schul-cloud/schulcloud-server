@@ -70,6 +70,42 @@ describe(SystemService.name, () => {
 		});
 	});
 
+	describe('getSystems', () => {
+		describe('when systems exist', () => {
+			const setup = () => {
+				const systems = systemFactory.buildList(3);
+
+				systemRepo.getSystemsByIds.mockResolvedValueOnce(systems);
+
+				return {
+					systems,
+				};
+			};
+
+			it('should return the systems', async () => {
+				const { systems } = setup();
+
+				const result = await service.getSystems(systems.map((s) => s.id));
+
+				expect(result).toEqual(systems);
+			});
+		});
+
+		describe('when no systems exist', () => {
+			const setup = () => {
+				systemRepo.getSystemsByIds.mockResolvedValueOnce([]);
+			};
+
+			it('should return empty array', async () => {
+				setup();
+
+				const result = await service.getSystems([new ObjectId().toHexString()]);
+
+				expect(result).toEqual([]);
+			});
+		});
+	});
+
 	describe('delete', () => {
 		describe('when the system was deleted', () => {
 			const setup = () => {

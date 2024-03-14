@@ -16,9 +16,7 @@ export class SystemRepo {
 			return null;
 		}
 
-		const props: SystemProps = SystemDomainMapper.mapEntityToDomainObjectProperties(entity);
-
-		const domainObject: System = new System(props);
+		const domainObject = this.mapToDo(entity);
 
 		return domainObject;
 	}
@@ -31,15 +29,33 @@ export class SystemRepo {
 			oauthConfig: undefined,
 		});
 
-		const domainObjects: System[] = entities.map((entity) => {
-			const props: SystemProps = SystemDomainMapper.mapEntityToDomainObjectProperties(entity);
-
-			const domainObject: System = new System(props);
-
-			return domainObject;
-		});
+		const domainObjects = this.mapToDos(entities);
 
 		return domainObjects;
+	}
+
+	async getSystemsByIds(ids: EntityId[]): Promise<System[]> {
+		const entities: SystemEntity[] = await this.em.find(SystemEntity, {
+			id: { $in: ids },
+		});
+
+		const domainObjects = this.mapToDos(entities);
+
+		return domainObjects;
+	}
+
+	private mapToDos(entities: SystemEntity[]) {
+		const domainObjects: System[] = entities.map((entity) => this.mapToDo(entity));
+
+		return domainObjects;
+	}
+
+	private mapToDo(entity: SystemEntity) {
+		const props: SystemProps = SystemDomainMapper.mapEntityToDomainObjectProperties(entity);
+
+		const domainObject: System = new System(props);
+
+		return domainObject;
 	}
 
 	public async delete(domainObject: System): Promise<boolean> {

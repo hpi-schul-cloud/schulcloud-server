@@ -13,6 +13,12 @@ export class SystemService {
 		return system;
 	}
 
+	public async getSystems(id: EntityId[]): Promise<System[]> {
+		const systems = await this.systemRepo.getSystemsByIds(id);
+
+		return systems;
+	}
+
 	public async findAllForLdapLogin(): Promise<System[]> {
 		const systems = await this.systemRepo.findAllForLdapLogin();
 

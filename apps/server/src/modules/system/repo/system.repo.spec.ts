@@ -171,6 +171,43 @@ describe(SystemRepo.name, () => {
 		});
 	});
 
+	describe('getSystemsByIds', () => {
+		describe('when no system exists', () => {
+			it('should return empty array', async () => {
+				const result = await repo.getSystemsByIds([new ObjectId().toHexString()]);
+
+				expect(result).toEqual([]);
+			});
+		});
+
+		describe('when different systems exist', () => {
+			const setup = async () => {
+				const system1: SystemEntity = systemEntityFactory.buildWithId();
+				const system2: SystemEntity = systemEntityFactory.buildWithId();
+				const system3: SystemEntity = systemEntityFactory.buildWithId();
+
+				await em.persistAndFlush([system1, system2, system3]);
+				em.clear();
+
+				const system1Props = SystemDomainMapper.mapEntityToDomainObjectProperties(system1);
+				const system2Props = SystemDomainMapper.mapEntityToDomainObjectProperties(system2);
+				const system3Props = SystemDomainMapper.mapEntityToDomainObjectProperties(system3);
+
+				const expectedSystems = [new System(system1Props), new System(system2Props), new System(system3Props)];
+
+				return { expectedSystems };
+			};
+
+			it('should return the systems', async () => {
+				const { expectedSystems } = await setup();
+
+				const result = await repo.getSystemsByIds(expectedSystems.map((s) => s.id));
+
+				expect(result).toEqual(expectedSystems);
+			});
+		});
+	});
+
 	describe('delete', () => {
 		describe('when the system exists', () => {
 			const setup = async () => {
