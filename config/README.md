@@ -293,12 +293,11 @@ The solution is the only existing way how environments should be passed to the n
 Please be careful! Secrets should be never exposed!
 They are readable in browser and request response.
 
-<https://github.com/hpi-schul-cloud/schulcloud-server/blob/main/src/services/config/publicAppConfigService.js#L14>
+<https://github.com/hpi-schul-cloud/schulcloud-server/blob/main/apps/server/src/modules/server/api/server-config.controller.ts>
 
-<http://{{HOST}}:{{PORT}}/api/v1/docs/config/app/public>
-<http://{{HOST}}:{{PORT}}/api/v1/config/app/public>
+<http://{{HOST}}:{{PORT}}/api/v3/config/public>
+<http://{{HOST}}:{{PORT}}/api/v3/files/config/public>
 
-> The public config endpoint should move to v3/ stack in future.
 
 ## Desired changes in future
 
