@@ -4,9 +4,17 @@ import { classEntityFactory } from '@modules/class/entity/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role, SchoolEntity, SchoolYearEntity, SystemEntity, User } from '@shared/domain/entity';
+import {
+	Course as CourseEntity,
+	Role,
+	SchoolEntity,
+	SchoolYearEntity,
+	SystemEntity,
+	User,
+} from '@shared/domain/entity';
 import { RoleName, SortOrder } from '@shared/domain/interface';
 import {
+	courseFactory as courseEntityFactory,
 	groupEntityFactory,
 	roleFactory,
 	schoolEntityFactory,
@@ -76,6 +84,7 @@ describe('Group (API)', () => {
 						},
 					],
 				});
+				const course: CourseEntity = courseEntityFactory.buildWithId({ syncedWithGroup: group });
 
 				await em.persistAndFlush([
 					school,
@@ -87,6 +96,7 @@ describe('Group (API)', () => {
 					clazz,
 					group,
 					schoolYear,
+					course,
 				]);
 				em.clear();
 
@@ -100,11 +110,12 @@ describe('Group (API)', () => {
 					adminUser,
 					teacherUser,
 					schoolYear,
+					course,
 				};
 			};
 
 			it('should return the classes of his school', async () => {
-				const { adminClient, group, clazz, system, schoolYear } = await setup();
+				const { adminClient, group, clazz, system, schoolYear, course } = await setup();
 
 				const response = await adminClient.get(`/class`).query({
 					skip: 0,
@@ -121,14 +132,15 @@ describe('Group (API)', () => {
 							type: ClassRootType.GROUP,
 							name: group.name,
 							externalSourceName: system.displayName,
-							teachers: [],
+							teacherNames: [],
 							studentCount: 0,
+							synchronizedCourses: [course.id],
 						},
 						{
 							id: clazz.id,
 							type: ClassRootType.CLASS,
 							name: clazz.gradeLevel ? `${clazz.gradeLevel}${clazz.name}` : clazz.name,
-							teachers: [],
+							teacherNames: [],
 							schoolYear: schoolYear.name,
 							isUpgradable: false,
 							studentCount: 0,
