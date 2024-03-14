@@ -1,11 +1,10 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
+import { SchulconnexCommunicationType } from './schulconnex-communication-type';
 
 export class SanisErreichbarkeitenResponse {
-	@IsOptional()
 	@IsString()
-	typ?: string;
+	typ!: SchulconnexCommunicationType;
 
-	@IsOptional()
 	@IsString()
-	kennung?: string;
+	kennung!: string;
 }

@@ -13,3 +13,4 @@ export * from './sanis-sonstige-gruppenzugehoerige-response';
 export * from './sanis-anschrift-response';
 export * from './sanis-response-validation-groups';
 export { SanisErreichbarkeitenResponse } from './sanis-erreichbarkeiten-response';
+export { SchulconnexCommunicationType } from './schulconnex-communication-type';
