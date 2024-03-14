@@ -7,6 +7,8 @@ export interface CourseRepo extends BaseDomainObjectRepoInterface<Course> {
 	findCourseById(id: EntityId): Promise<Course>;
 
 	findBySyncedGroup(group: Group): Promise<Course[]>;
+
+	findSyncedCourses(): Promise<Course[]>;
 }
 
 export const COURSE_REPO = Symbol('COURSE_REPO');

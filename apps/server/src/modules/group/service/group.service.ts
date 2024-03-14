@@ -43,7 +43,16 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 	public async findAvailableGroupsByUserAndGroupTypes(user: UserDO, groupTypes?: GroupTypes[]): Promise<Group[]> {
 		const groups: Group[] = await this.groupRepo.findAvailableByUserAndGroupTypes(user, groupTypes);
 
-		return groups;
+		const courses: Course[] = await this.courseService.findSyncedCourses();
+
+		const syncedGroupIds: (string | undefined)[] = courses.map(
+			(course: Course): string | undefined => course.syncedWithGroup
+		);
+
+		const availableGroups: Group[] = groups.filter((group: Group) => !syncedGroupIds.includes(group.id));
+
+		return availableGroups;
+		// TODO: test
 	}
 
 	public async findGroupsBySchoolIdAndGroupTypes(schoolId: EntityId, groupTypes: GroupTypes[]): Promise<Group[]> {
@@ -56,9 +65,18 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		schoolId: EntityId,
 		groupTypes: GroupTypes[]
 	): Promise<Group[]> {
-		const group: Group[] = await this.groupRepo.findAvailableBySchoolIdAndGroupTypes(schoolId, groupTypes);
+		const groups: Group[] = await this.groupRepo.findAvailableBySchoolIdAndGroupTypes(schoolId, groupTypes);
 
-		return group;
+		const courses: Course[] = await this.courseService.findSyncedCourses();
+
+		const syncedGroupIds: (string | undefined)[] = courses.map(
+			(course: Course): string | undefined => course.syncedWithGroup
+		);
+
+		const availableGroups: Group[] = groups.filter((group: Group) => !syncedGroupIds.includes(group.id));
+
+		return availableGroups;
+		// TODO: test
 	}
 
 	public async findGroupsBySchoolIdAndSystemIdAndGroupType(

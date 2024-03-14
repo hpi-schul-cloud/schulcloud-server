@@ -369,7 +369,6 @@ export class GroupUc {
 	private async getGroupsForSchool(schoolId: EntityId, availableSyncedGroups?: boolean): Promise<GroupDto[]> {
 		let foundGroups: Group[];
 		if (availableSyncedGroups) {
-			// TODO: implement query
 			foundGroups = await this.groupService.findAvailableGroupsBySchoolIdAndGroupTypes(
 				schoolId,
 				this.ALLOWED_GROUP_TYPES
@@ -389,7 +388,6 @@ export class GroupUc {
 		let foundGroups: Group[];
 		const user: UserDO = await this.userService.findById(userId);
 		if (availableSyncedGroups) {
-			// TODO: implement query
 			foundGroups = await this.groupService.findAvailableGroupsByUserAndGroupTypes(user, this.ALLOWED_GROUP_TYPES);
 		} else {
 			foundGroups = await this.groupService.findGroupsByUserAndGroupTypes(user, this.ALLOWED_GROUP_TYPES);

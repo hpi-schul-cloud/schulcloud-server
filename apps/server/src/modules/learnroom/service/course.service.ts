@@ -95,4 +95,11 @@ export class CourseService {
 
 		return courses;
 	}
+
+	public async findSyncedCourses(): Promise<Course[]> {
+		const courses: Course[] = await this.courseRepo.findSyncedCourses();
+
+		return courses;
+		// TODO: test
+	}
 }
