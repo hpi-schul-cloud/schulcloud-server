@@ -1,6 +1,6 @@
-import { SanisErreichbarkeitenResponse } from '@infra/schulconnex-client/response/sanis-erreichbarkeiten-response';
 import { Type } from 'class-transformer';
 import { IsArray, IsEnum, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { SanisErreichbarkeitenResponse } from './sanis-erreichbarkeiten-response';
 import { SanisGruppenResponse } from './sanis-gruppen-response';
 import { SanisOrganisationResponse } from './sanis-organisation-response';
 import { SanisResponseValidationGroups } from './sanis-response-validation-groups';
