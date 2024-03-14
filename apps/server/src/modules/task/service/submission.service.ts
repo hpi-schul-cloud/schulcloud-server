@@ -27,7 +27,9 @@ export class SubmissionService implements DeletionService, IEventHandler<UserDel
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly logger: Logger,
 		private readonly eventBus: EventBus
-	) {}
+	) {
+		this.logger.setContext(SubmissionService.name);
+	}
 
 	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
 		const dataDeleted = await this.deleteUserData(targetRefId);
