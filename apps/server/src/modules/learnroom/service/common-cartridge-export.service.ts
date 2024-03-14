@@ -48,9 +48,7 @@ export class CommonCartridgeExportService {
 			});
 
 			lesson.getLessonLinkedTasks().forEach((task) => {
-				organizationBuilder
-					.addSubOrganization(this.commonCartridgeMapper.mapTaskToOrganization(task))
-					.addResource(this.commonCartridgeMapper.mapTaskToResource(task, version));
+				organizationBuilder.addResource(this.commonCartridgeMapper.mapTaskToResource(task, version));
 			});
 		});
 	}
