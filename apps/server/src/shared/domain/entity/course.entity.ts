@@ -226,6 +226,7 @@ export class Course extends BaseEntityWithTimestamps implements Learnroom, Entit
 			untilDate: this.untilDate,
 			startDate: this.startDate,
 			copyingSince: this.copyingSince,
+			isSynchronized: !!this.syncedWithGroup,
 		};
 	}
 
