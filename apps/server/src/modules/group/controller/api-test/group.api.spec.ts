@@ -255,4 +255,51 @@ describe('Group (API)', () => {
 			});
 		});
 	});
+
+	describe('[GET] /groups', () => {
+		describe('when admin requests groups', () => {
+			const setup = async () => {};
+			describe('when requesting all groups', () => {
+				it('should return all groups of the school', async () => {});
+			});
+
+			describe('when requesting all available groups', () => {
+				it('should return all available groups for course sync', async () => {});
+			});
+		});
+
+		describe('when teacher requests groups', () => {
+			const setup = async () => {};
+			describe('when requesting all groups', () => {
+				it('should return all groups the teacher is part of', async () => {});
+			});
+
+			describe('when requesting all available groups', () => {
+				it('should return all available groups for course sync the teacher is part of', async () => {});
+			});
+		});
+
+		describe('when unauthorized user requests groups', () => {
+			const setup = async () => {
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				await em.persistAndFlush([studentAccount, studentUser]);
+				em.clear();
+			};
+
+			it('should return unauthorized', async () => {
+				await setup();
+
+				const response = await testApiClient.get();
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+				expect(response.body).toEqual({
+					code: HttpStatus.UNAUTHORIZED,
+					message: 'Unauthorized',
+					title: 'Unauthorized',
+					type: 'UNAUTHORIZED',
+				});
+			});
+		});
+	});
 });
