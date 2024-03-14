@@ -231,30 +231,6 @@ describe('Users Admin Teachers Controller (API)', () => {
 			});
 		});
 
-		describe('when skip params are too big', () => {
-			const setup = () => {
-				currentUser = mapUserToCurrentUser(adminUser, adminAccount);
-				const query: UsersSearchQueryParams = {
-					$skip: 50000,
-					$limit: 5,
-					$sort: { firstName: 1 },
-				};
-
-				return {
-					query,
-				};
-			};
-
-			it('should return 200', async () => {
-				const { query } = setup();
-				await request(app.getHttpServer()) //
-					.get(`${basePath}`)
-					.query(query)
-					.send()
-					.expect(200);
-			});
-		});
-
 		describe('when user has no right permission', () => {
 			const setup = () => {
 				currentUser = mapUserToCurrentUser(teacherUser1, teacherAccount1);

@@ -270,4 +270,29 @@ describe('users admin repo', () => {
 			expect(data.length).toBe(0);
 		});
 	});
+
+	describe('when skip params are too big', () => {
+		const setup = () => {
+			const query: UsersSearchQueryParams = {
+				$skip: 50000,
+				$limit: 5,
+				$sort: { firstName: 1 },
+			};
+
+			return {
+				query,
+			};
+		};
+
+		it('should return empty list', async () => {
+			const { query } = setup();
+			const response = await repo.getUsersWithNestedData(studentRole.id, school.id, currentYear.id, query);
+
+			const userListResponse = response as UserListResponse[];
+			const data = userListResponse[0].data;
+
+			expect(data.length).toBe(0);
+			expect(userListResponse[0].total).toBe(2);
+		});
+	});
 });
