@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { Course, User } from '@shared/domain/entity';
 import { ColumnBoardService, ColumnService } from '@src/modules/board';
-import { CommonCartridgeFileParser, DEFAULT_FILE_PARSER_OPTIONS } from '@src/modules/common-cartridge/import';
+import { CommonCartridgeFileParser, DEFAULT_FILE_PARSER_OPTIONS } from '@src/modules/common-cartridge';
 import { CourseService } from './course.service';
 
 @Injectable()
