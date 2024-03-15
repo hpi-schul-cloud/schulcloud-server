@@ -3,21 +3,22 @@ import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { AccountConfig } from '@modules/account';
 import type { AuthenticationConfig, XApiKeyConfig } from '@modules/authentication';
+import type { BoardConfig } from '@modules/board';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
 import type { CommonCartridgeConfig, LearnroomConfig } from '@modules/learnroom';
-import type { SchoolConfig } from '@modules/school';
-import type { UserConfig } from '@modules/user';
-import { type IUserImportFeatures, UserImportConfiguration } from '@modules/user-import';
-import type { CoreModuleConfig } from '@src/core';
-import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
-import { ToolConfiguration, type IToolFeatures } from '@modules/tool';
-import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
-import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@modules/video-conference';
-import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
 import type { LessonConfig } from '@modules/lesson';
-import type { BoardConfig } from '@modules/board';
+import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import type { SystemConfig } from '@modules/system';
+import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
+import { type IToolFeatures, ToolConfiguration } from '@modules/tool';
+import type { UserConfig } from '@modules/user';
+import { type IUserImportFeatures, UserImportConfiguration } from '@modules/user-import';
+import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
+import { type IVideoConferenceSettings, VideoConferenceConfiguration } from '@modules/video-conference';
+import type { CoreModuleConfig } from '@src/core';
+import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
+import { ProvisioningConfig } from '../provisioning';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -50,7 +51,8 @@ export interface ServerConfig
 		SharingConfig,
 		IUserImportFeatures,
 		SchulconnexClientConfig,
-		SystemConfig {
+		SystemConfig,
+		ProvisioningConfig {
 	NODE_ENV: string;
 	SC_DOMAIN: string;
 	ACCESSIBILITY_REPORT_EMAIL: string;
@@ -198,6 +200,7 @@ const config: ServerConfig = {
 	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: Configuration.get(
 		'SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS'
 	) as number,
+	FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') as boolean,
 	...getTldrawClientConfig(),
 	...ToolConfiguration.toolFeatures,
 	...VideoConferenceConfiguration.videoConference,

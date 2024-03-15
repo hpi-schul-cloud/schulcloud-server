@@ -15,6 +15,7 @@ import { schoolFactory } from '@modules/school/testing';
 import { LegacySystemService, SystemDto } from '@modules/system';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page, UserDO } from '@shared/domain/domainobject';
@@ -31,6 +32,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { ProvisioningConfig } from '../../provisioning';
 import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupTypes } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
@@ -52,6 +54,7 @@ describe('GroupUc', () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
 	let courseService: DeepMocked<CourseService>;
+	let configService: DeepMocked<ConfigService<ProvisioningConfig, true>>;
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let logger: DeepMocked<Logger>;
 
@@ -96,6 +99,10 @@ describe('GroupUc', () => {
 					useValue: createMock<CourseService>(),
 				},
 				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
+				},
+				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
@@ -112,6 +119,7 @@ describe('GroupUc', () => {
 		authorizationService = module.get(AuthorizationService);
 		schoolYearService = module.get(SchoolYearService);
 		courseService = module.get(CourseService);
+		configService = module.get(ConfigService);
 		logger = module.get(Logger);
 
 		await setupEntities();
@@ -262,6 +270,7 @@ describe('GroupUc', () => {
 				schoolYearService.findById.mockResolvedValueOnce(schoolYear);
 				schoolYearService.findById.mockResolvedValueOnce(nextSchoolYear);
 				schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYear);
+				configService.get.mockReturnValueOnce(true);
 				courseService.findBySyncedGroup.mockResolvedValueOnce([synchronizedCourse]);
 				courseService.findBySyncedGroup.mockResolvedValueOnce([]);
 
@@ -685,6 +694,7 @@ describe('GroupUc', () => {
 					throw new Error();
 				});
 				schoolYearService.findById.mockResolvedValue(schoolYear);
+				configService.get.mockReturnValueOnce(true);
 				courseService.findBySyncedGroup.mockResolvedValueOnce([]);
 				courseService.findBySyncedGroup.mockResolvedValueOnce([]);
 
@@ -961,6 +971,7 @@ describe('GroupUc', () => {
 					throw new Error();
 				});
 				schoolYearService.findById.mockResolvedValue(schoolYear);
+				configService.get.mockReturnValueOnce(true);
 				courseService.findBySyncedGroup.mockResolvedValueOnce([]);
 
 				return {

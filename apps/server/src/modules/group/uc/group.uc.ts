@@ -6,6 +6,7 @@ import { RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school/domain';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { SortHelper } from '@shared/common';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { SchoolYearEntity, User } from '@shared/domain/entity';
@@ -15,6 +16,7 @@ import { Logger } from '@src/core/logger';
 import { LegacySystemService, SystemDto } from '@src/modules/system';
 import { CourseService } from '../../learnroom';
 import { Course } from '../../learnroom/domain';
+import { ProvisioningConfig } from '../../provisioning';
 import { RoleDto } from '../../role/service/dto/role.dto';
 import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupTypes, GroupUser } from '../domain';
@@ -35,6 +37,7 @@ export class GroupUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolYearService: SchoolYearService,
 		private readonly courseService: CourseService,
+		private readonly configService: ConfigService<ProvisioningConfig, true>,
 		private readonly logger: Logger
 	) {}
 
@@ -261,7 +264,10 @@ export class GroupUc {
 
 		const resolvedUsers: ResolvedGroupUser[] = [];
 
-		const synchronizedCourses: Course[] = await this.courseService.findBySyncedGroup(group);
+		let synchronizedCourses: Course[] = [];
+		if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')) {
+			synchronizedCourses = await this.courseService.findBySyncedGroup(group);
+		}
 
 		const mapped: ClassInfoDto = GroupUcMapper.mapGroupToClassInfoDto(
 			group,
