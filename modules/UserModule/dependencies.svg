@@ -24,119 +24,119 @@
 <title>cluster_UserModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 771,-268 771,-70 8,-70"/>
 </g>
+<g id="clust3" class="cluster">
+<title>cluster_UserModule_imports</title>
+<polygon fill="none" stroke="black" points="419,-78 419,-130 763,-130 763,-78 419,-78"/>
+</g>
 <g id="clust4" class="cluster">
 <title>cluster_UserModule_exports</title>
-<polygon fill="none" stroke="black" points="264,-208 264,-260 462,-260 462,-208 264,-208"/>
+<polygon fill="none" stroke="black" points="302,-208 302,-260 500,-260 500,-208 302,-208"/>
 </g>
 <g id="clust6" class="cluster">
 <title>cluster_UserModule_providers</title>
-<polygon fill="none" stroke="black" points="368,-78 368,-130 763,-130 763,-78 368,-78"/>
-</g>
-<g id="clust3" class="cluster">
-<title>cluster_UserModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 360,-130 360,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 411,-130 411,-78 16,-78"/>
 </g>
 <!-- AccountModule -->
 <g id="node1" class="node">
 <title>AccountModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="352.48,-122 349.48,-126 328.48,-126 325.48,-122 245.52,-122 245.52,-86 352.48,-86 352.48,-122"/>
-<text text-anchor="middle" x="299" y="-99.8" font-family="Times,serif" font-size="14.00">AccountModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="755.48,-122 752.48,-126 731.48,-126 728.48,-122 648.52,-122 648.52,-86 755.48,-86 755.48,-122"/>
+<text text-anchor="middle" x="702" y="-99.8" font-family="Times,serif" font-size="14.00">AccountModule</text>
 </g>
 <!-- UserModule -->
 <g id="node4" class="node">
 <title>UserModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="408.98,-187 405.98,-191 384.98,-191 381.98,-187 323.02,-187 323.02,-151 408.98,-151 408.98,-187"/>
-<text text-anchor="middle" x="366" y="-164.8" font-family="Times,serif" font-size="14.00">UserModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="446.98,-187 443.98,-191 422.98,-191 419.98,-187 361.02,-187 361.02,-151 446.98,-151 446.98,-187"/>
+<text text-anchor="middle" x="404" y="-164.8" font-family="Times,serif" font-size="14.00">UserModule</text>
 </g>
 <!-- AccountModule&#45;&gt;UserModule -->
 <g id="edge1" class="edge">
 <title>AccountModule&#45;&gt;UserModule</title>
-<path fill="none" stroke="black" d="M337.75,-122.11C337.75,-122.11 337.75,-140.99 337.75,-140.99"/>
-<polygon fill="black" stroke="black" points="334.25,-140.99 337.75,-150.99 341.25,-140.99 334.25,-140.99"/>
+<path fill="none" stroke="black" d="M702,-122.28C702,-143.32 702,-175 702,-175 702,-175 457.01,-175 457.01,-175"/>
+<polygon fill="black" stroke="black" points="457.01,-171.5 447.01,-175 457.01,-178.5 457.01,-171.5"/>
 </g>
 <!-- LoggerModule -->
 <g id="node2" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="227.98,-122 224.98,-126 203.98,-126 200.98,-122 128.02,-122 128.02,-86 227.98,-86 227.98,-122"/>
-<text text-anchor="middle" x="178" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="630.98,-122 627.98,-126 606.98,-126 603.98,-122 531.02,-122 531.02,-86 630.98,-86 630.98,-122"/>
+<text text-anchor="middle" x="581" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;UserModule -->
 <g id="edge2" class="edge">
 <title>LoggerModule&#45;&gt;UserModule</title>
-<path fill="none" stroke="black" d="M178,-122.02C178,-139.37 178,-163 178,-163 178,-163 312.87,-163 312.87,-163"/>
-<polygon fill="black" stroke="black" points="312.87,-166.5 322.87,-163 312.87,-159.5 312.87,-166.5"/>
+<path fill="none" stroke="black" d="M581,-122.02C581,-139.37 581,-163 581,-163 581,-163 457.3,-163 457.3,-163"/>
+<polygon fill="black" stroke="black" points="457.3,-159.5 447.3,-163 457.3,-166.5 457.3,-159.5"/>
 </g>
 <!-- RoleModule -->
 <g id="node3" class="node">
 <title>RoleModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="109.99,-122 106.99,-126 85.99,-126 82.99,-122 24.01,-122 24.01,-86 109.99,-86 109.99,-122"/>
-<text text-anchor="middle" x="67" y="-99.8" font-family="Times,serif" font-size="14.00">RoleModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="512.99,-122 509.99,-126 488.99,-126 485.99,-122 427.01,-122 427.01,-86 512.99,-86 512.99,-122"/>
+<text text-anchor="middle" x="470" y="-99.8" font-family="Times,serif" font-size="14.00">RoleModule</text>
 </g>
 <!-- RoleModule&#45;&gt;UserModule -->
 <g id="edge3" class="edge">
 <title>RoleModule&#45;&gt;UserModule</title>
-<path fill="none" stroke="black" d="M67,-122.28C67,-143.32 67,-175 67,-175 67,-175 312.84,-175 312.84,-175"/>
-<polygon fill="black" stroke="black" points="312.84,-178.5 322.84,-175 312.84,-171.5 312.84,-178.5"/>
+<path fill="none" stroke="black" d="M437,-122.11C437,-122.11 437,-140.99 437,-140.99"/>
+<polygon fill="black" stroke="black" points="433.5,-140.99 437,-150.99 440.5,-140.99 433.5,-140.99"/>
 </g>
 <!-- UserRepo  -->
 <g id="node5" class="node">
 <title>UserRepo </title>
-<polygon fill="#fb8072" stroke="black" points="453.98,-252 378.02,-252 378.02,-216 453.98,-216 453.98,-252"/>
-<text text-anchor="middle" x="416" y="-229.8" font-family="Times,serif" font-size="14.00">UserRepo </text>
+<polygon fill="#fb8072" stroke="black" points="491.98,-252 416.02,-252 416.02,-216 491.98,-216 491.98,-252"/>
+<text text-anchor="middle" x="454" y="-229.8" font-family="Times,serif" font-size="14.00">UserRepo </text>
 </g>
 <!-- UserModule&#45;&gt;UserRepo  -->
 <g id="edge4" class="edge">
 <title>UserModule&#45;&gt;UserRepo </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M393.62,-187.11C393.62,-187.11 393.62,-205.99 393.62,-205.99"/>
-<polygon fill="black" stroke="black" points="390.12,-205.99 393.62,-215.99 397.12,-205.99 390.12,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M431.62,-187.11C431.62,-187.11 431.62,-205.99 431.62,-205.99"/>
+<polygon fill="black" stroke="black" points="428.12,-205.99 431.62,-215.99 435.12,-205.99 428.12,-205.99"/>
 </g>
 <!-- UserService  -->
 <g id="node6" class="node">
 <title>UserService </title>
-<polygon fill="#fb8072" stroke="black" points="359.9,-252 272.1,-252 272.1,-216 359.9,-216 359.9,-252"/>
-<text text-anchor="middle" x="316" y="-229.8" font-family="Times,serif" font-size="14.00">UserService </text>
+<polygon fill="#fb8072" stroke="black" points="397.9,-252 310.1,-252 310.1,-216 397.9,-216 397.9,-252"/>
+<text text-anchor="middle" x="354" y="-229.8" font-family="Times,serif" font-size="14.00">UserService </text>
 </g>
 <!-- UserModule&#45;&gt;UserService  -->
 <g id="edge5" class="edge">
 <title>UserModule&#45;&gt;UserService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M341.48,-187.11C341.48,-187.11 341.48,-205.99 341.48,-205.99"/>
-<polygon fill="black" stroke="black" points="337.98,-205.99 341.48,-215.99 344.98,-205.99 337.98,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M379.48,-187.11C379.48,-187.11 379.48,-205.99 379.48,-205.99"/>
+<polygon fill="black" stroke="black" points="375.98,-205.99 379.48,-215.99 382.98,-205.99 375.98,-205.99"/>
 </g>
 <!-- UserDORepo -->
 <g id="node7" class="node">
 <title>UserDORepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="691" cy="-104" rx="63.68" ry="18"/>
-<text text-anchor="middle" x="691" y="-99.8" font-family="Times,serif" font-size="14.00">UserDORepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="339" cy="-104" rx="63.68" ry="18"/>
+<text text-anchor="middle" x="339" y="-99.8" font-family="Times,serif" font-size="14.00">UserDORepo</text>
 </g>
 <!-- UserDORepo&#45;&gt;UserModule -->
 <g id="edge6" class="edge">
 <title>UserDORepo&#45;&gt;UserModule</title>
-<path fill="none" stroke="black" d="M691,-122.28C691,-143.32 691,-175 691,-175 691,-175 419.16,-175 419.16,-175"/>
-<polygon fill="black" stroke="black" points="419.16,-171.5 409.16,-175 419.16,-178.5 419.16,-171.5"/>
+<path fill="none" stroke="black" d="M381.8,-117.47C381.8,-117.47 381.8,-140.86 381.8,-140.86"/>
+<polygon fill="black" stroke="black" points="378.3,-140.86 381.8,-150.86 385.3,-140.86 378.3,-140.86"/>
 </g>
 <!-- UserRepo -->
 <g id="node8" class="node">
 <title>UserRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="560" cy="-104" rx="49.8" ry="18"/>
-<text text-anchor="middle" x="560" y="-99.8" font-family="Times,serif" font-size="14.00">UserRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="208" cy="-104" rx="49.8" ry="18"/>
+<text text-anchor="middle" x="208" y="-99.8" font-family="Times,serif" font-size="14.00">UserRepo</text>
 </g>
 <!-- UserRepo&#45;&gt;UserModule -->
 <g id="edge7" class="edge">
 <title>UserRepo&#45;&gt;UserModule</title>
-<path fill="none" stroke="black" d="M560,-122.02C560,-139.37 560,-163 560,-163 560,-163 419.05,-163 419.05,-163"/>
-<polygon fill="black" stroke="black" points="419.05,-159.5 409.05,-163 419.05,-166.5 419.05,-159.5"/>
+<path fill="none" stroke="black" d="M208,-122.02C208,-139.37 208,-163 208,-163 208,-163 350.99,-163 350.99,-163"/>
+<polygon fill="black" stroke="black" points="350.99,-166.5 360.99,-163 350.99,-159.5 350.99,-166.5"/>
 </g>
 <!-- UserService -->
 <g id="node9" class="node">
 <title>UserService</title>
-<ellipse fill="#fdb462" stroke="black" cx="434" cy="-104" rx="58.44" ry="18"/>
-<text text-anchor="middle" x="434" y="-99.8" font-family="Times,serif" font-size="14.00">UserService</text>
+<ellipse fill="#fdb462" stroke="black" cx="82" cy="-104" rx="58.44" ry="18"/>
+<text text-anchor="middle" x="82" y="-99.8" font-family="Times,serif" font-size="14.00">UserService</text>
 </g>
 <!-- UserService&#45;&gt;UserModule -->
 <g id="edge8" class="edge">
 <title>UserService&#45;&gt;UserModule</title>
-<path fill="none" stroke="black" d="M392.38,-116.84C392.38,-116.84 392.38,-140.52 392.38,-140.52"/>
-<polygon fill="black" stroke="black" points="388.88,-140.52 392.38,-150.52 395.88,-140.52 388.88,-140.52"/>
+<path fill="none" stroke="black" d="M82,-122.28C82,-143.32 82,-175 82,-175 82,-175 350.91,-175 350.91,-175"/>
+<polygon fill="black" stroke="black" points="350.91,-178.5 360.91,-175 350.91,-171.5 350.91,-178.5"/>
 </g>
 </g>
 </svg>

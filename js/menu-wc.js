@@ -5362,6 +5362,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SanisAnschriftResponse.html" data-type="entity-link" >SanisAnschriftResponse</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SanisErreichbarkeitenResponse.html" data-type="entity-link" >SanisErreichbarkeitenResponse</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SanisGeburtResponse.html" data-type="entity-link" >SanisGeburtResponse</a>
                             </li>
                             <li class="link">

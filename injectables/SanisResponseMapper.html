@@ -201,7 +201,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:36</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:37</a></div>
                             </td>
                         </tr>
 
@@ -266,8 +266,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="86"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:86</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="96"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:96</a></div>
                         </td>
                     </tr>
 
@@ -347,8 +347,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="68"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:68</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="78"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:78</a></div>
                         </td>
                     </tr>
 
@@ -416,8 +416,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:82</a></div>
                         </td>
                     </tr>
 
@@ -485,8 +485,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="120"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:120</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="130"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:130</a></div>
                         </td>
                     </tr>
 
@@ -552,8 +552,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="40"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:40</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -619,8 +619,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="57"
+                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:57</a></div>
                         </td>
                     </tr>
 
@@ -690,7 +690,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="36" class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:36</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="37" class="link-to-prism">apps/server/src/modules/provisioning/strategy/sanis/sanis-response.mapper.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -708,6 +708,7 @@
 	SanisResponse,
 	SanisSonstigeGruppenzugehoerigeResponse,
 } from &#x27;@infra/schulconnex-client&#x27;;
+import { SanisErreichbarkeitenResponse, SchulconnexCommunicationType } from &#x27;@infra/schulconnex-client/response&#x27;;
 import { SanisGroupRole } from &#x27;@infra/schulconnex-client/response/sanis-group-role&#x27;;
 import { SanisGroupType } from &#x27;@infra/schulconnex-client/response/sanis-group-type&#x27;;
 import { SanisRole } from &#x27;@infra/schulconnex-client/response/sanis-role&#x27;;
@@ -759,12 +760,21 @@ export class SanisResponseMapper {
 	}
 
 	mapToExternalUserDto(source: SanisResponse): ExternalUserDto {
+		let email: string | undefined;
+		if (source.personenkontexte[0].erreichbarkeiten?.length) {
+			const emailContact: SanisErreichbarkeitenResponse | undefined &#x3D; source.personenkontexte[0].erreichbarkeiten.find(
+				(contact: SanisErreichbarkeitenResponse): boolean &#x3D;&gt; contact.typ &#x3D;&#x3D;&#x3D; SchulconnexCommunicationType.EMAIL
+			);
+			email &#x3D; emailContact?.kennung;
+		}
+
 		const mapped &#x3D; new ExternalUserDto({
 			firstName: source.person.name.vorname,
 			lastName: source.person.name.familienname,
 			roles: [SanisResponseMapper.mapSanisRoleToRoleName(source)],
 			externalId: source.pid,
 			birthday: source.person.geburt?.datum ? new Date(source.person.geburt?.datum) : undefined,
+			email,
 		});
 
 		return mapped;
