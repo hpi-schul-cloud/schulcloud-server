@@ -3,10 +3,9 @@ import { SystemDto } from '@modules/system';
 import { UserDO } from '@shared/domain/domainobject';
 import { SchoolYearEntity } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
 import { Course } from '@src/modules/learnroom/domain';
 import { Group } from '../../domain';
-import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from '../dto';
+import { ClassInfoDto, CourseInfoDto, ResolvedGroupDto, ResolvedGroupUser } from '../dto';
 import { ClassRootType } from '../dto/class-root-type';
 
 export class GroupUcMapper {
@@ -26,7 +25,13 @@ export class GroupUcMapper {
 				.map((groupUser: ResolvedGroupUser) => groupUser.user.lastName),
 			studentCount: resolvedUsers.filter((groupUser: ResolvedGroupUser) => groupUser.role.name === RoleName.STUDENT)
 				.length,
-			synchronizedCourses: synchronizedCourses.map((course: Course): EntityId => course.id),
+			synchronizedCourses: synchronizedCourses.map(
+				(course: Course): CourseInfoDto =>
+					new CourseInfoDto({
+						id: course.id,
+						name: course.name,
+					})
+			),
 		});
 
 		return mapped;

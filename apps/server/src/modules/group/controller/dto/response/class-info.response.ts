@@ -1,6 +1,7 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain/types';
 import { ClassRootType } from '../../../uc/dto/class-root-type';
+import { CourseInfoResponse } from './course-info.response';
 
 export class ClassInfoResponse {
 	@ApiProperty()
@@ -27,8 +28,8 @@ export class ClassInfoResponse {
 	@ApiProperty()
 	studentCount: number;
 
-	@ApiPropertyOptional()
-	synchronizedCourses?: EntityId[];
+	@ApiPropertyOptional({ type: [CourseInfoResponse] })
+	synchronizedCourses?: CourseInfoResponse[];
 
 	constructor(props: ClassInfoResponse) {
 		this.id = props.id;

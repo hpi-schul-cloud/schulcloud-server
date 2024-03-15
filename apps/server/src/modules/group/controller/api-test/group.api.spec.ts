@@ -134,7 +134,7 @@ describe('Group (API)', () => {
 							externalSourceName: system.displayName,
 							teacherNames: [],
 							studentCount: 0,
-							synchronizedCourses: [course.id],
+							synchronizedCourses: [{ id: course.id, name: course.name }],
 						},
 						{
 							id: clazz.id,
