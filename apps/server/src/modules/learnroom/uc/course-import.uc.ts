@@ -23,6 +23,6 @@ export class CourseImportUc {
 
 		this.authorizationService.checkAllPermissions(user, [Permission.COURSE_CREATE]);
 
-		await this.courseImportService.createCourse(user, file);
+		await this.courseImportService.importFile(user, file);
 	}
 }
