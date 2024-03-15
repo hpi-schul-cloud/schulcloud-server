@@ -1,3 +1,4 @@
+export { LearnroomConfig } from './learnroom.config';
 export * from './learnroom.module';
 export {
 	CommonCartridgeExportService,
@@ -7,5 +8,3 @@ export {
 	DashboardService,
 	RoomsService,
 } from './service';
-export { CommonCartridgeConfig } from './common-cartridge';
-export { LearnroomConfig } from './learnroom.config';
