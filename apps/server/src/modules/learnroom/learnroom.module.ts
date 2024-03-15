@@ -4,19 +4,21 @@ import { LessonModule } from '@modules/lesson';
 import { TaskModule } from '@modules/task';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { ToolConfigModule } from '@modules/tool/tool-config.module';
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import {
-	LegacyBoardRepo,
 	CourseGroupRepo,
 	CourseRepo,
 	DashboardElementRepo,
 	DashboardModelMapper,
 	DashboardRepo,
+	LegacyBoardRepo,
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
 import { CqrsModule } from '@nestjs/cqrs';
+import { BoardNodeRepo } from '../board/repo';
 import { COURSE_REPO } from './domain';
+import { CommonCartridgeMapper } from './mapper/common-cartridge.mapper';
 import { CourseMikroOrmRepo } from './repo/mikro-orm/course.repo';
 import {
 	BoardCopyService,
@@ -29,11 +31,10 @@ import {
 	RoomsService,
 } from './service';
 import { CommonCartridgeFileValidatorPipe } from './utils';
-import { BoardNodeRepo } from '../board/repo';
 
 @Module({
 	imports: [
-		BoardModule,
+		forwardRef(() => BoardModule),
 		CopyHelperModule,
 		ContextExternalToolModule,
 		LessonModule,
@@ -52,6 +53,7 @@ import { BoardNodeRepo } from '../board/repo';
 		CommonCartridgeExportService,
 		CommonCartridgeFileValidatorPipe,
 		CommonCartridgeImportService,
+		CommonCartridgeMapper,
 		CourseCopyService,
 		CourseGroupRepo,
 		CourseGroupService,

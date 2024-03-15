@@ -1,6 +1,6 @@
+import { CommonCartridgeFileParser } from '@modules/common-cartridge';
 import { Injectable } from '@nestjs/common';
 import { Course, User } from '@shared/domain/entity';
-import { CommonCartridgeFileParser } from '@src/modules/common-cartridge/import';
 
 @Injectable()
 export class CommonCartridgeImportService {

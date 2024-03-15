@@ -90,14 +90,14 @@ describe('Course Controller (API)', () => {
 			const student2 = createStudent();
 			const teacher = createTeacher();
 			const substitutionTeacher = createTeacher();
-			const teacherUnkownToCourse = createTeacher();
+			const teacherUnknownToCourse = createTeacher();
 			const course = courseFactory.build({
 				name: 'course #1',
 				teachers: [teacher.user],
 				students: [student1.user, student2.user],
 			});
 
-			return { course, teacher, teacherUnkownToCourse, substitutionTeacher, student1 };
+			return { course, teacher, teacherUnknownToCourse, substitutionTeacher, student1 };
 		};
 
 		it('should find course export', async () => {
@@ -122,7 +122,9 @@ describe('Course Controller (API)', () => {
 	describe('[POST] /courses/import', () => {
 		const setup = async () => {
 			const teacher = createTeacher();
-			const course = await readFile('./apps/server/test/assets/common-cartridge/us_history_since_1877.imscc');
+			const course = await readFile(
+				'./apps/server/src/modules/common-cartridge/testing/assets/us_history_since_1877.imscc'
+			);
 			const courseFileName = 'us_history_since_1877.imscc';
 
 			await em.persistAndFlush([teacher.account, teacher.user]);
