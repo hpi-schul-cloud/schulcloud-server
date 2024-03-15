@@ -1,3 +1,3 @@
 export enum SchulconnexCommunicationType {
-	EMAIL = 'EMail',
+	EMAIL = 'E-Mail',
 }
