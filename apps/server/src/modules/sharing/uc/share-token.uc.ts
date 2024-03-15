@@ -9,6 +9,8 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotImple
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
+import { ColumnBoardCopyService } from '@modules/board';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import {
 	ShareTokenContext,
 	ShareTokenContextType,
@@ -30,6 +32,7 @@ export class ShareTokenUC {
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly courseService: CourseService,
 		private readonly taskCopyService: TaskCopyService,
+		private readonly columnBoardCopyService: ColumnBoardCopyService,
 
 		private readonly logger: LegacyLogger
 	) {
@@ -121,6 +124,12 @@ export class ShareTokenUC {
 				}
 				result = await this.copyTask(userId, shareToken.payload.parentId, destinationCourseId, newName);
 				break;
+			case ShareTokenParentType.ColumnBoard:
+				if (destinationCourseId === undefined) {
+					throw new BadRequestException('Destination course id is required to copy task');
+				}
+				result = await this.copyColumnBoard(userId, shareToken.payload.parentId, destinationCourseId, newName);
+				break;
 			default:
 				throw new NotImplementedException('Copy not implemented');
 		}
@@ -163,6 +172,21 @@ export class ShareTokenUC {
 		});
 	}
 
+	private copyColumnBoard(
+		userId: string,
+		originalColumnBoardId: string,
+		courseId: string
+		// copyName?: string // TODO: implement copyName once is supported
+	): Promise<CopyStatus> {
+		// const destinationCourse = await this.courseService.findById(courseId);
+		// TODO should we not check write permission on destination course here?
+		return this.columnBoardCopyService.copyColumnBoard({
+			originalColumnBoardId,
+			destinationExternalReference: { type: BoardExternalReferenceType.Course, id: courseId },
+			userId,
+		});
+	}
+
 	private async checkParentWritePermission(userId: EntityId, payload: ShareTokenPayload) {
 		const allowedParentType = ShareTokenParentTypeMapper.mapToAllowedAuthorizationEntityType(payload.parentType);
 
@@ -177,6 +201,14 @@ export class ShareTokenUC {
 				break;
 			case ShareTokenParentType.Task:
 				requiredPermissions = [Permission.HOMEWORK_CREATE];
+				break;
+			case ShareTokenParentType.ColumnBoard:
+				// TODO
+				requiredPermissions = [];
+				break;
+			default:
+				// TODO check if this is the right error
+				throw new InternalServerErrorException('Invalid parent type');
 		}
 
 		const authorizationContext = AuthorizationContextBuilder.write(requiredPermissions);
@@ -218,6 +250,14 @@ export class ShareTokenUC {
 				break;
 			case ShareTokenParentType.Task:
 				requiredPermissions = [Permission.HOMEWORK_CREATE];
+				break;
+			case ShareTokenParentType.ColumnBoard:
+				// TODO
+				requiredPermissions = [];
+				break;
+			default:
+				// TODO check if this is the right error
+				throw new InternalServerErrorException('Invalid parent type');
 		}
 		this.authorizationService.checkAllPermissions(user, requiredPermissions);
 	}
@@ -245,6 +285,12 @@ export class ShareTokenUC {
 			case ShareTokenParentType.Task:
 				// Configuration.get is the deprecated way to read envirment variables
 				if (!(Configuration.get('FEATURE_TASK_SHARE') as boolean)) {
+					throw new InternalServerErrorException('Import Task Feature not enabled');
+				}
+				break;
+			case ShareTokenParentType.ColumnBoard:
+				// Configuration.get is the deprecated way to read envirment variables
+				if (!(Configuration.get('FEATURE_COLUMNBOARD_SHARE') as boolean)) {
 					throw new InternalServerErrorException('Import Task Feature not enabled');
 				}
 				break;

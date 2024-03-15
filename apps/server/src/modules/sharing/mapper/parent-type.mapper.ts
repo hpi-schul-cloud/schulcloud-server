@@ -8,6 +8,7 @@ export class ShareTokenParentTypeMapper {
 		types.set(ShareTokenParentType.Course, AuthorizableReferenceType.Course);
 		types.set(ShareTokenParentType.Lesson, AuthorizableReferenceType.Lesson);
 		types.set(ShareTokenParentType.Task, AuthorizableReferenceType.Task);
+		types.set(ShareTokenParentType.ColumnBoard, AuthorizableReferenceType.BoardNode);
 
 		const res = types.get(type);
 

@@ -11,11 +11,14 @@ import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helpe
 import { CourseCopyService, CourseService } from '@modules/learnroom';
 import { LessonCopyService } from '@modules/lesson';
 import { TaskCopyService } from '@modules/task';
+import { ColumnBoardCopyService } from '@modules/board';
 import { BadRequestException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import {
 	courseFactory,
+	columnBoardFactory,
 	lessonFactory,
 	schoolEntityFactory,
 	setupEntities,
@@ -35,6 +38,7 @@ describe('ShareTokenUC', () => {
 	let courseCopyService: DeepMocked<CourseCopyService>;
 	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let taskCopyService: DeepMocked<TaskCopyService>;
+	let columnBoardCopyService: DeepMocked<ColumnBoardCopyService>;
 	let authorization: DeepMocked<AuthorizationService>;
 	let authorizationReferenceService: DeepMocked<AuthorizationReferenceService>;
 	let courseService: DeepMocked<CourseService>;
@@ -64,12 +68,16 @@ describe('ShareTokenUC', () => {
 					useValue: createMock<LessonCopyService>(),
 				},
 				{
-					provide: CourseService,
-					useValue: createMock<CourseService>(),
-				},
-				{
 					provide: TaskCopyService,
 					useValue: createMock<TaskCopyService>(),
+				},
+				{
+					provide: ColumnBoardCopyService,
+					useValue: createMock<ColumnBoardCopyService>(),
+				},
+				{
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
 				},
 				{
 					provide: LegacyLogger,
@@ -83,6 +91,7 @@ describe('ShareTokenUC', () => {
 		courseCopyService = module.get(CourseCopyService);
 		lessonCopyService = module.get(LessonCopyService);
 		taskCopyService = module.get(TaskCopyService);
+		columnBoardCopyService = module.get(ColumnBoardCopyService);
 		authorization = module.get(AuthorizationService);
 		authorizationReferenceService = module.get(AuthorizationReferenceService);
 		courseService = module.get(CourseService);
@@ -101,6 +110,7 @@ describe('ShareTokenUC', () => {
 		Configuration.set('FEATURE_COURSE_SHARE', true);
 		Configuration.set('FEATURE_LESSON_SHARE', true);
 		Configuration.set('FEATURE_TASK_SHARE', true);
+		Configuration.set('FEATURE_COLUMNBOARD_SHARE', true);
 	});
 
 	describe('create a sharetoken', () => {
@@ -945,6 +955,77 @@ describe('ShareTokenUC', () => {
 
 					expect(authorizationReferenceService.checkPermissionByReferences).not.toHaveBeenCalled();
 				});
+			});
+		});
+
+		describe('when parent is a columnboard', () => {
+			const setup = () => {
+				const course = courseFactory.buildWithId();
+				courseService.findById.mockResolvedValueOnce(course);
+
+				const columnBoard = columnBoardFactory.build();
+				const user = userFactory.buildWithId();
+				authorization.getUserWithPermissions.mockResolvedValueOnce(user);
+
+				const payload: ShareTokenPayload = { parentType: ShareTokenParentType.ColumnBoard, parentId: columnBoard.id };
+				const shareToken = shareTokenFactory.build({ payload });
+				service.lookupToken.mockResolvedValueOnce(shareToken);
+
+				return { user, shareToken, course, columnBoard };
+			};
+			it('should get token from service', async () => {
+				const { user, shareToken, course } = setup();
+				await uc.importShareToken(user.id, shareToken.token, 'NewName', course.id);
+				expect(service.lookupToken).toHaveBeenCalledWith(shareToken.token);
+			});
+			it('should throw if the FEATURE_COLUMBBOARD_SHARE is not enabled', async () => {
+				const { user, shareToken } = setup();
+				Configuration.set('FEATURE_COLUMNBOARD_SHARE', false);
+				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
+					InternalServerErrorException
+				);
+			});
+			it('should get user with permissions', async () => {
+				const { user, shareToken, course } = setup();
+				await uc.importShareToken(user.id, shareToken.token, 'NewName', course.id);
+				expect(authorization.getUserWithPermissions).toHaveBeenCalledWith(user.id);
+			});
+			it('should check the permission to create the columnboard', async () => {
+				const { user, shareToken, course } = setup();
+				await uc.importShareToken(user.id, shareToken.token, 'NewName', course.id);
+				expect(authorization.checkAllPermissions).toHaveBeenCalledWith(user, []);
+			});
+			it('should throw if destination course id is not given', async () => {
+				const { user, shareToken } = setup();
+				courseService.findById.mockRestore();
+
+				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
+					BadRequestException
+				);
+			});
+			it('should call the columnboard copy service', async () => {
+				const { user, shareToken, course, columnBoard } = setup();
+				const newName = 'NewName';
+				await uc.importShareToken(user.id, shareToken.token, newName, course.id);
+				expect(columnBoardCopyService.copyColumnBoard).toHaveBeenCalledWith({
+					originalColumnBoardId: columnBoard.id,
+					destinationExternalReference: { type: BoardExternalReferenceType.Course, id: course.id },
+					userId: user.id,
+				});
+			});
+			it('should return the result', async () => {
+				const { user, shareToken, columnBoard } = setup();
+				const status: CopyStatus = {
+					type: CopyElementType.COLUMNBOARD,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: columnBoard,
+				};
+				columnBoardCopyService.copyColumnBoard.mockResolvedValueOnce(status);
+				const newName = 'NewName';
+
+				const result = await uc.importShareToken(user.id, shareToken.token, newName, columnBoard.id);
+
+				expect(result).toEqual(status);
 			});
 		});
 

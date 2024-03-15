@@ -5,6 +5,7 @@ export enum ShareTokenParentType {
 	'Course' = 'courses',
 	'Task' = 'tasks',
 	'Lesson' = 'lessons',
+	'ColumnBoard' = 'column-board',
 }
 
 export enum ShareTokenContextType {

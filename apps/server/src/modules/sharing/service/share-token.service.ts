@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CourseService } from '@modules/learnroom/service';
+import { ColumnBoardService } from '@modules/board/service';
 import { LessonService } from '@modules/lesson/service';
 import { TaskService } from '@modules/task/service';
 import {
@@ -19,7 +20,8 @@ export class ShareTokenService {
 		private readonly shareTokenRepo: ShareTokenRepo,
 		private readonly courseService: CourseService,
 		private readonly lessonService: LessonService,
-		private readonly taskService: TaskService
+		private readonly taskService: TaskService,
+		private readonly columnBoardService: ColumnBoardService
 	) {}
 
 	async createToken(
@@ -61,7 +63,13 @@ export class ShareTokenService {
 			case ShareTokenParentType.Task:
 				parentName = (await this.taskService.findById(shareToken.payload.parentId)).name;
 				break;
+			case ShareTokenParentType.ColumnBoard:
+				// TODO - well the column board should have a name...
+				parentName = (await this.columnBoardService.findById(shareToken.payload.parentId)).title;
+				break;
 			default:
+				// TODO find an appropriate error
+				throw new Error('Invalid parent type');
 		}
 
 		return { shareToken, parentName };
