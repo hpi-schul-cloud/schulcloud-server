@@ -1170,11 +1170,18 @@
 			"default": false,
 			"description": "Toggle for copy course feature."
 		},
-		"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": {
+		"FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for the IMSCC course download feature."
 		},
+		"GEOGEBRA_BASE_URL": {
+			"type": "string",
+			"format": "uri",
+			"default": "https://www.geogebra.org",
+			"pattern": ".*(?<!/)$",
+			"description": "Base URL of GeoGebra materials"
+    },
 		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED": {
 			"type": "boolean",
 			"default": false,
