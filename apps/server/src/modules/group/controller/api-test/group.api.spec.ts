@@ -4,9 +4,17 @@ import { classEntityFactory } from '@modules/class/entity/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Role, SchoolEntity, SchoolYearEntity, SystemEntity, User } from '@shared/domain/entity';
+import {
+	Course as CourseEntity,
+	Role,
+	SchoolEntity,
+	SchoolYearEntity,
+	SystemEntity,
+	User,
+} from '@shared/domain/entity';
 import { RoleName, SortOrder } from '@shared/domain/interface';
 import {
+	courseFactory,
 	groupEntityFactory,
 	roleFactory,
 	schoolEntityFactory,
@@ -258,9 +266,46 @@ describe('Group (API)', () => {
 
 	describe('[GET] /groups', () => {
 		describe('when admin requests groups', () => {
-			const setup = async () => {};
+			const setup = async () => {
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const otherSchool: SchoolEntity = schoolEntityFactory.buildWithId();
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+
+				const groupInSchool: GroupEntity = groupEntityFactory.buildWithId({ organization: school });
+				const availableGroupInSchool: GroupEntity = groupEntityFactory.buildWithId({ organization: school });
+				const groupInOtherSchool: GroupEntity = groupEntityFactory.buildWithId({ organization: otherSchool });
+
+				const syncedCourse: CourseEntity = courseFactory.build({
+					school,
+					syncedWithGroup: availableGroupInSchool,
+				});
+
+				await em.persistAndFlush([
+					adminAccount,
+					adminUser,
+					groupInSchool,
+					availableGroupInSchool,
+					groupInOtherSchool,
+					school,
+					otherSchool,
+					syncedCourse,
+				]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return {
+					loggedInClient,
+				};
+			};
 			describe('when requesting all groups', () => {
-				it('should return all groups of the school', async () => {});
+				it('should return all groups of the school', async () => {
+					const { loggedInClient } = await setup();
+
+					const response = await loggedInClient.get();
+
+					expect(response.status).toEqual(HttpStatus.OK);
+				});
 			});
 
 			describe('when requesting all available groups', () => {
