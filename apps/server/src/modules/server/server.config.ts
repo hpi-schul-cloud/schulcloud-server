@@ -3,21 +3,23 @@ import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { AccountConfig } from '@modules/account';
 import type { AuthenticationConfig, XApiKeyConfig } from '@modules/authentication';
+import type { BoardConfig } from '@modules/board';
 import type { FilesStorageClientConfig } from '@modules/files-storage-client';
 import type { CommonCartridgeConfig, LearnroomConfig } from '@modules/learnroom';
-import type { SchoolConfig } from '@modules/school';
-import type { UserConfig } from '@modules/user';
-import { type IUserImportFeatures, UserImportConfiguration } from '@modules/user-import';
-import type { CoreModuleConfig } from '@src/core';
-import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
-import { ToolConfiguration, type IToolFeatures } from '@modules/tool';
-import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
-import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@modules/video-conference';
-import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
 import type { LessonConfig } from '@modules/lesson';
-import type { BoardConfig } from '@modules/board';
+import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import type { SystemConfig } from '@modules/system';
+import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
+import { ToolConfiguration, type IToolFeatures } from '@modules/tool';
+import type { UserConfig } from '@modules/user';
+import { UserImportConfiguration, type IUserImportFeatures } from '@modules/user-import';
+import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
+import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@modules/video-conference';
+import { LanguageType } from '@shared/domain/interface';
+import type { CoreModuleConfig } from '@src/core';
+import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
+import { SchulcloudTheme } from './types/schulcloud-theme.enum';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -51,7 +53,7 @@ export interface ServerConfig
 		IUserImportFeatures,
 		SchulconnexClientConfig,
 		SystemConfig {
-	NODE_ENV: string;
+	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	ACCESSIBILITY_REPORT_EMAIL: string;
 	ADMIN_TABLES_DISPLAY_CONSENT_COLUMN: boolean;
@@ -78,8 +80,8 @@ export interface ServerConfig
 	JWT_TIMEOUT_SECONDS: number;
 	NOT_AUTHENTICATED_REDIRECT_URL: string;
 	DOCUMENT_BASE_DIR: string;
-	SC_THEME: string; // should be enum
-	SC_TITLE: string; // should be enum
+	SC_THEME: SchulcloudTheme;
+	SC_TITLE: string;
 	FEATURE_SHOW_OUTDATED_USERS: boolean;
 	FEATURE_NEW_SCHOOL_ADMINISTRATION_PAGE_AS_DEFAULT_ENABLED: boolean;
 	FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION: boolean;
@@ -90,7 +92,7 @@ export interface ServerConfig
 	TLDRAW__ASSETS_ENABLED: boolean;
 	TLDRAW__ASSETS_MAX_SIZE: number;
 	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST?: string;
-	I18N__AVAILABLE_LANGUAGES: string; // string[] / enum
+	I18N__AVAILABLE_LANGUAGES: LanguageType[];
 	I18N__DEFAULT_LANGUAGE: string; // should be enum
 	I18N__FALLBACK_LANGUAGE: string; // should be enum
 	I18N__DEFAULT_TIMEZONE: string; // should be enum
@@ -139,14 +141,14 @@ const config: ServerConfig = {
 	JWT_TIMEOUT_SECONDS: Configuration.get('JWT_TIMEOUT_SECONDS') as number,
 	NOT_AUTHENTICATED_REDIRECT_URL: Configuration.get('NOT_AUTHENTICATED_REDIRECT_URL') as string,
 	DOCUMENT_BASE_DIR: Configuration.get('DOCUMENT_BASE_DIR') as string,
-	SC_THEME: Configuration.get('SC_THEME') as string,
+	SC_THEME: Configuration.get('SC_THEME') as SchulcloudTheme,
 	SC_TITLE: Configuration.get('SC_TITLE') as string,
 	SC_DOMAIN: Configuration.get('SC_DOMAIN') as string,
 	INCOMING_REQUEST_TIMEOUT: Configuration.get('INCOMING_REQUEST_TIMEOUT_API') as number,
 	INCOMING_REQUEST_TIMEOUT_COPY_API: Configuration.get('INCOMING_REQUEST_TIMEOUT_COPY_API') as number,
 	NEST_LOG_LEVEL: Configuration.get('NEST_LOG_LEVEL') as string,
 	EXIT_ON_ERROR: Configuration.get('EXIT_ON_ERROR') as boolean,
-	AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(','),
+	AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',') as LanguageType[],
 	NODE_ENV: Configuration.get('NODE_ENV') as NodeEnvType,
 	LOGIN_BLOCK_TIME: Configuration.get('LOGIN_BLOCK_TIME') as number,
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
@@ -191,7 +193,7 @@ const config: ServerConfig = {
 	ETHERPAD__PAD_URI: Configuration.has('ETHERPAD__PAD_URI')
 		? (Configuration.get('ETHERPAD__PAD_URI') as string)
 		: undefined,
-	I18N__AVAILABLE_LANGUAGES: Configuration.get('I18N__AVAILABLE_LANGUAGES') as string,
+	I18N__AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',') as LanguageType[],
 	I18N__DEFAULT_LANGUAGE: Configuration.get('I18N__DEFAULT_LANGUAGE') as string,
 	I18N__FALLBACK_LANGUAGE: Configuration.get('I18N__FALLBACK_LANGUAGE') as string,
 	I18N__DEFAULT_TIMEZONE: Configuration.get('I18N__DEFAULT_TIMEZONE') as string,

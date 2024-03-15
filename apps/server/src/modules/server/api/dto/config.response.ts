@@ -1,5 +1,8 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { LanguageType } from '@shared/domain/interface';
+import { IsEnum } from 'class-validator';
 import type { ServerConfig } from '../..';
+import { SchulcloudTheme } from '../../types/schulcloud-theme.enum';
 
 export class ConfigResponse {
 	@ApiProperty()
@@ -148,8 +151,13 @@ export class ConfigResponse {
 
 	// LERNSTORE_MODE: boolean; looks like not in use anymore
 
-	@ApiProperty()
-	I18N__AVAILABLE_LANGUAGES: string; // enum 'de,en,es,ua' -> Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',')
+	@ApiProperty({
+		isArray: true,
+		enum: LanguageType,
+		enumName: 'Language',
+	})
+	@IsEnum(LanguageType, { each: true })
+	I18N__AVAILABLE_LANGUAGES: LanguageType[];
 
 	@ApiProperty()
 	I18N__DEFAULT_LANGUAGE: string; // enum
@@ -172,8 +180,9 @@ export class ConfigResponse {
 	@ApiProperty()
 	DOCUMENT_BASE_DIR: string;
 
-	@ApiProperty()
-	SC_THEME: string;
+	@ApiProperty({ enum: SchulcloudTheme, enumName: 'SchulcloudTheme' })
+	@IsEnum(SchulcloudTheme)
+	SC_THEME: SchulcloudTheme;
 
 	@ApiProperty()
 	SC_TITLE: string;

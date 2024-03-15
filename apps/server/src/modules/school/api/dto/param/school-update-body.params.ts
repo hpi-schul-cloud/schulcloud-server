@@ -71,7 +71,7 @@ export class SchoolUpdateBodyParams implements SchoolUpdateBody {
 
 	@IsEnum(LanguageType)
 	@IsOptional()
-	@ApiPropertyOptional({ enum: LanguageType })
+	@ApiPropertyOptional({ enum: LanguageType, enumName: 'Language' })
 	language?: LanguageType;
 
 	@IsEnum(SchoolFeature, { each: true })
