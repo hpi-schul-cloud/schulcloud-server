@@ -5,14 +5,13 @@ import {
 	SanisGruppenResponse,
 	SanisPersonenkontextResponse,
 	SanisResponse,
-	SanisRole,
 	SanisSonstigeGruppenzugehoerigeResponse,
+	schulconnexResponseFactory,
 } from '@infra/schulconnex-client';
 import { GroupTypes } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RoleName } from '@shared/domain/interface';
 import { Logger } from '@src/core/logger';
-import { UUID } from 'bson';
 import { ExternalGroupDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
 import { SanisResponseMapper } from './sanis-response.mapper';
 
@@ -38,50 +37,7 @@ describe('SanisResponseMapper', () => {
 		const externalUserId = 'aef1f4fd-c323-466e-962b-a84354c0e713';
 		const externalSchoolId = 'df66c8e6-cfac-40f7-b35b-0da5d8ee680e';
 
-		const sanisResponse: SanisResponse = {
-			pid: externalUserId,
-			person: {
-				name: {
-					vorname: 'firstName',
-					familienname: 'lastName',
-				},
-				geburt: {
-					datum: '2023-11-17',
-				},
-			},
-			personenkontexte: [
-				{
-					id: new UUID().toString(),
-					rolle: SanisRole.LERN,
-					organisation: {
-						id: new UUID(externalSchoolId).toString(),
-						name: 'schoolName',
-						kennung: 'NI_123456_NI_ashd3838',
-						anschrift: {
-							ort: 'Hannover',
-						},
-					},
-					gruppen: [
-						{
-							gruppe: {
-								id: new UUID().toString(),
-								bezeichnung: 'bezeichnung',
-								typ: SanisGroupType.CLASS,
-							},
-							gruppenzugehoerigkeit: {
-								rollen: [SanisGroupRole.TEACHER],
-							},
-							sonstige_gruppenzugehoerige: [
-								{
-									rollen: [SanisGroupRole.STUDENT],
-									ktid: 'ktid',
-								},
-							],
-						},
-					],
-				},
-			],
-		};
+		const sanisResponse: SanisResponse = schulconnexResponseFactory.build();
 
 		return {
 			externalUserId,
@@ -100,7 +56,7 @@ describe('SanisResponseMapper', () => {
 				expect(result).toEqual<ExternalSchoolDto>({
 					externalId: externalSchoolId,
 					name: 'schoolName',
-					officialSchoolNumber: '123456_NI_ashd3838',
+					officialSchoolNumber: 'Kennung',
 					location: 'Hannover',
 				});
 			});
@@ -116,9 +72,10 @@ describe('SanisResponseMapper', () => {
 
 				expect(result).toEqual<ExternalUserDto>({
 					externalId: externalUserId,
-					firstName: 'firstName',
-					lastName: 'lastName',
-					roles: [RoleName.STUDENT],
+					firstName: 'Hans',
+					lastName: 'Peter',
+					email: 'hans.peter@muster-schule.de',
+					roles: [RoleName.ADMINISTRATOR],
 					birthday: new Date('2023-11-17'),
 				});
 			});
