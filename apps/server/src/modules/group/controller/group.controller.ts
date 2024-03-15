@@ -14,7 +14,6 @@ import {
 	GroupEntryResponse,
 	GroupIdParams,
 	GroupPaginationParams,
-	GroupParams,
 	GroupResponse,
 } from './dto';
 import { GroupResponseMapper } from './mapper';
@@ -79,13 +78,13 @@ export class GroupController {
 	@ApiResponse({ status: '4XX', type: ErrorResponse })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	public async getAllGroups(
-		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: GroupParams
+		@CurrentUser() currentUser: ICurrentUser
+		// @Param() params?: GroupParams
 	): Promise<GroupEntryResponse[]> {
 		const groups: GroupDto[] = await this.groupUc.getAllGroups(
 			currentUser.userId,
-			currentUser.schoolId,
-			params.availableSyncedGroups
+			currentUser.schoolId
+			// params?.availableSyncedGroups
 		);
 		const response: GroupEntryResponse[] = GroupResponseMapper.mapToGroupListResponse(groups);
 

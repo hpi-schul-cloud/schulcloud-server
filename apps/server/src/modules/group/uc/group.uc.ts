@@ -347,7 +347,11 @@ export class GroupUc {
 		);
 	}
 
-	public async getAllGroups(userId: EntityId, schoolId: EntityId, availablesyncedGroups?: boolean) {
+	public async getAllGroups(
+		userId: EntityId,
+		schoolId: EntityId,
+		availableSyncedGroups?: boolean
+	): Promise<GroupDto[]> {
 		const school: School = await this.schoolService.getSchoolById(schoolId);
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
@@ -357,9 +361,9 @@ export class GroupUc {
 
 		let groups: GroupDto[];
 		if (canSeeFullList) {
-			groups = await this.getGroupsForSchool(schoolId, availablesyncedGroups);
+			groups = await this.getGroupsForSchool(schoolId, availableSyncedGroups);
 		} else {
-			groups = await this.getGroupsForUser(userId, availablesyncedGroups);
+			groups = await this.getGroupsForUser(userId, availableSyncedGroups);
 		}
 
 		return groups;

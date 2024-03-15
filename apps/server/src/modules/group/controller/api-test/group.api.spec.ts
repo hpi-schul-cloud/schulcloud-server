@@ -296,15 +296,27 @@ describe('Group (API)', () => {
 
 				return {
 					loggedInClient,
+					groupInSchool,
+					availableGroupInSchool,
 				};
 			};
 			describe('when requesting all groups', () => {
 				it('should return all groups of the school', async () => {
-					const { loggedInClient } = await setup();
+					const { loggedInClient, groupInSchool, availableGroupInSchool } = await setup();
 
 					const response = await loggedInClient.get();
 
 					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual([
+						{
+							id: groupInSchool.id,
+							name: groupInSchool.name,
+						},
+						{
+							id: availableGroupInSchool.id,
+							name: availableGroupInSchool.name,
+						},
+					]);
 				});
 			});
 
