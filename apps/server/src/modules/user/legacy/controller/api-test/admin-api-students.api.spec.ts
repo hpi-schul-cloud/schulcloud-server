@@ -278,6 +278,36 @@ describe('Users Admin Students Controller (API)', () => {
 			});
 		});
 
+		describe('when searching for users by wrong params', () => {
+			const setup = () => {
+				currentUser = mapUserToCurrentUser(adminUser, adminAccount);
+				const query: UsersSearchQueryParams = {
+					$skip: 0,
+					$limit: 5,
+					$sort: { firstName: 1 },
+					classes: ['1A'],
+				};
+
+				return {
+					query,
+				};
+			};
+
+			it('should return empty list', async () => {
+				const { query } = setup();
+				const response = await request(app.getHttpServer()) //
+					.get(`${basePath}`)
+					.query(query)
+					.set('Accept', 'application/json')
+					.expect(200);
+
+				const { data, total } = response.body as UserListResponse;
+
+				expect(total).toBe(0);
+				expect(data.length).toBe(0);
+			});
+		});
+
 		describe('when user has no right permission', () => {
 			const setup = () => {
 				currentUser = mapUserToCurrentUser(studentUser1, studentAccount1);
