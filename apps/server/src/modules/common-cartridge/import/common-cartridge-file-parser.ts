@@ -1,14 +1,15 @@
 import AdmZip from 'adm-zip';
+import { DEFAULT_FILE_PARSER_OPTIONS } from './common-cartridge-import.types';
 import { CommonCartridgeManifestParser } from './common-cartridge-manifest-parser';
 import { CommonCartridgeManifestNotFoundException } from './utils/common-cartridge-manifest-not-found.exception';
 
 export class CommonCartridgeFileParser {
 	private readonly manifestParser: CommonCartridgeManifestParser;
 
-	public constructor(file: Buffer) {
+	public constructor(file: Buffer, private readonly options = DEFAULT_FILE_PARSER_OPTIONS) {
 		const archive = new AdmZip(file);
 
-		this.manifestParser = new CommonCartridgeManifestParser(this.getManifestFileAsString(archive));
+		this.manifestParser = new CommonCartridgeManifestParser(this.getManifestFileAsString(archive), this.options);
 	}
 
 	public get manifest(): CommonCartridgeManifestParser {
