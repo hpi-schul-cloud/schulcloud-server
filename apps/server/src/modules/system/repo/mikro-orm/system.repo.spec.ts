@@ -5,11 +5,11 @@ import { LdapConfigEntity, OauthConfigEntity, SystemEntity } from '@shared/domai
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SystemTypeEnum } from '@shared/domain/types';
 import { cleanupCollections, systemEntityFactory } from '@shared/testing';
-import { System, SystemProps } from '../domain';
-import { SystemDomainMapper } from './system-domain.mapper';
-import { SystemRepo } from './system.repo';
+import { SYSTEM_REPO, System, SystemProps, SystemRepo } from '../../domain';
+import { SystemEntityMapper } from './mapper/system-entity.mapper';
+import { SystemMikroOrmRepo } from './system.repo';
 
-describe(SystemRepo.name, () => {
+describe(SystemMikroOrmRepo.name, () => {
 	let module: TestingModule;
 	let repo: SystemRepo;
 	let em: EntityManager;
@@ -17,10 +17,10 @@ describe(SystemRepo.name, () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [SystemRepo],
+			providers: [{ provide: SYSTEM_REPO, useClass: SystemMikroOrmRepo }],
 		}).compile();
 
-		repo = module.get(SystemRepo);
+		repo = module.get(SYSTEM_REPO);
 		em = module.get(EntityManager);
 	});
 
@@ -79,7 +79,7 @@ describe(SystemRepo.name, () => {
 			it('should return the system', async () => {
 				const { system, oauthConfig, ldapConfig } = await setup();
 
-				const result = await repo.findById(system.id);
+				const result = await repo.getSystemById(system.id);
 
 				expect(result?.getProps()).toEqual<SystemProps>({
 					id: system.id,
@@ -115,7 +115,7 @@ describe(SystemRepo.name, () => {
 
 		describe('when the system does not exist', () => {
 			it('should return null', async () => {
-				const result = await repo.findById(new ObjectId().toHexString());
+				const result = await repo.getSystemById(new ObjectId().toHexString());
 
 				expect(result).toBeNull();
 			});
@@ -153,8 +153,7 @@ describe(SystemRepo.name, () => {
 				await em.persistAndFlush([activeLdapSystem, inActiveLdapSystem, activeLdapSystemWithOauthConfig, otherSystem]);
 				em.clear();
 
-				const activeLdapSystemProps = SystemDomainMapper.mapEntityToDomainObjectProperties(activeLdapSystem);
-				const activeLdapSystemDo = new System(activeLdapSystemProps);
+				const activeLdapSystemDo = SystemEntityMapper.mapToDo(activeLdapSystem);
 
 				const expectedSystems = [activeLdapSystemDo];
 
@@ -189,11 +188,11 @@ describe(SystemRepo.name, () => {
 				await em.persistAndFlush([system1, system2, system3]);
 				em.clear();
 
-				const system1Props = SystemDomainMapper.mapEntityToDomainObjectProperties(system1);
-				const system2Props = SystemDomainMapper.mapEntityToDomainObjectProperties(system2);
-				const system3Props = SystemDomainMapper.mapEntityToDomainObjectProperties(system3);
+				const system1Props = SystemEntityMapper.mapToDo(system1);
+				const system2Props = SystemEntityMapper.mapToDo(system2);
+				const system3Props = SystemEntityMapper.mapToDo(system3);
 
-				const expectedSystems = [new System(system1Props), new System(system2Props), new System(system3Props)];
+				const expectedSystems = [system1Props, system2Props, system3Props];
 
 				return { expectedSystems };
 			};
@@ -216,7 +215,7 @@ describe(SystemRepo.name, () => {
 				await em.persistAndFlush([systemEntity]);
 				em.clear();
 
-				const props: SystemProps = SystemDomainMapper.mapEntityToDomainObjectProperties(systemEntity);
+				const props: SystemProps = SystemEntityMapper.mapToDo(systemEntity);
 				const system: System = new System(props);
 
 				return {
@@ -231,20 +230,12 @@ describe(SystemRepo.name, () => {
 
 				expect(await em.findOne(SystemEntity, { id: system.id })).toBeNull();
 			});
-
-			it('should return true', async () => {
-				const { system } = await setup();
-
-				const result = await repo.delete(system);
-
-				expect(result).toEqual(true);
-			});
 		});
 
 		describe('when the system does not exists', () => {
 			const setup = () => {
 				const systemEntity: SystemEntity = systemEntityFactory.buildWithId();
-				const props: SystemProps = SystemDomainMapper.mapEntityToDomainObjectProperties(systemEntity);
+				const props: SystemProps = SystemEntityMapper.mapToDo(systemEntity);
 				const system: System = new System(props);
 
 				return {
@@ -252,12 +243,10 @@ describe(SystemRepo.name, () => {
 				};
 			};
 
-			it('should return false', async () => {
+			it('should not throw an error', async () => {
 				const { system } = setup();
 
-				const result = await repo.delete(system);
-
-				expect(result).toEqual(false);
+				await expect(repo.delete(system)).resolves.not.toThrow();
 			});
 		});
 	});
