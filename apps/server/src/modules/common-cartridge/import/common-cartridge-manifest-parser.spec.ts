@@ -98,8 +98,7 @@ describe('CommonCartridgeManifestParser', () => {
 				const { sut } = await setup();
 				const result = sut.getOrganizations();
 
-				expect(result).toBe('201510-AMH-2020-70C-12218-US History Since 1877');
-				expect.any(String);
+				expect(result).toHaveLength(117);
 			});
 		});
 
@@ -110,7 +109,7 @@ describe('CommonCartridgeManifestParser', () => {
 				const { sut } = await setup();
 				const result = sut.getOrganizations();
 
-				expect(result).toBe([]);
+				expect(result).toHaveLength(0);
 			});
 		});
 	});

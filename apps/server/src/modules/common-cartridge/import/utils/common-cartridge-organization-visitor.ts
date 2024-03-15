@@ -1,4 +1,4 @@
-import { UUID } from 'bson';
+import { randomUUID } from 'crypto';
 import { CommonCartridgeFileParserOptions, OrganizationProps } from '../common-cartridge-import.types';
 
 type SearchElement = { depth: number; path: string; element: Element };
@@ -74,7 +74,7 @@ export class CommonCartridgeOrganizationVisitor {
 	}
 
 	private getElementIdentifier(element: Element): string {
-		const identifier = element.getAttribute('identifier') ?? `i${UUID.generate().toString()}`;
+		const identifier = element.getAttribute('identifier') ?? `i${randomUUID()}`;
 
 		return identifier;
 	}

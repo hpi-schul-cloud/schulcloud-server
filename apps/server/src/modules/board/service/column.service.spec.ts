@@ -38,6 +38,10 @@ describe(ColumnService.name, () => {
 		await module.close();
 	});
 
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	describe('findById', () => {
 		describe('when finding a column', () => {
 			const setup = () => {
