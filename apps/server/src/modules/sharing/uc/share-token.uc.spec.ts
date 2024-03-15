@@ -306,6 +306,37 @@ describe('ShareTokenUC', () => {
 			});
 		});
 
+		describe('when parent is a columnboard', () => {
+			it('should throw if the feature is not enabled', async () => {
+				const { user } = setup();
+				Configuration.set('FEATURE_COLUMNBOARD_SHARE', false);
+
+				await expect(
+					uc.createShareToken(user.id, {
+						parentId: '123',
+						parentType: ShareTokenParentType.ColumnBoard,
+					})
+				).rejects.toThrowError();
+			});
+			it('should check permission for parent', async () => {
+				const { user } = setup();
+				const parent = columnBoardFactory.build();
+				await uc.createShareToken(user.id, {
+					parentId: parent.id,
+					parentType: ShareTokenParentType.ColumnBoard,
+				});
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
+					user.id,
+					AuthorizableReferenceType.BoardNode,
+					parent.id,
+					{
+						action: Action.write,
+						requiredPermissions: [],
+					}
+				);
+			});
+		});
+
 		describe('when restricted to same school', () => {
 			it('should check parent write permission', async () => {
 				const school = schoolEntityFactory.buildWithId();

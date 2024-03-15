@@ -213,5 +213,16 @@ describe('ShareTokenService', () => {
 				expect(result).toEqual({ shareToken, parentName: columnBoard.title });
 			});
 		});
+
+		it('should throw if parent type is not supported', async () => {
+			// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+			// @ts-ignore
+			const shareToken = shareTokenFactory.build({ payload: { parentType: 'invalid' } });
+			repo.findOneByToken.mockResolvedValue(shareToken);
+
+			const lookupToken = async () => service.lookupTokenWithParentName(shareToken.token);
+
+			await expect(lookupToken).rejects.toThrowError('Invalid parent type');
+		});
 	});
 });

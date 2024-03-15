@@ -33,7 +33,6 @@ export class ShareTokenUC {
 		private readonly courseService: CourseService,
 		private readonly taskCopyService: TaskCopyService,
 		private readonly columnBoardCopyService: ColumnBoardCopyService,
-
 		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(ShareTokenUC.name);
@@ -128,7 +127,7 @@ export class ShareTokenUC {
 				if (destinationCourseId === undefined) {
 					throw new BadRequestException('Destination course id is required to copy task');
 				}
-				result = await this.copyColumnBoard(userId, shareToken.payload.parentId, destinationCourseId, newName);
+				result = await this.copyColumnBoard(userId, shareToken.payload.parentId, destinationCourseId);
 				break;
 			default:
 				throw new NotImplementedException('Copy not implemented');
@@ -206,9 +205,6 @@ export class ShareTokenUC {
 				// TODO
 				requiredPermissions = [];
 				break;
-			default:
-				// TODO check if this is the right error
-				throw new InternalServerErrorException('Invalid parent type');
 		}
 
 		const authorizationContext = AuthorizationContextBuilder.write(requiredPermissions);
@@ -255,9 +251,6 @@ export class ShareTokenUC {
 				// TODO
 				requiredPermissions = [];
 				break;
-			default:
-				// TODO check if this is the right error
-				throw new InternalServerErrorException('Invalid parent type');
 		}
 		this.authorizationService.checkAllPermissions(user, requiredPermissions);
 	}
