@@ -99,7 +99,9 @@ describe('CommonCartridgeFileValidatorPipe', () => {
 
 		describe('when the file is valid', () => {
 			const setup = async () => {
-				const buffer = await readFile('./apps/server/test/assets/common-cartridge/us_history_since_1877.imscc');
+				const buffer = await readFile(
+					'./apps/server/src/modules/common-cartridge/testing/assets/us_history_since_1877.imscc'
+				);
 
 				configServiceMock.getOrThrow.mockReturnValue(1000);
 
