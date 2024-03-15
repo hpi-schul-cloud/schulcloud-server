@@ -1,24 +1,11 @@
 import { JSDOM } from 'jsdom';
-
-export type OrganizationProps = {
-	path: string;
-	identifier: string;
-	identifierRef?: string;
-	title: string;
-};
-
-export type ManifestParserOptions = {
-	maxOrganizationSearchDepth: number;
-	pathSeparator: string;
-};
+import { CommonCartridgeFileParserOptions, OrganizationProps } from './common-cartridge-import.types';
+import { CommonCartridgeOrganizationVisitor } from './utils/common-cartridge-organization-visitor';
 
 export class CommonCartridgeManifestParser {
 	private readonly doc: Document;
 
-	public constructor(
-		manifest: string,
-		private readonly options: ManifestParserOptions = { maxOrganizationSearchDepth: 3, pathSeparator: '/' }
-	) {
+	constructor(manifest: string, private readonly options: CommonCartridgeFileParserOptions) {
 		this.doc = new JSDOM(manifest, { contentType: 'text/xml' }).window.document;
 	}
 
@@ -41,44 +28,9 @@ export class CommonCartridgeManifestParser {
 	}
 
 	public getOrganizations(): OrganizationProps[] {
-		const orgs = new Array<OrganizationProps>();
-		const result = this.doc.querySelectorAll('manifest > organizations > organization > item > item');
+		const visitor = new CommonCartridgeOrganizationVisitor(this.doc, this.options);
+		const result = visitor.findAllOrganizations();
 
-		result.forEach((currentElement) => {
-			const currentTitle = currentElement.querySelector('title')?.textContent ?? 'NO_TITLE';
-
-			this.traverseElement(currentElement, this.options.maxOrganizationSearchDepth, 0, (childElement) => {
-				const childTitle = childElement.querySelector('title')?.textContent ?? 'NO_TITLE';
-				const identifier = childElement.getAttribute('identifier') ?? 'NO_IDENTIFIER';
-				const identifierRef = childElement.getAttribute('identifierref') ?? undefined;
-
-				orgs.push({
-					path:
-						currentTitle === childTitle ? currentTitle : `${currentTitle}${this.options.pathSeparator}${childTitle}`,
-					identifier,
-					identifierRef,
-					title: childTitle,
-				});
-			});
-		});
-
-		return orgs;
-	}
-
-	private traverseElement(
-		element: Element,
-		maxDepth: number,
-		currentDepth: number,
-		action: (element: Element) => void
-	): void {
-		if (currentDepth > maxDepth) {
-			return;
-		}
-
-		action(element);
-
-		element.querySelectorAll('item').forEach((child) => {
-			this.traverseElement(child, maxDepth, currentDepth + 1, action);
-		});
+		return result;
 	}
 }

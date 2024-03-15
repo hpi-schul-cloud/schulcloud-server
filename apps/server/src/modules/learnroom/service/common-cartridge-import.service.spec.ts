@@ -1,21 +1,44 @@
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userFactory } from '@shared/testing';
+import { ColumnBoardService, ColumnService } from '@src/modules/board';
 import { readFile } from 'fs/promises';
 import { CommonCartridgeImportService } from './common-cartridge-import.service';
+import { CourseService } from './course.service';
 
 describe('CommonCartridgeImportService', () => {
 	let orm: MikroORM;
 	let moduleRef: TestingModule;
 	let sut: CommonCartridgeImportService;
+	let courseServiceMock: DeepMocked<CourseService>;
+	let columnBoardServiceMock: DeepMocked<ColumnBoardService>;
+	let columnServiceMock: DeepMocked<ColumnService>;
 
 	beforeEach(async () => {
 		orm = await setupEntities();
 		moduleRef = await Test.createTestingModule({
-			providers: [CommonCartridgeImportService],
+			providers: [
+				CommonCartridgeImportService,
+				{
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
+				},
+				{
+					provide: ColumnBoardService,
+					useValue: createMock<ColumnBoardService>(),
+				},
+				{
+					provide: ColumnService,
+					useValue: createMock<ColumnService>(),
+				},
+			],
 		}).compile();
 
 		sut = moduleRef.get<CommonCartridgeImportService>(CommonCartridgeImportService);
+		courseServiceMock = moduleRef.get(CourseService);
+		columnBoardServiceMock = moduleRef.get(ColumnBoardService);
+		columnServiceMock = moduleRef.get(ColumnService);
 	});
 
 	afterAll(async () => {
@@ -23,11 +46,15 @@ describe('CommonCartridgeImportService', () => {
 		await orm.close();
 	});
 
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	it('should be defined', () => {
 		expect(sut).toBeDefined();
 	});
 
-	describe('createCourse', () => {
+	describe('importFile', () => {
 		describe('when the common cartridge is valid', () => {
 			const setup = async () => {
 				const user = userFactory.buildWithId();
@@ -36,29 +63,28 @@ describe('CommonCartridgeImportService', () => {
 				return { user, buffer };
 			};
 
-			it('should return course with name from the common cartridge file', async () => {
+			it('should create a course', async () => {
 				const { user, buffer } = await setup();
 
-				const result = sut.createCourse(user, buffer);
+				await sut.importFile(user, buffer);
 
-				expect(result.name).toBe('201510-AMH-2020-70C-12218-US History Since 1877');
+				expect(courseServiceMock.create).toHaveBeenCalledTimes(1);
 			});
 
-			it('should return course with teachers set', async () => {
+			it('should create a column board', async () => {
 				const { user, buffer } = await setup();
 
-				const result = sut.createCourse(user, buffer);
+				await sut.importFile(user, buffer);
 
-				expect(result.teachers).toHaveLength(1);
-				expect(result.teachers[0]).toStrictEqual(user);
+				expect(columnBoardServiceMock.create).toHaveBeenCalledTimes(1);
 			});
 
-			it('should return course with school set', async () => {
+			it('should create columns', async () => {
 				const { user, buffer } = await setup();
 
-				const result = sut.createCourse(user, buffer);
+				await sut.importFile(user, buffer);
 
-				expect(result.school).toStrictEqual(user.school);
+				expect(columnServiceMock.createMany).toHaveBeenCalledTimes(1);
 			});
 		});
 	});

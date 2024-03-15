@@ -1,18 +1,19 @@
 import AdmZip from 'adm-zip';
 import { readFile } from 'fs/promises';
+import { DEFAULT_FILE_PARSER_OPTIONS } from './common-cartridge-import.types';
 import { CommonCartridgeManifestParser } from './common-cartridge-manifest-parser';
 
 describe('CommonCartridgeManifestParser', () => {
 	const setupFile = async (loadFile: boolean) => {
 		if (!loadFile) {
-			const sut = new CommonCartridgeManifestParser('<manifest></manifest>');
+			const sut = new CommonCartridgeManifestParser('<manifest></manifest>', DEFAULT_FILE_PARSER_OPTIONS);
 
 			return { sut };
 		}
 
 		const buffer = await readFile('./apps/server/test/assets/common-cartridge/us_history_since_1877.imscc');
 		const archive = new AdmZip(buffer);
-		const sut = new CommonCartridgeManifestParser(archive.readAsText('imsmanifest.xml'));
+		const sut = new CommonCartridgeManifestParser(archive.readAsText('imsmanifest.xml'), DEFAULT_FILE_PARSER_OPTIONS);
 
 		return { sut };
 	};
@@ -98,6 +99,7 @@ describe('CommonCartridgeManifestParser', () => {
 				const result = sut.getOrganizations();
 
 				expect(result).toBe('201510-AMH-2020-70C-12218-US History Since 1877');
+				expect.any(String);
 			});
 		});
 

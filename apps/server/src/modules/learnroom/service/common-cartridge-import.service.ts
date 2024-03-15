@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject';
 import { Course, User } from '@shared/domain/entity';
-import { CardService, ColumnBoardService, ColumnService } from '@src/modules/board';
-import { CommonCartridgeFileParser } from '@src/modules/common-cartridge/import';
+import { ColumnBoardService, ColumnService } from '@src/modules/board';
+import { CommonCartridgeFileParser, DEFAULT_FILE_PARSER_OPTIONS } from '@src/modules/common-cartridge/import';
 import { CourseService } from './course.service';
 
 @Injectable()
@@ -10,12 +10,14 @@ export class CommonCartridgeImportService {
 	constructor(
 		private readonly courseService: CourseService,
 		private readonly columnBoardService: ColumnBoardService,
-		private readonly columnService: ColumnService,
-		private readonly cardService: CardService
+		private readonly columnService: ColumnService
 	) {}
 
-	public async createCourse(user: User, file: Buffer): Promise<void> {
-		const parser = new CommonCartridgeFileParser(file);
+	public async importFile(user: User, file: Buffer): Promise<void> {
+		const parser = new CommonCartridgeFileParser(file, {
+			maxSearchDepth: 1,
+			pathSeparator: DEFAULT_FILE_PARSER_OPTIONS.pathSeparator,
+		});
 		const course = new Course({ teachers: [user], school: user.school, name: parser.manifest.getTitle() });
 
 		await this.courseService.create(course);
@@ -31,27 +33,10 @@ export class CommonCartridgeImportService {
 			},
 			parser.manifest.getTitle()
 		);
-
-		for (const organization of organizations) {
-			if (organization.title === organization.path) {
-				// eslint-disable-next-line no-await-in-loop
-				const column = await this.columnService.create(columnBoard);
-
-				// eslint-disable-next-line no-await-in-loop
-				await this.columnService.updateTitle(column, organization.title);
-
-				const items = organizations.filter(
-					(org) => org.path.startsWith(organization.path) && org.path !== organization.path
-				);
-
-				for (const item of items) {
-					// eslint-disable-next-line no-await-in-loop
-					const card = await this.cardService.create(column);
-
-					// eslint-disable-next-line no-await-in-loop
-					await this.cardService.updateTitle(card, item.title);
-				}
-			}
-		}
+		const columnProps = organizations.map((organization) => {
+			return { title: organization.title };
+		});
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const columns = await this.columnService.createMany(columnBoard, columnProps);
 	}
 }
