@@ -10,7 +10,9 @@ describe('CommonCartridgeManifestParser', () => {
 			return { sut };
 		}
 
-		const buffer = await readFile('./apps/server/test/assets/common-cartridge/us_history_since_1877.imscc');
+		const buffer = await readFile(
+			'./apps/server/src/modules/common-cartridge/testing/assets/us_history_since_1877.imscc'
+		);
 		const archive = new AdmZip(buffer);
 		const sut = new CommonCartridgeManifestParser(archive.readAsText('imsmanifest.xml'));
 
