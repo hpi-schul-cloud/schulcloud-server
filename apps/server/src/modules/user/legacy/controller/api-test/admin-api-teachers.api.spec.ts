@@ -182,55 +182,6 @@ describe('Users Admin Teachers Controller (API)', () => {
 				expect(data[1]._id).toBe(teacherUser2._id.toString());
 			});
 		});
-
-		describe('when search params are too tight', () => {
-			const setup = () => {
-				currentUser = mapUserToCurrentUser(adminUser, adminAccount);
-				const query: UsersSearchQueryParams = {
-					$skip: 0,
-					$limit: 5,
-					$sort: { firstName: 1 },
-					classes: ['1A'],
-					consentStatus: { $in: ['ok'] },
-					createdAt: {
-						$gt: new Date('2024-02-08T23:00:00Z'),
-						$gte: new Date('2024-02-08T23:00:00Z'),
-						$lt: new Date('2024-02-08T23:00:00Z'),
-						$lte: new Date('2024-02-08T23:00:00Z'),
-					},
-					lastLoginSystemChange: {
-						$gt: new Date('2024-02-08T23:00:00Z'),
-						$gte: new Date('2024-02-08T23:00:00Z'),
-						$lt: new Date('2024-02-08T23:00:00Z'),
-						$lte: new Date('2024-02-08T23:00:00Z'),
-					},
-					outdatedSince: {
-						$gt: new Date('2024-02-08T23:00:00Z'),
-						$gte: new Date('2024-02-08T23:00:00Z'),
-						$lt: new Date('2024-02-08T23:00:00Z'),
-						$lte: new Date('2024-02-08T23:00:00Z'),
-					},
-				};
-
-				return {
-					query,
-				};
-			};
-
-			it('should return empty list', async () => {
-				const { query } = setup();
-				const response = await request(app.getHttpServer()) //
-					.get(`${basePath}`)
-					.query(query)
-					.send()
-					.expect(200);
-				const { data, total } = response.body as UserListResponse;
-
-				expect(total).toBe(0);
-				expect(data.length).toBe(0);
-			});
-		});
-
 		describe('when user has no right permission', () => {
 			const setup = () => {
 				currentUser = mapUserToCurrentUser(teacherUser1, teacherAccount1);

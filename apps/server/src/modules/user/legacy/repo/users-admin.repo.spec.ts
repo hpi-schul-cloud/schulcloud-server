@@ -295,4 +295,49 @@ describe('users admin repo', () => {
 			expect(userListResponse[0].total).toBe(2);
 		});
 	});
+
+	describe('when search params are too tight', () => {
+		const setup = () => {
+			const query: UsersSearchQueryParams = {
+				$skip: 0,
+				$limit: 5,
+				$sort: { firstName: 1 },
+				classes: ['1A'],
+				consentStatus: { $in: ['ok'] },
+				createdAt: {
+					$gt: new Date('2024-02-08T23:00:00Z'),
+					$gte: new Date('2024-02-08T23:00:00Z'),
+					$lt: new Date('2024-02-08T23:00:00Z'),
+					$lte: new Date('2024-02-08T23:00:00Z'),
+				},
+				lastLoginSystemChange: {
+					$gt: new Date('2024-02-08T23:00:00Z'),
+					$gte: new Date('2024-02-08T23:00:00Z'),
+					$lt: new Date('2024-02-08T23:00:00Z'),
+					$lte: new Date('2024-02-08T23:00:00Z'),
+				},
+				outdatedSince: {
+					$gt: new Date('2024-02-08T23:00:00Z'),
+					$gte: new Date('2024-02-08T23:00:00Z'),
+					$lt: new Date('2024-02-08T23:00:00Z'),
+					$lte: new Date('2024-02-08T23:00:00Z'),
+				},
+			};
+
+			return {
+				query,
+			};
+		};
+
+		it('should return empty list', async () => {
+			const { query } = setup();
+			const response = await repo.getUsersWithNestedData(studentRole.id, school.id, currentYear.id, query);
+
+			const userListResponse = response as UserListResponse[];
+			const data = userListResponse[0].data;
+
+			expect(data.length).toBe(0);
+			expect(userListResponse[0].total).toBe(0);
+		});
+	});
 });

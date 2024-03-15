@@ -212,7 +212,7 @@ describe('Search query helper', () => {
 				};
 			};
 
-			it('should fill date params', () => {
+			it('should not fill date params', () => {
 				const { queryParams, query } = setup();
 
 				SearchQueryHelper.setDateParametersIfExists(query, queryParams);
