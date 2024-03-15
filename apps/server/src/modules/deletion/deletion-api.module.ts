@@ -3,15 +3,15 @@ import { LoggerModule } from '@src/core/logger';
 import { CqrsModule } from '@nestjs/cqrs';
 import { AuthenticationModule } from '@modules/authentication';
 import { RocketChatUserModule } from '@modules/rocketchat-user';
-import { DeletionRequestsController } from './api/controller/deletion-requests.controller';
-import { DeletionExecutionsController } from './api/controller/deletion-executions.controller';
-import { DeletionRequestUc } from './api/uc';
+import { ClassModule } from '@modules/class';
+import { NewsModule } from '@modules/news';
+import { TeamsModule } from '@modules/teams';
+import { PseudonymModule } from '@modules/pseudonym';
+import { FilesModule } from '@modules/files';
 import { DeletionModule } from '.';
-import { ClassModule } from '../class';
-import { NewsModule } from '../news';
-import { TeamsModule } from '../teams';
-import { PseudonymModule } from '../pseudonym';
-import { FilesModule } from '../files';
+import { DeletionRequestUc } from './api/uc';
+import { DeletionExecutionsController } from './api/controller/deletion-executions.controller';
+import { DeletionRequestsController } from './api/controller/deletion-requests.controller';
 
 @Module({
 	imports: [
