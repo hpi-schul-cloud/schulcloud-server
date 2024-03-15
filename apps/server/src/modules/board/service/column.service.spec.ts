@@ -95,6 +95,44 @@ describe(ColumnService.name, () => {
 		});
 	});
 
+	describe('createMany', () => {
+		describe('when creating multiple columns', () => {
+			const setup = () => {
+				const board = columnBoardFactory.build();
+				const props = [{ title: 'title-1' }, { title: 'title-2' }];
+
+				return { board, props };
+			};
+
+			it('should save a list of columns using the repo in a batch', async () => {
+				const { board, props } = setup();
+
+				await service.createMany(board, props);
+
+				expect(boardDoRepo.save).toHaveBeenCalledTimes(1);
+				expect(boardDoRepo.save).toHaveBeenCalledWith(
+					[
+						expect.objectContaining({
+							id: expect.any(String),
+							title: 'title-1',
+							children: [],
+							createdAt: expect.any(Date),
+							updatedAt: expect.any(Date),
+						}),
+						expect.objectContaining({
+							id: expect.any(String),
+							title: 'title-2',
+							children: [],
+							createdAt: expect.any(Date),
+							updatedAt: expect.any(Date),
+						}),
+					],
+					board
+				);
+			});
+		});
+	});
+
 	describe('delete', () => {
 		describe('when deleting a column', () => {
 			it('should call the service', async () => {
