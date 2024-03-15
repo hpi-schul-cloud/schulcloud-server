@@ -157,10 +157,12 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#firstName" >firstName</a>
                             </li>
                             <li>
+                                    <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
@@ -248,6 +250,7 @@
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier"></span>
                             <span class="modifier">Optional</span>
                         <span ><b>firstName</b></span>
                         <a href="#firstName"><span class="icon ion-ios-link"></span></a>
@@ -265,13 +268,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsString()<br />@IsOptional()<br />@ApiProperty({description: &#x27;The new first name for the current user.&#x27;, required: false, nullable: true})<br />
+                            @IsString()<br />@IsOptional()<br />@SanitizeHtml()<br />@ApiProperty({description: &#x27;The new first name for the current user.&#x27;, required: false, nullable: true})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">apps/server/src/modules/account/controller/dto/patch-my-account.params.ts:42</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="43" class="link-to-prism">apps/server/src/modules/account/controller/dto/patch-my-account.params.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -284,6 +287,7 @@
                 <td class="col-md-4">
                     <a name="lastName"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
@@ -304,13 +308,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsString()<br />@IsOptional()<br />@ApiProperty({description: &#x27;The new last name for the current user.&#x27;, required: false, nullable: true})<br />
+                            @IsString()<br />@IsOptional()<br />@SanitizeHtml()<br />@ApiProperty({description: &#x27;The new last name for the current user.&#x27;, required: false, nullable: true})<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="51" class="link-to-prism">apps/server/src/modules/account/controller/dto/patch-my-account.params.ts:51</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="53" class="link-to-prism">apps/server/src/modules/account/controller/dto/patch-my-account.params.ts:53</a></div>
                         </td>
                     </tr>
 
@@ -408,7 +412,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
-import { PrivacyProtect } from &#x27;@shared/controller&#x27;;
+import { PrivacyProtect, SanitizeHtml } from &#x27;@shared/controller&#x27;;
 import { IsEmail, IsOptional, IsString, Matches } from &#x27;class-validator&#x27;;
 import { passwordPattern } from &#x27;./password-pattern&#x27;;
 
@@ -443,6 +447,7 @@ export class PatchMyAccountParams {
 
 	@IsString()
 	@IsOptional()
+	@SanitizeHtml()
 	@ApiProperty({
 		description: &#x27;The new first name for the current user.&#x27;,
 		required: false,
@@ -452,6 +457,7 @@ export class PatchMyAccountParams {
 
 	@IsString()
 	@IsOptional()
+	@SanitizeHtml()
 	@ApiProperty({
 		description: &#x27;The new last name for the current user.&#x27;,
 		required: false,
