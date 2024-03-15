@@ -154,6 +154,12 @@
                                         </a>
                                 </li>
                                 <li>
+                                        <a href="#FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED" 
+>
+                                            FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED
+                                        </a>
+                                </li>
+                                <li>
                                         <a href="#FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED" 
 >
                                             FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED
@@ -169,6 +175,12 @@
                                         <a href="#FEATURE_COPY_SERVICE_ENABLED" 
 >
                                             FEATURE_COPY_SERVICE_ENABLED
+                                        </a>
+                                </li>
+                                <li>
+                                        <a href="#GEOGEBRA_BASE_URL" 
+>
+                                            GEOGEBRA_BASE_URL
                                         </a>
                                 </li>
                             </ul>
@@ -197,6 +209,39 @@
                                 <tr>
                                     <td class="col-md-4">
                                         <code>FEATURE_COLUMN_BOARD_ENABLED:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED"></a>
+                                        <span class="name "><b>FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED</b>
+                                            <a href="#FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -314,12 +359,47 @@
 
                         </tbody>
                     </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="GEOGEBRA_BASE_URL"></a>
+                                        <span class="name "><b>GEOGEBRA_BASE_URL</b>
+                                            <a href="#GEOGEBRA_BASE_URL">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>GEOGEBRA_BASE_URL:         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                                        </td>
+                                    </tr>
+
+
+
+
+
+                        </tbody>
+                    </table>
             </section>
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export interface LearnroomConfig {
+	FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED: boolean;
+	GEOGEBRA_BASE_URL: string;
 	FEATURE_COLUMN_BOARD_ENABLED: boolean;
 	FEATURE_COPY_SERVICE_ENABLED: boolean;
 	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED: boolean;

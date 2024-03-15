@@ -86,7 +86,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content interface">
+               <div class="content class">
                    <div class="content-data">
 
 
@@ -100,12 +100,9 @@
 
 
 
-
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Interfaces</li>
-  <li class="breadcrumb-item"
-  >
-  CommonCartridgeElement</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >CommonCartridgeResourceFactoryV110</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -129,36 +126,44 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/learnroom/common-cartridge/common-cartridge-element.interface.ts</code>
+            <code>apps/server/src/modules/common-cartridge/export/resources/v1.1.0/common-cartridge-resource-factory.ts</code>
         </p>
 
 
 
 
-        <section data-compodoc="block-index">
-            <h3 id="index">Index</h3>
-            <table class="table table-sm table-bordered index-table">
-                <tbody>
-                    <tr>
-                        <td class="col-md-4">
-                            <h6><b>Methods</b></h6>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <ul class="index-list">
-                                <li>
-                                    <a href="#transform" 
->
-                                        transform
-                                    </a>
-                                </li>
-                            </ul>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Static</span>
+                                <a href="#createResource" >createResource</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+
 
             <section data-compodoc="block-methods">
     
@@ -169,24 +174,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="transform"></a>
+                    <a name="createResource"></a>
                     <span class="name">
-                        <span ><b>transform</b></span>
-                        <a href="#transform"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Static</span>
+                        <span ><b>createResource</b></span>
+                        <a href="#createResource"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>transform()</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createResource(props: <a href="../undefineds/CommonCartridgeResourcePropsV110.html" target="_self">CommonCartridgeResourcePropsV110</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="2"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-element.interface.ts:2</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="23"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/export/resources/v1.1.0/common-cartridge-resource-factory.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -194,26 +201,95 @@
             <tr>
                 <td class="col-md-4">
 
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>props</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#CommonCartridgeResourcePropsV110" target="_self" >CommonCartridgeResourcePropsV110</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Record&lt;string, &gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/CommonCartridgeResource.html" target="_self" >CommonCartridgeResource</a></code>
 
                         </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
     </table>
 </section>
 
+
+
+
+
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export interface CommonCartridgeElement {
-	transform(): Record&lt;string, unknown&gt;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CommonCartridgeResourceType } from &#x27;../../common-cartridge.enums&#x27;;
+import { CommonCartridgeResource } from &#x27;../../interfaces&#x27;;
+import { createResourceTypeNotSupportedError } from &#x27;../../utils&#x27;;
+import {
+	CommonCartridgeManifestResourcePropsV110,
+	CommonCartridgeManifestResourceV110,
+} from &#x27;./common-cartridge-manifest-resource&#x27;;
+import {
+	CommonCartridgeWebContentResourcePropsV110,
+	CommonCartridgeWebContentResourceV110,
+} from &#x27;./common-cartridge-web-content-resource&#x27;;
+import {
+	CommonCartridgeWebLinkResourcePropsV110,
+	CommonCartridgeWebLinkResourceV110,
+} from &#x27;./common-cartridge-web-link-resource&#x27;;
+
+type CommonCartridgeResourcePropsV110 &#x3D;
+	| CommonCartridgeManifestResourcePropsV110
+	| CommonCartridgeWebContentResourcePropsV110
+	| CommonCartridgeWebLinkResourcePropsV110;
+
+export class CommonCartridgeResourceFactoryV110 {
+	public static createResource(props: CommonCartridgeResourcePropsV110): CommonCartridgeResource {
+		const { type } &#x3D; props;
+
+		switch (type) {
+			case CommonCartridgeResourceType.MANIFEST:
+				return new CommonCartridgeManifestResourceV110(props);
+			case CommonCartridgeResourceType.WEB_CONTENT:
+				return new CommonCartridgeWebContentResourceV110(props);
+			case CommonCartridgeResourceType.WEB_LINK:
+				return new CommonCartridgeWebLinkResourceV110(props);
+			default:
+				throw createResourceTypeNotSupportedError(type);
+		}
+	}
 }
 </code></pre>
     </div>
 </div>
+
 
 
 
@@ -247,8 +323,8 @@
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
-            var COMPODOC_CURRENT_PAGE_URL = 'CommonCartridgeElement.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'CommonCartridgeResourceFactoryV110.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

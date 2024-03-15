@@ -102,7 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >CommonCartridgeOrganizationItemElement</li>
+  <li class="breadcrumb-item" >CommonCartridgeElementFactoryV110</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,18 +126,12 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/learnroom/common-cartridge/common-cartridge-organization-item-element.ts</code>
+            <code>apps/server/src/modules/common-cartridge/export/elements/v1.1.0/common-cartridge-element-factory.ts</code>
         </p>
 
 
 
 
-            <p class="comment">
-                <h3>Implements</h3>
-            </p>
-            <p class="comment">
-                            <code><a href="../interfaces/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement</a></code>
-            </p>
 
 
             <section data-compodoc="block-index">
@@ -154,7 +148,8 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#transform" >transform</a>
+                                    <span class="modifier">Static</span>
+                                <a href="#createElement" >createElement</a>
                             </li>
                         </ul>
                     </td>
@@ -168,54 +163,6 @@
     </table>
 </section>
 
-            <section data-compodoc="block-constructor">
-    <h3 id="constructor">Constructor</h3>
-        <table class="table table-sm table-bordered">
-            <tbody>
-                <tr>
-                    <td class="col-md-4">
-<code>constructor(props: <a href="../undefineds/ICommonCartridgeOrganizationProps.html" target="_self">ICommonCartridgeOrganizationProps</a>)</code>
-                    </td>
-                </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-organization-item-element.ts:12</a></div>
-                            </td>
-                        </tr>
-
-                <tr>
-                    <td class="col-md-4">
-                            <div>
-                                    <b>Parameters :</b>
-                                    <table class="params">
-                                        <thead>
-                                            <tr>
-                                                <td>Name</td>
-                                                    <td>Type</td>
-                                                <td>Optional</td>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                                <tr>
-                                                        <td>props</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../miscellaneous/typealiases.html#ICommonCartridgeOrganizationProps" target="_self" >ICommonCartridgeOrganizationProps</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                        </tbody>
-                                    </table>
-                            </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-</section>
 
 
             <section data-compodoc="block-methods">
@@ -227,24 +174,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="transform"></a>
+                    <a name="createElement"></a>
                     <span class="name">
-                        <span ><b>transform</b></span>
-                        <a href="#transform"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Static</span>
+                        <span ><b>createElement</b></span>
+                        <a href="#createElement"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>transform()</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createElement(props: <a href="../undefineds/CommonCartridgeElementPropsV110.html" target="_self">CommonCartridgeElementPropsV110</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="15"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-organization-item-element.ts:15</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="28"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/export/elements/v1.1.0/common-cartridge-element-factory.ts:28</a></div>
                         </td>
                     </tr>
 
@@ -252,10 +201,40 @@
             <tr>
                 <td class="col-md-4">
 
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>props</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#CommonCartridgeElementPropsV110" target="_self" >CommonCartridgeElementPropsV110</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Record&lt;string, &gt;</code>
+                            <b>Returns : </b>        <code><a href="../classes/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement</a></code>
 
                         </div>
+                            <div class="io-description">
+                                
+                            </div>
                 </td>
             </tr>
         </tbody>
@@ -270,36 +249,49 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CommonCartridgeElement } from &#x27;./common-cartridge-element.interface&#x27;;
-import { ICommonCartridgeResourceProps } from &#x27;./common-cartridge-resource-item-element&#x27;;
-import { createIdentifier } from &#x27;./utils&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CommonCartridgeElementType } from &#x27;../../common-cartridge.enums&#x27;;
+import { CommonCartridgeElement } from &#x27;../../interfaces&#x27;;
+import { createElementTypeNotSupportedError } from &#x27;../../utils&#x27;;
+import {
+	CommonCartridgeMetadataElementPropsV110,
+	CommonCartridgeMetadataElementV110,
+} from &#x27;./common-cartridge-metadata-element&#x27;;
+import {
+	CommonCartridgeOrganizationElementPropsV110,
+	CommonCartridgeOrganizationElementV110,
+} from &#x27;./common-cartridge-organization-element&#x27;;
+import {
+	CommonCartridgeOrganizationsWrapperElementPropsV110,
+	CommonCartridgeOrganizationsWrapperElementV110,
+} from &#x27;./common-cartridge-organizations-wrapper-element&#x27;;
+import {
+	CommonCartridgeResourcesWrapperElementPropsV110,
+	CommonCartridgeResourcesWrapperElementV110,
+} from &#x27;./common-cartridge-resources-wrapper-element&#x27;;
 
-export type ICommonCartridgeOrganizationProps &#x3D; {
-	identifier: string;
-	title: string;
-	version: string;
-	resources: ICommonCartridgeResourceProps[];
-};
+type CommonCartridgeElementPropsV110 &#x3D;
+	| CommonCartridgeMetadataElementPropsV110
+	| CommonCartridgeOrganizationElementPropsV110
+	| CommonCartridgeOrganizationsWrapperElementPropsV110
+	| CommonCartridgeResourcesWrapperElementPropsV110;
 
-export class CommonCartridgeOrganizationItemElement implements CommonCartridgeElement {
-	constructor(private readonly props: ICommonCartridgeOrganizationProps) {}
+export class CommonCartridgeElementFactoryV110 {
+	public static createElement(props: CommonCartridgeElementPropsV110): CommonCartridgeElement {
+		const { type } &#x3D; props;
 
-	transform(): Record&lt;string, unknown&gt; {
-		return {
-			$: {
-				identifier: this.props.identifier,
-			},
-			title: this.props.title,
-			item: this.props.resources.map((content) &#x3D;&gt; {
-				return {
-					$: {
-						identifier: createIdentifier(),
-						identifierref: content.identifier,
-					},
-					title: content.title,
-				};
-			}),
-		};
+		switch (type) {
+			// AI next 8 lines
+			case CommonCartridgeElementType.METADATA:
+				return new CommonCartridgeMetadataElementV110(props);
+			case CommonCartridgeElementType.ORGANIZATION:
+				return new CommonCartridgeOrganizationElementV110(props);
+			case CommonCartridgeElementType.ORGANIZATIONS_WRAPPER:
+				return new CommonCartridgeOrganizationsWrapperElementV110(props);
+			case CommonCartridgeElementType.RESOURCES_WRAPPER:
+				return new CommonCartridgeResourcesWrapperElementV110(props);
+			default:
+				throw createElementTypeNotSupportedError(type);
+		}
 	}
 }
 </code></pre>
@@ -340,7 +332,7 @@ export class CommonCartridgeOrganizationItemElement implements CommonCartridgeEl
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'CommonCartridgeOrganizationItemElement.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'CommonCartridgeElementFactoryV110.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

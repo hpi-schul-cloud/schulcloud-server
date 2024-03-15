@@ -217,8 +217,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="59"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:59</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="58"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:58</a></div>
                         </td>
                     </tr>
 
@@ -330,8 +330,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="46"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:46</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -494,7 +494,6 @@
 import {
 	Controller,
 	Get,
-	NotFoundException,
 	Param,
 	Post,
 	Query,
@@ -554,12 +553,13 @@ export class CourseController {
 		@Query() queryParams: CourseQueryParams,
 		@Res({ passthrough: true }) response: Response
 	): Promise&lt;StreamableFile&gt; {
-		if (!this.configService.get&lt;boolean&gt;(&#x27;FEATURE_IMSCC_COURSE_EXPORT_ENABLED&#x27;)) throw new NotFoundException();
 		const result &#x3D; await this.courseExportUc.exportCourse(urlParams.courseId, currentUser.userId, queryParams.version);
+
 		response.set({
 			&#x27;Content-Type&#x27;: &#x27;application/zip&#x27;,
 			&#x27;Content-Disposition&#x27;: &#x27;attachment;&#x27;,
 		});
+
 		return new StreamableFile(result);
 	}
 

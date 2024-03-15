@@ -102,7 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >CommonCartridgeWebLinkResourceElement</li>
+  <li class="breadcrumb-item" >CommonCartridgeOrganizationElementV110</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,19 +126,18 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/learnroom/common-cartridge/common-cartridge-web-link-resource.ts</code>
+            <code>apps/server/src/modules/common-cartridge/export/elements/v1.1.0/common-cartridge-organization-element.ts</code>
         </p>
 
 
 
+            <p class="comment">
+                <h3>Extends</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../classes/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement</a></code>
+            </p>
 
-            <p class="comment">
-                <h3>Implements</h3>
-            </p>
-            <p class="comment">
-                            <code><a href="../interfaces/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement</a></code>
-                            <code><a href="../interfaces/CommonCartridgeFile.html" target="_self" >CommonCartridgeFile</a></code>
-            </p>
 
 
             <section data-compodoc="block-index">
@@ -155,13 +154,16 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#canInline" >canInline</a>
+                                    <span class="modifier">Public</span>
+                                <a href="#getManifestXmlObject" >getManifestXmlObject</a>
                             </li>
                             <li>
-                                <a href="#content" >content</a>
+                                    <span class="modifier">Public</span>
+                                <a href="#getSupportedVersion" >getSupportedVersion</a>
                             </li>
                             <li>
-                                <a href="#transform" >transform</a>
+                                    <span class="modifier">Private</span>
+                                <a href="#checkVersion" >checkVersion</a>
                             </li>
                         </ul>
                     </td>
@@ -181,12 +183,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(props: <a href="../undefineds/ICommonCartridgeWebLinkResourceProps.html" target="_self">ICommonCartridgeWebLinkResourceProps</a>, xmlBuilder: <a href="../classes/Builder.html" target="_self">Builder</a>)</code>
+<code>constructor(props: <a href="../undefineds/CommonCartridgeOrganizationElementPropsV110.html" target="_self">CommonCartridgeOrganizationElementPropsV110</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-web-link-resource.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/common-cartridge/export/elements/v1.1.0/common-cartridge-organization-element.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -207,19 +209,7 @@
                                                         <td>props</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../miscellaneous/typealiases.html#ICommonCartridgeWebLinkResourceProps" target="_self" >ICommonCartridgeWebLinkResourceProps</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>xmlBuilder</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../classes/Builder.html" target="_self" >Builder</a></code>
+                                                                        <code><a href="../miscellaneous/typealiases.html#CommonCartridgeOrganizationElementPropsV110" target="_self" >CommonCartridgeOrganizationElementPropsV110</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -246,98 +236,32 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="canInline"></a>
+                    <a name="getManifestXmlObject"></a>
                     <span class="name">
-                        <span ><b>canInline</b></span>
-                        <a href="#canInline"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Public</span>
+                        <span ><b>getManifestXmlObject</b></span>
+                        <a href="#getManifestXmlObject"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>canInline()</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getManifestXmlObject()</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-web-link-resource.ts:18</a></div>
+                            <div class="io-line">Inherited from         <code><a href="../classes/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement</a></code>
+</div>
                         </td>
                     </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
-
-                        </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="content"></a>
-                    <span class="name">
-                        <span ><b>content</b></span>
-                        <a href="#content"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>content()</code>
-                </td>
-            </tr>
-
-
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-web-link-resource.ts:22</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                        </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="transform"></a>
-                    <span class="name">
-                        <span ><b>transform</b></span>
-                        <a href="#transform"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-<code>transform()</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="61"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-web-link-resource.ts:61</a></div>
+                                <div class="io-line">Defined in         <code><a href="../classes/CommonCartridgeElement.html#source" target="_self" >CommonCartridgeElement:22</a></code>
+</div>
                         </td>
                     </tr>
 
@@ -353,6 +277,126 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getSupportedVersion"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>getSupportedVersion</b></span>
+                        <a href="#getSupportedVersion"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getSupportedVersion()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Inherited from         <code><a href="../classes/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/CommonCartridgeElement.html#source" target="_self" >CommonCartridgeElement:18</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#CommonCartridgeVersion" target="_self" >CommonCartridgeVersion</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkVersion"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>checkVersion</b></span>
+                        <a href="#checkVersion"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkVersion(target: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Inherited from         <code><a href="../classes/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/CommonCartridgeElement.html#source" target="_self" >CommonCartridgeElement:38</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>target</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#CommonCartridgeVersion" target="_self" >CommonCartridgeVersion</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
 
@@ -363,77 +407,56 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Builder } from &#x27;xml2js&#x27;;
-import { CommonCartridgeElement } from &#x27;./common-cartridge-element.interface&#x27;;
-import { CommonCartridgeResourceType, CommonCartridgeVersion } from &#x27;./common-cartridge-enums&#x27;;
-import { CommonCartridgeFile } from &#x27;./common-cartridge-file.interface&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CommonCartridgeElementType, CommonCartridgeVersion } from &#x27;../../common-cartridge.enums&#x27;;
+import { CommonCartridgeElement, CommonCartridgeResource } from &#x27;../../interfaces&#x27;;
+import { createIdentifier } from &#x27;../../utils&#x27;;
 
-export type ICommonCartridgeWebLinkResourceProps &#x3D; {
-	type: CommonCartridgeResourceType.WEB_LINK_V1 | CommonCartridgeResourceType.WEB_LINK_V3;
+export type CommonCartridgeOrganizationElementPropsV110 &#x3D; {
+	type: CommonCartridgeElementType.ORGANIZATION;
 	version: CommonCartridgeVersion;
 	identifier: string;
-	href: string;
 	title: string;
-	url: string;
+	items: CommonCartridgeResource | Array&lt;CommonCartridgeElement | CommonCartridgeResource&gt;;
 };
 
-export class CommonCartridgeWebLinkResourceElement implements CommonCartridgeElement, CommonCartridgeFile {
-	constructor(private readonly props: ICommonCartridgeWebLinkResourceProps, private readonly xmlBuilder: Builder) {}
-
-	canInline(): boolean {
-		return false;
+export class CommonCartridgeOrganizationElementV110 extends CommonCartridgeElement {
+	constructor(protected readonly props: CommonCartridgeOrganizationElementPropsV110) {
+		super(props);
 	}
 
-	content(): string {
-		const commonTags &#x3D; {
-			title: this.props.title,
-			url: {
+	public getSupportedVersion(): CommonCartridgeVersion {
+		return CommonCartridgeVersion.V_1_1_0;
+	}
+
+	public getManifestXmlObject(): Record&lt;string, unknown&gt; {
+		if (this.props.items instanceof CommonCartridgeResource) {
+			return {
 				$: {
-					href: this.props.url,
-					target: &#x27;_self&#x27;,
-					windowFeatures: &#x27;width&#x3D;100, height&#x3D;100&#x27;,
+					identifier: this.identifier,
+					identifierref: this.props.items.identifier,
 				},
-			},
-		};
-		switch (this.props.version) {
-			case CommonCartridgeVersion.V_1_3_0:
-				return this.xmlBuilder.buildObject({
-					webLink: {
-						...commonTags,
-						$: {
-							xmlns: &#x27;http://www.imsglobal.org/xsd/imsccv1p3/imswl_v1p3&#x27;,
-							&#x27;xmlns:xsi&#x27;: &#x27;http://www.w3.org/2001/XMLSchema-instance&#x27;,
-							&#x27;xsi:schemaLocation&#x27;:
-								&#x27;http://www.imsglobal.org/xsd/imsccv1p3/imswl_v1p3 http://www.imsglobal.org/profile/cc/ccv1p3/ccv1p3_imswl_v1p3.xsd&#x27;,
-						},
-					},
-				});
-			default:
-				return this.xmlBuilder.buildObject({
-					webLink: {
-						...commonTags,
-						$: {
-							xmlns: &#x27;http://www.imsglobal.org/xsd/imsccv1p1/imswl_v1p1&#x27;,
-							&#x27;xmlns:xsi&#x27;: &#x27;http://www.w3.org/2001/XMLSchema-instance&#x27;,
-							&#x27;xsi:schemaLocation&#x27;:
-								&#x27;http://www.imsglobal.org/xsd/imsccv1p1/imswl_v1p1 https://www.imsglobal.org/sites/default/files/profile/cc/ccv1p1/ccv1p1_imswl_v1p1.xsd&#x27;,
-						},
-					},
-				});
+				title: this.title,
+			};
 		}
-	}
 
-	transform(): Record&lt;string, unknown&gt; {
 		return {
 			$: {
-				identifier: this.props.identifier,
-				type: this.props.type,
+				identifier: this.identifier,
 			},
-			file: {
-				$: {
-					href: this.props.href,
-				},
-			},
+			title: this.title,
+			item: this.props.items.map((item) &#x3D;&gt; {
+				if (item instanceof CommonCartridgeResource) {
+					return {
+						$: {
+							identifier: createIdentifier(),
+							identifierref: item.identifier,
+						},
+						title: item.title,
+					};
+				}
+
+				return item.getManifestXmlObject();
+			}),
 		};
 	}
 }
@@ -475,7 +498,7 @@ export class CommonCartridgeWebLinkResourceElement implements CommonCartridgeEle
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'CommonCartridgeWebLinkResourceElement.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'CommonCartridgeOrganizationElementV110.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

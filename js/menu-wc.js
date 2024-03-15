@@ -719,13 +719,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/ContextExternalToolModule.html" data-type="entity-link" >ContextExternalToolModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-ContextExternalToolModule-41126e48dc9093ee4ffb45063f00f4a19b64e12a5e88f889ae34b9eba0c569abb61c596f93368ab5456b96248d1dcaa2fe6c6a1c9840c3bfcfd34f50f011b4dd"' : 'data-bs-target="#xs-injectables-links-module-ContextExternalToolModule-41126e48dc9093ee4ffb45063f00f4a19b64e12a5e88f889ae34b9eba0c569abb61c596f93368ab5456b96248d1dcaa2fe6c6a1c9840c3bfcfd34f50f011b4dd"' }>
+                                        'data-bs-target="#injectables-links-module-ContextExternalToolModule-4cb706041c7557d24796c428c575d7f7ea8401c140f622d8ca4418bb85e06de4575c0599f8e52a89e036e0c4661055ec052933d96013fdaf1448f107b94877a1"' : 'data-bs-target="#xs-injectables-links-module-ContextExternalToolModule-4cb706041c7557d24796c428c575d7f7ea8401c140f622d8ca4418bb85e06de4575c0599f8e52a89e036e0c4661055ec052933d96013fdaf1448f107b94877a1"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ContextExternalToolModule-41126e48dc9093ee4ffb45063f00f4a19b64e12a5e88f889ae34b9eba0c569abb61c596f93368ab5456b96248d1dcaa2fe6c6a1c9840c3bfcfd34f50f011b4dd"' :
-                                        'id="xs-injectables-links-module-ContextExternalToolModule-41126e48dc9093ee4ffb45063f00f4a19b64e12a5e88f889ae34b9eba0c569abb61c596f93368ab5456b96248d1dcaa2fe6c6a1c9840c3bfcfd34f50f011b4dd"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-ContextExternalToolModule-4cb706041c7557d24796c428c575d7f7ea8401c140f622d8ca4418bb85e06de4575c0599f8e52a89e036e0c4661055ec052933d96013fdaf1448f107b94877a1"' :
+                                        'id="xs-injectables-links-module-ContextExternalToolModule-4cb706041c7557d24796c428c575d7f7ea8401c140f622d8ca4418bb85e06de4575c0599f8e52a89e036e0c4661055ec052933d96013fdaf1448f107b94877a1"' }>
                                         <li class="link">
                                             <a href="injectables/ContextExternalToolAuthorizableService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >ContextExternalToolAuthorizableService</a>
                                         </li>
@@ -1554,13 +1554,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/LearnroomModule.html" data-type="entity-link" >LearnroomModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-LearnroomModule-6328b092722f9ab3527c3f981780f5a9e45e330f9f9ecc6d371758902240c7cbc9333e7ec79277354ea0f5ababb3b647b6c4842fc1750a52a9e23766e1195472"' : 'data-bs-target="#xs-injectables-links-module-LearnroomModule-6328b092722f9ab3527c3f981780f5a9e45e330f9f9ecc6d371758902240c7cbc9333e7ec79277354ea0f5ababb3b647b6c4842fc1750a52a9e23766e1195472"' }>
+                                        'data-bs-target="#injectables-links-module-LearnroomModule-51ffdc38e58feb5174ad54303054685e8eb3af458a6ed748ce2688e2f8dc1abfb1f97456e209bc3ce5967e7808713b7b90747624a6d0594f3338b6ee46818d50"' : 'data-bs-target="#xs-injectables-links-module-LearnroomModule-51ffdc38e58feb5174ad54303054685e8eb3af458a6ed748ce2688e2f8dc1abfb1f97456e209bc3ce5967e7808713b7b90747624a6d0594f3338b6ee46818d50"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-LearnroomModule-6328b092722f9ab3527c3f981780f5a9e45e330f9f9ecc6d371758902240c7cbc9333e7ec79277354ea0f5ababb3b647b6c4842fc1750a52a9e23766e1195472"' :
-                                        'id="xs-injectables-links-module-LearnroomModule-6328b092722f9ab3527c3f981780f5a9e45e330f9f9ecc6d371758902240c7cbc9333e7ec79277354ea0f5ababb3b647b6c4842fc1750a52a9e23766e1195472"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-LearnroomModule-51ffdc38e58feb5174ad54303054685e8eb3af458a6ed748ce2688e2f8dc1abfb1f97456e209bc3ce5967e7808713b7b90747624a6d0594f3338b6ee46818d50"' :
+                                        'id="xs-injectables-links-module-LearnroomModule-51ffdc38e58feb5174ad54303054685e8eb3af458a6ed748ce2688e2f8dc1abfb1f97456e209bc3ce5967e7808713b7b90747624a6d0594f3338b6ee46818d50"' }>
                                         <li class="link">
                                             <a href="injectables/BoardCopyService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BoardCopyService</a>
                                         </li>
@@ -1575,6 +1575,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </li>
                                         <li class="link">
                                             <a href="injectables/CommonCartridgeImportService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >CommonCartridgeImportService</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/CommonCartridgeMapper.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >CommonCartridgeMapper</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/CourseCopyService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >CourseCopyService</a>
@@ -2382,13 +2385,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/SchoolExternalToolModule.html" data-type="entity-link" >SchoolExternalToolModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-SchoolExternalToolModule-be1eba272ff1dfd930e17776ceea3f7c0b8f896565be5bac31569213927699cc75e5d98ff8467ab9852b68231780c11f22525f5b9edd0d5346d58fcfe1e53032"' : 'data-bs-target="#xs-injectables-links-module-SchoolExternalToolModule-be1eba272ff1dfd930e17776ceea3f7c0b8f896565be5bac31569213927699cc75e5d98ff8467ab9852b68231780c11f22525f5b9edd0d5346d58fcfe1e53032"' }>
+                                        'data-bs-target="#injectables-links-module-SchoolExternalToolModule-48c66423b1125237176f5777d12a41a9d8c459f2a3d2dd0bb577a9cb2aab7d6e733593988afa895e8cd5021c4c52a755c6932ac6ea295801c2666ca8d48dd938"' : 'data-bs-target="#xs-injectables-links-module-SchoolExternalToolModule-48c66423b1125237176f5777d12a41a9d8c459f2a3d2dd0bb577a9cb2aab7d6e733593988afa895e8cd5021c4c52a755c6932ac6ea295801c2666ca8d48dd938"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-SchoolExternalToolModule-be1eba272ff1dfd930e17776ceea3f7c0b8f896565be5bac31569213927699cc75e5d98ff8467ab9852b68231780c11f22525f5b9edd0d5346d58fcfe1e53032"' :
-                                        'id="xs-injectables-links-module-SchoolExternalToolModule-be1eba272ff1dfd930e17776ceea3f7c0b8f896565be5bac31569213927699cc75e5d98ff8467ab9852b68231780c11f22525f5b9edd0d5346d58fcfe1e53032"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-SchoolExternalToolModule-48c66423b1125237176f5777d12a41a9d8c459f2a3d2dd0bb577a9cb2aab7d6e733593988afa895e8cd5021c4c52a755c6932ac6ea295801c2666ca8d48dd938"' :
+                                        'id="xs-injectables-links-module-SchoolExternalToolModule-48c66423b1125237176f5777d12a41a9d8c459f2a3d2dd0bb577a9cb2aab7d6e733593988afa895e8cd5021c4c52a755c6932ac6ea295801c2666ca8d48dd938"' }>
                                         <li class="link">
                                             <a href="injectables/SchoolExternalToolService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SchoolExternalToolService</a>
                                         </li>
@@ -3859,16 +3862,22 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ColumnUrlParams.html" data-type="entity-link" >ColumnUrlParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/CommonCartridgeElement.html" data-type="entity-link" >CommonCartridgeElement</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeElementFactory.html" data-type="entity-link" >CommonCartridgeElementFactory</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeElementFactoryV110.html" data-type="entity-link" >CommonCartridgeElementFactoryV110</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeElementFactoryV130.html" data-type="entity-link" >CommonCartridgeElementFactoryV130</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/CommonCartridgeFileBuilder.html" data-type="entity-link" >CommonCartridgeFileBuilder</a>
                             </li>
                             <li class="link">
                                 <a href="classes/CommonCartridgeFileParser.html" data-type="entity-link" >CommonCartridgeFileParser</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/CommonCartridgeLtiResource.html" data-type="entity-link" >CommonCartridgeLtiResource</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/CommonCartridgeManifestElement.html" data-type="entity-link" >CommonCartridgeManifestElement</a>
                             </li>
                             <li class="link">
                                 <a href="classes/CommonCartridgeManifestNotFoundException.html" data-type="entity-link" >CommonCartridgeManifestNotFoundException</a>
@@ -3877,28 +3886,61 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/CommonCartridgeManifestParser.html" data-type="entity-link" >CommonCartridgeManifestParser</a>
                             </li>
                             <li class="link">
-                                <a href="classes/CommonCartridgeMetadataElement.html" data-type="entity-link" >CommonCartridgeMetadataElement</a>
+                                <a href="classes/CommonCartridgeManifestResourceV110.html" data-type="entity-link" >CommonCartridgeManifestResourceV110</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeManifestResourceV130.html" data-type="entity-link" >CommonCartridgeManifestResourceV130</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeMetadataElementV110.html" data-type="entity-link" >CommonCartridgeMetadataElementV110</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeMetadataElementV130.html" data-type="entity-link" >CommonCartridgeMetadataElementV130</a>
                             </li>
                             <li class="link">
                                 <a href="classes/CommonCartridgeOrganizationBuilder.html" data-type="entity-link" >CommonCartridgeOrganizationBuilder</a>
                             </li>
                             <li class="link">
-                                <a href="classes/CommonCartridgeOrganizationItemElement.html" data-type="entity-link" >CommonCartridgeOrganizationItemElement</a>
+                                <a href="classes/CommonCartridgeOrganizationElementV110.html" data-type="entity-link" >CommonCartridgeOrganizationElementV110</a>
                             </li>
                             <li class="link">
-                                <a href="classes/CommonCartridgeOrganizationWrapperElement.html" data-type="entity-link" >CommonCartridgeOrganizationWrapperElement</a>
+                                <a href="classes/CommonCartridgeOrganizationElementV130.html" data-type="entity-link" >CommonCartridgeOrganizationElementV130</a>
                             </li>
                             <li class="link">
-                                <a href="classes/CommonCartridgeResourceItemElement.html" data-type="entity-link" >CommonCartridgeResourceItemElement</a>
+                                <a href="classes/CommonCartridgeOrganizationsWrapperElementV110.html" data-type="entity-link" >CommonCartridgeOrganizationsWrapperElementV110</a>
                             </li>
                             <li class="link">
-                                <a href="classes/CommonCartridgeResourceWrapperElement.html" data-type="entity-link" >CommonCartridgeResourceWrapperElement</a>
+                                <a href="classes/CommonCartridgeOrganizationsWrapperElementV130.html" data-type="entity-link" >CommonCartridgeOrganizationsWrapperElementV130</a>
                             </li>
                             <li class="link">
-                                <a href="classes/CommonCartridgeWebContentResource.html" data-type="entity-link" >CommonCartridgeWebContentResource</a>
+                                <a href="classes/CommonCartridgeResource.html" data-type="entity-link" >CommonCartridgeResource</a>
                             </li>
                             <li class="link">
-                                <a href="classes/CommonCartridgeWebLinkResourceElement.html" data-type="entity-link" >CommonCartridgeWebLinkResourceElement</a>
+                                <a href="classes/CommonCartridgeResourceFactory.html" data-type="entity-link" >CommonCartridgeResourceFactory</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeResourceFactoryV110.html" data-type="entity-link" >CommonCartridgeResourceFactoryV110</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeResourceFactoryV130.html" data-type="entity-link" >CommonCartridgeResourceFactoryV130</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeResourcesWrapperElementV110.html" data-type="entity-link" >CommonCartridgeResourcesWrapperElementV110</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeResourcesWrapperElementV130.html" data-type="entity-link" >CommonCartridgeResourcesWrapperElementV130</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeWebContentResourceV110.html" data-type="entity-link" >CommonCartridgeWebContentResourceV110</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeWebContentResourceV130.html" data-type="entity-link" >CommonCartridgeWebContentResourceV130</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeWebLinkResourceV110.html" data-type="entity-link" >CommonCartridgeWebLinkResourceV110</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/CommonCartridgeWebLinkResourceV130.html" data-type="entity-link" >CommonCartridgeWebLinkResourceV130</a>
                             </li>
                             <li class="link">
                                 <a href="classes/ConfigResponse.html" data-type="entity-link" >ConfigResponse</a>
@@ -7149,15 +7191,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/ColumnProps.html" data-type="entity-link" >ColumnProps</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/CommonCartridgeConfig.html" data-type="entity-link" >CommonCartridgeConfig</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/CommonCartridgeElement.html" data-type="entity-link" >CommonCartridgeElement</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/CommonCartridgeFile.html" data-type="entity-link" >CommonCartridgeFile</a>
-                            </li>
-                            <li class="link">
                                 <a href="interfaces/ComponentEtherpadProperties.html" data-type="entity-link" >ComponentEtherpadProperties</a>
                             </li>
                             <li class="link">
@@ -7441,12 +7474,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/IBbbSettings.html" data-type="entity-link" >IBbbSettings</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ICommonCartridgeFileBuilder.html" data-type="entity-link" >ICommonCartridgeFileBuilder</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/ICommonCartridgeOrganizationBuilder.html" data-type="entity-link" >ICommonCartridgeOrganizationBuilder</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/ICurrentUser.html" data-type="entity-link" >ICurrentUser</a>

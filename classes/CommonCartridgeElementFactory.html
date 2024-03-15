@@ -86,7 +86,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content interface">
+               <div class="content class">
                    <div class="content-data">
 
 
@@ -100,12 +100,9 @@
 
 
 
-
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Interfaces</li>
-  <li class="breadcrumb-item"
-  >
-  ICommonCartridgeOrganizationBuilder</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >CommonCartridgeElementFactory</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -129,36 +126,44 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts</code>
+            <code>apps/server/src/modules/common-cartridge/export/elements/common-cartridge-element-factory.ts</code>
         </p>
 
 
 
 
-        <section data-compodoc="block-index">
-            <h3 id="index">Index</h3>
-            <table class="table table-sm table-bordered index-table">
-                <tbody>
-                    <tr>
-                        <td class="col-md-4">
-                            <h6><b>Methods</b></h6>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="col-md-4">
-                            <ul class="index-list">
-                                <li>
-                                    <a href="#addResourceToOrganization" 
->
-                                        addResourceToOrganization
-                                    </a>
-                                </li>
-                            </ul>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </section>
+
+
+            <section data-compodoc="block-index">
+    <h3 id="index">Index</h3>
+    <table class="table table-sm table-bordered index-table">
+        <tbody>
+
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Methods</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Static</span>
+                                <a href="#createElement" >createElement</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
+
+
+
+
+
+        </tbody>
+    </table>
+</section>
+
+
 
             <section data-compodoc="block-methods">
     
@@ -169,24 +174,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="addResourceToOrganization"></a>
+                    <a name="createElement"></a>
                     <span class="name">
-                        <span ><b>addResourceToOrganization</b></span>
-                        <a href="#addResourceToOrganization"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Static</span>
+                        <span ><b>createElement</b></span>
+                        <a href="#createElement"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>addResourceToOrganization(props: <a href="../undefineds/ICommonCartridgeResourceProps.html" target="_self">ICommonCartridgeResourceProps</a>)</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createElement(props: <a href="../undefineds/CommonCartridgeElementPropsInternal.html" target="_self">CommonCartridgeElementPropsInternal</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="24"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-file-builder.ts:24</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/export/elements/common-cartridge-element-factory.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -209,7 +216,7 @@
                                         <tr>
                                                 <td>props</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#ICommonCartridgeResourceProps" target="_self" >ICommonCartridgeResourceProps</a></code>
+                                                            <code><a href="../miscellaneous/typealiases.html#CommonCartridgeElementPropsInternal" target="_self" >CommonCartridgeElementPropsInternal</a></code>
                                             </td>
 
                                             <td>
@@ -222,7 +229,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/ICommonCartridgeOrganizationBuilder.html" target="_self" >ICommonCartridgeOrganizationBuilder</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement</a></code>
 
                         </div>
                             <div class="io-description">
@@ -234,122 +241,70 @@
     </table>
 </section>
 
+
+
+
+
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import AdmZip from &#x27;adm-zip&#x27;;
-import { Builder } from &#x27;xml2js&#x27;;
-import { CommonCartridgeElement } from &#x27;./common-cartridge-element.interface&#x27;;
-import { CommonCartridgeVersion } from &#x27;./common-cartridge-enums&#x27;;
-import { CommonCartridgeManifestElement } from &#x27;./common-cartridge-manifest-element&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CommonCartridgeVersion } from &#x27;../common-cartridge.enums&#x27;;
+import { CommonCartridgeElement } from &#x27;../interfaces&#x27;;
+import { OmitVersionAndFolder, createVersionNotSupportedError } from &#x27;../utils&#x27;;
 import {
-	CommonCartridgeOrganizationItemElement,
-	ICommonCartridgeOrganizationProps,
-} from &#x27;./common-cartridge-organization-item-element&#x27;;
+	CommonCartridgeElementFactoryV110,
+	CommonCartridgeMetadataElementPropsV110,
+	CommonCartridgeOrganizationElementPropsV110,
+	CommonCartridgeOrganizationsWrapperElementPropsV110,
+	CommonCartridgeResourcesWrapperElementPropsV110,
+} from &#x27;./v1.1.0&#x27;;
 import {
-	CommonCartridgeResourceItemElement,
-	ICommonCartridgeResourceProps,
-} from &#x27;./common-cartridge-resource-item-element&#x27;;
+	CommonCartridgeElementFactoryV130,
+	CommonCartridgeMetadataElementPropsV130,
+	CommonCartridgeOrganizationElementPropsV130,
+	CommonCartridgeOrganizationsWrapperElementPropsV130,
+	CommonCartridgeResourcesWrapperElementPropsV130,
+} from &#x27;./v1.3.0&#x27;;
 
-export type CommonCartridgeFileBuilderOptions &#x3D; {
-	identifier: string;
-	title: string;
-	copyrightOwners: string;
-	creationYear: string;
-	version: CommonCartridgeVersion;
-};
+export type CommonCartridgeElementProps &#x3D;
+	| OmitVersionAndFolder&lt;CommonCartridgeMetadataElementPropsV110&gt;
+	| OmitVersionAndFolder&lt;CommonCartridgeOrganizationElementPropsV110&gt;
+	| OmitVersionAndFolder&lt;CommonCartridgeOrganizationsWrapperElementPropsV110&gt;
+	| OmitVersionAndFolder&lt;CommonCartridgeResourcesWrapperElementPropsV110&gt;
+	| OmitVersionAndFolder&lt;CommonCartridgeMetadataElementPropsV130&gt;
+	| OmitVersionAndFolder&lt;CommonCartridgeOrganizationElementPropsV130&gt;
+	| OmitVersionAndFolder&lt;CommonCartridgeOrganizationsWrapperElementPropsV130&gt;
+	| OmitVersionAndFolder&lt;CommonCartridgeResourcesWrapperElementPropsV130&gt;;
 
-export interface ICommonCartridgeOrganizationBuilder {
-	addResourceToOrganization(props: ICommonCartridgeResourceProps): ICommonCartridgeOrganizationBuilder;
-}
+type CommonCartridgeElementPropsInternal &#x3D;
+	| CommonCartridgeMetadataElementPropsV110
+	| CommonCartridgeOrganizationElementPropsV110
+	| CommonCartridgeOrganizationsWrapperElementPropsV110
+	| CommonCartridgeResourcesWrapperElementPropsV110
+	| CommonCartridgeMetadataElementPropsV130
+	| CommonCartridgeOrganizationElementPropsV130
+	| CommonCartridgeOrganizationsWrapperElementPropsV130
+	| CommonCartridgeResourcesWrapperElementPropsV130;
 
-export interface ICommonCartridgeFileBuilder {
-	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder;
+export class CommonCartridgeElementFactory {
+	public static createElement(props: CommonCartridgeElementPropsInternal): CommonCartridgeElement {
+		const { version } &#x3D; props;
 
-	addResourceToFile(props: ICommonCartridgeResourceProps): ICommonCartridgeFileBuilder;
-
-	build(): Promise&lt;Buffer&gt;;
-}
-
-class CommonCartridgeOrganizationBuilder implements ICommonCartridgeOrganizationBuilder {
-	constructor(
-		private readonly props: ICommonCartridgeOrganizationProps,
-		private readonly xmlBuilder: Builder,
-		private readonly zipBuilder: AdmZip
-	) {}
-
-	get organization(): CommonCartridgeElement {
-		return new CommonCartridgeOrganizationItemElement(this.props);
-	}
-
-	get resources(): CommonCartridgeElement[] {
-		return this.props.resources.map(
-			(resourceProps) &#x3D;&gt; new CommonCartridgeResourceItemElement(resourceProps, this.xmlBuilder)
-		);
-	}
-
-	addResourceToOrganization(props: ICommonCartridgeResourceProps): ICommonCartridgeOrganizationBuilder {
-		const newResource &#x3D; new CommonCartridgeResourceItemElement(props, this.xmlBuilder);
-		this.props.resources.push(props);
-		if (!newResource.canInline()) {
-			this.zipBuilder.addFile(props.href, Buffer.from(newResource.content()));
+		switch (version) {
+			case CommonCartridgeVersion.V_1_1_0:
+				return CommonCartridgeElementFactoryV110.createElement(props);
+			case CommonCartridgeVersion.V_1_3_0:
+				return CommonCartridgeElementFactoryV130.createElement(props);
+			default:
+				throw createVersionNotSupportedError(version);
 		}
-		return this;
-	}
-}
-
-export class CommonCartridgeFileBuilder implements ICommonCartridgeFileBuilder {
-	private readonly xmlBuilder &#x3D; new Builder();
-
-	private readonly zipBuilder &#x3D; new AdmZip();
-
-	private readonly organizations &#x3D; new Array&lt;CommonCartridgeOrganizationBuilder&gt;();
-
-	private readonly resources &#x3D; new Array&lt;CommonCartridgeResourceItemElement&gt;();
-
-	constructor(private readonly options: CommonCartridgeFileBuilderOptions) {}
-
-	addOrganization(props: ICommonCartridgeOrganizationProps): ICommonCartridgeOrganizationBuilder {
-		const organizationBuilder &#x3D; new CommonCartridgeOrganizationBuilder(props, this.xmlBuilder, this.zipBuilder);
-		this.organizations.push(organizationBuilder);
-		return organizationBuilder;
-	}
-
-	addResourceToFile(props: ICommonCartridgeResourceProps): ICommonCartridgeFileBuilder {
-		const resource &#x3D; new CommonCartridgeResourceItemElement(props, this.xmlBuilder);
-		if (!resource.canInline()) {
-			this.zipBuilder.addFile(props.href, Buffer.from(resource.content()));
-		}
-		this.resources.push(resource);
-		return this;
-	}
-
-	async build(): Promise&lt;Buffer&gt; {
-		const organizations &#x3D; this.organizations.map((organization) &#x3D;&gt; organization.organization);
-		const resources &#x3D; this.organizations.flatMap((organization) &#x3D;&gt; organization.resources).concat(this.resources);
-		const manifest &#x3D; this.xmlBuilder.buildObject(
-			new CommonCartridgeManifestElement(
-				{
-					identifier: this.options.identifier,
-				},
-				{
-					title: this.options.title,
-					copyrightOwners: this.options.copyrightOwners,
-					creationYear: this.options.creationYear,
-					version: this.options.version,
-				},
-				organizations,
-				resources
-			).transform()
-		);
-		this.zipBuilder.addFile(&#x27;imsmanifest.xml&#x27;, Buffer.from(manifest));
-		return this.zipBuilder.toBufferPromise();
 	}
 }
 </code></pre>
     </div>
 </div>
+
 
 
 
@@ -383,8 +338,8 @@ export class CommonCartridgeFileBuilder implements ICommonCartridgeFileBuilder {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'interface';
-            var COMPODOC_CURRENT_PAGE_URL = 'ICommonCartridgeOrganizationBuilder.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'CommonCartridgeElementFactory.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

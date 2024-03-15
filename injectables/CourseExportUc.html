@@ -143,6 +143,10 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#checkFeatureEnabled" >checkFeatureEnabled</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#exportCourse" >exportCourse</a>
                             </li>
@@ -164,12 +168,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(courseExportService: <a href="../injectables/CommonCartridgeExportService.html" target="_self">CommonCartridgeExportService</a>, authorizationService: <a href="../injectables/AuthorizationReferenceService.html" target="_self">AuthorizationReferenceService</a>)</code>
+<code>constructor(configService: ConfigService<LearnroomConfig | >, courseExportService: <a href="../injectables/CommonCartridgeExportService.html" target="_self">CommonCartridgeExportService</a>, authorizationService: <a href="../injectables/AuthorizationReferenceService.html" target="_self">AuthorizationReferenceService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -186,6 +190,18 @@
                                             </tr>
                                         </thead>
                                         <tbody>
+                                                <tr>
+                                                        <td>configService</td>
+                                                  
+                                                        <td>
+                                                                    <code>ConfigService&lt;LearnroomConfig | &gt;</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                                 <tr>
                                                         <td>courseExportService</td>
                                                   
@@ -228,6 +244,45 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="checkFeatureEnabled"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>checkFeatureEnabled</b></span>
+                        <a href="#checkFeatureEnabled"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkFeatureEnabled()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:32</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="exportCourse"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -246,8 +301,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="19"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -325,20 +380,24 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContextBuilder } from &#x27;@modules/authorization&#x27;;
 import { AuthorizableReferenceType, AuthorizationReferenceService } from &#x27;@modules/authorization/domain&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { CommonCartridgeVersion } from &#x27;@modules/common-cartridge&#x27;;
+import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
+import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { Permission } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { CommonCartridgeVersion } from &#x27;../common-cartridge&#x27;;
+import { LearnroomConfig } from &#x27;../learnroom.config&#x27;;
 import { CommonCartridgeExportService } from &#x27;../service/common-cartridge-export.service&#x27;;
 
 @Injectable()
 export class CourseExportUc {
 	constructor(
+		private readonly configService: ConfigService&lt;LearnroomConfig, true&gt;,
 		private readonly courseExportService: CommonCartridgeExportService,
 		private readonly authorizationService: AuthorizationReferenceService
 	) {}
 
 	async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise&lt;Buffer&gt; {
+		this.checkFeatureEnabled();
 		const context &#x3D; AuthorizationContextBuilder.read([Permission.COURSE_EDIT]);
 		await this.authorizationService.checkPermissionByReferences(
 			userId,
@@ -348,6 +407,12 @@ export class CourseExportUc {
 		);
 
 		return this.courseExportService.exportCourse(courseId, userId, version);
+	}
+
+	private checkFeatureEnabled(): void {
+		if (!this.configService.get&lt;boolean&gt;(&#x27;FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED&#x27;)) {
+			throw new NotFoundException();
+		}
 	}
 }
 </code></pre>

@@ -102,7 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >CommonCartridgeManifestElement</li>
+  <li class="breadcrumb-item" >CommonCartridgeOrganizationElementV130</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,18 +126,18 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/learnroom/common-cartridge/common-cartridge-manifest-element.ts</code>
+            <code>apps/server/src/modules/common-cartridge/export/elements/v1.3.0/common-cartridge-organization-element.ts</code>
         </p>
 
 
 
+            <p class="comment">
+                <h3>Extends</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../classes/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement</a></code>
+            </p>
 
-            <p class="comment">
-                <h3>Implements</h3>
-            </p>
-            <p class="comment">
-                            <code><a href="../interfaces/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement</a></code>
-            </p>
 
 
             <section data-compodoc="block-index">
@@ -154,7 +154,16 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                <a href="#transform" >transform</a>
+                                    <span class="modifier">Public</span>
+                                <a href="#getManifestXmlObject" >getManifestXmlObject</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                <a href="#getSupportedVersion" >getSupportedVersion</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#checkVersion" >checkVersion</a>
                             </li>
                         </ul>
                     </td>
@@ -174,12 +183,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(props: <a href="../undefineds/ICommonCartridgeManifestProps.html" target="_self">ICommonCartridgeManifestProps</a>, metadataProps: <a href="../undefineds/ICommonCartridgeMetadataProps.html" target="_self">ICommonCartridgeMetadataProps</a>, organizations: <a href="../interfaces/CommonCartridgeElement.html" target="_self">CommonCartridgeElement[]</a>, resources: <a href="../interfaces/CommonCartridgeElement.html" target="_self">CommonCartridgeElement[]</a>)</code>
+<code>constructor(props: <a href="../undefineds/CommonCartridgeOrganizationElementPropsV130.html" target="_self">CommonCartridgeOrganizationElementPropsV130</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-manifest-element.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/common-cartridge/export/elements/v1.3.0/common-cartridge-organization-element.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -200,43 +209,7 @@
                                                         <td>props</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../miscellaneous/typealiases.html#ICommonCartridgeManifestProps" target="_self" >ICommonCartridgeManifestProps</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>metadataProps</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../miscellaneous/typealiases.html#ICommonCartridgeMetadataProps" target="_self" >ICommonCartridgeMetadataProps</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>organizations</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../interfaces/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement[]</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>resources</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../interfaces/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement[]</a></code>
+                                                                        <code><a href="../miscellaneous/typealiases.html#CommonCartridgeOrganizationElementPropsV130" target="_self" >CommonCartridgeOrganizationElementPropsV130</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -263,24 +236,32 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="transform"></a>
+                    <a name="getManifestXmlObject"></a>
                     <span class="name">
-                        <span ><b>transform</b></span>
-                        <a href="#transform"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Public</span>
+                        <span ><b>getManifestXmlObject</b></span>
+                        <a href="#getManifestXmlObject"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>transform()</code>
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getManifestXmlObject()</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/common-cartridge/common-cartridge-manifest-element.ts:19</a></div>
+                            <div class="io-line">Inherited from         <code><a href="../classes/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/CommonCartridgeElement.html#source" target="_self" >CommonCartridgeElement:22</a></code>
+</div>
                         </td>
                     </tr>
 
@@ -296,6 +277,126 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getSupportedVersion"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>getSupportedVersion</b></span>
+                        <a href="#getSupportedVersion"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getSupportedVersion()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Inherited from         <code><a href="../classes/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/CommonCartridgeElement.html#source" target="_self" >CommonCartridgeElement:18</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/enumerations.html#CommonCartridgeVersion" target="_self" >CommonCartridgeVersion</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkVersion"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>checkVersion</b></span>
+                        <a href="#checkVersion"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkVersion(target: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Inherited from         <code><a href="../classes/CommonCartridgeElement.html" target="_self" >CommonCartridgeElement</a></code>
+</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in         <code><a href="../classes/CommonCartridgeElement.html#source" target="_self" >CommonCartridgeElement:38</a></code>
+</div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>target</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#CommonCartridgeVersion" target="_self" >CommonCartridgeVersion</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
 
@@ -306,68 +407,57 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CommonCartridgeElement } from &#x27;./common-cartridge-element.interface&#x27;;
-import { CommonCartridgeVersion } from &#x27;./common-cartridge-enums&#x27;;
-import { CommonCartridgeMetadataElement, ICommonCartridgeMetadataProps } from &#x27;./common-cartridge-metadata-element&#x27;;
-import { CommonCartridgeOrganizationWrapperElement } from &#x27;./common-cartridge-organization-wrapper-element&#x27;;
-import { CommonCartridgeResourceWrapperElement } from &#x27;./common-cartridge-resource-wrapper-element&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CommonCartridgeElementType, CommonCartridgeVersion } from &#x27;../../common-cartridge.enums&#x27;;
+import { CommonCartridgeElement, CommonCartridgeResource } from &#x27;../../interfaces&#x27;;
+import { createIdentifier } from &#x27;../../utils&#x27;;
 
-export type ICommonCartridgeManifestProps &#x3D; {
+export type CommonCartridgeOrganizationElementPropsV130 &#x3D; {
+	type: CommonCartridgeElementType.ORGANIZATION;
+	version: CommonCartridgeVersion;
 	identifier: string;
+	title: string;
+	items: CommonCartridgeResource | Array&lt;CommonCartridgeElement | CommonCartridgeResource&gt;;
 };
 
-export class CommonCartridgeManifestElement implements CommonCartridgeElement {
-	constructor(
-		private readonly props: ICommonCartridgeManifestProps,
-		private readonly metadataProps: ICommonCartridgeMetadataProps,
-		private readonly organizations: CommonCartridgeElement[],
-		private readonly resources: CommonCartridgeElement[]
-	) {}
+export class CommonCartridgeOrganizationElementV130 extends CommonCartridgeElement {
+	constructor(private readonly props: CommonCartridgeOrganizationElementPropsV130) {
+		super(props);
+	}
 
-	transform(): Record&lt;string, unknown&gt; {
-		const versionNumber &#x3D; this.metadataProps.version;
-		switch (versionNumber) {
-			case CommonCartridgeVersion.V_1_3_0:
-				return {
-					manifest: {
-						$: {
-							identifier: this.props.identifier,
-							xmlns: &#x27;http://www.imsglobal.org/xsd/imsccv1p3/imscp_v1p1&#x27;,
-							&#x27;xmlns:mnf&#x27;: &#x27;http://ltsc.ieee.org/xsd/imsccv1p3/LOM/manifest&#x27;,
-							&#x27;xmlns:res&#x27;: &#x27;http://ltsc.ieee.org/xsd/imsccv1p3/LOM/resource&#x27;,
-							&#x27;xmlns:ext&#x27;: &#x27;http://www.imsglobal.org/xsd/imsccv1p3/imscp_extensionv1p2&#x27;,
-							&#x27;xmlns:xsi&#x27;: &#x27;http://www.w3.org/2001/XMLSchema-instance&#x27;,
-							&#x27;xsi:schemaLocation&#x27;:
-								&#x27;http://ltsc.ieee.org/xsd/imsccv1p3/LOM/resource http://www.imsglobal.org/profile/cc/ccv1p3/LOM/ccv1p3_lomresource_v1p0.xsd &#x27; +
-								&#x27;http://www.imsglobal.org/xsd/imsccv1p3/imscp_v1p1 http://www.imsglobal.org/profile/cc/ccv1p3/ccv1p3_imscp_v1p2_v1p0.xsd &#x27; +
-								&#x27;http://ltsc.ieee.org/xsd/imsccv1p3/LOM/manifest http://www.imsglobal.org/profile/cc/ccv1p3/LOM/ccv1p3_lommanifest_v1p0.xsd &#x27; +
-								&#x27;http://www.imsglobal.org/xsd/imsccv1p3/imscp_extensionv1p2 http://www.imsglobal.org/profile/cc/ccv1p3/ccv1p3_cpextensionv1p2_v1p0.xsd&#x27;,
-						},
-						metadata: new CommonCartridgeMetadataElement(this.metadataProps).transform(),
-						organizations: new CommonCartridgeOrganizationWrapperElement(this.organizations).transform(),
-						resources: new CommonCartridgeResourceWrapperElement(this.resources).transform(),
-					},
-				};
-			default:
-				return {
-					manifest: {
-						$: {
-							identifier: this.props.identifier,
-							xmlns: &#x27;http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1&#x27;,
-							&#x27;xmlns:mnf&#x27;: &#x27;http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest&#x27;,
-							&#x27;xmlns:res&#x27;: &#x27;http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource&#x27;,
-							&#x27;xmlns:xsi&#x27;: &#x27;http://www.w3.org/2001/XMLSchema-instance&#x27;,
-							&#x27;xsi:schemaLocation&#x27;:
-								&#x27;http://ltsc.ieee.org/xsd/imsccv1p1/LOM/resource http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lomresource_v1p0.xsd &#x27; +
-								&#x27;http://www.imsglobal.org/xsd/imsccv1p1/imscp_v1p1 http://www.imsglobal.org/profile/cc/ccv1p1/ccv1p1_imscp_v1p2_v1p0.xsd &#x27; +
-								&#x27;http://ltsc.ieee.org/xsd/imsccv1p1/LOM/manifest http://www.imsglobal.org/profile/cc/ccv1p1/LOM/ccv1p1_lommanifest_v1p0.xsd &#x27;,
-						},
-						metadata: new CommonCartridgeMetadataElement(this.metadataProps).transform(),
-						organizations: new CommonCartridgeOrganizationWrapperElement(this.organizations).transform(),
-						resources: new CommonCartridgeResourceWrapperElement(this.resources).transform(),
-					},
-				};
+	public getSupportedVersion(): CommonCartridgeVersion {
+		return CommonCartridgeVersion.V_1_3_0;
+	}
+
+	public getManifestXmlObject(): Record&lt;string, unknown&gt; {
+		if (this.props.items instanceof CommonCartridgeResource) {
+			return {
+				$: {
+					identifier: this.identifier,
+					identifierref: this.props.items.identifier,
+				},
+				title: this.title,
+			};
 		}
+
+		return {
+			$: {
+				identifier: this.identifier,
+			},
+			title: this.title,
+			item: this.props.items.map((item) &#x3D;&gt; {
+				if (item instanceof CommonCartridgeResource) {
+					return {
+						$: {
+							identifier: createIdentifier(),
+							identifierref: item.identifier,
+						},
+						title: item.title,
+					};
+				}
+
+				return item.getManifestXmlObject();
+			}),
+		};
 	}
 }
 </code></pre>
@@ -408,7 +498,7 @@ export class CommonCartridgeManifestElement implements CommonCartridgeElement {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'CommonCartridgeManifestElement.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'CommonCartridgeOrganizationElementV130.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

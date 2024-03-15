@@ -158,13 +158,16 @@
                             <a href="#ClassSortBy" title="apps/server/src/modules/group/controller/dto/interface/class-sort-by.enum.ts" ><b>ClassSortBy</b>&nbsp;&nbsp;&nbsp;(apps/.../class-sort-by.enum.ts)</a>
                         </li>
                         <li>
-                            <a href="#CommonCartridgeIntendedUseType" title="apps/server/src/modules/learnroom/common-cartridge/common-cartridge-enums.ts" ><b>CommonCartridgeIntendedUseType</b>&nbsp;&nbsp;&nbsp;(apps/.../common-cartridge-enums.ts)</a>
+                            <a href="#CommonCartridgeElementType" title="apps/server/src/modules/common-cartridge/export/common-cartridge.enums.ts" ><b>CommonCartridgeElementType</b>&nbsp;&nbsp;&nbsp;(apps/.../common-cartridge.enums.ts)</a>
                         </li>
                         <li>
-                            <a href="#CommonCartridgeResourceType" title="apps/server/src/modules/learnroom/common-cartridge/common-cartridge-enums.ts" ><b>CommonCartridgeResourceType</b>&nbsp;&nbsp;&nbsp;(apps/.../common-cartridge-enums.ts)</a>
+                            <a href="#CommonCartridgeIntendedUseType" title="apps/server/src/modules/common-cartridge/export/common-cartridge.enums.ts" ><b>CommonCartridgeIntendedUseType</b>&nbsp;&nbsp;&nbsp;(apps/.../common-cartridge.enums.ts)</a>
                         </li>
                         <li>
-                            <a href="#CommonCartridgeVersion" title="apps/server/src/modules/learnroom/common-cartridge/common-cartridge-enums.ts" ><b>CommonCartridgeVersion</b>&nbsp;&nbsp;&nbsp;(apps/.../common-cartridge-enums.ts)</a>
+                            <a href="#CommonCartridgeResourceType" title="apps/server/src/modules/common-cartridge/export/common-cartridge.enums.ts" ><b>CommonCartridgeResourceType</b>&nbsp;&nbsp;&nbsp;(apps/.../common-cartridge.enums.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#CommonCartridgeVersion" title="apps/server/src/modules/common-cartridge/export/common-cartridge.enums.ts" ><b>CommonCartridgeVersion</b>&nbsp;&nbsp;&nbsp;(apps/.../common-cartridge.enums.ts)</a>
                         </li>
                         <li>
                             <a href="#ComponentType" title="apps/server/src/shared/domain/entity/lesson.entity.ts" ><b>ComponentType</b>&nbsp;&nbsp;&nbsp;(apps/.../lesson.entity.ts)</a>
@@ -1091,8 +1094,58 @@
             </tbody>
         </table>
 </section>
-    <h3>apps/server/src/modules/learnroom/common-cartridge/common-cartridge-enums.ts</h3>
+    <h3>apps/server/src/modules/common-cartridge/export/common-cartridge.enums.ts</h3>
     <section data-compodoc="block-enums">
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <a name="CommonCartridgeElementType"></a>
+                        <span class="name "><b>CommonCartridgeElementType</b><a href="#CommonCartridgeElementType"><span class="icon ion-ios-link"></span></a></span>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;METADATA
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>metadata</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;ORGANIZATION
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>organization</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;RESOURCES_WRAPPER
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>resourceswrapper</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;ORGANIZATIONS_WRAPPER
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>organizationswrapper</code>
+                            </td>
+                        </tr>
+            </tbody>
+        </table>
         <table class="table table-sm table-bordered">
             <tbody>
                 <tr>
@@ -1153,12 +1206,22 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                &nbsp;LTI
+                                &nbsp;UNKNOWN
                             </td>
                         </tr>
                         <tr>
                             <td class="col-md-4">
-                                <i>Value : </i><code>imsbasiclti_xmlv1p0</code>
+                                <i>Value : </i><code>unknown</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;MANIFEST
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>manifest</code>
                             </td>
                         </tr>
                         <tr>
@@ -1173,22 +1236,12 @@
                         </tr>
                         <tr>
                             <td class="col-md-4">
-                                &nbsp;WEB_LINK_V1
+                                &nbsp;WEB_LINK
                             </td>
                         </tr>
                         <tr>
                             <td class="col-md-4">
-                                <i>Value : </i><code>imswl_xmlv1p1</code>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                &nbsp;WEB_LINK_V3
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="col-md-4">
-                                <i>Value : </i><code>imswl_xmlv1p3</code>
+                                <i>Value : </i><code>weblink</code>
                             </td>
                         </tr>
             </tbody>
@@ -1203,6 +1256,16 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
+                                &nbsp;V_1_0_0
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>1.0.0</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
                                 &nbsp;V_1_1_0
                             </td>
                         </tr>
@@ -1213,12 +1276,32 @@
                         </tr>
                         <tr>
                             <td class="col-md-4">
+                                &nbsp;V_1_2_0
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>1.2.0</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
                                 &nbsp;V_1_3_0
                             </td>
                         </tr>
                         <tr>
                             <td class="col-md-4">
                                 <i>Value : </i><code>1.3.0</code>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                &nbsp;V_1_4_0
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <i>Value : </i><code>1.4.0</code>
                             </td>
                         </tr>
             </tbody>

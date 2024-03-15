@@ -1094,6 +1094,9 @@
                             <a href="#VideoConferencingScopeMapping" title="apps/server/src/shared/repo/videoconference/video-conference.repo.ts" ><b>VideoConferencingScopeMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference.repo.ts)</a>
                         </li>
                         <li>
+                            <a href="#xmlBuilder" title="apps/server/src/modules/common-cartridge/export/utils.ts" ><b>xmlBuilder</b>&nbsp;&nbsp;&nbsp;(apps/.../utils.ts)</a>
+                        </li>
+                        <li>
                             <a href="#yesterday" title="apps/server/src/shared/testing/factory/filerecord.factory.ts" ><b>yesterday</b>&nbsp;&nbsp;&nbsp;(apps/.../filerecord.factory.ts)</a>
                         </li>
                         <li>
@@ -3722,7 +3725,10 @@ This allows adding console commands to execute provider methods.</p>
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
 		&#x27;TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE&#x27;
 	) as boolean,
-	FEATURE_IMSCC_COURSE_EXPORT_ENABLED: Configuration.get(&#x27;FEATURE_IMSCC_COURSE_EXPORT_ENABLED&#x27;) as boolean,
+	FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED: Configuration.get(
+		&#x27;FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED&#x27;
+	) as boolean,
+	GEOGEBRA_BASE_URL: Configuration.get(&#x27;GEOGEBRA_BASE_URL&#x27;) as string,
 	FEATURE_IDENTITY_MANAGEMENT_ENABLED: Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_ENABLED&#x27;) as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED&#x27;) as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get(&#x27;FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED&#x27;) as boolean,
@@ -12610,6 +12616,32 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>Symbol(&#x27;VideoConferenceSettings&#x27;)</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/modules/common-cartridge/export/utils.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="xmlBuilder"></a>
+                    <span class="name">
+                        <span ><b>xmlBuilder</b></span>
+                        <a href="#xmlBuilder"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>new Builder({
+	xmldec: { version: &#x27;1.0&#x27;, encoding: &#x27;UTF-8&#x27; },
+	renderOpts: { pretty: true, indent: &#x27;    &#x27;, newline: &#x27;\n&#x27; },
+})</code>
                     </td>
                 </tr>
 
