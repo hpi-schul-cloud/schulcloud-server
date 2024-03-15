@@ -321,18 +321,95 @@ describe('Group (API)', () => {
 			});
 
 			describe('when requesting all available groups', () => {
-				it('should return all available groups for course sync', async () => {});
+				it('should return all available groups for course sync', async () => {
+					const { loggedInClient, availableGroupInSchool } = await setup();
+
+					const response = await loggedInClient.get('true');
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual([
+						{
+							id: availableGroupInSchool.id,
+							name: availableGroupInSchool.name,
+						},
+					]);
+				});
 			});
 		});
 
 		describe('when teacher requests groups', () => {
-			const setup = async () => {};
+			const setup = async () => {
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+
+				const teachersGroup: GroupEntity = groupEntityFactory.buildWithId({
+					organization: school,
+					users: [{ user: teacherUser, role: teacherUser.roles[0] }],
+				});
+				const availableTeachersGroup: GroupEntity = groupEntityFactory.buildWithId({
+					organization: school,
+					users: [{ user: teacherUser, role: teacherUser.roles[0] }],
+				});
+				const groupWithoutTeacher: GroupEntity = groupEntityFactory.buildWithId({ organization: school });
+
+				const syncedCourse: CourseEntity = courseFactory.build({
+					school,
+					syncedWithGroup: availableTeachersGroup,
+				});
+
+				await em.persistAndFlush([
+					teacherAccount,
+					teacherUser,
+					teachersGroup,
+					availableTeachersGroup,
+					groupWithoutTeacher,
+					school,
+					syncedCourse,
+				]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return {
+					loggedInClient,
+					teachersGroup,
+					availableTeachersGroup,
+				};
+			};
 			describe('when requesting all groups', () => {
-				it('should return all groups the teacher is part of', async () => {});
+				it('should return all groups the teacher is part of', async () => {
+					const { loggedInClient, teachersGroup, availableTeachersGroup } = await setup();
+
+					const response = await loggedInClient.get();
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual([
+						{
+							id: teachersGroup.id,
+							name: teachersGroup.name,
+						},
+						{
+							id: availableTeachersGroup.id,
+							name: availableTeachersGroup.name,
+						},
+					]);
+				});
 			});
 
 			describe('when requesting all available groups', () => {
-				it('should return all available groups for course sync the teacher is part of', async () => {});
+				it('should return all available groups for course sync the teacher is part of', async () => {
+					const { loggedInClient, availableTeachersGroup } = await setup();
+
+					const response = await loggedInClient.get('true');
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual([
+						{
+							id: availableTeachersGroup.id,
+							name: availableTeachersGroup.name,
+						},
+					]);
+				});
 			});
 		});
 

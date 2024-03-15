@@ -347,11 +347,7 @@ export class GroupUc {
 		);
 	}
 
-	public async getAllGroups(
-		userId: EntityId,
-		schoolId: EntityId,
-		availableSyncedGroups?: boolean
-	): Promise<GroupDto[]> {
+	public async getAllGroups(userId: EntityId, schoolId: EntityId, availableSyncedGroups: boolean): Promise<GroupDto[]> {
 		const school: School = await this.schoolService.getSchoolById(schoolId);
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
@@ -370,7 +366,7 @@ export class GroupUc {
 		// TODO: test
 	}
 
-	private async getGroupsForSchool(schoolId: EntityId, availableSyncedGroups?: boolean): Promise<GroupDto[]> {
+	private async getGroupsForSchool(schoolId: EntityId, availableSyncedGroups: boolean): Promise<GroupDto[]> {
 		let foundGroups: Group[];
 		if (availableSyncedGroups) {
 			foundGroups = await this.groupService.findAvailableGroupsBySchoolIdAndGroupTypes(
@@ -388,7 +384,7 @@ export class GroupUc {
 		return groups;
 	}
 
-	private async getGroupsForUser(userId: EntityId, availableSyncedGroups?: boolean): Promise<GroupDto[]> {
+	private async getGroupsForUser(userId: EntityId, availableSyncedGroups: boolean): Promise<GroupDto[]> {
 		let foundGroups: Group[];
 		const user: UserDO = await this.userService.findById(userId);
 		if (availableSyncedGroups) {

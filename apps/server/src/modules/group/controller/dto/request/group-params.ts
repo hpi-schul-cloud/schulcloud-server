@@ -1,9 +1,9 @@
-import { ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 
 import { IsBoolean } from 'class-validator';
 
 export class GroupParams {
+	@ApiProperty({ default: false })
 	@IsBoolean()
-	@ApiPropertyOptional()
-	availableSyncedGroups?: boolean;
+	availableSyncedGroups!: boolean;
 }
