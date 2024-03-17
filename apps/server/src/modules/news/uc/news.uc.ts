@@ -123,7 +123,6 @@ export class NewsUc {
 			}
 		}
 		Object.assign(news, { updater: userId });
-		news.displayUpdateAt = new Date();
 
 		await this.newsRepo.save(news);
 

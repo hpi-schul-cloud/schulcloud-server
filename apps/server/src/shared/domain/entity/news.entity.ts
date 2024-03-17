@@ -14,7 +14,6 @@ export interface NewsProperties {
 	school: EntityId | SchoolEntity;
 	creator?: EntityId | User;
 	target: EntityId | NewsTarget;
-	displayUpdateAt?: Date;
 	externalId?: string;
 	source?: 'internal' | 'rss';
 	sourceDescription?: string;
@@ -41,9 +40,6 @@ export abstract class News extends BaseEntityWithTimestamps {
 	@Property()
 	@Index()
 	displayAt: Date;
-
-	@Property({ nullable: true })
-	displayUpdateAt?: Date;
 
 	@Property({ nullable: true })
 	externalId?: string;
