@@ -1,7 +1,5 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { DynamicModule, Module } from '@nestjs/common';
-// import { ALL_ENTITIES } from '@shared/domain';
 import { FileEntity } from '@modules/files/entity';
 import { ConfigModule } from '@nestjs/config';
 import { ALL_ENTITIES } from '@shared/domain/entity';
@@ -10,25 +8,17 @@ import { LoggerModule } from '@src/core/logger';
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from '@src/infra/database';
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from '@src/infra/rabbitmq';
 import { CqrsModule } from '@nestjs/cqrs';
-import { RocketChatModule } from '@modules/rocketchat';
 import { DeletionApiModule } from '@modules/deletion/deletion-api.module';
+import { LegacySchoolAdminApiModule } from '@modules/legacy-school/legacy-school-admin.api-module';
+import { UserAdminApiModule } from '@modules/user/user-admin-api.module';
 import { serverConfig } from './server.config';
 import { defaultMikroOrmOptions } from './server.module';
-import { LegacySchoolAdminApiModule } from '../legacy-school/legacy-school-admin.api-module';
-import { UserAdminApiModule } from '../user/user-admin-api.module';
 
 const serverModules = [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 	DeletionApiModule,
 	LegacySchoolAdminApiModule,
 	UserAdminApiModule,
-	RocketChatModule.forRoot({
-		uri: Configuration.get('ROCKET_CHAT_URI') as string,
-		adminId: Configuration.get('ROCKET_CHAT_ADMIN_ID') as string,
-		adminToken: Configuration.get('ROCKET_CHAT_ADMIN_TOKEN') as string,
-		adminUser: Configuration.get('ROCKET_CHAT_ADMIN_USER') as string,
-		adminPassword: Configuration.get('ROCKET_CHAT_ADMIN_PASSWORD') as string,
-	}),
 ];
 
 @Module({
