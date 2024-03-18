@@ -3,6 +3,7 @@ import { LanguageType } from '@shared/domain/interface';
 import { IsEnum } from 'class-validator';
 import type { ServerConfig } from '../..';
 import { SchulcloudTheme } from '../../types/schulcloud-theme.enum';
+import { Timezone } from '../../types/timezone.enum';
 
 export class ConfigResponse {
 	@ApiProperty()
@@ -173,8 +174,9 @@ export class ConfigResponse {
 	@IsEnum(LanguageType)
 	I18N__FALLBACK_LANGUAGE: LanguageType;
 
-	@ApiProperty()
-	I18N__DEFAULT_TIMEZONE: string; // enum
+	@ApiProperty({ enum: Timezone, enumName: 'Timezone' })
+	@IsEnum(Timezone)
+	I18N__DEFAULT_TIMEZONE: Timezone;
 
 	@ApiProperty()
 	JWT_SHOW_TIMEOUT_WARNING_SECONDS: number;
