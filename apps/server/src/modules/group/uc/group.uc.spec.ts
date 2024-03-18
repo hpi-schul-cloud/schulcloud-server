@@ -15,12 +15,13 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page, UserDO } from '@shared/domain/domainobject';
-import { SchoolYearEntity, User } from '@shared/domain/entity';
+import { Role, SchoolYearEntity, User } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import {
 	groupFactory,
 	roleDtoFactory,
+	roleFactory,
 	schoolYearFactory,
 	setupEntities,
 	UserAndAccountTestFactory,
@@ -1104,6 +1105,157 @@ describe('GroupUc', () => {
 							},
 						},
 					],
+				});
+			});
+		});
+	});
+
+	describe('getAllGroups', () => {
+		describe('when the user has no permission', () => {
+			const setup = () => {
+				const school: School = schoolFactory.build();
+				const user: User = userFactory.buildWithId();
+				const error = new ForbiddenException();
+
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				authorizationService.checkPermission.mockImplementation(() => {
+					throw error;
+				});
+
+				return {
+					user,
+					error,
+					school,
+				};
+			};
+
+			it('should throw forbidden', async () => {
+				const { user, error, school } = setup();
+
+				const func = () => uc.getAllGroups(user.id, school.id, false);
+
+				await expect(func).rejects.toThrow(error);
+			});
+		});
+
+		describe('when admin requests groups', () => {
+			const setup = () => {
+				const school: School = schoolFactory.build();
+				const roles: Role = roleFactory.build({ permissions: [Permission.GROUP_FULL_ADMIN, Permission.GROUP_VIEW] });
+				const user: User = userFactory.buildWithId({ roles: [roles], school });
+
+				const groupInSchool: Group = groupFactory.build({ organizationId: school.id });
+				const availableGroupInSchool: Group = groupFactory.build({ organizationId: school.id });
+
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				authorizationService.checkPermission.mockReturnValueOnce();
+				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
+				groupService.findAvailableGroupsBySchoolIdAndGroupTypes.mockResolvedValueOnce([availableGroupInSchool]);
+				groupService.findGroupsBySchoolIdAndGroupTypes.mockResolvedValueOnce([groupInSchool, availableGroupInSchool]);
+
+				return {
+					user,
+					school,
+					groupInSchool,
+					availableGroupInSchool,
+				};
+			};
+			describe('when requesting all groups', () => {
+				it('should return all groups of the school', async () => {
+					const { user, groupInSchool, availableGroupInSchool, school } = setup();
+
+					const response = await uc.getAllGroups(user.id, school.id, false);
+
+					expect(response).toEqual([
+						{
+							id: groupInSchool.id,
+							name: groupInSchool.name,
+						},
+						{
+							id: availableGroupInSchool.id,
+							name: availableGroupInSchool.name,
+						},
+					]);
+				});
+			});
+
+			describe('when requesting all available groups', () => {
+				it('should return all available groups for course sync', async () => {
+					const { user, availableGroupInSchool, school } = setup();
+
+					const response = await uc.getAllGroups(user.id, school.id, true);
+
+					expect(response).toEqual([
+						{
+							id: availableGroupInSchool.id,
+							name: availableGroupInSchool.name,
+						},
+					]);
+				});
+			});
+		});
+
+		describe('when teacher requests groups', () => {
+			const setup = () => {
+				const school: School = schoolFactory.build();
+				const roles: Role = roleFactory.build({ permissions: [Permission.GROUP_VIEW] });
+				const user: User = userFactory.buildWithId({ roles: [roles], school });
+
+				const teachersGroup: Group = groupFactory.build({
+					organizationId: school.id,
+					users: [{ userId: user.id, roleId: user.roles[0].id }],
+				});
+				const availableTeachersGroup: Group = groupFactory.build({
+					organizationId: school.id,
+					users: [{ userId: user.id, roleId: user.roles[0].id }],
+				});
+
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				authorizationService.checkPermission.mockReturnValueOnce();
+				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
+				groupService.findAvailableGroupsBySchoolIdAndGroupTypes.mockResolvedValueOnce([availableTeachersGroup]);
+				groupService.findGroupsBySchoolIdAndGroupTypes.mockResolvedValueOnce([teachersGroup, availableTeachersGroup]);
+
+				return {
+					user,
+					school,
+					teachersGroup,
+					availableTeachersGroup,
+				};
+			};
+			describe('when requesting all groups', () => {
+				it('should return all groups the teacher is part of', async () => {
+					const { user, teachersGroup, availableTeachersGroup, school } = setup();
+
+					const response = await uc.getAllGroups(user.id, school.id, false);
+
+					expect(response).toEqual([
+						{
+							id: teachersGroup.id,
+							name: teachersGroup.name,
+						},
+						{
+							id: availableTeachersGroup.id,
+							name: availableTeachersGroup.name,
+						},
+					]);
+				});
+			});
+
+			describe('when requesting all available groups', () => {
+				it('should return all available groups for course sync the teacher is part of', async () => {
+					const { user, availableTeachersGroup, school } = setup();
+
+					const response = await uc.getAllGroups(user.id, school.id, true);
+
+					expect(response).toEqual([
+						{
+							id: availableTeachersGroup.id,
+							name: availableTeachersGroup.name,
+						},
+					]);
 				});
 			});
 		});

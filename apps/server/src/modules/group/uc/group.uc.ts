@@ -363,7 +363,6 @@ export class GroupUc {
 		}
 
 		return groups;
-		// TODO: test
 	}
 
 	private async getGroupsForSchool(schoolId: EntityId, availableSyncedGroups: boolean): Promise<GroupDto[]> {

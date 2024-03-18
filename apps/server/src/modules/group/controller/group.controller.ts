@@ -90,6 +90,5 @@ export class GroupController {
 		const response: GroupEntryResponse[] = GroupResponseMapper.mapToGroupListResponse(groups);
 
 		return response;
-		// TODO: test
 	}
 }
