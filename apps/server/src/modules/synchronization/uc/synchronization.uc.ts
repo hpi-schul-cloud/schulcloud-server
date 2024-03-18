@@ -15,8 +15,8 @@ export class SynchronizationUc {
 		this.logger.setContext(SynchronizationUc.name);
 	}
 
-	async findUsersToDelete(): Promise<void> {
-		this.logger.debug({ action: 'findUsersToDelete' });
+	async updateSystemUsersLastSyncedAt(systemId: string): Promise<void> {
+		this.logger.debug({ action: 'updateSystemUsersLastSyncedAt', systemId });
 
 		const synchronizationId = await this.synchronizationService.createSynchronization();
 		console.log(synchronizationId);
@@ -25,7 +25,8 @@ export class SynchronizationUc {
 
 		const userToCheck = usersDownloaded.map((user) => user.pid);
 
-		const usersToSynchronization = await this.userService.findByExternalIdsAndProvidedBySystemId(userToCheck);
-		console.log(usersToSynchronization);
+		const usersToSync = await this.userService.findByExternalIdsAndProvidedBySystemId(userToCheck, systemId);
+
+		await this.userService.updateLastSyncedAt(usersToSync);
 	}
 }

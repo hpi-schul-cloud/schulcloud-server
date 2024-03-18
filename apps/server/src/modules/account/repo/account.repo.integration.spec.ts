@@ -4,7 +4,6 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account, User } from '@shared/domain/entity';
 import { accountFactory, cleanupCollections, userFactory } from '@shared/testing';
-import { UserIdAndExternalIdBuilder } from '@shared/domain/builder';
 import { AccountRepo } from './account.repo';
 
 describe('account repo', () => {
@@ -257,39 +256,48 @@ describe('account repo', () => {
 		});
 	});
 
-	describe('findByUserIdsAndSystemIds', () => {
+	describe('findByUserIdsAndSystemId', () => {
 		describe('when accounts exist', () => {
 			const setup = async () => {
-				const userA = userFactory.buildWithId({ externalId: new ObjectId().toHexString() });
-				const userB = userFactory.buildWithId({ externalId: new ObjectId().toHexString() });
-				const userC = userFactory.buildWithId({ externalId: new ObjectId().toHexString() });
+				const systemId = new ObjectId().toHexString();
+				const userAId = new ObjectId().toHexString();
+				const userBId = new ObjectId().toHexString();
+				const userCId = new ObjectId().toHexString();
 
-				const accountA = accountFactory.withSystemId(userA.externalId as string).build({ userId: userA.id });
-				const accountB = accountFactory.withSystemId(userB.externalId as string).build({ userId: userB.id });
-				const accountC = accountFactory.withSystemId(userC.externalId as string).build({ userId: userC.id });
+				const accountA = accountFactory.withSystemId(systemId).build({ userId: userAId });
+				const accountB = accountFactory.withSystemId(systemId).build({ userId: userBId });
+				const accountC = accountFactory.withSystemId(new ObjectId().toHexString()).build({ userId: userCId });
 
 				await em.persistAndFlush([accountA, accountB, accountC]);
 				em.clear();
 
-				const userIdsAndExternalIds = [
-					UserIdAndExternalIdBuilder.build(userA.id, userA.externalId),
-					UserIdAndExternalIdBuilder.build(userB.id, userB.externalId),
-				];
+				const userIds = [userAId, userBId, userCId];
+				const expectedUserIds = [userAId, userBId];
 
 				return {
-					accountA,
-					accountB,
-					userIdsAndExternalIds,
+					expectedUserIds,
+					systemId,
+					userIds,
 				};
 			};
 
-			it('should return array of accounts', async () => {
-				const { accountA, accountB, userIdsAndExternalIds } = await setup();
+			it('should return array of verified userIds', async () => {
+				const { expectedUserIds, systemId, userIds } = await setup();
 
-				const foundAccounts = await repo.findByUserIdsAndSystemIds(userIdsAndExternalIds);
+				const verifiedUserIds = await repo.findByUserIdsAndSystemId(userIds, systemId);
 
-				expect(foundAccounts[0].id).toEqual(accountA.id);
-				expect(foundAccounts[1].id).toEqual(accountB.id);
+				expect(verifiedUserIds).toEqual(expectedUserIds);
+			});
+		});
+
+		describe('when accounts do not exist', () => {
+			it('should return empty array', async () => {
+				const result = await repo.findByUserIdsAndSystemId(
+					[new ObjectId().toHexString(), new ObjectId().toHexString()],
+					new ObjectId().toHexString()
+				);
+
+				expect(result).toHaveLength(0);
 			});
 		});
 	});

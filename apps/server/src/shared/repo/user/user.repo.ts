@@ -3,10 +3,9 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { StringValidator } from '@shared/common';
 import { ImportUser, Role, SchoolEntity, User } from '@shared/domain/entity';
-import { IFindOptions, SortOrder, UserIdAndExternalId } from '@shared/domain/interface';
+import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId, NameMatch } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { UserIdAndExternalIdBuilder } from '@shared/domain/builder';
 import { MongoPatterns } from '../mongo.patterns';
 
 @Injectable()
@@ -221,15 +220,25 @@ export class UserRepo extends BaseRepo<User> {
 		return users;
 	}
 
-	public async findByExternalIds(externalIds: string[]): Promise<UserIdAndExternalId[]> {
+	public async findByExternalIds(externalIds: string[]): Promise<string[]> {
 		const foundUsers = await this._em.find(
 			User,
 			{ externalId: { $in: externalIds } },
 			{ fields: ['id', 'externalId'] }
 		);
 
-		const users = foundUsers.map(({ id, externalId }) => UserIdAndExternalIdBuilder.build(id, externalId));
+		const users = foundUsers.map(({ id }) => id);
 
 		return users;
+	}
+
+	public async updateAllUserByLastSyncedAt(userIds: string[]): Promise<void> {
+		await this._em.nativeUpdate(
+			User,
+			{
+				id: { $in: userIds },
+			},
+			{ lastSyncedAt: new Date() }
+		);
 	}
 }

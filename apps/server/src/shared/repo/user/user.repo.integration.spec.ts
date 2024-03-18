@@ -13,7 +13,6 @@ import {
 	systemEntityFactory,
 	userFactory,
 } from '@shared/testing';
-import { UserIdAndExternalIdBuilder } from '@shared/domain/builder';
 import { UserRepo } from './user.repo';
 
 describe('user repo', () => {
@@ -65,6 +64,7 @@ describe('user repo', () => {
 					'firstNameSearchValues',
 					'lastName',
 					'lastNameSearchValues',
+					'lastSyncedAt',
 					'email',
 					'emailSearchValues',
 					'school',
@@ -194,6 +194,7 @@ describe('user repo', () => {
 					'firstNameSearchValues',
 					'lastName',
 					'lastNameSearchValues',
+					'lastSyncedAt',
 					'email',
 					'emailSearchValues',
 					'customAvatarBackgroundColor',
@@ -617,10 +618,7 @@ describe('user repo', () => {
 
 				const externalIds: string[] = ['111', '222'];
 
-				const expectedResult = [
-					UserIdAndExternalIdBuilder.build(userA.id, userA.externalId),
-					UserIdAndExternalIdBuilder.build(userB.id, userB.externalId),
-				];
+				const expectedResult = [userA.id, userB.id];
 
 				return {
 					expectedResult,
@@ -633,6 +631,47 @@ describe('user repo', () => {
 
 				const result = await repo.findByExternalIds(externalIds);
 				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when users do not exist', () => {
+			it('should return empty array', async () => {
+				const result = await repo.findByExternalIds(['externalId1', 'externalId2']);
+
+				expect(result).toHaveLength(0);
+			});
+		});
+	});
+
+	describe('updateAllUserByLastSyncedAt', () => {
+		describe('when updating many users by field lastSyncedAt', () => {
+			const setup = async () => {
+				const userA = userFactory.buildWithId();
+				const userB = userFactory.buildWithId();
+				const userC = userFactory.buildWithId();
+
+				await em.persistAndFlush([userA, userB, userC]);
+				em.clear();
+
+				const userIds = [userA.id, userC.id];
+
+				return {
+					userIds,
+					userA,
+					userC,
+				};
+			};
+
+			it('should update lastSyncedAt ', async () => {
+				const { userIds, userA, userC } = await setup();
+
+				await repo.updateAllUserByLastSyncedAt(userIds);
+
+				const resultForUserA = await repo.findById(userA.id);
+				expect(resultForUserA.lastSyncedAt instanceof Date).toBe(true);
+
+				const resultForUserC = await repo.findById(userC.id);
+				expect(resultForUserC.lastSyncedAt instanceof Date).toBe(true);
 			});
 		});
 	});

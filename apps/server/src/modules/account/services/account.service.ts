@@ -4,9 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common';
 import { Counted, DomainName, EntityId, OperationType } from '@shared/domain/types';
 import { isEmail, validateOrReject } from 'class-validator';
-import { DomainOperation, UserIdAndExternalId } from '@shared/domain/interface';
+import { DomainOperation } from '@shared/domain/interface';
 import { DomainOperationBuilder } from '@shared/domain/builder';
-import { Account } from '@shared/domain/entity';
 import { LegacyLogger } from '../../../core/logger';
 import { ServerConfig } from '../../server/server.config';
 import { AccountServiceDb } from './account-db.service';
@@ -209,13 +208,9 @@ export class AccountService extends AbstractAccountService {
 		return null;
 	}
 
-	async findByUserIdsAndSystemIds(usersIdsAndExternalIds: UserIdAndExternalId[]): Promise<string[]> {
-		const foundAccounts = await this.accountRepo.findByUserIdsAndSystemIds(usersIdsAndExternalIds);
+	async findByUserIdsAndSystemId(usersIds: string[], systemId: string): Promise<string[]> {
+		const foundAccounts = await this.accountRepo.findByUserIdsAndSystemId(usersIds, systemId);
 
-		const foundUserIds: string[] = foundAccounts
-			.map((account: Account) => account.userId?.toHexString())
-			.filter((userId) => userId !== undefined) as string[];
-
-		return foundUserIds;
+		return foundAccounts;
 	}
 }

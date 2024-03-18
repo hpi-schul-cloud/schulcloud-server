@@ -9,7 +9,7 @@ import { ConfigService } from '@nestjs/config';
 import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { LanguageType, User } from '@shared/domain/entity';
-import { DomainOperation, IFindOptions, UserIdAndExternalId } from '@shared/domain/interface';
+import { DomainOperation, IFindOptions } from '@shared/domain/interface';
 import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
@@ -194,15 +194,19 @@ export class UserService {
 		return users;
 	}
 
-	public async findByExternalIdsAndProvidedBySystemId(externalIds: string[]): Promise<string[]> {
+	public async findByExternalIdsAndProvidedBySystemId(externalIds: string[], systemId: string): Promise<string[]> {
 		const foundUsers = await this.findByExternalIds(externalIds);
 
-		const verifiedUsers = await this.accountService.findByUserIdsAndSystemIds(foundUsers);
+		const verifiedUsers = await this.accountService.findByUserIdsAndSystemId(foundUsers, systemId);
 
 		return verifiedUsers;
 	}
 
-	public async findByExternalIds(externalIds: string[]): Promise<UserIdAndExternalId[]> {
+	public async findByExternalIds(externalIds: string[]): Promise<string[]> {
 		return this.userRepo.findByExternalIds(externalIds);
+	}
+
+	public async updateLastSyncedAt(userIds: string[]): Promise<void> {
+		await this.userRepo.updateAllUserByLastSyncedAt(userIds);
 	}
 }
