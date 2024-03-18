@@ -1,11 +1,11 @@
-import { ObjectID } from 'bson';
+import { ObjectId } from 'bson';
 import { UserSortQuery } from './user-sort.query';
 
 export interface UserSearchQuery {
 	_id?: any;
-	schoolId: ObjectID;
-	roles: ObjectID;
-	schoolYearId?: ObjectID;
+	schoolId: ObjectId;
+	roles: ObjectId;
+	schoolYearId?: ObjectId;
 	sort?: UserSortQuery;
 	select: string[];
 	skip?: number;

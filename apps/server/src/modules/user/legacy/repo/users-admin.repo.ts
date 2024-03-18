@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { ObjectID } from 'bson';
+import { ObjectId } from 'bson';
 import { createMultiDocumentAggregation, SearchQueryHelper } from './helper';
 import { UsersSearchQueryParams } from '../controller/dto';
 import { UserSearchQuery } from '../interfaces';
@@ -24,9 +24,9 @@ export class UsersAdminRepo extends BaseRepo<User> {
 			skip: undefined,
 			sort: undefined,
 			_id,
-			schoolId: new ObjectID(schoolId),
-			roles: new ObjectID(roleId),
-			schoolYearId: new ObjectID(schoolYearId),
+			schoolId: new ObjectId(schoolId),
+			roles: new ObjectId(roleId),
+			schoolYearId: new ObjectId(schoolYearId),
 			select: [
 				'consentStatus',
 				'consent',
@@ -55,9 +55,9 @@ export class UsersAdminRepo extends BaseRepo<User> {
 		params: UsersSearchQueryParams
 	): Promise<any[]> {
 		const query: UserSearchQuery = {
-			schoolId: new ObjectID(schoolId),
-			roles: new ObjectID(roleId),
-			schoolYearId: new ObjectID(schoolYearId),
+			schoolId: new ObjectId(schoolId),
+			roles: new ObjectId(roleId),
+			schoolYearId: new ObjectId(schoolYearId),
 			select: [
 				'consentStatus',
 				'consent',
