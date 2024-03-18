@@ -315,7 +315,7 @@
 		"H5P_EDITOR": {
 			"type": "object",
 			"description": "Properties of the H5P server microservice and library management job",
-			"required": ["S3_ENDPOINT", "S3_REGION", "S3_BUCKET_CONTENT", "S3_BUCKET_LIBRARIES", "INCOMING_REQUEST_TIMEOUT"],
+			"required": ["S3_ENDPOINT", "S3_REGION", "S3_BUCKET_CONTENT", "S3_BUCKET_LIBRARIES"],
 			"default": {},
 			"properties": {
 				"S3_ENDPOINT": {
