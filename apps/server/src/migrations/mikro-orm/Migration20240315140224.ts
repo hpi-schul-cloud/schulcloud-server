@@ -4,26 +4,35 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable no-await-in-loop */
 import { Migration } from '@mikro-orm/migrations-mongodb';
+import { FileRecordParentType } from '@src/modules/files-storage/entity';
 
 export class Migration20240315140224 extends Migration {
 	private numberOfUpdatedFileRecords = 0;
 
 	async up(): Promise<void> {
-		const teacherRole = await this.driver.findOne('roles', { name: 'teacher' });
-
 		const batchSize = 10000;
+		console.log(
+			`Start updating parentType of fileRecords if creator is teacher. Working with batches of ${batchSize}.`
+		);
+
 		let batchCounter = 0;
 		let numberOfFoundFileRecordsInBatch = 0;
+
+		const teacherRole = await this.driver.findOne('roles', { name: 'teacher' });
 
 		do {
 			const fileRecords = await this.driver.find(
 				'filerecords',
-				{ parentType: 'submissions' },
+				{ parentType: FileRecordParentType.Submission },
 				{ limit: batchSize, offset: batchCounter * batchSize, orderBy: [{ _id: 1 }] }
 			);
 
 			numberOfFoundFileRecordsInBatch = fileRecords.length;
-			console.log(`${numberOfFoundFileRecordsInBatch} fileRecords found in batch ${batchCounter + 1}`);
+			console.log(
+				`${numberOfFoundFileRecordsInBatch} fileRecords with parentType ${
+					FileRecordParentType.Submission
+				} found in batch ${batchCounter + 1}`
+			);
 
 			const promises = fileRecords.map((fileRecord) =>
 				this.updateParentTypeIfCreatorIsTeacher(fileRecord, teacherRole)
@@ -43,15 +52,16 @@ export class Migration20240315140224 extends Migration {
 			console.log(`Creator not found for fileRecord ${fileRecord._id.toString()}`);
 		}
 
-		if (creator?.roles.includes(teacherRole._id)) {
-			const updatedFileRecord = await this.driver.nativeUpdate(
+		const isCreatorTeacher = !!creator?.roles.find((role) => role.toString() === teacherRole._id.toString());
+
+		if (isCreatorTeacher) {
+			await this.driver.nativeUpdate(
 				'filerecords',
 				{ _id: fileRecord._id },
-				{ $set: { parentType: 'grading' } }
+				{ $set: { parentType: FileRecordParentType.Grading } }
 			);
 
 			this.numberOfUpdatedFileRecords += 1;
-			console.log(updatedFileRecord);
 		}
 	}
 }
