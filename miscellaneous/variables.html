@@ -7777,9 +7777,9 @@ it should ensure an empty result</p>
                         <i>Default value : </i><code>H5PContentFactory.define(H5PContent, ({ sequence }) &#x3D;&gt; {
 	return {
 		parentType: H5PContentParentType.Lesson,
-		parentId: new ObjectID().toHexString(),
-		creatorId: new ObjectID().toHexString(),
-		schoolId: new ObjectID().toHexString(),
+		parentId: new ObjectId().toHexString(),
+		creatorId: new ObjectId().toHexString(),
+		schoolId: new ObjectId().toHexString(),
 		content: {
 			[&#x60;field${sequence}&#x60;]: sequence,
 			dateField: new Date(sequence),

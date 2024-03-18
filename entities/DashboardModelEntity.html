@@ -193,7 +193,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @OneToMany(&#x27;DashboardGridElementModel&#x27;, &#x27;dashboard&#x27;)<br />
+                            @OneToMany(&#x27;DashboardGridElementModel&#x27;, &#x27;dashboard&#x27;, {orphanRemoval: true})<br />
                         </code>
                     </td>
                 </tr>
@@ -322,7 +322,7 @@ export class DashboardModelEntity extends BaseEntityWithTimestamps {
 		if (props.gridElements) this.gridElements.set(props.gridElements);
 	}
 
-	@OneToMany(&#x27;DashboardGridElementModel&#x27;, &#x27;dashboard&#x27;)
+	@OneToMany(&#x27;DashboardGridElementModel&#x27;, &#x27;dashboard&#x27;, { orphanRemoval: true })
 	gridElements: Collection&lt;DashboardGridElementModel&gt; &#x3D; new Collection&lt;DashboardGridElementModel&gt;(this);
 
 	// userId
