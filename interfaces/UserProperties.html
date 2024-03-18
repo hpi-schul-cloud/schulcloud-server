@@ -156,6 +156,13 @@
                                 </li>
                                 <li>
                                             <span class="modifier">Optional</span>
+                                        <a href="#consent" 
+>
+                                            consent
+                                        </a>
+                                </li>
+                                <li>
+                                            <span class="modifier">Optional</span>
                                         <a href="#customAvatarBackgroundColor" 
 >
                                             customAvatarBackgroundColor
@@ -295,6 +302,44 @@
                                     <tr>
                                         <td class="col-md-4">
                                             <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
+
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Optional</i>
+                                        </td>
+                                    </tr>
+
+
+
+
+                        </tbody>
+                    </table>
+                    <table class="table table-sm table-bordered">
+                        <tbody>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <a name="consent"></a>
+                                        <span class="name "><b>consent</b>
+                                            <a href="#consent">
+                                                <span class="icon ion-ios-link"></span>
+                                            </a>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="col-md-4">
+                                        <code>consent:         <code><a href="../interfaces/Consent.html" target="_self" >Consent</a></code>
+</code>
+                                    </td>
+                                </tr>
+
+
+                                    <tr>
+                                        <td class="col-md-4">
+                                            <i>Type : </i>        <code><a href="../interfaces/Consent.html" target="_self" >Consent</a></code>
 
                                         </td>
                                     </tr>
@@ -899,12 +944,35 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from &#x27;@mikro-orm/core&#x27;;
+import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { EntityWithSchool, LanguageType } from &#x27;../interface&#x27;;
 import { EntityId } from &#x27;../types&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;./base.entity&#x27;;
 import { Role } from &#x27;./role.entity&#x27;;
 import { SchoolEntity } from &#x27;./school.entity&#x27;;
 import { UserParentsEntity } from &#x27;./user-parents.entity&#x27;;
+
+export interface Consent {
+	userConsent?: UserConsent;
+	parentConsents?: ParentConsent[];
+}
+
+export interface UserConsent {
+	form: string;
+	privacyConsent: boolean;
+	termsOfUseConsent: boolean;
+	dateOfPrivacyConsent: Date;
+	dateOfTermsOfUseConsent: Date;
+}
+
+export interface ParentConsent {
+	_id: ObjectId;
+	form: string;
+	privacyConsent: boolean;
+	termsOfUseConsent: boolean;
+	dateOfPrivacyConsent: Date;
+	dateOfTermsOfUseConsent: Date;
+}
 
 export interface UserProperties {
 	email: string;
@@ -924,6 +992,7 @@ export interface UserProperties {
 	birthday?: Date;
 	customAvatarBackgroundColor?: string;
 	parents?: UserParentsEntity[];
+	consent?: Consent;
 }
 
 interface UserInfo {
@@ -1008,6 +1077,9 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property({ nullable: true })
 	customAvatarBackgroundColor?: string; // in legacy it is NOT optional, but all new users stored without default value
 
+	@Property({ nullable: true })
+	consent?: Consent;
+
 	@Embedded(() &#x3D;&gt; UserParentsEntity, { array: true, nullable: true })
 	parents?: UserParentsEntity[];
 
@@ -1030,6 +1102,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		this.birthday &#x3D; props.birthday;
 		this.customAvatarBackgroundColor &#x3D; props.customAvatarBackgroundColor;
 		this.parents &#x3D; props.parents;
+		this.consent &#x3D; props.consent;
 	}
 
 	public resolvePermissions(): string[] {

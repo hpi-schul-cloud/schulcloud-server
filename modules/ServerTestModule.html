@@ -358,8 +358,8 @@ Customizations:</p>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="146"
-                                    class="link-to-prism">apps/server/src/modules/server/server.module.ts:146</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="148"
+                                    class="link-to-prism">apps/server/src/modules/server/server.module.ts:148</a></div>
                         </td>
                     </tr>
 
@@ -449,6 +449,7 @@ import { ALL_ENTITIES } from &#x27;@shared/domain/entity&#x27;;
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from &#x27;@src/config&#x27;;
 import { CoreModule } from &#x27;@src/core&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
+import { UsersAdminApiModule } from &#x27;@modules/user/legacy/users-admin-api.module&#x27;;
 import { ServerConfigController, ServerController, ServerUc } from &#x27;./api&#x27;;
 import { SERVER_CONFIG_TOKEN, serverConfig } from &#x27;./server.config&#x27;;
 
@@ -464,6 +465,7 @@ const serverModules &#x3D; [
 	LessonApiModule,
 	NewsModule,
 	UserApiModule,
+	UsersAdminApiModule,
 	SchulconnexClientModule.register({
 		apiUrl: Configuration.get(&#x27;SCHULCONNEX_CLIENT__API_URL&#x27;) as string,
 		tokenEndpoint: Configuration.get(&#x27;SCHULCONNEX_CLIENT__TOKEN_ENDPOINT&#x27;) as string,
