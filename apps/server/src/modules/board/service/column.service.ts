@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { BoardCompositeProps, Column, ColumnBoard, ColumnProps } from '@shared/domain/domainobject';
+import { Column, ColumnBoard, ColumnInitProps } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { BoardDoRepo } from '../repo';
@@ -14,10 +14,10 @@ export class ColumnService {
 		return column;
 	}
 
-	async create(parent: ColumnBoard): Promise<Column> {
+	async create(parent: ColumnBoard, props?: ColumnInitProps): Promise<Column> {
 		const column = new Column({
 			id: new ObjectId().toHexString(),
-			title: '',
+			title: props?.title || '',
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
@@ -30,7 +30,7 @@ export class ColumnService {
 		return column;
 	}
 
-	async createMany(parent: ColumnBoard, props: Omit<ColumnProps, keyof BoardCompositeProps>[]): Promise<Column[]> {
+	async createMany(parent: ColumnBoard, props: ColumnInitProps[]): Promise<Column[]> {
 		const columns = props.map((prop) => {
 			const column = new Column({
 				id: new ObjectId().toHexString(),
