@@ -4,7 +4,7 @@ import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
 } from '@shared/domain/domainobject/board/types';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardNode, BoardNodeProps } from './boardnode.entity';
 import { BoardDoBuilder } from './types';
 import { BoardNodeType } from './types/board-node-type';

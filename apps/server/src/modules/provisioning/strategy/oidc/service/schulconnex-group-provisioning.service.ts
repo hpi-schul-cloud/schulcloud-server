@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService, GroupTypes, GroupUser } from '@modules/group';
 import {
 	LegacySchoolService,
@@ -12,7 +13,6 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource, LegacySchoolDo, UserDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { ObjectId } from 'bson';
 import { ExternalGroupDto, ExternalGroupUserDto, ExternalSchoolDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
 
