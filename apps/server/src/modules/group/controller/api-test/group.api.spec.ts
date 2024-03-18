@@ -304,7 +304,7 @@ describe('Group (API)', () => {
 				it('should return all groups of the school', async () => {
 					const { loggedInClient, groupInSchool, availableGroupInSchool } = await setup();
 
-					const response = await loggedInClient.get('false');
+					const response = await loggedInClient.get();
 
 					expect(response.status).toEqual(HttpStatus.OK);
 					expect(response.body).toEqual([
@@ -380,7 +380,7 @@ describe('Group (API)', () => {
 				it('should return all groups the teacher is part of', async () => {
 					const { loggedInClient, teachersGroup, availableTeachersGroup } = await setup();
 
-					const response = await loggedInClient.get('false');
+					const response = await loggedInClient.get();
 
 					expect(response.status).toEqual(HttpStatus.OK);
 					expect(response.body).toEqual([

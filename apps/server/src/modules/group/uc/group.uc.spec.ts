@@ -1132,7 +1132,7 @@ describe('GroupUc', () => {
 			it('should throw forbidden', async () => {
 				const { user, error, school } = setup();
 
-				const func = () => uc.getAllGroups(user.id, school.id, false);
+				const func = () => uc.getAllGroups(user.id, school.id);
 
 				await expect(func).rejects.toThrow(error);
 			});
@@ -1165,7 +1165,7 @@ describe('GroupUc', () => {
 				it('should return all groups of the school', async () => {
 					const { user, groupInSchool, availableGroupInSchool, school } = setup();
 
-					const response = await uc.getAllGroups(user.id, school.id, false);
+					const response = await uc.getAllGroups(user.id, school.id);
 
 					expect(response).toEqual([
 						{
@@ -1215,8 +1215,8 @@ describe('GroupUc', () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorizationService.checkPermission.mockReturnValueOnce();
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
-				groupService.findAvailableGroupsBySchoolIdAndGroupTypes.mockResolvedValueOnce([availableTeachersGroup]);
-				groupService.findGroupsBySchoolIdAndGroupTypes.mockResolvedValueOnce([teachersGroup, availableTeachersGroup]);
+				groupService.findAvailableGroupsByUserAndGroupTypes.mockResolvedValueOnce([availableTeachersGroup]);
+				groupService.findGroupsByUserAndGroupTypes.mockResolvedValueOnce([teachersGroup, availableTeachersGroup]);
 
 				return {
 					user,
@@ -1229,7 +1229,7 @@ describe('GroupUc', () => {
 				it('should return all groups the teacher is part of', async () => {
 					const { user, teachersGroup, availableTeachersGroup, school } = setup();
 
-					const response = await uc.getAllGroups(user.id, school.id, false);
+					const response = await uc.getAllGroups(user.id, school.id);
 
 					expect(response).toEqual([
 						{
