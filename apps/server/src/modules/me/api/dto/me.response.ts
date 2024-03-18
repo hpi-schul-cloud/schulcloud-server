@@ -1,4 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { LanguageType } from '@shared/domain/interface';
+import { IsEnum } from 'class-validator';
 
 export class MeAccountResponse {
 	@ApiProperty()
@@ -86,8 +88,12 @@ export class MeResponse {
 	@ApiProperty()
 	permissions: string[];
 
-	@ApiPropertyOptional()
-	language?: string;
+	@ApiProperty({
+		enum: LanguageType,
+		enumName: 'Language',
+	})
+	@IsEnum(LanguageType)
+	language?: LanguageType;
 
 	@ApiProperty()
 	account: MeAccountResponse;

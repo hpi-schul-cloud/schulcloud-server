@@ -93,8 +93,8 @@ export interface ServerConfig
 	TLDRAW__ASSETS_MAX_SIZE: number;
 	TLDRAW__ASSETS_ALLOWED_EXTENSIONS_LIST?: string;
 	I18N__AVAILABLE_LANGUAGES: LanguageType[];
-	I18N__DEFAULT_LANGUAGE: string; // should be enum
-	I18N__FALLBACK_LANGUAGE: string; // should be enum
+	I18N__DEFAULT_LANGUAGE: LanguageType;
+	I18N__FALLBACK_LANGUAGE: LanguageType;
 	I18N__DEFAULT_TIMEZONE: string; // should be enum
 }
 
@@ -194,8 +194,8 @@ const config: ServerConfig = {
 		? (Configuration.get('ETHERPAD__PAD_URI') as string)
 		: undefined,
 	I18N__AVAILABLE_LANGUAGES: (Configuration.get('I18N__AVAILABLE_LANGUAGES') as string).split(',') as LanguageType[],
-	I18N__DEFAULT_LANGUAGE: Configuration.get('I18N__DEFAULT_LANGUAGE') as string,
-	I18N__FALLBACK_LANGUAGE: Configuration.get('I18N__FALLBACK_LANGUAGE') as string,
+	I18N__DEFAULT_LANGUAGE: Configuration.get('I18N__DEFAULT_LANGUAGE') as unknown as LanguageType,
+	I18N__FALLBACK_LANGUAGE: Configuration.get('I18N__FALLBACK_LANGUAGE') as unknown as LanguageType,
 	I18N__DEFAULT_TIMEZONE: Configuration.get('I18N__DEFAULT_TIMEZONE') as string,
 	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: Configuration.get(
 		'SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS'

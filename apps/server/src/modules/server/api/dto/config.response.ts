@@ -159,11 +159,19 @@ export class ConfigResponse {
 	@IsEnum(LanguageType, { each: true })
 	I18N__AVAILABLE_LANGUAGES: LanguageType[];
 
-	@ApiProperty()
-	I18N__DEFAULT_LANGUAGE: string; // enum
+	@ApiProperty({
+		enum: LanguageType,
+		enumName: 'Language',
+	})
+	@IsEnum(LanguageType)
+	I18N__DEFAULT_LANGUAGE: LanguageType;
 
-	@ApiProperty()
-	I18N__FALLBACK_LANGUAGE: string; // enum
+	@ApiProperty({
+		enum: LanguageType,
+		enumName: 'Language',
+	})
+	@IsEnum(LanguageType)
+	I18N__FALLBACK_LANGUAGE: LanguageType;
 
 	@ApiProperty()
 	I18N__DEFAULT_TIMEZONE: string; // enum
