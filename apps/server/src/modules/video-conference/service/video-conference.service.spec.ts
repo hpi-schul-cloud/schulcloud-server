@@ -16,7 +16,7 @@ import { courseFactory, roleFactory, setupEntities, userDoFactory, userFactory }
 import { teamFactory } from '@shared/testing/factory/team.factory';
 import { teamUserFactory } from '@shared/testing/factory/teamuser.factory';
 import { videoConferenceDOFactory } from '@shared/testing/factory/video-conference.do.factory';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BBBRole } from '../bbb';
 import { ErrorStatus } from '../error';
 import { IVideoConferenceSettings, VideoConferenceOptions, VideoConferenceSettings } from '../interface';

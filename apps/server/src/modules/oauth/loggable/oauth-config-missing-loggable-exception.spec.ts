@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { OauthConfigMissingLoggableException } from './oauth-config-missing-loggable-exception';
 
 describe(OauthConfigMissingLoggableException.name, () => {

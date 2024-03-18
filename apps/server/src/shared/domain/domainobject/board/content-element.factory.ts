@@ -1,6 +1,6 @@
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { InputFormat } from '@shared/domain/types';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalToolElement } from './external-tool-element.do';
 import { DrawingElement } from './drawing-element.do';
 import { FileElement } from './file-element.do';

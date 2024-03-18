@@ -7,7 +7,7 @@ import { Counted } from '@shared/domain/types';
 import { SubmissionRepo } from '@shared/repo';
 import { setupEntities, submissionFactory, taskFactory, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { SubmissionService } from './submission.service';
 
 describe('Submission Service', () => {
