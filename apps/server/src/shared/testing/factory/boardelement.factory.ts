@@ -7,9 +7,9 @@ import {
 	TaskBoardElement,
 } from '@shared/domain/entity';
 import { BaseFactory } from './base.factory';
+import { columnBoardNodeFactory } from './boardnode';
 import { lessonFactory } from './lesson.factory';
 import { taskFactory } from './task.factory';
-import { columnBoardNodeFactory } from './boardnode';
 
 export const taskBoardElementFactory = BaseFactory.define<TaskBoardElement, { target: Task }>(TaskBoardElement, () => {
 	return {

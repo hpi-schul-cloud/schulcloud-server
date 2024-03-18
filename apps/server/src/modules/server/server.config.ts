@@ -3,21 +3,21 @@ import type { IdentityManagementConfig } from '@infra/identity-management';
 import type { SchulconnexClientConfig } from '@infra/schulconnex-client';
 import type { AccountConfig } from '@modules/account';
 import type { AuthenticationConfig, XApiKeyConfig } from '@modules/authentication';
-import type { FilesStorageClientConfig } from '@modules/files-storage-client';
-import type { CommonCartridgeConfig, LearnroomConfig } from '@modules/learnroom';
-import type { SchoolConfig } from '@modules/school';
-import type { UserConfig } from '@modules/user';
-import { type IUserImportFeatures, UserImportConfiguration } from '@modules/user-import';
-import type { CoreModuleConfig } from '@src/core';
-import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
-import { ToolConfiguration, type IToolFeatures } from '@modules/tool';
-import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
-import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@modules/video-conference';
-import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
-import type { LessonConfig } from '@modules/lesson';
 import type { BoardConfig } from '@modules/board';
+import type { FilesStorageClientConfig } from '@modules/files-storage-client';
+import type { LearnroomConfig } from '@modules/learnroom';
+import type { LessonConfig } from '@modules/lesson';
+import type { SchoolConfig } from '@modules/school';
 import type { SharingConfig } from '@modules/sharing';
 import type { SystemConfig } from '@modules/system';
+import { getTldrawClientConfig, type TldrawClientConfig } from '@modules/tldraw-client';
+import { ToolConfiguration, type IToolFeatures } from '@modules/tool';
+import type { UserConfig } from '@modules/user';
+import { UserImportConfiguration, type IUserImportFeatures } from '@modules/user-import';
+import type { UserLoginMigrationConfig } from '@modules/user-login-migration';
+import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@modules/video-conference';
+import type { CoreModuleConfig } from '@src/core';
+import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -34,7 +34,6 @@ export interface ServerConfig
 		FilesStorageClientConfig,
 		AccountConfig,
 		IdentityManagementConfig,
-		CommonCartridgeConfig,
 		SchoolConfig,
 		MailConfig,
 		XApiKeyConfig,
@@ -46,7 +45,6 @@ export interface ServerConfig
 		LessonConfig,
 		IVideoConferenceSettings,
 		BoardConfig,
-		LearnroomConfig,
 		SharingConfig,
 		IUserImportFeatures,
 		SchulconnexClientConfig,
@@ -152,7 +150,10 @@ const config: ServerConfig = {
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: Configuration.get(
 		'TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE'
 	) as boolean,
-	FEATURE_IMSCC_COURSE_EXPORT_ENABLED: Configuration.get('FEATURE_IMSCC_COURSE_EXPORT_ENABLED') as boolean,
+	FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED: Configuration.get(
+		'FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED'
+	) as boolean,
+	GEOGEBRA_BASE_URL: Configuration.get('GEOGEBRA_BASE_URL') as string,
 	FEATURE_IDENTITY_MANAGEMENT_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,

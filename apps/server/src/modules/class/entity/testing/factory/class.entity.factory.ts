@@ -1,6 +1,6 @@
 import { ClassEntity, ClassEntityProps, ClassSourceOptionsEntity } from '@modules/class/entity';
 import { BaseFactory } from '@shared/testing/factory/base.factory';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { DeepPartial } from 'fishery';
 
 class ClassEntityFactory extends BaseFactory<ClassEntity, ClassEntityProps> {
