@@ -32,7 +32,7 @@ describe(SystemMikroOrmRepo.name, () => {
 		await cleanupCollections(em);
 	});
 
-	describe('findById', () => {
+	describe('getSystemById', () => {
 		describe('when the system exists', () => {
 			const setup = async () => {
 				const oauthConfig = new OauthConfigEntity({
@@ -193,16 +193,37 @@ describe(SystemMikroOrmRepo.name, () => {
 				const system3Props = SystemEntityMapper.mapToDo(system3);
 
 				const expectedSystems = [system1Props, system2Props, system3Props];
+				const systemIds = expectedSystems.map((s) => s.id);
 
-				return { expectedSystems };
+				return { expectedSystems, systemIds };
 			};
 
 			it('should return the systems', async () => {
-				const { expectedSystems } = await setup();
+				const { expectedSystems, systemIds } = await setup();
 
-				const result = await repo.getSystemsByIds(expectedSystems.map((s) => s.id));
+				const result = await repo.getSystemsByIds(systemIds);
 
 				expect(result).toEqual(expectedSystems);
+			});
+		});
+
+		describe('when throwing an error', () => {
+			const setup = () => {
+				const systemIds = [new ObjectId().toHexString()];
+				const error = new Error('Connection error');
+				const spy = jest.spyOn(em, 'find');
+				spy.mockRejectedValueOnce(error);
+
+				return {
+					systemIds,
+					error,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { systemIds, error } = setup();
+
+				await expect(repo.getSystemsByIds(systemIds)).rejects.toThrow(error);
 			});
 		});
 	});

@@ -10,4 +10,12 @@ export class TypeGuard {
 
 		return isNumber;
 	}
+
+	static isArrayWithElements(value: unknown): value is [] {
+		if (Array.isArray(value) && value.length > 0) {
+			return true;
+		}
+
+		return false;
+	}
 }

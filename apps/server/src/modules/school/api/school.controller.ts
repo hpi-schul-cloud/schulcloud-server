@@ -49,7 +49,7 @@ export class SchoolController {
 		return res;
 	}
 
-	@ApiOperation({ summary: 'Get systems form school' })
+	@ApiOperation({ summary: 'Get systems from school' })
 	@ApiResponse({ status: 200, type: SchoolResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })

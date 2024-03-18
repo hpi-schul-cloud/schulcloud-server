@@ -5,7 +5,7 @@ export class SchoolSystemsResponse {
 	id: string;
 
 	@ApiProperty()
-	systems: SystemsResponse[];
+	systems: SchoolSystemResponse[];
 
 	constructor(props: SchoolSystemsResponse) {
 		this.id = props.id;
@@ -13,7 +13,7 @@ export class SchoolSystemsResponse {
 	}
 }
 
-export class SystemsResponse {
+export class SchoolSystemResponse {
 	@ApiProperty()
 	id: string;
 
@@ -23,7 +23,7 @@ export class SystemsResponse {
 	@ApiProperty()
 	alias?: string;
 
-	constructor(props: SystemsResponse) {
+	constructor(props: SchoolSystemResponse) {
 		this.id = props.id;
 		this.type = props.type;
 		this.alias = props.alias;

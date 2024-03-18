@@ -104,6 +104,22 @@ describe(SystemService.name, () => {
 				expect(result).toEqual([]);
 			});
 		});
+
+		describe('when throwing an error', () => {
+			const setup = () => {
+				const systemIds = [new ObjectId().toHexString()];
+				const error = new Error('Connection error');
+				systemRepo.getSystemsByIds.mockRejectedValueOnce(error);
+
+				return { systemIds, error };
+			};
+
+			it('should throw an error', async () => {
+				const { systemIds, error } = setup();
+
+				await expect(service.getSystems(systemIds)).rejects.toThrow(error);
+			});
+		});
 	});
 
 	describe('delete', () => {
@@ -138,7 +154,7 @@ describe(SystemService.name, () => {
 				};
 			};
 
-			it('schould throw an error', async () => {
+			it('should throw an error', async () => {
 				const { system } = setup();
 
 				await expect(service.delete(system)).rejects.toThrowError('Not found');

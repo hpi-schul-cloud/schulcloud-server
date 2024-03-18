@@ -584,5 +584,20 @@ describe('SchoolService', () => {
 				expect(result).toEqual([]);
 			});
 		});
+
+		describe('when systemService.getSystems throws error', () => {
+			const setup = () => {
+				const school = schoolFactory.build({ systemIds: ['1'] });
+				systemService.getSystems.mockRejectedValueOnce(new NotFoundException());
+
+				return { school };
+			};
+
+			it('should throw NotFoundException', async () => {
+				const { school } = setup();
+
+				await expect(service.getSchoolSystems(school)).rejects.toThrowError(NotFoundException);
+			});
+		});
 	});
 });

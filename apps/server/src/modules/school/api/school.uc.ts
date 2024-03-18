@@ -48,7 +48,7 @@ export class SchoolUc {
 
 		const systems = await this.schoolService.getSchoolSystems(school);
 
-		const responseDto = SystemResponseMapper.mapToSchoolSystemResponse(school, systems);
+		const responseDto = SystemResponseMapper.mapToSchoolSystemsResponse(school, systems);
 
 		return responseDto;
 	}

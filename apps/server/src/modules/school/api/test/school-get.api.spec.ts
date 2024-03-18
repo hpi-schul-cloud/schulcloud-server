@@ -66,10 +66,11 @@ describe('School Controller (API)', () => {
 				const response = await loggedInClient.get(`id/123`);
 
 				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				expect(response.body.validationErrors).toEqual([
-					{ errors: ['schoolId must be a mongodb id'], field: ['schoolId'] },
-				]);
+				expect(response.body).toEqual(
+					expect.objectContaining({
+						validationErrors: [{ errors: ['schoolId must be a mongodb id'], field: ['schoolId'] }],
+					})
+				);
 			});
 		});
 
@@ -242,10 +243,11 @@ describe('School Controller (API)', () => {
 				const response = await testApiClient.get(`exists/id/123`);
 
 				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				expect(response.body.validationErrors).toEqual([
-					{ errors: ['schoolId must be a mongodb id'], field: ['schoolId'] },
-				]);
+				expect(response.body).toEqual(
+					expect.objectContaining({
+						validationErrors: [{ errors: ['schoolId must be a mongodb id'], field: ['schoolId'] }],
+					})
+				);
 			});
 		});
 
@@ -370,10 +372,11 @@ describe('School Controller (API)', () => {
 				const response = await loggedInClient.get(`123/systems`);
 
 				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				expect(response.body.validationErrors).toEqual([
-					{ errors: ['schoolId must be a mongodb id'], field: ['schoolId'] },
-				]);
+				expect(response.body).toEqual(
+					expect.objectContaining({
+						validationErrors: [{ errors: ['schoolId must be a mongodb id'], field: ['schoolId'] }],
+					})
+				);
 			});
 		});
 

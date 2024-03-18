@@ -1,5 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { TypeGuard } from '@shared/common';
 import { IFindOptions } from '@shared/domain/interface/find-options';
 import { EntityId } from '@shared/domain/types/entity-id';
 import { System, SystemService } from '@src/modules/system';
@@ -64,11 +65,11 @@ export class SchoolService {
 	public async getSchoolSystems(school: School): Promise<System[]> {
 		const { systemIds } = school.getProps();
 
-		if (!Array.isArray(systemIds) || systemIds.length === 0) {
-			return [];
-		}
+		let schoolSystems: System[] = [];
 
-		const schoolSystems = await this.systemService.getSystems(systemIds);
+		if (TypeGuard.isArrayWithElements(systemIds)) {
+			schoolSystems = await this.systemService.getSystems(systemIds);
+		}
 
 		return schoolSystems;
 	}
