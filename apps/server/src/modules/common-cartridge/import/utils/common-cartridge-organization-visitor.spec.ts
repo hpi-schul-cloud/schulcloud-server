@@ -12,7 +12,9 @@ describe('CommonCartridgeOrganizationVisitor', () => {
 			return document;
 		}
 
-		const buffer = await readFile('./apps/server/test/assets/common-cartridge/us_history_since_1877.imscc');
+		const buffer = await readFile(
+			'./apps/server/src/modules/common-cartridge/testing/assets/us_history_since_1877.imscc'
+		);
 		const archive = new AdmZip(buffer);
 		const { document } = new JSDOM(archive.readAsText('imsmanifest.xml'), { contentType: 'text/xml' }).window;
 
