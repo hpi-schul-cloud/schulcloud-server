@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { DomainName, EntityId, StatusModel } from '@shared/domain/types';
 import { DataDeletionDomainOperationLoggable } from './data-deletion-domain-operation-loggable';
 

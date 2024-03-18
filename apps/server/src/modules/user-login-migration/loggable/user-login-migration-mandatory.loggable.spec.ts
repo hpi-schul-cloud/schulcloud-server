@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UserLoginMigrationMandatoryLoggable } from './user-login-migration-mandatory.loggable';
 
 describe(UserLoginMigrationMandatoryLoggable.name, () => {
