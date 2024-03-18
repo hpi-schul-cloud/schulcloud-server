@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 import { LinkElement, LinkElementProps } from '@shared/domain/domainobject';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '../../base.factory';
 
 export const linkElementFactory = BaseFactory.define<LinkElement, LinkElementProps>(LinkElement, ({ sequence }) => {
