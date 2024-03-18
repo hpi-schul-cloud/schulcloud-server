@@ -4,7 +4,7 @@ import { IsBoolean, IsOptional } from 'class-validator';
 
 export class GroupParams {
 	@IsOptional()
-	@ApiPropertyOptional({ default: false, required: false })
 	@IsBoolean()
+	@ApiPropertyOptional()
 	availableSyncedGroups?: boolean;
 }
