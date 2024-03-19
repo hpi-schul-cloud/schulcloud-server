@@ -1,5 +1,5 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { AuthorizableReferenceType, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
 import { CopyStatus } from '@modules/copy-helper';
 import { CourseCopyService, CourseService } from '@modules/learnroom';
@@ -47,7 +47,7 @@ export class ShareTokenUC {
 
 		this.logger.debug({ action: 'createShareToken', userId, payload, options });
 
-		await this.checkParentWritePermission(userId, payload);
+		await this.checkCreatePermission(userId, payload);
 
 		const serviceOptions: { context?: ShareTokenContext; expiresAt?: Date } = {};
 		if (options?.schoolExclusive) {
@@ -73,7 +73,7 @@ export class ShareTokenUC {
 
 		this.checkFeatureEnabled(shareToken.payload.parentType);
 
-		await this.checkCreatePermission(userId, shareToken.payload.parentType);
+		await this.checkLookupPermission(userId, shareToken.payload.parentType);
 
 		if (shareToken.context) {
 			await this.checkContextReadPermission(userId, shareToken.context);
@@ -104,7 +104,7 @@ export class ShareTokenUC {
 			await this.checkContextReadPermission(userId, shareToken.context);
 		}
 
-		await this.checkCreatePermission(userId, shareToken.payload.parentType);
+		await this.checkImportPermission(userId, shareToken.payload.parentType, destinationCourseId);
 
 		let result: CopyStatus;
 		switch (shareToken.payload.parentType) {
@@ -171,22 +171,17 @@ export class ShareTokenUC {
 		});
 	}
 
-	private copyColumnBoard(
-		userId: string,
-		originalColumnBoardId: string,
-		courseId: string
-		// copyName?: string // TODO: implement copyName once is supported
-	): Promise<CopyStatus> {
-		// const destinationCourse = await this.courseService.findById(courseId);
-		// TODO should we not check write permission on destination course here?
-		return this.columnBoardCopyService.copyColumnBoard({
+	private copyColumnBoard(userId: string, originalColumnBoardId: string, courseId: string): Promise<CopyStatus> {
+		const copyCopyStatus = this.columnBoardCopyService.copyColumnBoard({
 			originalColumnBoardId,
 			destinationExternalReference: { type: BoardExternalReferenceType.Course, id: courseId },
 			userId,
+			// copyName // TODO: implement copyName once it's supported
 		});
+		return copyCopyStatus;
 	}
 
-	private async checkParentWritePermission(userId: EntityId, payload: ShareTokenPayload) {
+	private async checkCreatePermission(userId: EntityId, payload: ShareTokenPayload) {
 		const allowedParentType = ShareTokenParentTypeMapper.mapToAllowedAuthorizationEntityType(payload.parentType);
 
 		let requiredPermissions: Permission[] = [];
@@ -202,8 +197,7 @@ export class ShareTokenUC {
 				requiredPermissions = [Permission.HOMEWORK_CREATE];
 				break;
 			case ShareTokenParentType.ColumnBoard:
-				// TODO
-				requiredPermissions = [];
+				requiredPermissions = [Permission.COURSE_EDIT];
 				break;
 		}
 
@@ -229,30 +223,48 @@ export class ShareTokenUC {
 		);
 	}
 
-	private async checkCreatePermission(userId: EntityId, parentType: ShareTokenParentType) {
-		// checks if parent type is supported
-		ShareTokenParentTypeMapper.mapToAllowedAuthorizationEntityType(parentType);
-
+	private async checkLookupPermission(userId: EntityId, parentType: ShareTokenParentType) {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const requiredPermissions = this.getCreatePermissionForParentType(parentType);
+		this.authorizationService.checkAllPermissions(user, requiredPermissions);
+	}
 
-		let requiredPermissions: Permission[] = [];
-		// eslint-disable-next-line default-case
+	private async checkImportPermission(
+		userId: EntityId,
+		parentType: ShareTokenParentType,
+		destinationCourseId?: EntityId
+	) {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const requiredPermissions = this.getCreatePermissionForParentType(parentType);
+
+		if (parentType === ShareTokenParentType.Course) {
+			this.authorizationService.checkAllPermissions(user, requiredPermissions);
+		} else {
+			if (!destinationCourseId) {
+				throw new BadRequestException('Destination course id is required');
+			}
+			await this.authorizationReferenceService.checkPermissionByReferences(
+				userId,
+				AuthorizableReferenceType.Course,
+				destinationCourseId,
+				AuthorizationContextBuilder.write(requiredPermissions)
+			);
+		}
+	}
+
+	private getCreatePermissionForParentType(parentType: ShareTokenParentType): Permission[] {
 		switch (parentType) {
 			case ShareTokenParentType.Course:
-				requiredPermissions = [Permission.COURSE_CREATE];
-				break;
+				return [Permission.COURSE_CREATE];
 			case ShareTokenParentType.Lesson:
-				requiredPermissions = [Permission.TOPIC_CREATE];
-				break;
+				return [Permission.TOPIC_CREATE];
 			case ShareTokenParentType.Task:
-				requiredPermissions = [Permission.HOMEWORK_CREATE];
-				break;
+				return [Permission.HOMEWORK_CREATE];
 			case ShareTokenParentType.ColumnBoard:
-				// TODO
-				requiredPermissions = [];
-				break;
+				return [Permission.COURSE_EDIT];
+			default:
+				throw new NotImplementedException('Import Feature not implemented');
 		}
-		this.authorizationService.checkAllPermissions(user, requiredPermissions);
 	}
 
 	private nowPlusDays(days: number) {

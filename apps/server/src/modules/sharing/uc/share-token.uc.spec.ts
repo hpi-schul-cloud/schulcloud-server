@@ -4,6 +4,7 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import {
 	Action,
 	AuthorizableReferenceType,
+	AuthorizationContextBuilder,
 	AuthorizationReferenceService,
 	AuthorizationService,
 } from '@modules/authorization';
@@ -331,7 +332,7 @@ describe('ShareTokenUC', () => {
 					parent.id,
 					{
 						action: Action.write,
-						requiredPermissions: [],
+						requiredPermissions: [Permission.COURSE_EDIT],
 					}
 				);
 			});
@@ -807,12 +808,17 @@ describe('ShareTokenUC', () => {
 				expect(result.status).toBe(CopyStatusEnum.SUCCESS);
 			});
 
-			it('should check the permission to create the topic', async () => {
+			it('should check the permission to create topic in destination course ', async () => {
 				const { user, shareToken, course } = setup();
 
-				await uc.importShareToken(user.id, shareToken.token, 'NewName', course._id.toHexString());
+				await uc.importShareToken(user.id, shareToken.token, 'NewName', course.id);
 
-				expect(authorization.checkAllPermissions).toBeCalledWith(user, [Permission.TOPIC_CREATE]);
+				expect(authorizationReferenceService.checkPermissionByReferences).toBeCalledWith(
+					user.id,
+					AuthorizableReferenceType.Course,
+					course.id,
+					AuthorizationContextBuilder.write([Permission.TOPIC_CREATE])
+				);
 			});
 
 			it('should use the service to copy the lesson', async () => {
@@ -915,20 +921,25 @@ describe('ShareTokenUC', () => {
 			});
 
 			it('should load the share token', async () => {
-				const { user, shareToken, task } = setupTask();
+				const { user, shareToken, course } = setupTask();
 
-				const result = await uc.importShareToken(user.id, shareToken.token, 'NewName', task.id);
+				const result = await uc.importShareToken(user.id, shareToken.token, 'NewName', course.id);
 
 				expect(service.lookupToken).toBeCalledWith(shareToken.token);
 				expect(result.status).toBe(CopyStatusEnum.SUCCESS);
 			});
 
-			it('should check the permission to create the task', async () => {
-				const { user, shareToken, task } = setupTask();
+			it('should check the permission to create the task in the destination course', async () => {
+				const { user, shareToken, course } = setupTask();
 
-				await uc.importShareToken(user.id, shareToken.token, 'NewName', task.id);
+				await uc.importShareToken(user.id, shareToken.token, 'NewName', course.id);
 
-				expect(authorization.checkAllPermissions).toBeCalledWith(user, [Permission.HOMEWORK_CREATE]);
+				expect(authorizationReferenceService.checkPermissionByReferences).toBeCalledWith(
+					user.id,
+					AuthorizableReferenceType.Course,
+					course.id,
+					AuthorizationContextBuilder.write([Permission.HOMEWORK_CREATE])
+				);
 			});
 
 			it('should use the service to copy the task', async () => {
@@ -1024,7 +1035,12 @@ describe('ShareTokenUC', () => {
 			it('should check the permission to create the columnboard', async () => {
 				const { user, shareToken, course } = setup();
 				await uc.importShareToken(user.id, shareToken.token, 'NewName', course.id);
-				expect(authorization.checkAllPermissions).toHaveBeenCalledWith(user, []);
+				expect(authorizationReferenceService.checkPermissionByReferences).toHaveBeenCalledWith(
+					user.id,
+					AuthorizableReferenceType.Course,
+					course.id,
+					AuthorizationContextBuilder.write([Permission.COURSE_EDIT])
+				);
 			});
 			it('should throw if destination course id is not given', async () => {
 				const { user, shareToken } = setup();

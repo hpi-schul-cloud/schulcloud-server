@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { CourseService } from '@modules/learnroom/service';
 import { ColumnBoardService } from '@modules/board/service';
 import { LessonService } from '@modules/lesson/service';
@@ -64,12 +64,10 @@ export class ShareTokenService {
 				parentName = (await this.taskService.findById(shareToken.payload.parentId)).name;
 				break;
 			case ShareTokenParentType.ColumnBoard:
-				// TODO - well the column board should have a name...
 				parentName = (await this.columnBoardService.findById(shareToken.payload.parentId)).title;
 				break;
 			default:
-				// TODO find an appropriate error
-				throw new Error('Invalid parent type');
+				throw new UnprocessableEntityException('Invalid parent type');
 		}
 
 		return { shareToken, parentName };
