@@ -1,6 +1,6 @@
 import { Page } from '@shared/domain/domainobject';
 import { GroupTypes } from '../../domain';
-import { ClassInfoDto, GroupDto, ResolvedGroupDto } from '../../uc/dto';
+import { ClassInfoDto, CourseInfoDto, GroupDto ResolvedGroupDto } from '../../uc/dto';
 import {
 	ClassInfoResponse,
 	ClassInfoSearchListResponse,
@@ -10,6 +10,7 @@ import {
 	GroupTypeResponse,
 	GroupUserResponse,
 } from '../dto';
+import { CourseInfoResponse } from '../dto/response/course-info.response';
 
 const typeMapping: Record<GroupTypes, GroupTypeResponse> = {
 	[GroupTypes.CLASS]: GroupTypeResponse.CLASS,
@@ -38,15 +39,18 @@ export class GroupResponseMapper {
 	}
 
 	private static mapToClassInfoToResponse(classInfo: ClassInfoDto): ClassInfoResponse {
-		const mapped = new ClassInfoResponse({
+		const mapped: ClassInfoResponse = new ClassInfoResponse({
 			id: classInfo.id,
 			type: classInfo.type,
 			name: classInfo.name,
 			externalSourceName: classInfo.externalSourceName,
-			teachers: classInfo.teacherNames,
+			teacherNames: classInfo.teacherNames,
 			schoolYear: classInfo.schoolYear,
 			isUpgradable: classInfo.isUpgradable,
 			studentCount: classInfo.studentCount,
+			synchronizedCourses: classInfo.synchronizedCourses?.map(
+				(synchronizedCourse: CourseInfoDto): CourseInfoResponse => new CourseInfoResponse(synchronizedCourse)
+			),
 		});
 
 		return mapped;
@@ -82,6 +86,7 @@ export class GroupResponseMapper {
 		const mapped: GroupEntryResponse[] = groups.map(
 			(group: GroupDto): GroupEntryResponse => new GroupEntryResponse({ id: group.id, name: group.name })
 		);
+
 		return mapped;
 	}
 }

@@ -1,9 +1,9 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CommonCartridgeVersion } from '@modules/common-cartridge';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ObjectId } from 'bson';
 import { AuthorizationReferenceService } from '../../authorization/domain';
 import { LearnroomConfig } from '../learnroom.config';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';

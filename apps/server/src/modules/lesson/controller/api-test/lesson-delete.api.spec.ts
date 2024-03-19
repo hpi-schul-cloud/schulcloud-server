@@ -12,7 +12,7 @@ import {
 	courseGroupFactory,
 	lessonFactory,
 } from '@shared/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 
 describe('Lesson Controller (API) - delete', () => {
 	let app: INestApplication;

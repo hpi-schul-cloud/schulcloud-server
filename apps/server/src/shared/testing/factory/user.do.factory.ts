@@ -1,7 +1,7 @@
 import { UserDO } from '@shared/domain/domainobject/user.do';
 import { RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { DeepPartial } from 'fishery';
 import { DoBaseFactory } from './domainobject';
 

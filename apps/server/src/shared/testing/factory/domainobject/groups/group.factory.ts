@@ -1,6 +1,6 @@
 import { Group, GroupProps, GroupTypes } from '@modules/group/domain';
 import { ExternalSource } from '@shared/domain/domainobject';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { DomainObjectFactory } from '../domain-object.factory';
 
 export const groupFactory = DomainObjectFactory.define<Group, GroupProps>(Group, ({ sequence }) => {

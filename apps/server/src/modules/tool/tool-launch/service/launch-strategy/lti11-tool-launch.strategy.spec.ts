@@ -12,7 +12,7 @@ import {
 	userDoFactory,
 } from '@shared/testing';
 import { pseudonymFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Authorization } from 'oauth-1.0a';
 import { LtiMessageType, LtiPrivacyPermission, LtiRole } from '../../../common/enum';
 import { ContextExternalTool } from '../../../context-external-tool/domain';

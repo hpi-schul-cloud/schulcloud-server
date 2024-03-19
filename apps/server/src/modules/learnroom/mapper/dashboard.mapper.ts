@@ -1,4 +1,4 @@
-import { DashboardEntity, GridElementWithPosition } from '@shared/domain/entity';
+import { DashboardEntity, GridElementContent, GridElementWithPosition, GridPosition } from '@shared/domain/entity';
 import { LearnroomMetadata } from '@shared/domain/types';
 import { DashboardGridElementResponse, DashboardGridSubElementResponse, DashboardResponse } from '../controller/dto';
 
@@ -14,15 +14,16 @@ export class DashboardMapper {
 	}
 
 	private static mapGridElement(data: GridElementWithPosition): DashboardGridElementResponse {
-		const elementData = data.gridElement.getContent();
-		const position = data.pos;
-		const dto = new DashboardGridElementResponse({
+		const elementData: GridElementContent = data.gridElement.getContent();
+		const position: GridPosition = data.pos;
+		const dto: DashboardGridElementResponse = new DashboardGridElementResponse({
 			title: elementData.title,
 			shortTitle: elementData.shortTitle,
 			displayColor: elementData.displayColor,
 			xPosition: position.x,
 			yPosition: position.y,
 			copyingSince: elementData.copyingSince ?? undefined,
+			isSynchronized: elementData.isSynchronized,
 		});
 		if (elementData.referencedId) {
 			dto.id = elementData.referencedId;
