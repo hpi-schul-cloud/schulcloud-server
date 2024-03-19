@@ -85,7 +85,7 @@ export class GroupController {
 		const groups: GroupDto[] = await this.groupUc.getAllGroups(
 			currentUser.userId,
 			currentUser.schoolId,
-			params.availableSyncedGroups
+			params.availableGroupsForCourseSync
 		);
 		const response: GroupEntryResponse[] = GroupResponseMapper.mapToGroupListResponse(groups);
 

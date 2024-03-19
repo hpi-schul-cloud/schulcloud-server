@@ -1219,16 +1219,41 @@ describe('GroupUc', () => {
 
 					const response = await uc.getAllGroups(user.id, school.id);
 
-					expect(response).toEqual([
-						{
-							id: groupInSchool.id,
-							name: groupInSchool.name,
-						},
-						{
-							id: availableGroupInSchool.id,
-							name: availableGroupInSchool.name,
-						},
-					]);
+					// expect(response).toEqual([groupInSchool, availableGroupInSchool]);
+					expect(response).toMatchObject({
+						id: groupInSchool.id,
+						name: groupInSchool.name,
+						type: GroupTypes.CLASS,
+						externalSource: groupInSchool.externalSource,
+						organizationId: groupInSchool.organizationId,
+						users: [
+							// TODO: get the correctly mapped users here
+							{
+								user: {
+									id: teacherUser.id,
+									firstName: teacherUser.firstName,
+									lastName: teacherUser.lastName,
+									email: teacherUser.email,
+								},
+								role: {
+									id: teacherUser.roles[0].id,
+									name: teacherUser.roles[0].name,
+								},
+							},
+							{
+								user: {
+									id: studentUser.id,
+									firstName: studentUser.firstName,
+									lastName: studentUser.lastName,
+									email: studentUser.email,
+								},
+								role: {
+									id: studentUser.roles[0].id,
+									name: studentUser.roles[0].name,
+								},
+							},
+						],
+					});
 				});
 
 				it('should not return group not in school', async () => {
@@ -1236,12 +1261,7 @@ describe('GroupUc', () => {
 
 					const response = await uc.getAllGroups(user.id, school.id);
 
-					expect(response).not.toEqual([
-						{
-							id: groupInOtherSchool.id,
-							name: groupInOtherSchool.name,
-						},
-					]);
+					expect(response).not.toEqual([groupInOtherSchool]);
 				});
 			});
 
