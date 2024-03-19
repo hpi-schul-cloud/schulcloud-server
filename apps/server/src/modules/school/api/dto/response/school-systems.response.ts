@@ -18,7 +18,7 @@ export class SchoolSystemResponse {
 	@ApiProperty()
 	id: string;
 
-	@ApiProperty()
+	@ApiProperty({ enum: SystemType, enumName: 'SystemType' })
 	type: SystemType;
 
 	@ApiProperty()
