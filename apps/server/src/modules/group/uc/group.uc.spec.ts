@@ -1141,17 +1141,19 @@ describe('GroupUc', () => {
 		describe('when admin requests groups', () => {
 			const setup = () => {
 				const school: School = schoolFactory.build();
+				const otherSchool: School = schoolFactory.build();
 				const roles: Role = roleFactory.build({ permissions: [Permission.GROUP_FULL_ADMIN, Permission.GROUP_VIEW] });
 				const user: User = userFactory.buildWithId({ roles: [roles], school });
 
 				const groupInSchool: Group = groupFactory.build({ organizationId: school.id });
 				const availableGroupInSchool: Group = groupFactory.build({ organizationId: school.id });
+				const groupInOtherSchool: Group = groupFactory.build({ organizationId: otherSchool.id });
 
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorizationService.checkPermission.mockReturnValueOnce();
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
-				groupService.findAvailableGroupsBySchoolIdAndGroupTypes.mockResolvedValueOnce([availableGroupInSchool]);
+				groupService.findAvailableGroupsBySchoolId.mockResolvedValueOnce([availableGroupInSchool]);
 				groupService.findGroupsBySchoolIdAndGroupTypes.mockResolvedValueOnce([groupInSchool, availableGroupInSchool]);
 
 				return {
@@ -1159,8 +1161,10 @@ describe('GroupUc', () => {
 					school,
 					groupInSchool,
 					availableGroupInSchool,
+					groupInOtherSchool,
 				};
 			};
+
 			describe('when requesting all groups', () => {
 				it('should return all groups of the school', async () => {
 					const { user, groupInSchool, availableGroupInSchool, school } = setup();
@@ -1175,6 +1179,19 @@ describe('GroupUc', () => {
 						{
 							id: availableGroupInSchool.id,
 							name: availableGroupInSchool.name,
+						},
+					]);
+				});
+
+				it('should not return group not in school', async () => {
+					const { user, groupInOtherSchool, school } = setup();
+
+					const response = await uc.getAllGroups(user.id, school.id);
+
+					expect(response).not.toEqual([
+						{
+							id: groupInOtherSchool.id,
+							name: groupInOtherSchool.name,
 						},
 					]);
 				});
@@ -1210,12 +1227,13 @@ describe('GroupUc', () => {
 					organizationId: school.id,
 					users: [{ userId: user.id, roleId: user.roles[0].id }],
 				});
+				const notTeachersGroup: Group = groupFactory.build({ organizationId: school.id });
 
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				authorizationService.checkPermission.mockReturnValueOnce();
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
-				groupService.findAvailableGroupsByUserAndGroupTypes.mockResolvedValueOnce([availableTeachersGroup]);
+				groupService.findAvailableGroupsByUser.mockResolvedValueOnce([availableTeachersGroup]);
 				groupService.findGroupsByUserAndGroupTypes.mockResolvedValueOnce([teachersGroup, availableTeachersGroup]);
 
 				return {
@@ -1223,8 +1241,10 @@ describe('GroupUc', () => {
 					school,
 					teachersGroup,
 					availableTeachersGroup,
+					notTeachersGroup,
 				};
 			};
+
 			describe('when requesting all groups', () => {
 				it('should return all groups the teacher is part of', async () => {
 					const { user, teachersGroup, availableTeachersGroup, school } = setup();
@@ -1239,6 +1259,19 @@ describe('GroupUc', () => {
 						{
 							id: availableTeachersGroup.id,
 							name: availableTeachersGroup.name,
+						},
+					]);
+				});
+
+				it('should not return group without the teacher', async () => {
+					const { user, notTeachersGroup, school } = setup();
+
+					const response = await uc.getAllGroups(user.id, school.id);
+
+					expect(response).not.toEqual([
+						{
+							id: notTeachersGroup.id,
+							name: notTeachersGroup.name,
 						},
 					]);
 				});

@@ -2,9 +2,10 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExternalSource, UserDO } from '@shared/domain/domainobject';
-import { SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { Course as CourseEntity, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
 import {
 	cleanupCollections,
+	courseFactory,
 	groupEntityFactory,
 	groupFactory,
 	roleFactory,
@@ -14,7 +15,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Group, GroupProps, GroupTypes, GroupUser } from '../domain';
-import { GroupEntity, GroupEntityTypes } from '../entity';
+import { GroupEntity, GroupEntityTypes, GroupUserEntity } from '../entity';
 import { GroupRepo } from './group.repo';
 
 describe('GroupRepo', () => {
@@ -178,6 +179,67 @@ describe('GroupRepo', () => {
 		});
 	});
 
+	describe('findAvailableByUser', () => {
+		describe('when the user has groups', () => {
+			const setup = async () => {
+				const userEntity: User = userFactory.buildWithId();
+				const user: UserDO = userDoFactory.build({ id: userEntity.id });
+				const groupUserEntity: GroupUserEntity = { user: userEntity, role: roleFactory.buildWithId() };
+				const groupUser: GroupUser = new GroupUser({
+					userId: groupUserEntity.user.id,
+					roleId: groupUserEntity.role.id,
+				});
+				const groups: GroupEntity[] = groupEntityFactory.buildListWithId(2, {
+					users: [groupUserEntity],
+				});
+				const course: CourseEntity = courseFactory.build({ syncedWithGroup: groups[0] });
+
+				const otherGroups: GroupEntity[] = groupEntityFactory.buildListWithId(2);
+
+				await em.persistAndFlush([userEntity, ...groups, ...otherGroups, course]);
+				em.clear();
+
+				return {
+					user,
+					groupUser,
+				};
+			};
+
+			it('should return the available groups', async () => {
+				const { user, groupUser } = await setup();
+
+				const result: Group[] = await repo.findAvailableByUser(user);
+
+				expect(result).toHaveLength(1);
+				expect(result.every((group) => group.users.includes(groupUser))).toEqual(true);
+			});
+		});
+
+		describe('when the user has no groups exists', () => {
+			const setup = async () => {
+				const userEntity: User = userFactory.buildWithId();
+				const user: UserDO = userDoFactory.build({ id: userEntity.id });
+
+				const otherGroups: GroupEntity[] = groupEntityFactory.buildListWithId(2);
+
+				await em.persistAndFlush([userEntity, ...otherGroups]);
+				em.clear();
+
+				return {
+					user,
+				};
+			};
+
+			it('should return an empty array', async () => {
+				const { user } = await setup();
+
+				const result: Group[] = await repo.findAvailableByUser(user);
+
+				expect(result).toHaveLength(0);
+			});
+		});
+	});
+
 	describe('findBySchoolIdAndGroupTypes', () => {
 		describe('when groups for the school exist', () => {
 			const setup = async () => {
@@ -263,6 +325,64 @@ describe('GroupRepo', () => {
 				const { school } = await setup();
 
 				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(school.id, [GroupTypes.CLASS]);
+
+				expect(result).toHaveLength(0);
+			});
+		});
+	});
+
+	describe('findAvailableBySchoolId', () => {
+		describe('when available groups for the school exist', () => {
+			const setup = async () => {
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+				const groups: GroupEntity[] = groupEntityFactory.buildListWithId(2, {
+					type: GroupEntityTypes.CLASS,
+					organization: school,
+				});
+				const course: CourseEntity = courseFactory.build({ school, syncedWithGroup: groups[0] });
+
+				const otherSchool: SchoolEntity = schoolEntityFactory.buildWithId();
+				const otherGroups: GroupEntity[] = groupEntityFactory.buildListWithId(2, {
+					type: GroupEntityTypes.CLASS,
+					organization: otherSchool,
+				});
+
+				await em.persistAndFlush([school, ...groups, otherSchool, ...otherGroups, course]);
+				em.clear();
+
+				return {
+					school,
+					otherSchool,
+					groups,
+				};
+			};
+
+			it('should return the available groups from selected school', async () => {
+				const { school } = await setup();
+
+				const result: Group[] = await repo.findAvailableBySchoolId(school.id);
+
+				expect(result).toHaveLength(1);
+				expect(result.every((group) => group.organizationId === school.id)).toEqual(true);
+			});
+		});
+
+		describe('when no group exists', () => {
+			const setup = async () => {
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
+
+				await em.persistAndFlush([school]);
+				em.clear();
+
+				return {
+					school,
+				};
+			};
+
+			it('should return an empty array', async () => {
+				const { school } = await setup();
+
+				const result: Group[] = await repo.findAvailableBySchoolId(school.id);
 
 				expect(result).toHaveLength(0);
 			});

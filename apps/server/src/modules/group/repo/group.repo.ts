@@ -65,17 +65,15 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		return domainObjects;
 	}
 
-	public async findAvailableByUserAndGroupTypes(user: UserDO, groupTypes?: GroupTypes[]): Promise<Group[]> {
-		let groupEntityTypes: GroupEntityTypes[] | undefined;
-		if (groupTypes) {
-			groupEntityTypes = groupTypes.map((type: GroupTypes) => GroupTypesToGroupEntityTypesMapping[type]);
-		}
-
-		const scope: Scope<GroupEntity> = new GroupScope().byUserId(user.id).byTypes(groupEntityTypes);
+	public async findAvailableByUser(user: UserDO): Promise<Group[]> {
+		const scope: Scope<GroupEntity> = new GroupScope().byUserId(user.id);
 
 		const entities: GroupEntity[] = await this.em.find(GroupEntity, scope.query);
+		await this.em.populate(entities, ['syncedCourses']);
 
-		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
+		const filteredEntities: GroupEntity[] = entities.filter((entity: GroupEntity) => entity.syncedCourses.length === 0);
+
+		const domainObjects: Group[] = filteredEntities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
 
 		return domainObjects;
 	}
@@ -95,17 +93,15 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		return domainObjects;
 	}
 
-	public async findAvailableBySchoolIdAndGroupTypes(schoolId: EntityId, groupTypes?: GroupTypes[]): Promise<Group[]> {
-		let groupEntityTypes: GroupEntityTypes[] | undefined;
-		if (groupTypes) {
-			groupEntityTypes = groupTypes.map((type: GroupTypes) => GroupTypesToGroupEntityTypesMapping[type]);
-		}
+	public async findAvailableBySchoolId(schoolId: EntityId): Promise<Group[]> {
+		const scope: Scope<GroupEntity> = new GroupScope().byOrganizationId(schoolId); // .byNotSyncedGroups();
 
-		const scope: Scope<GroupEntity> = new GroupScope().byOrganizationId(schoolId).byTypes(groupEntityTypes);
+		const entities: GroupEntity[] = await this.em.find(GroupEntity, scope.query); // , { populate: ['syncedCourses'] });
+		await this.em.populate(entities, ['syncedCourses']);
 
-		const entities: GroupEntity[] = await this.em.find(GroupEntity, scope.query);
+		const filteredEntities: GroupEntity[] = entities.filter((entity: GroupEntity) => entity.syncedCourses.length === 0);
 
-		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
+		const domainObjects: Group[] = filteredEntities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
 
 		return domainObjects;
 	}

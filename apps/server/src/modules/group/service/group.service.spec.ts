@@ -186,6 +186,58 @@ describe('GroupService', () => {
 		});
 	});
 
+	describe('findAvailableGroupByUser', () => {
+		describe('when available groups exist for user', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId();
+				const groups: Group[] = groupFactory.buildList(2);
+
+				groupRepo.findAvailableByUser.mockResolvedValue([groups[1]]);
+
+				return {
+					user,
+					groups,
+				};
+			};
+
+			it('should call repo', async () => {
+				const { user } = setup();
+
+				await service.findAvailableGroupsByUser(user);
+
+				expect(groupRepo.findAvailableByUser).toHaveBeenCalledWith(user);
+			});
+
+			it('should return groups', async () => {
+				const { user, groups } = setup();
+
+				const result: Group[] = await service.findAvailableGroupsByUser(user);
+
+				expect(result).toEqual([groups[1]]);
+			});
+		});
+
+		describe('when no groups with the user exists', () => {
+			const setup = () => {
+				const user: UserDO = userDoFactory.buildWithId();
+
+				groupRepo.findAvailableByUser.mockResolvedValue([]);
+
+				return {
+					user,
+				};
+			};
+
+			it('should return empty array', async () => {
+				const { user } = setup();
+
+				const result: Group[] = await service.findAvailableGroupsByUser(user);
+
+				expect(result).toEqual([]);
+			});
+		});
+	});
+
 	describe('findGroupsBySchoolIdAndGroupTypes', () => {
 		describe('when the school has groups of type class', () => {
 			const setup = () => {
@@ -222,6 +274,58 @@ describe('GroupService', () => {
 				const result: Group[] = await service.findGroupsBySchoolIdAndGroupTypes(schoolId, [GroupTypes.CLASS]);
 
 				expect(result).toEqual(groups);
+			});
+		});
+	});
+
+	describe('findAvailableGroupBySchoolId', () => {
+		describe('when available groups exist for school', () => {
+			const setup = () => {
+				const schoolId: string = new ObjectId().toHexString();
+				const groups: Group[] = groupFactory.buildList(2);
+
+				groupRepo.findAvailableBySchoolId.mockResolvedValue([groups[1]]);
+
+				return {
+					schoolId,
+					groups,
+				};
+			};
+
+			it('should call repo', async () => {
+				const { schoolId } = setup();
+
+				await service.findAvailableGroupsBySchoolId(schoolId);
+
+				expect(groupRepo.findAvailableBySchoolId).toHaveBeenCalledWith(schoolId);
+			});
+
+			it('should return groups', async () => {
+				const { schoolId, groups } = setup();
+
+				const result: Group[] = await service.findAvailableGroupsBySchoolId(schoolId);
+
+				expect(result).toEqual([groups[1]]);
+			});
+		});
+
+		describe('when no groups with the user exists', () => {
+			const setup = () => {
+				const schoolId: string = new ObjectId().toHexString();
+
+				groupRepo.findAvailableBySchoolId.mockResolvedValue([]);
+
+				return {
+					schoolId,
+				};
+			};
+
+			it('should return empty array', async () => {
+				const { schoolId } = setup();
+
+				const result: Group[] = await service.findAvailableGroupsBySchoolId(schoolId);
+
+				expect(result).toEqual([]);
 			});
 		});
 	});
