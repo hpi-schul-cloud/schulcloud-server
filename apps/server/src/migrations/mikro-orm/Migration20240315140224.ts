@@ -42,4 +42,16 @@ export class Migration20240315140224 extends Migration {
 
 		console.log(`Updated ${result.affectedRows} filerecords.`);
 	}
+
+	async down(): Promise<void> {
+		console.log('Resetting parentType "gradings" of fileRecords to "submissions".');
+
+		const result = await this.driver.nativeUpdate(
+			'filerecords',
+			{ parentType: FileRecordParentType.Grading },
+			{ $set: { parentType: FileRecordParentType.Submission } }
+		);
+
+		console.log(`Updated ${result.affectedRows} filerecords.`);
+	}
 }
