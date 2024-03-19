@@ -7,7 +7,7 @@ import { CourseRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
 import { columnBoardFactory, columnFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardDoAuthorizableService, ColumnBoardService, ColumnService, ContentElementService } from '../service';
 import { ColumnBoardCopyService } from '../service/column-board-copy.service';
 import { BoardUc } from './board.uc';

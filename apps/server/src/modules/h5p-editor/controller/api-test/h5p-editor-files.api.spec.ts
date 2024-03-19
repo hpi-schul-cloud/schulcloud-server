@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { IFileStats, ILibraryName } from '@lumieducation/h5p-server';
 import { ContentMetadata } from '@lumieducation/h5p-server/build/src/ContentMetadata';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import {
@@ -12,7 +12,6 @@ import {
 	TestApiClient,
 	UserAndAccountTestFactory,
 } from '@shared/testing';
-import { ObjectID } from 'bson';
 import { Readable } from 'stream';
 import { H5PContent, H5PContentParentType, H5PContentProperties } from '../../entity';
 import { H5PEditorTestModule } from '../../h5p-editor-test.module';
@@ -46,9 +45,9 @@ const helpers = {
 			data: `Data #${n}`,
 		};
 		const h5pContentProperties: H5PContentProperties = {
-			creatorId: new ObjectID().toString(),
-			parentId: new ObjectID().toString(),
-			schoolId: new ObjectID().toString(),
+			creatorId: new ObjectId().toString(),
+			parentId: new ObjectId().toString(),
+			schoolId: new ObjectId().toString(),
 			metadata,
 			content,
 			parentType: H5PContentParentType.Lesson,
@@ -57,7 +56,7 @@ const helpers = {
 
 		return {
 			withID(id?: number) {
-				const objectId = new ObjectID(id);
+				const objectId = new ObjectId(id);
 				h5pContent._id = objectId;
 				h5pContent.id = objectId.toString();
 

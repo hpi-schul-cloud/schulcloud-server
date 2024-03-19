@@ -1,6 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
 import { roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Role } from '.';
 import { LanguageType, Permission } from '../interface';
 import { User } from './user.entity';

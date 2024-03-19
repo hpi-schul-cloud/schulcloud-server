@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { ObjectID } from 'bson';
+import { ObjectId } from 'bson';
 import { Builder } from 'xml2js';
 
 export type OmitVersion<T> = Omit<T, 'version'>;
@@ -30,9 +30,9 @@ export function createElementTypeNotSupportedError(type: string): Error {
 	return new InternalServerErrorException(`Common Cartridge element type ${type} is not supported`);
 }
 
-export function createIdentifier(identifier?: string | ObjectID): string {
+export function createIdentifier(identifier?: string | ObjectId): string {
 	if (!identifier) {
-		return `i${new ObjectID().toString()}`;
+		return `i${new ObjectId().toString()}`;
 	}
 
 	return `i${identifier.toString()}`;
