@@ -103,6 +103,7 @@ describe(CommonToolMetadataService.name, () => {
 			const setup = () => {
 				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce([]);
 				contextExternalToolRepo.findBySchoolToolIdsAndContextType.mockResolvedValueOnce([]);
+				contentElementService.countBoardUsageForExternalTools.mockResolvedValueOnce(0);
 			};
 
 			it('should return 0 usages for all contexts', async () => {

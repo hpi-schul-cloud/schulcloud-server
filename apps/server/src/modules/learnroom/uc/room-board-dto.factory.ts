@@ -2,10 +2,10 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import {
-	Board,
-	BoardElement,
-	BoardElementType,
-	ColumnBoardTarget,
+	LegacyBoard,
+	LegacyBoardElement,
+	LegacyBoardElementType,
+	ColumnBoardNode,
 	ColumnboardBoardElement,
 	Course,
 	LessonEntity,
@@ -27,7 +27,7 @@ import { RoomsAuthorisationService } from './rooms.authorisation.service';
 class DtoCreator {
 	room: Course;
 
-	board: Board;
+	board: LegacyBoard;
 
 	user: User;
 
@@ -43,7 +43,7 @@ class DtoCreator {
 		roomsAuthorisationService,
 	}: {
 		room: Course;
-		board: Board;
+		board: LegacyBoard;
 		user: User;
 		authorisationService: AuthorizationService;
 		roomsAuthorisationService: RoomsAuthorisationService;
@@ -64,14 +64,14 @@ class DtoCreator {
 		return dto;
 	}
 
-	private filterByPermission(elements: BoardElement[]) {
+	private filterByPermission(elements: LegacyBoardElement[]) {
 		const filtered = elements.filter((element) => {
 			let result = false;
-			if (element.boardElementType === BoardElementType.Task) {
+			if (element.boardElementType === LegacyBoardElementType.Task) {
 				result = this.roomsAuthorisationService.hasTaskReadPermission(this.user, element.target as Task);
 			}
 
-			if (element.boardElementType === BoardElementType.Lesson) {
+			if (element.boardElementType === LegacyBoardElementType.Lesson) {
 				result = this.roomsAuthorisationService.hasLessonReadPermission(this.user, element.target as LessonEntity);
 			}
 
@@ -99,18 +99,18 @@ class DtoCreator {
 		return false;
 	}
 
-	private mapToElementDTOs(elements: BoardElement[]) {
+	private mapToElementDTOs(elements: LegacyBoardElement[]) {
 		const results: RoomBoardElementDTO[] = [];
 		elements.forEach((element) => {
-			if (element.boardElementType === BoardElementType.Task) {
+			if (element.boardElementType === LegacyBoardElementType.Task) {
 				const mapped = this.mapTaskElement(element);
 				results.push(mapped);
 			}
-			if (element.boardElementType === BoardElementType.Lesson) {
+			if (element.boardElementType === LegacyBoardElementType.Lesson) {
 				const mapped = this.mapLessonElement(element);
 				results.push(mapped);
 			}
-			if (element.boardElementType === BoardElementType.ColumnBoard) {
+			if (element.boardElementType === LegacyBoardElementType.ColumnBoard) {
 				const mapped = this.mapColumnBoardElement(element);
 				results.push(mapped);
 			}
@@ -118,7 +118,7 @@ class DtoCreator {
 		return results;
 	}
 
-	private mapTaskElement(element: BoardElement): RoomBoardElementDTO {
+	private mapTaskElement(element: LegacyBoardElement): RoomBoardElementDTO {
 		const task = element.target as Task;
 		const status = this.createTaskStatus(task);
 
@@ -136,7 +136,7 @@ class DtoCreator {
 		return status;
 	}
 
-	private mapLessonElement(element: BoardElement): RoomBoardElementDTO {
+	private mapLessonElement(element: LegacyBoardElement): RoomBoardElementDTO {
 		const type = RoomBoardElementTypes.LESSON;
 		const lesson = element.target as LessonEntity;
 		const content: LessonMetaData = {
@@ -155,16 +155,16 @@ class DtoCreator {
 		return { type, content };
 	}
 
-	private mapColumnBoardElement(element: BoardElement): RoomBoardElementDTO {
+	private mapColumnBoardElement(element: LegacyBoardElement): RoomBoardElementDTO {
 		const type = RoomBoardElementTypes.COLUMN_BOARD;
-		const columnBoardTarget = element.target as ColumnBoardTarget;
+		const columnBoardNode = element.target as ColumnBoardNode;
 		const content: ColumnBoardMetaData = {
-			id: columnBoardTarget.id,
-			columnBoardId: columnBoardTarget.columnBoardId,
-			title: columnBoardTarget.title,
-			createdAt: columnBoardTarget.createdAt,
-			updatedAt: columnBoardTarget.updatedAt,
-			published: columnBoardTarget.published,
+			id: columnBoardNode.id,
+			columnBoardId: columnBoardNode.id,
+			title: columnBoardNode.title || '',
+			createdAt: columnBoardNode.createdAt,
+			updatedAt: columnBoardNode.updatedAt,
+			published: columnBoardNode.isVisible,
 		};
 
 		return { type, content };
@@ -189,7 +189,7 @@ export class RoomBoardDTOFactory {
 		private readonly roomsAuthorisationService: RoomsAuthorisationService
 	) {}
 
-	createDTO({ room, board, user }: { room: Course; board: Board; user: User }): RoomBoardDTO {
+	createDTO({ room, board, user }: { room: Course; board: LegacyBoard; user: User }): RoomBoardDTO {
 		const worker = new DtoCreator({
 			room,
 			board,

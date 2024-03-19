@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { LanguageType, User } from '@shared/domain/entity';
+import { User } from '@shared/domain/entity';
+import { LanguageType } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { ChangeLanguageParams } from '../controller/dto';

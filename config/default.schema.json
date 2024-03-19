@@ -315,12 +315,7 @@
 		"H5P_EDITOR": {
 			"type": "object",
 			"description": "Properties of the H5P server microservice and library management job",
-			"required": [
-				"S3_ENDPOINT",
-				"S3_REGION",
-				"S3_BUCKET_CONTENT",
-				"S3_BUCKET_LIBRARIES"
-			],
+			"required": ["S3_ENDPOINT", "S3_REGION", "S3_BUCKET_CONTENT", "S3_BUCKET_LIBRARIES"],
 			"default": {},
 			"properties": {
 				"S3_ENDPOINT": {
@@ -519,6 +514,11 @@
 			"format": "uri",
 			"default": "amqp://guest:guest@localhost:5672",
 			"description": "The URI of the RabbitMQ server."
+		},
+		"LEGACY_RABBITMQ_GLOBAL_PREFETCH_COUNT": {
+			"type": "number",
+			"default": 25,
+			"description": "deprecated from the start, PLEASE GET YOUR OWN CONFIG, prefetch count is applied per channel globally for all legacy rabbitmq channels (nest based code is not affected)"
 		},
 		"HOST": {
 			"type": "string",
@@ -1140,11 +1140,6 @@
 			"default": false,
 			"description": "Toggle for course sharing feature."
 		},
-		"FEATURE_COURSE_SHARE_NEW": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for the new course sharing feature."
-		},
 		"FEATURE_LESSON_SHARE": {
 			"type": "boolean",
 			"default": false,
@@ -1170,10 +1165,27 @@
 			"default": false,
 			"description": "Toggle for copy course feature."
 		},
-		"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": {
+		"FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for the IMSCC course download feature."
+		},
+		"GEOGEBRA_BASE_URL": {
+			"type": "string",
+			"format": "uri",
+			"default": "https://www.geogebra.org",
+			"pattern": ".*(?<!/)$",
+			"description": "Base URL of GeoGebra materials"
+    },
+		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the Common Cartridge course import feature."
+		},
+		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE": {
+			"type": "integer",
+			"default": 2000000000,
+			"description": "The maximum file upload size in bytes for the Common Cartridge file during import."
 		},
 		"GHOST_BASE_URL": {
 			"type": "string",
@@ -1392,6 +1404,11 @@
 			"default": false,
 			"description": "Enables groups of type class in courses"
 		},
+		"FEATURE_NEST_SYSTEMS_API_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Uses the v3 api over the v1 api for systems"
+		},
 		"FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1401,6 +1418,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the copying of ctl tools when copying a course."
+		},
+		"CTL_TOOLS_RELOAD_TIME_MS": {
+			"type": "number",
+			"default": 299000,
+			"description": "Sets the time before launch request data is called again from server"
 		},
 		"FEATURE_SHOW_MIGRATION_WIZARD": {
 			"type": "boolean",
@@ -1473,11 +1495,13 @@
 			"description": "Configuration of tldraw related settings",
 			"required": [
 				"PING_TIMEOUT",
+				"FINALIZE_DELAY",
 				"SOCKET_PORT",
 				"GC_ENABLED",
-				"DB_FLUSH_SIZE",
+				"DB_COMPRESS_THRESHOLD",
 				"MAX_DOCUMENT_SIZE",
 				"ASSETS_ENABLED",
+				"ASSETS_SYNC_ENABLED",
 				"ASSETS_MAX_SIZE",
 				"ASSETS_ALLOWED_MIME_TYPES_LIST"
 			],
@@ -1488,15 +1512,19 @@
 				},
 				"PING_TIMEOUT": {
 					"type": "number",
-					"description": "Max time for waiting between calls for tldraw"
+					"description": "Websocket ping timeout in ms"
+				},
+				"FINALIZE_DELAY": {
+					"type": "number",
+					"description": "Delay in milliseconds before checking if can finalize a tldraw board"
 				},
 				"GC_ENABLED": {
 					"type": "boolean",
 					"description": "If tldraw garbage collector should be enabled"
 				},
-				"DB_FLUSH_SIZE": {
+				"DB_COMPRESS_THRESHOLD": {
 					"type": "integer",
-					"description": "DB collection flushing size"
+					"description": "Mongo documents with same docName compress threshold size"
 				},
 				"MAX_DOCUMENT_SIZE": {
 					"type": "number",
@@ -1505,6 +1533,10 @@
 				"ASSETS_ENABLED": {
 					"type": "boolean",
 					"description": "Enables uploading assets to tldraw board"
+				},
+				"ASSETS_SYNC_ENABLED": {
+					"type": "boolean",
+					"description": "Enables synchronization of tldraw board assets with file storage"
 				},
 				"ASSETS_MAX_SIZE": {
 					"type": "integer",
@@ -1519,10 +1551,12 @@
 			"default": {
 				"SOCKET_PORT": 3345,
 				"PING_TIMEOUT": 30000,
+				"FINALIZE_DELAY": 5000,
 				"GC_ENABLED": true,
-				"DB_FLUSH_SIZE": 400,
+				"DB_COMPRESS_THRESHOLD": 400,
 				"MAX_DOCUMENT_SIZE": 15000000,
 				"ASSETS_ENABLED": true,
+				"ASSETS_SYNC_ENABLED": false,
 				"ASSETS_MAX_SIZE": 10485760,
 				"ASSETS_ALLOWED_MIME_TYPES_LIST": "image/png,image/jpeg,image/gif,image/svg+xml"
 			}
@@ -1558,6 +1592,11 @@
 				"CLIENT_SECRET": {
 					"type": "string",
 					"description": "Client secret for accessing the schulconnex API (from server vault)"
+				},
+				"PERSONEN_INFO_TIMEOUT_IN_MS": {
+					"type": "integer",
+					"description": "Timeout in milliseconds for fetching personen info from schulconnex",
+					"default": 120000
 				}
 			},
 			"default": {
@@ -1566,6 +1605,20 @@
 				"CLIENT_ID": "",
 				"CLIENT_SECRET": ""
 			}
+		},
+		"HOSTNAME": {
+			"type": "string",
+			"description": "Hostname. Should not be usually defined as it's expected to be taken from the process env."
+		},
+		"HEALTH_CHECKS_EXCLUDE_MONGODB": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle that, when enabled, excludes MongoDB from the health checks."
+		},
+		"FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enables the synchronization of courses with linked groups during provisioning."
 		}
 	},
 	"required": []

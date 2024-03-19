@@ -1,12 +1,12 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
+import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
 import {
 	cleanupCollections,
-	externalToolEntityFactory,
 	externalToolPseudonymEntityFactory,
 	schoolEntityFactory,
 	TestApiClient,

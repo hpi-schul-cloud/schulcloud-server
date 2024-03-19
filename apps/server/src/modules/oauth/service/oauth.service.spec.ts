@@ -20,7 +20,6 @@ import { LegacySystemService } from '@src/modules/system';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { OAuthTokenDto } from '../interface';
 import {
-	AuthCodeFailureLoggableException,
 	IdTokenInvalidLoggableException,
 	OauthConfigMissingLoggableException,
 	UserNotFoundAfterProvisioningLoggableException,
@@ -263,22 +262,6 @@ describe('OAuthService', () => {
 				const func = () => service.authenticateUser(testSystem.id, 'redirectUri', authCode);
 
 				await expect(func).rejects.toThrow(new OauthConfigMissingLoggableException(testSystem.id));
-			});
-		});
-
-		describe('when query has an error code', () => {
-			it('should throw an error', async () => {
-				const func = () => service.authenticateUser('systemId', 'redirectUri', undefined, 'errorCode');
-
-				await expect(func).rejects.toThrow(new AuthCodeFailureLoggableException('errorCode'));
-			});
-		});
-
-		describe('when query has no code and no error', () => {
-			it('should throw an error', async () => {
-				const func = () => service.authenticateUser('systemId', 'redirectUri');
-
-				await expect(func).rejects.toThrow(new AuthCodeFailureLoggableException());
 			});
 		});
 	});

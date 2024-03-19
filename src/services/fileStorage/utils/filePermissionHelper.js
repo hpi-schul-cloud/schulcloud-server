@@ -2,14 +2,12 @@ const { NotFound } = require('../../../errors');
 const { FileModel } = require('../model');
 const { userModel } = require('../../user/model');
 const RoleModel = require('../../role/model');
-const { sortRoles } = require('../../role/utils/rolesHelper');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 const getFile = (id) => FileModel.findOne({ _id: id }).populate('owner').lean().exec();
 
 const checkTeamPermission = async ({ user, file, permission }) => {
 	let teamRoles;
-	let sortedTeamRoles;
 	const roleIndex = {};
 
 	try {
@@ -17,7 +15,6 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 		teamRoles.forEach((role) => {
 			roleIndex[role._id] = role;
 		});
-		sortedTeamRoles = sortRoles(teamRoles);
 	} catch (error) {
 		return Promise.reject(error);
 	}
@@ -34,17 +31,7 @@ const checkTeamPermission = async ({ user, file, permission }) => {
 			rolesToTest = rolesToTest.concat(roleIndex[roleId].roles || []);
 		}
 
-		// deprecated: author check via file.permissions[0]?.refId is deprecated and will be removed in the next release
-		const { role: creatorRole } = file.owner.userIds.find((_) =>
-			equalIds(_.userId, file.creator || file.permissions[0]?.refId)
-		);
-
-		const findRole = (roleId) => (roles) => roles.findIndex((r) => equalIds(r._id, roleId)) > -1;
-
-		const userPos = sortedTeamRoles.findIndex(findRole(role));
-		const creatorPos = sortedTeamRoles.findIndex(findRole(creatorRole));
-
-		if (userPos > creatorPos || rolePermissions[permission]) {
+		if (rolePermissions[permission]) {
 			resolve(true);
 		}
 		reject();

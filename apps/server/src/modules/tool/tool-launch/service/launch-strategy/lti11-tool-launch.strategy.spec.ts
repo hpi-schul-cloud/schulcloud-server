@@ -12,9 +12,9 @@ import {
 	userDoFactory,
 } from '@shared/testing';
 import { pseudonymFactory } from '@shared/testing/factory/domainobject/pseudonym.factory';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Authorization } from 'oauth-1.0a';
-import { LtiMessageType, LtiPrivacyPermission, LtiRole, ToolContextType } from '../../../common/enum';
+import { LtiMessageType, LtiPrivacyPermission, LtiRole } from '../../../common/enum';
 import { ContextExternalTool } from '../../../context-external-tool/domain';
 import { ExternalTool } from '../../../external-tool/domain';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
@@ -93,7 +93,6 @@ describe('Lti11ToolLaunchStrategy', () => {
 				const mockKey = 'mockKey';
 				const mockSecret = 'mockSecret';
 				const ltiMessageType = LtiMessageType.BASIC_LTI_LAUNCH_REQUEST;
-				const resourceLinkId = 'resourceLinkId';
 				const launchPresentationLocale = 'de-DE';
 
 				const externalTool: ExternalTool = externalToolFactory
@@ -102,7 +101,6 @@ describe('Lti11ToolLaunchStrategy', () => {
 						secret: mockSecret,
 						lti_message_type: ltiMessageType,
 						privacy_permission: LtiPrivacyPermission.PUBLIC,
-						resource_link_id: resourceLinkId,
 						launch_presentation_locale: launchPresentationLocale,
 					})
 					.buildWithId();
@@ -136,7 +134,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 					mockKey,
 					mockSecret,
 					ltiMessageType,
-					resourceLinkId,
+					contextExternalTool,
 					launchPresentationLocale,
 				};
 			};
@@ -155,7 +153,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 			});
 
 			it('should contain mandatory lti attributes', async () => {
-				const { data, ltiMessageType, resourceLinkId, launchPresentationLocale } = setup();
+				const { data, ltiMessageType, contextExternalTool, launchPresentationLocale } = setup();
 
 				const result: PropertyData[] = await strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
 
@@ -165,7 +163,7 @@ describe('Lti11ToolLaunchStrategy', () => {
 						new PropertyData({ name: 'lti_version', value: 'LTI-1p0', location: PropertyLocation.BODY }),
 						new PropertyData({
 							name: 'resource_link_id',
-							value: resourceLinkId,
+							value: contextExternalTool.id as string,
 							location: PropertyLocation.BODY,
 						}),
 						new PropertyData({
@@ -183,57 +181,6 @@ describe('Lti11ToolLaunchStrategy', () => {
 			});
 		});
 
-		describe('when no resource link id is available', () => {
-			const setup = () => {
-				const externalTool: ExternalTool = externalToolFactory
-					.withLti11Config({
-						key: 'mockKey',
-						secret: 'mockSecret',
-						lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
-						privacy_permission: LtiPrivacyPermission.PUBLIC,
-						resource_link_id: undefined,
-					})
-					.buildWithId();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-
-				const contextId: string = new ObjectId().toHexString();
-				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
-					contextRef: { id: contextId, type: ToolContextType.COURSE },
-				});
-
-				const data: ToolLaunchParams = {
-					contextExternalTool,
-					schoolExternalTool,
-					externalTool,
-				};
-
-				const user: UserDO = userDoFactory.buildWithId();
-
-				userService.findById.mockResolvedValue(user);
-
-				return {
-					data,
-					contextId,
-				};
-			};
-
-			it('should use the context id as resource link id', async () => {
-				const { data, contextId } = setup();
-
-				const result: PropertyData[] = await strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
-
-				expect(result).toEqual(
-					expect.arrayContaining([
-						new PropertyData({
-							name: 'resource_link_id',
-							value: contextId,
-							location: PropertyLocation.BODY,
-						}),
-					])
-				);
-			});
-		});
-
 		describe('when lti privacyPermission is public', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory
@@ -242,7 +189,6 @@ describe('Lti11ToolLaunchStrategy', () => {
 						secret: 'mockSecret',
 						lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 						privacy_permission: LtiPrivacyPermission.PUBLIC,
-						resource_link_id: 'resourceLinkId',
 					})
 					.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
@@ -318,7 +264,6 @@ describe('Lti11ToolLaunchStrategy', () => {
 						secret: 'mockSecret',
 						lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 						privacy_permission: LtiPrivacyPermission.NAME,
-						resource_link_id: 'resourceLinkId',
 					})
 					.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
@@ -389,7 +334,6 @@ describe('Lti11ToolLaunchStrategy', () => {
 						secret: 'mockSecret',
 						lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 						privacy_permission: LtiPrivacyPermission.EMAIL,
-						resource_link_id: 'resourceLinkId',
 					})
 					.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
@@ -461,7 +405,6 @@ describe('Lti11ToolLaunchStrategy', () => {
 						secret: 'mockSecret',
 						lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 						privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
-						resource_link_id: 'resourceLinkId',
 					})
 					.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
@@ -529,7 +472,6 @@ describe('Lti11ToolLaunchStrategy', () => {
 						secret: 'mockSecret',
 						lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 						privacy_permission: LtiPrivacyPermission.ANONYMOUS,
-						resource_link_id: 'resourceLinkId',
 					})
 					.buildWithId();
 				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
@@ -604,6 +546,39 @@ describe('Lti11ToolLaunchStrategy', () => {
 						'Unable to build LTI 1.1 launch data. Tool configuration is of type basic. Expected "lti11"'
 					)
 				);
+			});
+		});
+
+		describe('when context external tool id is undefined', () => {
+			const setup = () => {
+				const externalTool: ExternalTool = externalToolFactory
+					.withLti11Config({
+						key: 'mockKey',
+						secret: 'mockSecret',
+						lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
+						privacy_permission: LtiPrivacyPermission.ANONYMOUS,
+					})
+					.buildWithId();
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.build();
+
+				const data: ToolLaunchParams = {
+					contextExternalTool,
+					schoolExternalTool,
+					externalTool,
+				};
+
+				return {
+					data,
+				};
+			};
+
+			it('should throw an InternalServerErrorException', async () => {
+				const { data } = setup();
+
+				const func = async () => strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
+
+				await expect(func).rejects.toThrow(new InternalServerErrorException());
 			});
 		});
 	});

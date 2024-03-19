@@ -15,13 +15,14 @@ metadata:
     nginx.ingress.kubernetes.io/http2-max-header-size: 96k
     nginx.ingress.kubernetes.io/large-client-header-buffers: 4 100k
     nginx.ingress.kubernetes.io/proxy-buffer-size: 96k
+    nginx.org/websocket-services: "tldraw-server-svc"
 {% if CLUSTER_ISSUER is defined %}
     cert-manager.io/cluster-issuer: {{ CLUSTER_ISSUER }}
 {% endif %}
 
 spec:
   ingressClassName: {{ INGRESS_CLASS }}
-{% if CLUSTER_ISSUER is defined or (TLS_ENABELD is defined and TLS_ENABELD|bool) %}
+{% if CLUSTER_ISSUER is defined or (TLS_ENABLED is defined and TLS_ENABLED|bool) %}
   tls:
   - hosts:
       - {{ DOMAIN }}

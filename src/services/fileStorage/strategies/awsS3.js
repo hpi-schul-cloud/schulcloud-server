@@ -462,7 +462,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 			});
 	}
 
-	getSignedUrl({ userId, flatFileName, localFileName, download, action = 'getObject' }) {
+	getSignedUrl({ userId, flatFileName, localFileName, download, action = 'getObject', bucket = undefined }) {
 		if (!userId || !flatFileName) {
 			return Promise.reject(new BadRequest('Missing parameters by getSignedUrl.', { userId, flatFileName }));
 		}
@@ -478,7 +478,7 @@ class AWSS3Strategy extends AbstractFileStorageStrategy {
 
 				return createAWSObject(result.schoolId).then((awsObject) => {
 					const params = {
-						Bucket: awsObject.bucket,
+						Bucket: bucket || awsObject.bucket,
 						Key: flatFileName,
 						Expires: Configuration.get('STORAGE_SIGNED_URL_EXPIRE'),
 					};

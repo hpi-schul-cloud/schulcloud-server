@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<webLink xmlns="http://www.imsglobal.org/xsd/imsccv1p3/imswl_v1p3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsccv1p3/imswl_v1p3 https://www.imsglobal.org/profile/cc/ccv1p3/ccv1p3_imswl_v1p3.xsd">
+    <title>Title</title>
+    <url href="http://www.example.tld" target="_self" windowFeatures="width=100;height=100;"/>
+</webLink>

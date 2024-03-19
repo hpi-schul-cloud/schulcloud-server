@@ -14,6 +14,7 @@ interface MigrationOptions {
 	from?: string;
 	to?: string;
 	only?: string;
+	pending?: boolean;
 }
 
 @Console({ command: 'database', description: 'database setup console' })
@@ -112,12 +113,17 @@ export class DatabaseManagementConsole {
 				required: false,
 				description: 'run a single migration',
 			},
+			{
+				flags: '--pending',
+				required: false,
+				description: 'list pending migrations',
+			},
 		],
 		description: 'Execute MikroOrm migration up/down',
 	})
 	async migration(migrationOptions: MigrationOptions): Promise<string> {
 		let report = 'no migration option was given';
-		if (!migrationOptions.up && !migrationOptions.down) {
+		if (!migrationOptions.up && !migrationOptions.down && !migrationOptions.pending) {
 			this.consoleWriter.error(report);
 			return report;
 		}
@@ -128,6 +134,10 @@ export class DatabaseManagementConsole {
 		if (migrationOptions.down) {
 			await this.databaseManagementUc.migrationDown(migrationOptions.from, migrationOptions.to, migrationOptions.only);
 			report = 'migration down is completed';
+		}
+		if (migrationOptions.pending) {
+			const pendingMigrations = await this.databaseManagementUc.migrationPending();
+			report = `Pending: ${JSON.stringify(pendingMigrations.map((migration) => migration.name))}`;
 		}
 
 		this.consoleWriter.info(report);

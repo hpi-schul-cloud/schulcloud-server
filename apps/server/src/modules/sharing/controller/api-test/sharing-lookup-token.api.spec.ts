@@ -34,7 +34,7 @@ describe(`share token lookup (api)`, () => {
 
 	describe('with the feature disabled', () => {
 		const setup = async () => {
-			Configuration.set('FEATURE_COURSE_SHARE_NEW', false);
+			Configuration.set('FEATURE_COURSE_SHARE', false);
 
 			const parentType = ShareTokenParentType.Course;
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [Permission.COURSE_CREATE]);
@@ -78,7 +78,7 @@ describe(`share token lookup (api)`, () => {
 
 	describe('with a valid token', () => {
 		const setup = async () => {
-			Configuration.set('FEATURE_COURSE_SHARE_NEW', true);
+			Configuration.set('FEATURE_COURSE_SHARE', true);
 
 			const parentType = ShareTokenParentType.Course;
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [Permission.COURSE_CREATE]);
@@ -122,7 +122,7 @@ describe(`share token lookup (api)`, () => {
 
 	describe('with invalid token', () => {
 		const setup = async () => {
-			Configuration.set('FEATURE_COURSE_SHARE_NEW', true);
+			Configuration.set('FEATURE_COURSE_SHARE', true);
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [Permission.COURSE_CREATE]);
 			const course = courseFactory.build({ teachers: [teacherUser] });
@@ -155,7 +155,7 @@ describe(`share token lookup (api)`, () => {
 
 	describe('with invalid context', () => {
 		const setup = async () => {
-			Configuration.set('FEATURE_COURSE_SHARE_NEW', true);
+			Configuration.set('FEATURE_COURSE_SHARE', true);
 
 			const parentType = ShareTokenParentType.Course;
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [Permission.COURSE_CREATE]);

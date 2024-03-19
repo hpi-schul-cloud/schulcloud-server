@@ -1,17 +1,20 @@
+import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { CommonCartridgeVersion } from '@modules/common-cartridge';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CommonCartridgeExportService } from '@modules/learnroom/service/common-cartridge-export.service';
-import { AuthorizationReferenceService } from '@modules/authorization/domain';
-import { ObjectId } from 'bson';
-import { ForbiddenException } from '@nestjs/common';
+import { AuthorizationReferenceService } from '../../authorization/domain';
+import { LearnroomConfig } from '../learnroom.config';
+import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 import { CourseExportUc } from './course-export.uc';
-import { CommonCartridgeVersion } from '../common-cartridge';
 
 describe('CourseExportUc', () => {
 	let module: TestingModule;
 	let courseExportUc: CourseExportUc;
 	let courseExportServiceMock: DeepMocked<CommonCartridgeExportService>;
 	let authorizationServiceMock: DeepMocked<AuthorizationReferenceService>;
+	let configServiceMock: DeepMocked<ConfigService<LearnroomConfig, true>>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -25,11 +28,16 @@ describe('CourseExportUc', () => {
 					provide: AuthorizationReferenceService,
 					useValue: createMock<AuthorizationReferenceService>(),
 				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService<LearnroomConfig, true>>(),
+				},
 			],
 		}).compile();
 		courseExportUc = module.get(CourseExportUc);
 		courseExportServiceMock = module.get(CommonCartridgeExportService);
 		authorizationServiceMock = module.get(AuthorizationReferenceService);
+		configServiceMock = module.get(ConfigService);
 	});
 
 	afterAll(async () => {
@@ -54,6 +62,7 @@ describe('CourseExportUc', () => {
 			const setup = () => {
 				authorizationServiceMock.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
 				courseExportServiceMock.exportCourse.mockResolvedValueOnce(Buffer.from(''));
+				configServiceMock.get.mockReturnValueOnce(true);
 
 				return setupParams();
 			};
@@ -71,6 +80,7 @@ describe('CourseExportUc', () => {
 			const setup = () => {
 				authorizationServiceMock.checkPermissionByReferences.mockResolvedValueOnce();
 				courseExportServiceMock.exportCourse.mockRejectedValueOnce(new Error());
+				configServiceMock.get.mockReturnValueOnce(true);
 
 				return setupParams();
 			};
@@ -86,6 +96,7 @@ describe('CourseExportUc', () => {
 			const setup = () => {
 				authorizationServiceMock.checkPermissionByReferences.mockResolvedValueOnce();
 				courseExportServiceMock.exportCourse.mockResolvedValueOnce(Buffer.from(''));
+				configServiceMock.get.mockReturnValueOnce(true);
 
 				return setupParams();
 			};
@@ -101,6 +112,24 @@ describe('CourseExportUc', () => {
 				const { courseId, userId, version } = setup();
 
 				await expect(courseExportUc.exportCourse(courseId, userId, version)).resolves.toBeInstanceOf(Buffer);
+			});
+		});
+
+		describe('when feature is disabled', () => {
+			const setup = () => {
+				authorizationServiceMock.checkPermissionByReferences.mockResolvedValueOnce();
+				courseExportServiceMock.exportCourse.mockResolvedValueOnce(Buffer.from(''));
+				configServiceMock.get.mockReturnValueOnce(false);
+
+				return setupParams();
+			};
+
+			it('should throw a NotFoundException', async () => {
+				const { courseId, userId, version } = setup();
+
+				await expect(courseExportUc.exportCourse(courseId, userId, version)).rejects.toThrowError(
+					new NotFoundException()
+				);
 			});
 		});
 	});

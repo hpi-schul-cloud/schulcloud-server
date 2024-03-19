@@ -1,5 +1,5 @@
-import { BoardModule } from '@modules/board';
-import { LegacySchoolModule } from '@modules/legacy-school';
+import { BoardModule } from '@modules/board/board.module';
+import { LegacySchoolModule } from '@modules/legacy-school/legacy-school.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { ContextExternalToolRepo, SchoolExternalToolRepo } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
@@ -7,7 +7,7 @@ import { CommonToolService, CommonToolValidationService } from './service';
 import { CommonToolMetadataService } from './service/common-tool-metadata.service';
 
 @Module({
-	imports: [LoggerModule, LegacySchoolModule, forwardRef(() => BoardModule)],
+	imports: [LoggerModule, forwardRef(() => LegacySchoolModule), forwardRef(() => BoardModule)],
 	// TODO: make deletion of entities cascading, adjust ExternalToolService.deleteExternalTool and remove the repos from here
 	providers: [
 		CommonToolService,

@@ -7,6 +7,7 @@ import { systemFactory } from '@shared/testing';
 import { SystemService } from '@src/modules/system';
 import { schoolFactory } from '../../testing';
 import { SchoolForLdapLogin, SchoolProps, SystemForLdapLogin } from '../do';
+import { SchoolFactory } from '../factory';
 import { SchoolRepo } from '../interface';
 import { SchoolQuery } from '../query';
 import { SchoolService } from './school.service';
@@ -84,7 +85,7 @@ describe('SchoolService', () => {
 				const result = await service.getSchoolById(id);
 
 				expect(result).toEqual(school);
-				expect(result.getProps().features).toContain('isTeamCreationByStudentsEnabled');
+				expect(result.getProps().instanceFeatures).toContain('isTeamCreationByStudentsEnabled');
 			});
 		});
 
@@ -124,7 +125,7 @@ describe('SchoolService', () => {
 				const result = await service.getSchoolById(id);
 
 				expect(result).toEqual(school);
-				expect(result.getProps().features).toContain('isTeamCreationByStudentsEnabled');
+				expect(result.getProps().instanceFeatures).toContain('isTeamCreationByStudentsEnabled');
 			});
 		});
 
@@ -184,7 +185,7 @@ describe('SchoolService', () => {
 				const result = await service.getSchoolById(id);
 
 				expect(result).toEqual(school);
-				expect(result.getProps().features).toContain('isTeamCreationByStudentsEnabled');
+				expect(result.getProps().instanceFeatures).toContain('isTeamCreationByStudentsEnabled');
 			});
 		});
 
@@ -224,7 +225,7 @@ describe('SchoolService', () => {
 				const result = await service.getSchoolById(id);
 
 				expect(result).toEqual(school);
-				expect(result.getProps().features).toContain('isTeamCreationByStudentsEnabled');
+				expect(result.getProps().instanceFeatures).toContain('isTeamCreationByStudentsEnabled');
 			});
 		});
 	});
@@ -449,6 +450,82 @@ describe('SchoolService', () => {
 				const result = await service.getSchoolsForLdapLogin();
 
 				expect(result).toEqual([expected]);
+			});
+		});
+	});
+
+	describe('updateSchool', () => {
+		describe('when school exists and save is successfull', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+				configService.get.mockReturnValue('enabled');
+
+				return { school, id: school.id };
+			};
+
+			it('should call getSchoolById', async () => {
+				const { id } = setup();
+
+				await service.updateSchool(id, {});
+
+				expect(schoolRepo.getSchoolById).toBeCalledWith(id);
+			});
+
+			it('should call save', async () => {
+				const { id, school } = setup();
+				const partialBody = { name: 'new name' };
+
+				const updatedSchool = SchoolFactory.buildFromPartialBody(school, partialBody);
+				schoolRepo.save.mockResolvedValueOnce(updatedSchool);
+
+				await service.updateSchool(id, partialBody);
+
+				expect(schoolRepo.save).toHaveBeenCalledWith(updatedSchool);
+			});
+
+			it('should return the updated school', async () => {
+				const { id, school } = setup();
+				const partialBody = { name: 'new name' };
+
+				const updatedSchool = SchoolFactory.buildFromPartialBody(school, partialBody);
+				schoolRepo.save.mockResolvedValueOnce(updatedSchool);
+
+				const result = await service.updateSchool(id, partialBody);
+
+				expect(result).toEqual(updatedSchool);
+			});
+		});
+
+		describe('when school does not exist', () => {
+			const setup = () => {
+				const id = '1';
+				schoolRepo.getSchoolById.mockRejectedValueOnce(new NotFoundException());
+
+				return { id };
+			};
+
+			it('should throw NotFoundException', async () => {
+				const { id } = setup();
+
+				await expect(service.updateSchool(id, {})).rejects.toThrowError(NotFoundException);
+			});
+		});
+
+		describe('when school repo save throws error', () => {
+			const setup = () => {
+				const school = schoolFactory.build();
+				const error = new Error('saveError');
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+				schoolRepo.save.mockRejectedValueOnce(error);
+
+				return { id: school.id, error };
+			};
+
+			it('should throw this error', async () => {
+				const { id, error } = setup();
+
+				await expect(service.updateSchool(id, {})).rejects.toThrowError(error);
 			});
 		});
 	});

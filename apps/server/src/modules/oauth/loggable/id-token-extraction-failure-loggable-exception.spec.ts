@@ -4,7 +4,9 @@ describe(IdTokenExtractionFailureLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
 			const fieldName = 'id_token';
+
 			const exception = new IdTokenExtractionFailureLoggableException(fieldName);
+
 			return { exception, fieldName };
 		};
 
@@ -14,7 +16,7 @@ describe(IdTokenExtractionFailureLoggableException.name, () => {
 			const logMessage = exception.getLogMessage();
 
 			expect(logMessage).toEqual({
-				type: 'SSO_JWT_PROBLEM',
+				type: 'ID_TOKEN_EXTRACTION_FAILURE',
 				message: 'Failed to extract field',
 				stack: exception.stack,
 				data: {

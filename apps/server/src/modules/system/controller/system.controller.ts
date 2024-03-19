@@ -48,6 +48,6 @@ export class SystemController {
 	@ApiOperation({ summary: 'Deletes a system.' })
 	@HttpCode(HttpStatus.NO_CONTENT)
 	async deleteSystem(@CurrentUser() currentUser: ICurrentUser, @Param() params: SystemIdParams): Promise<void> {
-		await this.systemUc.delete(currentUser.userId, params.systemId);
+		await this.systemUc.delete(currentUser.userId, currentUser.schoolId, params.systemId);
 	}
 }
