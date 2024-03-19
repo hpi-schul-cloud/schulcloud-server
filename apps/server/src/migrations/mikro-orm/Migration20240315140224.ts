@@ -18,9 +18,25 @@ export class Migration20240315140224 extends Migration {
 
 		console.log(`Found ${teacherIds.length} teachers.`);
 
+		// Teachers can make submissions themselves and they sometimes misuse that for planning stuff or so.
+		// Thus the filter by creator of the filerecord is not enough to identify a grading and we exclude these submissions by teachers below.
+		const submissionsByTeachers = await this.driver.aggregate('submissions', [
+			{ $match: { studentId: { $in: teacherIds } } },
+			{ $project: { _id: 1 } },
+		]);
+		const submissionsByTeachersIds = submissionsByTeachers.map((submission: any) => submission._id);
+
+		console.log(
+			`Found ${submissionsByTeachersIds.length} submissions by teachers, which will be excluded from update.`
+		);
+
 		const result = await this.driver.nativeUpdate(
 			'filerecords',
-			{ parentType: FileRecordParentType.Submission, creator: { $in: teacherIds } },
+			{
+				parentType: FileRecordParentType.Submission,
+				creator: { $in: teacherIds },
+				parent: { $nin: submissionsByTeachersIds },
+			},
 			{ $set: { parentType: FileRecordParentType.Grading } }
 		);
 
