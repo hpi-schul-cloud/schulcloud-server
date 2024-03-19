@@ -12,10 +12,8 @@ export class TypeGuard {
 	}
 
 	static isArrayWithElements(value: unknown): value is [] {
-		if (Array.isArray(value) && value.length > 0) {
-			return true;
-		}
+		const isArrayWithElements = Array.isArray(value) && value.length > 0;
 
-		return false;
+		return isArrayWithElements;
 	}
 }
