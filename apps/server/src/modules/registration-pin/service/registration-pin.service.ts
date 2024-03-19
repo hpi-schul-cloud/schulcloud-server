@@ -1,20 +1,27 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
-import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
-import { DomainOperation } from '@shared/domain/interface';
-import { DomainOperationBuilder } from '@shared/domain/builder';
-import { DeletionErrorLoggableException } from '@shared/common/loggable-exception';
-import { RegistrationPinRepo } from '../repo';
+import { EntityId } from '@shared/domain/types';
+import {
+	DeletionService,
+	DomainDeletionReport,
+	DataDeletionDomainOperationLoggable,
+	DomainName,
+	DeletionErrorLoggableException,
+	DomainDeletionReportBuilder,
+	DomainOperationReportBuilder,
+	OperationType,
+	StatusModel,
+} from '@modules/deletion';
 import { RegistrationPinEntity } from '../entity';
+import { RegistrationPinRepo } from '../repo';
 
 @Injectable()
-export class RegistrationPinService {
+export class RegistrationPinService implements DeletionService {
 	constructor(private readonly registrationPinRepo: RegistrationPinRepo, private readonly logger: Logger) {
 		this.logger.setContext(RegistrationPinService.name);
 	}
 
-	async deleteRegistrationPinByEmail(email: string): Promise<DomainOperation> {
+	public async deleteUserData(email: string): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from RegistrationPin',
@@ -30,12 +37,13 @@ export class RegistrationPinService {
 			throw new DeletionErrorLoggableException(`Failed to delete user data from RegistrationPin for '${email}'`);
 		}
 
-		const result = DomainOperationBuilder.build(
-			DomainName.REGISTRATIONPIN,
-			OperationType.DELETE,
-			numberOfDeletedRegistrationPins,
-			this.getRegistrationPinsId(registrationPinToDelete)
-		);
+		const result = DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+			DomainOperationReportBuilder.build(
+				OperationType.DELETE,
+				numberOfDeletedRegistrationPins,
+				this.getRegistrationPinsId(registrationPinToDelete)
+			),
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(

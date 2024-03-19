@@ -1,6 +1,6 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { LanguageType } from '@shared/domain/interface';
 import { SchoolPurpose } from '@shared/domain/types';
-import { ObjectId } from 'bson';
 import { federalStateFactory, schoolFactory } from '../../testing';
 import { InstanceFeature } from '../type';
 

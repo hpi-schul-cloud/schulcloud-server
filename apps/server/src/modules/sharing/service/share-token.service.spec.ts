@@ -13,7 +13,7 @@ import { CourseService } from '@modules/learnroom/service';
 import { ColumnBoardService } from '@modules/board/service';
 import { LessonService } from '@modules/lesson/service';
 import { TaskService } from '@modules/task/service';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ShareTokenContextType, ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareTokenRepo } from '../repo/share-token.repo';
 import { ShareTokenService } from './share-token.service';

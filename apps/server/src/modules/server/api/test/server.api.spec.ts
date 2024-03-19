@@ -90,6 +90,7 @@ describe('Server Controller (API)', () => {
 				'TEACHER_STUDENT_VISIBILITY__IS_VISIBLE',
 				'TLDRAW__ASSETS_ENABLED',
 				'TLDRAW__ASSETS_MAX_SIZE',
+				'FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED',
 			];
 
 			expect(response.status).toEqual(HttpStatus.OK);

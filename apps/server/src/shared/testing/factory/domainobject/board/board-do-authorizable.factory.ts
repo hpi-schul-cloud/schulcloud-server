@@ -1,5 +1,5 @@
 import { BoardDoAuthorizable, BoardDoAuthorizableProps } from '@shared/domain/domainobject/board';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { DomainObjectFactory } from '../domain-object.factory';
 import { columnFactory } from './column.do.factory';
 import { columnBoardFactory } from './column-board.do.factory';

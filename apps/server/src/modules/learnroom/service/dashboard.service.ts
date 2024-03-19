@@ -1,22 +1,39 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DomainOperationBuilder } from '@shared/domain/builder';
-import { DomainOperation } from '@shared/domain/interface';
-import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import { EntityId } from '@shared/domain/types';
 import { IDashboardRepo, DashboardElementRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DataDeletionDomainOperationLoggable,
+	DomainName,
+	DomainDeletionReportBuilder,
+	DomainOperationReportBuilder,
+	OperationType,
+	StatusModel,
+} from '@modules/deletion';
 
 @Injectable()
-export class DashboardService {
+@EventsHandler(UserDeletedEvent)
+export class DashboardService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		@Inject('DASHBOARD_REPO') private readonly dashboardRepo: IDashboardRepo,
 		private readonly dashboardElementRepo: DashboardElementRepo,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus
 	) {
 		this.logger.setContext(DashboardService.name);
 	}
 
-	async deleteDashboardByUserId(userId: EntityId): Promise<DomainOperation> {
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+	}
+
+	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Dashboard',
@@ -34,7 +51,9 @@ export class DashboardService {
 			refs.push(usersDashboard.id);
 		}
 
-		const result = DomainOperationBuilder.build(DomainName.DASHBOARD, OperationType.DELETE, deletedDashboard, refs);
+		const result = DomainDeletionReportBuilder.build(DomainName.DASHBOARD, [
+			DomainOperationReportBuilder.build(OperationType.DELETE, deletedDashboard, refs),
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
