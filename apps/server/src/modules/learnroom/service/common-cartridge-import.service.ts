@@ -36,7 +36,6 @@ export class CommonCartridgeImportService {
 		const columnProps = organizations.map((organization) => {
 			return { title: organization.title };
 		});
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const columns = await this.columnService.createMany(columnBoard, columnProps);
+		await this.columnService.createMany(columnBoard, columnProps);
 	}
 }
