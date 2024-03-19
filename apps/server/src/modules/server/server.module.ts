@@ -37,6 +37,7 @@ import { ALL_ENTITIES } from '@shared/domain/entity';
 import { createConfigModuleOptions, DB_PASSWORD, DB_URL, DB_USERNAME } from '@src/config';
 import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
+import { UsersAdminApiModule } from '@modules/user/legacy/users-admin-api.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
 import { SERVER_CONFIG_TOKEN, serverConfig } from './server.config';
 
@@ -52,6 +53,7 @@ const serverModules = [
 	LessonApiModule,
 	NewsModule,
 	UserApiModule,
+	UsersAdminApiModule,
 	SchulconnexClientModule.register({
 		apiUrl: Configuration.get('SCHULCONNEX_CLIENT__API_URL') as string,
 		tokenEndpoint: Configuration.get('SCHULCONNEX_CLIENT__TOKEN_ENDPOINT') as string,

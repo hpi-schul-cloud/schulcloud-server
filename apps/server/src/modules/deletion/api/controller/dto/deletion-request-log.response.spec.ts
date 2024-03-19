@@ -1,5 +1,5 @@
-import { DomainName, StatusModel, OperationType } from '@src/modules/deletion/domain/types';
 import { ObjectId } from 'bson';
+import { DomainName, StatusModel, OperationType } from '../../../domain/types';
 import { DomainOperationReportBuilder } from '../../../domain/builder';
 import { DeletionTargetRefBuilder, DeletionLogStatisticBuilder } from './builder';
 import { DeletionRequestLogResponse } from './deletion-request-log.response';
