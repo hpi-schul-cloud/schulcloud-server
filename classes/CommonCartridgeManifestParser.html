@@ -165,6 +165,10 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Public</span>
+                                <a href="#getOrganizations" >getOrganizations</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#getSchema" >getSchema</a>
                             </li>
                             <li>
@@ -193,13 +197,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-                                <span class="modifier">Public</span>
-                        <code>constructor(manifest: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+<code>constructor(manifest: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, options: <a href="../undefineds/CommonCartridgeFileParserOptions.html" target="_self">CommonCartridgeFileParserOptions</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-manifest-parser.ts:4</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-manifest-parser.ts:6</a></div>
                             </td>
                         </tr>
 
@@ -221,6 +224,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>options</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../miscellaneous/typealiases.html#CommonCartridgeFileParserOptions" target="_self" >CommonCartridgeFileParserOptions</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -263,7 +278,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-manifest-parser.ts:4</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-manifest-parser.ts:6</a></div>
                         </td>
                     </tr>
 
@@ -277,6 +292,45 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getOrganizations"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>getOrganizations</b></span>
+                        <a href="#getOrganizations"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getOrganizations()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="30"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-manifest-parser.ts:30</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#OrganizationProps" target="_self" >OrganizationProps[]</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -299,8 +353,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="10"
-                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-manifest-parser.ts:10</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="12"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-manifest-parser.ts:12</a></div>
                         </td>
                     </tr>
 
@@ -338,8 +392,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-manifest-parser.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-manifest-parser.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -377,8 +431,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-manifest-parser.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="18"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/common-cartridge-manifest-parser.ts:18</a></div>
                         </td>
                     </tr>
 
@@ -405,11 +459,13 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { JSDOM } from &#x27;jsdom&#x27;;
+import { CommonCartridgeFileParserOptions, OrganizationProps } from &#x27;./common-cartridge-import.types&#x27;;
+import { CommonCartridgeOrganizationVisitor } from &#x27;./utils/common-cartridge-organization-visitor&#x27;;
 
 export class CommonCartridgeManifestParser {
 	private readonly doc: Document;
 
-	public constructor(manifest: string) {
+	constructor(manifest: string, private readonly options: CommonCartridgeFileParserOptions) {
 		this.doc &#x3D; new JSDOM(manifest, { contentType: &#x27;text/xml&#x27; }).window.document;
 	}
 
@@ -429,6 +485,13 @@ export class CommonCartridgeManifestParser {
 		const result &#x3D; this.doc.querySelector(&#x27;manifest &gt; metadata &gt; lom &gt; general &gt; title &gt; string&#x27;);
 
 		return result?.textContent ?? undefined;
+	}
+
+	public getOrganizations(): OrganizationProps[] {
+		const visitor &#x3D; new CommonCartridgeOrganizationVisitor(this.doc, this.options);
+		const result &#x3D; visitor.findAllOrganizations();
+
+		return result;
 	}
 }
 </code></pre>

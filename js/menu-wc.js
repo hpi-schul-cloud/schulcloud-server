@@ -3985,6 +3985,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/CommonCartridgeOrganizationsWrapperElementV130.html" data-type="entity-link" >CommonCartridgeOrganizationsWrapperElementV130</a>
                             </li>
                             <li class="link">
+                                <a href="classes/CommonCartridgeOrganizationVisitor.html" data-type="entity-link" >CommonCartridgeOrganizationVisitor</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/CommonCartridgeResource.html" data-type="entity-link" >CommonCartridgeResource</a>
                             </li>
                             <li class="link">

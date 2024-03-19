@@ -166,7 +166,7 @@
                 <tr>
                     <td class="col-md-4">
                                 <span class="modifier">Public</span>
-                        <code>constructor(courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, configService: ConfigService<LearnroomConfig | >, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, courseImportService: <a href="../injectables/CommonCartridgeImportService.html" target="_self">CommonCartridgeImportService</a>)</code>
+                        <code>constructor(configService: ConfigService<LearnroomConfig | >, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, courseImportService: <a href="../injectables/CommonCartridgeImportService.html" target="_self">CommonCartridgeImportService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -188,18 +188,6 @@
                                             </tr>
                                         </thead>
                                         <tbody>
-                                                <tr>
-                                                        <td>courseService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/CourseService.html" target="_self" >CourseService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
                                                 <tr>
                                                         <td>configService</td>
                                                   
@@ -273,8 +261,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/course-import.uc.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/course-import.uc.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -344,12 +332,11 @@ import { Permission } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { AuthorizationService } from &#x27;@src/modules/authorization&#x27;;
 import { LearnroomConfig } from &#x27;../learnroom.config&#x27;;
-import { CommonCartridgeImportService, CourseService } from &#x27;../service&#x27;;
+import { CommonCartridgeImportService } from &#x27;../service&#x27;;
 
 @Injectable()
 export class CourseImportUc {
 	public constructor(
-		private readonly courseService: CourseService,
 		private readonly configService: ConfigService&lt;LearnroomConfig, true&gt;,
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseImportService: CommonCartridgeImportService
@@ -364,9 +351,7 @@ export class CourseImportUc {
 
 		this.authorizationService.checkAllPermissions(user, [Permission.COURSE_CREATE]);
 
-		const course &#x3D; this.courseImportService.createCourse(user, file);
-
-		await this.courseService.create(course);
+		await this.courseImportService.importFile(user, file);
 	}
 }
 </code></pre>

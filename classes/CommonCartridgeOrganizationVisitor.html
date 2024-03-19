@@ -86,7 +86,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content injectable">
+               <div class="content class">
                    <div class="content-data">
 
 
@@ -96,9 +96,13 @@
 
 
 
+
+
+
+
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >ColumnService</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >CommonCartridgeOrganizationVisitor</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -122,8 +126,9 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/board/service/column.service.ts</code>
+            <code>apps/server/src/modules/common-cartridge/import/utils/common-cartridge-organization-visitor.ts</code>
         </p>
+
 
 
 
@@ -143,28 +148,40 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#create" >create</a>
+                                    <span class="modifier">Private</span>
+                                <a href="#createOrganizationProps" >createOrganizationProps</a>
                             </li>
                             <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#createMany" >createMany</a>
+                                    <span class="modifier">Public</span>
+                                <a href="#findAllOrganizations" >findAllOrganizations</a>
                             </li>
                             <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#delete" >delete</a>
+                                    <span class="modifier">Private</span>
+                                <a href="#getElementIdentifier" >getElementIdentifier</a>
                             </li>
                             <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#findById" >findById</a>
+                                    <span class="modifier">Private</span>
+                                <a href="#getElementIdentifierRef" >getElementIdentifierRef</a>
                             </li>
                             <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#move" >move</a>
+                                    <span class="modifier">Private</span>
+                                <a href="#getElementTitle" >getElementTitle</a>
                             </li>
                             <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#updateTitle" >updateTitle</a>
+                                    <span class="modifier">Private</span>
+                                <a href="#initSearch" >initSearch</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#search" >search</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#shouldContinueSearch" >shouldContinueSearch</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#visit" >visit</a>
                             </li>
                         </ul>
                     </td>
@@ -184,12 +201,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(boardDoRepo: <a href="../injectables/BoardDoRepo.html" target="_self">BoardDoRepo</a>, boardDoService: <a href="../injectables/BoardDoService.html" target="_self">BoardDoService</a>)</code>
+<code>constructor(document: Document, options: <a href="../undefineds/CommonCartridgeFileParserOptions.html" target="_self">CommonCartridgeFileParserOptions</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/board/service/column.service.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/common-cartridge/import/utils/common-cartridge-organization-visitor.ts:22</a></div>
                             </td>
                         </tr>
 
@@ -207,10 +224,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>boardDoRepo</td>
+                                                        <td>document</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/BoardDoRepo.html" target="_self" >BoardDoRepo</a></code>
+                                                                    <code>Document</code>
                                                         </td>
                                                   
                                                     <td>
@@ -219,10 +236,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>boardDoService</td>
+                                                        <td>options</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/BoardDoService.html" target="_self" >BoardDoService</a></code>
+                                                                        <code><a href="../miscellaneous/typealiases.html#CommonCartridgeFileParserOptions" target="_self" >CommonCartridgeFileParserOptions</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -239,6 +256,7 @@
         </table>
 </section>
 
+
             <section data-compodoc="block-methods">
     
     <h3 id="methods">
@@ -248,26 +266,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="create"></a>
+                    <a name="createOrganizationProps"></a>
                     <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>create</b></span>
-                        <a href="#create"><span class="icon ion-ios-link"></span></a>
+                            <span class="modifier">Private</span>
+                        <span ><b>createOrganizationProps</b></span>
+                        <a href="#createOrganizationProps"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>create(parent: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>)</code>
+                    <code>createOrganizationProps(element: Element, path: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">apps/server/src/modules/board/service/column.service.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="94"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/utils/common-cartridge-organization-visitor.ts:94</a></div>
                         </td>
                     </tr>
 
@@ -288,78 +306,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>parent</td>
+                                                <td>element</td>
                                             <td>
-                                                            <code><a href="../classes/ColumnBoard.html" target="_self" >ColumnBoard</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/Column.html" target="_self" >Promise&lt;Column&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="createMany"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>createMany</b></span>
-                        <a href="#createMany"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createMany(parent: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>, props: Omit<ColumnProps, BoardCompositeProps>[])</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">apps/server/src/modules/board/service/column.service.ts:33</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>parent</td>
-                                            <td>
-                                                            <code><a href="../classes/ColumnBoard.html" target="_self" >ColumnBoard</a></code>
+                                                        <code>Element</code>
                                             </td>
 
                                             <td>
@@ -369,319 +318,7 @@
 
                                         </tr>
                                         <tr>
-                                                <td>props</td>
-                                            <td>
-                                                        <code>Omit&lt;ColumnProps, BoardCompositeProps&gt;[]</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/Column.html" target="_self" >Promise&lt;Column[]&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="delete"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>delete</b></span>
-                        <a href="#delete"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>delete(column: <a href="../classes/Column.html" target="_self">Column</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="53"
-                                    class="link-to-prism">apps/server/src/modules/board/service/column.service.ts:53</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>column</td>
-                                            <td>
-                                                            <code><a href="../classes/Column.html" target="_self" >Column</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="findById"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>findById</b></span>
-                        <a href="#findById"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>findById(columnId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">apps/server/src/modules/board/service/column.service.ts:12</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>columnId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/Column.html" target="_self" >Promise&lt;Column&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="move"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>move</b></span>
-                        <a href="#move"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>move(column: <a href="../classes/Column.html" target="_self">Column</a>, targetBoard: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>, targetPosition?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="57"
-                                    class="link-to-prism">apps/server/src/modules/board/service/column.service.ts:57</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>column</td>
-                                            <td>
-                                                            <code><a href="../classes/Column.html" target="_self" >Column</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>targetBoard</td>
-                                            <td>
-                                                            <code><a href="../classes/ColumnBoard.html" target="_self" >ColumnBoard</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>targetPosition</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="updateTitle"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>updateTitle</b></span>
-                        <a href="#updateTitle"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>updateTitle(column: <a href="../classes/Column.html" target="_self">Column</a>, title: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="61"
-                                    class="link-to-prism">apps/server/src/modules/board/service/column.service.ts:61</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>column</td>
-                                            <td>
-                                                            <code><a href="../classes/Column.html" target="_self" >Column</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>title</td>
+                                                <td>path</td>
                                             <td>
                                                             <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
                                             </td>
@@ -696,7 +333,481 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#OrganizationProps" target="_self" >OrganizationProps</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="findAllOrganizations"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                        <span ><b>findAllOrganizations</b></span>
+                        <a href="#findAllOrganizations"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>findAllOrganizations()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="25"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/utils/common-cartridge-organization-visitor.ts:25</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#OrganizationProps" target="_self" >OrganizationProps[]</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getElementIdentifier"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>getElementIdentifier</b></span>
+                        <a href="#getElementIdentifier"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getElementIdentifier(element: Element)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/utils/common-cartridge-organization-visitor.ts:76</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>element</td>
+                                            <td>
+                                                        <code>Element</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getElementIdentifierRef"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>getElementIdentifierRef</b></span>
+                        <a href="#getElementIdentifierRef"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getElementIdentifierRef(element: Element)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/utils/common-cartridge-organization-visitor.ts:82</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>element</td>
+                                            <td>
+                                                        <code>Element</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>string | undefined</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getElementTitle"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>getElementTitle</b></span>
+                        <a href="#getElementTitle"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getElementTitle(element: Element)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="88"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/utils/common-cartridge-organization-visitor.ts:88</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>element</td>
+                                            <td>
+                                                        <code>Element</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="initSearch"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>initSearch</b></span>
+                        <a href="#initSearch"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>initSearch()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/utils/common-cartridge-organization-visitor.ts:45</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#SearchElement" target="_self" >SearchElement[]</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="search"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>search</b></span>
+                        <a href="#search"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>search()</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="29"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/utils/common-cartridge-organization-visitor.ts:29</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#SearchElement" target="_self" >SearchElement[]</a></code>
+
+                        </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="shouldContinueSearch"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>shouldContinueSearch</b></span>
+                        <a href="#shouldContinueSearch"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>shouldContinueSearch(depth: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/utils/common-cartridge-organization-visitor.ts:60</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>depth</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="visit"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>visit</b></span>
+                        <a href="#visit"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>visit(element: <a href="../undefineds/SearchElement.html" target="_self">SearchElement</a>, queue: <a href="../undefineds/SearchElement.html" target="_self">SearchElement[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="66"
+                                    class="link-to-prism">apps/server/src/modules/common-cartridge/import/utils/common-cartridge-organization-visitor.ts:66</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>element</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#SearchElement" target="_self" >SearchElement</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>queue</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#SearchElement" target="_self" >SearchElement[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
 
                         </div>
                             <div class="io-description">
@@ -708,84 +819,123 @@
     </table>
 </section>
 
+
+
+
+
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { BoardCompositeProps, Column, ColumnBoard, ColumnProps } from &#x27;@shared/domain/domainobject&#x27;;
-import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
-import { BoardDoRepo } from &#x27;../repo&#x27;;
-import { BoardDoService } from &#x27;./board-do.service&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { randomUUID } from &#x27;crypto&#x27;;
+import { CommonCartridgeFileParserOptions, OrganizationProps } from &#x27;../common-cartridge-import.types&#x27;;
 
-@Injectable()
-export class ColumnService {
-	constructor(private readonly boardDoRepo: BoardDoRepo, private readonly boardDoService: BoardDoService) {}
+type SearchElement &#x3D; { depth: number; path: string; element: Element };
 
-	async findById(columnId: EntityId): Promise&lt;Column&gt; {
-		const column &#x3D; await this.boardDoRepo.findByClassAndId(Column, columnId);
-		return column;
+/*
+ * &#x60;CommonCartridgeOrganizationVisitor&#x60; is a class that is used to traverse and extract information from
+ * an XML document representing a Common Cartridge package. The class uses a breadth-first search algorithm
+ * to visit &#x27;item&#x27; elements in the XML document, up to a specified maximum depth.
+ *
+ * The class is initialized with an XML document and an optional &#x60;ManifestParserOptions&#x60; object, which can
+ * specify the maximum search depth and the path separator to use when constructing paths to elements.
+ *
+ * The main public method of the class is &#x60;findAllOrganizations()&#x60;, which returns an array of &#x60;OrganizationProps&#x60;
+ * objects representing all the &#x27;organization&#x27; elements in the XML document. Each &#x60;OrganizationProps&#x60; object
+ * includes the path to the element, the identifier of the element, the identifierref of the element, and the
+ * title of the element.
+ *
+ * The class also includes several private helper methods for initializing the search, determining whether to
+ * continue the search, visiting an element, and creating an &#x60;OrganizationProps&#x60; object for an element.
+ */
+export class CommonCartridgeOrganizationVisitor {
+	constructor(private readonly document: Document, private readonly options: CommonCartridgeFileParserOptions) {}
+
+	public findAllOrganizations(): OrganizationProps[] {
+		return this.search().map((element) &#x3D;&gt; this.createOrganizationProps(element.element, element.path));
 	}
 
-	async create(parent: ColumnBoard): Promise&lt;Column&gt; {
-		const column &#x3D; new Column({
-			id: new ObjectId().toHexString(),
-			title: &#x27;&#x27;,
-			children: [],
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		});
+	private search(): SearchElement[] {
+		const result &#x3D; new Array&lt;SearchElement&gt;();
+		const queue &#x3D; this.initSearch();
 
-		parent.addChild(column);
+		while (queue.length &gt; 0) {
+			const current &#x3D; queue.shift();
 
-		await this.boardDoRepo.save(parent.children, parent);
+			if (current &amp;&amp; this.shouldContinueSearch(current.depth)) {
+				this.visit(current, queue);
+				result.push(current);
+			}
+		}
 
-		return column;
+		return result;
 	}
 
-	async createMany(parent: ColumnBoard, props: Omit&lt;ColumnProps, keyof BoardCompositeProps&gt;[]): Promise&lt;Column[]&gt; {
-		const columns &#x3D; props.map((prop) &#x3D;&gt; {
-			const column &#x3D; new Column({
-				id: new ObjectId().toHexString(),
-				title: prop.title,
-				children: [],
-				createdAt: new Date(),
-				updatedAt: new Date(),
+	private initSearch(): SearchElement[] {
+		const result &#x3D; new Array&lt;SearchElement&gt;();
+		const root &#x3D; this.document.querySelectorAll(&#x27;manifest &gt; organizations &gt; organization &gt; item &gt; item&#x27;);
+
+		root.forEach((element) &#x3D;&gt; {
+			result.push({
+				depth: 0,
+				path: this.getElementIdentifier(element),
+				element,
 			});
-
-			parent.addChild(column);
-
-			return column;
 		});
 
-		await this.boardDoRepo.save(parent.children, parent);
-
-		return columns;
+		return result;
 	}
 
-	async delete(column: Column): Promise&lt;void&gt; {
-		await this.boardDoService.deleteWithDescendants(column);
+	private shouldContinueSearch(depth: number): boolean {
+		const shouldContinueSearch &#x3D; depth &lt; this.options.maxSearchDepth;
+
+		return shouldContinueSearch;
 	}
 
-	async move(column: Column, targetBoard: ColumnBoard, targetPosition?: number): Promise&lt;void&gt; {
-		await this.boardDoService.move(column, targetBoard, targetPosition);
+	private visit(element: SearchElement, queue: SearchElement[]): void {
+		element.element.querySelectorAll(&#x27;item&#x27;).forEach((child) &#x3D;&gt; {
+			queue.push({
+				depth: element.depth + 1,
+				path: &#x60;${element.path}${this.options.pathSeparator}${this.getElementIdentifier(child)}&#x60;,
+				element: child,
+			});
+		});
 	}
 
-	async updateTitle(column: Column, title: string): Promise&lt;void&gt; {
-		const parent &#x3D; await this.boardDoRepo.findParentOfId(column.id);
-		column.title &#x3D; title;
-		await this.boardDoRepo.save(column, parent);
+	private getElementIdentifier(element: Element): string {
+		const identifier &#x3D; element.getAttribute(&#x27;identifier&#x27;) ?? &#x60;i${randomUUID()}&#x60;;
+
+		return identifier;
+	}
+
+	private getElementIdentifierRef(element: Element): string | undefined {
+		const identifierRef &#x3D; element.getAttribute(&#x27;identifierref&#x27;) ?? undefined;
+
+		return identifierRef;
+	}
+
+	private getElementTitle(element: Element): string {
+		const title &#x3D; element.querySelector(&#x27;title&#x27;)?.textContent ?? &#x27;&#x27;;
+
+		return title;
+	}
+
+	private createOrganizationProps(element: Element, path: string): OrganizationProps {
+		const title &#x3D; this.getElementTitle(element);
+		const identifier &#x3D; this.getElementIdentifier(element);
+		const identifierRef &#x3D; this.getElementIdentifierRef(element);
+
+		return {
+			path,
+			identifier,
+			identifierRef,
+			title,
+		};
 	}
 }
 </code></pre>
     </div>
-
 </div>
-
-
-
-
 
 
 
@@ -820,8 +970,8 @@ export class ColumnService {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'ColumnService.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'CommonCartridgeOrganizationVisitor.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
