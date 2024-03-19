@@ -8,6 +8,7 @@ import { cleanupCollections, systemEntityFactory } from '@shared/testing';
 import { SYSTEM_REPO, System, SystemProps, SystemRepo } from '../../domain';
 import { SystemEntityMapper } from './mapper/system-entity.mapper';
 import { SystemMikroOrmRepo } from './system.repo';
+import { NotImplementedException } from '@nestjs/common';
 
 describe(SystemMikroOrmRepo.name, () => {
 	let module: TestingModule;
@@ -275,7 +276,7 @@ describe(SystemMikroOrmRepo.name, () => {
 	});
 
 	describe('save', () => {
-		describe('when the system is new', () => {
+		describe('when the valid system is passed', () => {
 			const setup = () => {
 				const system = new System({
 					id: new ObjectId().toHexString(),
@@ -295,7 +296,9 @@ describe(SystemMikroOrmRepo.name, () => {
 			it('should throw error because mapDOToEntityProperties is not implement', async () => {
 				const { system } = setup();
 
-				await expect(repo.save(system)).rejects.toThrowError('Method `mapDOToEntityProperties` not implemented.');
+				// @ts-expect-error Testcase
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+				await expect(repo.save(system)).rejects.toThrowError(NotImplementedException);
 			});
 		});
 	});

@@ -1,5 +1,5 @@
 import { EntityData, EntityName } from '@mikro-orm/core';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
 import { SystemEntity } from '@shared/domain/entity';
 import { EntityId, SystemTypeEnum } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
@@ -14,7 +14,7 @@ export class SystemMikroOrmRepo extends BaseDomainObjectRepo<System, SystemEntit
 	}
 
 	protected mapDOToEntityProperties(): EntityData<SystemEntity> {
-		throw new Error('Method `mapDOToEntityProperties` not implemented.');
+		throw new NotImplementedException('Method `mapDOToEntityProperties` not implemented.');
 	}
 
 	public async getSystemById(id: EntityId): Promise<System | null> {
