@@ -1,5 +1,6 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LdapConfigEntity, OauthConfigEntity, SystemEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -8,7 +9,6 @@ import { cleanupCollections, systemEntityFactory } from '@shared/testing';
 import { SYSTEM_REPO, System, SystemProps, SystemRepo } from '../../domain';
 import { SystemEntityMapper } from './mapper/system-entity.mapper';
 import { SystemMikroOrmRepo } from './system.repo';
-import { NotImplementedException } from '@nestjs/common';
 
 describe(SystemMikroOrmRepo.name, () => {
 	let module: TestingModule;
