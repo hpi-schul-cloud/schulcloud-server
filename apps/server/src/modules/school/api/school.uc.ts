@@ -96,7 +96,7 @@ export class SchoolUc {
 		const authContext = AuthorizationContextBuilder.write([Permission.SCHOOL_EDIT]);
 		this.authorizationService.checkPermission(user, school, authContext);
 
-		const updatedSchool = await this.schoolService.updateSchool(schoolId, body);
+		const updatedSchool = await this.schoolService.updateSchool(school, body);
 
 		const responseDto = this.mapToSchoolResponseDto(updatedSchool, schoolYears);
 

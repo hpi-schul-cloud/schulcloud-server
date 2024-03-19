@@ -87,9 +87,7 @@ export class SchoolService {
 		return schoolsForLdapLogin;
 	}
 
-	public async updateSchool(schoolId: string, body: SchoolUpdateBody) {
-		const school = await this.getSchoolById(schoolId);
-
+	public async updateSchool(school: School, body: SchoolUpdateBody) {
 		const fullSchoolObject = SchoolFactory.buildFromPartialBody(school, body);
 
 		let updatedSchool = await this.schoolRepo.save(fullSchoolObject);
