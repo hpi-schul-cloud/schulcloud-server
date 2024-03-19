@@ -75,12 +75,12 @@ export class GroupController {
 
 	@Get()
 	@ApiOperation({ summary: 'Get a list of all groups.' })
-	@ApiResponse({ status: HttpStatus.OK, type: GroupResponse })
+	@ApiResponse({ status: HttpStatus.OK, type: [GroupEntryResponse] })
 	@ApiResponse({ status: '4XX', type: ErrorResponse })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	public async getAllGroups(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Param() params: GroupParams
+		@Query() params: GroupParams
 	): Promise<GroupEntryResponse[]> {
 		const groups: GroupDto[] = await this.groupUc.getAllGroups(
 			currentUser.userId,
