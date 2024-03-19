@@ -15,7 +15,7 @@ import { PermissionService } from '@shared/domain/service';
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { BruteForcePrevention } from '@src/imports-from-feathers';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountConfig } from '../account-config';
 import {
 	AccountByIdBodyParams,

@@ -3,6 +3,7 @@ import {
 	SanisResponse,
 	SanisSonstigeGruppenzugehoerigeResponse,
 } from '@infra/schulconnex-client';
+import { SanisErreichbarkeitenResponse, SchulconnexCommunicationType } from '@infra/schulconnex-client/response';
 import { SanisGroupRole } from '@infra/schulconnex-client/response/sanis-group-role';
 import { SanisGroupType } from '@infra/schulconnex-client/response/sanis-group-type';
 import { SanisRole } from '@infra/schulconnex-client/response/sanis-role';
@@ -54,12 +55,21 @@ export class SanisResponseMapper {
 	}
 
 	mapToExternalUserDto(source: SanisResponse): ExternalUserDto {
+		let email: string | undefined;
+		if (source.personenkontexte[0].erreichbarkeiten?.length) {
+			const emailContact: SanisErreichbarkeitenResponse | undefined = source.personenkontexte[0].erreichbarkeiten.find(
+				(contact: SanisErreichbarkeitenResponse): boolean => contact.typ === SchulconnexCommunicationType.EMAIL
+			);
+			email = emailContact?.kennung;
+		}
+
 		const mapped = new ExternalUserDto({
 			firstName: source.person.name.vorname,
 			lastName: source.person.name.familienname,
 			roles: [SanisResponseMapper.mapSanisRoleToRoleName(source)],
 			externalId: source.pid,
 			birthday: source.person.geburt?.datum ? new Date(source.person.geburt?.datum) : undefined,
+			email,
 		});
 
 		return mapped;

@@ -8,7 +8,7 @@ import {
 	submissionItemFactory,
 	userFactory,
 } from '@shared/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardDoAuthorizable, BoardRoles } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { Action } from '../type';
