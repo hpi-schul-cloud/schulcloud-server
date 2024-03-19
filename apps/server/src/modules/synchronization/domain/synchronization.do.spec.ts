@@ -35,7 +35,7 @@ describe(Synchronization.name, () => {
 				const props = {
 					id: new ObjectId().toHexString(),
 					count: 1,
-					failure: '',
+					failureCause: '',
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				};
@@ -50,7 +50,7 @@ describe(Synchronization.name, () => {
 				const gettersValues = {
 					id: synchronizationsDo.id,
 					count: synchronizationsDo.count,
-					failure: synchronizationsDo.failure,
+					failureCause: synchronizationsDo?.failureCause,
 					createdAt: synchronizationsDo.createdAt,
 					updatedAt: synchronizationsDo.updatedAt,
 				};

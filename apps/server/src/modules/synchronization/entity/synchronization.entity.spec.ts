@@ -13,7 +13,7 @@ describe(SynchronizationEntity.name, () => {
 				const props = {
 					id: new ObjectId().toHexString(),
 					count: 1,
-					failure: '',
+					failureCause: '',
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				};
@@ -40,7 +40,7 @@ describe(SynchronizationEntity.name, () => {
 				const entityProps = {
 					id: entity.id,
 					count: entity.count,
-					failure: entity.failure,
+					failureCause: entity?.failureCause,
 					createdAt: entity.createdAt,
 					updatedAt: entity.updatedAt,
 				};

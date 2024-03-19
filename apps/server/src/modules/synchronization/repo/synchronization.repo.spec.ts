@@ -60,7 +60,7 @@ describe(SynchronizationRepo.name, () => {
 				const expectedDomainObject = {
 					id: domainObject.id,
 					count: domainObject.count,
-					failure: domainObject.failure,
+					failureCause: domainObject.failureCause,
 					createdAt: domainObject.createdAt,
 					updatedAt: domainObject.updatedAt,
 				};
@@ -88,7 +88,7 @@ describe(SynchronizationRepo.name, () => {
 				const expectedSynchronization = {
 					id: entity.id,
 					count: entity.count,
-					failure: entity.failure,
+					failureCause: entity.failureCause,
 					createdAt: entity.createdAt,
 					updatedAt: entity.updatedAt,
 				};

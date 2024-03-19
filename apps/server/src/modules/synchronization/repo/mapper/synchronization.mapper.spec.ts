@@ -13,7 +13,7 @@ describe(SynchronizationMapper.name, () => {
 				const expectedDomainObject = new Synchronization({
 					id: entity.id,
 					count: entity.count,
-					failure: entity.failure,
+					failureCause: entity?.failureCause,
 					createdAt: entity.createdAt,
 					updatedAt: entity.updatedAt,
 				});
@@ -47,7 +47,7 @@ describe(SynchronizationMapper.name, () => {
 				const expectedEntities = new SynchronizationEntity({
 					id: domainObject.id,
 					count: domainObject.count,
-					failure: domainObject.failure,
+					failureCause: domainObject?.failureCause,
 					createdAt: domainObject.createdAt,
 					updatedAt: domainObject.updatedAt,
 				});

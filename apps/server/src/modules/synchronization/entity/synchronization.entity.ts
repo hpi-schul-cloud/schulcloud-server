@@ -5,7 +5,7 @@ import { EntityId } from '@shared/domain/types';
 export interface SynchronizationEntityProps {
 	id?: EntityId;
 	count?: number;
-	failure?: string;
+	failureCause?: string;
 	createdAt?: Date;
 	updatedAt?: Date;
 }
@@ -16,7 +16,7 @@ export class SynchronizationEntity extends BaseEntityWithTimestamps {
 	count?: number;
 
 	@Property({ nullable: true })
-	failure?: string;
+	failureCause?: string;
 
 	constructor(props: SynchronizationEntityProps) {
 		super();
@@ -28,8 +28,8 @@ export class SynchronizationEntity extends BaseEntityWithTimestamps {
 			this.count = props.count;
 		}
 
-		if (props.failure !== undefined) {
-			this.failure = props.failure;
+		if (props.failureCause !== undefined) {
+			this.failureCause = props.failureCause;
 		}
 
 		if (props.createdAt !== undefined) {

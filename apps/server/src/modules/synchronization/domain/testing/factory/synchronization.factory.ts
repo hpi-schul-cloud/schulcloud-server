@@ -8,7 +8,7 @@ export const synchronizationFactory = DoBaseFactory.define<Synchronization, Sync
 		return {
 			id: new ObjectId().toHexString(),
 			count: 1,
-			failure: '',
+			failureCause: '',
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};

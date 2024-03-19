@@ -4,7 +4,7 @@ export interface SynchronizationProps extends AuthorizableObject {
 	createdAt?: Date;
 	updatedAt?: Date;
 	count?: number;
-	failure?: string;
+	failureCause?: string;
 }
 
 export class Synchronization extends DomainObject<SynchronizationProps> {
@@ -20,7 +20,7 @@ export class Synchronization extends DomainObject<SynchronizationProps> {
 		return this.props.count;
 	}
 
-	get failure(): string | undefined {
-		return this.props.failure;
+	get failureCause(): string | undefined {
+		return this.props.failureCause;
 	}
 }

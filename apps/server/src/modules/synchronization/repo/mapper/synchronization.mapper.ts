@@ -8,7 +8,7 @@ export class SynchronizationMapper {
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
 			count: entity.count,
-			failure: entity.failure,
+			failureCause: entity?.failureCause,
 		});
 	}
 
@@ -18,7 +18,7 @@ export class SynchronizationMapper {
 			createdAt: domainObject.createdAt,
 			updatedAt: domainObject.updatedAt,
 			count: domainObject.count,
-			failure: domainObject.failure,
+			failureCause: domainObject.failureCause,
 		});
 	}
 }

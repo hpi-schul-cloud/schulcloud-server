@@ -8,7 +8,7 @@ export const synchronizationEntityFactory = BaseFactory.define<SynchronizationEn
 		return {
 			id: new ObjectId().toHexString(),
 			count: 1,
-			failure: '',
+			failureCause: '',
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
