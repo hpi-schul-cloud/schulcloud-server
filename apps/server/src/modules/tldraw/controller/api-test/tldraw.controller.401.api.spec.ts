@@ -47,7 +47,7 @@ describe('tldraw controller (api)', () => {
 			return { teacherUser, drawingItemData };
 		};
 
-		it('should return status 403 for delete', async () => {
+		it('should return status 401 for delete', async () => {
 			const { drawingItemData } = await setup();
 
 			const response = await testXApiKeyClient.delete(`${drawingItemData.docName}`);
