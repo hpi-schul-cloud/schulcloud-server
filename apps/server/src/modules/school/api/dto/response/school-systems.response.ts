@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { SystemType } from '@shared/domain/types';
 
 export class SchoolSystemsResponse {
 	@ApiProperty()
@@ -18,7 +19,7 @@ export class SchoolSystemResponse {
 	id: string;
 
 	@ApiProperty()
-	type: string;
+	type: SystemType;
 
 	@ApiProperty()
 	alias?: string;
