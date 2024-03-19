@@ -102,7 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >DashboardGridSubElementResponse</li>
+  <li class="breadcrumb-item" >CourseInfoResponse</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/learnroom/controller/dto/dashboard.response.ts</code>
+            <code>apps/server/src/modules/group/controller/dto/response/course-info.response.ts</code>
         </p>
 
 
@@ -148,20 +148,11 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier"></span>
-                                <a href="#displayColor" >displayColor</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
                                 <a href="#id" >id</a>
                             </li>
                             <li>
                                     <span class="modifier"></span>
-                                <a href="#shortTitle" >shortTitle</a>
-                            </li>
-                            <li>
-                                    <span class="modifier"></span>
-                                    <span class="modifier"></span>
-                                <a href="#title" >title</a>
+                                <a href="#name" >name</a>
                             </li>
                         </ul>
                     </td>
@@ -182,12 +173,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(props: <a href="../classes/DashboardGridSubElementResponse.html" target="_self">DashboardGridSubElementResponse</a>)</code>
+<code>constructor(props: <a href="../classes/CourseInfoResponse.html" target="_self">CourseInfoResponse</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/learnroom/controller/dto/dashboard.response.ts:25</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/group/controller/dto/response/course-info.response.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -208,7 +199,7 @@
                                                         <td>props</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../classes/DashboardGridSubElementResponse.html" target="_self" >DashboardGridSubElementResponse</a></code>
+                                                                        <code><a href="../classes/CourseInfoResponse.html" target="_self" >CourseInfoResponse</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -234,42 +225,6 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="displayColor"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                        <span ><b>displayColor</b></span>
-                        <a href="#displayColor"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @ApiProperty({description: &#x27;Color of the Grid element&#x27;})<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/learnroom/controller/dto/dashboard.response.ts:25</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
                     <a name="id"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -280,7 +235,7 @@
             </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
 
                     </td>
                 </tr>
@@ -289,13 +244,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({description: &#x27;The id of the Grid element&#x27;, pattern: &#x27;[a-f0-9]{24}&#x27;})<br />
+                            @ApiProperty()<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/learnroom/controller/dto/dashboard.response.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/group/controller/dto/response/course-info.response.ts:6</a></div>
                         </td>
                     </tr>
 
@@ -306,11 +261,11 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="shortTitle"></a>
+                    <a name="name"></a>
                     <span class="name">
                             <span class="modifier"></span>
-                        <span ><b>shortTitle</b></span>
-                        <a href="#shortTitle"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>name</b></span>
+                        <a href="#name"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
@@ -325,50 +280,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiProperty({description: &#x27;Short title of the Grid element&#x27;})<br />
+                            @ApiProperty()<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="20" class="link-to-prism">apps/server/src/modules/learnroom/controller/dto/dashboard.response.ts:20</a></div>
-                        </td>
-                    </tr>
-
-
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="title"></a>
-                    <span class="name">
-                            <span class="modifier"></span>
-                            <span class="modifier"></span>
-                        <span ><b>title</b></span>
-                        <a href="#title"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Type : </i>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-
-                    </td>
-                </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <b>Decorators : </b>
-                        <br />
-                        <code>
-                            @DecodeHtmlEntities()<br />@ApiProperty({description: &#x27;Title of the Grid element&#x27;})<br />
-                        </code>
-                    </td>
-                </tr>
-                    <tr>
-                        <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/learnroom/controller/dto/dashboard.response.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/group/controller/dto/response/course-info.response.ts:9</a></div>
                         </td>
                     </tr>
 
@@ -388,125 +306,19 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
-import { DecodeHtmlEntities } from &#x27;@shared/controller&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 
-export class DashboardGridSubElementResponse {
-	@ApiProperty({
-		description: &#x27;The id of the Grid element&#x27;,
-		pattern: &#x27;[a-f0-9]{24}&#x27;,
-	})
-	id: string;
+export class CourseInfoResponse {
+	@ApiProperty()
+	id: EntityId;
 
-	@DecodeHtmlEntities()
-	@ApiProperty({
-		description: &#x27;Title of the Grid element&#x27;,
-	})
-	title: string;
+	@ApiProperty()
+	name: string;
 
-	@ApiProperty({
-		description: &#x27;Short title of the Grid element&#x27;,
-	})
-	shortTitle: string;
-
-	@ApiProperty({
-		description: &#x27;Color of the Grid element&#x27;,
-	})
-	displayColor: string;
-
-	constructor(props: DashboardGridSubElementResponse) {
+	constructor(props: CourseInfoResponse) {
 		this.id &#x3D; props.id;
-		this.title &#x3D; props.title;
-		this.shortTitle &#x3D; props.shortTitle;
-		this.displayColor &#x3D; props.displayColor;
+		this.name &#x3D; props.name;
 	}
-}
-
-export class DashboardGridElementResponse {
-	@ApiProperty({
-		description: &#x27;The id of the Grid element&#x27;,
-		pattern: &#x27;[a-f0-9]{24}&#x27;,
-	})
-	id?: string;
-
-	@DecodeHtmlEntities()
-	@ApiProperty({
-		description: &#x27;Title of the Grid element&#x27;,
-	})
-	title?: string;
-
-	@ApiProperty({
-		description: &#x27;Short title of the Grid element&#x27;,
-	})
-	shortTitle: string;
-
-	@ApiProperty({
-		description: &#x27;Color of the Grid element&#x27;,
-	})
-	displayColor: string;
-
-	@ApiProperty({
-		description: &#x27;X position of the Grid element&#x27;,
-	})
-	xPosition: number;
-
-	@ApiProperty({
-		description: &#x27;Y position of the Grid element&#x27;,
-	})
-	yPosition: number;
-
-	@ApiProperty({
-		description: &#x27;The id of the group element&#x27;,
-		pattern: &#x27;[a-f0-9]{24}&#x27;,
-	})
-	groupId?: string;
-
-	@ApiProperty({
-		type: [DashboardGridSubElementResponse],
-		description: &#x27;List of all subelements in the group&#x27;,
-	})
-	groupElements?: DashboardGridSubElementResponse[];
-
-	@ApiProperty({
-		description: &#x27;Start of the copying process if it is still ongoing - otherwise property is not set.&#x27;,
-	})
-	copyingSince?: Date;
-
-	@ApiProperty({
-		description: &#x27;Is the course synchronized with a group?&#x27;,
-	})
-	isSynchronized: boolean;
-
-	constructor(props: DashboardGridElementResponse) {
-		this.id &#x3D; props.id;
-		this.title &#x3D; props.title;
-		this.shortTitle &#x3D; props.shortTitle;
-		this.displayColor &#x3D; props.displayColor;
-		this.xPosition &#x3D; props.xPosition;
-		this.yPosition &#x3D; props.yPosition;
-		this.groupId &#x3D; props.groupId;
-		this.groupElements &#x3D; props.groupElements;
-		this.copyingSince &#x3D; props.copyingSince;
-		this.isSynchronized &#x3D; props.isSynchronized;
-	}
-}
-
-export class DashboardResponse {
-	constructor({ id, gridElements }: DashboardResponse) {
-		this.id &#x3D; id;
-		this.gridElements &#x3D; gridElements;
-	}
-
-	@ApiProperty({
-		description: &#x27;The id of the Dashboard entity&#x27;,
-		pattern: &#x27;[a-f0-9]{24}&#x27;,
-	})
-	id: string;
-
-	@ApiProperty({
-		type: [DashboardGridElementResponse],
-		description: &#x27;List of all elements visible on the dashboard&#x27;,
-	})
-	gridElements: DashboardGridElementResponse[];
 }
 </code></pre>
     </div>
@@ -546,7 +358,7 @@ export class DashboardResponse {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'DashboardGridSubElementResponse.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'CourseInfoResponse.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

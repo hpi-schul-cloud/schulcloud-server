@@ -295,14 +295,16 @@ export class SortHelper {
 	public static genericSortFunction&lt;T&gt;(a: T, b: T, sortOrder: SortOrder &#x3D; SortOrder.asc): number {
 		let order: number;
 
-		if (typeof a !&#x3D;&#x3D; &#x27;undefined&#x27; &amp;&amp; typeof b &#x3D;&#x3D;&#x3D; &#x27;undefined&#x27;) {
+		if (a !&#x3D; null &amp;&amp; b &#x3D;&#x3D; null) {
 			order &#x3D; 1;
-		} else if (typeof a &#x3D;&#x3D;&#x3D; &#x27;undefined&#x27; &amp;&amp; typeof b !&#x3D;&#x3D; &#x27;undefined&#x27;) {
+		} else if (a &#x3D;&#x3D; null &amp;&amp; b !&#x3D; null) {
 			order &#x3D; -1;
 		} else if (typeof a &#x3D;&#x3D;&#x3D; &#x27;string&#x27; &amp;&amp; typeof b &#x3D;&#x3D;&#x3D; &#x27;string&#x27;) {
 			order &#x3D; a.localeCompare(b);
 		} else if (typeof a &#x3D;&#x3D;&#x3D; &#x27;number&#x27; &amp;&amp; typeof b &#x3D;&#x3D;&#x3D; &#x27;number&#x27;) {
 			order &#x3D; a - b;
+		} else if (typeof a &#x3D;&#x3D;&#x3D; &#x27;object&#x27; &amp;&amp; typeof b &#x3D;&#x3D;&#x3D; &#x27;object&#x27; &amp;&amp; a !&#x3D;&#x3D; null &amp;&amp; b !&#x3D;&#x3D; null) {
+			order &#x3D; Object.values(a).join().localeCompare(Object.values(b).join());
 		} else {
 			order &#x3D; 0;
 		}

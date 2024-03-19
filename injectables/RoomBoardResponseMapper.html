@@ -282,7 +282,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="29" class="link-to-prism">apps/server/src/modules/learnroom/mapper/room-board-response.mapper.ts:29</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="30" class="link-to-prism">apps/server/src/modules/learnroom/mapper/room-board-response.mapper.ts:30</a></div>
                         </td>
                     </tr>
 
@@ -308,7 +308,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="93" class="link-to-prism">apps/server/src/modules/learnroom/mapper/room-board-response.mapper.ts:93</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="94" class="link-to-prism">apps/server/src/modules/learnroom/mapper/room-board-response.mapper.ts:94</a></div>
                         </td>
                     </tr>
 
@@ -334,7 +334,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="73" class="link-to-prism">apps/server/src/modules/learnroom/mapper/room-board-response.mapper.ts:73</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="74" class="link-to-prism">apps/server/src/modules/learnroom/mapper/room-board-response.mapper.ts:74</a></div>
                         </td>
                     </tr>
 
@@ -360,7 +360,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">apps/server/src/modules/learnroom/mapper/room-board-response.mapper.ts:47</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="48" class="link-to-prism">apps/server/src/modules/learnroom/mapper/room-board-response.mapper.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -388,14 +388,15 @@ import { BoardTaskStatusMapper } from &#x27;./board-taskStatus.mapper&#x27;;
 @Injectable()
 export class RoomBoardResponseMapper {
 	mapToResponse(board: RoomBoardDTO): SingleColumnBoardResponse {
-		const elements &#x3D; this.mapBoardElements(board);
+		const elements: BoardElementResponse[] &#x3D; this.mapBoardElements(board);
 
-		const mapped &#x3D; new SingleColumnBoardResponse({
+		const mapped: SingleColumnBoardResponse &#x3D; new SingleColumnBoardResponse({
 			roomId: board.roomId,
 			title: board.title,
 			displayColor: board.displayColor,
 			elements,
 			isArchived: board.isArchived,
+			isSynchronized: board.isSynchronized,
 		});
 
 		return mapped;

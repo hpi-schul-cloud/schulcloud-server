@@ -200,8 +200,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/mapper/group-uc.mapper.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/mapper/group-uc.mapper.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -286,7 +286,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapGroupToClassInfoDto(group: <a href="../interfaces/Group.html" target="_self">Group</a>, resolvedUsers: <a href="../entitys/User.html" target="_self">ResolvedGroupUser[]</a>, system?: <a href="../classes/SystemDto.html" target="_self">SystemDto</a>)</code>
+                    <code>mapGroupToClassInfoDto(group: <a href="../interfaces/Group.html" target="_self">Group</a>, resolvedUsers: <a href="../entitys/User.html" target="_self">ResolvedGroupUser[]</a>, synchronizedCourses: <a href="../classes/Course.html" target="_self">Course[]</a>, system?: <a href="../classes/SystemDto.html" target="_self">SystemDto</a>)</code>
                 </td>
             </tr>
 
@@ -330,6 +330,18 @@
                                                 <td>resolvedUsers</td>
                                             <td>
                                                             <code><a href="../entitys/User.html" target="_self" >ResolvedGroupUser[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>synchronizedCourses</td>
+                                            <td>
+                                                            <code><a href="../classes/Course.html" target="_self" >Course[]</a></code>
                                             </td>
 
                                             <td>
@@ -386,8 +398,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="50"
-                                    class="link-to-prism">apps/server/src/modules/group/uc/mapper/group-uc.mapper.ts:50</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="58"
+                                    class="link-to-prism">apps/server/src/modules/group/uc/mapper/group-uc.mapper.ts:58</a></div>
                         </td>
                     </tr>
 
@@ -457,18 +469,19 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Class } from &#x27;@modules/class/domain&#x27;;
 import { SystemDto } from &#x27;@modules/system&#x27;;
-
 import { UserDO } from &#x27;@shared/domain/domainobject&#x27;;
 import { SchoolYearEntity } from &#x27;@shared/domain/entity&#x27;;
 import { RoleName } from &#x27;@shared/domain/interface&#x27;;
+import { Course } from &#x27;@src/modules/learnroom/domain&#x27;;
 import { Group } from &#x27;../../domain&#x27;;
-import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from &#x27;../dto&#x27;;
+import { ClassInfoDto, CourseInfoDto, ResolvedGroupDto, ResolvedGroupUser } from &#x27;../dto&#x27;;
 import { ClassRootType } from &#x27;../dto/class-root-type&#x27;;
 
 export class GroupUcMapper {
 	public static mapGroupToClassInfoDto(
 		group: Group,
 		resolvedUsers: ResolvedGroupUser[],
+		synchronizedCourses: Course[],
 		system?: SystemDto
 	): ClassInfoDto {
 		const mapped: ClassInfoDto &#x3D; new ClassInfoDto({
@@ -481,6 +494,13 @@ export class GroupUcMapper {
 				.map((groupUser: ResolvedGroupUser) &#x3D;&gt; groupUser.user.lastName),
 			studentCount: resolvedUsers.filter((groupUser: ResolvedGroupUser) &#x3D;&gt; groupUser.role.name &#x3D;&#x3D;&#x3D; RoleName.STUDENT)
 				.length,
+			synchronizedCourses: synchronizedCourses.map(
+				(course: Course): CourseInfoDto &#x3D;&gt;
+					new CourseInfoDto({
+						id: course.id,
+						name: course.name,
+					})
+			),
 		});
 
 		return mapped;

@@ -712,6 +712,7 @@ export type GridElementContent &#x3D; {
 	group?: LearnroomMetadata[];
 	groupId?: string;
 	copyingSince?: Date;
+	isSynchronized: boolean;
 };
 
 export class GridElement implements IGridElement {
@@ -803,14 +804,15 @@ export class GridElement implements IGridElement {
 			};
 			return metadata;
 		}
-		const groupData &#x3D; this.references.map((reference) &#x3D;&gt; reference.getMetadata());
-		const checkShortTitle &#x3D; this.title ? this.title.substring(0, 2) : &#x27;&#x27;;
-		const groupMetadata &#x3D; {
+		const groupData: LearnroomMetadata[] &#x3D; this.references.map((reference) &#x3D;&gt; reference.getMetadata());
+		const checkShortTitle: string &#x3D; this.title ? this.title.substring(0, 2) : &#x27;&#x27;;
+		const groupMetadata: GridElementContent &#x3D; {
 			groupId: this.getId(),
 			title: this.title,
 			shortTitle: checkShortTitle,
 			displayColor: &#x27;exampleColor&#x27;,
 			group: groupData,
+			isSynchronized: false,
 		};
 		return groupMetadata;
 	}

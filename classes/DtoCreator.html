@@ -1026,12 +1026,12 @@
 import { Action, AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import {
+	ColumnboardBoardElement,
+	ColumnBoardNode,
+	Course,
 	LegacyBoard,
 	LegacyBoardElement,
 	LegacyBoardElementType,
-	ColumnBoardNode,
-	ColumnboardBoardElement,
-	Course,
 	LessonEntity,
 	Task,
 	TaskWithStatusVo,
@@ -1195,12 +1195,13 @@ class DtoCreator {
 	}
 
 	private buildDTOWithElements(elements: RoomBoardElementDTO[]): RoomBoardDTO {
-		const dto &#x3D; {
+		const dto: RoomBoardDTO &#x3D; {
 			roomId: this.room.id,
 			displayColor: this.room.color,
 			title: this.room.name,
 			elements,
 			isArchived: this.room.isFinished(),
+			isSynchronized: !!this.room.syncedWithGroup,
 		};
 		return dto;
 	}
