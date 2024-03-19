@@ -140,4 +140,19 @@ export class BoardController {
 	) {
 		await this.boardUc.updateVisibility(currentUser.userId, urlParams.boardId, bodyParams.isVisible);
 	}
+
+	@ApiOperation({ summary: 'Get the information if board has whiteboard as a child.' })
+	@ApiResponse({ status: 200, type: Boolean })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Get(':boardId/hasDrawingChild')
+	async hasDrawingChild(
+		@Param() urlParams: BoardUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<boolean> {
+		const response = await this.boardUc.hasDrawingChild(currentUser.userId, urlParams.boardId);
+
+		return response;
+	}
 }

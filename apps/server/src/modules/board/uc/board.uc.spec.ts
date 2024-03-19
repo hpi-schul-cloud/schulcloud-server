@@ -99,6 +99,7 @@ describe(BoardUc.name, () => {
 		};
 
 		boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);
+		columnBoardService.hasDrawingChild.mockReturnValue(true);
 
 		return { user, board, boardId, column, createCardBodyParams };
 	};
@@ -280,6 +281,25 @@ describe(BoardUc.name, () => {
 			await uc.updateVisibility(user.id, board.id, true);
 
 			expect(columnBoardService.updateBoardVisibility).toHaveBeenCalledWith(board.id, true);
+		});
+	});
+
+	describe('hasDrawingChild', () => {
+		describe('when board has drawing child', () => {
+			it('should call the service', async () => {
+				const { user, boardId } = globalSetup();
+
+				await uc.hasDrawingChild(user.id, boardId);
+
+				expect(columnBoardService.findById).toHaveBeenCalledWith(boardId);
+				expect(columnBoardService.hasDrawingChild).toHaveBeenCalled();
+			});
+
+			it('should return true', async () => {
+				const { user, boardId } = globalSetup();
+
+				expect(await uc.hasDrawingChild(user.id, boardId)).toBe(true);
+			});
 		});
 	});
 });
