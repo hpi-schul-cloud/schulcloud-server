@@ -1,5 +1,7 @@
 # Schul-Cloud Server
 
+> This is just a demo branch a will be deleted soon.
+
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=hpi-schul-cloud_schulcloud-server&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=hpi-schul-cloud_schulcloud-server)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=hpi-schul-cloud_schulcloud-server&metric=coverage)](https://sonarcloud.io/summary/new_code?id=hpi-schul-cloud_schulcloud-server)
 [![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=hpi-schul-cloud_schulcloud-server&metric=sqale_rating)](https://sonarcloud.io/summary/new_code?id=hpi-schul-cloud_schulcloud-server)
