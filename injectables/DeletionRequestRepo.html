@@ -168,6 +168,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#markDeletionRequestAsPending" >markDeletionRequestAsPending</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#update" >update</a>
                             </li>
                         </ul>
@@ -341,8 +345,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="78"
-                                    class="link-to-prism">apps/server/src/modules/deletion/repo/deletion-request.repo.ts:78</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="90"
+                                    class="link-to-prism">apps/server/src/modules/deletion/repo/deletion-request.repo.ts:90</a></div>
                         </td>
                     </tr>
 
@@ -548,8 +552,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">apps/server/src/modules/deletion/repo/deletion-request.repo.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="57"
+                                    class="link-to-prism">apps/server/src/modules/deletion/repo/deletion-request.repo.ts:57</a></div>
                         </td>
                     </tr>
 
@@ -617,8 +621,77 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="67"
-                                    class="link-to-prism">apps/server/src/modules/deletion/repo/deletion-request.repo.ts:67</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="68"
+                                    class="link-to-prism">apps/server/src/modules/deletion/repo/deletion-request.repo.ts:68</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>deletionRequestId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="markDeletionRequestAsPending"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>markDeletionRequestAsPending</b></span>
+                        <a href="#markDeletionRequestAsPending"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>markDeletionRequestAsPending(deletionRequestId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="79"
+                                    class="link-to-prism">apps/server/src/modules/deletion/repo/deletion-request.repo.ts:79</a></div>
                         </td>
                     </tr>
 
@@ -686,8 +759,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="49"
-                                    class="link-to-prism">apps/server/src/modules/deletion/repo/deletion-request.repo.ts:49</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="50"
+                                    class="link-to-prism">apps/server/src/modules/deletion/repo/deletion-request.repo.ts:50</a></div>
                         </td>
                     </tr>
 
@@ -770,10 +843,10 @@
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { SortOrder } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { DeletionRequest } from &#x27;../domain/deletion-request.do&#x27;;
-import { DeletionRequestEntity } from &#x27;../entity&#x27;;
-import { DeletionRequestScope } from &#x27;./deletion-request-scope&#x27;;
-import { DeletionRequestMapper } from &#x27;./mapper/deletion-request.mapper&#x27;;
+import { DeletionRequest } from &#x27;../domain/do&#x27;;
+import { DeletionRequestEntity } from &#x27;./entity&#x27;;
+import { DeletionRequestMapper } from &#x27;./mapper&#x27;;
+import { DeletionRequestScope } from &#x27;./scope&#x27;;
 
 @Injectable()
 export class DeletionRequestRepo {
@@ -801,7 +874,8 @@ export class DeletionRequestRepo {
 
 	async findAllItemsToExecution(limit?: number): Promise&lt;DeletionRequest[]&gt; {
 		const currentDate &#x3D; new Date();
-		const scope &#x3D; new DeletionRequestScope().byDeleteAfter(currentDate).byStatus();
+		const fifteenMinutesAgo &#x3D; new Date(Date.now() - 1 * 60 * 1000);
+		const scope &#x3D; new DeletionRequestScope().byDeleteAfter(currentDate).byStatus(fifteenMinutesAgo);
 		const order &#x3D; { createdAt: SortOrder.desc };
 
 		const [deletionRequestEntities] &#x3D; await this.em.findAndCount(DeletionRequestEntity, scope.query, {
@@ -838,6 +912,17 @@ export class DeletionRequestRepo {
 		});
 
 		deletionRequest.failed();
+		await this.em.persistAndFlush(deletionRequest);
+
+		return true;
+	}
+
+	async markDeletionRequestAsPending(deletionRequestId: EntityId): Promise&lt;boolean&gt; {
+		const deletionRequest: DeletionRequestEntity &#x3D; await this.em.findOneOrFail(DeletionRequestEntity, {
+			id: deletionRequestId,
+		});
+
+		deletionRequest.pending();
 		await this.em.persistAndFlush(deletionRequest);
 
 		return true;

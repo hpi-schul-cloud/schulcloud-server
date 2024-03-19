@@ -278,10 +278,11 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Module } from &#x27;@nestjs/common&#x27;;
 import { TeamsRepo } from &#x27;@shared/repo&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
+import { CqrsModule } from &#x27;@nestjs/cqrs&#x27;;
 import { TeamService } from &#x27;./service&#x27;;
 
 @Module({
-	imports: [LoggerModule],
+	imports: [CqrsModule, LoggerModule],
 	providers: [TeamService, TeamsRepo],
 	exports: [TeamService],
 })

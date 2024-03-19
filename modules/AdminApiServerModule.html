@@ -271,7 +271,6 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { MikroOrmModule } from &#x27;@mikro-orm/nestjs&#x27;;
 import { DynamicModule, Module } from &#x27;@nestjs/common&#x27;;
-// import { ALL_ENTITIES } from &#x27;@shared/domain&#x27;;
 import { FileEntity } from &#x27;@modules/files/entity&#x27;;
 import { ConfigModule } from &#x27;@nestjs/config&#x27;;
 import { ALL_ENTITIES } from &#x27;@shared/domain/entity&#x27;;
@@ -279,11 +278,12 @@ import { DB_PASSWORD, DB_URL, DB_USERNAME, createConfigModuleOptions } from &#x2
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { MongoDatabaseModuleOptions, MongoMemoryDatabaseModule } from &#x27;@src/infra/database&#x27;;
 import { RabbitMQWrapperModule, RabbitMQWrapperTestModule } from &#x27;@src/infra/rabbitmq&#x27;;
-import { DeletionApiModule } from &#x27;../deletion/deletion-api.module&#x27;;
+import { CqrsModule } from &#x27;@nestjs/cqrs&#x27;;
+import { DeletionApiModule } from &#x27;@modules/deletion/deletion-api.module&#x27;;
+import { LegacySchoolAdminApiModule } from &#x27;@modules/legacy-school/legacy-school-admin.api-module&#x27;;
+import { UserAdminApiModule } from &#x27;@modules/user/user-admin-api.module&#x27;;
 import { serverConfig } from &#x27;./server.config&#x27;;
 import { defaultMikroOrmOptions } from &#x27;./server.module&#x27;;
-import { LegacySchoolAdminApiModule } from &#x27;../legacy-school/legacy-school-admin.api-module&#x27;;
-import { UserAdminApiModule } from &#x27;../user/user-admin-api.module&#x27;;
 
 const serverModules &#x3D; [
 	ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
@@ -305,6 +305,7 @@ const serverModules &#x3D; [
 			entities: [...ALL_ENTITIES, FileEntity],
 			debug: true,
 		}),
+		CqrsModule,
 		LoggerModule,
 	],
 })

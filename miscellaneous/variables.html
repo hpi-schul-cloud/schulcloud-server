@@ -398,13 +398,13 @@
                             <a href="#defaultVideoConferenceOptions" title="apps/server/src/modules/video-conference/interface/video-conference-options.interface.ts" ><b>defaultVideoConferenceOptions</b>&nbsp;&nbsp;&nbsp;(apps/.../video-conference-options.interface.ts)</a>
                         </li>
                         <li>
-                            <a href="#deletionLogEntityFactory" title="apps/server/src/modules/deletion/entity/testing/factory/deletion-log.entity.factory.ts" ><b>deletionLogEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../deletion-log.entity.factory.ts)</a>
+                            <a href="#deletionLogEntityFactory" title="apps/server/src/modules/deletion/repo/entity/testing/factory/deletion-log.entity.factory.ts" ><b>deletionLogEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../deletion-log.entity.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#deletionLogFactory" title="apps/server/src/modules/deletion/domain/testing/factory/deletion-log.factory.ts" ><b>deletionLogFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../deletion-log.factory.ts)</a>
                         </li>
                         <li>
-                            <a href="#deletionRequestEntityFactory" title="apps/server/src/modules/deletion/entity/testing/factory/deletion-request.entity.factory.ts" ><b>deletionRequestEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../deletion-request.entity.factory.ts)</a>
+                            <a href="#deletionRequestEntityFactory" title="apps/server/src/modules/deletion/repo/entity/testing/factory/deletion-request.entity.factory.ts" ><b>deletionRequestEntityFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../deletion-request.entity.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#deletionRequestFactory" title="apps/server/src/modules/deletion/domain/testing/factory/deletion-request.factory.ts" ><b>deletionRequestFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../deletion-request.factory.ts)</a>
@@ -698,7 +698,7 @@
                             <a href="#mikroOrmCliConfig" title="apps/server/src/config/mikro-orm-cli.config.ts" ><b>mikroOrmCliConfig</b>&nbsp;&nbsp;&nbsp;(apps/.../mikro-orm-cli.config.ts)</a>
                         </li>
                         <li>
-                            <a href="#MINUTES_OF_30_DAYS" title="apps/server/src/modules/deletion/controller/dto/deletion-request.body.params.ts" ><b>MINUTES_OF_30_DAYS</b>&nbsp;&nbsp;&nbsp;(apps/.../deletion-request.body.params.ts)</a>
+                            <a href="#MINUTES_OF_30_DAYS" title="apps/server/src/modules/deletion/api/controller/dto/deletion-request.body.props.ts" ><b>MINUTES_OF_30_DAYS</b>&nbsp;&nbsp;&nbsp;(apps/.../deletion-request.body.props.ts)</a>
                         </li>
                         <li>
                             <a href="#mongoDBUpsertOperationTime" title="apps/server/src/modules/health/uc/health.uc.ts" ><b>mongoDBUpsertOperationTime</b>&nbsp;&nbsp;&nbsp;(apps/.../health.uc.ts)</a>
@@ -902,7 +902,7 @@
                             <a href="#scopeMapping" title="apps/server/src/modules/tool/external-tool/mapper/external-tool-response.mapper.ts" ><b>scopeMapping</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool-response.mapper.ts)</a>
                         </li>
                         <li>
-                            <a href="#SECONDS_OF_90_DAYS" title="apps/server/src/modules/deletion/entity/deletion-request.entity.ts" ><b>SECONDS_OF_90_DAYS</b>&nbsp;&nbsp;&nbsp;(apps/.../deletion-request.entity.ts)</a>
+                            <a href="#SECONDS_OF_90_DAYS" title="apps/server/src/modules/deletion/repo/entity/deletion-request.entity.ts" ><b>SECONDS_OF_90_DAYS</b>&nbsp;&nbsp;&nbsp;(apps/.../deletion-request.entity.ts)</a>
                         </li>
                         <li>
                             <a href="#seedFederalStates" title="apps/server/src/modules/management/seed-data/federalstates.ts" ><b>seedFederalStates</b>&nbsp;&nbsp;&nbsp;(apps/.../federalstates.ts)</a>
@@ -7001,7 +7001,7 @@ To filter by consentStatus, it has to created first</p>
         </tbody>
     </table>
 </section>
-    <h3>apps/server/src/modules/deletion/entity/testing/factory/deletion-log.entity.factory.ts</h3>
+    <h3>apps/server/src/modules/deletion/repo/entity/testing/factory/deletion-log.entity.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
         <tbody>
@@ -7022,9 +7022,16 @@ To filter by consentStatus, it has to created first</p>
 		return {
 			id: new ObjectId().toHexString(),
 			domain: DomainName.USER,
-			operation: OperationType.DELETE,
-			count: 1,
-			refs: [new ObjectId().toHexString()],
+			operations: [DomainOperationReportBuilder.build(OperationType.DELETE, 1, [new ObjectId().toHexString()])],
+			subdomainOperations: [
+				DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+					DomainOperationReportBuilder.build(OperationType.DELETE, 2, [
+						new ObjectId().toHexString(),
+						new ObjectId().toHexString(),
+					]),
+				]),
+			],
+			performedAt: new Date(),
 			deletionRequestId: new ObjectId(),
 			createdAt: new Date(),
 			updatedAt: new Date(),
@@ -7057,9 +7064,15 @@ To filter by consentStatus, it has to created first</p>
 	return {
 		id: new ObjectId().toHexString(),
 		domain: DomainName.USER,
-		operation: OperationType.DELETE,
-		count: 1,
-		refs: [new ObjectId().toHexString()],
+		operations: [DomainOperationReportBuilder.build(OperationType.DELETE, 1, [new ObjectId().toHexString()])],
+		subdomainOperations: [
+			DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+				DomainOperationReportBuilder.build(OperationType.DELETE, 2, [
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString(),
+				]),
+			]),
+		],
 		deletionRequestId: new ObjectId().toHexString(),
 		performedAt: new Date(),
 		createdAt: new Date(),
@@ -7073,7 +7086,7 @@ To filter by consentStatus, it has to created first</p>
         </tbody>
     </table>
 </section>
-    <h3>apps/server/src/modules/deletion/entity/testing/factory/deletion-request.entity.factory.ts</h3>
+    <h3>apps/server/src/modules/deletion/repo/entity/testing/factory/deletion-request.entity.factory.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
         <tbody>
@@ -7096,7 +7109,7 @@ To filter by consentStatus, it has to created first</p>
 			targetRefDomain: DomainName.USER,
 			deleteAfter: new Date(),
 			targetRefId: new ObjectId().toHexString(),
-			status: DeletionStatusModel.REGISTERED,
+			status: StatusModel.REGISTERED,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
@@ -7130,7 +7143,7 @@ To filter by consentStatus, it has to created first</p>
 		targetRefDomain: DomainName.USER,
 		deleteAfter: new Date(),
 		targetRefId: new ObjectId().toHexString(),
-		status: DeletionStatusModel.REGISTERED,
+		status: StatusModel.REGISTERED,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};
@@ -9878,7 +9891,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
-    <h3>apps/server/src/modules/deletion/controller/dto/deletion-request.body.params.ts</h3>
+    <h3>apps/server/src/modules/deletion/api/controller/dto/deletion-request.body.props.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
         <tbody>
@@ -11646,7 +11659,7 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
         </tbody>
     </table>
 </section>
-    <h3>apps/server/src/modules/deletion/entity/deletion-request.entity.ts</h3>
+    <h3>apps/server/src/modules/deletion/repo/entity/deletion-request.entity.ts</h3>
     <section data-compodoc="block-properties">
     <h3></h3>    <table class="table table-sm table-bordered">
         <tbody>

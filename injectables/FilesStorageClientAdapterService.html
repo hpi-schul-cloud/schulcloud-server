@@ -155,16 +155,21 @@
                                 <a href="#deleteFilesOfParent" >deleteFilesOfParent</a>
                             </li>
                             <li>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteUserData" >deleteUserData</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Private</span>
                                 <a href="#getFileRecordsId" >getFileRecordsId</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#listFilesOfParent" >listFilesOfParent</a>
+                                <a href="#handle" >handle</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
-                                <a href="#removeCreatorIdFromFileRecords" >removeCreatorIdFromFileRecords</a>
+                                <a href="#listFilesOfParent" >listFilesOfParent</a>
                             </li>
                         </ul>
                     </td>
@@ -184,12 +189,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, fileStorageMQProducer: <a href="../injectables/FilesStorageProducer.html" target="_self">FilesStorageProducer</a>)</code>
+<code>constructor(logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, fileStorageMQProducer: <a href="../injectables/FilesStorageProducer.html" target="_self">FilesStorageProducer</a>, eventBus: EventBus)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:23</a></div>
                             </td>
                         </tr>
 
@@ -223,6 +228,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/FilesStorageProducer.html" target="_self" >FilesStorageProducer</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>eventBus</td>
+                                                  
+                                                        <td>
+                                                                    <code>EventBus</code>
                                                         </td>
                                                   
                                                     <td>
@@ -266,8 +283,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -335,8 +352,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="41"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:41</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -404,8 +421,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -455,6 +472,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="deleteUserData"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteUserData</b></span>
+                        <a href="#deleteUserData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteUserData(creatorId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="68"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:68</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>creatorId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainDeletionReport.html" target="_self" >Promise&lt;DomainDeletionReport&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="getFileRecordsId"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -473,8 +559,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:62</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="78"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:78</a></div>
                         </td>
                     </tr>
 
@@ -524,6 +610,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="handle"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>handle</b></span>
+                        <a href="#handle"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handle(undefined: <a href="../classes/UserDeletedEvent.html" target="_self">UserDeletedEvent</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:32</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                            <code><a href="../classes/UserDeletedEvent.html" target="_self" >UserDeletedEvent</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="listFilesOfParent"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -542,8 +697,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:25</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="44"
+                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -589,75 +744,6 @@
             </tr>
         </tbody>
     </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="removeCreatorIdFromFileRecords"></a>
-                    <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>removeCreatorIdFromFileRecords</b></span>
-                        <a href="#removeCreatorIdFromFileRecords"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeCreatorIdFromFileRecords(creatorId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="49"
-                                    class="link-to-prism">apps/server/src/modules/files-storage-client/service/files-storage-client.service.ts:49</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>creatorId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperation.html" target="_self" >Promise&lt;DomainOperation&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
 </section>
 
     </div>
@@ -665,20 +751,39 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { DomainName, EntityId, OperationType } from &#x27;@shared/domain/types&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
 import { FileDO } from &#x27;@src/infra/rabbitmq&#x27;;
-import { DomainOperation } from &#x27;@shared/domain/interface&#x27;;
-import { DomainOperationBuilder } from &#x27;@shared/domain/builder&#x27;;
-import { CopyFileDto, FileDto } from &#x27;../dto&#x27;;
-import { CopyFilesRequestInfo } from &#x27;../interfaces/copy-file-request-info&#x27;;
-import { FilesStorageClientMapper } from &#x27;../mapper&#x27;;
+import { IEventHandler, EventBus, EventsHandler } from &#x27;@nestjs/cqrs&#x27;;
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+} from &#x27;@modules/deletion&#x27;;
 import { FilesStorageProducer } from &#x27;./files-storage.producer&#x27;;
+import { FilesStorageClientMapper } from &#x27;../mapper&#x27;;
+import { CopyFilesRequestInfo } from &#x27;../interfaces/copy-file-request-info&#x27;;
+import { CopyFileDto, FileDto } from &#x27;../dto&#x27;;
 
 @Injectable()
-export class FilesStorageClientAdapterService {
-	constructor(private logger: LegacyLogger, private readonly fileStorageMQProducer: FilesStorageProducer) {
+@EventsHandler(UserDeletedEvent)
+export class FilesStorageClientAdapterService implements DeletionService, IEventHandler&lt;UserDeletedEvent&gt; {
+	constructor(
+		private logger: LegacyLogger,
+		private readonly fileStorageMQProducer: FilesStorageProducer,
+		private readonly eventBus: EventBus
+	) {
 		this.logger.setContext(FilesStorageClientAdapterService.name);
+	}
+
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise&lt;void&gt; {
+		const dataDeleted &#x3D; await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	async copyFilesOfParent(param: CopyFilesRequestInfo): Promise&lt;CopyFileDto[]&gt; {
@@ -712,15 +817,12 @@ export class FilesStorageClientAdapterService {
 		return fileInfos;
 	}
 
-	async removeCreatorIdFromFileRecords(creatorId: EntityId): Promise&lt;DomainOperation&gt; {
+	async deleteUserData(creatorId: EntityId): Promise&lt;DomainDeletionReport&gt; {
 		const response &#x3D; await this.fileStorageMQProducer.removeCreatorIdFromFileRecords(creatorId);
 
-		const result &#x3D; DomainOperationBuilder.build(
-			DomainName.FILERECORDS,
-			OperationType.UPDATE,
-			response.length,
-			this.getFileRecordsId(response)
-		);
+		const result &#x3D; DomainDeletionReportBuilder.build(DomainName.FILERECORDS, [
+			DomainOperationReportBuilder.build(OperationType.UPDATE, response.length, this.getFileRecordsId(response)),
+		]);
 
 		return result;
 	}

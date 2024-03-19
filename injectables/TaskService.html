@@ -152,8 +152,14 @@
                                 <a href="#deleteSubmissions" >deleteSubmissions</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#deleteTasksByOnlyCreator" >deleteTasksByOnlyCreator</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteUserData" >deleteUserData</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -168,10 +174,17 @@
                                 <a href="#getTasksId" >getTasksId</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#handle" >handle</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#removeCreatorIdFromTasks" >removeCreatorIdFromTasks</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#removeUserFromFinished" >removeUserFromFinished</a>
                             </li>
@@ -193,12 +206,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(taskRepo: <a href="../injectables/TaskRepo.html" target="_self">TaskRepo</a>, submissionService: <a href="../injectables/SubmissionService.html" target="_self">SubmissionService</a>, filesStorageClientAdapterService: <a href="../injectables/FilesStorageClientAdapterService.html" target="_self">FilesStorageClientAdapterService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(taskRepo: <a href="../injectables/TaskRepo.html" target="_self">TaskRepo</a>, submissionService: <a href="../injectables/SubmissionService.html" target="_self">SubmissionService</a>, filesStorageClientAdapterService: <a href="../injectables/FilesStorageClientAdapterService.html" target="_self">FilesStorageClientAdapterService</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, eventBus: EventBus)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:26</a></div>
                             </td>
                         </tr>
 
@@ -263,6 +276,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>eventBus</td>
+                                                  
+                                                        <td>
+                                                                    <code>EventBus</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -299,8 +324,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:51</a></div>
                         </td>
                     </tr>
 
@@ -369,8 +394,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="40"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:40</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="59"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:59</a></div>
                         </td>
                     </tr>
 
@@ -422,6 +447,7 @@
                 <td class="col-md-4">
                     <a name="deleteTasksByOnlyCreator"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>deleteTasksByOnlyCreator</b></span>
                         <a href="#deleteTasksByOnlyCreator"><span class="icon ion-ios-link"></span></a>
@@ -438,8 +464,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="51"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:51</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="88"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:88</a></div>
                         </td>
                     </tr>
 
@@ -475,7 +501,77 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperation.html" target="_self" >Promise&lt;DomainOperation&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperationReport.html" target="_self" >Promise&lt;DomainOperationReport&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteUserData"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteUserData</b></span>
+                        <a href="#deleteUserData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteUserData(creatorId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:70</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>creatorId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainDeletionReport.html" target="_self" >Promise&lt;DomainDeletionReport&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -507,8 +603,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:47</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="66"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:66</a></div>
                         </td>
                     </tr>
 
@@ -576,8 +672,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="23"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:23</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -681,8 +777,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="163"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:163</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="200"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:200</a></div>
                         </td>
                     </tr>
 
@@ -732,8 +828,78 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="handle"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>handle</b></span>
+                        <a href="#handle"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handle(undefined: <a href="../classes/UserDeletedEvent.html" target="_self">UserDeletedEvent</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:37</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                            <code><a href="../classes/UserDeletedEvent.html" target="_self" >UserDeletedEvent</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="removeCreatorIdFromTasks"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>removeCreatorIdFromTasks</b></span>
                         <a href="#removeCreatorIdFromTasks"><span class="icon ion-ios-link"></span></a>
@@ -750,8 +916,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="88"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:88</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="125"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:125</a></div>
                         </td>
                     </tr>
 
@@ -787,7 +953,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperation.html" target="_self" >Promise&lt;DomainOperation&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperationReport.html" target="_self" >Promise&lt;DomainOperationReport&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -803,6 +969,7 @@
                 <td class="col-md-4">
                     <a name="removeUserFromFinished"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>removeUserFromFinished</b></span>
                         <a href="#removeUserFromFinished"><span class="icon ion-ios-link"></span></a>
@@ -819,8 +986,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="124"
-                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:124</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="161"
+                                    class="link-to-prism">apps/server/src/modules/task/service/task.service.ts:161</a></div>
                         </td>
                     </tr>
 
@@ -856,7 +1023,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperation.html" target="_self" >Promise&lt;DomainOperation&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperationReport.html" target="_self" >Promise&lt;DomainOperationReport&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -875,23 +1042,42 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { FilesStorageClientAdapterService } from &#x27;@modules/files-storage-client&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { Task } from &#x27;@shared/domain/entity&#x27;;
-import { DomainOperation, IFindOptions } from &#x27;@shared/domain/interface&#x27;;
-import { Counted, DomainName, EntityId, OperationType, StatusModel } from &#x27;@shared/domain/types&#x27;;
+import { IFindOptions } from &#x27;@shared/domain/interface&#x27;;
+import { Counted, EntityId } from &#x27;@shared/domain/types&#x27;;
 import { TaskRepo } from &#x27;@shared/repo&#x27;;
-import { DomainOperationBuilder } from &#x27;@shared/domain/builder&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { DataDeletionDomainOperationLoggable } from &#x27;@shared/common/loggable&#x27;;
+import { IEventHandler, EventBus, EventsHandler } from &#x27;@nestjs/cqrs&#x27;;
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	DomainOperationReport,
+	DataDeletionDomainOperationLoggable,
+	StatusModel,
+} from &#x27;@modules/deletion&#x27;;
 import { SubmissionService } from &#x27;./submission.service&#x27;;
 
 @Injectable()
-export class TaskService {
+@EventsHandler(UserDeletedEvent)
+export class TaskService implements DeletionService, IEventHandler&lt;UserDeletedEvent&gt; {
 	constructor(
 		private readonly taskRepo: TaskRepo,
 		private readonly submissionService: SubmissionService,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus
 	) {
 		this.logger.setContext(TaskService.name);
+	}
+
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise&lt;void&gt; {
+		const dataDeleted &#x3D; await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	async findBySingleParent(
@@ -922,7 +1108,25 @@ export class TaskService {
 		return this.taskRepo.findById(taskId);
 	}
 
-	async deleteTasksByOnlyCreator(creatorId: EntityId): Promise&lt;DomainOperation&gt; {
+	public async deleteUserData(creatorId: EntityId): Promise&lt;DomainDeletionReport&gt; {
+		const [tasksDeleted, tasksModifiedByRemoveCreator, tasksModifiedByRemoveUserFromFinished] &#x3D; await Promise.all([
+			this.deleteTasksByOnlyCreator(creatorId),
+			this.removeCreatorIdFromTasks(creatorId),
+			this.removeUserFromFinished(creatorId),
+		]);
+
+		const modifiedTasksCount &#x3D; tasksModifiedByRemoveCreator.count + tasksModifiedByRemoveUserFromFinished.count;
+		const modifiedTasksRef &#x3D; [...tasksModifiedByRemoveCreator.refs, ...tasksModifiedByRemoveUserFromFinished.refs];
+
+		const result &#x3D; DomainDeletionReportBuilder.build(DomainName.TASK, [
+			tasksDeleted,
+			DomainOperationReportBuilder.build(OperationType.UPDATE, modifiedTasksCount, modifiedTasksRef),
+		]);
+
+		return result;
+	}
+
+	public async deleteTasksByOnlyCreator(creatorId: EntityId): Promise&lt;DomainOperationReport&gt; {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				&#x27;Deleting data from Task&#x27;,
@@ -939,12 +1143,12 @@ export class TaskService {
 			await Promise.all(promiseDeletedTasks);
 		}
 
-		const result &#x3D; DomainOperationBuilder.build(
-			DomainName.TASK,
+		const result &#x3D; DomainOperationReportBuilder.build(
 			OperationType.DELETE,
 			counterOfTasksOnlyWithCreatorId,
 			this.getTasksId(tasksByOnlyCreatorId)
 		);
+
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				&#x27;Successfully deleted data from Task&#x27;,
@@ -959,7 +1163,7 @@ export class TaskService {
 		return result;
 	}
 
-	async removeCreatorIdFromTasks(creatorId: EntityId): Promise&lt;DomainOperation&gt; {
+	public async removeCreatorIdFromTasks(creatorId: EntityId): Promise&lt;DomainOperationReport&gt; {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				&#x27;Deleting user data from Task&#x27;,
@@ -976,12 +1180,12 @@ export class TaskService {
 			await this.taskRepo.save(tasksByCreatorIdWithCoursesAndLessons);
 		}
 
-		const result &#x3D; DomainOperationBuilder.build(
-			DomainName.TASK,
+		const result &#x3D; DomainOperationReportBuilder.build(
 			OperationType.UPDATE,
 			counterOfTasksWithCoursesorLessons,
 			this.getTasksId(tasksByCreatorIdWithCoursesAndLessons)
 		);
+
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				&#x27;Successfully deleted user data from Task&#x27;,
@@ -995,7 +1199,7 @@ export class TaskService {
 		return result;
 	}
 
-	async removeUserFromFinished(userId: EntityId): Promise&lt;DomainOperation&gt; {
+	public async removeUserFromFinished(userId: EntityId): Promise&lt;DomainOperationReport&gt; {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				&#x27;Deleting user data from Task archive collection&#x27;,
@@ -1014,12 +1218,12 @@ export class TaskService {
 			await this.taskRepo.save(tasksWithUserInFinished);
 		}
 
-		const result &#x3D; DomainOperationBuilder.build(
-			DomainName.TASK,
+		const result &#x3D; DomainOperationReportBuilder.build(
 			OperationType.UPDATE,
 			counterOfTasksWithUserInFinished,
 			this.getTasksId(tasksWithUserInFinished)
 		);
+
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				&#x27;Successfully deleted user data from Task archive collection&#x27;,

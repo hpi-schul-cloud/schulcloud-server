@@ -122,7 +122,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/deletion/uc/deletion-request.uc.ts</code>
+            <code>apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts</code>
         </p>
 
 
@@ -133,6 +133,20 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
+                <tr>
+                    <td class="col-md-4">
+                        <h6><b>Properties</b></h6>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <ul class="index-list">
+                            <li>
+                                <a href="#config" >config</a>
+                            </li>
+                        </ul>
+                    </td>
+                </tr>
 
                 <tr>
                     <td class="col-md-4">
@@ -142,6 +156,10 @@
                 <tr>
                     <td class="col-md-4">
                         <ul class="index-list">
+                            <li>
+                                    <span class="modifier">Private</span>
+                                <a href="#checkLogsPerDomain" >checkLogsPerDomain</a>
+                            </li>
                             <li>
                                     <span class="modifier">Async</span>
                                 <a href="#createDeletionRequest" >createDeletionRequest</a>
@@ -164,93 +182,8 @@
                                 <a href="#findById" >findById</a>
                             </li>
                             <li>
-                                    <span class="modifier">Private</span>
-                                <a href="#getDomainOperation" >getDomainOperation</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
-                                <a href="#logDeletion" >logDeletion</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#removeAccount" >removeAccount</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#removeUser" >removeUser</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#removeUserFromClasses" >removeUserFromClasses</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#removeUserFromCourse" >removeUserFromCourse</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#removeUserFromCourseGroup" >removeUserFromCourseGroup</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#removeUserFromLessons" >removeUserFromLessons</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#removeUserFromRocketChat" >removeUserFromRocketChat</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#removeUserFromSubmissions" >removeUserFromSubmissions</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#removeUserFromTasks" >removeUserFromTasks</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#removeUserFromTeams" >removeUserFromTeams</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#removeUserRegistrationPin" >removeUserRegistrationPin</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#removeUsersDashboard" >removeUsersDashboard</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#removeUsersDataFromFileRecords" >removeUsersDataFromFileRecords</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#removeUsersDataFromNews" >removeUsersDataFromNews</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#removeUsersFilesAndPermissions" >removeUsersFilesAndPermissions</a>
-                            </li>
-                            <li>
-                                    <span class="modifier">Private</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#removeUsersPseudonyms" >removeUsersPseudonyms</a>
+                                <a href="#handle" >handle</a>
                             </li>
                         </ul>
                     </td>
@@ -270,12 +203,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(deletionRequestService: <a href="../injectables/DeletionRequestService.html" target="_self">DeletionRequestService</a>, deletionLogService: <a href="../injectables/DeletionLogService.html" target="_self">DeletionLogService</a>, accountService: <a href="../injectables/AccountService.html" target="_self">AccountService</a>, classService: <a href="../injectables/ClassService.html" target="_self">ClassService</a>, courseGroupService: <a href="../injectables/CourseGroupService.html" target="_self">CourseGroupService</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, filesService: <a href="../injectables/FilesService.html" target="_self">FilesService</a>, lessonService: <a href="../injectables/LessonService.html" target="_self">LessonService</a>, pseudonymService: <a href="../injectables/PseudonymService.html" target="_self">PseudonymService</a>, teamService: <a href="../injectables/TeamService.html" target="_self">TeamService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, rocketChatUserService: <a href="../injectables/RocketChatUserService.html" target="_self">RocketChatUserService</a>, rocketChatService: <a href="../injectables/RocketChatService.html" target="_self">RocketChatService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, registrationPinService: <a href="../injectables/RegistrationPinService.html" target="_self">RegistrationPinService</a>, filesStorageClientAdapterService: <a href="../injectables/FilesStorageClientAdapterService.html" target="_self">FilesStorageClientAdapterService</a>, dashboardService: <a href="../injectables/DashboardService.html" target="_self">DashboardService</a>, taskService: <a href="../injectables/TaskService.html" target="_self">TaskService</a>, submissionService: <a href="../injectables/SubmissionService.html" target="_self">SubmissionService</a>, newsService: <a href="../injectables/NewsService.html" target="_self">NewsService</a>)</code>
+<code>constructor(deletionRequestService: <a href="../injectables/DeletionRequestService.html" target="_self">DeletionRequestService</a>, deletionLogService: <a href="../injectables/DeletionLogService.html" target="_self">DeletionLogService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>, eventBus: EventBus)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:26</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:17</a></div>
                             </td>
                         </tr>
 
@@ -317,138 +250,6 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>accountService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/AccountService.html" target="_self" >AccountService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>classService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/ClassService.html" target="_self" >ClassService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>courseGroupService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/CourseGroupService.html" target="_self" >CourseGroupService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>courseService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/CourseService.html" target="_self" >CourseService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>filesService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/FilesService.html" target="_self" >FilesService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>lessonService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/LessonService.html" target="_self" >LessonService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>pseudonymService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/PseudonymService.html" target="_self" >PseudonymService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>teamService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/TeamService.html" target="_self" >TeamService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>userService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/UserService.html" target="_self" >UserService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>rocketChatUserService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/RocketChatUserService.html" target="_self" >RocketChatUserService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>rocketChatService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/RocketChatService.html" target="_self" >RocketChatService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
                                                         <td>logger</td>
                                                   
                                                         <td>
@@ -461,70 +262,10 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>registrationPinService</td>
+                                                        <td>eventBus</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/RegistrationPinService.html" target="_self" >RegistrationPinService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>filesStorageClientAdapterService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/FilesStorageClientAdapterService.html" target="_self" >FilesStorageClientAdapterService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>dashboardService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/DashboardService.html" target="_self" >DashboardService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>taskService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/TaskService.html" target="_self" >TaskService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>submissionService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/SubmissionService.html" target="_self" >SubmissionService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>newsService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/NewsService.html" target="_self" >NewsService</a></code>
+                                                                    <code>EventBus</code>
                                                         </td>
                                                   
                                                     <td>
@@ -550,6 +291,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="checkLogsPerDomain"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>checkLogsPerDomain</b></span>
+                        <a href="#checkLogsPerDomain"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkLogsPerDomain(deletionLogs: <a href="../classes/DeletionLog.html" target="_self">DeletionLog[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="55"
+                                    class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:55</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>deletionLogs</td>
+                                            <td>
+                                                            <code><a href="../classes/DeletionLog.html" target="_self" >DeletionLog[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/boolean" target="_blank" >boolean</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="createDeletionRequest"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -568,8 +378,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="52"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:52</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="59"
+                                    class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:59</a></div>
                         </td>
                     </tr>
 
@@ -637,8 +447,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="95"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:95</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="103"
+                                    class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:103</a></div>
                         </td>
                     </tr>
 
@@ -707,8 +517,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="101"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:101</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="109"
+                                    class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:109</a></div>
                         </td>
                     </tr>
 
@@ -776,8 +586,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="63"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:63</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:70</a></div>
                         </td>
                     </tr>
 
@@ -845,8 +655,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="76"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:76</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="84"
+                                    class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:84</a></div>
                         </td>
                     </tr>
 
@@ -882,7 +692,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/DeletionRequestLog.html" target="_self" >Promise&lt;DeletionRequestLogResponse&gt;</a></code>
+                            <b>Returns : </b>    <code>Promise&lt;DeletionRequestLogResponse&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -896,96 +706,26 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="getDomainOperation"></a>
+                    <a name="handle"></a>
                     <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>getDomainOperation</b></span>
-                        <a href="#getDomainOperation"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>getDomainOperation(results: <a href="../interfaces/DomainOperation.html" target="_self">DomainOperation[]</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="169"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:169</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>results</td>
-                                            <td>
-                                                            <code><a href="../interfaces/DomainOperation.html" target="_self" >DomainOperation[]</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="logDeletion"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
                             <span class="modifier">Async</span>
-                        <span ><b>logDeletion</b></span>
-                        <a href="#logDeletion"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>handle</b></span>
+                        <a href="#handle"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>logDeletion(deletionRequest: <a href="../classes/DeletionRequest.html" target="_self">DeletionRequest</a>, domainModel: <a href="../undefineds/DomainName.html" target="_self">DomainName</a>, operation: <a href="../undefineds/OperationType.html" target="_self">OperationType</a>, count: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, refs: string[])</code>
+                    <code>handle(undefined: <a href="../classes/DataDeletedEvent.html" target="_self">DataDeletedEvent</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="127"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:127</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -1006,1177 +746,8 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>deletionRequest</td>
                                             <td>
-                                                            <code><a href="../classes/DeletionRequest.html" target="_self" >DeletionRequest</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>domainModel</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#DomainName" target="_self" >DomainName</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>operation</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#OperationType" target="_self" >OperationType</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>count</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>refs</td>
-                                            <td>
-                                                        <code>string[]</code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="removeAccount"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>removeAccount</b></span>
-                        <a href="#removeAccount"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeAccount(deletionRequest: <a href="../classes/DeletionRequest.html" target="_self">DeletionRequest</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="137"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:137</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>deletionRequest</td>
-                                            <td>
-                                                            <code><a href="../classes/DeletionRequest.html" target="_self" >DeletionRequest</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="removeUser"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>removeUser</b></span>
-                        <a href="#removeUser"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeUser(deletionRequest: <a href="../classes/DeletionRequest.html" target="_self">DeletionRequest</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="306"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:306</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>deletionRequest</td>
-                                            <td>
-                                                            <code><a href="../classes/DeletionRequest.html" target="_self" >DeletionRequest</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="removeUserFromClasses"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>removeUserFromClasses</b></span>
-                        <a href="#removeUserFromClasses"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeUserFromClasses(deletionRequest: <a href="../classes/DeletionRequest.html" target="_self">DeletionRequest</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="186"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:186</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>deletionRequest</td>
-                                            <td>
-                                                            <code><a href="../classes/DeletionRequest.html" target="_self" >DeletionRequest</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="removeUserFromCourse"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>removeUserFromCourse</b></span>
-                        <a href="#removeUserFromCourse"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeUserFromCourse(deletionRequest: <a href="../classes/DeletionRequest.html" target="_self">DeletionRequest</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="212"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:212</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>deletionRequest</td>
-                                            <td>
-                                                            <code><a href="../classes/DeletionRequest.html" target="_self" >DeletionRequest</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="removeUserFromCourseGroup"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>removeUserFromCourseGroup</b></span>
-                        <a href="#removeUserFromCourseGroup"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeUserFromCourseGroup(deletionRequest: <a href="../classes/DeletionRequest.html" target="_self">DeletionRequest</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="199"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:199</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>deletionRequest</td>
-                                            <td>
-                                                            <code><a href="../classes/DeletionRequest.html" target="_self" >DeletionRequest</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="removeUserFromLessons"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>removeUserFromLessons</b></span>
-                        <a href="#removeUserFromLessons"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeUserFromLessons(deletionRequest: <a href="../classes/DeletionRequest.html" target="_self">DeletionRequest</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="267"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:267</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>deletionRequest</td>
-                                            <td>
-                                                            <code><a href="../classes/DeletionRequest.html" target="_self" >DeletionRequest</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="removeUserFromRocketChat"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>removeUserFromRocketChat</b></span>
-                        <a href="#removeUserFromRocketChat"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeUserFromRocketChat(deletionRequest: <a href="../classes/DeletionRequest.html" target="_self">DeletionRequest</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="323"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:323</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>deletionRequest</td>
-                                            <td>
-                                                            <code><a href="../classes/DeletionRequest.html" target="_self" >DeletionRequest</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="removeUserFromSubmissions"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>removeUserFromSubmissions</b></span>
-                        <a href="#removeUserFromSubmissions"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeUserFromSubmissions(deletionRequest: <a href="../classes/DeletionRequest.html" target="_self">DeletionRequest</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="379"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:379</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>deletionRequest</td>
-                                            <td>
-                                                            <code><a href="../classes/DeletionRequest.html" target="_self" >DeletionRequest</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="removeUserFromTasks"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>removeUserFromTasks</b></span>
-                        <a href="#removeUserFromTasks"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeUserFromTasks(deletionRequest: <a href="../classes/DeletionRequest.html" target="_self">DeletionRequest</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="350"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:350</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>deletionRequest</td>
-                                            <td>
-                                                            <code><a href="../classes/DeletionRequest.html" target="_self" >DeletionRequest</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="removeUserFromTeams"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>removeUserFromTeams</b></span>
-                        <a href="#removeUserFromTeams"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeUserFromTeams(deletionRequest: <a href="../classes/DeletionRequest.html" target="_self">DeletionRequest</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="293"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:293</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>deletionRequest</td>
-                                            <td>
-                                                            <code><a href="../classes/DeletionRequest.html" target="_self" >DeletionRequest</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="removeUserRegistrationPin"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>removeUserRegistrationPin</b></span>
-                        <a href="#removeUserRegistrationPin"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeUserRegistrationPin(deletionRequest: <a href="../classes/DeletionRequest.html" target="_self">DeletionRequest</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="150"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:150</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>deletionRequest</td>
-                                            <td>
-                                                            <code><a href="../classes/DeletionRequest.html" target="_self" >DeletionRequest</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;number&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="removeUsersDashboard"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>removeUsersDashboard</b></span>
-                        <a href="#removeUsersDashboard"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeUsersDashboard(deletionRequest: <a href="../classes/DeletionRequest.html" target="_self">DeletionRequest</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="225"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:225</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>deletionRequest</td>
-                                            <td>
-                                                            <code><a href="../classes/DeletionRequest.html" target="_self" >DeletionRequest</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="removeUsersDataFromFileRecords"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>removeUsersDataFromFileRecords</b></span>
-                        <a href="#removeUsersDataFromFileRecords"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeUsersDataFromFileRecords(deletionRequest: <a href="../classes/DeletionRequest.html" target="_self">DeletionRequest</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="251"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:251</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>deletionRequest</td>
-                                            <td>
-                                                            <code><a href="../classes/DeletionRequest.html" target="_self" >DeletionRequest</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="removeUsersDataFromNews"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>removeUsersDataFromNews</b></span>
-                        <a href="#removeUsersDataFromNews"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeUsersDataFromNews(deletionRequest: <a href="../classes/DeletionRequest.html" target="_self">DeletionRequest</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="404"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:404</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>deletionRequest</td>
-                                            <td>
-                                                            <code><a href="../classes/DeletionRequest.html" target="_self" >DeletionRequest</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="removeUsersFilesAndPermissions"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>removeUsersFilesAndPermissions</b></span>
-                        <a href="#removeUsersFilesAndPermissions"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeUsersFilesAndPermissions(deletionRequest: <a href="../classes/DeletionRequest.html" target="_self">DeletionRequest</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="238"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:238</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>deletionRequest</td>
-                                            <td>
-                                                            <code><a href="../classes/DeletionRequest.html" target="_self" >DeletionRequest</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="removeUsersPseudonyms"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>removeUsersPseudonyms</b></span>
-                        <a href="#removeUsersPseudonyms"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>removeUsersPseudonyms(deletionRequest: <a href="../classes/DeletionRequest.html" target="_self">DeletionRequest</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="280"
-                                    class="link-to-prism">apps/server/src/modules/deletion/uc/deletion-request.uc.ts:280</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>deletionRequest</td>
-                                            <td>
-                                                            <code><a href="../classes/DeletionRequest.html" target="_self" >DeletionRequest</a></code>
+                                                            <code><a href="../classes/DataDeletedEvent.html" target="_self" >DataDeletedEvent</a></code>
                                             </td>
 
                                             <td>
@@ -2200,60 +771,99 @@
         </tbody>
     </table>
 </section>
+            <section data-compodoc="block-properties">
+    
+    <h3 id="inputs">
+        Properties
+    </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="config"></a>
+                    <span class="name">
+                        <span ><b>config</b></span>
+                        <a href="#config"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>string[]</code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/deletion/api/uc/deletion-request.uc.ts:17</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
+</section>
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AccountService } from &#x27;@modules/account/services&#x27;;
-import { ClassService } from &#x27;@modules/class&#x27;;
-import { FilesService } from &#x27;@modules/files/service&#x27;;
-import { CourseGroupService, CourseService, DashboardService } from &#x27;@modules/learnroom&#x27;;
-import { LessonService } from &#x27;@modules/lesson/service&#x27;;
-import { PseudonymService } from &#x27;@modules/pseudonym&#x27;;
-import { RegistrationPinService } from &#x27;@modules/registration-pin&#x27;;
-import { RocketChatService } from &#x27;@modules/rocketchat&#x27;;
-import { RocketChatUserService } from &#x27;@modules/rocketchat-user&#x27;;
-import { TeamService } from &#x27;@modules/teams&#x27;;
-import { UserService } from &#x27;@modules/user&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { DomainName, EntityId, OperationType } from &#x27;@shared/domain/types&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
-import { FilesStorageClientAdapterService } from &#x27;@modules/files-storage-client&#x27;;
-import { SubmissionService, TaskService } from &#x27;@modules/task&#x27;;
-import { DomainOperation } from &#x27;@shared/domain/interface&#x27;;
-import { DomainOperationBuilder } from &#x27;@shared/domain/builder/domain-operation.builder&#x27;;
-import { NewsService } from &#x27;@src/modules/news/service/news.service&#x27;;
-import { DeletionRequestLogResponseBuilder, DeletionTargetRefBuilder } from &#x27;../builder&#x27;;
-import { DeletionRequestBodyProps, DeletionRequestLogResponse, DeletionRequestResponse } from &#x27;../controller/dto&#x27;;
-import { DeletionRequest, DeletionLog } from &#x27;../domain&#x27;;
-import { DeletionRequestService, DeletionLogService } from &#x27;../services&#x27;;
+import { EventBus, EventsHandler, IEventHandler } from &#x27;@nestjs/cqrs&#x27;;
+import { DomainDeletionReportBuilder } from &#x27;../../domain/builder&#x27;;
+import { DeletionLog, DeletionRequest } from &#x27;../../domain/do&#x27;;
+import { DataDeletedEvent, UserDeletedEvent } from &#x27;../../domain/event&#x27;;
+import { DomainDeletionReport } from &#x27;../../domain/interface&#x27;;
+import { DeletionRequestService, DeletionLogService } from &#x27;../../domain/service&#x27;;
+import { DeletionRequestLogResponseBuilder } from &#x27;../builder&#x27;;
+import { DeletionRequestBodyProps, DeletionRequestResponse, DeletionRequestLogResponse } from &#x27;../controller/dto&#x27;;
+import { DeletionTargetRefBuilder } from &#x27;../controller/dto/builder&#x27;;
 
 @Injectable()
-export class DeletionRequestUc {
+@EventsHandler(DataDeletedEvent)
+export class DeletionRequestUc implements IEventHandler&lt;DataDeletedEvent&gt; {
+	config: string[];
+
 	constructor(
 		private readonly deletionRequestService: DeletionRequestService,
 		private readonly deletionLogService: DeletionLogService,
-		private readonly accountService: AccountService,
-		private readonly classService: ClassService,
-		private readonly courseGroupService: CourseGroupService,
-		private readonly courseService: CourseService,
-		private readonly filesService: FilesService,
-		private readonly lessonService: LessonService,
-		private readonly pseudonymService: PseudonymService,
-		private readonly teamService: TeamService,
-		private readonly userService: UserService,
-		private readonly rocketChatUserService: RocketChatUserService,
-		private readonly rocketChatService: RocketChatService,
 		private readonly logger: LegacyLogger,
-		private readonly registrationPinService: RegistrationPinService,
-		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
-		private readonly dashboardService: DashboardService,
-		private readonly taskService: TaskService,
-		private readonly submissionService: SubmissionService,
-		private readonly newsService: NewsService
+		private readonly eventBus: EventBus
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
+		this.config &#x3D; [
+			&#x27;account&#x27;,
+			&#x27;class&#x27;,
+			&#x27;courseGroup&#x27;,
+			&#x27;course&#x27;,
+			&#x27;dashboard&#x27;,
+			&#x27;file&#x27;,
+			&#x27;fileRecords&#x27;,
+			&#x27;lessons&#x27;,
+			&#x27;pseudonyms&#x27;,
+			&#x27;rocketChatUser&#x27;,
+			&#x27;task&#x27;,
+			&#x27;teams&#x27;,
+			&#x27;user&#x27;,
+			&#x27;submissions&#x27;,
+			&#x27;news&#x27;,
+		];
+	}
+
+	async handle({ deletionRequestId, domainDeletionReport }: DataDeletedEvent) {
+		await this.deletionLogService.createDeletionLog(deletionRequestId, domainDeletionReport);
+
+		const deletionLogs: DeletionLog[] &#x3D; await this.deletionLogService.findByDeletionRequestId(deletionRequestId);
+
+		if (this.checkLogsPerDomain(deletionLogs)) {
+			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequestId);
+		}
+	}
+
+	private checkLogsPerDomain(deletionLogs: DeletionLog[]): boolean {
+		return this.config.every((domain) &#x3D;&gt; deletionLogs.some((log) &#x3D;&gt; log.domain &#x3D;&#x3D;&#x3D; domain));
 	}
 
 	async createDeletionRequest(deletionRequest: DeletionRequestBodyProps): Promise&lt;DeletionRequestResponse&gt; {
@@ -2274,14 +884,15 @@ export class DeletionRequestUc {
 			limit
 		);
 
-		for (const req of deletionRequestToExecution) {
-			// eslint-disable-next-line no-await-in-loop
-			await this.executeDeletionRequest(req);
-		}
+		await Promise.all(
+			deletionRequestToExecution.map(async (req) &#x3D;&gt; {
+				await this.executeDeletionRequest(req);
+			})
+		);
 	}
 
 	async findById(deletionRequestId: EntityId): Promise&lt;DeletionRequestLogResponse&gt; {
-		this.logger.debug({ action: &#x27;deletionRequestId&#x27;, deletionRequestId });
+		this.logger.debug({ action: &#x27;findById&#x27;, deletionRequestId });
 
 		const deletionRequest: DeletionRequest &#x3D; await this.deletionRequestService.findById(deletionRequestId);
 		let response: DeletionRequestLogResponse &#x3D; DeletionRequestLogResponseBuilder.build(
@@ -2291,8 +902,8 @@ export class DeletionRequestUc {
 		);
 
 		const deletionLog: DeletionLog[] &#x3D; await this.deletionLogService.findByDeletionRequestId(deletionRequestId);
-		const domainOperation: DomainOperation[] &#x3D; deletionLog.map((log) &#x3D;&gt;
-			DomainOperationBuilder.build(log.domain, log.operation, log.count, log.refs)
+		const domainOperation: DomainDeletionReport[] &#x3D; deletionLog.map((log) &#x3D;&gt;
+			DomainDeletionReportBuilder.build(log.domain, log.operations, log.subdomainOperations)
 		);
 		response &#x3D; { ...response, statistics: domainOperation };
 
@@ -2307,318 +918,12 @@ export class DeletionRequestUc {
 
 	private async executeDeletionRequest(deletionRequest: DeletionRequest): Promise&lt;void&gt; {
 		try {
-			await Promise.all([
-				this.removeAccount(deletionRequest),
-				this.removeUserFromClasses(deletionRequest),
-				this.removeUserFromCourseGroup(deletionRequest),
-				this.removeUserFromCourse(deletionRequest),
-				this.removeUsersFilesAndPermissions(deletionRequest),
-				this.removeUsersDataFromFileRecords(deletionRequest),
-				this.removeUserFromLessons(deletionRequest),
-				this.removeUsersPseudonyms(deletionRequest),
-				this.removeUserFromTeams(deletionRequest),
-				this.removeUser(deletionRequest),
-				this.removeUserFromRocketChat(deletionRequest),
-				this.removeUsersDashboard(deletionRequest),
-				this.removeUserFromTasks(deletionRequest),
-				this.removeUserFromSubmissions(deletionRequest),
-				this.removeUsersDataFromNews(deletionRequest),
-			]);
-			await this.deletionRequestService.markDeletionRequestAsExecuted(deletionRequest.id);
+			await this.eventBus.publish(new UserDeletedEvent(deletionRequest.id, deletionRequest.targetRefId));
+			await this.deletionRequestService.markDeletionRequestAsPending(deletionRequest.id);
 		} catch (error) {
-			this.logger.error(&#x60;execution of deletionRequest ${deletionRequest.id} was failed&#x60;, error);
+			this.logger.error(&#x60;execution of deletionRequest ${deletionRequest.id} has failed&#x60;, error);
 			await this.deletionRequestService.markDeletionRequestAsFailed(deletionRequest.id);
 		}
-	}
-
-	private async logDeletion(
-		deletionRequest: DeletionRequest,
-		domainModel: DomainName,
-		operation: OperationType,
-		count: number,
-		refs: string[]
-	): Promise&lt;void&gt; {
-		await this.deletionLogService.createDeletionLog(deletionRequest.id, domainModel, operation, count, refs);
-	}
-
-	private async removeAccount(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: &#x27;removeAccount&#x27;, deletionRequest });
-
-		const accountDeleted &#x3D; await this.accountService.deleteAccountByUserId(deletionRequest.targetRefId);
-		await this.logDeletion(
-			deletionRequest,
-			accountDeleted.domain,
-			accountDeleted.operation,
-			accountDeleted.count,
-			accountDeleted.refs
-		);
-	}
-
-	private async removeUserRegistrationPin(deletionRequest: DeletionRequest): Promise&lt;number&gt; {
-		const userToDeletion &#x3D; await this.userService.findByIdOrNull(deletionRequest.targetRefId);
-		const parentEmails &#x3D; await this.userService.getParentEmailsFromUser(deletionRequest.targetRefId);
-		let emailsToDeletion: string[] &#x3D; [];
-		if (userToDeletion !&#x3D;&#x3D; null) {
-			emailsToDeletion &#x3D; [userToDeletion.email, ...parentEmails];
-		}
-
-		const results &#x3D; await Promise.all(
-			emailsToDeletion.map((email) &#x3D;&gt; this.registrationPinService.deleteRegistrationPinByEmail(email))
-		);
-
-		const result &#x3D; this.getDomainOperation(results);
-
-		await this.logDeletion(deletionRequest, result.domain, result.operation, result.count, result.refs);
-
-		return result.count;
-	}
-
-	private getDomainOperation(results: DomainOperation[]) {
-		return results.reduce(
-			(acc, current) &#x3D;&gt; {
-				acc.count +&#x3D; current.count;
-				acc.refs &#x3D; [...acc.refs, ...current.refs];
-
-				return acc;
-			},
-			{
-				domain: results[0].domain,
-				operation: results[0].operation,
-				count: 0,
-				refs: [],
-			}
-		);
-	}
-
-	private async removeUserFromClasses(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: &#x27;removeUserFromClasses&#x27;, deletionRequest });
-
-		const classesUpdated &#x3D; await this.classService.deleteUserDataFromClasses(deletionRequest.targetRefId);
-		await this.logDeletion(
-			deletionRequest,
-			classesUpdated.domain,
-			classesUpdated.operation,
-			classesUpdated.count,
-			classesUpdated.refs
-		);
-	}
-
-	private async removeUserFromCourseGroup(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: &#x27;removeUserFromCourseGroup&#x27;, deletionRequest });
-
-		const courseGroupUpdated &#x3D; await this.courseGroupService.deleteUserDataFromCourseGroup(deletionRequest.targetRefId);
-		await this.logDeletion(
-			deletionRequest,
-			courseGroupUpdated.domain,
-			courseGroupUpdated.operation,
-			courseGroupUpdated.count,
-			courseGroupUpdated.refs
-		);
-	}
-
-	private async removeUserFromCourse(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: &#x27;removeUserFromCourse&#x27;, deletionRequest });
-
-		const courseUpdated &#x3D; await this.courseService.deleteUserDataFromCourse(deletionRequest.targetRefId);
-		await this.logDeletion(
-			deletionRequest,
-			courseUpdated.domain,
-			courseUpdated.operation,
-			courseUpdated.count,
-			courseUpdated.refs
-		);
-	}
-
-	private async removeUsersDashboard(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: &#x27;removeUsersDashboard&#x27;, deletionRequest });
-
-		const dashboardDeleted &#x3D; await this.dashboardService.deleteDashboardByUserId(deletionRequest.targetRefId);
-		await this.logDeletion(
-			deletionRequest,
-			dashboardDeleted.domain,
-			dashboardDeleted.operation,
-			dashboardDeleted.count,
-			dashboardDeleted.refs
-		);
-	}
-
-	private async removeUsersFilesAndPermissions(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: &#x27;removeUsersFilesAndPermissions&#x27;, deletionRequest });
-
-		const filesDeleted &#x3D; await this.filesService.markFilesOwnedByUserForDeletion(deletionRequest.targetRefId);
-		const filesUpdated &#x3D; await this.filesService.removeUserPermissionsOrCreatorReferenceToAnyFiles(
-			deletionRequest.targetRefId
-		);
-
-		const result &#x3D; this.getDomainOperation([filesDeleted, filesUpdated]);
-
-		await this.logDeletion(deletionRequest, result.domain, result.operation, result.count, result.refs);
-	}
-
-	private async removeUsersDataFromFileRecords(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: &#x27;removeUsersDataFromFileRecords&#x27;, deletionRequest });
-
-		const fileRecordsUpdated &#x3D; await this.filesStorageClientAdapterService.removeCreatorIdFromFileRecords(
-			deletionRequest.targetRefId
-		);
-
-		await this.logDeletion(
-			deletionRequest,
-			fileRecordsUpdated.domain,
-			fileRecordsUpdated.operation,
-			fileRecordsUpdated.count,
-			fileRecordsUpdated.refs
-		);
-	}
-
-	private async removeUserFromLessons(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: &#x27;removeUserFromLessons&#x27;, deletionRequest });
-
-		const lessonsUpdated &#x3D; await this.lessonService.deleteUserDataFromLessons(deletionRequest.targetRefId);
-		await this.logDeletion(
-			deletionRequest,
-			lessonsUpdated.domain,
-			lessonsUpdated.operation,
-			lessonsUpdated.count,
-			lessonsUpdated.refs
-		);
-	}
-
-	private async removeUsersPseudonyms(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: &#x27;removeUsersPseudonyms&#x27;, deletionRequest });
-
-		const pseudonymsDeleted &#x3D; await this.pseudonymService.deleteByUserId(deletionRequest.targetRefId);
-		await this.logDeletion(
-			deletionRequest,
-			pseudonymsDeleted.domain,
-			pseudonymsDeleted.operation,
-			pseudonymsDeleted.count,
-			pseudonymsDeleted.refs
-		);
-	}
-
-	private async removeUserFromTeams(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: &#x27; removeUserFromTeams&#x27;, deletionRequest });
-
-		const teamsUpdated &#x3D; await this.teamService.deleteUserDataFromTeams(deletionRequest.targetRefId);
-		await this.logDeletion(
-			deletionRequest,
-			teamsUpdated.domain,
-			teamsUpdated.operation,
-			teamsUpdated.count,
-			teamsUpdated.refs
-		);
-	}
-
-	private async removeUser(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: &#x27;removeUser&#x27;, deletionRequest });
-
-		const registrationPinDeleted &#x3D; await this.removeUserRegistrationPin(deletionRequest);
-
-		if (registrationPinDeleted &gt;&#x3D; 0) {
-			const userDeleted &#x3D; await this.userService.deleteUser(deletionRequest.targetRefId);
-			await this.logDeletion(
-				deletionRequest,
-				userDeleted.domain,
-				userDeleted.operation,
-				userDeleted.count,
-				userDeleted.refs
-			);
-		}
-	}
-
-	private async removeUserFromRocketChat(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: &#x27;removeUserFromRocketChat&#x27;, deletionRequest });
-
-		const rocketChatUser &#x3D; await this.rocketChatUserService.findByUserId(deletionRequest.targetRefId);
-
-		if (rocketChatUser.length &gt; 0) {
-			const [rocketChatDeleted, rocketChatUserDeleted] &#x3D; await Promise.all([
-				this.rocketChatService.deleteUser(rocketChatUser[0].username),
-				this.rocketChatUserService.deleteByUserId(rocketChatUser[0].userId),
-			]);
-
-			await this.logDeletion(
-				deletionRequest,
-				rocketChatUserDeleted.domain,
-				rocketChatUserDeleted.operation,
-				rocketChatUserDeleted.count,
-				rocketChatUserDeleted.refs
-			);
-
-			if (rocketChatDeleted) {
-				await this.logDeletion(deletionRequest, DomainName.ROCKETCHATSERVICE, OperationType.DELETE, 1, [
-					rocketChatUser[0].username,
-				]);
-			}
-		}
-	}
-
-	private async removeUserFromTasks(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: &#x27;removeUserFromTasks&#x27;, deletionRequest });
-
-		const [tasksDeleted, tasksModifiedByRemoveCreator, tasksModifiedByRemoveUserFromFinished] &#x3D; await Promise.all([
-			this.taskService.deleteTasksByOnlyCreator(deletionRequest.targetRefId),
-			this.taskService.removeCreatorIdFromTasks(deletionRequest.targetRefId),
-			this.taskService.removeUserFromFinished(deletionRequest.targetRefId),
-		]);
-
-		const modifiedTasksCount &#x3D; tasksModifiedByRemoveCreator.count + tasksModifiedByRemoveUserFromFinished.count;
-		const modifiedTasksRef &#x3D; [...tasksModifiedByRemoveCreator.refs, ...tasksModifiedByRemoveUserFromFinished.refs];
-
-		await this.logDeletion(
-			deletionRequest,
-			tasksDeleted.domain,
-			tasksDeleted.operation,
-			tasksDeleted.count,
-			tasksDeleted.refs
-		);
-
-		await this.logDeletion(
-			deletionRequest,
-			tasksModifiedByRemoveCreator.domain,
-			tasksModifiedByRemoveCreator.operation,
-			modifiedTasksCount,
-			modifiedTasksRef
-		);
-	}
-
-	private async removeUserFromSubmissions(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: &#x27;removeUserFromSubmissions&#x27;, deletionRequest });
-
-		const [submissionsDeleted, submissionsModified] &#x3D; await Promise.all([
-			this.submissionService.deleteSingleSubmissionsOwnedByUser(deletionRequest.targetRefId),
-			this.submissionService.removeUserReferencesFromSubmissions(deletionRequest.targetRefId),
-		]);
-
-		await this.logDeletion(
-			deletionRequest,
-			submissionsDeleted.domain,
-			submissionsDeleted.operation,
-			submissionsDeleted.count,
-			submissionsDeleted.refs
-		);
-
-		await this.logDeletion(
-			deletionRequest,
-			submissionsModified.domain,
-			submissionsModified.operation,
-			submissionsModified.count,
-			submissionsModified.refs
-		);
-	}
-
-	private async removeUsersDataFromNews(deletionRequest: DeletionRequest) {
-		this.logger.debug({ action: &#x27;removeUsersDataFromNews&#x27;, deletionRequest });
-		const newsModified &#x3D; await this.newsService.deleteCreatorOrUpdaterReference(deletionRequest.targetRefId);
-
-		await this.logDeletion(
-			deletionRequest,
-			newsModified.domain,
-			newsModified.operation,
-			newsModified.count,
-			newsModified.refs
-		);
 	}
 }
 </code></pre>

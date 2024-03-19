@@ -191,7 +191,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/deletion/repo/deletion-log.repo.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/deletion/repo/deletion-log.repo.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -256,8 +256,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">apps/server/src/modules/deletion/repo/deletion-log.repo.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">apps/server/src/modules/deletion/repo/deletion-log.repo.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -325,8 +325,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">apps/server/src/modules/deletion/repo/deletion-log.repo.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/modules/deletion/repo/deletion-log.repo.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -394,8 +394,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/modules/deletion/repo/deletion-log.repo.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">apps/server/src/modules/deletion/repo/deletion-log.repo.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -463,7 +463,7 @@
                 </tr>
                             <tr>
                                 <td class="col-md-4">
-                                    <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/deletion/repo/deletion-log.repo.ts:12</a></div>
+                                    <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/deletion/repo/deletion-log.repo.ts:13</a></div>
                                 </td>
                             </tr>
 
@@ -474,12 +474,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager, ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityManager } from &#x27;@mikro-orm/mongodb&#x27;;
+import { ObjectId } from &#x27;bson&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { DeletionLog } from &#x27;../domain/deletion-log.do&#x27;;
-import { DeletionLogEntity } from &#x27;../entity/deletion-log.entity&#x27;;
-import { DeletionLogMapper } from &#x27;./mapper/deletion-log.mapper&#x27;;
+import { DeletionLog } from &#x27;../domain/do&#x27;;
+import { DeletionLogEntity } from &#x27;./entity&#x27;;
+import { DeletionLogMapper } from &#x27;./mapper&#x27;;
 
 @Injectable()
 export class DeletionLogRepo {

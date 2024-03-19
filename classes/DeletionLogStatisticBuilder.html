@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/deletion/builder/deletion-log-statistic.builder.ts</code>
+            <code>apps/server/src/modules/deletion/api/controller/dto/builder/deletion-log-statistic.builder.ts</code>
         </p>
 
 
@@ -185,7 +185,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>build(domain: <a href="../undefineds/DomainName.html" target="_self">DomainName</a>, operation: <a href="../undefineds/OperationType.html" target="_self">OperationType</a>, count: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, refs: <a href="../undefineds/EntityId.html" target="_self">EntityId[]</a>)</code>
+                    <code>build(domain: <a href="../undefineds/DomainName.html" target="_self">DomainName</a>, operations: <a href="../interfaces/DomainOperationReport.html" target="_self">DomainOperationReport[]</a>, subdomainOperations?: <a href="../interfaces/DomainDeletionReport.html" target="_self">DomainDeletionReport[] | null</a>)</code>
                 </td>
             </tr>
 
@@ -193,7 +193,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="5"
-                                    class="link-to-prism">apps/server/src/modules/deletion/builder/deletion-log-statistic.builder.ts:5</a></div>
+                                    class="link-to-prism">apps/server/src/modules/deletion/api/controller/dto/builder/deletion-log-statistic.builder.ts:5</a></div>
                         </td>
                     </tr>
 
@@ -226,9 +226,9 @@
 
                                         </tr>
                                         <tr>
-                                                <td>operation</td>
+                                                <td>operations</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#OperationType" target="_self" >OperationType</a></code>
+                                                            <code><a href="../interfaces/DomainOperationReport.html" target="_self" >DomainOperationReport[]</a></code>
                                             </td>
 
                                             <td>
@@ -238,25 +238,13 @@
 
                                         </tr>
                                         <tr>
-                                                <td>count</td>
+                                                <td>subdomainOperations</td>
                                             <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
+                                                            <code><a href="../interfaces/DomainDeletionReport.html" target="_self" >DomainDeletionReport[] | null</a></code>
                                             </td>
 
                                             <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>refs</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId[]</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
+                                                    Yes
                                             </td>
 
 
@@ -265,7 +253,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperation.html" target="_self" >DomainOperation</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainDeletionReport.html" target="_self" >DomainDeletionReport</a></code>
 
                         </div>
                             <div class="io-description">
@@ -285,12 +273,20 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DomainOperation } from &#x27;@shared/domain/interface&#x27;;
-import { DomainName, EntityId, OperationType } from &#x27;@shared/domain/types&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DomainOperationReport, DomainDeletionReport } from &#x27;../../../../domain/interface&#x27;;
+import { DomainName } from &#x27;../../../../domain/types&#x27;;
 
 export class DeletionLogStatisticBuilder {
-	static build(domain: DomainName, operation: OperationType, count: number, refs: EntityId[]): DomainOperation {
-		const deletionLogStatistic &#x3D; { domain, operation, count, refs };
+	static build(
+		domain: DomainName,
+		operations: DomainOperationReport[],
+		subdomainOperations?: DomainDeletionReport[] | null
+	): DomainDeletionReport {
+		const deletionLogStatistic: DomainDeletionReport &#x3D; {
+			domain,
+			operations,
+			subdomainOperations: subdomainOperations || null,
+		};
 
 		return deletionLogStatistic;
 	}

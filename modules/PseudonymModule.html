@@ -128,13 +128,13 @@
 <title>cluster_PseudonymModule_providers</title>
 <polygon fill="none" stroke="black" points="384,-78 384,-130 1386,-130 1386,-78 384,-78"/>
 </g>
-<g id="clust3" class="cluster">
-<title>cluster_PseudonymModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 376,-130 376,-78 16,-78"/>
-</g>
 <g id="clust4" class="cluster">
 <title>cluster_PseudonymModule_exports</title>
 <polygon fill="none" stroke="black" points="415,-208 415,-260 721,-260 721,-208 415,-208"/>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_PseudonymModule_imports</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 376,-130 376,-78 16,-78"/>
 </g>
 <!-- LearnroomModule -->
 <g id="node1" class="node">
@@ -370,11 +370,12 @@ import { ToolModule } from &#x27;@modules/tool&#x27;;
 import { UserModule } from &#x27;@modules/user/user.module&#x27;;
 import { forwardRef, Module } from &#x27;@nestjs/common&#x27;;
 import { LegacyLogger, LoggerModule } from &#x27;@src/core/logger&#x27;;
+import { CqrsModule } from &#x27;@nestjs/cqrs&#x27;;
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from &#x27;./repo&#x27;;
 import { FeathersRosterService, PseudonymService } from &#x27;./service&#x27;;
 
 @Module({
-	imports: [UserModule, LearnroomModule, forwardRef(() &#x3D;&gt; ToolModule), LoggerModule],
+	imports: [UserModule, LearnroomModule, forwardRef(() &#x3D;&gt; ToolModule), LoggerModule, CqrsModule],
 	providers: [PseudonymService, PseudonymsRepo, ExternalToolPseudonymRepo, LegacyLogger, FeathersRosterService],
 	exports: [PseudonymService, FeathersRosterService],
 })

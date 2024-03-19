@@ -124,10 +124,6 @@
 <title>cluster_NewsModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-268 674,-268 674,-70 8,-70"/>
 </g>
-<g id="clust4" class="cluster">
-<title>cluster_NewsModule_exports</title>
-<polygon fill="none" stroke="black" points="256,-208 256,-260 452,-260 452,-208 256,-208"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_NewsModule_providers</title>
 <polygon fill="none" stroke="black" points="296,-78 296,-130 666,-130 666,-78 296,-78"/>
@@ -135,6 +131,10 @@
 <g id="clust3" class="cluster">
 <title>cluster_NewsModule_imports</title>
 <polygon fill="none" stroke="black" points="16,-78 16,-130 288,-130 288,-78 16,-78"/>
+</g>
+<g id="clust4" class="cluster">
+<title>cluster_NewsModule_exports</title>
+<polygon fill="none" stroke="black" points="256,-208 256,-260 452,-260 452,-208 256,-208"/>
 </g>
 <!-- AuthorizationModule -->
 <g id="node1" class="node">
@@ -337,13 +337,14 @@
 import { NewsRepo } from &#x27;@shared/repo&#x27;;
 import { LoggerModule } from &#x27;@src/core/logger&#x27;;
 import { AuthorizationModule } from &#x27;@modules/authorization&#x27;;
+import { CqrsModule } from &#x27;@nestjs/cqrs&#x27;;
 import { NewsController } from &#x27;./controller/news.controller&#x27;;
 import { TeamNewsController } from &#x27;./controller/team-news.controller&#x27;;
 import { NewsUc } from &#x27;./uc/news.uc&#x27;;
 import { NewsService } from &#x27;./service/news.service&#x27;;
 
 @Module({
-	imports: [AuthorizationModule, LoggerModule],
+	imports: [AuthorizationModule, CqrsModule, LoggerModule],
 	controllers: [NewsController, TeamNewsController],
 	providers: [NewsUc, NewsRepo, NewsService],
 	exports: [NewsUc, NewsService],

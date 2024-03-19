@@ -122,7 +122,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/deletion/services/deletion-log.service.ts</code>
+            <code>apps/server/src/modules/deletion/domain/service/deletion-log.service.ts</code>
         </p>
 
 
@@ -173,7 +173,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/deletion/services/deletion-log.service.ts:8</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-log.service.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -231,15 +231,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createDeletionLog(deletionRequestId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, domain: <a href="../undefineds/DomainName.html" target="_self">DomainName</a>, operation: <a href="../undefineds/OperationType.html" target="_self">OperationType</a>, count: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, refs: string[])</code>
+                    <code>createDeletionLog(deletionRequestId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, domainDeletionReport: <a href="../interfaces/DomainDeletionReport.html" target="_self">DomainDeletionReport</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="11"
-                                    class="link-to-prism">apps/server/src/modules/deletion/services/deletion-log.service.ts:11</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="12"
+                                    class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-log.service.ts:12</a></div>
                         </td>
                     </tr>
 
@@ -272,45 +272,9 @@
 
                                         </tr>
                                         <tr>
-                                                <td>domain</td>
+                                                <td>domainDeletionReport</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#DomainName" target="_self" >DomainName</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>operation</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#OperationType" target="_self" >OperationType</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>count</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>refs</td>
-                                            <td>
-                                                        <code>string[]</code>
+                                                            <code><a href="../interfaces/DomainDeletionReport.html" target="_self" >DomainDeletionReport</a></code>
                                             </td>
 
                                             <td>
@@ -355,8 +319,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="31"
-                                    class="link-to-prism">apps/server/src/modules/deletion/services/deletion-log.service.ts:31</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-log.service.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -410,29 +374,25 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { DomainName, EntityId, OperationType } from &#x27;@shared/domain/types&#x27;;
-import { DeletionLog } from &#x27;../domain/deletion-log.do&#x27;;
-import { DeletionLogRepo } from &#x27;../repo&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { DomainDeletionReport } from &#x27;../interface&#x27;;
+import { DeletionLogRepo } from &#x27;../../repo&#x27;;
+import { DeletionLog } from &#x27;../do&#x27;;
 
 @Injectable()
 export class DeletionLogService {
 	constructor(private readonly deletionLogRepo: DeletionLogRepo) {}
 
-	async createDeletionLog(
-		deletionRequestId: EntityId,
-		domain: DomainName,
-		operation: OperationType,
-		count: number,
-		refs: string[]
-	): Promise&lt;void&gt; {
+	async createDeletionLog(deletionRequestId: EntityId, domainDeletionReport: DomainDeletionReport): Promise&lt;void&gt; {
 		const newDeletionLog &#x3D; new DeletionLog({
 			id: new ObjectId().toHexString(),
-			performedAt: new Date(),
-			domain,
 			deletionRequestId,
-			operation,
-			count,
-			refs,
+			performedAt: new Date(),
+			domain: domainDeletionReport.domain,
+			operations: domainDeletionReport.operations,
+			subdomainOperations: domainDeletionReport.subdomainOperations
+				? domainDeletionReport.subdomainOperations
+				: undefined,
 		});
 
 		await this.deletionLogRepo.create(newDeletionLog);

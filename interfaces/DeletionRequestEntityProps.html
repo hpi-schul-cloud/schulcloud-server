@@ -129,7 +129,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/deletion/entity/deletion-request.entity.ts</code>
+            <code>apps/server/src/modules/deletion/repo/entity/deletion-request.entity.ts</code>
         </p>
 
 
@@ -326,7 +326,7 @@
                                 </tr>
                                 <tr>
                                     <td class="col-md-4">
-                                        <code>status:         <code><a href="../miscellaneous/enumerations.html#DeletionStatusModel" target="_self" >DeletionStatusModel</a></code>
+                                        <code>status:         <code><a href="../miscellaneous/enumerations.html#StatusModel" target="_self" >StatusModel</a></code>
 </code>
                                     </td>
                                 </tr>
@@ -334,7 +334,7 @@
 
                                     <tr>
                                         <td class="col-md-4">
-                                            <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#DeletionStatusModel" target="_self" >DeletionStatusModel</a></code>
+                                            <i>Type : </i>        <code><a href="../miscellaneous/enumerations.html#StatusModel" target="_self" >StatusModel</a></code>
 
                                         </td>
                                     </tr>
@@ -456,8 +456,8 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Entity, Index, Property, Unique } from &#x27;@mikro-orm/core&#x27;;
 import { BaseEntityWithTimestamps } from &#x27;@shared/domain/entity/base.entity&#x27;;
-import { DomainName, EntityId } from &#x27;@shared/domain/types&#x27;;
-import { DeletionStatusModel } from &#x27;../domain/types&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { DomainName, StatusModel } from &#x27;../../domain/types&#x27;;
 
 const SECONDS_OF_90_DAYS &#x3D; 90 * 24 * 60 * 60;
 export interface DeletionRequestEntityProps {
@@ -465,7 +465,7 @@ export interface DeletionRequestEntityProps {
 	targetRefDomain: DomainName;
 	deleteAfter: Date;
 	targetRefId: EntityId;
-	status: DeletionStatusModel;
+	status: StatusModel;
 	createdAt?: Date;
 	updatedAt?: Date;
 }
@@ -484,7 +484,7 @@ export class DeletionRequestEntity extends BaseEntityWithTimestamps {
 	targetRefDomain: DomainName;
 
 	@Property()
-	status: DeletionStatusModel;
+	status: StatusModel;
 
 	constructor(props: DeletionRequestEntityProps) {
 		super();
@@ -507,11 +507,15 @@ export class DeletionRequestEntity extends BaseEntityWithTimestamps {
 	}
 
 	public executed(): void {
-		this.status &#x3D; DeletionStatusModel.SUCCESS;
+		this.status &#x3D; StatusModel.SUCCESS;
 	}
 
 	public failed(): void {
-		this.status &#x3D; DeletionStatusModel.FAILED;
+		this.status &#x3D; StatusModel.FAILED;
+	}
+
+	public pending(): void {
+		this.status &#x3D; StatusModel.PENDING;
 	}
 }
 </code></pre>

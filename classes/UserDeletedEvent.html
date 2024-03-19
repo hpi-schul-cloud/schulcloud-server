@@ -102,7 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >DeletionRequestLogResponseBuilder</li>
+  <li class="breadcrumb-item" >UserDeletedEvent</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/deletion/api/builder/deletion-request-log-response.builder.ts</code>
+            <code>apps/server/src/modules/deletion/domain/event/user-deleted.event.ts</code>
         </p>
 
 
@@ -138,18 +138,19 @@
     <h3 id="index">Index</h3>
     <table class="table table-sm table-bordered index-table">
         <tbody>
-
                 <tr>
                     <td class="col-md-4">
-                        <h6><b>Methods</b></h6>
+                        <h6><b>Properties</b></h6>
                     </td>
                 </tr>
                 <tr>
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Static</span>
-                                <a href="#build" >build</a>
+                                <a href="#deletionRequestId" >deletionRequestId</a>
+                            </li>
+                            <li>
+                                <a href="#targetRefId" >targetRefId</a>
                             </li>
                         </ul>
                     </td>
@@ -159,123 +160,132 @@
 
 
 
+
         </tbody>
     </table>
 </section>
 
+            <section data-compodoc="block-constructor">
+    <h3 id="constructor">Constructor</h3>
+        <table class="table table-sm table-bordered">
+            <tbody>
+                <tr>
+                    <td class="col-md-4">
+<code>constructor(deletionRequestId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, targetRefId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    </td>
+                </tr>
+                        <tr>
+                            <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/deletion/domain/event/user-deleted.event.ts:6</a></div>
+                            </td>
+                        </tr>
 
+                <tr>
+                    <td class="col-md-4">
+                            <div>
+                                    <b>Parameters :</b>
+                                    <table class="params">
+                                        <thead>
+                                            <tr>
+                                                <td>Name</td>
+                                                    <td>Type</td>
+                                                <td>Optional</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                                <tr>
+                                                        <td>deletionRequestId</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>targetRefId</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                        </tbody>
+                                    </table>
+                            </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+</section>
 
-            <section data-compodoc="block-methods">
+            <section data-compodoc="block-properties">
     
-    <h3 id="methods">
-        Methods
+    <h3 id="inputs">
+        Properties
     </h3>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="build"></a>
+                    <a name="deletionRequestId"></a>
                     <span class="name">
-                            <span class="modifier">Static</span>
-                        <span ><b>build</b></span>
-                        <a href="#build"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>deletionRequestId</b></span>
+                        <a href="#deletionRequestId"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>build(targetRef: <a href="../interfaces/DeletionTargetRef.html" target="_self">DeletionTargetRef</a>, deletionPlannedAt: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank">Date</a>, status: <a href="../undefineds/StatusModel.html" target="_self">StatusModel</a>, statistics?: <a href="../interfaces/DomainDeletionReport.html" target="_self">DomainDeletionReport[]</a>)</code>
-                </td>
-            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
 
-
+                    </td>
+                </tr>
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="6"
-                                    class="link-to-prism">apps/server/src/modules/deletion/api/builder/deletion-request-log-response.builder.ts:6</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="4" class="link-to-prism">apps/server/src/modules/deletion/domain/event/user-deleted.event.ts:4</a></div>
                         </td>
                     </tr>
 
 
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
             <tr>
                 <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>targetRef</td>
-                                            <td>
-                                                            <code><a href="../interfaces/DeletionTargetRef.html" target="_self" >DeletionTargetRef</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>deletionPlannedAt</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date" target="_blank" >Date</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>status</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#StatusModel" target="_self" >StatusModel</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>statistics</td>
-                                            <td>
-                                                            <code><a href="../interfaces/DomainDeletionReport.html" target="_self" >DomainDeletionReport[]</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/DeletionRequestLogResponse.html" target="_self" >DeletionRequestLogResponse</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
+                    <a name="targetRefId"></a>
+                    <span class="name">
+                        <span ><b>targetRefId</b></span>
+                        <a href="#targetRefId"><span class="icon ion-ios-link"></span></a>
+                    </span>
                 </td>
             </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/deletion/domain/event/user-deleted.event.ts:6</a></div>
+                        </td>
+                    </tr>
+
+
         </tbody>
     </table>
 </section>
+
+
 
 
 
@@ -285,20 +295,16 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DeletionTargetRef, DomainDeletionReport } from &#x27;../../domain/interface&#x27;;
-import { StatusModel } from &#x27;../../domain/types&#x27;;
-import { DeletionRequestLogResponse } from &#x27;../controller/dto&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { EntityId } from &#x27;@shared/domain/types&#x27;;
 
-export class DeletionRequestLogResponseBuilder {
-	static build(
-		targetRef: DeletionTargetRef,
-		deletionPlannedAt: Date,
-		status: StatusModel,
-		statistics?: DomainDeletionReport[]
-	): DeletionRequestLogResponse {
-		const deletionRequestLog &#x3D; { targetRef, deletionPlannedAt, status, statistics };
+export class UserDeletedEvent {
+	deletionRequestId: EntityId;
 
-		return deletionRequestLog;
+	targetRefId: EntityId;
+
+	constructor(deletionRequestId: EntityId, targetRefId: EntityId) {
+		this.deletionRequestId &#x3D; deletionRequestId;
+		this.targetRefId &#x3D; targetRefId;
 	}
 }
 </code></pre>
@@ -339,7 +345,7 @@ export class DeletionRequestLogResponseBuilder {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'DeletionRequestLogResponseBuilder.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'UserDeletedEvent.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

@@ -145,7 +145,7 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#deleteUserDataFromCourseGroup" >deleteUserDataFromCourseGroup</a>
+                                <a href="#deleteUserData" >deleteUserData</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -155,6 +155,11 @@
                             <li>
                                     <span class="modifier">Private</span>
                                 <a href="#getCourseGroupsId" >getCourseGroupsId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#handle" >handle</a>
                             </li>
                         </ul>
                     </td>
@@ -174,12 +179,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(repo: <a href="../injectables/CourseGroupRepo.html" target="_self">CourseGroupRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(repo: <a href="../injectables/CourseGroupRepo.html" target="_self">CourseGroupRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, eventBus: EventBus)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/learnroom/service/coursegroup.service.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/learnroom/service/coursegroup.service.ts:22</a></div>
                             </td>
                         </tr>
 
@@ -220,6 +225,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>eventBus</td>
+                                                  
+                                                        <td>
+                                                                    <code>EventBus</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -238,27 +255,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="deleteUserDataFromCourseGroup"></a>
+                    <a name="deleteUserData"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>deleteUserDataFromCourseGroup</b></span>
-                        <a href="#deleteUserDataFromCourseGroup"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>deleteUserData</b></span>
+                        <a href="#deleteUserData"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteUserDataFromCourseGroup(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>deleteUserData(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/coursegroup.service.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="42"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/coursegroup.service.ts:42</a></div>
                         </td>
                     </tr>
 
@@ -294,7 +311,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperation.html" target="_self" >Promise&lt;DomainOperation&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainDeletionReport.html" target="_self" >Promise&lt;DomainDeletionReport&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -327,8 +344,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/coursegroup.service.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="36"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/coursegroup.service.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -396,8 +413,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="58"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/coursegroup.service.ts:58</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="75"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/coursegroup.service.ts:75</a></div>
                         </td>
                     </tr>
 
@@ -443,6 +460,75 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handle"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>handle</b></span>
+                        <a href="#handle"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handle(undefined: <a href="../classes/UserDeletedEvent.html" target="_self">UserDeletedEvent</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/coursegroup.service.ts:31</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                            <code><a href="../classes/UserDeletedEvent.html" target="_self" >UserDeletedEvent</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -450,18 +536,38 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { DataDeletionDomainOperationLoggable } from &#x27;@shared/common/loggable&#x27;;
-import { DomainOperationBuilder } from &#x27;@shared/domain/builder&#x27;;
+import { EventBus, EventsHandler, IEventHandler } from &#x27;@nestjs/cqrs&#x27;;
 import { CourseGroup } from &#x27;@shared/domain/entity&#x27;;
-import { DomainOperation } from &#x27;@shared/domain/interface&#x27;;
-import { Counted, DomainName, EntityId, OperationType, StatusModel } from &#x27;@shared/domain/types&#x27;;
+import { Counted, EntityId } from &#x27;@shared/domain/types&#x27;;
 import { CourseGroupRepo } from &#x27;@shared/repo&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DataDeletionDomainOperationLoggable,
+	DomainName,
+	DomainDeletionReportBuilder,
+	DomainOperationReportBuilder,
+	OperationType,
+	StatusModel,
+} from &#x27;@modules/deletion&#x27;;
 
 @Injectable()
-export class CourseGroupService {
-	constructor(private readonly repo: CourseGroupRepo, private readonly logger: Logger) {
+@EventsHandler(UserDeletedEvent)
+export class CourseGroupService implements DeletionService, IEventHandler&lt;UserDeletedEvent&gt; {
+	constructor(
+		private readonly repo: CourseGroupRepo,
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus
+	) {
 		this.logger.setContext(CourseGroupService.name);
+	}
+
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise&lt;void&gt; {
+		const dataDeleted &#x3D; await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	public async findAllCourseGroupsByUserId(userId: EntityId): Promise&lt;Counted&lt;CourseGroup[]&gt;&gt; {
@@ -470,7 +576,7 @@ export class CourseGroupService {
 		return [courseGroups, count];
 	}
 
-	public async deleteUserDataFromCourseGroup(userId: EntityId): Promise&lt;DomainOperation&gt; {
+	public async deleteUserData(userId: EntityId): Promise&lt;DomainDeletionReport&gt; {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				&#x27;Deleting user data from CourseGroup&#x27;,
@@ -485,12 +591,9 @@ export class CourseGroupService {
 
 		await this.repo.save(courseGroups);
 
-		const result &#x3D; DomainOperationBuilder.build(
-			DomainName.COURSEGROUP,
-			OperationType.UPDATE,
-			count,
-			this.getCourseGroupsId(courseGroups)
-		);
+		const result &#x3D; DomainDeletionReportBuilder.build(DomainName.COURSEGROUP, [
+			DomainOperationReportBuilder.build(OperationType.UPDATE, count, this.getCourseGroupsId(courseGroups)),
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(

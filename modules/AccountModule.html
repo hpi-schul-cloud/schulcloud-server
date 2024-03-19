@@ -417,6 +417,7 @@ import { PermissionService } from &#x27;@shared/domain/service&#x27;;
 import { LegacySystemRepo, UserRepo } from &#x27;@shared/repo&#x27;;
 
 import { LoggerModule } from &#x27;@src/core/logger/logger.module&#x27;;
+import { CqrsModule } from &#x27;@nestjs/cqrs&#x27;;
 import { ServerConfig } from &#x27;../server/server.config&#x27;;
 import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb, AccountIdmToDtoMapperIdm } from &#x27;./mapper&#x27;;
 import { AccountRepo } from &#x27;./repo/account.repo&#x27;;
@@ -434,7 +435,7 @@ function accountIdmToDtoMapperFactory(configService: ConfigService&lt;ServerConf
 }
 
 @Module({
-	imports: [IdentityManagementModule, LoggerModule],
+	imports: [CqrsModule, IdentityManagementModule, LoggerModule],
 	providers: [
 		UserRepo,
 		LegacySystemRepo,

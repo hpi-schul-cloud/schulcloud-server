@@ -145,11 +145,16 @@
                             <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#deleteCreatorOrUpdaterReference" >deleteCreatorOrUpdaterReference</a>
+                                <a href="#deleteUserData" >deleteUserData</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
                                 <a href="#getNewsId" >getNewsId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#handle" >handle</a>
                             </li>
                         </ul>
                     </td>
@@ -169,12 +174,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(newsRepo: <a href="../injectables/NewsRepo.html" target="_self">NewsRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(newsRepo: <a href="../injectables/NewsRepo.html" target="_self">NewsRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, eventBus: EventBus)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/news/service/news.service.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/news/service/news.service.ts:22</a></div>
                             </td>
                         </tr>
 
@@ -215,6 +220,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>eventBus</td>
+                                                  
+                                                        <td>
+                                                                    <code>EventBus</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -233,27 +250,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="deleteCreatorOrUpdaterReference"></a>
+                    <a name="deleteUserData"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>deleteCreatorOrUpdaterReference</b></span>
-                        <a href="#deleteCreatorOrUpdaterReference"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>deleteUserData</b></span>
+                        <a href="#deleteUserData"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteCreatorOrUpdaterReference(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>deleteUserData(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/modules/news/service/news.service.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="36"
+                                    class="link-to-prism">apps/server/src/modules/news/service/news.service.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -289,7 +306,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperation.html" target="_self" >Promise&lt;DomainOperation&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainDeletionReport.html" target="_self" >Promise&lt;DomainDeletionReport&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -321,8 +338,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="55"
-                                    class="link-to-prism">apps/server/src/modules/news/service/news.service.ts:55</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">apps/server/src/modules/news/service/news.service.ts:72</a></div>
                         </td>
                     </tr>
 
@@ -368,6 +385,75 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handle"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>handle</b></span>
+                        <a href="#handle"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handle(undefined: <a href="../classes/UserDeletedEvent.html" target="_self">UserDeletedEvent</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="31"
+                                    class="link-to-prism">apps/server/src/modules/news/service/news.service.ts:31</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                            <code><a href="../classes/UserDeletedEvent.html" target="_self" >UserDeletedEvent</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -375,21 +461,41 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { DomainName, EntityId, OperationType, StatusModel } from &#x27;@shared/domain/types&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { DataDeletionDomainOperationLoggable } from &#x27;@shared/common/loggable&#x27;;
 import { NewsRepo } from &#x27;@shared/repo&#x27;;
-import { DomainOperationBuilder } from &#x27;@shared/domain/builder&#x27;;
-import { DomainOperation } from &#x27;@shared/domain/interface&#x27;;
 import { News } from &#x27;@shared/domain/entity&#x27;;
+import { IEventHandler, EventBus, EventsHandler } from &#x27;@nestjs/cqrs&#x27;;
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DomainName,
+	DomainDeletionReportBuilder,
+	DomainOperationReportBuilder,
+	OperationType,
+	DataDeletionDomainOperationLoggable,
+	StatusModel,
+} from &#x27;@modules/deletion&#x27;;
 
 @Injectable()
-export class NewsService {
-	constructor(private readonly newsRepo: NewsRepo, private readonly logger: Logger) {
+@EventsHandler(UserDeletedEvent)
+export class NewsService implements DeletionService, IEventHandler&lt;UserDeletedEvent&gt; {
+	constructor(
+		private readonly newsRepo: NewsRepo,
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus
+	) {
 		this.logger.setContext(NewsService.name);
 	}
 
-	public async deleteCreatorOrUpdaterReference(userId: EntityId): Promise&lt;DomainOperation&gt; {
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise&lt;void&gt; {
+		const dataDeleted &#x3D; await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+	}
+
+	public async deleteUserData(userId: EntityId): Promise&lt;DomainDeletionReport&gt; {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				&#x27;Deleting user data from News&#x27;,
@@ -408,12 +514,9 @@ export class NewsService {
 
 		await this.newsRepo.save(newsWithUserData);
 
-		const result &#x3D; DomainOperationBuilder.build(
-			DomainName.NEWS,
-			OperationType.UPDATE,
-			counterOfNews,
-			this.getNewsId(newsWithUserData)
-		);
+		const result &#x3D; DomainDeletionReportBuilder.build(DomainName.NEWS, [
+			DomainOperationReportBuilder.build(OperationType.UPDATE, counterOfNews, this.getNewsId(newsWithUserData)),
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(

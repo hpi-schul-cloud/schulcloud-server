@@ -273,8 +273,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">apps/server/src/modules/deletion/repo/mapper/deletion-log.mapper.ts:34</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/deletion/repo/mapper/deletion-log.mapper.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -342,8 +342,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="38"
-                                    class="link-to-prism">apps/server/src/modules/deletion/repo/mapper/deletion-log.mapper.ts:38</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="36"
+                                    class="link-to-prism">apps/server/src/modules/deletion/repo/mapper/deletion-log.mapper.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -411,8 +411,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">apps/server/src/modules/deletion/repo/mapper/deletion-log.mapper.ts:20</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="19"
+                                    class="link-to-prism">apps/server/src/modules/deletion/repo/mapper/deletion-log.mapper.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -468,9 +468,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
-import { DeletionLogEntity } from &#x27;../../entity/deletion-log.entity&#x27;;
-import { DeletionLog } from &#x27;../../domain/deletion-log.do&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;bson&#x27;;
+import { DeletionLog } from &#x27;../../domain/do&#x27;;
+import { DeletionLogEntity } from &#x27;../entity&#x27;;
 
 export class DeletionLogMapper {
 	static mapToDO(entity: DeletionLogEntity): DeletionLog {
@@ -479,10 +479,9 @@ export class DeletionLogMapper {
 			createdAt: entity.createdAt,
 			updatedAt: entity.updatedAt,
 			domain: entity.domain,
-			operation: entity.operation,
-			count: entity.count,
-			refs: entity.refs,
-			deletionRequestId: entity.deletionRequestId?.toHexString(),
+			operations: entity.operations,
+			subdomainOperations: entity.subdomainOperations,
+			deletionRequestId: entity.deletionRequestId.toHexString(),
 			performedAt: entity.performedAt,
 		});
 	}
@@ -493,9 +492,8 @@ export class DeletionLogMapper {
 			createdAt: domainObject.createdAt,
 			updatedAt: domainObject.updatedAt,
 			domain: domainObject.domain,
-			operation: domainObject.operation,
-			count: domainObject.count,
-			refs: domainObject.refs,
+			operations: domainObject.operations,
+			subdomainOperations: domainObject.subdomainOperations,
 			deletionRequestId: new ObjectId(domainObject.deletionRequestId),
 			performedAt: domainObject.performedAt,
 		});

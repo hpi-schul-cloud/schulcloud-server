@@ -143,8 +143,9 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
-                                <a href="#deleteRegistrationPinByEmail" >deleteRegistrationPinByEmail</a>
+                                <a href="#deleteUserData" >deleteUserData</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -173,7 +174,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/registration-pin/service/registration-pin.service.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/registration-pin/service/registration-pin.service.ts:19</a></div>
                             </td>
                         </tr>
 
@@ -232,26 +233,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="deleteRegistrationPinByEmail"></a>
+                    <a name="deleteUserData"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
-                        <span ><b>deleteRegistrationPinByEmail</b></span>
-                        <a href="#deleteRegistrationPinByEmail"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>deleteUserData</b></span>
+                        <a href="#deleteUserData"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteRegistrationPinByEmail(email: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>deleteUserData(email: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="17"
-                                    class="link-to-prism">apps/server/src/modules/registration-pin/service/registration-pin.service.ts:17</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">apps/server/src/modules/registration-pin/service/registration-pin.service.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -287,7 +289,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperation.html" target="_self" >Promise&lt;DomainOperation&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainDeletionReport.html" target="_self" >Promise&lt;DomainDeletionReport&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -319,8 +321,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="54"
-                                    class="link-to-prism">apps/server/src/modules/registration-pin/service/registration-pin.service.ts:54</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/modules/registration-pin/service/registration-pin.service.ts:62</a></div>
                         </td>
                     </tr>
 
@@ -374,21 +376,28 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { DataDeletionDomainOperationLoggable } from &#x27;@shared/common/loggable&#x27;;
-import { DomainName, EntityId, OperationType, StatusModel } from &#x27;@shared/domain/types&#x27;;
-import { DomainOperation } from &#x27;@shared/domain/interface&#x27;;
-import { DomainOperationBuilder } from &#x27;@shared/domain/builder&#x27;;
-import { DeletionErrorLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
-import { RegistrationPinRepo } from &#x27;../repo&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import {
+	DeletionService,
+	DomainDeletionReport,
+	DataDeletionDomainOperationLoggable,
+	DomainName,
+	DeletionErrorLoggableException,
+	DomainDeletionReportBuilder,
+	DomainOperationReportBuilder,
+	OperationType,
+	StatusModel,
+} from &#x27;@modules/deletion&#x27;;
 import { RegistrationPinEntity } from &#x27;../entity&#x27;;
+import { RegistrationPinRepo } from &#x27;../repo&#x27;;
 
 @Injectable()
-export class RegistrationPinService {
+export class RegistrationPinService implements DeletionService {
 	constructor(private readonly registrationPinRepo: RegistrationPinRepo, private readonly logger: Logger) {
 		this.logger.setContext(RegistrationPinService.name);
 	}
 
-	async deleteRegistrationPinByEmail(email: string): Promise&lt;DomainOperation&gt; {
+	public async deleteUserData(email: string): Promise&lt;DomainDeletionReport&gt; {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				&#x27;Deleting user data from RegistrationPin&#x27;,
@@ -404,12 +413,13 @@ export class RegistrationPinService {
 			throw new DeletionErrorLoggableException(&#x60;Failed to delete user data from RegistrationPin for &#x27;${email}&#x27;&#x60;);
 		}
 
-		const result &#x3D; DomainOperationBuilder.build(
-			DomainName.REGISTRATIONPIN,
-			OperationType.DELETE,
-			numberOfDeletedRegistrationPins,
-			this.getRegistrationPinsId(registrationPinToDelete)
-		);
+		const result &#x3D; DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, [
+			DomainOperationReportBuilder.build(
+				OperationType.DELETE,
+				numberOfDeletedRegistrationPins,
+				this.getRegistrationPinsId(registrationPinToDelete)
+			),
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(

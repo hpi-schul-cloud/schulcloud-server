@@ -143,11 +143,6 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#deleteByUserId" >deleteByUserId</a>
-                            </li>
-                            <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#deleteExternalToolPseudonymsByUserId" >deleteExternalToolPseudonymsByUserId</a>
@@ -156,6 +151,11 @@
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
                                 <a href="#deletePseudonymsByUserId" >deletePseudonymsByUserId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteUserData" >deleteUserData</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -197,6 +197,11 @@
                                     <span class="modifier">Private</span>
                                 <a href="#getRepository" >getRepository</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#handle" >handle</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -215,12 +220,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(pseudonymRepo: <a href="../injectables/PseudonymsRepo.html" target="_self">PseudonymsRepo</a>, externalToolPseudonymRepo: <a href="../injectables/ExternalToolPseudonymRepo.html" target="_self">ExternalToolPseudonymRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(pseudonymRepo: <a href="../injectables/PseudonymsRepo.html" target="_self">PseudonymsRepo</a>, externalToolPseudonymRepo: <a href="../injectables/ExternalToolPseudonymRepo.html" target="_self">ExternalToolPseudonymRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, eventBus: EventBus)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="28" class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:28</a></div>
                             </td>
                         </tr>
 
@@ -273,6 +278,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>eventBus</td>
+                                                  
+                                                        <td>
+                                                                    <code>EventBus</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -287,76 +304,6 @@
     <h3 id="methods">
         Methods
     </h3>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="deleteByUserId"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>deleteByUserId</b></span>
-                        <a href="#deleteByUserId"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>deleteByUserId(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="82"
-                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:82</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperation.html" target="_self" >Promise&lt;DomainOperation&gt;</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -380,8 +327,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="141"
-                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:141</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="159"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:159</a></div>
                         </td>
                     </tr>
 
@@ -450,8 +397,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="135"
-                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:135</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="153"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:153</a></div>
                         </td>
                     </tr>
 
@@ -501,6 +448,76 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="deleteUserData"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteUserData</b></span>
+                        <a href="#deleteUserData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteUserData(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="100"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:100</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainDeletionReport.html" target="_self" >Promise&lt;DomainDeletionReport&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="findByUserAndToolOrThrow"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -520,8 +537,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:25</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="43"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:43</a></div>
                         </td>
                     </tr>
 
@@ -602,8 +619,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="35"
-                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:35</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="53"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:53</a></div>
                         </td>
                     </tr>
 
@@ -672,8 +689,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="129"
-                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:129</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="147"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:147</a></div>
                         </td>
                     </tr>
 
@@ -742,8 +759,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="58"
-                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:58</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -823,8 +840,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="162"
-                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:162</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="180"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:180</a></div>
                         </td>
                     </tr>
 
@@ -904,8 +921,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="156"
-                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:156</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="174"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:174</a></div>
                         </td>
                     </tr>
 
@@ -974,8 +991,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="123"
-                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:123</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="141"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:141</a></div>
                         </td>
                     </tr>
 
@@ -1041,8 +1058,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="168"
-                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:168</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="186"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:186</a></div>
                         </td>
                     </tr>
 
@@ -1110,8 +1127,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="148"
-                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:148</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="166"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:166</a></div>
                         </td>
                     </tr>
 
@@ -1157,6 +1174,75 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="handle"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>handle</b></span>
+                        <a href="#handle"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handle(undefined: <a href="../classes/UserDeletedEvent.html" target="_self">UserDeletedEvent</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="38"
+                                    class="link-to-prism">apps/server/src/modules/pseudonym/service/pseudonym.service.ts:38</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                            <code><a href="../classes/UserDeletedEvent.html" target="_self" >UserDeletedEvent</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
@@ -1168,23 +1254,41 @@ import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { ExternalTool } from &#x27;@modules/tool/external-tool/domain&#x27;;
 import { Injectable, InternalServerErrorException } from &#x27;@nestjs/common&#x27;;
 import { LtiToolDO, Page, Pseudonym, UserDO } from &#x27;@shared/domain/domainobject&#x27;;
-import { DomainOperation, IFindOptions } from &#x27;@shared/domain/interface&#x27;;
 import { v4 as uuidv4 } from &#x27;uuid&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { DataDeletionDomainOperationLoggable } from &#x27;@shared/common/loggable&#x27;;
-import { DomainName, EntityId, OperationType, StatusModel } from &#x27;@shared/domain/types&#x27;;
-import { DomainOperationBuilder } from &#x27;@shared/domain/builder&#x27;;
-import { PseudonymSearchQuery } from &#x27;../domain&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { IEventHandler, EventBus, EventsHandler } from &#x27;@nestjs/cqrs&#x27;;
+import { IFindOptions } from &#x27;@shared/domain/interface&#x27;;
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DataDeletionDomainOperationLoggable,
+	DomainName,
+	DomainDeletionReportBuilder,
+	DomainOperationReportBuilder,
+	OperationType,
+	StatusModel,
+} from &#x27;@modules/deletion&#x27;;
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from &#x27;../repo&#x27;;
+import { PseudonymSearchQuery } from &#x27;../domain&#x27;;
 
 @Injectable()
-export class PseudonymService {
+@EventsHandler(UserDeletedEvent)
+export class PseudonymService implements DeletionService, IEventHandler&lt;UserDeletedEvent&gt; {
 	constructor(
 		private readonly pseudonymRepo: PseudonymsRepo,
 		private readonly externalToolPseudonymRepo: ExternalToolPseudonymRepo,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus
 	) {
 		this.logger.setContext(PseudonymService.name);
+	}
+
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise&lt;void&gt; {
+		const dataDeleted &#x3D; await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	public async findByUserAndToolOrThrow(user: UserDO, tool: ExternalTool | LtiToolDO): Promise&lt;Pseudonym&gt; {
@@ -1244,7 +1348,7 @@ export class PseudonymService {
 		return pseudonym;
 	}
 
-	public async deleteByUserId(userId: string): Promise&lt;DomainOperation&gt; {
+	public async deleteUserData(userId: string): Promise&lt;DomainDeletionReport&gt; {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				&#x27;Deleting user data from Pseudonyms&#x27;,
@@ -1264,12 +1368,12 @@ export class PseudonymService {
 
 		const numberOfDeletedPseudonyms &#x3D; deletedPseudonyms.length + deletedExternalToolPseudonyms.length;
 
-		const result &#x3D; DomainOperationBuilder.build(
-			DomainName.PSEUDONYMS,
-			OperationType.DELETE,
-			numberOfDeletedPseudonyms,
-			[...deletedPseudonyms, ...deletedExternalToolPseudonyms]
-		);
+		const result &#x3D; DomainDeletionReportBuilder.build(DomainName.PSEUDONYMS, [
+			DomainOperationReportBuilder.build(OperationType.DELETE, numberOfDeletedPseudonyms, [
+				...deletedPseudonyms,
+				...deletedExternalToolPseudonyms,
+			]),
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(

@@ -102,7 +102,7 @@
 
 <ol class="breadcrumb">
   <li class="breadcrumb-item">Classes</li>
-  <li class="breadcrumb-item" >DomainOperationBuilder</li>
+  <li class="breadcrumb-item" >OperationReportHelper</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/shared/domain/builder/domain-operation.builder.ts</code>
+            <code>apps/server/src/modules/deletion/domain/helper/operation-report.helper.ts</code>
         </p>
 
 
@@ -149,7 +149,7 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Static</span>
-                                <a href="#build" >build</a>
+                                <a href="#extractOperationReports" >extractOperationReports</a>
                             </li>
                         </ul>
                     </td>
@@ -174,18 +174,18 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="build"></a>
+                    <a name="extractOperationReports"></a>
                     <span class="name">
                             <span class="modifier">Static</span>
-                        <span ><b>build</b></span>
-                        <a href="#build"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>extractOperationReports</b></span>
+                        <a href="#extractOperationReports"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>build(domain: <a href="../undefineds/DomainName.html" target="_self">DomainName</a>, operation: <a href="../undefineds/OperationType.html" target="_self">OperationType</a>, count: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>, refs: <a href="../undefineds/EntityId.html" target="_self">EntityId[]</a>)</code>
+                    <code>extractOperationReports(reports: <a href="../interfaces/DomainDeletionReport.html" target="_self">DomainDeletionReport[]</a>)</code>
                 </td>
             </tr>
 
@@ -193,7 +193,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="5"
-                                    class="link-to-prism">apps/server/src/shared/domain/builder/domain-operation.builder.ts:5</a></div>
+                                    class="link-to-prism">apps/server/src/modules/deletion/domain/helper/operation-report.helper.ts:5</a></div>
                         </td>
                     </tr>
 
@@ -214,45 +214,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>domain</td>
+                                                <td>reports</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#DomainName" target="_self" >DomainName</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>operation</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#OperationType" target="_self" >OperationType</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>count</td>
-                                            <td>
-                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>refs</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId[]</a></code>
+                                                            <code><a href="../interfaces/DomainDeletionReport.html" target="_self" >DomainDeletionReport[]</a></code>
                                             </td>
 
                                             <td>
@@ -265,7 +229,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperation.html" target="_self" >DomainOperation</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperationReport.html" target="_self" >DomainOperationReport[]</a></code>
 
                         </div>
                             <div class="io-description">
@@ -285,14 +249,22 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DomainOperation } from &#x27;@shared/domain/interface&#x27;;
-import { DomainName, EntityId, OperationType } from &#x27;@shared/domain/types&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { DomainDeletionReport, DomainOperationReport } from &#x27;../interface&#x27;;
+import { OperationType } from &#x27;../types&#x27;;
 
-export class DomainOperationBuilder {
-	static build(domain: DomainName, operation: OperationType, count: number, refs: EntityId[]): DomainOperation {
-		const domainOperation &#x3D; { domain, operation, count, refs };
+export class OperationReportHelper {
+	public static extractOperationReports(reports: DomainDeletionReport[]): DomainOperationReport[] {
+		const operationReports: { [key in OperationType]?: DomainOperationReport } &#x3D; {};
 
-		return domainOperation;
+		for (const { operations } of reports) {
+			for (const { operation, count, refs } of operations) {
+				operationReports[operation] &#x3D; operationReports[operation] || { operation, count: 0, refs: [] };
+				operationReports[operation]!.count +&#x3D; count;
+				operationReports[operation]!.refs.push(...refs);
+			}
+		}
+
+		return Object.values(operationReports).filter((report) &#x3D;&gt; report !&#x3D;&#x3D; undefined);
 	}
 }
 </code></pre>
@@ -333,7 +305,7 @@ export class DomainOperationBuilder {
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
-            var COMPODOC_CURRENT_PAGE_URL = 'DomainOperationBuilder.html';
+            var COMPODOC_CURRENT_PAGE_URL = 'OperationReportHelper.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 

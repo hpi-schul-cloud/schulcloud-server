@@ -122,7 +122,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/deletion/services/deletion-request.service.ts</code>
+            <code>apps/server/src/modules/deletion/domain/service/deletion-request.service.ts</code>
         </p>
 
 
@@ -168,6 +168,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#markDeletionRequestAsPending" >markDeletionRequestAsPending</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#update" >update</a>
                             </li>
                         </ul>
@@ -193,7 +197,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/deletion/services/deletion-request.service.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-request.service.ts:9</a></div>
                             </td>
                         </tr>
 
@@ -259,7 +263,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">apps/server/src/modules/deletion/services/deletion-request.service.ts:12</a></div>
+                                    class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-request.service.ts:12</a></div>
                         </td>
                     </tr>
 
@@ -359,8 +363,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="57"
-                                    class="link-to-prism">apps/server/src/modules/deletion/services/deletion-request.service.ts:57</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-request.service.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -429,7 +433,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="39"
-                                    class="link-to-prism">apps/server/src/modules/deletion/services/deletion-request.service.ts:39</a></div>
+                                    class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-request.service.ts:39</a></div>
                         </td>
                     </tr>
 
@@ -498,7 +502,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">apps/server/src/modules/deletion/services/deletion-request.service.ts:33</a></div>
+                                    class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-request.service.ts:33</a></div>
                         </td>
                     </tr>
 
@@ -567,7 +571,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="49"
-                                    class="link-to-prism">apps/server/src/modules/deletion/services/deletion-request.service.ts:49</a></div>
+                                    class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-request.service.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -636,7 +640,76 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="53"
-                                    class="link-to-prism">apps/server/src/modules/deletion/services/deletion-request.service.ts:53</a></div>
+                                    class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-request.service.ts:53</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>deletionRequestId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="markDeletionRequestAsPending"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>markDeletionRequestAsPending</b></span>
+                        <a href="#markDeletionRequestAsPending"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>markDeletionRequestAsPending(deletionRequestId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="57"
+                                    class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-request.service.ts:57</a></div>
                         </td>
                     </tr>
 
@@ -705,7 +778,7 @@
                     <tr>
                         <td class="col-md-4">
                             <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/modules/deletion/services/deletion-request.service.ts:45</a></div>
+                                    class="link-to-prism">apps/server/src/modules/deletion/domain/service/deletion-request.service.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -757,12 +830,12 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { DomainName, EntityId } from &#x27;@shared/domain/types&#x27;;
-import { DeletionRequest } from &#x27;../domain/deletion-request.do&#x27;;
-import { DeletionStatusModel } from &#x27;../domain/types&#x27;;
-import { DeletionRequestRepo } from &#x27;../repo/deletion-request.repo&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { ObjectId } from &#x27;bson&#x27;;
+import { DeletionRequestRepo } from &#x27;../../repo&#x27;;
+import { DeletionRequest } from &#x27;../do&#x27;;
+import { DomainName, StatusModel } from &#x27;../types&#x27;;
 
 @Injectable()
 export class DeletionRequestService {
@@ -781,7 +854,7 @@ export class DeletionRequestService {
 			targetRefDomain,
 			deleteAfter: dateOfDeletion,
 			targetRefId,
-			status: DeletionStatusModel.REGISTERED,
+			status: StatusModel.REGISTERED,
 		});
 
 		await this.deletionRequestRepo.create(newDeletionRequest);
@@ -811,6 +884,10 @@ export class DeletionRequestService {
 
 	async markDeletionRequestAsFailed(deletionRequestId: EntityId): Promise&lt;boolean&gt; {
 		return this.deletionRequestRepo.markDeletionRequestAsFailed(deletionRequestId);
+	}
+
+	async markDeletionRequestAsPending(deletionRequestId: EntityId): Promise&lt;boolean&gt; {
+		return this.deletionRequestRepo.markDeletionRequestAsPending(deletionRequestId);
 	}
 
 	async deleteById(deletionRequestId: EntityId): Promise&lt;void&gt; {

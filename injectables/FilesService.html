@@ -143,6 +143,11 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#deleteUserData" >deleteUserData</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Async</span>
                                 <a href="#findFilesAccessibleOrCreatedByUser" >findFilesAccessibleOrCreatedByUser</a>
                             </li>
@@ -153,6 +158,11 @@
                             <li>
                                     <span class="modifier">Private</span>
                                 <a href="#getFilesId" >getFilesId</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#handle" >handle</a>
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
@@ -180,12 +190,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(repo: <a href="../injectables/FilesRepo.html" target="_self">FilesRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(repo: <a href="../injectables/FilesRepo.html" target="_self">FilesRepo</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>, eventBus: EventBus)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="22" class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:22</a></div>
                             </td>
                         </tr>
 
@@ -226,6 +236,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>eventBus</td>
+                                                  
+                                                        <td>
+                                                                    <code>EventBus</code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -240,6 +262,76 @@
     <h3 id="methods">
         Methods
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="deleteUserData"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deleteUserData</b></span>
+                        <a href="#deleteUserData"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deleteUserData(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="117"
+                                    class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:117</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainDeletionReport.html" target="_self" >Promise&lt;DomainDeletionReport&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -262,8 +354,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="32"
+                                    class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:32</a></div>
                         </td>
                     </tr>
 
@@ -331,8 +423,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="61"
-                                    class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:61</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="74"
+                                    class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:74</a></div>
                         </td>
                     </tr>
 
@@ -400,8 +492,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="103"
-                                    class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:103</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="137"
+                                    class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:137</a></div>
                         </td>
                     </tr>
 
@@ -451,6 +543,75 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="handle"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>handle</b></span>
+                        <a href="#handle"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>handle(undefined: <a href="../classes/UserDeletedEvent.html" target="_self">UserDeletedEvent</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:27</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                            <code><a href="../classes/UserDeletedEvent.html" target="_self" >UserDeletedEvent</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="markFilesOwnedByUserForDeletion"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -469,8 +630,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="65"
-                                    class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:65</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="78"
+                                    class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:78</a></div>
                         </td>
                     </tr>
 
@@ -506,7 +667,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperation.html" target="_self" >Promise&lt;DomainOperation&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainDeletionReport.html" target="_self" >Promise&lt;DomainDeletionReport&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -538,8 +699,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="20"
-                                    class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:20</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="36"
+                                    class="link-to-prism">apps/server/src/modules/files/service/files.service.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -575,7 +736,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../interfaces/DomainOperation.html" target="_self" >Promise&lt;DomainOperation&gt;</a></code>
+                            <b>Returns : </b>        <code><a href="../interfaces/DomainDeletionReport.html" target="_self" >Promise&lt;DomainDeletionReport&gt;</a></code>
 
                         </div>
                             <div class="io-description">
@@ -592,25 +753,41 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { DomainName, EntityId, OperationType, StatusModel } from &#x27;@shared/domain/types&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
-import { DataDeletionDomainOperationLoggable } from &#x27;@shared/common/loggable&#x27;;
-import { DomainOperation } from &#x27;@shared/domain/interface&#x27;;
-import { DomainOperationBuilder } from &#x27;@shared/domain/builder&#x27;;
+import { EventBus, EventsHandler, IEventHandler } from &#x27;@nestjs/cqrs&#x27;;
+import {
+	DataDeletedEvent,
+	DataDeletionDomainOperationLoggable,
+	DeletionService,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	UserDeletedEvent,
+	StatusModel,
+} from &#x27;@modules/deletion&#x27;;
 import { FileEntity } from &#x27;../entity&#x27;;
 import { FilesRepo } from &#x27;../repo&#x27;;
 
 @Injectable()
-export class FilesService {
-	constructor(private readonly repo: FilesRepo, private readonly logger: Logger) {
+@EventsHandler(UserDeletedEvent)
+export class FilesService implements DeletionService, IEventHandler&lt;UserDeletedEvent&gt; {
+	constructor(private readonly repo: FilesRepo, private readonly logger: Logger, private readonly eventBus: EventBus) {
 		this.logger.setContext(FilesService.name);
+	}
+
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise&lt;void&gt; {
+		const dataDeleted &#x3D; await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	async findFilesAccessibleOrCreatedByUser(userId: EntityId): Promise&lt;FileEntity[]&gt; {
 		return this.repo.findByPermissionRefIdOrCreatorId(userId);
 	}
 
-	async removeUserPermissionsOrCreatorReferenceToAnyFiles(userId: EntityId): Promise&lt;DomainOperation&gt; {
+	async removeUserPermissionsOrCreatorReferenceToAnyFiles(userId: EntityId): Promise&lt;DomainDeletionReport&gt; {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				&#x27;Deleting user data from Files&#x27;,
@@ -630,12 +807,9 @@ export class FilesService {
 
 		const numberOfUpdatedFiles &#x3D; entities.length;
 
-		const result &#x3D; DomainOperationBuilder.build(
-			DomainName.FILE,
-			OperationType.UPDATE,
-			numberOfUpdatedFiles,
-			this.getFilesId(entities)
-		);
+		const result &#x3D; DomainDeletionReportBuilder.build(DomainName.FILE, [
+			DomainOperationReportBuilder.build(OperationType.UPDATE, numberOfUpdatedFiles, this.getFilesId(entities)),
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
@@ -655,7 +829,7 @@ export class FilesService {
 		return this.repo.findByOwnerUserId(userId);
 	}
 
-	async markFilesOwnedByUserForDeletion(userId: EntityId): Promise&lt;DomainOperation&gt; {
+	async markFilesOwnedByUserForDeletion(userId: EntityId): Promise&lt;DomainDeletionReport&gt; {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				&#x27;Marking user files to deletion&#x27;,
@@ -672,12 +846,13 @@ export class FilesService {
 
 		const numberOfMarkedForDeletionFiles &#x3D; entities.length;
 
-		const result &#x3D; DomainOperationBuilder.build(
-			DomainName.FILE,
-			OperationType.UPDATE,
-			numberOfMarkedForDeletionFiles,
-			this.getFilesId(entities)
-		);
+		const result &#x3D; DomainDeletionReportBuilder.build(DomainName.FILE, [
+			DomainOperationReportBuilder.build(
+				OperationType.UPDATE,
+				numberOfMarkedForDeletionFiles,
+				this.getFilesId(entities)
+			),
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
@@ -689,6 +864,26 @@ export class FilesService {
 				0
 			)
 		);
+
+		return result;
+	}
+
+	public async deleteUserData(userId: EntityId): Promise&lt;DomainDeletionReport&gt; {
+		const [markedFilesForDeletion, removedUserPermissionsToFiles] &#x3D; await Promise.all([
+			this.markFilesOwnedByUserForDeletion(userId),
+			this.removeUserPermissionsOrCreatorReferenceToAnyFiles(userId),
+		]);
+
+		const modifiedFilesCount &#x3D;
+			markedFilesForDeletion.operations[0].count + removedUserPermissionsToFiles.operations[0].count;
+		const modifiedFilesRef &#x3D; [
+			...markedFilesForDeletion.operations[0].refs,
+			...removedUserPermissionsToFiles.operations[0].refs,
+		];
+
+		const result &#x3D; DomainDeletionReportBuilder.build(DomainName.FILE, [
+			DomainOperationReportBuilder.build(OperationType.UPDATE, modifiedFilesCount, modifiedFilesRef),
+		]);
 
 		return result;
 	}
