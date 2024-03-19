@@ -1,5 +1,5 @@
 import { Scope } from '@shared/repo';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalToolPseudonymEntity } from './external-tool-pseudonym.entity';
 
 export class PseudonymScope extends Scope<ExternalToolPseudonymEntity> {

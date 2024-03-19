@@ -6,7 +6,7 @@ import { DomainName, LearnroomMetadata, LearnroomTypes, OperationType } from '@s
 import { DashboardElementRepo, IDashboardRepo, UserRepo } from '@shared/repo';
 import { setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { DashboardService } from '.';
 
 const learnroomMock = (id: string, name: string) => {
