@@ -1,7 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
+import { ManagementServerTestModule } from '@modules/management/management-server.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ManagementServerTestModule } from '@modules/management/management-server.module';
 import request from 'supertest';
 
 describe('Database Management Controller (API)', () => {

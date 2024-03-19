@@ -10,7 +10,7 @@ import { LanguageType } from '@shared/domain/interface';
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { federalStateFactory, schoolEntityFactory } from '@shared/testing';
 import { FileStorageType } from '@src/modules/school/domain/type/file-storage-type.enum';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { DeepPartial } from 'fishery';
 import { EFederalState } from './federalstates';
 import { SeedSchoolYearEnum } from './schoolyears';

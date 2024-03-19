@@ -8,7 +8,7 @@ import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { legacySchoolDoFactory, setupEntities, userFactory, userLoginMigrationDOFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UserLoginMigrationNotFoundLoggableException } from '../loggable';
 import { UserLoginMigrationService } from '../service';
 import { ToggleUserLoginMigrationUc } from './toggle-user-login-migration.uc';

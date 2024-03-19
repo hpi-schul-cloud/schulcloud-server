@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 import { SubmissionItem, SubmissionItemProps } from '@shared/domain/domainobject';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '../../base.factory';
 
 export const submissionItemFactory = BaseFactory.define<SubmissionItem, SubmissionItemProps>(

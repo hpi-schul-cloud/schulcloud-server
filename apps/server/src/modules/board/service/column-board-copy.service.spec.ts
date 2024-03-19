@@ -15,7 +15,7 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardDoRepo } from '../repo';
 import {
 	BoardDoCopyService,
