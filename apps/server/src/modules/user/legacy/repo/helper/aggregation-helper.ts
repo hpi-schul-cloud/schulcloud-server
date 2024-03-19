@@ -1,7 +1,10 @@
-const { ObjectId } = require('mongoose').Types;
+/* eslint-disable */
+// The code in this file is copied from the legacy part of the server. As it does not meet our ESLint rules, ESLint is disabled for the whole file.
+import { ObjectId } from 'bson';
+import { UserSearchQuery } from '../../interfaces';
 
 const convertToIn = (value) => {
-	let list = [];
+	let list: any[] = [];
 	if (Array.isArray(value)) {
 		list = value;
 	} else if (Array.isArray(value.$in)) {
@@ -32,19 +35,24 @@ const stageBaseFilter = (aggregation, attr, value) => {
  * Convert a "select"-array to an object to handle it with aggregaitons
  * @param {Array} select
  */
-const convertSelect = (select) => select.reduce((acc, curr) => ({ ...acc, [curr]: 1 }), {});
+const convertSelect = (select) =>
+	select.reduce((acc, curr) => {
+		return { ...acc, [curr]: 1 };
+	}, {});
 
 /**
  * Creates an reducer to filter parent consent
  * @param {string} type - consent type
  */
-const getParentReducer = (type) => ({
-	$reduce: {
-		input: '$consent.parentConsents',
-		initialValue: false,
-		in: { $or: ['$$value', `$$this.${type}`] },
-	},
-});
+const getParentReducer = (type) => {
+	return {
+		$reduce: {
+			input: '$consent.parentConsents',
+			initialValue: false,
+			in: { $or: ['$$value', `$$this.${type}`] },
+		},
+	};
+};
 
 /**
  * To sort by consentStatus, this stage convert the status message to an number.
@@ -145,14 +153,6 @@ const getConsentStatusSwitch = () => {
 	};
 };
 
-const stageAddConsentStatus = (aggregation) => {
-	aggregation.push({
-		$addFields: {
-			consentStatus: getConsentStatusSwitch(),
-		},
-	});
-};
-
 /**
  * Convert Select array to and aggregation Project and adds consentStatus if part of select
  *
@@ -162,9 +162,7 @@ const stageAddConsentStatus = (aggregation) => {
 const stageAddSelectProjectWithConsentCreate = (aggregation, select) => {
 	const project = convertSelect(select);
 
-	if (select.includes('consentStatus')) {
-		project.consentStatus = getConsentStatusSwitch();
-	}
+	project.consentStatus = getConsentStatusSwitch();
 
 	aggregation.push({
 		$project: project,
@@ -180,7 +178,7 @@ const stageSimpleProject = (aggregation, select) => {
 	});
 };
 
-const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
+const stageLookupClasses = (aggregation, schoolId: ObjectId, schoolYearId: ObjectId | unknown) => {
 	aggregation.push({
 		$lookup: {
 			from: 'classes',
@@ -190,14 +188,11 @@ const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
 					$match: {
 						$expr: {
 							$and: [
-								{ $eq: ['$schoolId', ObjectId(schoolId.toString())] },
+								{ $eq: ['$schoolId', schoolId] },
 								{
 									$and: [
 										{
-											$or: [
-												{ $eq: ['$year', ObjectId(schoolYearId.toString())] },
-												{ $eq: [{ $type: '$year' }, 'missing'] },
-											],
+											$or: [{ $eq: ['$year', schoolYearId] }, { $eq: [{ $type: '$year' }, 'missing'] }],
 										},
 										{
 											$or: [{ $max: '$gradeLevel' }, { $eq: [{ $type: '$gradeLevel' }, 'missing'] }],
@@ -266,9 +261,11 @@ const stageLookupClasses = (aggregation, schoolId, schoolYearId) => {
 const stageSort = (aggregation, sort) => {
 	const mSort = {};
 	for (const k in sort) {
-		if (k === 'searchQuery') {
+		if (k === 'sortBySearchQueryResult') {
+			// @ts-ignore
 			mSort.score = { $meta: 'textScore' };
 		} else if (k === 'consentStatus') {
+			// @ts-ignore
 			mSort.consentSortParam = Number(sort[k]);
 			stageAddConsentSortParam(aggregation);
 		} else if (k === 'classes') {
@@ -350,11 +347,11 @@ const stageFilterSearch = (aggregation, amount) => {
 
 /**
  * Creates an Array for an Aggregation pipeline and can handle, select, sort, limit, skip and matches.
- * To filter or sort by consentStatus, it have also to be seleceted first.
+ * To filter or sort by consentStatus, it has also to be seleceted first.
  *
  * @param {{select: Array, sort: Object, limit: Int, skip: Int, ...matches}} param0
  */
-const createMultiDocumentAggregation = ({
+export const createMultiDocumentAggregation = ({
 	select,
 	sort,
 	limit = 25,
@@ -365,16 +362,12 @@ const createMultiDocumentAggregation = ({
 	searchQuery,
 	searchFilterGate,
 	...match
-}) => {
-	// eslint-disable-next-line no-param-reassign
-	limit = Number(limit);
-	// eslint-disable-next-line no-param-reassign
-	skip = Number(skip);
+}: UserSearchQuery) => {
 	if (typeof match._id === 'string') {
-		match._id = ObjectId(match._id);
+		match._id = new ObjectId(match._id);
 	} else if (Array.isArray(match._id)) {
 		// build "$in" Query
-		const convertToObjectIds = (inArray) => inArray.map((id) => ObjectId(id));
+		const convertToObjectIds = (inArray: any[]) => inArray.map((id) => new ObjectId(id));
 		match._id = { $in: convertToObjectIds(convertToIn(match._id)) };
 	}
 
@@ -383,12 +376,14 @@ const createMultiDocumentAggregation = ({
 
 	if (searchQuery) {
 		// to sort by this value, add 'searchQuery' to sort value
+		// @ts-ignore
 		match.$text = {
-			$search: searchQuery,
+			$search: searchQuery
 		};
 	}
 
 	if (match) {
+		// @ts-ignore
 		aggregation.push({
 			$match: match,
 		});
@@ -400,10 +395,7 @@ const createMultiDocumentAggregation = ({
 
 	if (select) {
 		stageAddSelectProjectWithConsentCreate(aggregation, select.concat(selectSortDiff));
-		if (select.includes('classes')) stageLookupClasses(aggregation, match.schoolId, schoolYearId);
-	} else {
-		stageAddConsentStatus(aggregation);
-		if (match.schoolId && schoolYearId) stageLookupClasses(aggregation, match.schoolId, schoolYearId);
+		stageLookupClasses(aggregation, match.schoolId, schoolYearId);
 	}
 
 	if (consentStatus) {
@@ -418,18 +410,11 @@ const createMultiDocumentAggregation = ({
 		stageSort(aggregation, sort);
 	}
 
-	// if (selectSortDiff.length !== 0) {
-	// TODO: think about doing it after limit and skip
 	stageSimpleProject(aggregation, select);
-	// }
 
-	if (!match._id || Array.isArray(match._id.$in)) stageFormatWithTotal(aggregation, limit, skip);
+	if (!match?._id || Array.isArray(match?._id?.$in)) {
+		stageFormatWithTotal(aggregation, limit, skip);
+	}
+
 	return aggregation;
-};
-
-module.exports = {
-	convertSelect,
-	getParentReducer,
-	convertToIn,
-	createMultiDocumentAggregation,
 };
