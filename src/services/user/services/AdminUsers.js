@@ -3,13 +3,8 @@
 /* eslint-disable no-underscore-dangle */
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const moment = require('moment');
-const { v4: uuidv4 } = require('uuid');
-const { Configuration } = require('@hpi-schul-cloud/commons');
 
-const { Forbidden, BadRequest, GeneralError } = require('../../../errors');
-const logger = require('../../../logger');
-const { createMultiDocumentAggregation } = require('../utils/aggregations');
-const { splitForSearchIndexes } = require('../../../utils/search');
+const { Forbidden, BadRequest } = require('../../../errors');
 const { hasSchoolPermission, blockDisposableEmail, transformToDataTransferObject } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 const { validateParams, parseRequestQuery } = require('../hooks/adminUsers.hooks');
@@ -20,29 +15,6 @@ const constants = require('../../../utils/constants');
 const { userModel } = require('../model');
 
 const getCurrentUserInfo = (id) => userModel.findById(id).select('schoolId').lean().exec();
-
-const getCurrentYearId = (ref, schoolId) =>
-	ref.app
-		.service('schools')
-		.get(schoolId, {
-			query: { $select: ['currentYear'] },
-		})
-		.then(({ currentYear }) => currentYear._id.toString());
-
-const setSearchParametesIfExist = (clientQuery, query) => {
-	if (clientQuery.searchQuery && clientQuery.searchQuery.trim().length !== 0) {
-		const amountOfSearchWords = clientQuery.searchQuery.split(' ').length;
-		const searchQueryElements = splitForSearchIndexes(clientQuery.searchQuery.trim());
-		query.searchQuery = `${clientQuery.searchQuery} ${searchQueryElements.join(' ')}`;
-		// increase gate by searched word, to get better results
-		query.searchFilterGate = searchQueryElements.length * 2 + amountOfSearchWords;
-		// recreating sort here, to set searchQuery as first (main) parameter of sorting
-		query.sort = {
-			...query.sort,
-			searchQuery: 1,
-		};
-	}
-};
 
 class AdminUsers {
 	constructor(roleName) {
@@ -56,108 +28,6 @@ class AdminUsers {
 				query: { name: this.roleName },
 			});
 			this.role = role.data[0];
-		}
-	}
-
-	async find(params) {
-		return this.getUsers(undefined, params);
-	}
-
-	async get(id, params) {
-		return this.getUsers(id, params);
-	}
-
-	async getUsers(_id, params) {
-		// integration test did not get the role in the setup
-		// so here is a workaround set it at first call
-		await this.setRole();
-
-		try {
-			const { query: clientQuery = {}, account } = params;
-			const currentUserId = account.userId.toString();
-
-			// fetch base data
-			const { schoolId } = await getCurrentUserInfo(currentUserId);
-			const schoolYearId = await getCurrentYearId(this, schoolId);
-
-			const query = {
-				schoolId,
-				roles: this.role._id,
-				schoolYearId,
-				sort: clientQuery.$sort || clientQuery.sort,
-				select: [
-					'consentStatus',
-					'consent',
-					'classes',
-					'firstName',
-					'lastName',
-					'email',
-					'createdAt',
-					'importHash',
-					'birthday',
-					'preferences.registrationMailSend',
-					'lastLoginSystemChange',
-					'outdatedSince',
-				],
-				skip: clientQuery.$skip || clientQuery.skip,
-				limit: clientQuery.$limit || clientQuery.limit,
-			};
-			if (_id) {
-				query._id = _id;
-			} else if (clientQuery.users) {
-				query._id = clientQuery.users;
-				// If the number of users exceeds 20, the underlying parsing library
-				// will convert the array to an object with the index as the key.
-				// To continue working with it, we convert it here back to the array form.
-				// See the documentation for further infos: https://github.com/ljharb/qs#parsing-arrays
-				if (typeof query._id === 'object') query._id = Object.values(query._id);
-			}
-			if (clientQuery.consentStatus) query.consentStatus = clientQuery.consentStatus;
-			if (clientQuery.classes) query.classes = clientQuery.classes;
-			if (clientQuery.firstName) query.firstName = clientQuery.firstName;
-			if (clientQuery.lastName) query.lastName = clientQuery.lastName;
-			setSearchParametesIfExist(clientQuery, query);
-
-			const dateQueries = ['createdAt', 'outdatedSince', 'lastLoginSystemChange'];
-			for (const dateQuery of dateQueries) {
-				if (clientQuery[dateQuery]) {
-					if (typeof clientQuery[dateQuery] === 'object') {
-						for (const [key, value] of Object.entries(clientQuery[dateQuery])) {
-							if (['$gt', '$gte', '$lt', '$lte'].includes(key)) {
-								clientQuery[dateQuery][key] = new Date(value);
-							}
-						}
-						query[dateQuery] = clientQuery[dateQuery];
-					} else {
-						query[dateQuery] = new Date(clientQuery[dateQuery]);
-					}
-				}
-			}
-
-			return new Promise((resolve, reject) =>
-				userModel
-					.aggregate(createMultiDocumentAggregation(query))
-					.option({
-						collation: { locale: 'de', caseLevel: true },
-					})
-					.exec((err, res) => {
-						if (err) reject(err);
-						else resolve(res[0] || {});
-					})
-			);
-		} catch (err) {
-			if ((err || {}).code === 403) {
-				throw new Forbidden('You have not the permission to execute this.', err);
-			}
-			if (err && err.code >= 500) {
-				const uuid = uuidv4();
-				logger.error(uuid, err);
-				if (Configuration.get('NODE_ENV') !== 'production') {
-					throw err;
-				}
-				throw new GeneralError(uuid);
-			}
-			throw err;
 		}
 	}
 
@@ -301,17 +171,9 @@ class AdminUsers {
 	}
 }
 
-const formatBirthdayOfUsers = ({ result: { data: users } }) => {
-	users.forEach((user) => {
-		if (user.birthday) user.birthday = moment(user.birthday).format('DD.MM.YYYY');
-	});
-};
-
 const adminHookGenerator = (kind) => ({
 	before: {
 		all: [authenticate('jwt')],
-		find: [hasSchoolPermission(`${kind}_LIST`)],
-		get: [hasSchoolPermission(`${kind}_LIST`)],
 		create: [hasSchoolPermission(`${kind}_CREATE`), blockDisposableEmail('email')],
 		update: [hasSchoolPermission(`${kind}_EDIT`), protectImmutableAttributes, blockDisposableEmail('email')],
 		patch: [hasSchoolPermission(`${kind}_EDIT`), protectImmutableAttributes, blockDisposableEmail('email')],
@@ -319,7 +181,6 @@ const adminHookGenerator = (kind) => ({
 	},
 	after: {
 		all: [transformToDataTransferObject],
-		find: [formatBirthdayOfUsers],
 		create: [sendRegistrationLink],
 	},
 });
