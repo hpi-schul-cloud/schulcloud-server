@@ -33,7 +33,7 @@ describe('tldraw controller (api)', () => {
 		await app.close();
 	});
 
-	describe('with invalid user', () => {
+	describe('when request does not contain token', () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 			const course = courseFactory.build({ teachers: [teacherUser] });
