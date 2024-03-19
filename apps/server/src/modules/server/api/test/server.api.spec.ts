@@ -1,6 +1,6 @@
-import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { ServerTestModule } from '@modules/server';
 import { TestApiClient } from '@shared/testing';
 import { ConfigResponse } from '../dto';
 

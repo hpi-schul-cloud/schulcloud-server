@@ -1,12 +1,12 @@
+import { Module } from '@nestjs/common';
 import { AuthorizationModule } from '@modules/authorization';
 import { ClassModule } from '@modules/class';
-import { LegacySchoolModule } from '@modules/legacy-school';
 import { RoleModule } from '@modules/role';
-import { SchoolModule } from '@modules/school';
+import { LegacySchoolModule } from '@modules/legacy-school';
 import { SystemModule } from '@modules/system';
-import { UserModule } from '@modules/user/user.module';
-import { Module } from '@nestjs/common';
+import { UserModule } from '@modules/user';
 import { LoggerModule } from '@src/core/logger';
+import { SchoolModule } from '@modules/school';
 import { GroupController } from './controller';
 import { GroupModule } from './group.module';
 import { GroupUc } from './uc';

@@ -1,5 +1,5 @@
 import { Group, GroupService, GroupTypes } from '@modules/group';
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { SchulConneXProvisioningOptions } from '../domain';
 import { ProvisioningOptionsUpdateHandler } from './provisioning-options-update-handler';
@@ -8,7 +8,7 @@ import { ProvisioningOptionsUpdateHandler } from './provisioning-options-update-
 export class SchulconnexProvisioningOptionsUpdateService
 	implements ProvisioningOptionsUpdateHandler<SchulConneXProvisioningOptions>
 {
-	constructor(@Inject(forwardRef(() => GroupService)) private readonly groupService: GroupService) {}
+	constructor(private readonly groupService: GroupService) {}
 
 	public async handleUpdate(
 		schoolId: EntityId,

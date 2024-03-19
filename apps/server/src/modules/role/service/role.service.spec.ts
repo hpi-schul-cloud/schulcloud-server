@@ -5,8 +5,9 @@ import { Role } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { RoleRepo } from '@shared/repo';
 import { roleFactory } from '@shared/testing';
-import { RoleDto } from './dto';
+import { RoleDto } from './dto/role.dto';
 import { RoleService } from './role.service';
+import resetAllMocks = jest.resetAllMocks;
 
 describe('RoleService', () => {
 	let module: TestingModule;
@@ -38,7 +39,7 @@ describe('RoleService', () => {
 	});
 
 	afterEach(() => {
-		jest.resetAllMocks();
+		resetAllMocks();
 	});
 
 	describe('findById', () => {
@@ -79,7 +80,7 @@ describe('RoleService', () => {
 		});
 	});
 
-	describe('findByNames', () => {
+	describe('findByName', () => {
 		it('should find role entity', async () => {
 			roleRepo.findByNames.mockResolvedValue([testRoleEntity]);
 
@@ -93,30 +94,6 @@ describe('RoleService', () => {
 			roleRepo.findByNames.mockRejectedValue(new NotFoundError('not found'));
 
 			await expect(roleService.findByNames(['unknown role' as unknown as RoleName])).rejects.toThrow(NotFoundError);
-		});
-	});
-
-	describe('findByName', () => {
-		describe('when a role exists', () => {
-			it('should find a role', async () => {
-				roleRepo.findByName.mockResolvedValue(testRoleEntity);
-
-				const result: RoleDto = await roleService.findByName(testRoleEntity.name);
-
-				expect(result).toEqual<RoleDto>({
-					id: testRoleEntity.id,
-					name: testRoleEntity.name,
-					permissions: [],
-				});
-			});
-		});
-
-		describe('when no role exists with a name', () => {
-			it('should throw an error', async () => {
-				roleRepo.findByName.mockRejectedValue(new NotFoundError('not found'));
-
-				await expect(roleService.findByName('unknown role' as unknown as RoleName)).rejects.toThrow(NotFoundError);
-			});
 		});
 	});
 

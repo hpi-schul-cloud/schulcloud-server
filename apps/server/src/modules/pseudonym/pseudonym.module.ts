@@ -1,6 +1,6 @@
 import { LearnroomModule } from '@modules/learnroom';
 import { ToolModule } from '@modules/tool';
-import { UserModule } from '@modules/user/user.module';
+import { UserModule } from '@modules/user';
 import { forwardRef, Module } from '@nestjs/common';
 import { LegacyLogger, LoggerModule } from '@src/core/logger';
 import { CqrsModule } from '@nestjs/cqrs';

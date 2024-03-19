@@ -3,7 +3,6 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ClassEntity } from '@modules/class/entity';
 import { classEntityFactory } from '@modules/class/entity/testing';
-import { Group } from '@modules/group';
 import { GroupEntity } from '@modules/group/entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Course as CourseEntity, CourseFeatures, CourseGroup, SchoolEntity, User } from '@shared/domain/entity';
@@ -12,7 +11,6 @@ import {
 	courseFactory as courseEntityFactory,
 	courseGroupFactory as courseGroupEntityFactory,
 	groupEntityFactory,
-	groupFactory,
 	schoolEntityFactory,
 	userFactory,
 } from '@shared/testing';
@@ -71,35 +69,6 @@ describe(CourseMikroOrmRepo.name, () => {
 				const result: Course = await repo.findCourseById(course.id);
 
 				expect(result).toEqual(course);
-			});
-		});
-	});
-
-	describe('findBySyncedGroup', () => {
-		describe('when a course is synced with a group', () => {
-			const setup = async () => {
-				const groupEntity: GroupEntity = groupEntityFactory.buildWithId();
-				const syncedCourseEntity: CourseEntity = courseEntityFactory.build({ syncedWithGroup: groupEntity });
-				const otherCourseEntity: CourseEntity = courseEntityFactory.build({ syncedWithGroup: undefined });
-				const group: Group = groupFactory.build({ id: groupEntity.id });
-
-				await em.persistAndFlush([syncedCourseEntity, groupEntity, otherCourseEntity]);
-				em.clear();
-
-				const course: Course = CourseEntityMapper.mapEntityToDo(syncedCourseEntity);
-
-				return {
-					course,
-					group,
-				};
-			};
-
-			it('should return courses', async () => {
-				const { course, group } = await setup();
-
-				const result: Course[] = await repo.findBySyncedGroup(group);
-
-				expect(result).toEqual([course]);
 			});
 		});
 	});

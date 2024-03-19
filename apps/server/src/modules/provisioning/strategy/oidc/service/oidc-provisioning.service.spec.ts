@@ -1,40 +1,53 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AccountService } from '@modules/account/services/account.service';
+import { AccountSaveDto } from '@modules/account/services/dto';
 import { Group, GroupService, GroupTypes } from '@modules/group';
 import {
+	FederalStateService,
 	LegacySchoolService,
 	SchoolSystemOptionsService,
+	SchoolYearService,
 	SchulConneXProvisioningOptions,
 } from '@modules/legacy-school';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { UserService } from '@modules/user';
+import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { ExternalSource, LegacySchoolDo, RoleReference, UserDO } from '@shared/domain/domainobject';
 import { RoleName } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { EntityId, SchoolFeature } from '@shared/domain/types';
 import {
 	externalGroupDtoFactory,
 	externalSchoolDtoFactory,
+	federalStateFactory,
 	groupFactory,
 	legacySchoolDoFactory,
 	roleDtoFactory,
 	roleFactory,
+	schoolYearFactory,
 	userDoFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { ExternalGroupDto, ExternalSchoolDto } from '../../../dto';
+import CryptoJS from 'crypto-js';
+import { ExternalGroupDto, ExternalSchoolDto, ExternalUserDto } from '../../../dto';
 import { SchoolForGroupNotFoundLoggable, UserForGroupNotFoundLoggable } from '../../../loggable';
-import { SchulconnexGroupProvisioningService } from './schulconnex-group-provisioning.service';
+import { OidcProvisioningService } from './oidc-provisioning.service';
 
-describe(SchulconnexGroupProvisioningService.name, () => {
+jest.mock('crypto-js');
+
+describe('OidcProvisioningService', () => {
 	let module: TestingModule;
-	let service: SchulconnexGroupProvisioningService;
+	let service: OidcProvisioningService;
 
 	let userService: DeepMocked<UserService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
 	let roleService: DeepMocked<RoleService>;
+	let accountService: DeepMocked<AccountService>;
+	let schoolYearService: DeepMocked<SchoolYearService>;
+	let federalStateService: DeepMocked<FederalStateService>;
 	let groupService: DeepMocked<GroupService>;
 	let schoolSystemOptionsService: DeepMocked<SchoolSystemOptionsService>;
 	let logger: DeepMocked<Logger>;
@@ -42,7 +55,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				SchulconnexGroupProvisioningService,
+				OidcProvisioningService,
 				{
 					provide: UserService,
 					useValue: createMock<UserService>(),
@@ -54,6 +67,18 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 				{
 					provide: RoleService,
 					useValue: createMock<RoleService>(),
+				},
+				{
+					provide: AccountService,
+					useValue: createMock<AccountService>(),
+				},
+				{
+					provide: SchoolYearService,
+					useValue: createMock<SchoolYearService>(),
+				},
+				{
+					provide: FederalStateService,
+					useValue: createMock<FederalStateService>(),
 				},
 				{
 					provide: GroupService,
@@ -70,10 +95,13 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 			],
 		}).compile();
 
-		service = module.get(SchulconnexGroupProvisioningService);
+		service = module.get(OidcProvisioningService);
 		userService = module.get(UserService);
 		schoolService = module.get(LegacySchoolService);
 		roleService = module.get(RoleService);
+		accountService = module.get(AccountService);
+		schoolYearService = module.get(SchoolYearService);
+		federalStateService = module.get(FederalStateService);
 		groupService = module.get(GroupService);
 		schoolSystemOptionsService = module.get(SchoolSystemOptionsService);
 		logger = module.get(Logger);
@@ -85,6 +113,573 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
+	});
+
+	describe('provisionExternalSchool', () => {
+		describe('when systemId is given and external school does not exist', () => {
+			describe('when successful', () => {
+				const setup = () => {
+					const systemId = new ObjectId().toHexString();
+					const externalSchoolDto: ExternalSchoolDto = new ExternalSchoolDto({
+						externalId: 'externalId',
+						name: 'name',
+						officialSchoolNumber: 'officialSchoolNumber',
+					});
+
+					const schoolYear = schoolYearFactory.build();
+					const federalState = federalStateFactory.build();
+					const savedSchoolDO = new LegacySchoolDo({
+						id: 'schoolId',
+						externalId: 'externalId',
+						name: 'name',
+						officialSchoolNumber: 'officialSchoolNumber',
+						systems: [systemId],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+						schoolYear,
+						federalState,
+					});
+
+					schoolService.save.mockResolvedValue(savedSchoolDO);
+					schoolService.getSchoolByExternalId.mockResolvedValue(null);
+					schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYear);
+					federalStateService.findFederalStateByName.mockResolvedValue(federalState);
+
+					return {
+						systemId,
+						externalSchoolDto,
+						savedSchoolDO,
+					};
+				};
+
+				it('should save the correct data', async () => {
+					const { systemId, externalSchoolDto, savedSchoolDO } = setup();
+
+					await service.provisionExternalSchool(externalSchoolDto, systemId);
+
+					expect(schoolService.save).toHaveBeenCalledWith({ ...savedSchoolDO, id: undefined }, true);
+				});
+
+				it('should save the new school', async () => {
+					const { systemId, externalSchoolDto, savedSchoolDO } = setup();
+
+					const result: LegacySchoolDo = await service.provisionExternalSchool(externalSchoolDto, systemId);
+
+					expect(result).toEqual(savedSchoolDO);
+				});
+			});
+
+			describe('when the external system provides a location for the school', () => {
+				const setup = () => {
+					const systemId = new ObjectId().toHexString();
+					const externalSchoolDto: ExternalSchoolDto = new ExternalSchoolDto({
+						externalId: 'externalId',
+						name: 'name',
+						officialSchoolNumber: 'officialSchoolNumber',
+						location: 'Hannover',
+					});
+
+					const schoolYear = schoolYearFactory.build();
+					const federalState = federalStateFactory.build();
+					const savedSchoolDO = new LegacySchoolDo({
+						id: 'schoolId',
+						externalId: 'externalId',
+						name: 'name (Hannover)',
+						officialSchoolNumber: 'officialSchoolNumber',
+						systems: [systemId],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+						schoolYear,
+						federalState,
+					});
+
+					schoolService.save.mockResolvedValue(savedSchoolDO);
+					schoolService.getSchoolByExternalId.mockResolvedValue(null);
+					schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYear);
+					federalStateService.findFederalStateByName.mockResolvedValue(federalState);
+
+					return {
+						systemId,
+						externalSchoolDto,
+						savedSchoolDO,
+					};
+				};
+
+				it('should append it to the school name', async () => {
+					const { systemId, externalSchoolDto, savedSchoolDO } = setup();
+
+					await service.provisionExternalSchool(externalSchoolDto, systemId);
+
+					expect(schoolService.save).toHaveBeenCalledWith({ ...savedSchoolDO, id: undefined }, true);
+				});
+			});
+
+			describe('when the external system does not provide a location for the school', () => {
+				const setup = () => {
+					const systemId = new ObjectId().toHexString();
+					const externalSchoolDto: ExternalSchoolDto = new ExternalSchoolDto({
+						externalId: 'externalId',
+						name: 'name',
+						officialSchoolNumber: 'officialSchoolNumber',
+					});
+
+					const schoolYear = schoolYearFactory.build();
+					const federalState = federalStateFactory.build();
+					const savedSchoolDO = new LegacySchoolDo({
+						id: 'schoolId',
+						externalId: 'externalId',
+						name: 'name',
+						officialSchoolNumber: 'officialSchoolNumber',
+						systems: [systemId],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+						schoolYear,
+						federalState,
+					});
+
+					schoolService.save.mockResolvedValue(savedSchoolDO);
+					schoolService.getSchoolByExternalId.mockResolvedValue(null);
+					schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYear);
+					federalStateService.findFederalStateByName.mockResolvedValue(federalState);
+
+					return {
+						systemId,
+						externalSchoolDto,
+						savedSchoolDO,
+					};
+				};
+
+				it('should only use the school name', async () => {
+					const { systemId, externalSchoolDto, savedSchoolDO } = setup();
+
+					await service.provisionExternalSchool(externalSchoolDto, systemId);
+
+					expect(schoolService.save).toHaveBeenCalledWith({ ...savedSchoolDO, id: undefined }, true);
+				});
+			});
+		});
+
+		describe('when external school already exists', () => {
+			describe('when successful', () => {
+				const setup = () => {
+					const systemId = new ObjectId().toHexString();
+					const externalSchoolDto: ExternalSchoolDto = new ExternalSchoolDto({
+						externalId: 'externalId',
+						name: 'name',
+						officialSchoolNumber: 'officialSchoolNumber',
+					});
+
+					const schoolYear = schoolYearFactory.build();
+					const federalState = federalStateFactory.build();
+					const savedSchoolDO = legacySchoolDoFactory.build({
+						id: 'schoolId',
+						externalId: 'externalId',
+						name: 'name',
+						officialSchoolNumber: 'officialSchoolNumber',
+						systems: [systemId],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+						schoolYear,
+						federalState,
+					});
+					const existingSchoolDO = legacySchoolDoFactory.build({
+						id: 'schoolId',
+						externalId: 'externalId',
+						name: 'existingName',
+						officialSchoolNumber: 'existingOfficialSchoolNumber',
+						systems: [systemId],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+					});
+
+					schoolService.save.mockResolvedValue(savedSchoolDO);
+					schoolService.getSchoolByExternalId.mockResolvedValue(existingSchoolDO);
+					schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYear);
+					federalStateService.findFederalStateByName.mockResolvedValue(federalState);
+
+					return {
+						systemId,
+						externalSchoolDto,
+						savedSchoolDO,
+						existingSchoolDO,
+					};
+				};
+
+				it('should update the existing school', async () => {
+					const { systemId, externalSchoolDto, savedSchoolDO } = setup();
+
+					const result: LegacySchoolDo = await service.provisionExternalSchool(externalSchoolDto, systemId);
+
+					expect(result).toEqual(savedSchoolDO);
+				});
+			});
+
+			describe('when the external system provides a location for the school', () => {
+				const setup = () => {
+					const systemId = new ObjectId().toHexString();
+					const externalSchoolDto: ExternalSchoolDto = new ExternalSchoolDto({
+						externalId: 'externalId',
+						name: 'name',
+						officialSchoolNumber: 'officialSchoolNumber',
+						location: 'Hannover',
+					});
+
+					const schoolYear = schoolYearFactory.build();
+					const federalState = federalStateFactory.build();
+					const savedSchoolDO = legacySchoolDoFactory.build({
+						id: 'schoolId',
+						externalId: 'externalId',
+						name: 'name (Hannover)',
+						officialSchoolNumber: 'officialSchoolNumber',
+						systems: [systemId],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+						schoolYear,
+						federalState,
+					});
+					const existingSchoolDO = legacySchoolDoFactory.build({
+						id: 'schoolId',
+						externalId: 'externalId',
+						name: 'existingName',
+						officialSchoolNumber: 'existingOfficialSchoolNumber',
+						systems: [systemId],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+						schoolYear,
+						federalState,
+					});
+
+					schoolService.save.mockResolvedValue(savedSchoolDO);
+					schoolService.getSchoolByExternalId.mockResolvedValue(existingSchoolDO);
+					schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYear);
+					federalStateService.findFederalStateByName.mockResolvedValue(federalState);
+
+					return {
+						systemId,
+						externalSchoolDto,
+						savedSchoolDO,
+						existingSchoolDO,
+					};
+				};
+
+				it('should append it to the school name', async () => {
+					const { systemId, externalSchoolDto, savedSchoolDO } = setup();
+
+					await service.provisionExternalSchool(externalSchoolDto, systemId);
+
+					expect(schoolService.save).toHaveBeenCalledWith(savedSchoolDO, true);
+				});
+			});
+
+			describe('when the external system does not provide a location for the school', () => {
+				const setup = () => {
+					const systemId = new ObjectId().toHexString();
+					const externalSchoolDto: ExternalSchoolDto = new ExternalSchoolDto({
+						externalId: 'externalId',
+						name: 'name',
+						officialSchoolNumber: 'officialSchoolNumber',
+					});
+
+					const schoolYear = schoolYearFactory.build();
+					const federalState = federalStateFactory.build();
+					const savedSchoolDO = legacySchoolDoFactory.build({
+						id: 'schoolId',
+						externalId: 'externalId',
+						name: 'name',
+						officialSchoolNumber: 'officialSchoolNumber',
+						systems: [systemId],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+						schoolYear,
+						federalState,
+					});
+					const existingSchoolDO = legacySchoolDoFactory.build({
+						id: 'schoolId',
+						externalId: 'externalId',
+						name: 'existingName',
+						officialSchoolNumber: 'existingOfficialSchoolNumber',
+						systems: [systemId],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+						schoolYear,
+						federalState,
+					});
+
+					schoolService.save.mockResolvedValue(savedSchoolDO);
+					schoolService.getSchoolByExternalId.mockResolvedValue(existingSchoolDO);
+					schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYear);
+					federalStateService.findFederalStateByName.mockResolvedValue(federalState);
+
+					return {
+						systemId,
+						externalSchoolDto,
+						savedSchoolDO,
+						existingSchoolDO,
+					};
+				};
+
+				it('should only use the school name', async () => {
+					const { systemId, externalSchoolDto, savedSchoolDO } = setup();
+
+					await service.provisionExternalSchool(externalSchoolDto, systemId);
+
+					expect(schoolService.save).toHaveBeenCalledWith(savedSchoolDO, true);
+				});
+			});
+
+			describe('when there is a system at the school', () => {
+				const setup = () => {
+					const systemId = new ObjectId().toHexString();
+					const otherSystemId = new ObjectId().toHexString();
+					const externalSchoolDto: ExternalSchoolDto = new ExternalSchoolDto({
+						externalId: 'externalId',
+						name: 'name',
+						officialSchoolNumber: 'officialSchoolNumber',
+					});
+
+					const schoolYear = schoolYearFactory.build();
+					const federalState = federalStateFactory.build();
+					const savedSchoolDO = legacySchoolDoFactory.build({
+						id: 'schoolId',
+						externalId: 'externalId',
+						name: 'name',
+						officialSchoolNumber: 'officialSchoolNumber',
+						systems: [otherSystemId, systemId],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+						schoolYear,
+						federalState,
+					});
+					const existingSchoolDO = legacySchoolDoFactory.build({
+						id: 'schoolId',
+						externalId: 'externalId',
+						name: 'existingName',
+						officialSchoolNumber: 'existingOfficialSchoolNumber',
+						systems: [otherSystemId],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+						schoolYear,
+						federalState,
+					});
+
+					schoolService.save.mockResolvedValue(savedSchoolDO);
+					schoolService.getSchoolByExternalId.mockResolvedValue(existingSchoolDO);
+					schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYear);
+					federalStateService.findFederalStateByName.mockResolvedValue(federalState);
+
+					return {
+						systemId,
+						otherSystemId,
+						externalSchoolDto,
+						savedSchoolDO,
+						existingSchoolDO,
+					};
+				};
+
+				it('should append the new system', async () => {
+					const { systemId, otherSystemId, externalSchoolDto, savedSchoolDO } = setup();
+
+					await service.provisionExternalSchool(externalSchoolDto, systemId);
+
+					expect(schoolService.save).toHaveBeenCalledWith(
+						{
+							...savedSchoolDO,
+							systems: [otherSystemId, systemId],
+						},
+						true
+					);
+				});
+			});
+
+			describe('when there is no system at the school yet', () => {
+				const setup = () => {
+					const systemId = new ObjectId().toHexString();
+					const externalSchoolDto: ExternalSchoolDto = new ExternalSchoolDto({
+						externalId: 'externalId',
+						name: 'name',
+						officialSchoolNumber: 'officialSchoolNumber',
+					});
+
+					const schoolYear = schoolYearFactory.build();
+					const federalState = federalStateFactory.build();
+					const savedSchoolDO = legacySchoolDoFactory.build({
+						id: 'schoolId',
+						externalId: 'externalId',
+						name: 'name',
+						officialSchoolNumber: 'officialSchoolNumber',
+						systems: [systemId],
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+						schoolYear,
+						federalState,
+					});
+					const existingSchoolDO = legacySchoolDoFactory.build({
+						id: 'schoolId',
+						externalId: 'externalId',
+						name: 'existingName',
+						officialSchoolNumber: 'existingOfficialSchoolNumber',
+						systems: undefined,
+						features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+						schoolYear,
+						federalState,
+					});
+
+					schoolService.save.mockResolvedValue(savedSchoolDO);
+					schoolService.getSchoolByExternalId.mockResolvedValue(existingSchoolDO);
+					schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYear);
+					federalStateService.findFederalStateByName.mockResolvedValue(federalState);
+
+					return {
+						systemId,
+						externalSchoolDto,
+						savedSchoolDO,
+						existingSchoolDO,
+					};
+				};
+
+				it('should create a new system list', async () => {
+					const { systemId, externalSchoolDto, savedSchoolDO } = setup();
+
+					await service.provisionExternalSchool(externalSchoolDto, systemId);
+
+					expect(schoolService.save).toHaveBeenCalledWith(savedSchoolDO, true);
+				});
+			});
+		});
+	});
+
+	describe('provisionExternalUser', () => {
+		const setupUser = () => {
+			const systemId = 'systemId';
+			const schoolId = 'schoolId';
+			const birthday = new Date('2023-11-17');
+			const existingUser: UserDO = userDoFactory.withRoles([{ id: 'existingRoleId', name: RoleName.USER }]).buildWithId(
+				{
+					firstName: 'existingFirstName',
+					lastName: 'existingLastName',
+					email: 'existingEmail',
+					schoolId: 'existingSchoolId',
+					externalId: 'externalUserId',
+					birthday: new Date('2023-11-16'),
+				},
+				'userId'
+			);
+			const savedUser: UserDO = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId(
+				{
+					firstName: 'firstName',
+					lastName: 'lastName',
+					email: 'email',
+					schoolId,
+					externalId: 'externalUserId',
+					birthday,
+				},
+				'userId'
+			);
+			const externalUser: ExternalUserDto = new ExternalUserDto({
+				externalId: 'externalUserId',
+				firstName: 'firstName',
+				lastName: 'lastName',
+				email: 'email',
+				roles: [RoleName.USER],
+				birthday,
+			});
+			const userRole: RoleDto = new RoleDto({
+				id: 'roleId',
+				name: RoleName.USER,
+			});
+			const hash = 'hash';
+
+			roleService.findByNames.mockResolvedValue([userRole]);
+			userService.save.mockResolvedValue(savedUser);
+			jest.spyOn(CryptoJS, 'SHA256').mockReturnValue({
+				toString: jest.fn().mockReturnValue(hash),
+				words: [],
+				sigBytes: 0,
+				concat: jest.fn(),
+				clamp: jest.fn(),
+				clone: jest.fn(),
+			});
+
+			return {
+				existingUser,
+				savedUser,
+				externalUser,
+				userRole,
+				schoolId,
+				systemId,
+				hash,
+			};
+		};
+
+		describe('when the user does not exist yet', () => {
+			it('should call the user service to save the user', async () => {
+				const { externalUser, schoolId, savedUser, systemId } = setupUser();
+
+				userService.findByExternalId.mockResolvedValue(null);
+
+				await service.provisionExternalUser(externalUser, systemId, schoolId);
+
+				expect(userService.save).toHaveBeenCalledWith(new UserDO({ ...savedUser, id: undefined }));
+			});
+
+			it('should return the saved user', async () => {
+				const { externalUser, schoolId, savedUser, systemId } = setupUser();
+
+				userService.findByExternalId.mockResolvedValue(null);
+
+				const result: UserDO = await service.provisionExternalUser(externalUser, systemId, schoolId);
+
+				expect(result).toEqual(savedUser);
+			});
+
+			it('should create a new account', async () => {
+				const { externalUser, schoolId, systemId, hash } = setupUser();
+				const account: AccountSaveDto = new AccountSaveDto({
+					userId: 'userId',
+					username: hash,
+					systemId,
+					activated: true,
+				});
+
+				userService.findByExternalId.mockResolvedValue(null);
+
+				await service.provisionExternalUser(externalUser, systemId, schoolId);
+
+				expect(accountService.saveWithValidation).toHaveBeenCalledWith(account);
+			});
+
+			describe('when no schoolId is provided', () => {
+				it('should throw UnprocessableEntityException', async () => {
+					const { externalUser } = setupUser();
+
+					userService.findByExternalId.mockResolvedValue(null);
+
+					const promise: Promise<UserDO> = service.provisionExternalUser(externalUser, 'systemId', undefined);
+
+					await expect(promise).rejects.toThrow(UnprocessableEntityException);
+				});
+			});
+		});
+
+		describe('when the user already exists', () => {
+			it('should call the user service to save the user', async () => {
+				const { externalUser, schoolId, existingUser, systemId } = setupUser();
+
+				userService.findByExternalId.mockResolvedValue(existingUser);
+
+				await service.provisionExternalUser(externalUser, systemId, schoolId);
+
+				expect(userService.save).toHaveBeenCalledWith(existingUser);
+			});
+
+			it('should return the updated user', async () => {
+				const { externalUser, schoolId, existingUser, savedUser, systemId } = setupUser();
+
+				userService.findByExternalId.mockResolvedValue(existingUser);
+
+				const result: UserDO = await service.provisionExternalUser(externalUser, systemId, schoolId);
+
+				expect(result).toEqual(savedUser);
+			});
+
+			it('should not create a new account', async () => {
+				const { externalUser, schoolId, systemId, existingUser } = setupUser();
+
+				userService.findByExternalId.mockResolvedValue(existingUser);
+
+				await service.provisionExternalUser(externalUser, systemId, schoolId);
+
+				expect(accountService.saveWithValidation).not.toHaveBeenCalled();
+			});
+		});
 	});
 
 	describe('filterExternalGroups', () => {
@@ -328,18 +923,6 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 
 				expect(groupService.save).not.toHaveBeenCalled();
 			});
-
-			it('should return null', async () => {
-				const { externalGroupDto, externalSchoolDto, systemId } = setup();
-
-				const result: Group | null = await service.provisionExternalGroup(
-					externalGroupDto,
-					externalSchoolDto,
-					systemId
-				);
-
-				expect(result).toBeNull();
-			});
 		});
 
 		describe('when the user cannot be found', () => {
@@ -406,7 +989,6 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 				roleService.findByNames.mockResolvedValueOnce([studentRole]);
 				userService.findByExternalId.mockResolvedValueOnce(teacher);
 				roleService.findByNames.mockResolvedValueOnce([teacherRole]);
-				groupService.save.mockImplementationOnce((group) => Promise.resolve(group));
 
 				return {
 					externalSchoolDto,
@@ -457,40 +1039,6 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 							},
 						],
 					},
-				});
-			});
-
-			it('should return the saved group', async () => {
-				const { externalGroupDto, externalSchoolDto, school, student, studentRole, teacher, teacherRole, systemId } =
-					setup();
-
-				const result: Group | null = await service.provisionExternalGroup(
-					externalGroupDto,
-					externalSchoolDto,
-					systemId
-				);
-
-				expect(result?.getProps()).toEqual({
-					id: expect.any(String),
-					name: externalGroupDto.name,
-					externalSource: {
-						externalId: externalGroupDto.externalId,
-						systemId,
-					},
-					type: externalGroupDto.type,
-					organizationId: school.id,
-					validFrom: externalGroupDto.from,
-					validUntil: externalGroupDto.until,
-					users: [
-						{
-							userId: student.id,
-							roleId: studentRole.id,
-						},
-						{
-							userId: teacher.id,
-							roleId: teacherRole.id,
-						},
-					],
 				});
 			});
 		});
@@ -735,18 +1283,6 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 
 					expect(groupService.save).not.toHaveBeenCalled();
 				});
-
-				it('should not return a group', async () => {
-					const { externalGroups, systemId, externalUserId } = setup();
-
-					const result: Group[] = await service.removeExternalGroupsAndAffiliation(
-						externalUserId,
-						externalGroups,
-						systemId
-					);
-
-					expect(result).toHaveLength(0);
-				});
 			});
 
 			describe('when group is not empty after removal of the User', () => {
@@ -788,16 +1324,14 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 					});
 					const externalGroups: ExternalGroupDto[] = [firstExternalGroup];
 
-					userService.findByExternalId.mockResolvedValueOnce(user);
-					groupService.findGroupsByUserAndGroupTypes.mockResolvedValueOnce(existingGroups);
-					groupService.save.mockResolvedValueOnce(secondExistingGroup);
+					userService.findByExternalId.mockResolvedValue(user);
+					groupService.findGroupsByUserAndGroupTypes.mockResolvedValue(existingGroups);
 
 					return {
 						externalGroups,
 						systemId,
 						externalUserId,
 						existingGroups,
-						secondExistingGroup,
 					};
 				};
 
@@ -815,18 +1349,6 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 					await service.removeExternalGroupsAndAffiliation(externalUserId, externalGroups, systemId);
 
 					expect(groupService.delete).not.toHaveBeenCalled();
-				});
-
-				it('should return the modified groups', async () => {
-					const { externalGroups, systemId, externalUserId, secondExistingGroup } = setup();
-
-					const result: Group[] = await service.removeExternalGroupsAndAffiliation(
-						externalUserId,
-						externalGroups,
-						systemId
-					);
-
-					expect(result).toEqual([secondExistingGroup]);
 				});
 			});
 		});

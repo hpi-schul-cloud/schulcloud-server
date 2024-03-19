@@ -1,6 +1,5 @@
-import { BoardModule } from '@modules/board/board.module';
-import { LessonModule } from '@modules/lesson/lesson.module';
-import { ToolModule } from '@modules/tool/tool.module';
+import { BoardModule } from '@modules/board';
+import { ToolModule } from '@modules/tool';
 import { forwardRef, Module } from '@nestjs/common';
 import {
 	CourseGroupRepo,
@@ -13,6 +12,7 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
+import { LessonModule } from '../lesson';
 import { AuthorizationModule } from './authorization.module';
 import { AuthorizationHelper, AuthorizationReferenceService, ReferenceLoader } from './domain';
 
@@ -22,7 +22,14 @@ import { AuthorizationHelper, AuthorizationReferenceService, ReferenceLoader } f
  * Avoid using this module and load the needed data in your use cases and then use the normal AuthorizationModule!
  */
 @Module({
-	imports: [AuthorizationModule, LessonModule, ToolModule, forwardRef(() => BoardModule), LoggerModule],
+	// TODO: remove forwardRef to TooModule N21-1055
+	imports: [
+		AuthorizationModule,
+		LessonModule,
+		forwardRef(() => ToolModule),
+		forwardRef(() => BoardModule),
+		LoggerModule,
+	],
 	providers: [
 		AuthorizationHelper,
 		ReferenceLoader,
