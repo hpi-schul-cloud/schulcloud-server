@@ -1,6 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { columnBoardFactory, columnFactory } from '@shared/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ColumnBoard } from './column-board.do';
 import { BoardCompositeVisitor, BoardCompositeVisitorAsync, BoardExternalReferenceType } from './types';
 
@@ -43,6 +43,16 @@ describe(ColumnBoard.name, () => {
 			columnBoard.context = { ...context };
 
 			expect(columnBoard.context).toEqual(context);
+		});
+	});
+
+	describe('set isVisible', () => {
+		it('should store isVisible', () => {
+			const columnBoard = columnBoardFactory.build();
+
+			columnBoard.isVisible = true;
+
+			expect(columnBoard.isVisible).toBe(true);
 		});
 	});
 });

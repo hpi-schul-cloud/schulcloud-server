@@ -1,6 +1,6 @@
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ServerTestModule } from '@modules/server';
 import { TestApiClient } from '@shared/testing';
 import { ConfigResponse } from '../dto';
 
@@ -53,7 +53,8 @@ describe('Server Controller (API)', () => {
 				'FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION',
 				'FEATURE_ES_COLLECTIONS_ENABLED',
 				'FEATURE_EXTENSIONS_ENABLED',
-				'FEATURE_IMSCC_COURSE_EXPORT_ENABLED',
+				'FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED',
+				'FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED',
 				'FEATURE_LERNSTORE_ENABLED',
 				'FEATURE_LESSON_SHARE',
 				'FEATURE_LOGIN_LINK_ENABLED',

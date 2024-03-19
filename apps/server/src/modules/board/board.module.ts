@@ -3,7 +3,7 @@ import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { TldrawClientModule } from '@modules/tldraw-client';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { ToolConfigModule } from '@modules/tool/tool-config.module';
-import { UserModule } from '@modules/user';
+import { UserModule } from '@modules/user/user.module';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { ContentElementFactory } from '@shared/domain/domainobject';
@@ -58,6 +58,10 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 		ContentElementService,
 		SubmissionItemService,
 		ColumnBoardCopyService,
+		/**
+		 * @deprecated - exported only deprecated learnraum module
+		 */
+		BoardNodeRepo,
 	],
 })
 export class BoardModule {}

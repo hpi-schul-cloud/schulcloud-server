@@ -76,6 +76,7 @@ describe(ColumnUc.name, () => {
 			users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 			id: board.id,
 			boardDo: board,
+			rootDo: columnBoardFactory.build(),
 		});
 		const createCardBodyParams = {
 			requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],

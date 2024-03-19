@@ -1,4 +1,5 @@
-import { ObjectId, UUID } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { UUID } from 'bson';
 import { PseudonymScope } from './pseudonym.scope';
 
 describe('PseudonymScope', () => {

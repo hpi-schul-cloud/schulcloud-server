@@ -1165,11 +1165,18 @@
 			"default": false,
 			"description": "Toggle for copy course feature."
 		},
-		"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": {
+		"FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for the IMSCC course download feature."
 		},
+		"GEOGEBRA_BASE_URL": {
+			"type": "string",
+			"format": "uri",
+			"default": "https://www.geogebra.org",
+			"pattern": ".*(?<!/)$",
+			"description": "Base URL of GeoGebra materials"
+    },
 		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -1607,6 +1614,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle that, when enabled, excludes MongoDB from the health checks."
+		},
+		"FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED": {
+			"type": "boolean",
+			"default": true,
+			"description": "Enables the synchronization of courses with linked groups during provisioning."
 		}
 	},
 	"required": []

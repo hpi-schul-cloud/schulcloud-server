@@ -1,5 +1,5 @@
 import { Account, User } from '@shared/domain/entity';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { setupEntities } from '../setup-entities';
 import { schoolEntityFactory } from './school-entity.factory';
 import { UserAndAccountParams, UserAndAccountTestFactory } from './user-and-account.test.factory';
