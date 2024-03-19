@@ -14,7 +14,7 @@ import {
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-} from '@src/modules/deletion';
+} from '@modules/deletion';
 import { LegacyLogger } from '../../../core/logger';
 import { ServerConfig } from '../../server/server.config';
 import { AccountServiceDb } from './account-db.service';

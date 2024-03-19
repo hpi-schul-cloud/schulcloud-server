@@ -10,7 +10,7 @@ import {
 	DomainOperationReportBuilder,
 	OperationType,
 	DataDeletedEvent,
-} from '@src/modules/deletion';
+} from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { LegacyLogger } from '../../../core/logger';
 import { AccountServiceDb } from './account-db.service';
