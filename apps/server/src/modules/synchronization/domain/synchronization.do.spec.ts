@@ -1,4 +1,5 @@
-import { ObjectId } from 'bson';
+import { StatusModel } from '@shared/domain/types';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Synchronization } from './synchronization.do';
 import { synchronizationFactory } from './testing';
 
@@ -36,6 +37,7 @@ describe(Synchronization.name, () => {
 					id: new ObjectId().toHexString(),
 					count: 1,
 					failureCause: '',
+					status: StatusModel.PENDING,
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				};
@@ -51,6 +53,7 @@ describe(Synchronization.name, () => {
 					id: synchronizationsDo.id,
 					count: synchronizationsDo.count,
 					failureCause: synchronizationsDo?.failureCause,
+					status: synchronizationsDo?.status,
 					createdAt: synchronizationsDo.createdAt,
 					updatedAt: synchronizationsDo.updatedAt,
 				};

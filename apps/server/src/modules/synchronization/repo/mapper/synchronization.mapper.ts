@@ -9,6 +9,7 @@ export class SynchronizationMapper {
 			updatedAt: entity.updatedAt,
 			count: entity.count,
 			failureCause: entity?.failureCause,
+			status: entity?.status,
 		});
 	}
 
@@ -19,6 +20,7 @@ export class SynchronizationMapper {
 			updatedAt: domainObject.updatedAt,
 			count: domainObject.count,
 			failureCause: domainObject.failureCause,
+			status: domainObject.status,
 		});
 	}
 }

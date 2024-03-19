@@ -1,5 +1,6 @@
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { StatusModel } from '@shared/domain/types';
 import { SynchronizationEntity } from './synchronization.entity';
 
 describe(SynchronizationEntity.name, () => {
@@ -14,6 +15,7 @@ describe(SynchronizationEntity.name, () => {
 					id: new ObjectId().toHexString(),
 					count: 1,
 					failureCause: '',
+					status: StatusModel.PENDING,
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				};
@@ -41,6 +43,7 @@ describe(SynchronizationEntity.name, () => {
 					id: entity.id,
 					count: entity.count,
 					failureCause: entity?.failureCause,
+					status: entity?.status,
 					createdAt: entity.createdAt,
 					updatedAt: entity.updatedAt,
 				};

@@ -1,10 +1,12 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { StatusModel } from '@shared/domain/types';
 
 export interface SynchronizationProps extends AuthorizableObject {
 	createdAt?: Date;
 	updatedAt?: Date;
 	count?: number;
 	failureCause?: string;
+	status?: StatusModel;
 }
 
 export class Synchronization extends DomainObject<SynchronizationProps> {
@@ -22,5 +24,9 @@ export class Synchronization extends DomainObject<SynchronizationProps> {
 
 	get failureCause(): string | undefined {
 		return this.props.failureCause;
+	}
+
+	get status(): StatusModel | undefined {
+		return this.props.status;
 	}
 }

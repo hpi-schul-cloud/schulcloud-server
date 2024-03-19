@@ -14,6 +14,7 @@ describe(SynchronizationMapper.name, () => {
 					id: entity.id,
 					count: entity.count,
 					failureCause: entity?.failureCause,
+					status: entity?.status,
 					createdAt: entity.createdAt,
 					updatedAt: entity.updatedAt,
 				});
@@ -48,6 +49,7 @@ describe(SynchronizationMapper.name, () => {
 					id: domainObject.id,
 					count: domainObject.count,
 					failureCause: domainObject?.failureCause,
+					status: domainObject?.status,
 					createdAt: domainObject.createdAt,
 					updatedAt: domainObject.updatedAt,
 				});
