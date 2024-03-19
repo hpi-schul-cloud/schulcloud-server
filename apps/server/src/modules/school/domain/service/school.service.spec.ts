@@ -560,6 +560,32 @@ describe('SchoolService', () => {
 			});
 		});
 
+		describe('when school has undefined systems', () => {
+			const setup = () => {
+				const school = schoolFactory.build({ systemIds: undefined });
+
+				schoolRepo.getSchoolById.mockResolvedValueOnce(school);
+
+				return { school };
+			};
+
+			it('should dont call systemService.getSystems', async () => {
+				const { school } = setup();
+
+				await service.getSchoolSystems(school);
+
+				expect(systemService.getSystems).not.toBeCalled();
+			});
+
+			it('should return empty array', async () => {
+				const { school } = setup();
+
+				const result = await service.getSchoolSystems(school);
+
+				expect(result).toEqual([]);
+			});
+		});
+
 		describe('when systemService.getSystems throws error', () => {
 			const setup = () => {
 				const school = schoolFactory.build({ systemIds: ['1'] });

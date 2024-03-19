@@ -9,6 +9,8 @@ export interface SystemRepo {
 	findAllForLdapLogin(): Promise<System[]>;
 
 	delete(domainObject: System): Promise<void>;
+
+	save(domainObject: System): Promise<System>;
 }
 
 export const SYSTEM_REPO = 'SYSTEM_REPO';

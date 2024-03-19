@@ -264,10 +264,38 @@ describe(SystemMikroOrmRepo.name, () => {
 				};
 			};
 
-			it('should not throw an error', async () => {
+			it('should return void', async () => {
 				const { system } = setup();
 
-				await expect(repo.delete(system)).resolves.not.toThrow();
+				const result = await repo.delete(system);
+
+				expect(result).toBeUndefined();
+			});
+		});
+	});
+
+	describe('save', () => {
+		describe('when the system is new', () => {
+			const setup = () => {
+				const system = new System({
+					id: new ObjectId().toHexString(),
+					type: SystemTypeEnum.OAUTH,
+					url: 'https://mock.de',
+					alias: 'alias',
+					displayName: 'displayName',
+					provisioningStrategy: SystemProvisioningStrategy.OIDC,
+					provisioningUrl: 'https://provisioningurl.de',
+				});
+
+				return {
+					system,
+				};
+			};
+
+			it('should throw error because mapDOToEntityProperties is not implement', async () => {
+				const { system } = setup();
+
+				await expect(repo.save(system)).rejects.toThrowError('Method `mapDOToEntityProperties` not implemented.');
 			});
 		});
 	});

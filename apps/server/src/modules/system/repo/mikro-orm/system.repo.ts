@@ -13,8 +13,8 @@ export class SystemMikroOrmRepo extends BaseDomainObjectRepo<System, SystemEntit
 		return SystemEntity;
 	}
 
-	protected mapDOToEntityProperties(_entityDO: System): EntityData<SystemEntity> {
-		throw new Error('Method not implemented.');
+	protected mapDOToEntityProperties(): EntityData<SystemEntity> {
+		throw new Error('Method `mapDOToEntityProperties` not implemented.');
 	}
 
 	public async getSystemById(id: EntityId): Promise<System | null> {
