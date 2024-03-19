@@ -6,21 +6,28 @@ import { TldrawAsset } from '../types';
 export class TldrawFilesStorageAdapterService {
 	constructor(private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService) {}
 
-	public async deleteUnusedFilesForDocument(docName: string, usedAssets: TldrawAsset[]) {
+	public async deleteUnusedFilesForDocument(docName: string, usedAssets: TldrawAsset[]): Promise<void> {
 		const fileRecords = await this.filesStorageClientAdapterService.listFilesOfParent(docName);
+		const fileRecordIdsForDeletion = this.foundAssetsForDeletion(fileRecords, usedAssets);
 
-		const deleteFilePromises = fileRecords.map((fileRecord) =>
-			this.createFileDeletionActionWhenAssetNotExists(fileRecord, usedAssets)
-		);
+		if (fileRecordIdsForDeletion.length === 0) {
+			return;
+		}
 
-		await Promise.allSettled(deleteFilePromises);
+		await this.filesStorageClientAdapterService.deleteFiles(fileRecordIdsForDeletion);
 	}
 
-	private createFileDeletionActionWhenAssetNotExists(fileRecord: FileDto, usedAssets: TldrawAsset[]) {
-		const foundAsset = usedAssets.find((asset) => this.matchAssetWithFileRecord(asset, fileRecord));
-		const promise = foundAsset ? Promise.resolve() : this.filesStorageClientAdapterService.deleteOneFile(fileRecord.id);
+	private foundAssetsForDeletion(fileRecords: FileDto[], usedAssets: TldrawAsset[]): string[] {
+		const fileRecordIdsForDeletion: string[] = [];
 
-		return promise;
+		for (const fileRecord of fileRecords) {
+			const foundAsset = usedAssets.some((asset) => this.matchAssetWithFileRecord(asset, fileRecord));
+			if (!foundAsset) {
+				fileRecordIdsForDeletion.push(fileRecord.id);
+			}
+		}
+
+		return fileRecordIdsForDeletion;
 	}
 
 	private matchAssetWithFileRecord(asset: TldrawAsset, fileRecord: FileDto) {

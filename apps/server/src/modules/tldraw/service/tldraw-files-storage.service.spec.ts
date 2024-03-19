@@ -50,22 +50,22 @@ describe('TldrawFilesStorageAdapterService', () => {
 				const listFilesOfParentSpy = jest
 					.spyOn(filesStorageClientAdapterService, 'listFilesOfParent')
 					.mockResolvedValueOnce(fileDtos);
-				const deleteOneFileSpy = jest.spyOn(filesStorageClientAdapterService, 'deleteOneFile');
+				const deleteFilesSpy = jest.spyOn(filesStorageClientAdapterService, 'deleteFiles');
 
 				return {
 					usedAssets,
 					listFilesOfParentSpy,
-					deleteOneFileSpy,
+					deleteFilesSpy,
 				};
 			};
 
-			it('should call deleteOneFile on filesStorageClientAdapterService correct number of times', async () => {
-				const { usedAssets, listFilesOfParentSpy, deleteOneFileSpy } = setup();
+			it('should call deleteFiles on filesStorageClientAdapterService', async () => {
+				const { usedAssets, listFilesOfParentSpy, deleteFilesSpy } = setup();
 
 				await tldrawFilesStorageAdapterService.deleteUnusedFilesForDocument('docname', usedAssets);
 
 				expect(listFilesOfParentSpy).toHaveBeenCalled();
-				expect(deleteOneFileSpy).toHaveBeenCalledTimes(2);
+				expect(deleteFilesSpy).toHaveBeenCalled();
 			});
 		});
 
@@ -74,21 +74,21 @@ describe('TldrawFilesStorageAdapterService', () => {
 				const listFilesOfParentSpy = jest
 					.spyOn(filesStorageClientAdapterService, 'listFilesOfParent')
 					.mockResolvedValueOnce([]);
-				const deleteOneFileSpy = jest.spyOn(filesStorageClientAdapterService, 'deleteOneFile');
+				const deleteFilesSpy = jest.spyOn(filesStorageClientAdapterService, 'deleteFiles');
 
 				return {
 					listFilesOfParentSpy,
-					deleteOneFileSpy,
+					deleteFilesSpy,
 				};
 			};
 
-			it('should not call deleteOneFile on filesStorageClientAdapterService', async () => {
-				const { listFilesOfParentSpy, deleteOneFileSpy } = setup();
+			it('should not call deleteFiles on filesStorageClientAdapterService', async () => {
+				const { listFilesOfParentSpy, deleteFilesSpy } = setup();
 
 				await tldrawFilesStorageAdapterService.deleteUnusedFilesForDocument('docname', []);
 
 				expect(listFilesOfParentSpy).toHaveBeenCalled();
-				expect(deleteOneFileSpy).not.toHaveBeenCalled();
+				expect(deleteFilesSpy).not.toHaveBeenCalled();
 			});
 		});
 	});

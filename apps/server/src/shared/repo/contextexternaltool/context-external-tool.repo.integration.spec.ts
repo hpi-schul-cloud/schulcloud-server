@@ -5,18 +5,14 @@ import { CustomParameterEntry } from '@modules/tool/common/domain';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool, ContextExternalToolProps } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/entity';
+import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { ContextExternalToolQuery } from '@modules/tool/context-external-tool/uc/dto/context-external-tool.types';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
+import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity';
 import { ExternalToolRepoMapper } from '@shared/repo/externaltool/external-tool.repo.mapper';
-import {
-	cleanupCollections,
-	contextExternalToolEntityFactory,
-	contextExternalToolFactory,
-	schoolEntityFactory,
-	schoolExternalToolEntityFactory,
-} from '@shared/testing';
+import { cleanupCollections, contextExternalToolFactory, schoolEntityFactory } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 import { ContextExternalToolRepo } from './context-external-tool.repo';
 

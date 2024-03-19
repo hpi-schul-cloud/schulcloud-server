@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import { ColumnBoard, ColumnBoardProps } from '@shared/domain/domainobject';
 import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '../../base.factory';
 
 export type IColumnBoardProperties = Readonly<ColumnBoardProps>;
@@ -23,5 +23,6 @@ export const columnBoardFactory = ColumnBoardFactory.define(ColumnBoard, ({ sequ
 			type: BoardExternalReferenceType.Course,
 			id: new ObjectId().toHexString(),
 		},
+		isVisible: true,
 	};
 });

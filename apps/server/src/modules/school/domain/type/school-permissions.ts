@@ -1,8 +1,14 @@
+import { Permission } from '@shared/domain/interface';
+
+export interface TeacherPermission {
+	[Permission.STUDENT_LIST]?: boolean;
+}
+
+export interface StudentPermission {
+	[Permission.LERNSTORE_VIEW]?: boolean;
+}
+
 export interface SchoolPermissions {
-	teacher?: {
-		STUDENT_LIST?: boolean;
-	};
-	student?: {
-		LERNSTORE_VIEW?: boolean;
-	};
+	teacher?: TeacherPermission;
+	student?: StudentPermission;
 }

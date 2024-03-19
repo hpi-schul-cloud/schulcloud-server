@@ -1,5 +1,5 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { User } from '@shared/domain/entity';
-import { ObjectId } from 'bson';
 import { AccountEntity } from '@src/modules/account/entity/account.entity';
 import { setupEntities } from '../setup-entities';
 import { schoolEntityFactory } from './school-entity.factory';

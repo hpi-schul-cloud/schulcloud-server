@@ -3,7 +3,7 @@ import { AuthorizationReferenceModule } from '@modules/authorization/authorizati
 import { CopyHelperModule } from '@modules/copy-helper';
 import { LessonModule } from '@modules/lesson';
 import { Module } from '@nestjs/common';
-import { BoardRepo, CourseRepo, DashboardModelMapper, DashboardRepo, UserRepo } from '@shared/repo';
+import { LegacyBoardRepo, CourseRepo, DashboardModelMapper, DashboardRepo, UserRepo } from '@shared/repo';
 import { CourseController } from './controller/course.controller';
 import { DashboardController } from './controller/dashboard.controller';
 import { RoomsController } from './controller/rooms.controller';
@@ -12,6 +12,7 @@ import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
 import {
 	CourseCopyUC,
 	CourseExportUc,
+	CourseImportUc,
 	CourseUc,
 	DashboardUc,
 	LessonCopyUC,
@@ -33,6 +34,7 @@ import {
 		CourseCopyUC,
 		RoomsAuthorisationService,
 		CourseExportUc,
+		CourseImportUc,
 		// FIXME Refactor UCs to use services and remove these imports
 		{
 			provide: 'DASHBOARD_REPO',
@@ -41,7 +43,7 @@ import {
 		DashboardModelMapper,
 		CourseRepo,
 		UserRepo,
-		BoardRepo,
+		LegacyBoardRepo,
 	],
 })
 export class LearnroomApiModule {}

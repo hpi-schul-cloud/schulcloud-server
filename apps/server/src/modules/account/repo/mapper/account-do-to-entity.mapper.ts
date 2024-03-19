@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Account } from '../../domain';
 import { AccountEntity } from '../../entity/account.entity';
 

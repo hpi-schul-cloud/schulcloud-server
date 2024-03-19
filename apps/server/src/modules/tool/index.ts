@@ -5,3 +5,4 @@ export * from './context-external-tool/service/context-external-tool-authorizabl
 export * from './external-tool';
 export * from './school-external-tool/entity/school-external-tool.entity';
 export * from './tool.module';
+export { default as ToolConfiguration, IToolFeatures } from './tool-config';

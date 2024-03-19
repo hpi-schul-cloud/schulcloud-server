@@ -16,7 +16,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { boardDoAuthorizableFactory } from '@shared/testing/factory/domainobject/board/board-do-authorizable.factory';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { ElementUc } from './element.uc';
@@ -138,7 +138,12 @@ describe(ElementUc.name, () => {
 				const drawingElement = drawingElementFactory.build();
 
 				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString(), boardDo: element })
+					new BoardDoAuthorizable({
+						users: [],
+						id: new ObjectId().toHexString(),
+						boardDo: element,
+						rootDo: columnBoardFactory.build(),
+					})
 				);
 
 				return { user, element, drawingElement };
@@ -237,7 +242,8 @@ describe(ElementUc.name, () => {
 			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
 				users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 				id: columnBoard.id,
-				boardDo: columnBoard,
+				boardDo: card,
+				rootDo: columnBoard,
 			});
 
 			boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);

@@ -37,26 +37,39 @@
       template: onepassword.yml.j2
     when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
 
+  - name: Admin Api ingress
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: admin-api-ingress.yml.j2
+      apply: yes
+    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
+
   - name: Admin API server ConfigMap
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: admin-api-server-configmap.yml.j2
       apply: yes
+    when: WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
 
   - name: Admin API server Secret (from 1Password)
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: admin-api-server-onepassword.yml.j2
-    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+    when:
+      - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+      - WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
 
   - name: Admin API client secret (from 1Password)
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: onepassword-admin-api-client.yml.j2
-    when: ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+    when:
+      - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+      - WITH_API_ADMIN is defined and WITH_API_ADMIN|bool
 
   - name: remove old migration Job
     kubernetes.core.k8s:

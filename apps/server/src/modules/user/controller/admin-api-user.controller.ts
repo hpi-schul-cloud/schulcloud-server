@@ -1,7 +1,7 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AdminApiUserUc } from '../uc/admin-api-user.uc';
+import { AdminApiUserUc } from '../uc';
 import { AdminApiUserCreateBodyParams } from './dto/admin-api-user-create.body.params';
 import { AdminApiUserCreateResponse } from './dto/admin-api-user-create.response.dto';
 
@@ -15,7 +15,7 @@ export class AdminApiUsersController {
 	@ApiOperation({
 		summary: 'create a user together with an account',
 	})
-	async createSchool(@Body() body: AdminApiUserCreateBodyParams): Promise<AdminApiUserCreateResponse> {
+	async createUser(@Body() body: AdminApiUserCreateBodyParams): Promise<AdminApiUserCreateResponse> {
 		const result = await this.uc.createUserAndAccount(body);
 		const mapped = new AdminApiUserCreateResponse(result);
 		return Promise.resolve(mapped);

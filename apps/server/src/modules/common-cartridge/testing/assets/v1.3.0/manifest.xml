@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<manifest identifier="m1" xmlns="http://www.imsglobal.org/xsd/imsccv1p3/imscp_v1p1" xmlns:mnf="http://ltsc.ieee.org/xsd/imsccv1p3/LOM/manifest" xmlns:res="http://ltsc.ieee.org/xsd/imsccv1p3/LOM/resource" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.imsglobal.org/xsd/imsccv1p3/imscp_v1p1 https://www.imsglobal.org/profile/cc/ccv1p3/ccv1p3_imscp_v1p2_v1p0.xsd http://ltsc.ieee.org/xsd/imsccv1p3/LOM/manifest https://www.imsglobal.org/profile/cc/ccv1p3/LOM/ccv1p3_lommanifest_v1p0.xsd http://ltsc.ieee.org/xsd/imsccv1p3/LOM/resource https://www.imsglobal.org/profile/cc/ccv1p3/LOM/ccv1p3_lomresource_v1p0.xsd">
+    <metadata>
+        <schema>IMS Common Cartridge</schema>
+        <schemaversion>1.3.0</schemaversion>
+        <mnf:lom>
+            <mnf:general>
+                <mnf:title>
+                    <mnf:string>Common Cartridge Manifest</mnf:string>
+                </mnf:title>
+            </mnf:general>
+            <mnf:rights>
+                <mnf:copyrightAndOtherRestrictions>
+                    <mnf:value>yes</mnf:value>
+                </mnf:copyrightAndOtherRestrictions>
+                <mnf:description>
+                    <mnf:string>2023 John Doe, Jane Doe</mnf:string>
+                </mnf:description>
+            </mnf:rights>
+        </mnf:lom>
+    </metadata>
+    <organizations>
+        <organization identifier="org-1" structure="rooted-hierarchy">
+            <item identifier="LearningModules">
+                <item identifier="o1" identifierref="r1">
+                    <title>Title 1</title>
+                </item>
+                <item identifier="o2" identifierref="r2">
+                    <title>Title 2</title>
+                </item>
+            </item>
+        </organization>
+    </organizations>
+    <resources>
+        <resource identifier="r1" type="webcontent" intendeduse="unspecified">
+            <file href="o1/r1.html"/>
+        </resource>
+        <resource identifier="r2" type="imswl_xmlv1p3">
+            <file href="o2/r2.xml"/>
+        </resource>
+    </resources>
+</manifest>

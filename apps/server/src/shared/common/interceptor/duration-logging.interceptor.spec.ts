@@ -1,32 +1,58 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { INestApplication } from '@nestjs/common';
-import { DurationLoggingInterceptor } from '@shared/common';
+import { Controller, Get, HttpStatus, INestApplication } from '@nestjs/common';
 import { LegacyLogger } from '@src/core/logger';
-import request from 'supertest';
-import { createTestModule } from './timeout.interceptor.spec';
+import { Test } from '@nestjs/testing';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { DurationLoggingInterceptor } from './duration-logging.interceptor';
+import { TestApiClient } from '../../testing';
+
+@Controller()
+class TestController {
+	@Get()
+	test(): { message: string } {
+		return { message: 'MyMessage' };
+	}
+}
 
 describe('DurationLoggingInterceptor', () => {
 	describe('when integrate DurationLoggingInterceptor', () => {
 		let app: INestApplication;
-		let interceptor: DurationLoggingInterceptor;
+		let logger: DeepMocked<LegacyLogger> = createMock<LegacyLogger>();
+		let testApiClient: TestApiClient;
 
-		const logger: DeepMocked<LegacyLogger> = createMock<LegacyLogger>();
+		beforeAll(async () => {
+			const moduleFixture = await Test.createTestingModule({
+				providers: [
+					{
+						provide: LegacyLogger,
+						useValue: createMock<LegacyLogger>(),
+					},
+					{
+						provide: APP_INTERCEPTOR,
+						useFactory: (legacyLogger: LegacyLogger) => new DurationLoggingInterceptor(legacyLogger),
+						inject: [LegacyLogger],
+					},
+				],
+				controllers: [TestController],
+			}).compile();
 
-		beforeEach(() => {
-			interceptor = new DurationLoggingInterceptor(logger);
+			app = moduleFixture.createNestApplication();
+			await app.init();
+
+			logger = app.get(LegacyLogger);
+			testApiClient = new TestApiClient(app, '');
 		});
 
-		afterEach(() => {});
+		afterAll(async () => {
+			await app.close();
+		});
 
 		it(`should not transform the response and produce before- and after-log`, async () => {
-			app = (await createTestModule(interceptor)).createNestApplication();
+			const response = await testApiClient.get();
 
-			await app.init();
-			await request(app.getHttpServer()).get('/').expect(200).expect('Schulcloud Server API');
-
+			expect(response.status).toBe(HttpStatus.OK);
+			expect(response.body).toEqual({ message: 'MyMessage' });
 			expect(logger.log).toBeCalledTimes(2);
-
-			await app.close();
 		});
 	});
 });

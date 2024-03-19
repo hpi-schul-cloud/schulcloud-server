@@ -1,5 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Course } from '@modules/learnroom/domain';
+import { CourseService } from '@modules/learnroom/service/course.service';
+import { courseFactory } from '@modules/learnroom/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { UserDO } from '@shared/domain/domainobject';
@@ -13,6 +16,7 @@ describe('GroupService', () => {
 	let service: GroupService;
 
 	let groupRepo: DeepMocked<GroupRepo>;
+	let courseService: DeepMocked<CourseService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -22,11 +26,16 @@ describe('GroupService', () => {
 					provide: GroupRepo,
 					useValue: createMock<GroupRepo>(),
 				},
+				{
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(GroupService);
 		groupRepo = module.get(GroupRepo);
+		courseService = module.get(CourseService);
 	});
 
 	afterAll(async () => {
@@ -42,7 +51,7 @@ describe('GroupService', () => {
 			const setup = () => {
 				const group: Group = groupFactory.build();
 
-				groupRepo.findById.mockResolvedValue(group);
+				groupRepo.findGroupById.mockResolvedValue(group);
 
 				return {
 					group,
@@ -62,7 +71,7 @@ describe('GroupService', () => {
 			const setup = () => {
 				const group: Group = groupFactory.build();
 
-				groupRepo.findById.mockResolvedValue(null);
+				groupRepo.findGroupById.mockResolvedValue(null);
 
 				return {
 					group,
@@ -84,7 +93,7 @@ describe('GroupService', () => {
 			const setup = () => {
 				const group: Group = groupFactory.build();
 
-				groupRepo.findById.mockResolvedValue(group);
+				groupRepo.findGroupById.mockResolvedValue(group);
 
 				return {
 					group,
@@ -104,7 +113,7 @@ describe('GroupService', () => {
 			const setup = () => {
 				const group: Group = groupFactory.build();
 
-				groupRepo.findById.mockResolvedValue(null);
+				groupRepo.findGroupById.mockResolvedValue(null);
 
 				return {
 					group,
@@ -290,12 +299,20 @@ describe('GroupService', () => {
 	});
 
 	describe('delete', () => {
-		describe('when saving a group', () => {
+		describe('when deleting a group', () => {
 			const setup = () => {
 				const group: Group = groupFactory.build();
+				const course: Course = courseFactory.build({
+					syncedWithGroup: group.id,
+					teacherIds: [new ObjectId().toHexString()],
+					studentIds: [new ObjectId().toHexString()],
+				});
+
+				courseService.findBySyncedGroup.mockResolvedValueOnce([course]);
 
 				return {
 					group,
+					course,
 				};
 			};
 
@@ -305,6 +322,20 @@ describe('GroupService', () => {
 				await service.delete(group);
 
 				expect(groupRepo.delete).toHaveBeenCalledWith(group);
+			});
+
+			it('should remove all sync references from courses', async () => {
+				const { group, course } = setup();
+
+				await service.delete(group);
+
+				expect(courseService.saveAll).toHaveBeenCalledWith<[Course[]]>([
+					new Course({
+						...course.getProps(),
+						syncedWithGroup: undefined,
+						studentIds: [],
+					}),
+				]);
 			});
 		});
 	});

@@ -1,17 +1,19 @@
 import { FindOptions } from '@mikro-orm/core';
-import { AutoPath } from '@mikro-orm/core/typings';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { AutoPath, EntityData, EntityName } from '@mikro-orm/core/typings';
 import { Injectable } from '@nestjs/common';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
 import { IFindOptions, SortOrder } from '@shared/domain/interface/find-options';
 import { EntityId } from '@shared/domain/types/entity-id';
+import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { School, SchoolProps, SchoolQuery, SchoolRepo } from '../../domain';
 import { SchoolEntityMapper } from './mapper/school.entity.mapper';
 import { SchoolScope } from './scope/school.scope';
 
 @Injectable()
-export class SchoolMikroOrmRepo implements SchoolRepo {
-	constructor(private readonly em: EntityManager) {}
+export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntity> implements SchoolRepo {
+	get entityName(): EntityName<SchoolEntity> {
+		return SchoolEntity;
+	}
 
 	public async getSchools(query: SchoolQuery, options?: IFindOptions<SchoolProps>): Promise<School[]> {
 		const scope = new SchoolScope();
@@ -49,6 +51,12 @@ export class SchoolMikroOrmRepo implements SchoolRepo {
 		const schools = SchoolEntityMapper.mapToDos(entities);
 
 		return schools;
+	}
+
+	protected mapDOToEntityProperties(domainObject: School): EntityData<SchoolEntity> {
+		const entityProps = SchoolEntityMapper.mapToEntityProperties(domainObject, this.em);
+
+		return entityProps;
 	}
 
 	private mapToMikroOrmOptions<P extends string = never>(

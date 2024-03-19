@@ -36,6 +36,7 @@ export class PatchMyAccountParams {
 	@IsString()
 	@SanitizeHtml()
 	@IsOptional()
+	@SanitizeHtml()
 	@ApiProperty({
 		description: 'The new first name for the current user.',
 		required: false,
@@ -46,6 +47,7 @@ export class PatchMyAccountParams {
 	@IsString()
 	@SanitizeHtml()
 	@IsOptional()
+	@SanitizeHtml()
 	@ApiProperty({
 		description: 'The new last name for the current user.',
 		required: false,

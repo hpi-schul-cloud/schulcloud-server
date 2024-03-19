@@ -81,15 +81,13 @@ describe('YMongoDb', () => {
 				await em.persistAndFlush(drawing);
 				em.clear();
 
-				const update = new Uint8Array([2, 2]);
-
-				return { drawing, update };
+				return { drawing };
 			};
 
 			it('should create new document with updates in the database', async () => {
-				const { drawing, update } = await setup();
+				const { drawing } = await setup();
 
-				await mdb.storeUpdateTransactional(drawing.docName, update);
+				await mdb.storeUpdateTransactional(drawing.docName, new Uint8Array([]));
 				const docs = await em.findAndCount(TldrawDrawing, { docName: drawing.docName });
 
 				expect(docs.length).toEqual(2);
@@ -122,9 +120,10 @@ describe('YMongoDb', () => {
 		});
 	});
 
-	describe('flushDocumentTransactional', () => {
+	describe('compressDocumentTransactional', () => {
 		const setup = async () => {
-			const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValue();
+			const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValueOnce();
+			const mergeUpdatesSpy = jest.spyOn(Yjs, 'mergeUpdates').mockReturnValueOnce(new Uint8Array([]));
 
 			const drawing1 = tldrawEntityFactory.build({ clock: 1, part: undefined });
 			const drawing2 = tldrawEntityFactory.build({ clock: 2, part: undefined });
@@ -136,6 +135,7 @@ describe('YMongoDb', () => {
 
 			return {
 				applyUpdateSpy,
+				mergeUpdatesSpy,
 				drawing1,
 			};
 		};
@@ -143,7 +143,7 @@ describe('YMongoDb', () => {
 		it('should merge multiple documents with the same name in the database into two (one main document and one with update)', async () => {
 			const { applyUpdateSpy, drawing1 } = await setup();
 
-			await mdb.flushDocumentTransactional(drawing1.docName);
+			await mdb.compressDocumentTransactional(drawing1.docName);
 			const docs = await em.findAndCount(TldrawDrawing, { docName: drawing1.docName });
 
 			expect(docs.length).toEqual(2);
@@ -173,6 +173,7 @@ describe('YMongoDb', () => {
 		describe('when getting document with well defined parts', () => {
 			const setup = async () => {
 				const applyUpdateSpy = jest.spyOn(Yjs, 'applyUpdate').mockReturnValue();
+				const mergeUpdatesSpy = jest.spyOn(Yjs, 'mergeUpdates').mockReturnValue(new Uint8Array([]));
 
 				const drawing1 = tldrawEntityFactory.build({ clock: 1, part: 1 });
 				const drawing2 = tldrawEntityFactory.build({ clock: 1, part: 2 });
@@ -183,6 +184,7 @@ describe('YMongoDb', () => {
 
 				return {
 					applyUpdateSpy,
+					mergeUpdatesSpy,
 					drawing1,
 					drawing2,
 					drawing3,
@@ -192,7 +194,7 @@ describe('YMongoDb', () => {
 			it('should return ydoc', async () => {
 				const { applyUpdateSpy } = await setup();
 
-				const doc = await mdb.getYDoc('test-name');
+				const doc = await mdb.getDocument('test-name');
 
 				expect(doc).toBeDefined();
 				applyUpdateSpy.mockRestore();
@@ -218,7 +220,7 @@ describe('YMongoDb', () => {
 			it('should not return ydoc', async () => {
 				const { applyUpdateSpy } = await setup();
 
-				const doc = await mdb.getYDoc('test-name');
+				const doc = await mdb.getDocument('test-name');
 
 				expect(doc).toBeUndefined();
 				applyUpdateSpy.mockRestore();
@@ -243,7 +245,7 @@ describe('YMongoDb', () => {
 			it('should return ydoc from the database', async () => {
 				const { applyUpdateSpy } = await setup();
 
-				const doc = await mdb.getYDoc('test-name');
+				const doc = await mdb.getDocument('test-name');
 
 				expect(doc).toBeDefined();
 				applyUpdateSpy.mockRestore();
@@ -251,11 +253,9 @@ describe('YMongoDb', () => {
 
 			describe('when single entity size is greater than MAX_DOCUMENT_SIZE', () => {
 				it('should return ydoc from the database', async () => {
-					// @ts-expect-error test-case
-					mdb.maxDocumentSize = 1;
 					const { applyUpdateSpy } = await setup();
 
-					const doc = await mdb.getYDoc('test-name');
+					const doc = await mdb.getDocument('test-name');
 
 					expect(doc).toBeDefined();
 					applyUpdateSpy.mockRestore();

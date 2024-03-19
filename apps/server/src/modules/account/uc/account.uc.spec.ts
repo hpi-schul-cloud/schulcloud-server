@@ -11,15 +11,15 @@ import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { accountFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
-import { AccountService } from '..';
 import { AccountSearchType } from '../controller/dto';
-import { Account, AccountSave } from '../domain';
-import { AccountEntity } from '../entity/account.entity';
-import { AccountEntityToDoMapper } from '../repo/mapper';
+import { AccountService } from '../services';
 import { AccountValidationService } from '../services/account.validation.service';
 import { AccountUc } from './account.uc';
 import { AccountSearchDto, UpdateAccountDto } from './dto';
 import { ResolvedAccountDto, ResolvedSearchListAccountDto } from './dto/resolved-account.dto';
+import { AccountEntity } from '../entity/account.entity';
+import { Account, AccountSave } from '../domain';
+import { AccountEntityToDoMapper } from '../repo/mapper';
 
 describe('AccountUc', () => {
 	let module: TestingModule;

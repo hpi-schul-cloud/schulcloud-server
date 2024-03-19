@@ -74,7 +74,7 @@ describe(`share token creation (api)`, () => {
 	});
 
 	beforeEach(() => {
-		Configuration.set('FEATURE_COURSE_SHARE_NEW', true);
+		Configuration.set('FEATURE_COURSE_SHARE', true);
 	});
 
 	const setup = async () => {
@@ -96,7 +96,7 @@ describe(`share token creation (api)`, () => {
 
 	describe('with the feature disabled', () => {
 		it('should return status 500', async () => {
-			Configuration.set('FEATURE_COURSE_SHARE_NEW', false);
+			Configuration.set('FEATURE_COURSE_SHARE', false);
 			const { course } = await setup();
 
 			const response = await api.post({ parentId: course.id, parentType: ShareTokenParentType.Course });

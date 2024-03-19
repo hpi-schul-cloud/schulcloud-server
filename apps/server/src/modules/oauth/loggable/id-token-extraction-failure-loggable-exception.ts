@@ -1,15 +1,23 @@
-import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
-import { OauthSsoErrorLoggableException } from './oauth-sso-error-loggable-exception';
+import { HttpStatus } from '@nestjs/common';
+import { BusinessError } from '@shared/common';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
-export class IdTokenExtractionFailureLoggableException extends OauthSsoErrorLoggableException {
+export class IdTokenExtractionFailureLoggableException extends BusinessError implements Loggable {
 	constructor(private readonly fieldName: string) {
-		super();
+		super(
+			{
+				type: 'ID_TOKEN_EXTRACTION_FAILURE',
+				title: 'Id token extraction failure',
+				defaultMessage: 'Failed to extract field',
+			},
+			HttpStatus.INTERNAL_SERVER_ERROR
+		);
 	}
 
-	override getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			type: 'SSO_JWT_PROBLEM',
-			message: 'Failed to extract field',
+			type: this.type,
+			message: this.message,
 			stack: this.stack,
 			data: {
 				fieldName: this.fieldName,

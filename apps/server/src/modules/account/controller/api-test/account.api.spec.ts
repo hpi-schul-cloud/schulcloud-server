@@ -175,6 +175,24 @@ describe('Account Controller (API)', () => {
 				await loggedInClient.patch('/me', patchMyAccountParams).expect(400);
 			});
 		});
+
+		it('should strip HTML off of firstName and lastName', async () => {
+			currentUser = mapUserToCurrentUser(teacherUser, teacherAccount);
+			const params: PatchMyAccountParams = {
+				passwordOld: defaultPassword,
+				firstName: 'Jane<script>alert("XSS")</script>',
+				lastName: '<b>Doe</b>',
+			};
+
+			await request(app.getHttpServer()) //
+				.patch(`${basePath}/me`)
+				.send(params)
+				.expect(200);
+
+			const updatedUser = await em.findOneOrFail(User, teacherUser.id);
+			expect(updatedUser.firstName).toEqual('Jane');
+			expect(updatedUser.lastName).toEqual('Doe');
+		});
 	});
 
 	describe('[GET]', () => {

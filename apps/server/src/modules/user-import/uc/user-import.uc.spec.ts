@@ -673,6 +673,45 @@ describe('[ImportUserModule]', () => {
 					});
 				});
 			});
+
+			describe('when the user does not have an account', () => {
+				const setup = () => {
+					const system = systemEntityFactory.buildWithId();
+					const schoolEntity = schoolEntityFactory.buildWithId();
+					const user = userFactory.buildWithId({
+						school: schoolEntity,
+					});
+					const school = legacySchoolDoFactory.build({
+						id: schoolEntity.id,
+						externalId: 'externalId',
+						officialSchoolNumber: 'officialSchoolNumber',
+						inUserMigration: true,
+						inMaintenanceSince: new Date(),
+						systems: [system.id],
+					});
+					const importUser = importUserFactory.buildWithId({
+						school: schoolEntity,
+						user,
+						matchedBy: MatchCreator.AUTO,
+						system,
+					});
+
+					userRepo.findById.mockResolvedValueOnce(user);
+					schoolService.getSchoolById.mockResolvedValueOnce(school);
+					importUserRepo.findImportUsers.mockResolvedValueOnce([[importUser], 1]);
+					accountService.findByUserId.mockResolvedValueOnce(null);
+
+					return { user };
+				};
+
+				it('should create it for the user', async () => {
+					const { user } = setup();
+
+					await uc.saveAllUsersMatches(user.id);
+
+					expect(accountService.save).toHaveBeenCalledWith(expect.objectContaining({ userId: user.id }));
+				});
+			});
 		});
 
 		describe('[startSchoolInUserMigration]', () => {

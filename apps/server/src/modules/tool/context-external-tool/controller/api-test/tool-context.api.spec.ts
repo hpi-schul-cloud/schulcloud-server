@@ -6,23 +6,22 @@ import { Course, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
 	accountFactory,
-	contextExternalToolEntityFactory,
 	courseFactory,
-	customParameterEntityFactory,
-	externalToolEntityFactory,
 	roleFactory,
 	schoolEntityFactory,
-	schoolExternalToolEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
-import { ObjectId } from 'bson';
 import { AccountEntity } from '@src/modules/account/entity/account.entity';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../../common/enum';
 import { ExternalToolEntity } from '../../../external-tool/entity';
+import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
+import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
+import { contextExternalToolEntityFactory } from '../../testing';
 import {
 	ContextExternalToolPostParams,
 	ContextExternalToolResponse,

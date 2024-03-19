@@ -392,42 +392,5 @@ describe('Login Controller (api)', () => {
 				expect(decodedToken).not.toHaveProperty('externalIdToken');
 			});
 		});
-
-		describe('when an error is provided', () => {
-			const setup = async () => {
-				const schoolExternalId = 'schoolExternalId';
-				const userExternalId = 'userExternalId';
-
-				const system = systemEntityFactory.withOauthConfig().buildWithId({});
-				const school = schoolEntityFactory.buildWithId({ systems: [system], externalId: schoolExternalId });
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const user = userFactory.buildWithId({ school, roles: [studentRoles], externalId: userExternalId });
-				const account = accountFactory.buildWithId({
-					userId: user.id,
-					systemId: system.id,
-				});
-
-				await em.persistAndFlush([system, school, studentRoles, user, account]);
-				em.clear();
-
-				return {
-					system,
-				};
-			};
-
-			it('should throw a InternalServerErrorException', async () => {
-				const { system } = await setup();
-
-				await request(app.getHttpServer())
-					.post(`${basePath}/oauth2`)
-					.send({
-						redirectUri: 'redirectUri',
-						error: 'sso_login_failed',
-						systemId: system.id,
-					})
-					// TODO N21-820: change this to UNAUTHORIZED when refactoring exceptions
-					.expect(HttpStatus.INTERNAL_SERVER_ERROR);
-			});
-		});
 	});
 });

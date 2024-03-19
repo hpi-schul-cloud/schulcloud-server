@@ -7,31 +7,24 @@ import { TldrawClientConfig } from '../interface';
 
 @Injectable()
 export class DrawingElementAdapterService {
-	private readonly baseUrl: string;
-
-	private readonly apiKey: string;
-
-	private readonly tldrawDocumentEndpoint: string;
-
 	constructor(
 		private logger: LegacyLogger,
 		private readonly httpService: HttpService,
 		private readonly configService: ConfigService<TldrawClientConfig, true>
 	) {
 		this.logger.setContext(DrawingElementAdapterService.name);
-
-		this.baseUrl = this.configService.get<string>('TLDRAW_ADMIN_API_CLIENT_BASE_URL');
-		this.apiKey = this.configService.get<string>('TLDRAW_ADMIN_API_CLIENT_API_KEY');
-
-		this.tldrawDocumentEndpoint = new URL('/api/v3/tldraw-document', this.baseUrl).toString();
 	}
 
 	async deleteDrawingBinData(docName: string): Promise<void> {
-		await firstValueFrom(this.httpService.delete(`${this.tldrawDocumentEndpoint}/${docName}`, this.defaultHeaders()));
+		const baseUrl = this.configService.get<string>('TLDRAW_ADMIN_API_CLIENT_BASE_URL');
+		const tldrawDocumentEndpoint = new URL('/api/v3/tldraw-document', baseUrl).toString();
+		await firstValueFrom(this.httpService.delete(`${tldrawDocumentEndpoint}/${docName}`, this.defaultHeaders()));
 	}
 
 	private apiKeyHeader() {
-		return { 'X-Api-Key': this.apiKey, Accept: 'Application/json' };
+		const apiKey = this.configService.get<string>('TLDRAW_ADMIN_API_CLIENT_API_KEY');
+
+		return { 'X-Api-Key': apiKey, Accept: 'Application/json' };
 	}
 
 	private defaultHeaders() {

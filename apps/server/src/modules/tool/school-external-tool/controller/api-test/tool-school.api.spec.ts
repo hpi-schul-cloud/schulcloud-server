@@ -10,18 +10,16 @@ import {
 	UserAndAccountTestFactory,
 	accountFactory,
 	columnBoardNodeFactory,
-	contextExternalToolEntityFactory,
-	customParameterEntityFactory,
 	externalToolElementNodeFactory,
-	externalToolEntityFactory,
 	schoolEntityFactory,
-	schoolExternalToolEntityFactory,
 	userFactory,
 } from '@shared/testing';
 import { schoolToolConfigurationStatusFactory } from '@shared/testing/factory';
 import { AccountEntity } from '@src/modules/account/entity/account.entity';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
+import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { CustomParameterScope, CustomParameterType, ExternalToolEntity } from '../../../external-tool/entity';
+import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
 import { SchoolExternalToolEntity } from '../../entity';
 import {
 	CustomParameterEntryParam,
@@ -31,6 +29,7 @@ import {
 	SchoolExternalToolSearchListResponse,
 	SchoolExternalToolSearchParams,
 } from '../dto';
+import { schoolExternalToolEntityFactory } from '../../testing/school-external-tool-entity.factory';
 
 describe('ToolSchoolController (API)', () => {
 	let app: INestApplication;

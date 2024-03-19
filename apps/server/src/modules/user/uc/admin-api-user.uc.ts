@@ -6,7 +6,7 @@ import { AccountService } from '@src/modules/account';
 import { AccountSave } from '@src/modules/account/domain';
 import { RoleService } from '@src/modules/role';
 import { nanoid } from 'nanoid';
-import { UserService } from '../service/user.service';
+import { UserService } from '../service';
 
 @Injectable()
 export class AdminApiUserUc {

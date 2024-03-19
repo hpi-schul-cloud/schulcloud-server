@@ -3,17 +3,14 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Board, Course, SchoolEntity, User } from '@shared/domain/entity';
+import { LegacyBoard, Course, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
 	accountFactory,
 	boardFactory,
-	contextExternalToolEntityFactory,
 	courseFactory,
 	customParameterFactory,
-	externalToolEntityFactory,
 	schoolEntityFactory,
-	schoolExternalToolEntityFactory,
 	TestApiClient,
 	UserAndAccountTestFactory,
 	userFactory,
@@ -27,8 +24,11 @@ import {
 	ToolContextType,
 } from '../../../common/enum';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/entity';
+import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
+import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ExternalToolEntity } from '../../entity';
+import { externalToolEntityFactory } from '../../testing';
 import {
 	ContextExternalToolConfigurationTemplateListResponse,
 	ContextExternalToolConfigurationTemplateResponse,
@@ -128,7 +128,7 @@ describe('ToolConfigurationController (API)', () => {
 				]);
 
 				const course: Course = courseFactory.buildWithId({ teachers: [teacherUser], school });
-				const board: Board = boardFactory.buildWithId({ course });
+				const board: LegacyBoard = boardFactory.buildWithId({ course });
 
 				const [globalParameter, schoolParameter, contextParameter] = customParameterFactory.buildListWithEachType();
 				const externalTool: ExternalToolEntity = externalToolEntityFactory.buildWithId({

@@ -8,6 +8,7 @@ import {
 	SubmissionItem,
 } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
+import { Permission } from '@shared/domain/interface';
 import { Action, AuthorizationContext, Rule } from '../type';
 import { AuthorizationHelper } from '../service/authorization.helper';
 
@@ -32,12 +33,20 @@ export class BoardDoRule implements Rule {
 			return false;
 		}
 
+		if (boardDoAuthorizable.rootDo.isVisible !== true && !this.isBoardEditor(userWithBoardRoles)) {
+			return false;
+		}
+
 		if (this.shouldProcessSubmissionItem(boardDoAuthorizable)) {
 			return this.hasPermissionForSubmissionItem(user, userWithBoardRoles, boardDoAuthorizable, context);
 		}
 
+		if (this.shouldProcessDrawingElementFile(boardDoAuthorizable, context)) {
+			return this.hasPermissionForDrawingElementFile(userWithBoardRoles);
+		}
+
 		if (this.shouldProcessDrawingElement(boardDoAuthorizable)) {
-			return this.hasPermissionForDrawingElement(userWithBoardRoles);
+			return this.hasPermissionForDrawingElement(userWithBoardRoles, context);
 		}
 
 		if (context.action === Action.write) {
@@ -55,16 +64,35 @@ export class BoardDoRule implements Rule {
 		return userWithBoardRoles.roles.includes(BoardRoles.READER) || userWithBoardRoles.roles.includes(BoardRoles.EDITOR);
 	}
 
+	private shouldProcessDrawingElementFile(
+		boardDoAuthorizable: BoardDoAuthorizable,
+		context: AuthorizationContext
+	): boolean {
+		const requiresFileStoragePermission =
+			context.requiredPermissions.includes(Permission.FILESTORAGE_CREATE) ||
+			context.requiredPermissions.includes(Permission.FILESTORAGE_VIEW);
+
+		return isDrawingElement(boardDoAuthorizable.boardDo) && requiresFileStoragePermission;
+	}
+
 	private shouldProcessDrawingElement(boardDoAuthorizable: BoardDoAuthorizable): boolean {
 		return isDrawingElement(boardDoAuthorizable.boardDo);
 	}
 
-	private hasPermissionForDrawingElement(userWithBoardRoles: UserWithBoardRoles): boolean {
-		// TODO
-		// for now, board Readers have also write permission for DrawingElement.
-		// This is needed because files "attached" to drawing element ask permission for the drawing element itself
-		// this will be changed in the future, when there should be a separate permission for drawing element and
-		// separate permission for files attached to drawing element (when drawing element is parent)
+	private hasPermissionForDrawingElementFile(userWithBoardRoles: UserWithBoardRoles): boolean {
+		// check if user has read permissions with no account for the context.action
+		// because everyone should be able to upload files to a drawing element
+		return this.isBoardReader(userWithBoardRoles);
+	}
+
+	private hasPermissionForDrawingElement(
+		userWithBoardRoles: UserWithBoardRoles,
+		context: AuthorizationContext
+	): boolean {
+		if (context.action === Action.write) {
+			return this.isBoardEditor(userWithBoardRoles);
+		}
+
 		return this.isBoardReader(userWithBoardRoles);
 	}
 

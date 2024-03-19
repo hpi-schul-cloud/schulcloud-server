@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import { BoardExternalReferenceType } from '@shared/domain/domainobject/board/types';
 import { ColumnBoardNode, ColumnBoardNodeProps } from '@shared/domain/entity';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '../base.factory';
 
 export const columnBoardNodeFactory = BaseFactory.define<ColumnBoardNode, ColumnBoardNodeProps>(
@@ -13,6 +13,7 @@ export const columnBoardNodeFactory = BaseFactory.define<ColumnBoardNode, Column
 				type: BoardExternalReferenceType.Course,
 				id: new ObjectId().toHexString(),
 			},
+			isVisible: true,
 		};
 	}
 );
