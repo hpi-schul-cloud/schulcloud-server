@@ -12,6 +12,7 @@ import { IdmAccount } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, cleanupCollections } from '@shared/testing';
 import { v1 } from 'uuid';
+import { EventBus } from '@nestjs/cqrs';
 import { LegacyLogger } from '../../../core/logger';
 import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
 import { AccountRepo } from '../repo/account.repo';
@@ -102,6 +103,12 @@ describe('AccountService Integration', () => {
 				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
+				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
 				},
 			],
 		}).compile();
