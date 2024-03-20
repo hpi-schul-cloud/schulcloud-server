@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { ObjectID } from 'bson';
+import { ObjectId } from 'bson';
 import { CommonCartridgeVersion } from './common-cartridge.enums';
 import {
 	buildXmlString,
@@ -33,7 +33,7 @@ describe('CommonCartridgeUtils', () => {
 	describe('createIdentifier', () => {
 		describe('when creating identifier', () => {
 			it('should return identifier with prefix', () => {
-				const identifier = new ObjectID();
+				const identifier = new ObjectId();
 
 				expect(createIdentifier(identifier)).toBe(`i${identifier.toHexString()}`);
 			});

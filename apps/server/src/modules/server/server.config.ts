@@ -19,6 +19,7 @@ import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@mo
 import { LanguageType } from '@shared/domain/interface';
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
+import { ProvisioningConfig } from '../provisioning';
 import { SchulcloudTheme } from './types/schulcloud-theme.enum';
 import { Timezone } from './types/timezone.enum';
 
@@ -51,7 +52,8 @@ export interface ServerConfig
 		SharingConfig,
 		IUserImportFeatures,
 		SchulconnexClientConfig,
-		SystemConfig {
+		SystemConfig,
+		ProvisioningConfig {
 	NODE_ENV: NodeEnvType;
 	SC_DOMAIN: string;
 	ACCESSIBILITY_REPORT_EMAIL: string;
@@ -202,6 +204,7 @@ const config: ServerConfig = {
 	SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS: Configuration.get(
 		'SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS'
 	) as number,
+	FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED: Configuration.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') as boolean,
 	...getTldrawClientConfig(),
 	...ToolConfiguration.toolFeatures,
 	...VideoConferenceConfiguration.videoConference,

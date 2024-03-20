@@ -3,23 +3,41 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { LtiToolDO, Page, Pseudonym, UserDO } from '@shared/domain/domainobject';
-import { DomainOperation, IFindOptions } from '@shared/domain/interface';
 import { v4 as uuidv4 } from 'uuid';
 import { Logger } from '@src/core/logger';
-import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
-import { DomainOperationBuilder } from '@shared/domain/builder';
-import { PseudonymSearchQuery } from '../domain';
+import { EntityId } from '@shared/domain/types';
+import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
+import { IFindOptions } from '@shared/domain/interface';
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DataDeletionDomainOperationLoggable,
+	DomainName,
+	DomainDeletionReportBuilder,
+	DomainOperationReportBuilder,
+	OperationType,
+	StatusModel,
+} from '@modules/deletion';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from '../repo';
+import { PseudonymSearchQuery } from '../domain';
 
 @Injectable()
-export class PseudonymService {
+@EventsHandler(UserDeletedEvent)
+export class PseudonymService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly pseudonymRepo: PseudonymsRepo,
 		private readonly externalToolPseudonymRepo: ExternalToolPseudonymRepo,
-		private readonly logger: Logger
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus
 	) {
 		this.logger.setContext(PseudonymService.name);
+	}
+
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	public async findByUserAndToolOrThrow(user: UserDO, tool: ExternalTool | LtiToolDO): Promise<Pseudonym> {
@@ -79,7 +97,7 @@ export class PseudonymService {
 		return pseudonym;
 	}
 
-	public async deleteByUserId(userId: string): Promise<DomainOperation> {
+	public async deleteUserData(userId: string): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Pseudonyms',
@@ -99,12 +117,12 @@ export class PseudonymService {
 
 		const numberOfDeletedPseudonyms = deletedPseudonyms.length + deletedExternalToolPseudonyms.length;
 
-		const result = DomainOperationBuilder.build(
-			DomainName.PSEUDONYMS,
-			OperationType.DELETE,
-			numberOfDeletedPseudonyms,
-			[...deletedPseudonyms, ...deletedExternalToolPseudonyms]
-		);
+		const result = DomainDeletionReportBuilder.build(DomainName.PSEUDONYMS, [
+			DomainOperationReportBuilder.build(OperationType.DELETE, numberOfDeletedPseudonyms, [
+				...deletedPseudonyms,
+				...deletedExternalToolPseudonyms,
+			]),
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(

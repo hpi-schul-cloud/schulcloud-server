@@ -1,7 +1,7 @@
 import { EntityManager, wrap } from '@mikro-orm/core';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import {
-	Course,
+	Course as CourseEntity,
 	DashboardEntity,
 	DashboardGridElementModel,
 	DashboardModelEntity,
@@ -16,15 +16,16 @@ import { LearnroomTypes } from '@shared/domain/types';
 export class DashboardModelMapper {
 	constructor(protected readonly em: EntityManager) {}
 
-	async mapReferenceToEntity(modelEntity: Course): Promise<Course> {
-		const domainEntity = await wrap(modelEntity).init();
+	async mapReferenceToEntity(modelEntity: CourseEntity): Promise<CourseEntity> {
+		const domainEntity: CourseEntity = await wrap(modelEntity).init();
+
 		return domainEntity;
 	}
 
 	async mapElementToEntity(modelEntity: DashboardGridElementModel): Promise<GridElementWithPosition> {
-		const referenceModels = await modelEntity.references.loadItems();
-		const references = await Promise.all(referenceModels.map((ref) => this.mapReferenceToEntity(ref)));
-		const result = {
+		const referenceModels: CourseEntity[] = await modelEntity.references.loadItems();
+		const references: CourseEntity[] = await Promise.all(referenceModels.map((ref) => this.mapReferenceToEntity(ref)));
+		const result: GridElementWithPosition = {
 			pos: { x: modelEntity.xPos, y: modelEntity.yPos },
 			gridElement: GridElement.FromPersistedGroup(modelEntity.id, modelEntity.title, references),
 		};
@@ -39,10 +40,10 @@ export class DashboardModelMapper {
 		return new DashboardEntity(modelEntity.id, { grid, userId: modelEntity.user.id });
 	}
 
-	mapReferenceToModel(reference: Learnroom): Course {
+	mapReferenceToModel(reference: Learnroom): CourseEntity {
 		const metadata = reference.getMetadata();
 		if (metadata.type === LearnroomTypes.Course) {
-			const course = reference as Course;
+			const course = reference as CourseEntity;
 			return course;
 		}
 		throw new InternalServerErrorException('unknown learnroom type');

@@ -1,23 +1,39 @@
 import { Injectable } from '@nestjs/common';
-import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
-import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DomainOperation } from '@shared/domain/interface';
-import { DomainOperationBuilder } from '@shared/domain/builder';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import {
+	DataDeletedEvent,
+	DataDeletionDomainOperationLoggable,
+	DeletionService,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	UserDeletedEvent,
+	StatusModel,
+} from '@modules/deletion';
 import { FileEntity } from '../entity';
 import { FilesRepo } from '../repo';
 
 @Injectable()
-export class FilesService {
-	constructor(private readonly repo: FilesRepo, private readonly logger: Logger) {
+@EventsHandler(UserDeletedEvent)
+export class FilesService implements DeletionService, IEventHandler<UserDeletedEvent> {
+	constructor(private readonly repo: FilesRepo, private readonly logger: Logger, private readonly eventBus: EventBus) {
 		this.logger.setContext(FilesService.name);
+	}
+
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	async findFilesAccessibleOrCreatedByUser(userId: EntityId): Promise<FileEntity[]> {
 		return this.repo.findByPermissionRefIdOrCreatorId(userId);
 	}
 
-	async removeUserPermissionsOrCreatorReferenceToAnyFiles(userId: EntityId): Promise<DomainOperation> {
+	async removeUserPermissionsOrCreatorReferenceToAnyFiles(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Files',
@@ -37,12 +53,9 @@ export class FilesService {
 
 		const numberOfUpdatedFiles = entities.length;
 
-		const result = DomainOperationBuilder.build(
-			DomainName.FILE,
-			OperationType.UPDATE,
-			numberOfUpdatedFiles,
-			this.getFilesId(entities)
-		);
+		const result = DomainDeletionReportBuilder.build(DomainName.FILE, [
+			DomainOperationReportBuilder.build(OperationType.UPDATE, numberOfUpdatedFiles, this.getFilesId(entities)),
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
@@ -62,7 +75,7 @@ export class FilesService {
 		return this.repo.findByOwnerUserId(userId);
 	}
 
-	async markFilesOwnedByUserForDeletion(userId: EntityId): Promise<DomainOperation> {
+	async markFilesOwnedByUserForDeletion(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Marking user files to deletion',
@@ -79,12 +92,13 @@ export class FilesService {
 
 		const numberOfMarkedForDeletionFiles = entities.length;
 
-		const result = DomainOperationBuilder.build(
-			DomainName.FILE,
-			OperationType.UPDATE,
-			numberOfMarkedForDeletionFiles,
-			this.getFilesId(entities)
-		);
+		const result = DomainDeletionReportBuilder.build(DomainName.FILE, [
+			DomainOperationReportBuilder.build(
+				OperationType.UPDATE,
+				numberOfMarkedForDeletionFiles,
+				this.getFilesId(entities)
+			),
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
@@ -96,6 +110,26 @@ export class FilesService {
 				0
 			)
 		);
+
+		return result;
+	}
+
+	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
+		const [markedFilesForDeletion, removedUserPermissionsToFiles] = await Promise.all([
+			this.markFilesOwnedByUserForDeletion(userId),
+			this.removeUserPermissionsOrCreatorReferenceToAnyFiles(userId),
+		]);
+
+		const modifiedFilesCount =
+			markedFilesForDeletion.operations[0].count + removedUserPermissionsToFiles.operations[0].count;
+		const modifiedFilesRef = [
+			...markedFilesForDeletion.operations[0].refs,
+			...removedUserPermissionsToFiles.operations[0].refs,
+		];
+
+		const result = DomainDeletionReportBuilder.build(DomainName.FILE, [
+			DomainOperationReportBuilder.build(OperationType.UPDATE, modifiedFilesCount, modifiedFilesRef),
+		]);
 
 		return result;
 	}
