@@ -409,7 +409,7 @@ export class GroupUc {
 		availableGroupsForCourseSync?: boolean
 	): Promise<Group[]> {
 		let foundGroups: Group[];
-		if (availableGroupsForCourseSync) {
+		if (availableGroupsForCourseSync && this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')) {
 			foundGroups = await this.groupService.findAvailableGroupsBySchoolId(schoolId, skip, limit);
 		} else {
 			foundGroups = await this.groupService.findGroupsBySchoolIdAndGroupTypes(
@@ -431,7 +431,7 @@ export class GroupUc {
 	): Promise<Group[]> {
 		let foundGroups: Group[];
 		const user: UserDO = await this.userService.findById(userId);
-		if (availableGroupsForCourseSync) {
+		if (availableGroupsForCourseSync && this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')) {
 			foundGroups = await this.groupService.findAvailableGroupsByUser(user, skip, limit);
 		} else {
 			foundGroups = await this.groupService.findGroupsByUserAndGroupTypes(user, skip, limit, this.ALLOWED_GROUP_TYPES);
