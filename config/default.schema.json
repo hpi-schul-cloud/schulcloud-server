@@ -1150,7 +1150,7 @@
 			"default": false,
 			"description": "Toggle for the task sharing feature."
 		},
-		"FEATURE_COLUMNBOARD_SHARE": {
+		"FEATURE_COLUMN_BOARD_SHARE": {
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for the column board sharing feature."

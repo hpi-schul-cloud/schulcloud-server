@@ -111,7 +111,7 @@ describe('ShareTokenUC', () => {
 		Configuration.set('FEATURE_COURSE_SHARE', true);
 		Configuration.set('FEATURE_LESSON_SHARE', true);
 		Configuration.set('FEATURE_TASK_SHARE', true);
-		Configuration.set('FEATURE_COLUMNBOARD_SHARE', true);
+		Configuration.set('FEATURE_COLUMN_BOARD_SHARE', true);
 	});
 
 	describe('create a sharetoken', () => {
@@ -326,7 +326,7 @@ describe('ShareTokenUC', () => {
 			};
 			it('should throw if the feature is not enabled', async () => {
 				const { user } = setup();
-				Configuration.set('FEATURE_COLUMNBOARD_SHARE', false);
+				Configuration.set('FEATURE_COLUMN_BOARD_SHARE', false);
 
 				await expect(
 					uc.createShareToken(user.id, {
@@ -660,7 +660,7 @@ describe('ShareTokenUC', () => {
 
 			it('should throw if the feature is not enabled', async () => {
 				const { user, shareToken } = setup();
-				Configuration.set('FEATURE_COLUMNBOARD_SHARE', false);
+				Configuration.set('FEATURE_COLUMN_BOARD_SHARE', false);
 
 				await expect(uc.lookupShareToken(user.id, shareToken.token)).rejects.toThrowError();
 			});
@@ -1035,7 +1035,7 @@ describe('ShareTokenUC', () => {
 			});
 			it('should throw if the FEATURE_COLUMBBOARD_SHARE is not enabled', async () => {
 				const { user, shareToken } = setup();
-				Configuration.set('FEATURE_COLUMNBOARD_SHARE', false);
+				Configuration.set('FEATURE_COLUMN_BOARD_SHARE', false);
 				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
 					InternalServerErrorException
 				);
