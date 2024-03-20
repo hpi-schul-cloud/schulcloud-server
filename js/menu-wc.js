@@ -819,13 +819,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/DeletionConsoleModule.html" data-type="entity-link" >DeletionConsoleModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-DeletionConsoleModule-3b263a0ebeb14485112045603ca67e9c7709545a1e2eaf682efb648c0a5b513d5a9c32f6e7fafcb7dff59d86f42b505ca677be692aee1198c8d9fb3157802acb"' : 'data-bs-target="#xs-injectables-links-module-DeletionConsoleModule-3b263a0ebeb14485112045603ca67e9c7709545a1e2eaf682efb648c0a5b513d5a9c32f6e7fafcb7dff59d86f42b505ca677be692aee1198c8d9fb3157802acb"' }>
+                                        'data-bs-target="#injectables-links-module-DeletionConsoleModule-fcae5422c07befda7bc1764ab2549124643d407802f03311a97861c056676d975cc3247ce333cd58e1eb282c2c541abcf77e27039e2242924a8c43c4bcef5b9c"' : 'data-bs-target="#xs-injectables-links-module-DeletionConsoleModule-fcae5422c07befda7bc1764ab2549124643d407802f03311a97861c056676d975cc3247ce333cd58e1eb282c2c541abcf77e27039e2242924a8c43c4bcef5b9c"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-DeletionConsoleModule-3b263a0ebeb14485112045603ca67e9c7709545a1e2eaf682efb648c0a5b513d5a9c32f6e7fafcb7dff59d86f42b505ca677be692aee1198c8d9fb3157802acb"' :
-                                        'id="xs-injectables-links-module-DeletionConsoleModule-3b263a0ebeb14485112045603ca67e9c7709545a1e2eaf682efb648c0a5b513d5a9c32f6e7fafcb7dff59d86f42b505ca677be692aee1198c8d9fb3157802acb"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-DeletionConsoleModule-fcae5422c07befda7bc1764ab2549124643d407802f03311a97861c056676d975cc3247ce333cd58e1eb282c2c541abcf77e27039e2242924a8c43c4bcef5b9c"' :
+                                        'id="xs-injectables-links-module-DeletionConsoleModule-fcae5422c07befda7bc1764ab2549124643d407802f03311a97861c056676d975cc3247ce333cd58e1eb282c2c541abcf77e27039e2242924a8c43c4bcef5b9c"' }>
                                         <li class="link">
                                             <a href="injectables/BatchDeletionService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BatchDeletionService</a>
                                         </li>
@@ -834,6 +834,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </li>
                                         <li class="link">
                                             <a href="injectables/DeletionClient.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >DeletionClient</a>
+                                        </li>
+                                        <li class="link">
+                                            <a href="injectables/DeletionExecutionUc.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >DeletionExecutionUc</a>
                                         </li>
                                     </ul>
                                 </li>
