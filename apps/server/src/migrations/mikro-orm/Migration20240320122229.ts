@@ -10,6 +10,7 @@ export class Migration20240320122229 extends Migration {
 		console.info(`Updated ${columBoardResponse.affectedRows} records in boardnodes`);
 	}
 
+	// eslint-disable-next-line @typescript-eslint/require-await
 	async down(): Promise<void> {
 		console.error(`boardnodes cannot be rolled-back. It must be restored from backup!`);
 	}
