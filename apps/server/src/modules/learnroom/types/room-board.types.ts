@@ -7,6 +7,7 @@ export type RoomBoardDTO = {
 	title: string;
 	elements: RoomBoardElementDTO[];
 	isArchived: boolean;
+	isSynchronized: boolean;
 };
 
 export enum RoomBoardElementTypes {

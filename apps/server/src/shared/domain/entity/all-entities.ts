@@ -9,7 +9,8 @@ import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/e
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
 import { AccountEntity } from '@src/modules/account/entity/account.entity';
-import { DeletionLogEntity, DeletionRequestEntity } from '@src/modules/deletion/entity';
+import { DeletionLogEntity } from '@src/modules/deletion/repo/entity/deletion-log.entity';
+import { DeletionRequestEntity } from '@src/modules/deletion/repo/entity/deletion-request.entity';
 import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
 import {
 	BoardNode,
@@ -30,9 +31,9 @@ import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.mod
 import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
 import { ImportUser } from './import-user.entity';
 import {
+	ColumnboardBoardElement,
 	LegacyBoard,
 	LegacyBoardElement,
-	ColumnboardBoardElement,
 	LessonBoardElement,
 	TaskBoardElement,
 } from './legacy-board';

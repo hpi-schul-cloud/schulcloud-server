@@ -176,22 +176,38 @@ describe('Account Controller (API)', () => {
 			});
 		});
 
-		it('should strip HTML off of firstName and lastName', async () => {
-			currentUser = mapUserToCurrentUser(teacherUser, teacherAccount);
-			const params: PatchMyAccountParams = {
-				passwordOld: defaultPassword,
-				firstName: 'Jane<script>alert("XSS")</script>',
-				lastName: '<b>Doe</b>',
+		describe('When patching with html inside name', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.buildWithId();
+				const teacherRoles = roleFactory.build({
+					name: RoleName.TEACHER,
+					permissions: [Permission.USER_CHANGE_OWN_NAME],
+				});
+				const teacherUser = userFactory.buildWithId({ school, roles: [teacherRoles] });
+				const teacherAccount = mapUserToAccount(teacherUser);
+
+				em.persist([school, teacherRoles, teacherUser, teacherAccount]);
+				await em.flush();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				const patchMyAccountParams: PatchMyAccountParams = {
+					passwordOld: defaultPassword,
+					firstName: 'Jane<script>alert("XSS")</script>',
+					lastName: '<b>Doe</b>',
+				};
+				return { patchMyAccountParams, loggedInClient, teacherUser };
 			};
 
-			await request(app.getHttpServer()) //
-				.patch(`${basePath}/me`)
-				.send(params)
-				.expect(200);
+			it('should strip HTML off of firstName and lastName', async () => {
+				const { teacherUser, loggedInClient, patchMyAccountParams } = await setup();
 
-			const updatedUser = await em.findOneOrFail(User, teacherUser.id);
-			expect(updatedUser.firstName).toEqual('Jane');
-			expect(updatedUser.lastName).toEqual('Doe');
+				await loggedInClient.patch('/me', patchMyAccountParams).expect(200);
+
+				const updatedUser = await em.findOneOrFail(User, teacherUser.id);
+				expect(updatedUser.firstName).toEqual('Jane');
+				expect(updatedUser.lastName).toEqual('Doe');
+			});
 		});
 	});
 
