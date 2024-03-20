@@ -30,6 +30,10 @@ spec:
             git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
             git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
         spec:
+          volumes:
+            - name: libraries-list
+              configMap:
+                name: api-h5p-library-management-configmap
           containers:
           - name: api-h5p-library-management-cronjob
             image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
@@ -40,6 +44,11 @@ spec:
                 name: api-secret
             - secretRef:
                 name: api-h5p-library-management-secret
+            volumeMounts:
+            - name: libraries-list
+              mountPath: /schulcloud-server/config/h5p-libraries.yaml
+              subPath: h5p-libraries.yaml
+              readOnly: true
             command: ['/bin/sh', '-c']
             args: ['npm run nest:start:h5p:library-management']
             resources:

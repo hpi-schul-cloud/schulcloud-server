@@ -1,1 +1,2 @@
-h5p_libraries: ['H5P.Accordion','H5P.MultiChoice']
+# Libraries can be configured with ansible (ConfigMap is mounted here)
+h5p_libraries: []
