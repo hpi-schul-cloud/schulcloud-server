@@ -28,4 +28,11 @@ export class SynchronizationRepo {
 		this.em.persist(synchronizationsEntity);
 		await this.em.flush();
 	}
+
+	async update(synchronization: Synchronization): Promise<void> {
+		const synchronizationEntity = SynchronizationMapper.mapToEntity(synchronization);
+		const referencedEntity = this.em.getReference(SynchronizationEntity, synchronizationEntity.id);
+
+		await this.em.persistAndFlush(referencedEntity);
+	}
 }

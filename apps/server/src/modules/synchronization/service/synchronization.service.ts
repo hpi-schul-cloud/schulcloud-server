@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
+import { EntityId, StatusModel } from '@shared/domain/types';
 import { ObjectId } from 'bson';
 import { Synchronization } from '../domain';
 import { SynchronizationRepo } from '../repo';
@@ -9,7 +9,10 @@ export class SynchronizationService {
 	constructor(private readonly synchronizationRepo: SynchronizationRepo) {}
 
 	async createSynchronization(): Promise<EntityId> {
-		const newSynchronization = new Synchronization({ id: new ObjectId().toHexString() });
+		const newSynchronization = new Synchronization({
+			id: new ObjectId().toHexString(),
+			status: StatusModel.REGISTERED,
+		});
 
 		await this.synchronizationRepo.create(newSynchronization);
 

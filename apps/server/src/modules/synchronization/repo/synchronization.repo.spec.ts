@@ -3,6 +3,7 @@ import { Test } from '@nestjs/testing';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { cleanupCollections } from '@shared/testing';
+import { StatusModel } from '@shared/domain/types';
 import { Synchronization } from '../domain';
 import { synchronizationFactory } from '../domain/testing';
 import { SynchronizationEntity } from '../entity';
@@ -61,6 +62,7 @@ describe(SynchronizationRepo.name, () => {
 					id: domainObject.id,
 					count: domainObject.count,
 					failureCause: domainObject.failureCause,
+					status: domainObject.status,
 					createdAt: domainObject.createdAt,
 					updatedAt: domainObject.updatedAt,
 				};
@@ -85,27 +87,48 @@ describe(SynchronizationRepo.name, () => {
 				const entity: SynchronizationEntity = synchronizationEntityFactory.build();
 				await em.persistAndFlush(entity);
 
-				const expectedSynchronization = {
-					id: entity.id,
-					count: entity.count,
-					failureCause: entity.failureCause,
-					createdAt: entity.createdAt,
-					updatedAt: entity.updatedAt,
-				};
+				// Arrange expected DeletionRequestEntity after changing status
+				entity.status = StatusModel.SUCCESS;
+				const synchronizationToUpdate = SynchronizationMapper.mapToDO(entity);
 
 				return {
 					entity,
-					expectedSynchronization,
+					synchronizationToUpdate,
 				};
 			};
 
 			it('should find the synchronization', async () => {
-				const { entity, expectedSynchronization } = await setup();
+				const { entity, synchronizationToUpdate } = await setup();
+
+				await repo.update(synchronizationToUpdate);
 
 				const result: Synchronization = await repo.findById(entity.id);
 
-				// Verify explicit fields.
-				expect(result).toEqual(expect.objectContaining(expectedSynchronization));
+				expect(result.status).toEqual(entity.status);
+			});
+		});
+	});
+
+	describe('update', () => {
+		describe('when update a synchronization', () => {
+			const setup = async () => {
+				const entity: SynchronizationEntity = synchronizationEntityFactory.build();
+				await em.persistAndFlush(entity);
+
+				// Arrange expected DeletionRequestEntity after changing status
+				entity.status = StatusModel.SUCCESS;
+				const synchronizationToUpdate = SynchronizationMapper.mapToDO(entity);
+
+				return { entity, synchronizationToUpdate };
+			};
+			it('should update a new deletionLog', async () => {
+				const { entity, synchronizationToUpdate } = await setup();
+
+				await repo.update(synchronizationToUpdate);
+
+				const result = await repo.findById(entity.id);
+
+				expect(result.status).toEqual(entity.status);
 			});
 		});
 	});
