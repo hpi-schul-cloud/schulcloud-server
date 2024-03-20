@@ -566,6 +566,9 @@ describe('AccountService', () => {
 			const result = await accountService.findByUserIdsAndSystemId(userIds, systemId);
 
 			expect(result).toEqual(expectedResult);
+		});
+	});
+
 	describe('deleteUserData', () => {
 		const setup = () => {
 			const userId = new ObjectId().toHexString();
