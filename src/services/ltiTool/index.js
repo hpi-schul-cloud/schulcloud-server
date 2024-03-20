@@ -29,10 +29,6 @@ module.exports = function () {
 	const ltiToolService = app.service('/ltiTools');
 	ltiToolService.hooks(hooks);
 
-	app.use('/ltitools', service(options));
-	const ltiToolService2 = app.service('/ltitools');
-	ltiToolService2.hooks(hooks);
-
 	app.use('/tools/:id/link', {
 		create(data, params) {
 			return app

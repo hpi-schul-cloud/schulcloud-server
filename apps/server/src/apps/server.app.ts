@@ -9,10 +9,10 @@ import { AccountUc } from '@modules/account/uc/account.uc';
 import { SystemRule } from '@modules/authorization/domain/rules';
 import { CollaborativeStorageUc } from '@modules/collaborative-storage/uc/collaborative-storage.uc';
 import { GroupService } from '@modules/group';
+import { InternalServerModule } from '@modules/internal-server';
 import { FeathersRosterService } from '@modules/pseudonym';
 import { RocketChatService } from '@modules/rocketchat';
 import { ServerModule } from '@modules/server';
-import { InternalServerModule } from '@modules/internal-server';
 import { TeamService } from '@modules/teams/service/team.service';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
@@ -108,7 +108,7 @@ async function bootstrap() {
 
 	// exposed alias mounts
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-	// rootExpress.use('/api/v1', feathersExpress);
+	rootExpress.use('/api/v1', feathersExpress);
 	rootExpress.use('/api/v3', nestExpress);
 	rootExpress.use('/internal', internalServerExpress);
 	rootExpress.use(express.static(join(__dirname, '../static-assets')));
@@ -122,8 +122,6 @@ async function bootstrap() {
 
 	// safety net for deprecated paths not beginning with version prefix
 	// TODO remove when all calls to the server are migrated
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-	rootExpress.use('/api/v1', logDeprecatedPaths, feathersExpress);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	rootExpress.use('/api', logDeprecatedPaths, feathersExpress);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
