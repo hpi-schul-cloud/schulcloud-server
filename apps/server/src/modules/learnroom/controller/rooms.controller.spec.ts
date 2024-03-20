@@ -81,6 +81,7 @@ describe('rooms controller', () => {
 					displayColor: '#FFFFFF',
 					elements: [],
 					isArchived: false,
+					isSynchronized: false,
 				} as RoomBoardDTO;
 				const ucSpy = jest.spyOn(uc, 'getBoard').mockImplementation(() => Promise.resolve(ucResult));
 
@@ -90,6 +91,7 @@ describe('rooms controller', () => {
 					displayColor: '#FFFFFF',
 					elements: [],
 					isArchived: false,
+					isSynchronized: false,
 				});
 				const mapperSpy = jest.spyOn(mapper, 'mapToResponse').mockImplementation(() => mapperResult);
 				return { currentUser, ucResult, ucSpy, mapperResult, mapperSpy };

@@ -1,9 +1,8 @@
 import { DoBaseFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DeepPartial } from 'fishery';
-import { DomainName } from '@shared/domain/types';
-import { DeletionRequest, DeletionRequestProps } from '../../deletion-request.do';
-import { DeletionStatusModel } from '../../types';
+import { DeletionRequest, DeletionRequestProps } from '../../do';
+import { DomainName, StatusModel } from '../../types';
 
 class DeletionRequestFactory extends DoBaseFactory<DeletionRequest, DeletionRequestProps> {
 	withUserIds(id: string): this {
@@ -21,7 +20,7 @@ export const deletionRequestFactory = DeletionRequestFactory.define(DeletionRequ
 		targetRefDomain: DomainName.USER,
 		deleteAfter: new Date(),
 		targetRefId: new ObjectId().toHexString(),
-		status: DeletionStatusModel.REGISTERED,
+		status: StatusModel.REGISTERED,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};
