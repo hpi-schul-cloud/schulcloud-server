@@ -6,9 +6,13 @@ import { TldrawAsset } from '../types';
 export class TldrawFilesStorageAdapterService {
 	constructor(private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService) {}
 
-	public async deleteUnusedFilesForDocument(docName: string, usedAssets: TldrawAsset[]): Promise<void> {
+	public async deleteUnusedFilesForDocument(
+		docName: string,
+		usedAssets: TldrawAsset[],
+		createdBeforeDate: Date
+	): Promise<void> {
 		const fileRecords = await this.filesStorageClientAdapterService.listFilesOfParent(docName);
-		const fileRecordIdsForDeletion = this.foundAssetsForDeletion(fileRecords, usedAssets);
+		const fileRecordIdsForDeletion = this.foundAssetsForDeletion(fileRecords, usedAssets, createdBeforeDate);
 
 		if (fileRecordIdsForDeletion.length === 0) {
 			return;
@@ -17,17 +21,23 @@ export class TldrawFilesStorageAdapterService {
 		await this.filesStorageClientAdapterService.deleteFiles(fileRecordIdsForDeletion);
 	}
 
-	private foundAssetsForDeletion(fileRecords: FileDto[], usedAssets: TldrawAsset[]): string[] {
+	private foundAssetsForDeletion(fileRecords: FileDto[], usedAssets: TldrawAsset[], createdBeforeDate: Date): string[] {
 		const fileRecordIdsForDeletion: string[] = [];
 
 		for (const fileRecord of fileRecords) {
-			const foundAsset = usedAssets.some((asset) => this.matchAssetWithFileRecord(asset, fileRecord));
-			if (!foundAsset) {
-				fileRecordIdsForDeletion.push(fileRecord.id);
+			if (this.isOlderThanRequiredDate(fileRecord, createdBeforeDate)) {
+				const foundAsset = usedAssets.some((asset) => this.matchAssetWithFileRecord(asset, fileRecord));
+				if (!foundAsset) {
+					fileRecordIdsForDeletion.push(fileRecord.id);
+				}
 			}
 		}
 
 		return fileRecordIdsForDeletion;
+	}
+
+	private isOlderThanRequiredDate(fileRecord: FileDto, createdBeforeDate: Date) {
+		return new Date(fileRecord.createdAt) < createdBeforeDate;
 	}
 
 	private matchAssetWithFileRecord(asset: TldrawAsset, fileRecord: FileDto) {

@@ -12,7 +12,7 @@ import { WsSharedDocDo } from '../domain';
 import { TldrawDrawing } from '../entities';
 import { MongoTransactionErrorLoggable } from '../loggable';
 import { YTransaction } from '../types';
-import { KeyFactory } from './key.factory';
+import { KeyFactory, Version } from './key.factory';
 import { TldrawRepo } from './tldraw.repo';
 
 @Injectable()
@@ -66,6 +66,13 @@ export class YMongodb {
 
 	public async createIndex(): Promise<void> {
 		await this.repo.ensureIndexes();
+	}
+
+	public async getAllDocumentNames(): Promise<string[]> {
+		const docs = await this.repo.readAsCursor({ version: Version.V1_SV });
+		const docNames = docs.map((doc) => doc.docName);
+
+		return docNames;
 	}
 
 	public getDocument(docName: string): Promise<WsSharedDocDo> {

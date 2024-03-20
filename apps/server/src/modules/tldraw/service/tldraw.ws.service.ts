@@ -286,9 +286,11 @@ export class TldrawWsService {
 
 			if (this.configService.get<number>('TLDRAW_ASSETS_SYNC_ENABLED')) {
 				const usedAssets = this.syncDocumentAssetsWithShapes(doc);
-				void this.filesStorageTldrawAdapterService.deleteUnusedFilesForDocument(doc.name, usedAssets).catch((err) => {
-					this.logger.warning(new FileStorageErrorLoggable(doc.name, err));
-				});
+				void this.filesStorageTldrawAdapterService
+					.deleteUnusedFilesForDocument(doc.name, usedAssets, new Date())
+					.catch((err) => {
+						this.logger.warning(new FileStorageErrorLoggable(doc.name, err));
+					});
 			}
 		} catch (err) {
 			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while finalizing document', err));

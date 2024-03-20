@@ -142,6 +142,12 @@
       namespace: "{{ NAMESPACE }}"
       template: api-delete-s3-files-cronjob.yml.j2
 
+  - name: Delete Tldraw Files CronJob
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: tldraw-delete-files-cronjob.yml.j2
+
   - name: Data deletion trigger CronJob
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
