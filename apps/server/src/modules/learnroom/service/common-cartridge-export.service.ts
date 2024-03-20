@@ -64,6 +64,11 @@ export class CommonCartridgeExportService {
 		version: CommonCartridgeVersion
 	): Promise<void> {
 		const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
+
+		if (tasks.length === 0) {
+			return;
+		}
+
 		const organization = builder.addOrganization({
 			title: '',
 			identifier: createIdentifier(),
