@@ -66,10 +66,11 @@ describe('School Controller (API)', () => {
 				const response = await loggedInClient.get(`id/123`);
 
 				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				expect(response.body.validationErrors).toEqual([
-					{ errors: ['schoolId must be a mongodb id'], field: ['schoolId'] },
-				]);
+				expect(response.body).toEqual(
+					expect.objectContaining({
+						validationErrors: [{ errors: ['schoolId must be a mongodb id'], field: ['schoolId'] }],
+					})
+				);
 			});
 		});
 
@@ -242,10 +243,11 @@ describe('School Controller (API)', () => {
 				const response = await testApiClient.get(`exists/id/123`);
 
 				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				expect(response.body.validationErrors).toEqual([
-					{ errors: ['schoolId must be a mongodb id'], field: ['schoolId'] },
-				]);
+				expect(response.body).toEqual(
+					expect.objectContaining({
+						validationErrors: [{ errors: ['schoolId must be a mongodb id'], field: ['schoolId'] }],
+					})
+				);
 			});
 		});
 
@@ -334,6 +336,123 @@ describe('School Controller (API)', () => {
 				const { expectedResponse } = await setup();
 
 				const response = await testApiClient.get('list-for-ldap-login');
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual(expectedResponse);
+			});
+		});
+	});
+
+	describe('getSchoolSystems', () => {
+		describe('when no user is logged in', () => {
+			it('should return 401', async () => {
+				const someId = new ObjectId().toHexString();
+
+				const response = await testApiClient.get(`${someId}/systems`);
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when id in params is not a mongo id', () => {
+			const setup = async () => {
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				await em.persistAndFlush([studentAccount, studentUser]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(studentAccount);
+
+				return { loggedInClient };
+			};
+
+			it('should return 400', async () => {
+				const { loggedInClient } = await setup();
+
+				const response = await loggedInClient.get(`123/systems`);
+
+				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+				expect(response.body).toEqual(
+					expect.objectContaining({
+						validationErrors: [{ errors: ['schoolId must be a mongodb id'], field: ['schoolId'] }],
+					})
+				);
+			});
+		});
+
+		describe('when requested school is not found', () => {
+			const setup = async () => {
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				await em.persistAndFlush([studentAccount, studentUser]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(studentAccount);
+
+				return { loggedInClient };
+			};
+
+			it('should return 404', async () => {
+				const { loggedInClient } = await setup();
+				const someId = new ObjectId().toHexString();
+
+				const response = await loggedInClient.get(`${someId}/systems`);
+
+				expect(response.status).toEqual(HttpStatus.NOT_FOUND);
+			});
+		});
+
+		describe('when user is not in requested school', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.build();
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				await em.persistAndFlush([school, studentAccount, studentUser]);
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(studentAccount);
+
+				return { schoolId: school.id, loggedInClient };
+			};
+
+			it('should return 403', async () => {
+				const { schoolId, loggedInClient } = await setup();
+
+				const response = await loggedInClient.get(`${schoolId}/systems`);
+
+				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when user is in requested school', () => {
+			const setup = async () => {
+				const systems = systemEntityFactory.buildList(3);
+				const school = schoolEntityFactory.build({ systems });
+				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
+
+				await em.persistAndFlush([school, adminAccount, adminUser]);
+				em.clear();
+
+				const expectedResponse = {
+					id: school.id,
+					systems: systems.map((system) => {
+						return {
+							id: system.id,
+							type: system.type,
+							alias: system.alias,
+						};
+					}),
+				};
+
+				const loggedInClient = await testApiClient.login(adminAccount);
+
+				return { schoolId: school.id, loggedInClient, expectedResponse };
+			};
+
+			it('should return school systems', async () => {
+				const { schoolId, loggedInClient, expectedResponse } = await setup();
+
+				const response = await loggedInClient.get(`${schoolId}/systems`);
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual(expectedResponse);

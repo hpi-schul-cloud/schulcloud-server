@@ -1,15 +1,16 @@
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LdapConfigEntity, OauthConfigEntity, SystemEntity } from '@shared/domain/entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SystemTypeEnum } from '@shared/domain/types';
 import { cleanupCollections, systemEntityFactory } from '@shared/testing';
-import { System, SystemProps } from '../domain';
-import { SystemDomainMapper } from './system-domain.mapper';
-import { SystemRepo } from './system.repo';
+import { SYSTEM_REPO, System, SystemProps, SystemRepo } from '../../domain';
+import { SystemEntityMapper } from './mapper/system-entity.mapper';
+import { SystemMikroOrmRepo } from './system.repo';
 
-describe(SystemRepo.name, () => {
+describe(SystemMikroOrmRepo.name, () => {
 	let module: TestingModule;
 	let repo: SystemRepo;
 	let em: EntityManager;
@@ -17,10 +18,10 @@ describe(SystemRepo.name, () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot()],
-			providers: [SystemRepo],
+			providers: [{ provide: SYSTEM_REPO, useClass: SystemMikroOrmRepo }],
 		}).compile();
 
-		repo = module.get(SystemRepo);
+		repo = module.get(SYSTEM_REPO);
 		em = module.get(EntityManager);
 	});
 
@@ -32,7 +33,7 @@ describe(SystemRepo.name, () => {
 		await cleanupCollections(em);
 	});
 
-	describe('findById', () => {
+	describe('getSystemById', () => {
 		describe('when the system exists', () => {
 			const setup = async () => {
 				const oauthConfig = new OauthConfigEntity({
@@ -79,7 +80,7 @@ describe(SystemRepo.name, () => {
 			it('should return the system', async () => {
 				const { system, oauthConfig, ldapConfig } = await setup();
 
-				const result = await repo.findById(system.id);
+				const result = await repo.getSystemById(system.id);
 
 				expect(result?.getProps()).toEqual<SystemProps>({
 					id: system.id,
@@ -115,7 +116,7 @@ describe(SystemRepo.name, () => {
 
 		describe('when the system does not exist', () => {
 			it('should return null', async () => {
-				const result = await repo.findById(new ObjectId().toHexString());
+				const result = await repo.getSystemById(new ObjectId().toHexString());
 
 				expect(result).toBeNull();
 			});
@@ -153,8 +154,7 @@ describe(SystemRepo.name, () => {
 				await em.persistAndFlush([activeLdapSystem, inActiveLdapSystem, activeLdapSystemWithOauthConfig, otherSystem]);
 				em.clear();
 
-				const activeLdapSystemProps = SystemDomainMapper.mapEntityToDomainObjectProperties(activeLdapSystem);
-				const activeLdapSystemDo = new System(activeLdapSystemProps);
+				const activeLdapSystemDo = SystemEntityMapper.mapToDo(activeLdapSystem);
 
 				const expectedSystems = [activeLdapSystemDo];
 
@@ -171,6 +171,64 @@ describe(SystemRepo.name, () => {
 		});
 	});
 
+	describe('getSystemsByIds', () => {
+		describe('when no system exists', () => {
+			it('should return empty array', async () => {
+				const result = await repo.getSystemsByIds([new ObjectId().toHexString()]);
+
+				expect(result).toEqual([]);
+			});
+		});
+
+		describe('when different systems exist', () => {
+			const setup = async () => {
+				const system1: SystemEntity = systemEntityFactory.buildWithId();
+				const system2: SystemEntity = systemEntityFactory.buildWithId();
+				const system3: SystemEntity = systemEntityFactory.buildWithId();
+
+				await em.persistAndFlush([system1, system2, system3]);
+				em.clear();
+
+				const system1Props = SystemEntityMapper.mapToDo(system1);
+				const system2Props = SystemEntityMapper.mapToDo(system2);
+				const system3Props = SystemEntityMapper.mapToDo(system3);
+
+				const expectedSystems = [system1Props, system2Props, system3Props];
+				const systemIds = expectedSystems.map((s) => s.id);
+
+				return { expectedSystems, systemIds };
+			};
+
+			it('should return the systems', async () => {
+				const { expectedSystems, systemIds } = await setup();
+
+				const result = await repo.getSystemsByIds(systemIds);
+
+				expect(result).toEqual(expectedSystems);
+			});
+		});
+
+		describe('when throwing an error', () => {
+			const setup = () => {
+				const systemIds = [new ObjectId().toHexString()];
+				const error = new Error('Connection error');
+				const spy = jest.spyOn(em, 'find');
+				spy.mockRejectedValueOnce(error);
+
+				return {
+					systemIds,
+					error,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { systemIds, error } = setup();
+
+				await expect(repo.getSystemsByIds(systemIds)).rejects.toThrow(error);
+			});
+		});
+	});
+
 	describe('delete', () => {
 		describe('when the system exists', () => {
 			const setup = async () => {
@@ -179,7 +237,7 @@ describe(SystemRepo.name, () => {
 				await em.persistAndFlush([systemEntity]);
 				em.clear();
 
-				const props: SystemProps = SystemDomainMapper.mapEntityToDomainObjectProperties(systemEntity);
+				const props: SystemProps = SystemEntityMapper.mapToDo(systemEntity);
 				const system: System = new System(props);
 
 				return {
@@ -194,20 +252,12 @@ describe(SystemRepo.name, () => {
 
 				expect(await em.findOne(SystemEntity, { id: system.id })).toBeNull();
 			});
-
-			it('should return true', async () => {
-				const { system } = await setup();
-
-				const result = await repo.delete(system);
-
-				expect(result).toEqual(true);
-			});
 		});
 
 		describe('when the system does not exists', () => {
 			const setup = () => {
 				const systemEntity: SystemEntity = systemEntityFactory.buildWithId();
-				const props: SystemProps = SystemDomainMapper.mapEntityToDomainObjectProperties(systemEntity);
+				const props: SystemProps = SystemEntityMapper.mapToDo(systemEntity);
 				const system: System = new System(props);
 
 				return {
@@ -215,12 +265,40 @@ describe(SystemRepo.name, () => {
 				};
 			};
 
-			it('should return false', async () => {
+			it('should return void', async () => {
 				const { system } = setup();
 
 				const result = await repo.delete(system);
 
-				expect(result).toEqual(false);
+				expect(result).toBeUndefined();
+			});
+		});
+	});
+
+	describe('save', () => {
+		describe('when the valid system is passed', () => {
+			const setup = () => {
+				const system = new System({
+					id: new ObjectId().toHexString(),
+					type: SystemTypeEnum.OAUTH,
+					url: 'https://mock.de',
+					alias: 'alias',
+					displayName: 'displayName',
+					provisioningStrategy: SystemProvisioningStrategy.OIDC,
+					provisioningUrl: 'https://provisioningurl.de',
+				});
+
+				return {
+					system,
+				};
+			};
+
+			it('should throw error because mapDOToEntityProperties is not implement', async () => {
+				const { system } = setup();
+
+				// @ts-expect-error Testcase
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+				await expect(repo.save(system)).rejects.toThrowError(NotImplementedException);
 			});
 		});
 	});
