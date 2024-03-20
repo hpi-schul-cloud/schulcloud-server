@@ -4,14 +4,6 @@ import { BoardElementResponse } from './board-element.response';
 
 // TODO: this and DashboardResponse should be combined
 export class SingleColumnBoardResponse {
-	constructor({ roomId, title, displayColor, elements, isArchived }: SingleColumnBoardResponse) {
-		this.roomId = roomId;
-		this.title = title;
-		this.displayColor = displayColor;
-		this.elements = elements;
-		this.isArchived = isArchived;
-	}
-
 	@ApiProperty({
 		description: 'The id of the room this board belongs to',
 		pattern: '[a-f0-9]{24}',
@@ -39,4 +31,18 @@ export class SingleColumnBoardResponse {
 		description: 'Boolean if the room this board belongs to is archived',
 	})
 	isArchived: boolean;
+
+	@ApiProperty({
+		description: 'Is the course synchronized with a group?',
+	})
+	isSynchronized: boolean;
+
+	constructor(props: SingleColumnBoardResponse) {
+		this.roomId = props.roomId;
+		this.title = props.title;
+		this.displayColor = props.displayColor;
+		this.elements = props.elements;
+		this.isArchived = props.isArchived;
+		this.isSynchronized = props.isSynchronized;
+	}
 }

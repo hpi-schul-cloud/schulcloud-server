@@ -3,11 +3,12 @@ import { ToolModule } from '@modules/tool';
 import { UserModule } from '@modules/user/user.module';
 import { forwardRef, Module } from '@nestjs/common';
 import { LegacyLogger, LoggerModule } from '@src/core/logger';
+import { CqrsModule } from '@nestjs/cqrs';
 import { ExternalToolPseudonymRepo, PseudonymsRepo } from './repo';
 import { FeathersRosterService, PseudonymService } from './service';
 
 @Module({
-	imports: [UserModule, LearnroomModule, forwardRef(() => ToolModule), LoggerModule],
+	imports: [UserModule, LearnroomModule, forwardRef(() => ToolModule), LoggerModule, CqrsModule],
 	providers: [PseudonymService, PseudonymsRepo, ExternalToolPseudonymRepo, LegacyLogger, FeathersRosterService],
 	exports: [PseudonymService, FeathersRosterService],
 })

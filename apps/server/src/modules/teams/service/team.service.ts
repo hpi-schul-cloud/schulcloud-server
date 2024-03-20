@@ -1,16 +1,36 @@
 import { Injectable } from '@nestjs/common';
-import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DomainOperationBuilder } from '@shared/domain/builder';
+import { EventsHandler, IEventHandler, EventBus } from '@nestjs/cqrs';
 import { TeamEntity } from '@shared/domain/entity';
-import { DomainOperation } from '@shared/domain/interface';
-import { DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { TeamsRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DomainName,
+	DomainDeletionReportBuilder,
+	DomainOperationReportBuilder,
+	OperationType,
+	DataDeletionDomainOperationLoggable,
+	StatusModel,
+} from '@modules/deletion';
 
 @Injectable()
-export class TeamService {
-	constructor(private readonly teamsRepo: TeamsRepo, private readonly logger: Logger) {
+@EventsHandler(UserDeletedEvent)
+export class TeamService implements DeletionService, IEventHandler<UserDeletedEvent> {
+	constructor(
+		private readonly teamsRepo: TeamsRepo,
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus
+	) {
 		this.logger.setContext(TeamService.name);
+	}
+
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	public async findUserDataFromTeams(userId: EntityId): Promise<TeamEntity[]> {
@@ -19,7 +39,7 @@ export class TeamService {
 		return teams;
 	}
 
-	public async deleteUserDataFromTeams(userId: EntityId): Promise<DomainOperation> {
+	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting user data from Teams',
@@ -38,12 +58,9 @@ export class TeamService {
 
 		const numberOfUpdatedTeams = teams.length;
 
-		const result = DomainOperationBuilder.build(
-			DomainName.TEAMS,
-			OperationType.UPDATE,
-			numberOfUpdatedTeams,
-			this.getTeamsId(teams)
-		);
+		const result = DomainDeletionReportBuilder.build(DomainName.TEAMS, [
+			DomainOperationReportBuilder.build(OperationType.UPDATE, numberOfUpdatedTeams, this.getTeamsId(teams)),
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(

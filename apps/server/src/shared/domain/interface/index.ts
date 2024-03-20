@@ -1,5 +1,4 @@
 export * from './account';
-export * from './domain-operation';
 export * from './entity';
 export * from './find-options';
 export * from './language-type.enum';

@@ -6,6 +6,6 @@ import { ClassSortBy } from '../interface';
 export class ClassSortParams extends SortingParams<ClassSortBy> {
 	@IsOptional()
 	@IsEnum(ClassSortBy)
-	@ApiPropertyOptional({ enum: ClassSortBy })
+	@ApiPropertyOptional({ enum: ClassSortBy, enumName: 'ClassSortBy' })
 	sortBy?: ClassSortBy;
 }
