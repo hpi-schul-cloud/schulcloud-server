@@ -118,7 +118,7 @@ describe('GroupRepo', () => {
 			it('should return the groups', async () => {
 				const { user, groups } = await setup();
 
-				const result: Group[] = await repo.findByUserAndGroupTypes(user, [
+				const result: Group[] = await repo.findByUserAndGroupTypes(user, undefined, undefined, [
 					GroupTypes.CLASS,
 					GroupTypes.COURSE,
 					GroupTypes.OTHER,
@@ -129,10 +129,23 @@ describe('GroupRepo', () => {
 				);
 			});
 
+			it('should return groups according to pagination', async () => {
+				const { user, groups } = await setup();
+
+				const result: Group[] = await repo.findByUserAndGroupTypes(user, 1, 1, [
+					GroupTypes.CLASS,
+					GroupTypes.COURSE,
+					GroupTypes.OTHER,
+				]);
+
+				expect(result.length).toEqual(1);
+				expect(result[0].id).toEqual(groups[1].id);
+			});
+
 			it('should return only groups of the given group types', async () => {
 				const { user } = await setup();
 
-				const result: Group[] = await repo.findByUserAndGroupTypes(user, [GroupTypes.CLASS]);
+				const result: Group[] = await repo.findByUserAndGroupTypes(user, undefined, undefined, [GroupTypes.CLASS]);
 
 				expect(result).toEqual([expect.objectContaining<Partial<Group>>({ type: GroupTypes.CLASS })]);
 			});
@@ -168,7 +181,7 @@ describe('GroupRepo', () => {
 			it('should return an empty array', async () => {
 				const { user } = await setup();
 
-				const result: Group[] = await repo.findByUserAndGroupTypes(user, [
+				const result: Group[] = await repo.findByUserAndGroupTypes(user, undefined, undefined, [
 					GroupTypes.CLASS,
 					GroupTypes.COURSE,
 					GroupTypes.OTHER,
@@ -185,11 +198,7 @@ describe('GroupRepo', () => {
 				const userEntity: User = userFactory.buildWithId();
 				const user: UserDO = userDoFactory.build({ id: userEntity.id });
 				const groupUserEntity: GroupUserEntity = { user: userEntity, role: roleFactory.buildWithId() };
-				const groupUser: GroupUser = new GroupUser({
-					userId: groupUserEntity.user.id,
-					roleId: groupUserEntity.role.id,
-				});
-				const groups: GroupEntity[] = groupEntityFactory.buildListWithId(2, {
+				const groups: GroupEntity[] = groupEntityFactory.buildListWithId(3, {
 					users: [groupUserEntity],
 				});
 				const course: CourseEntity = courseFactory.build({ syncedWithGroup: groups[0] });
@@ -201,17 +210,26 @@ describe('GroupRepo', () => {
 
 				return {
 					user,
-					groupUser,
+					groups,
 				};
 			};
 
 			it('should return the available groups', async () => {
-				const { user, groupUser } = await setup();
+				const { user } = await setup();
 
 				const result: Group[] = await repo.findAvailableByUser(user);
 
-				expect(result).toHaveLength(1);
-				expect(result.every((group) => group.users.includes(groupUser))).toEqual(true);
+				expect(result).toHaveLength(2);
+				expect(result.every((group) => group.users[0].userId === user.id)).toEqual(true);
+			});
+
+			it('should return groups according to pagination', async () => {
+				const { user, groups } = await setup();
+
+				const result: Group[] = await repo.findAvailableByUser(user, 1, 1);
+
+				expect(result.length).toEqual(1);
+				expect(result[0].id).toEqual(groups[1].id);
 			});
 		});
 
@@ -270,7 +288,7 @@ describe('GroupRepo', () => {
 			it('should return the groups', async () => {
 				const { school, groups } = await setup();
 
-				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(school.id, [
+				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(school.id, undefined, undefined, [
 					GroupTypes.CLASS,
 					GroupTypes.COURSE,
 					GroupTypes.OTHER,
@@ -282,7 +300,7 @@ describe('GroupRepo', () => {
 			it('should not return groups from another school', async () => {
 				const { school, otherSchool } = await setup();
 
-				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(school.id, [
+				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(school.id, undefined, undefined, [
 					GroupTypes.CLASS,
 					GroupTypes.COURSE,
 				]);
@@ -290,10 +308,25 @@ describe('GroupRepo', () => {
 				expect(result.map((group) => group.organizationId)).not.toContain(otherSchool.id);
 			});
 
+			it('should return groups according to pagination', async () => {
+				const { school, groups } = await setup();
+
+				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(school.id, 1, 1, [
+					GroupTypes.CLASS,
+					GroupTypes.COURSE,
+					GroupTypes.OTHER,
+				]);
+
+				expect(result.length).toEqual(1);
+				expect(result[0].id).toEqual(groups[1].id);
+			});
+
 			it('should return only groups of the given group types', async () => {
 				const { school } = await setup();
 
-				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(school.id, [GroupTypes.CLASS]);
+				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(school.id, undefined, undefined, [
+					GroupTypes.CLASS,
+				]);
 
 				expect(result).toEqual([expect.objectContaining<Partial<Group>>({ type: GroupTypes.CLASS })]);
 			});
@@ -324,7 +357,9 @@ describe('GroupRepo', () => {
 			it('should return an empty array', async () => {
 				const { school } = await setup();
 
-				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(school.id, [GroupTypes.CLASS]);
+				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(school.id, undefined, undefined, [
+					GroupTypes.CLASS,
+				]);
 
 				expect(result).toHaveLength(0);
 			});
@@ -335,7 +370,7 @@ describe('GroupRepo', () => {
 		describe('when available groups for the school exist', () => {
 			const setup = async () => {
 				const school: SchoolEntity = schoolEntityFactory.buildWithId();
-				const groups: GroupEntity[] = groupEntityFactory.buildListWithId(2, {
+				const groups: GroupEntity[] = groupEntityFactory.buildListWithId(3, {
 					type: GroupEntityTypes.CLASS,
 					organization: school,
 				});
@@ -362,8 +397,17 @@ describe('GroupRepo', () => {
 
 				const result: Group[] = await repo.findAvailableBySchoolId(school.id);
 
-				expect(result).toHaveLength(1);
+				expect(result).toHaveLength(2);
 				expect(result.every((group) => group.organizationId === school.id)).toEqual(true);
+			});
+
+			it('should return groups according to pagination', async () => {
+				const { school, groups } = await setup();
+
+				const result: Group[] = await repo.findAvailableBySchoolId(school.id, 1, 1);
+
+				expect(result.length).toEqual(1);
+				expect(result[0].id).toEqual(groups[1].id);
 			});
 		});
 
