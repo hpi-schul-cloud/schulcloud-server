@@ -1,5 +1,6 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { TypeGuard } from '@shared/common';
 import { IFindOptions } from '@shared/domain/interface/find-options';
 import { EntityId } from '@shared/domain/types/entity-id';
 import { System, SystemService } from '@src/modules/system';
@@ -61,6 +62,18 @@ export class SchoolService {
 		}
 	}
 
+	public async getSchoolSystems(school: School): Promise<System[]> {
+		const { systemIds } = school.getProps();
+
+		let schoolSystems: System[] = [];
+
+		if (TypeGuard.isArrayWithElements(systemIds)) {
+			schoolSystems = await this.systemService.getSystems(systemIds);
+		}
+
+		return schoolSystems;
+	}
+
 	public async getSchoolsForLdapLogin(): Promise<SchoolForLdapLogin[]> {
 		const ldapLoginSystems = await this.systemService.findAllForLdapLogin();
 		const ldapLoginSystemsIds = ldapLoginSystems.map((system) => system.id);
@@ -74,9 +87,7 @@ export class SchoolService {
 		return schoolsForLdapLogin;
 	}
 
-	public async updateSchool(schoolId: string, body: SchoolUpdateBody) {
-		const school = await this.getSchoolById(schoolId);
-
+	public async updateSchool(school: School, body: SchoolUpdateBody) {
 		const fullSchoolObject = SchoolFactory.buildFromPartialBody(school, body);
 
 		let updatedSchool = await this.schoolRepo.save(fullSchoolObject);
