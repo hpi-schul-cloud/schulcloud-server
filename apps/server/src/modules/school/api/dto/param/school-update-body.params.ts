@@ -1,4 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
+import { SanitizeHtml } from '@shared/controller';
 import { LanguageType, Permission } from '@shared/domain/interface';
 import { EntityId, SchoolFeature } from '@shared/domain/types';
 import { Transform, Type } from 'class-transformer';
@@ -20,6 +21,7 @@ export class SchoolLogo {
 	@ApiPropertyOptional()
 	@IsString()
 	@IsOptional()
+	@SanitizeHtml()
 	name?: string;
 }
 
@@ -51,6 +53,7 @@ export class SchoolUpdateBodyParams implements SchoolUpdateBody {
 	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional()
+	@SanitizeHtml()
 	name?: string;
 
 	@IsString()

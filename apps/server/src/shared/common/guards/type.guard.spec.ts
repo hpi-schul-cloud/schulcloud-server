@@ -68,4 +68,20 @@ describe('TypeGuard', () => {
 			});
 		});
 	});
+
+	describe('isArrayWithElements', () => {
+		describe('when passing type of value is an array with elements', () => {
+			it('should be return true', () => {
+				expect(TypeGuard.isArrayWithElements([1, 2, 3])).toBe(true);
+			});
+
+			it('should be return true', () => {
+				expect(TypeGuard.isArrayWithElements(['a', 'b', 'c'])).toBe(true);
+			});
+
+			it('should be return true', () => {
+				expect(TypeGuard.isArrayWithElements([{ a: 1 }, { b: 2 }])).toBe(true);
+			});
+		});
+	});
 });

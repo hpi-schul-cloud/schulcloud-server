@@ -1,9 +1,9 @@
 import { LdapConfigEntity, OauthConfigEntity, SystemEntity } from '@shared/domain/entity';
-import { LdapConfig, OauthConfig, SystemProps } from '../domain';
+import { LdapConfig, OauthConfig, System, SystemFactory } from '../../../domain';
 
-export class SystemDomainMapper {
-	public static mapEntityToDomainObjectProperties(entity: SystemEntity): SystemProps {
-		const mapped: SystemProps = {
+export class SystemEntityMapper {
+	public static mapToDo(entity: SystemEntity): System {
+		const system = SystemFactory.build({
 			id: entity.id,
 			url: entity.url,
 			type: entity.type,
@@ -13,9 +13,9 @@ export class SystemDomainMapper {
 			alias: entity.alias,
 			oauthConfig: entity.oauthConfig ? this.mapOauthConfigEntityToDomainObject(entity.oauthConfig) : undefined,
 			ldapConfig: entity.ldapConfig ? this.mapLdapConfigEntityToDomainObject(entity.ldapConfig) : undefined,
-		};
+		});
 
-		return mapped;
+		return system;
 	}
 
 	private static mapOauthConfigEntityToDomainObject(oauthConfig: OauthConfigEntity): OauthConfig {
