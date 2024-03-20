@@ -1,6 +1,7 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Controller, Get, HttpStatus, Param, Query } from '@nestjs/common';
+import { Controller, ForbiddenException, Get, HttpStatus, Param, Query, UnauthorizedException } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiValidationError } from '@shared/common';
 import { Page } from '@shared/domain/domainobject';
 import { ErrorResponse } from '@src/core/error/dto';
 import { GroupUc } from '../uc';
@@ -74,7 +75,9 @@ export class GroupController {
 	@Get()
 	@ApiOperation({ summary: 'Get a list of all groups.' })
 	@ApiResponse({ status: HttpStatus.OK, type: [GroupResponse] })
-	@ApiResponse({ status: '4XX', type: ErrorResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 401, type: UnauthorizedException })
+	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	public async getAllGroups(
 		@CurrentUser() currentUser: ICurrentUser,
