@@ -161,21 +161,21 @@ export class ConfigResponse {
 	@ApiProperty({
 		isArray: true,
 		enum: LanguageType,
-		enumName: 'Language',
+		enumName: 'LanguageType',
 	})
 	@IsEnum(LanguageType, { each: true })
 	I18N__AVAILABLE_LANGUAGES: LanguageType[];
 
 	@ApiProperty({
 		enum: LanguageType,
-		enumName: 'Language',
+		enumName: 'LanguageType',
 	})
 	@IsEnum(LanguageType)
 	I18N__DEFAULT_LANGUAGE: LanguageType;
 
 	@ApiProperty({
 		enum: LanguageType,
-		enumName: 'Language',
+		enumName: 'LanguageType',
 	})
 	@IsEnum(LanguageType)
 	I18N__FALLBACK_LANGUAGE: LanguageType;

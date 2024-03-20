@@ -5,7 +5,7 @@ import { IsEnum } from 'class-validator';
 export class ChangeLanguageParams {
 	@ApiProperty({
 		enum: LanguageType,
-		enumName: 'Language',
+		enumName: 'LanguageType',
 	})
 	@IsEnum(LanguageType)
 	language!: LanguageType;

@@ -90,7 +90,7 @@ export class MeResponse {
 
 	@ApiProperty({
 		enum: LanguageType,
-		enumName: 'Language',
+		enumName: 'LanguageType',
 	})
 	@IsEnum(LanguageType)
 	language?: LanguageType;
