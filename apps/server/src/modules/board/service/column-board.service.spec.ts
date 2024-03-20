@@ -257,4 +257,18 @@ describe(ColumnBoardService.name, () => {
 			expect(service.hasDrawingChild(board)).toEqual(false);
 		});
 	});
+
+	describe('hasColumnDrawingChild', () => {
+		it('should find drawing as child of column', () => {
+			const { column } = setup();
+
+			expect(service.hasColumnDrawingChild(column)).toEqual(true);
+		});
+
+		it('should not find drawing as child of column', () => {
+			const column = columnFactory.build();
+
+			expect(service.hasColumnDrawingChild(column)).toEqual(false);
+		});
+	});
 });

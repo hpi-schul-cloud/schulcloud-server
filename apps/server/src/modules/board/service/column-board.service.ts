@@ -88,12 +88,21 @@ export class ColumnBoardService {
 	}
 
 	hasDrawingChild(board: ColumnBoard): boolean {
+		let result = false;
 		for (const column of board.children) {
-			for (const card of column.children) {
-				const hasDrawingElement = card.children.some((value) => isDrawingElement(value));
-				if (hasDrawingElement) {
-					return true;
-				}
+			result = this.hasColumnDrawingChild(column);
+			if (result) {
+				break;
+			}
+		}
+		return result;
+	}
+
+	hasColumnDrawingChild(column: AnyBoardDo) {
+		for (const card of column.children) {
+			const hasDrawingElement = card.children.some((value) => isDrawingElement(value));
+			if (hasDrawingElement) {
+				return true;
 			}
 		}
 		return false;
