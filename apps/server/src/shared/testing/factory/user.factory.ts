@@ -1,6 +1,13 @@
 /* istanbul ignore file */
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Role, User, UserProperties } from '@shared/domain/entity';
+import {
+	ConsentEntity,
+	ParentConsentEntity,
+	Role,
+	User,
+	UserConsentEntity,
+	UserProperties,
+} from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { DeepPartial } from 'fishery';
 import _ from 'lodash';
@@ -8,6 +15,34 @@ import { adminPermissions, studentPermissions, teacherPermissions, userPermissio
 import { BaseFactory } from './base.factory';
 import { roleFactory } from './role.factory';
 import { schoolEntityFactory } from './school-entity.factory';
+
+const userConsentFactory = BaseFactory.define<UserConsentEntity, UserConsentEntity>(UserConsentEntity, () => {
+	return {
+		form: 'digital',
+		privacyConsent: true,
+		termsOfUseConsent: true,
+		dateOfPrivacyConsent: new Date('2017-01-01T00:06:37.148Z'),
+		dateOfTermsOfUseConsent: new Date('2017-01-01T00:06:37.148Z'),
+	};
+});
+
+const parentConsentFactory = BaseFactory.define<ParentConsentEntity, ParentConsentEntity>(ParentConsentEntity, () => {
+	return {
+		_id: new ObjectId(),
+		form: 'digital',
+		privacyConsent: true,
+		termsOfUseConsent: true,
+		dateOfPrivacyConsent: new Date('2017-01-01T00:06:37.148Z'),
+		dateOfTermsOfUseConsent: new Date('2017-01-01T00:06:37.148Z'),
+	};
+});
+
+const consentFactory = BaseFactory.define<ConsentEntity, ConsentEntity>(ConsentEntity, () => {
+	return {
+		userConsent: userConsentFactory.build(),
+		parentConsents: parentConsentFactory.buildList(1),
+	};
+});
 
 class UserFactory extends BaseFactory<User, UserProperties> {
 	withRoleByName(name: RoleName): this {
@@ -57,24 +92,6 @@ export const userFactory = UserFactory.define(User, ({ sequence }) => {
 		email: `user-${sequence}@example.com`,
 		roles: [],
 		school: schoolEntityFactory.build(),
-		consent: {
-			userConsent: {
-				form: 'digital',
-				privacyConsent: true,
-				termsOfUseConsent: true,
-				dateOfPrivacyConsent: new Date('2017-01-01T00:06:37.148Z'),
-				dateOfTermsOfUseConsent: new Date('2017-01-01T00:06:37.148Z'),
-			},
-			parentConsents: [
-				{
-					_id: new ObjectId('5ece7de4a194604c6e31f434'),
-					form: 'digital',
-					privacyConsent: true,
-					termsOfUseConsent: true,
-					dateOfPrivacyConsent: new Date('2017-01-01T00:06:37.148Z'),
-					dateOfTermsOfUseConsent: new Date('2017-01-01T00:06:37.148Z'),
-				},
-			],
-		},
+		consent: consentFactory.build(),
 	};
 });
