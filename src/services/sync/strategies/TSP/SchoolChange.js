@@ -29,7 +29,7 @@ const deleteUser = (app, user) => {
 	return Promise.all([
 		userService.remove({ _id: user._id }),
 		accountService.deleteByUserId(user._id.toString()),
-		teamService.deleteUserDataFromTeams(user._id.toString()),
+		teamService.deleteUserData(user._id.toString()),
 	]);
 };
 

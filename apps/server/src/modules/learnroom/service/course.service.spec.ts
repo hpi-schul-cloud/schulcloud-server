@@ -1,21 +1,30 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { DomainOperationBuilder } from '@shared/domain/builder';
 import { Course as CourseEntity } from '@shared/domain/entity';
-import { DomainName, OperationType } from '@shared/domain/types';
 import { CourseRepo as LegacyCourseRepo, UserRepo } from '@shared/repo';
 import { courseFactory as courseEntityFactory, groupFactory, setupEntities, userFactory } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { Group } from '@src/modules/group';
-import { Course, COURSE_REPO, CourseRepo } from '../domain';
-import { courseFactory } from '../testing';
+import { EventBus } from '@nestjs/cqrs';
+import { ObjectId } from 'bson';
+import { Group } from '@modules/group';
+import {
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	DataDeletedEvent,
+} from '@modules/deletion';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { CourseService } from './course.service';
+import { courseFactory } from '../testing';
+import { Course, COURSE_REPO, CourseRepo } from '../domain';
 
 describe('CourseService', () => {
 	let module: TestingModule;
 	let courseService: CourseService;
 
 	let userRepo: DeepMocked<UserRepo>;
+	let eventBus: DeepMocked<EventBus>;
 	let legacyCourseRepo: DeepMocked<LegacyCourseRepo>;
 	let courseRepo: DeepMocked<CourseRepo>;
 
@@ -37,6 +46,12 @@ describe('CourseService', () => {
 					useValue: createMock<Logger>(),
 				},
 				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
+				},
+				{
 					provide: COURSE_REPO,
 					useValue: createMock<CourseRepo>(),
 				},
@@ -46,6 +61,7 @@ describe('CourseService', () => {
 		courseRepo = module.get(COURSE_REPO);
 		courseService = module.get(CourseService);
 		userRepo = module.get(UserRepo);
+		eventBus = module.get(EventBus);
 	});
 
 	afterAll(async () => {
@@ -121,10 +137,8 @@ describe('CourseService', () => {
 			userRepo.findById.mockResolvedValue(user);
 			legacyCourseRepo.findAllByUserId.mockResolvedValue([allCourses, allCourses.length]);
 
-			const expectedResult = DomainOperationBuilder.build(DomainName.COURSE, OperationType.UPDATE, 3, [
-				course1.id,
-				course2.id,
-				course3.id,
+			const expectedResult = DomainDeletionReportBuilder.build(DomainName.COURSE, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 3, [course1.id, course2.id, course3.id]),
 			]);
 
 			return {
@@ -135,13 +149,13 @@ describe('CourseService', () => {
 
 		it('should call courseRepo.findAllByUserId', async () => {
 			const { user } = setup();
-			await courseService.deleteUserDataFromCourse(user.id);
+			await courseService.deleteUserData(user.id);
 			expect(legacyCourseRepo.findAllByUserId).toBeCalledWith(user.id);
 		});
 
 		it('should update courses without deleted user', async () => {
 			const { expectedResult, user } = setup();
-			const result = await courseService.deleteUserDataFromCourse(user.id);
+			const result = await courseService.deleteUserData(user.id);
 			expect(result).toEqual(expectedResult);
 		});
 	});
@@ -227,6 +241,50 @@ describe('CourseService', () => {
 			const result: Course[] = await courseService.findBySyncedGroup(group);
 
 			expect(result).toEqual([course]);
+		});
+	});
+
+	describe('handle', () => {
+		const setup = () => {
+			const targetRefId = new ObjectId().toHexString();
+			const targetRefDomain = DomainName.FILERECORDS;
+			const deletionRequest = deletionRequestFactory.build({ targetRefId, targetRefDomain });
+			const deletionRequestId = deletionRequest.id;
+
+			const expectedData = DomainDeletionReportBuilder.build(DomainName.FILERECORDS, [
+				DomainOperationReportBuilder.build(OperationType.UPDATE, 2, [
+					new ObjectId().toHexString(),
+					new ObjectId().toHexString(),
+				]),
+			]);
+
+			return {
+				deletionRequestId,
+				expectedData,
+				targetRefId,
+			};
+		};
+
+		describe('when UserDeletedEvent is received', () => {
+			it('should call deleteUserData in courseService', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(courseService, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await courseService.handle({ deletionRequestId, targetRefId });
+
+				expect(courseService.deleteUserData).toHaveBeenCalledWith(targetRefId);
+			});
+
+			it('should call eventBus.publish with DataDeletedEvent', async () => {
+				const { deletionRequestId, expectedData, targetRefId } = setup();
+
+				jest.spyOn(courseService, 'deleteUserData').mockResolvedValueOnce(expectedData);
+
+				await courseService.handle({ deletionRequestId, targetRefId });
+
+				expect(eventBus.publish).toHaveBeenCalledWith(new DataDeletedEvent(deletionRequestId, expectedData));
+			});
 		});
 	});
 });
