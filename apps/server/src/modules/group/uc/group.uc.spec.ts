@@ -4,6 +4,9 @@ import { Action, AuthorizationContext, AuthorizationService } from '@modules/aut
 import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
 import { classFactory } from '@modules/class/domain/testing/factory/class.factory';
+import { CourseService } from '@modules/learnroom';
+import { Course } from '@modules/learnroom/domain';
+import { courseFactory } from '@modules/learnroom/testing';
 import { SchoolYearService } from '@modules/legacy-school';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
@@ -12,6 +15,7 @@ import { schoolFactory } from '@modules/school/testing';
 import { LegacySystemService, SystemDto } from '@modules/system';
 import { UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page, UserDO } from '@shared/domain/domainobject';
@@ -28,6 +32,7 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
+import { ProvisioningConfig } from '../../provisioning';
 import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupTypes } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
@@ -48,6 +53,8 @@ describe('GroupUc', () => {
 	let schoolService: DeepMocked<SchoolService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
+	let courseService: DeepMocked<CourseService>;
+	let configService: DeepMocked<ConfigService<ProvisioningConfig, true>>;
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let logger: DeepMocked<Logger>;
 
@@ -88,6 +95,14 @@ describe('GroupUc', () => {
 					useValue: createMock<SchoolYearService>(),
 				},
 				{
+					provide: CourseService,
+					useValue: createMock<CourseService>(),
+				},
+				{
+					provide: ConfigService,
+					useValue: createMock<ConfigService>(),
+				},
+				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
@@ -103,6 +118,8 @@ describe('GroupUc', () => {
 		schoolService = module.get(SchoolService);
 		authorizationService = module.get(AuthorizationService);
 		schoolYearService = module.get(SchoolYearService);
+		courseService = module.get(CourseService);
+		configService = module.get(ConfigService);
 		logger = module.get(Logger);
 
 		await setupEntities();
@@ -207,6 +224,7 @@ describe('GroupUc', () => {
 						{ userId: studentUser.id, roleId: studentUser.roles[0].id },
 					],
 				});
+				const synchronizedCourse: Course = courseFactory.build({ syncedWithGroup: group.id });
 
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
@@ -252,6 +270,9 @@ describe('GroupUc', () => {
 				schoolYearService.findById.mockResolvedValueOnce(schoolYear);
 				schoolYearService.findById.mockResolvedValueOnce(nextSchoolYear);
 				schoolYearService.getCurrentSchoolYear.mockResolvedValue(schoolYear);
+				configService.get.mockReturnValueOnce(true);
+				courseService.findBySyncedGroup.mockResolvedValueOnce([synchronizedCourse]);
+				courseService.findBySyncedGroup.mockResolvedValueOnce([]);
 
 				return {
 					teacherUser,
@@ -264,6 +285,7 @@ describe('GroupUc', () => {
 					system,
 					schoolYear,
 					nextSchoolYear,
+					synchronizedCourse,
 				};
 			};
 
@@ -325,6 +347,7 @@ describe('GroupUc', () => {
 						system,
 						schoolYear,
 						nextSchoolYear,
+						synchronizedCourse,
 					} = setup();
 
 					const result: Page<ClassInfoDto> = await uc.findAllClasses(teacherUser.id, teacherUser.school.id, undefined);
@@ -370,6 +393,7 @@ describe('GroupUc', () => {
 								type: ClassRootType.GROUP,
 								teacherNames: [],
 								studentCount: 0,
+								synchronizedCourses: [{ id: synchronizedCourse.id, name: synchronizedCourse.name }],
 							},
 							{
 								id: groupWithSystem.id,
@@ -378,6 +402,7 @@ describe('GroupUc', () => {
 								externalSourceName: system.displayName,
 								teacherNames: [],
 								studentCount: 0,
+								synchronizedCourses: [],
 							},
 						],
 						total: 5,
@@ -398,7 +423,16 @@ describe('GroupUc', () => {
 
 			describe('when sorting by external source name in descending order', () => {
 				it('should return all classes sorted by external source name in descending order', async () => {
-					const { teacherUser, clazz, classWithoutSchoolYear, group, groupWithSystem, system, schoolYear } = setup();
+					const {
+						teacherUser,
+						clazz,
+						classWithoutSchoolYear,
+						group,
+						groupWithSystem,
+						system,
+						schoolYear,
+						synchronizedCourse,
+					} = setup();
 
 					const result: Page<ClassInfoDto> = await uc.findAllClasses(
 						teacherUser.id,
@@ -441,6 +475,7 @@ describe('GroupUc', () => {
 								externalSourceName: system.displayName,
 								teacherNames: [],
 								studentCount: 0,
+								synchronizedCourses: [],
 							},
 							{
 								id: group.id,
@@ -448,6 +483,7 @@ describe('GroupUc', () => {
 								type: ClassRootType.GROUP,
 								teacherNames: [],
 								studentCount: 0,
+								synchronizedCourses: [{ id: synchronizedCourse.id, name: synchronizedCourse.name }],
 							},
 						],
 						total: 4,
@@ -457,7 +493,7 @@ describe('GroupUc', () => {
 
 			describe('when using pagination', () => {
 				it('should return the selected page', async () => {
-					const { teacherUser, group } = setup();
+					const { teacherUser, group, synchronizedCourse } = setup();
 
 					const result: Page<ClassInfoDto> = await uc.findAllClasses(
 						teacherUser.id,
@@ -478,6 +514,7 @@ describe('GroupUc', () => {
 								type: ClassRootType.GROUP,
 								teacherNames: [],
 								studentCount: 0,
+								synchronizedCourses: [{ id: synchronizedCourse.id, name: synchronizedCourse.name }],
 							},
 						],
 						total: 4,
@@ -657,6 +694,9 @@ describe('GroupUc', () => {
 					throw new Error();
 				});
 				schoolYearService.findById.mockResolvedValue(schoolYear);
+				configService.get.mockReturnValueOnce(true);
+				courseService.findBySyncedGroup.mockResolvedValueOnce([]);
+				courseService.findBySyncedGroup.mockResolvedValueOnce([]);
 
 				return {
 					adminUser,
@@ -720,6 +760,7 @@ describe('GroupUc', () => {
 								type: ClassRootType.GROUP,
 								teacherNames: [],
 								studentCount: 0,
+								synchronizedCourses: [],
 							},
 							{
 								id: groupWithSystem.id,
@@ -728,6 +769,7 @@ describe('GroupUc', () => {
 								externalSourceName: system.displayName,
 								teacherNames: [],
 								studentCount: 0,
+								synchronizedCourses: [],
 							},
 						],
 						total: 3,
@@ -780,6 +822,7 @@ describe('GroupUc', () => {
 								externalSourceName: system.displayName,
 								teacherNames: [],
 								studentCount: 0,
+								synchronizedCourses: [],
 							},
 							{
 								id: group.id,
@@ -787,6 +830,7 @@ describe('GroupUc', () => {
 								type: ClassRootType.GROUP,
 								teacherNames: [],
 								studentCount: 0,
+								synchronizedCourses: [],
 							},
 						],
 						total: 3,
@@ -817,6 +861,7 @@ describe('GroupUc', () => {
 								type: ClassRootType.GROUP,
 								teacherNames: [],
 								studentCount: 0,
+								synchronizedCourses: [],
 							},
 						],
 						total: 3,
@@ -926,6 +971,8 @@ describe('GroupUc', () => {
 					throw new Error();
 				});
 				schoolYearService.findById.mockResolvedValue(schoolYear);
+				configService.get.mockReturnValueOnce(true);
+				courseService.findBySyncedGroup.mockResolvedValueOnce([]);
 
 				return {
 					teacherUser,
@@ -959,6 +1006,7 @@ describe('GroupUc', () => {
 							type: ClassRootType.GROUP,
 							teacherNames: [],
 							studentCount: 0,
+							synchronizedCourses: [],
 						},
 					],
 					total: 2,

@@ -1,13 +1,15 @@
 import { Action, AuthorizationService } from '@modules/authorization';
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { BoardExternalReference, Column, ColumnBoard } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CourseRepo } from '@shared/repo';
 import { LegacyLogger } from '@src/core/logger';
+import { CopyStatus } from '@src/modules/copy-helper';
 import { CreateBoardBodyParams } from '../controller/dto';
 import { ColumnBoardService, ColumnService } from '../service';
 import { BoardDoAuthorizableService } from '../service/board-do-authorizable.service';
+import { ColumnBoardCopyService } from '../service/column-board-copy.service';
 import { BaseUc } from './base.uc';
 
 @Injectable()
@@ -17,6 +19,7 @@ export class BoardUc extends BaseUc {
 		protected readonly authorizationService: AuthorizationService,
 		protected readonly boardDoAuthorizableService: BoardDoAuthorizableService,
 		private readonly columnBoardService: ColumnBoardService,
+		private readonly columnBoardCopyService: ColumnBoardCopyService,
 		private readonly columnService: ColumnService,
 		private readonly logger: LegacyLogger,
 		private readonly courseRepo: CourseRepo
@@ -103,6 +106,28 @@ export class BoardUc extends BaseUc {
 		await this.checkPermission(userId, targetBoard, Action.write);
 
 		await this.columnService.move(column, targetBoard, targetPosition);
+	}
+
+	async copyBoard(userId: EntityId, boardId: EntityId): Promise<CopyStatus> {
+		this.logger.debug({ action: 'copyBoard', userId, boardId });
+
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const board = await this.columnBoardService.findById(boardId);
+		const course = await this.courseRepo.findById(board.context.id);
+
+		await this.checkPermission(userId, board, Action.read);
+		this.authorizationService.checkPermission(user, course, {
+			action: Action.write,
+			requiredPermissions: [],
+		});
+
+		const copyStatus = await this.columnBoardCopyService.copyColumnBoard({
+			userId,
+			originalColumnBoardId: boardId,
+			destinationExternalReference: board.context,
+		});
+
+		return copyStatus;
 	}
 
 	async updateVisibility(userId: EntityId, boardId: EntityId, isVisible: boolean): Promise<void> {
