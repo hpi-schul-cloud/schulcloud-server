@@ -13,12 +13,12 @@ export class RocketChatUserRepo {
 		return RocketChatUserEntity;
 	}
 
-	async findByUserId(userId: EntityId): Promise<RocketChatUser> {
-		const entity: RocketChatUserEntity = await this.em.findOneOrFail(RocketChatUserEntity, {
+	async findByUserId(userId: EntityId): Promise<RocketChatUser[]> {
+		const entities: RocketChatUserEntity[] = await this.em.find(RocketChatUserEntity, {
 			userId: new ObjectId(userId),
 		});
 
-		const mapped: RocketChatUser = RocketChatUserMapper.mapToDO(entity);
+		const mapped: RocketChatUser[] = RocketChatUserMapper.mapToDOs(entities);
 
 		return mapped;
 	}

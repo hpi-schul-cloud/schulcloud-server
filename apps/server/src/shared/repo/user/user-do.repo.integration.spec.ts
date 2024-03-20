@@ -7,13 +7,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { Page } from '@shared/domain/domainobject/page';
 import { UserDO } from '@shared/domain/domainobject/user.do';
-import { LanguageType, Role, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
-import { IFindOptions, RoleName, SortOrder } from '@shared/domain/interface';
+import { Role, SchoolEntity, SystemEntity, User } from '@shared/domain/entity';
+import { IFindOptions, LanguageType, RoleName, SortOrder } from '@shared/domain/interface';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import {
 	cleanupCollections,
 	roleFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	systemEntityFactory,
 	userDoFactory,
 	userFactory,
@@ -108,7 +108,7 @@ describe('UserRepo', () => {
 
 		beforeEach(async () => {
 			system = systemEntityFactory.buildWithId();
-			school = schoolFactory.buildWithId();
+			school = schoolEntityFactory.buildWithId();
 			school.systems.add(system);
 			user = userFactory.buildWithId({ externalId, school });
 
@@ -152,7 +152,7 @@ describe('UserRepo', () => {
 
 		beforeEach(async () => {
 			system = systemEntityFactory.buildWithId();
-			school = schoolFactory.buildWithId();
+			school = schoolEntityFactory.buildWithId();
 			school.systems.add(system);
 			user = userFactory.buildWithId({ externalId, school });
 
@@ -234,7 +234,7 @@ describe('UserRepo', () => {
 					email: 'email@email.email',
 					firstName: 'firstName',
 					lastName: 'lastName',
-					school: schoolFactory.buildWithId(),
+					school: schoolEntityFactory.buildWithId(),
 					ldapDn: 'ldapDn',
 					externalId: 'externalId',
 					language: LanguageType.DE,

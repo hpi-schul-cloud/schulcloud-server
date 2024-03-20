@@ -3,7 +3,7 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { nanoid } = require('nanoid');
 const { iff, isProvider } = require('feathers-hooks-common');
-const { NotFound, BadRequest, Forbidden } = require('../../../errors');
+const { NotFound, BadRequest } = require('../../../errors');
 const { equal } = require('../../../helper/compare').ObjectId;
 const {
 	injectUserId,
@@ -184,6 +184,7 @@ const restrictToUsersCoursesLessons = async (context) => {
 		if (context.params.query.shareToken) return context;
 		({ courseId, courseGroupId } = context.params.query);
 	} else {
+		// @deprecated - use nest endpoint instead to get lesson
 		const lesson = await context.app.service('lessons').get(context.id);
 		({ courseId, courseGroupId } = lesson);
 	}
@@ -201,19 +202,6 @@ const restrictToUsersCoursesLessons = async (context) => {
 	if (!(userInCourse || hasAdminAccess)) {
 		throw new NotFound(`no record found for id '${context.id || courseGroupId || courseId}'`);
 	}
-	return context;
-};
-
-const restrictToUsersDraftLessons = async (context) => {
-	const user = await context.app.service('users').get(context.params.account.userId, { query: { $populate: 'roles' } });
-	const userIsStudent = user.roles.filter((u) => u.name === 'student').length > 0;
-	const lesson = await context.app.service('lessons').get(context.id);
-	const isDraft = lesson.hidden;
-
-	if (isDraft && userIsStudent) {
-		throw new Forbidden(`You don't have permission.`);
-	}
-
 	return context;
 };
 
@@ -245,16 +233,18 @@ const populateWhitelist = {
 exports.before = () => {
 	return {
 		all: [authenticate('jwt'), mapUsers],
+		// @deprecated - use nest endpoint instead to get lesson
 		find: [
 			hasPermission('TOPIC_VIEW'),
 			iff(isProvider('external'), validateLessonFind),
 			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
 			iff(isProvider('external'), restrictToUsersCoursesLessons),
 		],
+		// @deprecated - use nest endpoint instead to get lesson
 		get: [
 			hasPermission('TOPIC_VIEW'),
 			iff(isProvider('external'), getRestrictPopulatesHook(populateWhitelist)),
-			iff(isProvider('external'), restrictToUsersCoursesLessons, restrictToUsersDraftLessons),
+			iff(isProvider('external'), restrictToUsersCoursesLessons),
 		],
 		create: [
 			checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_CREATE', 'TOPIC_CREATE', true),
@@ -267,7 +257,7 @@ exports.before = () => {
 			iff(isProvider('external'), preventPopulate),
 			permitGroupOperation,
 			ifNotLocal(checkCorrectCourseOrTeamId),
-			iff(isProvider('external'), restrictToUsersCoursesLessons, restrictToUsersDraftLessons),
+			iff(isProvider('external'), restrictToUsersCoursesLessons),
 			checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', false),
 		],
 		patch: [

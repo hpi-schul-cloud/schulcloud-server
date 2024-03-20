@@ -21,7 +21,7 @@ spec:
         - secretRef:
             name: api-secret
         command: ['/bin/sh','-c']
-        args: ['npm run ensureIndexes && npm run migration-sync && npm run migration-prune && npm run migration up']
+        args: ['npm run ensureIndexes && npm run migration:up']
         resources:
           limits:
             cpu: {{ API_CPU_LIMITS|default("2000m", true) }}
@@ -30,4 +30,4 @@ spec:
             cpu: {{ API_CPU_REQUESTS|default("100m", true) }}
             memory: {{ API_MEMORY_REQUESTS|default("150Mi", true) }}
       restartPolicy: Never
-  backoffLimit: 3
+  backoffLimit: 5

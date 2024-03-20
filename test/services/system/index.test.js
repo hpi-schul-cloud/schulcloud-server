@@ -512,6 +512,31 @@ describe('systemId service', () => {
 			expect(usersSchoolUpdated.ldapSchoolIdentifier).to.be.undefined;
 		});
 
+		it('REMOVE should not remove ldapschoolidentifier from school, if another system exists', async () => {
+			const usersSystem = await testObjects.createTestSystem({
+				type: 'ldap',
+				ldapConfig: {
+					provider: 'general',
+				},
+			});
+			const oauthSystem = await testObjects.createTestSystem({
+				type: 'oauth',
+			});
+			const usersSchool = await testObjects.createTestSchool({
+				systems: [usersSystem._id, oauthSystem._id],
+				ldapSchoolIdentifier: 'someidentifier',
+			});
+
+			const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId: [usersSchool._id] });
+			const params = await testObjects.generateRequestParamsFromUser(user);
+
+			await app.service('systems').remove(usersSystem._id, params);
+
+			const usersSchoolUpdated = await app.service('schools').get(usersSchool._id, params);
+
+			expect(usersSchoolUpdated.ldapSchoolIdentifier).to.not.be.undefined;
+		});
+
 		it('REMOVE should remove ldapLastSync from school if ldap system is removed', async () => {
 			const usersSystem = await testObjects.createTestSystem({
 				type: 'ldap',

@@ -206,5 +206,28 @@
 			"isDeactivated": true,
 			"isOutdatedOnScopeSchool": false
 		}
+	},
+	{
+		"_id": {
+			"$oid": "659bf73f49e52dedff83a8f2"
+		},
+		"createdAt": {
+			"$date": "2023-11-30T15:29:00.061Z"
+		},
+		"updatedAt": {
+			"$date": "2023-11-30T15:29:00.061Z"
+		},
+		"tool": {
+			"$oid": "659bf6f049e52dedff83a8f1"
+		},
+		"school": {
+			"$oid": "5fa2c5ccb229544f2c69666c"
+		},
+		"schoolParameters": [],
+		"toolVersion": 1,
+		"status": {
+			"isDeactivated": false,
+			"isOutdatedOnScopeSchool": false
+		}
 	}
 ]

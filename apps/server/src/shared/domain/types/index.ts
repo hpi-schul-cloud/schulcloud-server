@@ -10,4 +10,3 @@ export * from './school-purpose.enum';
 export * from './system.type';
 export * from './task.types';
 export * from './value-of';
-export * from './domain';

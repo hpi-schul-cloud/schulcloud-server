@@ -3,18 +3,21 @@ import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
 import { SchoolYearService } from '@modules/legacy-school';
 import { RoleService } from '@modules/role';
-import { RoleDto } from '@modules/role/service/dto/role.dto';
+import { School, SchoolService } from '@modules/school/domain';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { SortHelper } from '@shared/common';
-import { ReferencedEntityNotFoundLoggable } from '@shared/common/loggable';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { SchoolYearEntity, User } from '@shared/domain/entity';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { LegacySystemService, SystemDto } from '@src/modules/system';
-import { School, SchoolService } from '@modules/school/domain';
+import { CourseService } from '../../learnroom';
+import { Course } from '../../learnroom/domain';
+import { ProvisioningConfig } from '../../provisioning';
+import { RoleDto } from '../../role/service/dto/role.dto';
 import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupTypes, GroupUser } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
@@ -33,6 +36,8 @@ export class GroupUc {
 		private readonly schoolService: SchoolService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolYearService: SchoolYearService,
+		private readonly courseService: CourseService,
+		private readonly configService: ConfigService<ProvisioningConfig, true>,
 		private readonly logger: Logger
 	) {}
 
@@ -153,7 +158,7 @@ export class GroupUc {
 			this.isClassOfQueryType(currentYear, classWithSchoolYear.schoolYear, schoolYearQueryType)
 		);
 
-		const classInfosFromClasses: ClassInfoDto[] = await this.mapClassInfosFromClasses(filteredClassesForSchoolYear);
+		const classInfosFromClasses: ClassInfoDto[] = this.mapClassInfosFromClasses(filteredClassesForSchoolYear);
 
 		return classInfosFromClasses;
 	}
@@ -201,13 +206,12 @@ export class GroupUc {
 		}
 	}
 
-	private async mapClassInfosFromClasses(
+	private mapClassInfosFromClasses(
 		filteredClassesForSchoolYear: { clazz: Class; schoolYear?: SchoolYearEntity }[]
-	): Promise<ClassInfoDto[]> {
-		const classInfosFromClasses: ClassInfoDto[] = await Promise.all(
-			filteredClassesForSchoolYear.map(async (classWithSchoolYear): Promise<ClassInfoDto> => {
-				const { teacherIds } = classWithSchoolYear.clazz;
-				const teachers: UserDO[] = await this.getTeachersByIds(teacherIds, classWithSchoolYear.clazz.id);
+	): ClassInfoDto[] {
+		const classInfosFromClasses: ClassInfoDto[] = filteredClassesForSchoolYear.map(
+			(classWithSchoolYear): ClassInfoDto => {
+				const teachers: UserDO[] = [];
 
 				const mapped: ClassInfoDto = GroupUcMapper.mapClassToClassInfoDto(
 					classWithSchoolYear.clazz,
@@ -216,28 +220,9 @@ export class GroupUc {
 				);
 
 				return mapped;
-			})
-		);
-
-		return classInfosFromClasses;
-	}
-
-	private async getTeachersByIds(teacherIds: EntityId[], classId: EntityId): Promise<UserDO[]> {
-		const teacherPromises: Promise<UserDO | null>[] = teacherIds.map(
-			async (teacherId: EntityId): Promise<UserDO | null> => {
-				const teacher: UserDO | null = await this.userService.findByIdOrNull(teacherId);
-				if (!teacher) {
-					this.logger.warning(new ReferencedEntityNotFoundLoggable(Class.name, classId, UserDO.name, teacherId));
-				}
-				return teacher;
 			}
 		);
-
-		const teachers: UserDO[] = (await Promise.all(teacherPromises)).filter(
-			(teacher: UserDO | null): teacher is UserDO => teacher !== null
-		);
-
-		return teachers;
+		return classInfosFromClasses;
 	}
 
 	private async findGroupsForSchool(schoolId: EntityId): Promise<ClassInfoDto[]> {
@@ -246,11 +231,7 @@ export class GroupUc {
 			this.ALLOWED_GROUP_TYPES
 		);
 
-		const systemMap: Map<EntityId, SystemDto> = await this.findSystemNamesForGroups(groups);
-
-		const classInfosFromGroups: ClassInfoDto[] = await Promise.all(
-			groups.map(async (group: Group): Promise<ClassInfoDto> => this.getClassInfoFromGroup(group, systemMap))
-		);
+		const classInfosFromGroups: ClassInfoDto[] = await this.getClassInfosFromGroups(groups);
 
 		return classInfosFromGroups;
 	}
@@ -258,15 +239,18 @@ export class GroupUc {
 	private async findGroupsForUser(userId: EntityId): Promise<ClassInfoDto[]> {
 		const user: UserDO = await this.userService.findById(userId);
 
-		const groupsOfTypeClass: Group[] = await this.groupService.findGroupsByUserAndGroupTypes(
-			user,
-			this.ALLOWED_GROUP_TYPES
-		);
+		const groups: Group[] = await this.groupService.findGroupsByUserAndGroupTypes(user, this.ALLOWED_GROUP_TYPES);
 
-		const systemMap: Map<EntityId, SystemDto> = await this.findSystemNamesForGroups(groupsOfTypeClass);
+		const classInfosFromGroups: ClassInfoDto[] = await this.getClassInfosFromGroups(groups);
+
+		return classInfosFromGroups;
+	}
+
+	private async getClassInfosFromGroups(groups: Group[]): Promise<ClassInfoDto[]> {
+		const systemMap: Map<EntityId, SystemDto> = await this.findSystemNamesForGroups(groups);
 
 		const classInfosFromGroups: ClassInfoDto[] = await Promise.all(
-			groupsOfTypeClass.map(async (group: Group): Promise<ClassInfoDto> => this.getClassInfoFromGroup(group, systemMap))
+			groups.map(async (group: Group): Promise<ClassInfoDto> => this.getClassInfoFromGroup(group, systemMap))
 		);
 
 		return classInfosFromGroups;
@@ -278,9 +262,19 @@ export class GroupUc {
 			system = systemMap.get(group.externalSource.systemId);
 		}
 
-		const resolvedUsers: ResolvedGroupUser[] = await this.findUsersForGroup(group);
+		const resolvedUsers: ResolvedGroupUser[] = [];
 
-		const mapped: ClassInfoDto = GroupUcMapper.mapGroupToClassInfoDto(group, resolvedUsers, system);
+		let synchronizedCourses: Course[] = [];
+		if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')) {
+			synchronizedCourses = await this.courseService.findBySyncedGroup(group);
+		}
+
+		const mapped: ClassInfoDto = GroupUcMapper.mapGroupToClassInfoDto(
+			group,
+			resolvedUsers,
+			synchronizedCourses,
+			system
+		);
 
 		return mapped;
 	}
@@ -295,7 +289,7 @@ export class GroupUc {
 		const systems: Map<EntityId, SystemDto> = new Map<EntityId, SystemDto>();
 
 		await Promise.all(
-			uniqueSystemIds.map(async (systemId: string) => {
+			uniqueSystemIds.map(async (systemId: string): Promise<void> => {
 				const system: SystemDto = await this.systemService.findById(systemId);
 
 				systems.set(systemId, system);
@@ -311,11 +305,11 @@ export class GroupUc {
 				const user: UserDO | null = await this.userService.findByIdOrNull(groupUser.userId);
 				let resolvedGroup: ResolvedGroupUser | null = null;
 
-				if (!user) {
-					this.logger.warning(
+				/* TODO add this log back later
+					    this.logger.warning(
 						new ReferencedEntityNotFoundLoggable(Group.name, group.id, UserDO.name, groupUser.userId)
-					);
-				} else {
+					); */
+				if (user) {
 					const role: RoleDto = await this.roleService.findById(groupUser.roleId);
 
 					resolvedGroup = new ResolvedGroupUser({

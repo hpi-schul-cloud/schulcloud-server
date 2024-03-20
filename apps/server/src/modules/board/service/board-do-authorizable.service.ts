@@ -6,8 +6,7 @@ import {
 	BoardExternalReferenceType,
 	BoardRoles,
 	ColumnBoard,
-	UserBoardRoles,
-	UserRoleEnum,
+	UserWithBoardRoles,
 } from '@shared/domain/domainobject';
 import { Course } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
@@ -23,31 +22,28 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 
 	async findById(id: EntityId): Promise<BoardDoAuthorizable> {
 		const boardDo = await this.boardDoRepo.findById(id, 1);
-		const { users } = await this.getBoardAuthorizable(boardDo);
-		const boardDoAuthorizable = new BoardDoAuthorizable({ users, id });
+		const boardDoAuthorizable = await this.getBoardAuthorizable(boardDo);
 
 		return boardDoAuthorizable;
 	}
 
 	async getBoardAuthorizable(boardDo: AnyBoardDo): Promise<BoardDoAuthorizable> {
-		const ancestorIds = await this.boardDoRepo.getAncestorIds(boardDo);
-		const ids = [...ancestorIds, boardDo.id];
-		const rootId = ids[0];
-		const rootBoardDo = await this.boardDoRepo.findById(rootId, 1);
-		if (rootBoardDo instanceof ColumnBoard) {
-			if (rootBoardDo.context?.type === BoardExternalReferenceType.Course) {
-				const course = await this.courseRepo.findById(rootBoardDo.context.id);
-				const users = this.mapCourseUsersToUsergroup(course);
-				return new BoardDoAuthorizable({ users, id: boardDo.id });
-			}
-		} else {
-			throw new Error('root boardnode was expected to be a ColumnBoard');
+		const rootDo = await this.getRootBoardDo(boardDo);
+		// TODO used only for SubmissionItem; for rest BoardDo avoid extra call to improve performance
+		const parentDo = await this.getParentDo(boardDo);
+		let users: UserWithBoardRoles[] = [];
+
+		if (rootDo.context?.type === BoardExternalReferenceType.Course) {
+			const course = await this.courseRepo.findById(rootDo.context.id);
+			users = this.mapCourseUsersToUserBoardRoles(course);
 		}
 
-		return new BoardDoAuthorizable({ users: [], id: boardDo.id });
+		const boardDoAuthorizable = new BoardDoAuthorizable({ users, id: boardDo.id, boardDo, rootDo, parentDo });
+
+		return boardDoAuthorizable;
 	}
 
-	private mapCourseUsersToUsergroup(course: Course): UserBoardRoles[] {
+	private mapCourseUsersToUserBoardRoles(course: Course): UserWithBoardRoles[] {
 		const users = [
 			...course.getTeachersList().map((user) => {
 				return {
@@ -55,7 +51,6 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 					firstName: user.firstName,
 					lastName: user.lastName,
 					roles: [BoardRoles.EDITOR],
-					userRoleEnum: UserRoleEnum.TEACHER,
 				};
 			}),
 			...course.getSubstitutionTeachersList().map((user) => {
@@ -64,7 +59,6 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 					firstName: user.firstName,
 					lastName: user.lastName,
 					roles: [BoardRoles.EDITOR],
-					userRoleEnum: UserRoleEnum.SUBSTITUTION_TEACHER,
 				};
 			}),
 			...course.getStudentsList().map((user) => {
@@ -73,10 +67,29 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 					firstName: user.firstName,
 					lastName: user.lastName,
 					roles: [BoardRoles.READER],
-					userRoleEnum: UserRoleEnum.STUDENT,
 				};
 			}),
 		];
+		// TODO check unique
 		return users;
+	}
+
+	private async getParentDo(boardDo: AnyBoardDo): Promise<Promise<AnyBoardDo> | undefined> {
+		const parentDo = await this.boardDoRepo.findParentOfId(boardDo.id);
+		return parentDo;
+	}
+
+	// TODO there is a similar method in board-do.service.ts
+	private async getRootBoardDo(boardDo: AnyBoardDo): Promise<ColumnBoard> {
+		const ancestorIds = await this.boardDoRepo.getAncestorIds(boardDo);
+		const ids = [...ancestorIds, boardDo.id];
+		const rootId = ids[0];
+		const rootBoardDo = await this.boardDoRepo.findById(rootId, 1);
+
+		if (!(rootBoardDo instanceof ColumnBoard)) {
+			throw new Error('root boardnode was expected to be a ColumnBoard');
+		}
+
+		return rootBoardDo;
 	}
 }

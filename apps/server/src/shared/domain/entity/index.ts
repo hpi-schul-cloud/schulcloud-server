@@ -25,3 +25,4 @@ export * from './user-login-migration.entity';
 export * from './user.entity';
 export * from './video-conference.entity';
 export * from './external-source.entity';
+export * from './consent';

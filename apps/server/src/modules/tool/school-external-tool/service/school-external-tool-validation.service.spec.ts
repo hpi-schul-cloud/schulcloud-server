@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { externalToolFactory, schoolExternalToolFactory } from '@shared/testing/factory/domainobject/tool';
+import { ValidationError } from '@shared/common';
+import { externalToolFactory, schoolExternalToolFactory } from '@shared/testing';
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { ExternalToolService } from '../../external-tool/service';
@@ -8,7 +9,7 @@ import { IToolFeatures, ToolFeatures } from '../../tool-config';
 import { SchoolExternalTool } from '../domain';
 import { SchoolExternalToolValidationService } from './school-external-tool-validation.service';
 
-describe('SchoolExternalToolValidationService', () => {
+describe(SchoolExternalToolValidationService.name, () => {
 	let module: TestingModule;
 	let service: SchoolExternalToolValidationService;
 
@@ -48,32 +49,21 @@ describe('SchoolExternalToolValidationService', () => {
 	});
 
 	describe('validate', () => {
-		const setup = (
-			externalToolDoMock?: Partial<ExternalTool>,
-			schoolExternalToolDoMock?: Partial<SchoolExternalTool>
-		) => {
-			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
-				...schoolExternalToolFactory.buildWithId(),
-				...schoolExternalToolDoMock,
-			});
-			const externalTool: ExternalTool = new ExternalTool({
-				...externalToolFactory.buildWithId(),
-				...externalToolDoMock,
-			});
+		describe('when the schoolExternalTool is valid', () => {
+			const setup = () => {
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({ toolVersion: 1337 });
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({ version: 8383 });
 
-			const schoolExternalToolId = schoolExternalTool.id as string;
+				externalToolService.findById.mockResolvedValue(externalTool);
+				commonToolValidationService.validateParameters.mockReturnValueOnce([]);
+				toolFeatures.toolStatusWithoutVersions = true;
 
-			externalToolService.findById.mockResolvedValue(externalTool);
-			toolFeatures.toolStatusWithoutVersions = true;
-
-			return {
-				schoolExternalTool,
-				ExternalTool,
-				schoolExternalToolId,
+				return {
+					schoolExternalTool,
+					externalTool,
+				};
 			};
-		};
 
-		describe('when schoolExternalTool is given', () => {
 			it('should call externalToolService.findExternalToolById', async () => {
 				const { schoolExternalTool } = setup();
 
@@ -83,22 +73,41 @@ describe('SchoolExternalToolValidationService', () => {
 			});
 
 			it('should call commonToolValidationService.checkCustomParameterEntries', async () => {
-				const { schoolExternalTool } = setup();
+				const { schoolExternalTool, externalTool } = setup();
 
 				await service.validate(schoolExternalTool);
 
-				expect(commonToolValidationService.checkCustomParameterEntries).toHaveBeenCalledWith(
-					expect.anything(),
-					schoolExternalTool
-				);
+				expect(commonToolValidationService.validateParameters).toHaveBeenCalledWith(externalTool, schoolExternalTool);
 			});
 
 			it('should not throw error', async () => {
-				const { schoolExternalTool } = setup({ version: 8383 }, { toolVersion: 1337 });
+				const { schoolExternalTool } = setup();
 
-				const func = () => service.validate(schoolExternalTool);
+				await expect(service.validate(schoolExternalTool)).resolves.not.toThrow();
+			});
+		});
 
-				await expect(func()).resolves.not.toThrow();
+		describe('when the schoolExternalTool is invalid', () => {
+			const setup = () => {
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const externalTool: ExternalTool = externalToolFactory.buildWithId();
+				const error: ValidationError = new ValidationError('');
+
+				externalToolService.findById.mockResolvedValue(externalTool);
+				commonToolValidationService.validateParameters.mockReturnValueOnce([error]);
+				toolFeatures.toolStatusWithoutVersions = true;
+
+				return {
+					schoolExternalTool,
+					externalTool,
+					error,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { schoolExternalTool, error } = setup();
+
+				await expect(service.validate(schoolExternalTool)).rejects.toThrow(error);
 			});
 		});
 	});
@@ -106,37 +115,24 @@ describe('SchoolExternalToolValidationService', () => {
 	// TODO N21-1337 refactor after feature flag is removed
 	describe('validate with FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED on false', () => {
 		describe('when version of externalTool and schoolExternalTool are different', () => {
-			const setup = (
-				externalToolDoMock?: Partial<ExternalTool>,
-				schoolExternalToolDoMock?: Partial<SchoolExternalTool>
-			) => {
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
-					...schoolExternalToolFactory.buildWithId(),
-					...schoolExternalToolDoMock,
-				});
-				const externalTool: ExternalTool = new ExternalTool({
-					...externalToolFactory.buildWithId(),
-					...externalToolDoMock,
-				});
-
-				const schoolExternalToolId = schoolExternalTool.id as string;
+			const setup = () => {
+				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({ toolVersion: 1337 });
+				const externalTool: ExternalTool = externalToolFactory.buildWithId({ version: 8383 });
 
 				externalToolService.findById.mockResolvedValue(externalTool);
 				toolFeatures.toolStatusWithoutVersions = false;
 
 				return {
 					schoolExternalTool,
-					ExternalTool,
-					schoolExternalToolId,
 				};
 			};
 
 			it('should throw error', async () => {
-				const { schoolExternalTool } = setup({ version: 8383 }, { toolVersion: 1337 });
+				const { schoolExternalTool } = setup();
 
 				const func = () => service.validate(schoolExternalTool);
 
-				await expect(func()).rejects.toThrowError('tool_version_mismatch:');
+				await expect(func()).rejects.toThrowError('tool_version_mismatch');
 			});
 		});
 	});

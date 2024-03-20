@@ -21,13 +21,13 @@ import {
 	externalToolFactory,
 	legacySchoolDoFactory,
 	pseudonymFactory,
+	schoolEntityFactory,
 	schoolExternalToolFactory,
-	schoolFactory,
 	setupEntities,
 	UserAndAccountTestFactory,
 	userDoFactory,
 } from '@shared/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { FeathersRosterService } from './feathers-roster.service';
 import { PseudonymService } from './pseudonym.service';
 
@@ -362,7 +362,7 @@ describe('FeathersRosterService', () => {
 		describe('when valid courseId and oauth2ClientId is given', () => {
 			const setup = () => {
 				let courseA: Course = courseFactory.buildWithId();
-				const schoolEntity: SchoolEntity = schoolFactory.buildWithId();
+				const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId();
 				const school: LegacySchoolDo = legacySchoolDoFactory.build({ id: schoolEntity.id });
 				const externalTool: ExternalTool = externalToolFactory.buildWithId();
 				const externalToolId: string = externalTool.id as string;

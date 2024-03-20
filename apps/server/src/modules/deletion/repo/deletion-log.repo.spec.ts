@@ -3,12 +3,12 @@ import { Test } from '@nestjs/testing';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { cleanupCollections } from '@shared/testing';
-import { DeletionLogMapper } from './mapper';
-import { DeletionLogEntity } from '../entity';
+import { DeletionLog } from '../domain/do';
+import { deletionLogFactory } from '../domain/testing';
 import { DeletionLogRepo } from './deletion-log.repo';
-import { deletionLogFactory } from '../domain/testing/factory/deletion-log.factory';
-import { DeletionLog } from '../domain/deletion-log.do';
-import { deletionLogEntityFactory } from '../entity/testing/factory/deletion-log.entity.factory';
+import { DeletionLogEntity } from './entity';
+import { deletionLogEntityFactory } from './entity/testing';
+import { DeletionLogMapper } from './mapper';
 
 describe(DeletionLogRepo.name, () => {
 	let module: TestingModule;
@@ -60,9 +60,8 @@ describe(DeletionLogRepo.name, () => {
 				const expectedDomainObject = {
 					id: domainObject.id,
 					domain: domainObject.domain,
-					operation: domainObject.operation,
-					modifiedCount: domainObject.modifiedCount,
-					deletedCount: domainObject.deletedCount,
+					operations: domainObject.operations,
+					subdomainOperations: domainObject.subdomainOperations,
 					deletionRequestId: domainObject.deletionRequestId,
 					performedAt: domainObject.performedAt,
 					createdAt: domainObject.createdAt,
@@ -71,6 +70,7 @@ describe(DeletionLogRepo.name, () => {
 
 				return { domainObject, deletionLogId, expectedDomainObject };
 			};
+
 			it('should create a new deletionLog', async () => {
 				const { domainObject, deletionLogId, expectedDomainObject } = setup();
 				await repo.create(domainObject);
@@ -86,20 +86,19 @@ describe(DeletionLogRepo.name, () => {
 		describe('when searching by Id', () => {
 			const setup = async () => {
 				// Test deletionLog entity
-				const entity: DeletionLogEntity = deletionLogEntityFactory.build();
+				const entity: DeletionLogEntity = deletionLogEntityFactory.buildWithId();
 				await em.persistAndFlush(entity);
 
-				const expectedDeletionLog = {
+				const expectedDeletionLog = new DeletionLog({
 					id: entity.id,
 					domain: entity.domain,
-					operation: entity.operation,
-					modifiedCount: entity.modifiedCount,
-					deletedCount: entity.deletedCount,
+					operations: entity.operations,
+					subdomainOperations: entity.subdomainOperations,
 					deletionRequestId: entity.deletionRequestId?.toHexString(),
 					performedAt: entity.performedAt,
 					createdAt: entity.createdAt,
 					updatedAt: entity.updatedAt,
-				};
+				});
 
 				return {
 					entity,
@@ -146,28 +145,26 @@ describe(DeletionLogRepo.name, () => {
 				em.clear();
 
 				const expectedArray = [
-					{
+					new DeletionLog({
 						id: deletionLogEntity1.id,
 						domain: deletionLogEntity1.domain,
-						operation: deletionLogEntity1.operation,
+						operations: deletionLogEntity1.operations,
+						subdomainOperations: deletionLogEntity1.subdomainOperations,
 						deletionRequestId: deletionLogEntity1.deletionRequestId?.toHexString(),
 						performedAt: deletionLogEntity1.performedAt,
-						modifiedCount: deletionLogEntity1.modifiedCount,
-						deletedCount: deletionLogEntity1.deletedCount,
 						createdAt: deletionLogEntity1.createdAt,
 						updatedAt: deletionLogEntity1.updatedAt,
-					},
-					{
+					}),
+					new DeletionLog({
 						id: deletionLogEntity2.id,
 						domain: deletionLogEntity2.domain,
-						operation: deletionLogEntity2.operation,
+						operations: deletionLogEntity2.operations,
+						subdomainOperations: deletionLogEntity2.subdomainOperations,
 						deletionRequestId: deletionLogEntity2.deletionRequestId?.toHexString(),
 						performedAt: deletionLogEntity2.performedAt,
-						modifiedCount: deletionLogEntity2.modifiedCount,
-						deletedCount: deletionLogEntity2.deletedCount,
 						createdAt: deletionLogEntity2.createdAt,
 						updatedAt: deletionLogEntity2.updatedAt,
-					},
+					}),
 				];
 
 				return { deletionLogEntity3, deletionRequest1Id, expectedArray };
@@ -176,7 +173,7 @@ describe(DeletionLogRepo.name, () => {
 			it('should find deletionRequests with deleteAfter smaller then today', async () => {
 				const { deletionLogEntity3, deletionRequest1Id, expectedArray } = await setup();
 
-				const results = await repo.findAllByDeletionRequestId(deletionRequest1Id.toHexString());
+				const results = await repo.findAllByDeletionRequestId(deletionRequest1Id?.toHexString());
 
 				expect(results.length).toEqual(2);
 

@@ -2,10 +2,10 @@ import { HeadObjectCommandOutput } from '@aws-sdk/client-s3';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { IContentMetadata, ILibraryName, IUser, LibraryName } from '@lumieducation/h5p-server';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IEntity } from '@shared/domain/interface';
-import { ObjectID } from 'bson';
 import { Readable } from 'stream';
 import { GetH5PFileResponse } from '../controller/dto';
 import { H5PContent, H5PContentParentType, H5PContentProperties } from '../entity';
@@ -41,9 +41,9 @@ const helpers = {
 			data: `Data #${n}`,
 		};
 		const h5pContentProperties: H5PContentProperties = {
-			creatorId: new ObjectID().toString(),
-			parentId: new ObjectID().toString(),
-			schoolId: new ObjectID().toString(),
+			creatorId: new ObjectId().toString(),
+			parentId: new ObjectId().toString(),
+			schoolId: new ObjectId().toString(),
 			metadata,
 			content,
 			parentType: H5PContentParentType.Lesson,
@@ -52,7 +52,7 @@ const helpers = {
 
 		return {
 			withID(id?: number) {
-				const objectId = new ObjectID(id);
+				const objectId = new ObjectId(id);
 				h5pContent._id = objectId;
 				h5pContent.id = objectId.toString();
 
@@ -83,7 +83,7 @@ const helpers = {
 
 		for (const entity of entities) {
 			if (!entity._id) {
-				const id = new ObjectID();
+				const id = new ObjectId();
 				entity._id = id;
 				entity.id = id.toString();
 			}
@@ -135,14 +135,14 @@ describe('ContentStorage', () => {
 				canInstallRecommended: false,
 				canUpdateAndInstallLibraries: false,
 				email: 'example@schul-cloud.org',
-				id: new ObjectID().toHexString(),
+				id: new ObjectId().toHexString(),
 				name: 'Example User',
 				type: 'user',
 			};
 			const parentParams: H5PContentParentParams = {
-				schoolId: new ObjectID().toHexString(),
+				schoolId: new ObjectId().toHexString(),
 				parentType: H5PContentParentType.Lesson,
-				parentId: new ObjectID().toHexString(),
+				parentId: new ObjectId().toHexString(),
 			};
 			const user = new LumiUserWithContentData(iUser, parentParams);
 
@@ -239,7 +239,7 @@ describe('ContentStorage', () => {
 			const filename = 'filename.txt';
 			const stream = Readable.from('content');
 
-			const contentID = new ObjectID();
+			const contentID = new ObjectId();
 			const contentIDString = contentID.toString();
 
 			const user = helpers.createUser();
@@ -276,7 +276,7 @@ describe('ContentStorage', () => {
 					expect.objectContaining({
 						name: filename,
 						data: stream,
-						mimeType: 'application/json',
+						mimeType: 'application/octet-stream',
 					})
 				);
 			});
@@ -423,7 +423,7 @@ describe('ContentStorage', () => {
 
 			const deleteError = new Error('Could not delete');
 
-			const contentID = new ObjectID().toString();
+			const contentID = new ObjectId().toString();
 
 			return {
 				contentID,
@@ -473,7 +473,7 @@ describe('ContentStorage', () => {
 
 			const deleteError = new Error('Could not delete');
 
-			const contentID = new ObjectID().toString();
+			const contentID = new ObjectId().toString();
 
 			return {
 				contentID,
@@ -534,7 +534,7 @@ describe('ContentStorage', () => {
 
 			const user = helpers.createUser();
 
-			const contentID = new ObjectID().toString();
+			const contentID = new ObjectId().toString();
 
 			const birthtime = new Date();
 			const size = 100;
@@ -623,7 +623,7 @@ describe('ContentStorage', () => {
 		const setup = () => {
 			const filename = 'testfile.txt';
 			const fileStream = Readable.from('content');
-			const contentID = new ObjectID().toString();
+			const contentID = new ObjectId().toString();
 			const fileResponse = createMock<GetH5PFileResponse>({ data: fileStream });
 			const user = helpers.createUser();
 
@@ -631,10 +631,10 @@ describe('ContentStorage', () => {
 
 			// [start, end, expected range]
 			const testRanges = [
-				[undefined, undefined, '0-'],
-				[100, undefined, '100-'],
-				[undefined, 100, '0-100'],
-				[100, 999, '100-999'],
+				[undefined, undefined, undefined],
+				[100, undefined, undefined],
+				[undefined, 100, undefined],
+				[100, 999, 'bytes=100-999'],
 			] as const;
 
 			return { filename, contentID, fileStream, fileResponse, testRanges, user, getError };

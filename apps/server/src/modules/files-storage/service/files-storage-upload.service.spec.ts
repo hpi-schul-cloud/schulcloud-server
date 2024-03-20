@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AntivirusService } from '@infra/antivirus';
+import { S3ClientAdapter } from '@infra/s3-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BadRequestException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AntivirusService } from '@infra/antivirus';
-import { S3ClientAdapter } from '@infra/s3-client';
 import { fileRecordFactory, setupEntities } from '@shared/testing';
 import { readableStreamWithFileTypeFactory } from '@shared/testing/factory/readable-stream-with-file-type.factory';
 import { LegacyLogger } from '@src/core/logger';
@@ -157,6 +157,8 @@ describe('FilesStorageService upload methods', () => {
 					if (fr instanceof FileRecord && !fr._id) {
 						fr._id = new ObjectId();
 					}
+
+					return Promise.resolve();
 				});
 
 				return {
@@ -187,6 +189,37 @@ describe('FilesStorageService upload methods', () => {
 				expect(getFileRecordsOfParentSpy).toHaveBeenCalledWith(params.parentId);
 			});
 
+			it('should call fileRecordRepo.save in first call with isUploading: true', async () => {
+				const { params, file, userId } = setup();
+
+				// haveBeenCalledWith can't be use here because fileRecord is a reference and
+				// it will always compare the final state of the object
+				let param: FileRecord | undefined;
+
+				fileRecordRepo.save.mockReset();
+				fileRecordRepo.save.mockImplementationOnce(async (fr) => {
+					if (fr instanceof FileRecord && !fr._id) {
+						fr._id = new ObjectId();
+					}
+
+					param = JSON.parse(JSON.stringify(fr)) as FileRecord;
+
+					return Promise.resolve();
+				});
+
+				fileRecordRepo.save.mockImplementationOnce(async (fr) => {
+					if (fr instanceof FileRecord && !fr._id) {
+						fr._id = new ObjectId();
+					}
+
+					return Promise.resolve();
+				});
+
+				await service.uploadFile(userId, params, file);
+
+				expect(param).toMatchObject({ isUploading: true });
+			});
+
 			it('should call fileRecordRepo.save twice with correct params', async () => {
 				const { params, file, fileSize, userId, readableStreamWithFileType, expectedFileRecord } = setup();
 
@@ -201,6 +234,7 @@ describe('FilesStorageService upload methods', () => {
 						size: fileSize,
 						createdAt: expect.any(Date),
 						updatedAt: expect.any(Date),
+						isUploading: undefined,
 					})
 				);
 			});

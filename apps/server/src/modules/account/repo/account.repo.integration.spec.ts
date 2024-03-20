@@ -196,14 +196,46 @@ describe('account repo', () => {
 	});
 
 	describe('deleteByUserId', () => {
-		it('should delete an account by user id', async () => {
+		const setup = async () => {
 			const user = userFactory.buildWithId();
+			const userWithoutAccount = userFactory.buildWithId();
 			const account = accountFactory.build({ userId: user.id });
+
 			await em.persistAndFlush([user, account]);
 
-			await expect(repo.deleteByUserId(user.id)).resolves.not.toThrow();
+			return {
+				account,
+				user,
+				userWithoutAccount,
+			};
+		};
 
-			await expect(repo.findById(account.id)).rejects.toThrow(NotFoundError);
+		describe('when user has account', () => {
+			it('should delete an account by user id', async () => {
+				const { account, user } = await setup();
+
+				await expect(repo.deleteByUserId(user.id)).resolves.not.toThrow();
+
+				await expect(repo.findById(account.id)).rejects.toThrow(NotFoundError);
+			});
+
+			it('should return accoountId', async () => {
+				const { account, user } = await setup();
+
+				const result = await repo.deleteByUserId(user.id);
+
+				expect(result).toEqual([account.id]);
+			});
+		});
+
+		describe('when user has no account', () => {
+			it('should return null', async () => {
+				const { userWithoutAccount } = await setup();
+
+				const result = await repo.deleteByUserId(userWithoutAccount.id);
+
+				expect(result).toEqual([]);
+			});
 		});
 	});
 

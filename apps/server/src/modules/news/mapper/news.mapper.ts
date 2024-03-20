@@ -10,7 +10,6 @@ export class NewsMapper {
 	static mapToResponse(news: News): NewsResponse {
 		const target = TargetInfoMapper.mapToResponse(news.target);
 		const school = SchoolInfoMapper.mapToResponse(news.school);
-		const creator = UserInfoMapper.mapToResponse(news.creator);
 
 		const dto = new NewsResponse({
 			id: news.id,
@@ -23,12 +22,14 @@ export class NewsMapper {
 			targetModel: news.targetModel,
 			target,
 			school,
-			creator,
 			createdAt: news.createdAt,
 			updatedAt: news.updatedAt,
 			permissions: news.permissions,
 		});
 
+		if (news.creator) {
+			dto.creator = UserInfoMapper.mapToResponse(news.creator);
+		}
 		if (news.updater) {
 			dto.updater = UserInfoMapper.mapToResponse(news.updater);
 		}

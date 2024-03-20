@@ -83,7 +83,7 @@ export class CardUc extends BaseUc {
 		targetCardId: EntityId,
 		targetPosition: number
 	): Promise<void> {
-		this.logger.debug({ action: 'moveCard', userId, elementId, targetCardId, targetPosition });
+		this.logger.debug({ action: 'moveElement', userId, elementId, targetCardId, targetPosition });
 
 		const element = await this.elementService.findById(elementId);
 		const targetCard = await this.cardService.findById(targetCardId);

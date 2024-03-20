@@ -8,9 +8,6 @@ metadata:
 data:
   update.sh: |
     #! /bin/bash
-    {% if KEDA_NAMESPACE_ACTIVATOR_ENABLED is defined %}
-    curl -XPUT -H 'Content-Type: application/json'  -L 'http://ns-activator-svc.sc-common.svc.cluster.local:8080/namespace' -d '{"name" : "{{ NAMESPACE }}"}'
-    {% endif %}
     # necessary for secret handling and legacy indexes
     git clone https://github.com/hpi-schul-cloud/schulcloud-server.git
     cd /schulcloud-server
@@ -317,25 +314,19 @@ data:
 
     if [ -n "$NS" ]; then
         # Set the BETTERMARKS_CLIENT_SECRET and BETTERMARKS_URL variables values according to the k8s namespace.
-        if [ "$SC_THEME" = "n21" ] && [ "$NS" = "bettermarks-test" ]; then
-            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_NBC_BETTERMARKS_TEST_CLIENT_SECRET
-            BETTERMARKS_URL=$BETTERMARKS_NBC_BETTERMARKS_TEST_ENTRYPOINT
-        elif [ "$SC_THEME" = "n21" ] && [ "$NS" = "main" ]; then
-            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_NBC_MAIN_CLIENT_SECRET
-            BETTERMARKS_URL=$BETTERMARKS_NBC_MAIN_ENTRYPOINT
-        elif [ "$SC_THEME" = "brb" ] && [ "$NS" = "bettermarks-test" ]; then
-            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_BRB_BETTERMARKS_TEST_CLIENT_SECRET
-            BETTERMARKS_URL=$BETTERMARKS_BRB_BETTERMARKS_TEST_ENTRYPOINT
-        elif [ "$SC_THEME" = "brb" ] && [ "$NS" = "main" ]; then
-            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_BRB_MAIN_CLIENT_SECRET
-            BETTERMARKS_URL=$BETTERMARKS_BRB_MAIN_ENTRYPOINT
+        if [ "$NS" = "main" ]; then
+            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_MAIN_CLIENT_SECRET
+            BETTERMARKS_URL=$BETTERMARKS_MAIN_ENTRYPOINT
+        elif [ "$NS" = "bettermarks-test" ]; then
+            BETTERMARKS_CLIENT_SECRET=$BETTERMARKS_BETTERMARKS_TEST_CLIENT_SECRET
+            BETTERMARKS_URL=$BETTERMARKS_BETTERMARKS_TEST_ENTRYPOINT
         else
             # Print some friendly message for any other namespace that's not supported.
             echo "Sorry, Bettermarks cannot be configured on the '$NS' namespace, omitting the config data init."
         fi
 
         # Perform the final Bettermarks config data init if client secret and URL has been properly set.
-        if [ -n "$BETTERMARKS_CLIENT_SECRET" ] && [ -n "$BETTERMARKS_URL" ]; then
+        if [ -n "$BETTERMARKS_CLIENT_SECRET" ] && [ -n "$BETTERMARKS_URL" ] && [ -n "$BETTERMARKS_REDIRECT_DOMAIN" ]; then
             # Add document to the 'ltitools' collection with Bettermarks tool configuration.
             mongosh $DATABASE__URL --quiet --eval 'db.getCollection("ltitools").replaceOne(
                 {
@@ -384,11 +375,9 @@ data:
                         "scope":"openid offline",
                         "token_endpoint_auth_method":"client_secret_post",
                         "redirect_uris": [
-                          "https://acc.bettermarks.com/v1.0/schulcloud/oauth/callback",
-                          "https://school.bettermarks.loc/v1.0/schulcloud/oauth/callback",
-                          "https://acc.bettermarks.com/auth/callback",
-                          "https://school.bettermarks.loc/auth/callback",
-                          "https://acc.bettermarks.com/auth/oidc/callback"
+                          "https://'$BETTERMARKS_REDIRECT_DOMAIN'/v1.0/schulcloud/oauth/callback",
+                          "https://'$BETTERMARKS_REDIRECT_DOMAIN'/auth/callback",
+                          "https://'$BETTERMARKS_REDIRECT_DOMAIN'/auth/oidc/callback"
                         ],
                         "subject_type":"pairwise"
                       }'
@@ -421,6 +410,8 @@ data:
             );'
 
             echo "Bettermarks config data init performed successfully."
+        else
+          echo "Bettermarks variables not provided, omitting the config data init."
         fi
     fi
 
@@ -484,7 +475,7 @@ data:
                        "'$PUBLIC_BACKEND_URL'/api/v3/sso/hydra"
                      ],
                      "client_uri": "'$NEXTCLOUD_BASE_URL'",
-                     "frontchannel_logout_uri": "'$NEXTCLOUD_BASE_URL'/apps/schulcloud/logout",
+                     "frontchannel_logout_uri": "'$NEXTCLOUD_BASE_URL'apps/schulcloud/logout",
                      "subject_type": "pairwise"
                    }'
          echo "POSTed nextcloud to hydra."
@@ -494,11 +485,11 @@ data:
          echo "Inserting nextcloud to external-tools..."
          mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
              {
-               "name": "nextcloud",
+               "name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
                "config_type": "oauth2"
              },
              { $setOnInsert: {
-               "name": "nextcloud",
+               "name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
                "url": "'$NEXTCLOUD_BASE_URL'",
                "logoUrl": "",
                "config_type": "oauth2",

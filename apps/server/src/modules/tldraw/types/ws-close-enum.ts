@@ -1,12 +1,15 @@
-export enum WsCloseCodeEnum {
-	WS_CLIENT_BAD_REQUEST_CODE = 4400,
-	WS_CLIENT_UNAUTHORISED_CONNECTION_CODE = 4401,
-	WS_CLIENT_NOT_FOUND_CODE = 4404,
-	WS_CLIENT_ESTABLISHING_CONNECTION_CODE = 4500,
+export enum WsCloseCode {
+	BAD_REQUEST = 4400,
+	UNAUTHORIZED = 4401,
+	NOT_FOUND = 4404,
+	NOT_ACCEPTABLE = 4406,
+	INTERNAL_SERVER_ERROR = 4500,
 }
-export enum WsCloseMessageEnum {
-	WS_CLIENT_BAD_REQUEST_MESSAGE = 'Document name is mandatory in url or Tldraw Tool is turned off.',
-	WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE = "Unauthorised connection - you don't have permission to this drawing.",
-	WS_CLIENT_NOT_FOUND_MESSAGE = 'Drawing not found.',
-	WS_CLIENT_ESTABLISHING_CONNECTION_MESSAGE = 'Unable to establish websocket connection. Try again later.',
+export enum WsCloseMessage {
+	FEATURE_DISABLED = 'Tldraw feature is disabled.',
+	BAD_REQUEST = 'Room name param not found in url.',
+	UNAUTHORIZED = "You don't have permission to this drawing.",
+	NOT_FOUND = 'Drawing not found.',
+	NOT_ACCEPTABLE = 'Could not get document, still finalizing or not yet loaded.',
+	INTERNAL_SERVER_ERROR = 'Unable to establish websocket connection.',
 }

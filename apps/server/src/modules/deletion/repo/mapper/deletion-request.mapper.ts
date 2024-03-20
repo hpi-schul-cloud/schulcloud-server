@@ -1,5 +1,5 @@
-import { DeletionRequest } from '../../domain/deletion-request.do';
-import { DeletionRequestEntity } from '../../entity';
+import { DeletionRequest } from '../../domain/do';
+import { DeletionRequestEntity } from '../entity';
 
 export class DeletionRequestMapper {
 	static mapToDO(entity: DeletionRequestEntity): DeletionRequest {

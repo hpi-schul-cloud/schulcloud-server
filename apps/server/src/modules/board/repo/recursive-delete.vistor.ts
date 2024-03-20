@@ -1,6 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { DrawingElementAdapterService } from '@modules/tldraw-client/service/drawing-element-adapter.service';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { Injectable } from '@nestjs/common';
@@ -19,6 +18,7 @@ import {
 import { DrawingElement } from '@shared/domain/domainobject/board/drawing-element.do';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { BoardNode } from '@shared/domain/entity';
+import { DrawingElementAdapterService } from '@modules/tldraw-client';
 
 @Injectable()
 export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
@@ -65,6 +65,7 @@ export class RecursiveDeleteVisitor implements BoardCompositeVisitorAsync {
 
 	async visitDrawingElementAsync(drawingElement: DrawingElement): Promise<void> {
 		await this.drawingElementAdapterService.deleteDrawingBinData(drawingElement.id);
+		await this.filesStorageClientAdapterService.deleteFilesOfParent(drawingElement.id);
 
 		this.deleteNode(drawingElement);
 		await this.visitChildrenAsync(drawingElement);

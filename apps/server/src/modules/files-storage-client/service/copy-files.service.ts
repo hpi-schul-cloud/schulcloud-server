@@ -2,16 +2,11 @@ import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { CopyFileDto } from '../dto';
-import { EntityWithEmbeddedFiles } from '../interfaces';
+import { EntityWithEmbeddedFiles, FileUrlReplacement } from '../interfaces';
 import { CopyFilesOfParentParamBuilder, FileParamBuilder } from '../mapper';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 
 const FILE_COULD_NOT_BE_COPIED_HINT = 'fileCouldNotBeCopied';
-
-export type FileUrlReplacement = {
-	regex: RegExp;
-	replacement: string;
-};
 
 @Injectable()
 export class CopyFilesService {
@@ -70,6 +65,7 @@ export class CopyFilesService {
 			status: this.copyHelperService.deriveStatusFromElements(fileStatuses),
 			elements: fileStatuses,
 		};
+
 		return fileGroupStatus;
 	}
 }

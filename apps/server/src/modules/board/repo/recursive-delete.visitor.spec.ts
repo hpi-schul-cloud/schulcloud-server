@@ -2,7 +2,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { DrawingElementAdapterService } from '@modules/tldraw-client/service/drawing-element-adapter.service';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
@@ -17,6 +16,7 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
+import { DrawingElementAdapterService } from '@modules/tldraw-client';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
 
 describe(RecursiveDeleteVisitor.name, () => {

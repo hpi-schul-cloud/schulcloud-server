@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AntivirusService } from '@infra/antivirus';
 import { S3ClientAdapter } from '@infra/s3-client';
+import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action } from '@modules/authorization';
 import { AuthorizationReferenceService } from '@modules/authorization/domain';
@@ -109,6 +110,10 @@ describe('FilesStorageUC upload methods', () => {
 				{
 					provide: PreviewService,
 					useValue: createMock<PreviewService>(),
+				},
+				{
+					provide: EntityManager,
+					useValue: createMock<EntityManager>(),
 				},
 			],
 		}).compile();
@@ -285,12 +290,20 @@ describe('FilesStorageUC upload methods', () => {
 					mimeType: fileRecord.mimeType,
 				};
 
+				let resolveUploadFile: (value: FileRecord | PromiseLike<FileRecord>) => void;
+				const fileRecordPromise = new Promise<FileRecord>((resolve) => {
+					resolveUploadFile = resolve;
+				});
+				filesStorageService.uploadFile.mockImplementationOnce(() => fileRecordPromise);
+
 				request.pipe.mockImplementation((requestStream) => {
 					requestStream.emit('file', 'file', readable, fileInfo);
+
+					requestStream.emit('finish');
+					resolveUploadFile(fileRecord);
+
 					return requestStream;
 				});
-
-				filesStorageService.uploadFile.mockResolvedValueOnce(fileRecord);
 
 				return { params, userId, request, fileRecord, readable, fileInfo };
 			};
@@ -314,7 +327,6 @@ describe('FilesStorageUC upload methods', () => {
 				const file = FileDtoBuilder.buildFromRequest(fileInfo, readable);
 
 				await filesStorageUC.upload(userId, params, request);
-
 				expect(filesStorageService.uploadFile).toHaveBeenCalledWith(userId, params, file);
 			});
 
@@ -333,8 +345,15 @@ describe('FilesStorageUC upload methods', () => {
 				const fileRecord = fileRecords[0];
 				const request = createRequest();
 				const readable = Readable.from('abc');
+				const error = new Error('test');
 
 				const size = request.headers['content-length'];
+
+				let rejectUploadFile: (value: Error) => void;
+				const fileRecordPromise = new Promise<FileRecord>((resolve, reject) => {
+					rejectUploadFile = reject;
+				});
+				filesStorageService.uploadFile.mockImplementationOnce(() => fileRecordPromise);
 
 				request.get.mockReturnValue(size);
 				request.pipe.mockImplementation((requestStream) => {
@@ -344,11 +363,11 @@ describe('FilesStorageUC upload methods', () => {
 						mimeType: fileRecord.mimeType,
 					});
 
+					requestStream.emit('finish');
+					rejectUploadFile(error);
+
 					return requestStream;
 				});
-
-				const error = new Error('test');
-				filesStorageService.uploadFile.mockRejectedValueOnce(error);
 
 				return { params, userId, request, error };
 			};

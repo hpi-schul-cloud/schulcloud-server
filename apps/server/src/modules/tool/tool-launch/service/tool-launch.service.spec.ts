@@ -108,10 +108,11 @@ describe('ToolLaunchService', () => {
 				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
 				externalToolService.findById.mockResolvedValue(externalTool);
 				basicToolLaunchStrategy.createLaunchData.mockResolvedValue(launchDataDO);
-				toolVersionService.determineToolConfigurationStatus.mockResolvedValueOnce(
+				toolVersionService.determineToolConfigurationStatus.mockReturnValueOnce(
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: false,
 						isOutdatedOnScopeSchool: false,
+						isIncompleteOnScopeContext: false,
 					})
 				);
 
@@ -179,10 +180,11 @@ describe('ToolLaunchService', () => {
 
 				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
 				externalToolService.findById.mockResolvedValue(externalTool);
-				toolVersionService.determineToolConfigurationStatus.mockResolvedValueOnce(
+				toolVersionService.determineToolConfigurationStatus.mockReturnValueOnce(
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: false,
 						isOutdatedOnScopeSchool: false,
+						isIncompleteOnScopeContext: false,
 					})
 				);
 
@@ -229,10 +231,11 @@ describe('ToolLaunchService', () => {
 				schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
 				externalToolService.findById.mockResolvedValue(externalTool);
 				basicToolLaunchStrategy.createLaunchData.mockResolvedValue(launchDataDO);
-				toolVersionService.determineToolConfigurationStatus.mockResolvedValueOnce(
+				toolVersionService.determineToolConfigurationStatus.mockReturnValueOnce(
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeContext: true,
 						isOutdatedOnScopeSchool: true,
+						isIncompleteOnScopeContext: false,
 						isDeactivated: true,
 					})
 				);

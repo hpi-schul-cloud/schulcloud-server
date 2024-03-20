@@ -86,4 +86,82 @@ describe('DatabaseManagementService', () => {
 			expect(spy).toHaveBeenCalled();
 		});
 	});
+
+	describe('When call migrationUp()', () => {
+		const setup = () => {
+			orm.getMigrator().up = jest.fn();
+		};
+		it('should call migrator.up()', async () => {
+			setup();
+			await service.migrationUp();
+			expect(orm.getMigrator().up).toHaveBeenCalled();
+		});
+		it('should call migrator.up() with from', async () => {
+			setup();
+			const params = { from: 'foo' };
+			await service.migrationUp(params.from, undefined, undefined);
+			expect(orm.getMigrator().up).toHaveBeenCalledWith(params);
+		});
+		it('should call migrator.up() with param "to"', async () => {
+			setup();
+			const params = { to: 'foo' };
+			await service.migrationUp(undefined, params.to, undefined);
+			expect(orm.getMigrator().up).toHaveBeenCalledWith(params);
+		});
+		it('should call migrator.up() with param "only"', async () => {
+			setup();
+			const params = { only: 'foo' };
+			await service.migrationUp(undefined, undefined, params.only);
+			expect(orm.getMigrator().up).toHaveBeenCalledWith({ migrations: [params.only] });
+		});
+		it('should call migrator.up() with param "only" and ignore from and to', async () => {
+			setup();
+			const params = { only: 'foo' };
+			await service.migrationUp('bar', 'baz', params.only);
+			expect(orm.getMigrator().up).toHaveBeenCalledWith({ migrations: [params.only] });
+		});
+	});
+
+	describe('When call migrationDown()', () => {
+		const setup = () => {
+			orm.getMigrator().down = jest.fn();
+		};
+		it('should call migrator.down()', async () => {
+			setup();
+			await service.migrationDown();
+			expect(orm.getMigrator().down).toHaveBeenCalled();
+		});
+		it('should call migrator.down() with from', async () => {
+			setup();
+			const params = { from: 'foo' };
+			await service.migrationDown(params.from, undefined, undefined);
+			expect(orm.getMigrator().down).toHaveBeenCalledWith(params);
+		});
+		it('should call migrator.down() with param "to"', async () => {
+			setup();
+			const params = { to: 'foo' };
+			await service.migrationDown(undefined, params.to, undefined);
+			expect(orm.getMigrator().down).toHaveBeenCalledWith(params);
+		});
+		it('should call migrator.down() with param "only"', async () => {
+			setup();
+			const params = { only: 'foo' };
+			await service.migrationDown(undefined, undefined, params.only);
+			expect(orm.getMigrator().down).toHaveBeenCalledWith({ migrations: [params.only] });
+		});
+		it('should call migrator.down() with param "only" and ignore from and to', async () => {
+			setup();
+			const params = { only: 'foo' };
+			await service.migrationDown('bar', 'baz', params.only);
+			expect(orm.getMigrator().down).toHaveBeenCalledWith({ migrations: [params.only] });
+		});
+	});
+
+	describe('When call migrationPending()', () => {
+		it('should call migrator.getPendingMigrations()', async () => {
+			const spy = jest.spyOn(orm.getMigrator(), 'getPendingMigrations');
+			await service.migrationPending();
+			expect(spy).toHaveBeenCalled();
+		});
+	});
 });

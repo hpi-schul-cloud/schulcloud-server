@@ -123,4 +123,8 @@ export class ImportUser extends BaseEntityWithTimestamps implements EntityWithSc
 		this.user = undefined;
 		this.matchedBy = undefined;
 	}
+
+	static isImportUserRole(role: RoleName): role is IImportUserRoleName {
+		return role === RoleName.ADMINISTRATOR || role === RoleName.STUDENT || role === RoleName.TEACHER;
+	}
 }

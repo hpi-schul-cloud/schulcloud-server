@@ -180,6 +180,9 @@ export class FilesStorageService {
 			// The actual file size is set here because it is known only after the whole file is streamed.
 			fileRecord.size = await fileSizePromise;
 			this.throwErrorIfFileIsTooBig(fileRecord.size);
+
+			fileRecord.markAsUploaded();
+
 			await this.fileRecordRepo.save(fileRecord);
 
 			if (!useStreamToAntivirus || !fileRecord.isPreviewPossible()) {
@@ -217,8 +220,14 @@ export class FilesStorageService {
 		}
 	}
 
+	public getMaxFileSize(): number {
+		const maxFileSize = this.configService.get<number>('MAX_FILE_SIZE');
+
+		return maxFileSize;
+	}
+
 	private throwErrorIfFileIsTooBig(fileSize: number): void {
-		if (fileSize > this.configService.get<number>('MAX_FILE_SIZE')) {
+		if (fileSize > this.getMaxFileSize()) {
 			throw new BadRequestException(ErrorType.FILE_TOO_BIG);
 		}
 	}

@@ -19,17 +19,17 @@ import {
 import { AuthorizableReferenceType } from '../type';
 
 type RepoType =
-	| TaskRepo
-	| CourseRepo
-	| UserRepo
-	| LegacySchoolRepo
-	| TeamsRepo
-	| CourseGroupRepo
-	| SubmissionRepo
-	| SchoolExternalToolRepo
 	| BoardDoAuthorizableService
 	| ContextExternalToolAuthorizableService
-	| LessonService;
+	| CourseGroupRepo
+	| CourseRepo
+	| LegacySchoolRepo
+	| LessonService
+	| SchoolExternalToolRepo
+	| SubmissionRepo
+	| TaskRepo
+	| TeamsRepo
+	| UserRepo;
 
 interface RepoLoader {
 	repo: RepoType;

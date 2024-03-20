@@ -1,12 +1,12 @@
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { H5PAjaxEndpoint, H5PEditor, H5PPlayer, H5pError } from '@lumieducation/h5p-server';
+import { HttpException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserDO } from '@shared/domain/domainobject';
-import { LanguageType } from '@shared/domain/entity';
+import { LanguageType } from '@shared/domain/interface';
 import { setupEntities } from '@shared/testing';
 import { AuthorizationReferenceService } from '@src/modules/authorization/domain';
 import { UserService } from '@src/modules/user';
-import { H5PErrorMapper } from '../mapper/h5p-error.mapper';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { H5PEditorUc } from './h5p.uc';
@@ -74,7 +74,6 @@ describe('H5P Ajax', () => {
 			accountId: 'dummyAccountId',
 			isExternalUser: false,
 		};
-		const spy = jest.spyOn(H5PErrorMapper.prototype, 'mapH5pError');
 
 		it('should call H5PAjaxEndpoint.getAjax and return the result', async () => {
 			const dummyResponse = {
@@ -102,10 +101,10 @@ describe('H5P Ajax', () => {
 			);
 		});
 
-		it('should invoce h5p-error mapper', async () => {
+		it('should rethrow H5pError as HttpException', async () => {
 			ajaxEndpoint.getAjax.mockRejectedValueOnce(new Error('Dummy Error'));
-			await uc.getAjax({ action: 'content-type-cache' }, userMock);
-			expect(spy).toHaveBeenCalledTimes(1);
+			const getPromise = uc.getAjax({ action: 'content-type-cache' }, userMock);
+			await expect(getPromise).rejects.toThrow(HttpException);
 		});
 	});
 
@@ -117,7 +116,6 @@ describe('H5P Ajax', () => {
 			accountId: 'dummyAccountId',
 			isExternalUser: false,
 		};
-		const spy = jest.spyOn(H5PErrorMapper.prototype, 'mapH5pError');
 
 		it('should call H5PAjaxEndpoint.postAjax and return the result', async () => {
 			const dummyResponse = [
@@ -214,15 +212,16 @@ describe('H5P Ajax', () => {
 			);
 		});
 
-		it('should invoce h5p-error.mapper', async () => {
+		it('should rethrow H5pError as HttpException', async () => {
 			ajaxEndpoint.postAjax.mockRejectedValueOnce(new H5pError('dummy-error', { error: 'Dummy Error' }, 400));
 
-			await uc.postAjax(
+			const postPromise = uc.postAjax(
 				userMock,
 				{ action: 'libraries' },
 				{ contentId: 'id', field: 'field', libraries: ['dummyLibrary-1.0'], libraryParameters: '' }
 			);
-			expect(spy).toHaveBeenCalledTimes(1);
+
+			await expect(postPromise).rejects.toThrow(HttpException);
 		});
 	});
 });

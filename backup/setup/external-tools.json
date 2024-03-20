@@ -327,6 +327,43 @@
 		"openNewTab": false,
 		"version": 2,
 		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "659bf6f049e52dedff83a8f1"
+		},
+		"createdAt": {
+			"$date": "2023-11-30T15:28:04.733Z"
+		},
+		"updatedAt": {
+			"$date": "2023-11-30T15:32:42.888Z"
+		},
+		"name": "CY Test Tool Protected Parameter",
+		"config_type": "basic",
+		"config_baseUrl": "https://google.com/search",
+		"parameters": [{
+			"name": "search",
+			"displayName": "Suchparameter",
+			"description": "Danch wird gesucht",
+			"scope": "context",
+			"location": "query",
+			"type": "string",
+			"isOptional": false,
+			"isProtected": false
+		}, {
+			"name": "protected",
+			"displayName": "geschützter Parameter",
+			"description": "Dieser parameter wird nicht mitkopiert",
+			"scope": "context",
+			"location": "query",
+			"type": "boolean",
+			"isOptional": false,
+			"isProtected": true
+		}],
+		"isHidden": false,
+		"openNewTab": false,
+		"version": 1,
+		"isDeactivated": false
 	}
 
 ]

@@ -3,7 +3,6 @@ import {
 	CopyFileDO,
 	CopyFilesOfParentParams,
 	FileDO,
-	FileRecordParams,
 	FilesStorageEvents,
 	FilesStorageExchange,
 	RpcMessageProducer,
@@ -12,7 +11,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EntityId } from '@shared/domain/types';
 import { LegacyLogger } from '@src/core/logger';
-import { FilesStorageClientConfig } from '../interfaces';
+import { FilesStorageClientConfig } from '../files-storage-client-config';
 
 @Injectable()
 export class FilesStorageProducer extends RpcMessageProducer {
@@ -34,7 +33,7 @@ export class FilesStorageProducer extends RpcMessageProducer {
 		return response;
 	}
 
-	async listFilesOfParent(payload: FileRecordParams): Promise<FileDO[]> {
+	async listFilesOfParent(payload: EntityId): Promise<FileDO[]> {
 		this.logger.debug({ action: 'listFilesOfParent:started', payload });
 		const response = await this.request<FileDO[]>(FilesStorageEvents.LIST_FILES_OF_PARENT, payload);
 
@@ -48,6 +47,15 @@ export class FilesStorageProducer extends RpcMessageProducer {
 		const response = await this.request<FileDO[]>(FilesStorageEvents.DELETE_FILES_OF_PARENT, payload);
 
 		this.logger.debug({ action: 'deleteFilesOfParent:finished', payload });
+
+		return response;
+	}
+
+	async deleteFiles(payload: EntityId[]): Promise<FileDO[]> {
+		this.logger.debug({ action: 'deleteFiles:started', payload });
+		const response = await this.request<FileDO[]>(FilesStorageEvents.DELETE_FILES, payload);
+
+		this.logger.debug({ action: 'deleteFiles:finished', payload });
 
 		return response;
 	}

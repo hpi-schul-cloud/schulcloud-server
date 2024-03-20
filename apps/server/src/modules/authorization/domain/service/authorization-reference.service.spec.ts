@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizableReferenceType } from '../type';
 import { AuthorizationService } from './authorization.service';
 import { ReferenceLoader } from './reference.loader';

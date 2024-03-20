@@ -1,9 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Action, AuthorizationService } from '@modules/authorization';
+import { AuthorizationService } from '@modules/authorization';
 import { HttpService } from '@nestjs/axios';
-import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, BoardRoles, UserRoleEnum } from '@shared/domain/domainobject';
+import { BoardDoAuthorizable, BoardRoles } from '@shared/domain/domainobject';
 import { InputFormat } from '@shared/domain/types';
 import {
 	cardFactory,
@@ -17,7 +16,8 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { boardDoAuthorizableFactory } from '@shared/testing/factory/domainobject/board/board-do-authorizable.factory';
 import { BoardDoAuthorizableService, ContentElementService, SubmissionItemService } from '../service';
 import { ElementUc } from './element.uc';
 
@@ -63,9 +63,7 @@ describe(ElementUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		authorizationService.checkPermission.mockImplementation(() => {});
 		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
-		boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-			new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
-		);
+		boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(boardDoAuthorizableFactory.build());
 		elementService = module.get(ContentElementService);
 		await setupEntities();
 	});
@@ -89,7 +87,7 @@ describe(ElementUc.name, () => {
 			it('should get element', async () => {
 				const { richTextElement, user, content, elementSpy } = setup();
 
-				await uc.updateElementContent(user.id, richTextElement.id, content);
+				await uc.updateElement(user.id, richTextElement.id, content);
 
 				expect(elementSpy).toHaveBeenCalledWith(richTextElement.id);
 			});
@@ -97,7 +95,7 @@ describe(ElementUc.name, () => {
 			it('should call the service', async () => {
 				const { richTextElement, user, content } = setup();
 
-				await uc.updateElementContent(user.id, richTextElement.id, content);
+				await uc.updateElement(user.id, richTextElement.id, content);
 
 				expect(elementService.update).toHaveBeenCalledWith(richTextElement, content);
 			});
@@ -117,7 +115,7 @@ describe(ElementUc.name, () => {
 			it('should get element', async () => {
 				const { fileElement, user, content, elementSpy } = setup();
 
-				await uc.updateElementContent(user.id, fileElement.id, content);
+				await uc.updateElement(user.id, fileElement.id, content);
 
 				expect(elementSpy).toHaveBeenCalledWith(fileElement.id);
 			});
@@ -125,7 +123,7 @@ describe(ElementUc.name, () => {
 			it('should call the service', async () => {
 				const { fileElement, user, content } = setup();
 
-				await uc.updateElementContent(user.id, fileElement.id, content);
+				await uc.updateElement(user.id, fileElement.id, content);
 
 				expect(elementService.update).toHaveBeenCalledWith(fileElement, content);
 			});
@@ -133,62 +131,6 @@ describe(ElementUc.name, () => {
 	});
 
 	describe('deleteElement', () => {
-		describe('when deleting an element which has a submission item parent', () => {
-			const setup = () => {
-				const user = userFactory.build();
-				const element = richTextElementFactory.build();
-				const submissionItem = submissionItemFactory.build({ userId: user.id });
-
-				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
-				);
-
-				elementService.findById.mockResolvedValueOnce(element);
-				return { element, user, submissionItem };
-			};
-
-			it('should call the service to find the element', async () => {
-				const { element, user } = setup();
-				await uc.deleteElement(user.id, element.id);
-
-				expect(elementService.findById).toHaveBeenCalledWith(element.id);
-			});
-
-			it('should call the service to find the parent of the element', async () => {
-				const { element, user } = setup();
-				await uc.deleteElement(user.id, element.id);
-
-				expect(elementService.findParentOfId).toHaveBeenCalledWith(element.id);
-			});
-
-			it('should throw if the user is not the owner of the submission item', async () => {
-				const { element, user } = setup();
-				const otherSubmissionItem = submissionItemFactory.build({ userId: new ObjectId().toHexString() });
-				elementService.findParentOfId.mockResolvedValueOnce(otherSubmissionItem);
-
-				await expect(uc.deleteElement(user.id, element.id)).rejects.toThrow(new ForbiddenException());
-			});
-
-			it('should authorize the user to delete the element', async () => {
-				const { element, user, submissionItem } = setup();
-				elementService.findParentOfId.mockResolvedValueOnce(submissionItem);
-				const boardDoAuthorizable = await boardDoAuthorizableService.getBoardAuthorizable(submissionItem);
-				const context = { action: Action.read, requiredPermissions: [] };
-				await uc.deleteElement(user.id, element.id);
-
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, boardDoAuthorizable, context);
-			});
-
-			it('should call the service to delete the element', async () => {
-				const { user, element, submissionItem } = setup();
-				elementService.findParentOfId.mockResolvedValueOnce(submissionItem);
-
-				await uc.deleteElement(user.id, element.id);
-
-				expect(elementService.delete).toHaveBeenCalledWith(element);
-			});
-		});
-
 		describe('when deleting a content element', () => {
 			const setup = () => {
 				const user = userFactory.build();
@@ -196,7 +138,12 @@ describe(ElementUc.name, () => {
 				const drawingElement = drawingElementFactory.build();
 
 				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
+					new BoardDoAuthorizable({
+						users: [],
+						id: new ObjectId().toHexString(),
+						boardDo: element,
+						rootDo: columnBoardFactory.build(),
+					})
 				);
 
 				return { user, element, drawingElement };
@@ -293,8 +240,10 @@ describe(ElementUc.name, () => {
 			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
-				users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
+				users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 				id: columnBoard.id,
+				boardDo: card,
+				rootDo: columnBoard,
 			});
 
 			boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);

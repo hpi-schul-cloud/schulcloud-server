@@ -7,9 +7,10 @@ import { ShareToken } from '@modules/sharing/entity/share-token.entity';
 import { ContextExternalToolEntity } from '@modules/tool/context-external-tool/entity';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/entity';
-import { DeletionLogEntity, DeletionRequestEntity } from '@src/modules/deletion/entity';
 import { RocketChatUserEntity } from '@src/modules/rocketchat-user/entity';
 import { TldrawDrawing } from '@modules/tldraw/entities';
+import { DeletionLogEntity } from '@src/modules/deletion/repo/entity/deletion-log.entity';
+import { DeletionRequestEntity } from '@src/modules/deletion/repo/entity/deletion-request.entity';
 import { Account } from './account.entity';
 import {
 	BoardNode,
@@ -30,10 +31,9 @@ import { DashboardGridElementModel, DashboardModelEntity } from './dashboard.mod
 import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
 import { ImportUser } from './import-user.entity';
 import {
-	Board,
-	BoardElement,
+	LegacyBoard,
+	LegacyBoardElement,
 	ColumnboardBoardElement,
-	ColumnBoardTarget,
 	LessonBoardElement,
 	TaskBoardElement,
 } from './legacy-board';
@@ -55,13 +55,12 @@ import { VideoConference } from './video-conference.entity';
 
 export const ALL_ENTITIES = [
 	Account,
-	Board,
-	BoardElement,
+	LegacyBoard,
+	LegacyBoardElement,
 	BoardNode,
 	CardNode,
 	ColumnboardBoardElement,
 	ColumnBoardNode,
-	ColumnBoardTarget,
 	ColumnNode,
 	ClassEntity,
 	DeletionRequestEntity,

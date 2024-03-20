@@ -1,23 +1,77 @@
+import { ValidationError } from '@shared/common';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { LanguageType } from '@shared/domain/interface';
 import { EntityId, SchoolFeature, SchoolPurpose } from '@shared/domain/types';
-import { FileStorageType, SchoolPermissions } from '../type';
+import { FileStorageType, InstanceFeature, SchoolPermissions } from '../type';
 import { County } from './county';
 import { FederalState } from './federal-state';
 import { SchoolYear } from './school-year';
 
-export class School extends DomainObject<SchoolProps> {
-	public addFeature(feature: SchoolFeature): void {
-		this.props.features.add(feature);
-	}
+interface SchoolLogo {
+	dataUrl?: string;
+	name?: string;
+}
 
-	public removeFeature(feature: SchoolFeature): void {
-		this.props.features.delete(feature);
+interface SchoolInfo {
+	id: EntityId;
+	name: string;
+	language?: string;
+	logo?: SchoolLogo;
+}
+
+export class School extends DomainObject<SchoolProps> {
+	public getInfo(): SchoolInfo {
+		const info = {
+			id: this.props.id,
+			name: this.props.name,
+			language: this.props.language,
+			logo: this.props.logo,
+		};
+
+		return info;
 	}
 
 	public getPermissions(): SchoolPermissions | undefined {
 		const { permissions } = this.props;
 
 		return permissions;
+	}
+
+	public addInstanceFeature(feature: InstanceFeature): void {
+		if (!this.props.instanceFeatures) {
+			this.props.instanceFeatures = new Set();
+		}
+		this.props.instanceFeatures.add(feature);
+	}
+
+	public removeInstanceFeature(feature: InstanceFeature): void {
+		if (this.props.instanceFeatures) {
+			this.props.instanceFeatures.delete(feature);
+		}
+	}
+
+	public updateCounty(countyId: EntityId): void {
+		const { county, federalState } = this.props;
+
+		if (county) {
+			throw new ValidationError('County cannot be updated, once it is set.');
+		}
+		const { counties } = federalState.getProps();
+		const countyObject = counties?.find((item) => item.id === countyId);
+
+		if (!countyObject) {
+			throw new ValidationError('County not found.');
+		}
+
+		this.props.county = countyObject;
+	}
+
+	public updateOfficialSchoolNumber(officialSchoolNumber: string): void {
+		if (this.props.officialSchoolNumber) {
+			throw new ValidationError('Official school number cannot be updated, once it is set.');
+		}
+
+		this.props.officialSchoolNumber = officialSchoolNumber;
 	}
 
 	public isInMaintenance(): boolean {
@@ -58,15 +112,15 @@ export interface SchoolProps extends AuthorizableObject {
 	county?: County;
 	purpose?: SchoolPurpose;
 	features: Set<SchoolFeature>;
+	instanceFeatures?: Set<InstanceFeature>;
 	systemIds?: EntityId[];
-	logo_dataUrl?: string;
-	logo_name?: string;
+	logo?: SchoolLogo;
 	fileStorageType?: FileStorageType;
-	language?: string;
+	language?: LanguageType;
 	timezone?: string;
 	permissions?: SchoolPermissions;
 	// The enableStudentTeamCreation property is for compatibility with the existing data.
-	// It can't be mapped to a feature straight-forwardly in the repo,
+	// It can't be mapped to a feature straight-forwardly,
 	// because the config value STUDENT_TEAM_CREATION has to be taken into account.
 	enableStudentTeamCreation?: boolean;
 }

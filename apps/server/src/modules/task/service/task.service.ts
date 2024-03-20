@@ -1,22 +1,42 @@
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { Task } from '@shared/domain/entity';
-import { DomainOperation, IFindOptions } from '@shared/domain/interface';
-import { Counted, DomainModel, EntityId } from '@shared/domain/types';
+import { IFindOptions } from '@shared/domain/interface';
+import { Counted, EntityId } from '@shared/domain/types';
 import { TaskRepo } from '@shared/repo';
-import { DomainOperationBuilder } from '@shared/domain/builder';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
+import { IEventHandler, EventBus, EventsHandler } from '@nestjs/cqrs';
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	DomainOperationReport,
+	DataDeletionDomainOperationLoggable,
+	StatusModel,
+} from '@modules/deletion';
 import { SubmissionService } from './submission.service';
 
 @Injectable()
-export class TaskService {
+@EventsHandler(UserDeletedEvent)
+export class TaskService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly taskRepo: TaskRepo,
 		private readonly submissionService: SubmissionService,
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
-		private readonly logger: LegacyLogger
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus
 	) {
 		this.logger.setContext(TaskService.name);
+	}
+
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	async findBySingleParent(
@@ -47,8 +67,34 @@ export class TaskService {
 		return this.taskRepo.findById(taskId);
 	}
 
-	async deleteTasksByOnlyCreator(creatorId: EntityId): Promise<DomainOperation> {
-		this.logger.log(`Deleting Tasks where creatorId ${creatorId} is only parent`);
+	public async deleteUserData(creatorId: EntityId): Promise<DomainDeletionReport> {
+		const [tasksDeleted, tasksModifiedByRemoveCreator, tasksModifiedByRemoveUserFromFinished] = await Promise.all([
+			this.deleteTasksByOnlyCreator(creatorId),
+			this.removeCreatorIdFromTasks(creatorId),
+			this.removeUserFromFinished(creatorId),
+		]);
+
+		const modifiedTasksCount = tasksModifiedByRemoveCreator.count + tasksModifiedByRemoveUserFromFinished.count;
+		const modifiedTasksRef = [...tasksModifiedByRemoveCreator.refs, ...tasksModifiedByRemoveUserFromFinished.refs];
+
+		const result = DomainDeletionReportBuilder.build(DomainName.TASK, [
+			tasksDeleted,
+			DomainOperationReportBuilder.build(OperationType.UPDATE, modifiedTasksCount, modifiedTasksRef),
+		]);
+
+		return result;
+	}
+
+	public async deleteTasksByOnlyCreator(creatorId: EntityId): Promise<DomainOperationReport> {
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Deleting data from Task',
+				DomainName.TASK,
+				creatorId,
+				StatusModel.PENDING
+			)
+		);
+
 		const [tasksByOnlyCreatorId, counterOfTasksOnlyWithCreatorId] = await this.taskRepo.findByOnlyCreatorId(creatorId);
 
 		if (counterOfTasksOnlyWithCreatorId > 0) {
@@ -56,16 +102,35 @@ export class TaskService {
 			await Promise.all(promiseDeletedTasks);
 		}
 
-		const result = DomainOperationBuilder.build(DomainModel.TASK, 0, counterOfTasksOnlyWithCreatorId);
-		this.logger.log(
-			`Successfully deleted ${counterOfTasksOnlyWithCreatorId} where creatorId ${creatorId} is only parent`
+		const result = DomainOperationReportBuilder.build(
+			OperationType.DELETE,
+			counterOfTasksOnlyWithCreatorId,
+			this.getTasksId(tasksByOnlyCreatorId)
+		);
+
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully deleted data from Task',
+				DomainName.TASK,
+				creatorId,
+				StatusModel.FINISHED,
+				counterOfTasksOnlyWithCreatorId,
+				0
+			)
 		);
 
 		return result;
 	}
 
-	async removeCreatorIdFromTasks(creatorId: EntityId): Promise<DomainOperation> {
-		this.logger.log(`Deleting creatorId ${creatorId} from Tasks`);
+	public async removeCreatorIdFromTasks(creatorId: EntityId): Promise<DomainOperationReport> {
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Deleting user data from Task',
+				DomainName.TASK,
+				creatorId,
+				StatusModel.PENDING
+			)
+		);
 		const [tasksByCreatorIdWithCoursesAndLessons, counterOfTasksWithCoursesorLessons] =
 			await this.taskRepo.findByCreatorIdWithCourseAndLesson(creatorId);
 
@@ -74,13 +139,34 @@ export class TaskService {
 			await this.taskRepo.save(tasksByCreatorIdWithCoursesAndLessons);
 		}
 
-		const result = DomainOperationBuilder.build(DomainModel.TASK, counterOfTasksWithCoursesorLessons, 0);
-		this.logger.log(`Successfully updated ${counterOfTasksWithCoursesorLessons} Tasks without creatorId ${creatorId}`);
+		const result = DomainOperationReportBuilder.build(
+			OperationType.UPDATE,
+			counterOfTasksWithCoursesorLessons,
+			this.getTasksId(tasksByCreatorIdWithCoursesAndLessons)
+		);
+
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully deleted user data from Task',
+				DomainName.TASK,
+				creatorId,
+				StatusModel.FINISHED,
+				counterOfTasksWithCoursesorLessons,
+				0
+			)
+		);
 		return result;
 	}
 
-	async removeUserFromFinished(userId: EntityId): Promise<DomainOperation> {
-		this.logger.log(`Deleting userId ${userId} from Archve collection in Tasks`);
+	public async removeUserFromFinished(userId: EntityId): Promise<DomainOperationReport> {
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Deleting user data from Task archive collection',
+				DomainName.TASK,
+				userId,
+				StatusModel.PENDING
+			)
+		);
 		const [tasksWithUserInFinished, counterOfTasksWithUserInFinished] = await this.taskRepo.findByUserIdInFinished(
 			userId
 		);
@@ -91,11 +177,27 @@ export class TaskService {
 			await this.taskRepo.save(tasksWithUserInFinished);
 		}
 
-		const result = DomainOperationBuilder.build(DomainModel.TASK, counterOfTasksWithUserInFinished, 0);
-		this.logger.log(
-			`Successfully updated ${counterOfTasksWithUserInFinished} Tasks without userId ${userId} in archive collection in Tasks`
+		const result = DomainOperationReportBuilder.build(
+			OperationType.UPDATE,
+			counterOfTasksWithUserInFinished,
+			this.getTasksId(tasksWithUserInFinished)
+		);
+
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully deleted user data from Task archive collection',
+				DomainName.TASK,
+				userId,
+				StatusModel.FINISHED,
+				counterOfTasksWithUserInFinished,
+				0
+			)
 		);
 
 		return result;
+	}
+
+	private getTasksId(tasks: Task[]): EntityId[] {
+		return tasks.map((task) => task.id);
 	}
 }

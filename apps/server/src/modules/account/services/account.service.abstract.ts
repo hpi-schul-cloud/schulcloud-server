@@ -26,7 +26,7 @@ export abstract class AbstractAccountService {
 
 	abstract delete(id: EntityId): Promise<void>;
 
-	abstract deleteByUserId(userId: EntityId): Promise<void>;
+	abstract deleteByUserId(userId: EntityId): Promise<EntityId[]>;
 
 	abstract searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<AccountDto[]>>;
 

@@ -1,9 +1,22 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Query, Res } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Delete,
+	Get,
+	HttpCode,
+	HttpStatus,
+	Param,
+	Post,
+	Query,
+	Res,
+	StreamableFile,
+} from '@nestjs/common';
 import {
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
 	ApiFoundResponse,
+	ApiNotFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
 	ApiResponse,
@@ -189,5 +202,25 @@ export class ToolController {
 			ExternalToolMetadataMapper.mapToExternalToolMetadataResponse(externalToolMetadata);
 
 		return mapped;
+	}
+
+	@Get(':externalToolId/datasheet')
+	@ApiOperation({ summary: 'Returns a pdf of the external tool information' })
+	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
+	@ApiNotFoundResponse({ description: 'The external tool has not been found' })
+	async getDatasheet(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ExternalToolIdParams,
+		@Res({ passthrough: true }) res: Response
+	): Promise<StreamableFile> {
+		const datasheetBuffer: Buffer = await this.externalToolUc.getDatasheet(currentUser.userId, params.externalToolId);
+
+		const myFilename = await this.externalToolUc.createDatasheetFilename(params.externalToolId);
+
+		res.setHeader('Content-Type', 'application/pdf');
+		res.setHeader('Content-Disposition', `inline; filename=${myFilename}`);
+
+		const streamableFile: StreamableFile = new StreamableFile(datasheetBuffer);
+		return streamableFile;
 	}
 }

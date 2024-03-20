@@ -3,6 +3,7 @@ const redis = require('redis');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const { GeneralError } = require('../errors');
+const logger = require('../logger');
 
 let redisClient = false;
 
@@ -14,6 +15,13 @@ async function initializeRedisClient() {
 				// Legacy mode is needed for compatibility with v4, see https://github.com/redis/node-redis/blob/HEAD/docs/v3-to-v4.md#legacy-mode
 				legacyMode: true,
 			});
+
+			// The error event must be handled, otherwise the app crashes on redis connection errors.
+			// This is due to basic NodeJS behavior: https://nodejs.org/api/events.html#error-events
+			redisClient.on('error', (err) => {
+				logger.error('Redis client error', err);
+			});
+
 			await redisClient.connect();
 		} catch (err) {
 			throw new GeneralError('Redis connection failed!', err);

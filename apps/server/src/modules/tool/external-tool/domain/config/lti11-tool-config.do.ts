@@ -6,8 +6,6 @@ export class Lti11ToolConfig extends ExternalToolConfig {
 
 	secret: string;
 
-	resource_link_id?: string;
-
 	lti_message_type: LtiMessageType;
 
 	privacy_permission: LtiPrivacyPermission;
@@ -21,7 +19,6 @@ export class Lti11ToolConfig extends ExternalToolConfig {
 		});
 		this.key = props.key;
 		this.secret = props.secret;
-		this.resource_link_id = props.resource_link_id;
 		this.lti_message_type = props.lti_message_type;
 		this.privacy_permission = props.privacy_permission;
 		this.launch_presentation_locale = props.launch_presentation_locale;

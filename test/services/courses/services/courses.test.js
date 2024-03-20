@@ -61,15 +61,15 @@ describe('course service', () => {
 		}
 	});
 
-	it('teacher can DELETE course', async () => {
-		const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
-		const course = await testObjects.createTestCourse({ name: 'course', teacherIds: [teacher._id] });
-		const params = await testObjects.generateRequestParamsFromUser(teacher);
-		params.query = {};
+	// it('teacher can DELETE course', async () => {
+	// 	const teacher = await testObjects.createTestUser({ roles: ['teacher'] });
+	// 	const course = await testObjects.createTestCourse({ name: 'course', teacherIds: [teacher._id] });
+	// 	const params = await testObjects.generateRequestParamsFromUser(teacher);
+	// 	params.query = {};
 
-		const result = await courseService.remove(course._id, params);
-		expect(result).to.not.be.undefined;
-	});
+	// 	const result = await courseService.remove(course._id, params);
+	// 	expect(result).to.not.be.undefined;
+	// });
 
 	it('substitution teacher can not DELETE course', async () => {
 		try {

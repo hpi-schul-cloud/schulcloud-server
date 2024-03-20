@@ -1,0 +1,30 @@
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: api-ldap-worker-scaledobject
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api-worker
+    app.kubernetes.io/part-of: schulcloud-verbund
+    app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    app.kubernetes.io/name: api-worker
+    app.kubernetes.io/component: sync
+    app.kubernetes.io/managed-by: ansible
+    git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+    git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+spec:
+  scaleTargetRef:
+    name: api-worker-deployment
+  idleReplicaCount: 0
+  minReplicaCount:  {{ API_WORKER_MIN_REPLICA_COUNT|default("1", true) }}
+  maxReplicaCount:  {{ API_WORKER_MAX_REPLICA_COUNT|default("40", true) }}
+  triggers:
+  - type: rabbitmq
+    metadata:
+      protocol: amqp
+      queueName: sync_ldap
+      mode: QueueLength
+      value: "1"
+    authenticationRef:
+      name: rabbitmq-trigger-auth

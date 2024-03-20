@@ -1,4 +1,4 @@
-import { SanisGroupRole, SanisSonstigeGruppenzugehoerigeResponse } from '../strategy';
+import { SanisGroupRole, SanisSonstigeGruppenzugehoerigeResponse } from '@infra/schulconnex-client';
 import { GroupRoleUnknownLoggable } from './group-role-unknown.loggable';
 
 describe('GroupRoleUnknownLoggable', () => {

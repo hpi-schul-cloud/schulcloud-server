@@ -152,9 +152,11 @@ export class AccountServiceIdm extends AbstractAccountService {
 		await this.identityManager.deleteAccountById(id);
 	}
 
-	async deleteByUserId(userId: EntityId): Promise<void> {
+	async deleteByUserId(userId: EntityId): Promise<EntityId[]> {
 		const idmAccount = await this.identityManager.findAccountByDbcUserId(userId);
-		await this.identityManager.deleteAccountById(idmAccount.id);
+		const deletedAccountId = await this.identityManager.deleteAccountById(idmAccount.id);
+
+		return [deletedAccountId];
 	}
 
 	// eslint-disable-next-line @typescript-eslint/require-await, @typescript-eslint/no-unused-vars

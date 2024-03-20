@@ -9,7 +9,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { cleanupCollections, mapUserToCurrentUser, roleFactory, schoolFactory, userFactory } from '@shared/testing';
+import {
+	cleanupCollections,
+	mapUserToCurrentUser,
+	roleFactory,
+	schoolEntityFactory,
+	userFactory,
+} from '@shared/testing';
 import NodeClam from 'clamscan';
 import { Request } from 'express';
 import FileType from 'file-type-cjs/file-type-cjs-index';
@@ -138,7 +144,7 @@ describe('files-storage controller (API)', () => {
 	beforeEach(async () => {
 		jest.resetAllMocks();
 		await cleanupCollections(em);
-		const school = schoolFactory.build();
+		const school = schoolEntityFactory.build();
 		const roles = roleFactory.buildList(1, {
 			permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW],
 		});

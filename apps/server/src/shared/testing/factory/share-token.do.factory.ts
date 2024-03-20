@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import { ShareTokenDO, ShareTokenParentType } from '@modules/sharing/domainobject/share-token.do';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Factory } from 'fishery';
 
 class ShareTokenFactory extends Factory<ShareTokenDO> {

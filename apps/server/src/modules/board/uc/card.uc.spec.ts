@@ -2,11 +2,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardDoAuthorizable, BoardRoles, ContentElementType, UserRoleEnum } from '@shared/domain/domainobject';
+import { BoardDoAuthorizable, BoardRoles, ContentElementType } from '@shared/domain/domainobject';
 import { columnBoardFactory, columnFactory, setupEntities, userFactory } from '@shared/testing';
 import { cardFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
 import { LegacyLogger } from '@src/core/logger';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardDoAuthorizableService, CardService, ContentElementService } from '../service';
 import { CardUc } from './card.uc';
 
@@ -74,7 +74,12 @@ describe(CardUc.name, () => {
 				const cardIds = cards.map((c) => c.id);
 
 				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
+					new BoardDoAuthorizable({
+						users: [],
+						id: new ObjectId().toHexString(),
+						boardDo: cards[0],
+						rootDo: columnBoardFactory.build(),
+					})
 				);
 
 				return { user, cards, cardIds };
@@ -109,8 +114,10 @@ describe(CardUc.name, () => {
 			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
-				users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
+				users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 				id: board.id,
+				boardDo: card,
+				rootDo: board,
 			});
 			const createCardBodyParams = {
 				requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
@@ -151,8 +158,10 @@ describe(CardUc.name, () => {
 			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
-				users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
+				users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 				id: board.id,
+				boardDo: card,
+				rootDo: board,
 			});
 			const createCardBodyParams = {
 				requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
@@ -204,8 +213,10 @@ describe(CardUc.name, () => {
 			authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 			const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
-				users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
-				id: board.id,
+				users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+				id: card.id,
+				boardDo: card,
+				rootDo: board,
 			});
 			const createCardBodyParams = {
 				requiredEmptyElements: [ContentElementType.FILE, ContentElementType.RICH_TEXT],
@@ -248,7 +259,12 @@ describe(CardUc.name, () => {
 				elementService.create.mockResolvedValueOnce(element);
 
 				boardDoAuthorizableService.getBoardAuthorizable.mockResolvedValue(
-					new BoardDoAuthorizable({ users: [], id: new ObjectId().toHexString() })
+					new BoardDoAuthorizable({
+						users: [],
+						id: new ObjectId().toHexString(),
+						boardDo: card,
+						rootDo: columnBoardFactory.build(),
+					})
 				);
 
 				return { user, card, element };
@@ -304,8 +320,10 @@ describe(CardUc.name, () => {
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 				const authorizableMock: BoardDoAuthorizable = new BoardDoAuthorizable({
-					users: [{ userId: user.id, roles: [BoardRoles.EDITOR], userRoleEnum: UserRoleEnum.TEACHER }],
+					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
 					id: element.id,
+					boardDo: element,
+					rootDo: columnBoardFactory.build(),
 				});
 
 				boardDoAuthorizableService.findById.mockResolvedValueOnce(authorizableMock);

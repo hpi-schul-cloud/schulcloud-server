@@ -7,8 +7,6 @@ import { BoardExternalReferenceType, ContentElementType } from '@shared/domain/d
 import { FileElementNode, RichTextElementNode, SubmissionContainerElementNode } from '@shared/domain/entity';
 import { InputFormat } from '@shared/domain/types';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	cardNodeFactory,
 	cleanupCollections,
 	columnBoardNodeFactory,
@@ -17,6 +15,8 @@ import {
 	fileElementNodeFactory,
 	richTextElementNodeFactory,
 	submissionContainerElementNodeFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 
 describe(`content element update content (api)`, () => {

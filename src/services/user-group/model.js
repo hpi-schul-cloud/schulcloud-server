@@ -61,6 +61,7 @@ const courseSchema = getUserGroupSchema({
 	// optional information if this course is a copy from other
 	isCopyFrom: { type: Schema.Types.ObjectId, default: null },
 	features: [{ type: String, enum: Object.values(COURSE_FEATURES) }],
+	syncedWithGroup: { type: Schema.Types.ObjectId },
 	...externalSourceSchema,
 });
 

@@ -1,0 +1,30 @@
+  - name: H5P Proxy Configmap Files
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-h5p-proxy-configmap-files.yml.j2
+    when: WITH_H5P_EDITOR is defined and WITH_H5P_EDITOR|bool and WITH_H5P_PROXY is defined and WITH_H5P_PROXY|bool
+
+
+  - name: H5P Proxy Deployment
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-h5p-proxy-deployment.yml.j2
+    when: WITH_H5P_EDITOR is defined and WITH_H5P_EDITOR|bool and WITH_H5P_PROXY is defined and WITH_H5P_PROXY|bool
+    
+  - name: H5P Proxy Service
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-h5p-proxy-svc.yml.j2
+    when: WITH_H5P_EDITOR is defined and WITH_H5P_EDITOR|bool and WITH_H5P_PROXY is defined and WITH_H5P_PROXY|bool
+
+  - name: H5P Proxy Ingress
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: api-h5p-proxy-ingress.yml.j2
+      apply: yes
+    when: WITH_H5P_EDITOR is defined and WITH_H5P_EDITOR|bool and WITH_H5P_PROXY is defined and WITH_H5P_PROXY|bool
+    

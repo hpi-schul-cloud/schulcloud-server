@@ -1,13 +1,16 @@
 import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { NotFoundError } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { DrawingElementAdapterService } from '@modules/tldraw-client';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AnyBoardDo, BoardExternalReferenceType, Card, Column, ColumnBoard } from '@shared/domain/domainobject';
-import { CardNode, RichTextElementNode } from '@shared/domain/entity';
+import { CardNode, ColumnBoardNode, ExternalToolElementNodeEntity, RichTextElementNode } from '@shared/domain/entity';
+import { EntityId } from '@shared/domain/types';
 import {
 	cardFactory,
 	cardNodeFactory,
@@ -16,12 +19,15 @@ import {
 	columnBoardNodeFactory,
 	columnFactory,
 	columnNodeFactory,
+	contextExternalToolFactory,
 	courseFactory,
+	externalToolElementNodeFactory,
 	fileElementFactory,
 	richTextElementFactory,
 	richTextElementNodeFactory,
 } from '@shared/testing';
-import { DrawingElementAdapterService } from '@modules/tldraw-client/service/drawing-element-adapter.service';
+import { ContextExternalToolEntity } from '../../tool';
+import { ContextExternalTool } from '../../tool/context-external-tool/domain';
 import { BoardDoRepo } from './board-do.repo';
 import { BoardNodeRepo } from './board-node.repo';
 import { RecursiveDeleteVisitor } from './recursive-delete.vistor';
@@ -263,6 +269,62 @@ describe(BoardDoRepo.name, () => {
 				const parent = await repo.findParentOfId(cardId);
 
 				expect(parent).toBeUndefined();
+			});
+		});
+	});
+
+	describe('countBoardUsageForExternalTools', () => {
+		describe('when counting the amount of boards used by the selected tools', () => {
+			const setup = async () => {
+				const contextExternalToolId: EntityId = new ObjectId().toHexString();
+				const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId(
+					undefined,
+					contextExternalToolId
+				);
+				const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId(
+					undefined,
+					contextExternalToolId
+				);
+				const otherContextExternalToolEntity: ContextExternalToolEntity =
+					contextExternalToolEntityFactory.buildWithId();
+
+				const board: ColumnBoardNode = columnBoardNodeFactory.buildWithId();
+				const otherBoard: ColumnBoardNode = columnBoardNodeFactory.buildWithId();
+				const card: CardNode = cardNodeFactory.buildWithId({ parent: board });
+				const otherCard: CardNode = cardNodeFactory.buildWithId({ parent: otherBoard });
+				const externalToolElements: ExternalToolElementNodeEntity[] = externalToolElementNodeFactory.buildListWithId(
+					2,
+					{
+						parent: card,
+						contextExternalTool: contextExternalToolEntity,
+					}
+				);
+				const otherExternalToolElement: ExternalToolElementNodeEntity = externalToolElementNodeFactory.buildWithId({
+					parent: otherCard,
+					contextExternalTool: otherContextExternalToolEntity,
+				});
+
+				await em.persistAndFlush([
+					board,
+					otherBoard,
+					card,
+					otherCard,
+					...externalToolElements,
+					otherExternalToolElement,
+					contextExternalToolEntity,
+				]);
+
+				return {
+					contextExternalTool,
+				};
+			};
+
+			it('should return the amount of boards used by the selected tools', async () => {
+				const { contextExternalTool } = await setup();
+
+				const result: number = await repo.countBoardUsageForExternalTools([contextExternalTool]);
+
+				expect(result).toEqual(1);
 			});
 		});
 	});

@@ -63,10 +63,21 @@ export class PseudonymsRepo {
 		return savedDomainObject;
 	}
 
-	async deletePseudonymsByUserId(userId: EntityId): Promise<number> {
-		const promise: Promise<number> = this.em.nativeDelete(PseudonymEntity, { userId: new ObjectId(userId) });
+	async deletePseudonymsByUserId(userId: EntityId): Promise<EntityId[]> {
+		const pseudonyms = await this.em.find(PseudonymEntity, { userId: new ObjectId(userId) });
+		if (pseudonyms.length === 0) {
+			return [];
+		}
 
-		return promise;
+		const removePromises = pseudonyms.map((pseudonym) => this.em.removeAndFlush(pseudonym));
+
+		await Promise.all(removePromises);
+
+		return this.getPseudonymId(pseudonyms);
+	}
+
+	private getPseudonymId(pseudonyms: PseudonymEntity[]): EntityId[] {
+		return pseudonyms.map((pseudonym) => pseudonym.id);
 	}
 
 	protected mapEntityToDomainObject(entity: PseudonymEntity): Pseudonym {

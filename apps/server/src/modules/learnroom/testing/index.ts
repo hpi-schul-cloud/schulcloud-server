@@ -1,0 +1,1 @@
+export { courseFactory } from './courseFactory';

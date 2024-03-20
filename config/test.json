@@ -43,7 +43,8 @@
 	"NEST_LOG_LEVEL": "error",
 	"CALENDAR_URI": "https://schul.tech:3000",
 	"HYDRA_URI": "http://hydra:9000",
-	"FEATURE_IMSCC_COURSE_EXPORT_ENABLED": true,
+	"FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED": true,
+	"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED": true,
 	"SESSION": {
 		"SAME_SITE": "lax",
 		"SECURE": false,
@@ -68,9 +69,26 @@
 	"TLDRAW": {
 		"SOCKET_PORT": 3346,
 		"PING_TIMEOUT": 1,
+		"FINALIZE_DELAY": 1,
 		"GC_ENABLED": true,
-		"DB_COLLECTION_NAME": "drawings",
-		"DB_FLUSH_SIZE": 400,
-		"DB_MULTIPLE_COLLECTIONS": false
+		"DB_COMPRESS_THRESHOLD": 400,
+		"MAX_DOCUMENT_SIZE": 15000000,
+		"ASSETS_ENABLED": true,
+		"ASSETS_SYNC_ENABLED": true,
+		"ASSETS_MAX_SIZE": 25000000,
+		"ASSETS_ALLOWED_MIME_TYPES_LIST": ""
+	},
+	"SCHULCONNEX_CLIENT": {
+		"API_URL": "http://localhost:8888/v1/",
+		"TOKEN_ENDPOINT": "http://localhost:8888/realms/SANIS/protocol/openid-connect/token",
+		"CLIENT_ID": "schulcloud",
+		"CLIENT_SECRET": "secret"
+	},
+	"ADMIN_API": { "ALLOWED_API_KEYS": "thisistheadminapitokeninthetestconfig" },
+	"EXIT_ON_ERROR": false,
+	"TEACHER_STUDENT_VISIBILITY": {
+		"IS_CONFIGURABLE": false,
+		"IS_ENABLED_BY_DEFAULT": true,
+		"IS_VISIBLE": true
 	}
 }

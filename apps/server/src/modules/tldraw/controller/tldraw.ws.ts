@@ -1,17 +1,24 @@
 import { WebSocketGateway, WebSocketServer, OnGatewayInit, OnGatewayConnection } from '@nestjs/websockets';
-import { Server, WebSocket } from 'ws';
+import WebSocket, { Server } from 'ws';
 import { Request } from 'express';
 import { ConfigService } from '@nestjs/config';
 import cookie from 'cookie';
-import { BadRequestException } from '@nestjs/common';
+import {
+	InternalServerErrorException,
+	UnauthorizedException,
+	NotFoundException,
+	NotAcceptableException,
+} from '@nestjs/common';
 import { Logger } from '@src/core/logger';
-import { AxiosError } from 'axios';
-import { WebsocketCloseErrorLoggable } from '../loggable/websocket-close-error.loggable';
-import { TldrawConfig, SOCKET_PORT } from '../config';
-import { WsCloseCodeEnum, WsCloseMessageEnum } from '../types';
+import { isAxiosError } from 'axios';
+import { firstValueFrom } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
+import { WebsocketInitErrorLoggable } from '../loggable';
+import { TldrawConfig, TLDRAW_SOCKET_PORT } from '../config';
+import { WsCloseCode, WsCloseMessage } from '../types';
 import { TldrawWsService } from '../service';
 
-@WebSocketGateway(SOCKET_PORT)
+@WebSocketGateway(TLDRAW_SOCKET_PORT)
 export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 	@WebSocketServer()
 	server!: Server;
@@ -19,64 +26,33 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 	constructor(
 		private readonly configService: ConfigService<TldrawConfig, true>,
 		private readonly tldrawWsService: TldrawWsService,
+		private readonly httpService: HttpService,
 		private readonly logger: Logger
 	) {}
 
-	async handleConnection(client: WebSocket, request: Request): Promise<void> {
+	public async handleConnection(client: WebSocket, request: Request): Promise<void> {
+		if (!this.configService.get<boolean>('FEATURE_TLDRAW_ENABLED')) {
+			client.close(WsCloseCode.BAD_REQUEST, WsCloseMessage.FEATURE_DISABLED);
+			return;
+		}
+
 		const docName = this.getDocNameFromRequest(request);
-		if (docName.length > 0 && this.configService.get<string>('FEATURE_TLDRAW_ENABLED')) {
+		if (!docName) {
+			client.close(WsCloseCode.BAD_REQUEST, WsCloseMessage.BAD_REQUEST);
+			return;
+		}
+
+		try {
 			const cookies = this.parseCookiesFromHeader(request);
-			try {
-				await this.tldrawWsService.authorizeConnection(docName, cookies?.jwt);
-			} catch (err) {
-				if ((err as AxiosError).response?.status === 404 || (err as AxiosError).response?.status === 400) {
-					this.closeClientAndLogError(
-						client,
-						WsCloseCodeEnum.WS_CLIENT_NOT_FOUND_CODE,
-						WsCloseMessageEnum.WS_CLIENT_NOT_FOUND_MESSAGE,
-						err as Error
-					);
-				} else {
-					this.closeClientAndLogError(
-						client,
-						WsCloseCodeEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_CODE,
-						WsCloseMessageEnum.WS_CLIENT_UNAUTHORISED_CONNECTION_MESSAGE,
-						err as Error
-					);
-				}
-				return;
-			}
-			try {
-				this.tldrawWsService.setupWSConnection(client, docName);
-			} catch (err) {
-				this.closeClientAndLogError(
-					client,
-					WsCloseCodeEnum.WS_CLIENT_ESTABLISHING_CONNECTION_CODE,
-					WsCloseMessageEnum.WS_CLIENT_ESTABLISHING_CONNECTION_MESSAGE,
-					err as Error
-				);
-			}
-		} else {
-			this.closeClientAndLogError(
-				client,
-				WsCloseCodeEnum.WS_CLIENT_BAD_REQUEST_CODE,
-				WsCloseMessageEnum.WS_CLIENT_BAD_REQUEST_MESSAGE,
-				new BadRequestException()
-			);
+			await this.authorizeConnection(docName, cookies?.jwt);
+			await this.tldrawWsService.setupWsConnection(client, docName);
+		} catch (err) {
+			this.handleError(err, client, docName);
 		}
 	}
 
-	public afterInit(): void {
-		this.tldrawWsService.setPersistence({
-			bindState: async (docName, ydoc) => {
-				await this.tldrawWsService.updateDocument(docName, ydoc);
-			},
-			writeState: async (docName) => {
-				// This is called when all connections to the document are closed.
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
-				await this.tldrawWsService.flushDocument(docName);
-			},
-		});
+	public async afterInit(): Promise<void> {
+		await this.tldrawWsService.createDbIndex();
 	}
 
 	private getDocNameFromRequest(request: Request): string {
@@ -89,8 +65,72 @@ export class TldrawWs implements OnGatewayInit, OnGatewayConnection {
 		return parsedCookies;
 	}
 
-	private closeClientAndLogError(client: WebSocket, code: WsCloseCodeEnum, data: string, err: Error): void {
-		client.close(code, data);
-		this.logger.warning(new WebsocketCloseErrorLoggable(err, `(${code}) ${data}`));
+	private async authorizeConnection(drawingName: string, token: string): Promise<void> {
+		if (!token) {
+			throw new UnauthorizedException('Token was not given');
+		}
+
+		try {
+			const apiHostUrl = this.configService.get<string>('API_HOST');
+			await firstValueFrom(
+				this.httpService.get(`${apiHostUrl}/v3/elements/${drawingName}/permission`, {
+					headers: {
+						Accept: 'Application/json',
+						Authorization: `Bearer ${token}`,
+					},
+				})
+			);
+		} catch (err) {
+			if (isAxiosError(err)) {
+				switch (err.response?.status) {
+					case 400:
+					case 404:
+						throw new NotFoundException();
+					case 401:
+					case 403:
+						throw new UnauthorizedException();
+					default:
+						throw new InternalServerErrorException();
+				}
+			}
+
+			throw new InternalServerErrorException();
+		}
+	}
+
+	private closeClientAndLog(
+		client: WebSocket,
+		code: WsCloseCode,
+		message: WsCloseMessage,
+		docName: string,
+		err?: unknown
+	): void {
+		client.close(code, message);
+		this.logger.warning(new WebsocketInitErrorLoggable(code, message, docName, err));
+	}
+
+	private handleError(err: unknown, client: WebSocket, docName: string): void {
+		if (err instanceof NotFoundException) {
+			this.closeClientAndLog(client, WsCloseCode.NOT_FOUND, WsCloseMessage.NOT_FOUND, docName);
+			return;
+		}
+
+		if (err instanceof UnauthorizedException) {
+			this.closeClientAndLog(client, WsCloseCode.UNAUTHORIZED, WsCloseMessage.UNAUTHORIZED, docName);
+			return;
+		}
+
+		if (err instanceof NotAcceptableException) {
+			this.closeClientAndLog(client, WsCloseCode.NOT_ACCEPTABLE, WsCloseMessage.NOT_ACCEPTABLE, docName);
+			return;
+		}
+
+		this.closeClientAndLog(
+			client,
+			WsCloseCode.INTERNAL_SERVER_ERROR,
+			WsCloseMessage.INTERNAL_SERVER_ERROR,
+			docName,
+			err
+		);
 	}
 }

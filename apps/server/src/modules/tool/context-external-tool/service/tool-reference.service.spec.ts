@@ -83,7 +83,7 @@ describe('ToolReferenceService', () => {
 				contextExternalToolService.findByIdOrFail.mockResolvedValueOnce(contextExternalTool);
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				externalToolService.findById.mockResolvedValueOnce(externalTool);
-				toolVersionService.determineToolConfigurationStatus.mockResolvedValue(
+				toolVersionService.determineToolConfigurationStatus.mockReturnValue(
 					toolConfigurationStatusFactory.build({
 						isOutdatedOnScopeSchool: true,
 						isOutdatedOnScopeContext: false,

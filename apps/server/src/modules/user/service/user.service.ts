@@ -1,32 +1,67 @@
 import { AccountService } from '@modules/account';
-import { AccountDto } from '@modules/account/services/dto';
 // invalid import
+import { AccountDto } from '@modules/account/services/dto';
 import { OauthCurrentUser } from '@modules/authentication/interface';
 import { CurrentUserMapper } from '@modules/authentication/mapper';
-import { RoleDto } from '@modules/role/service/dto/role.dto';
-import { RoleService } from '@modules/role/service/role.service';
+import { RoleDto, RoleService } from '@modules/role';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Page, RoleReference, UserDO } from '@shared/domain/domainobject';
-import { LanguageType, User } from '@shared/domain/entity';
-import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
-import { UserConfig } from '../interfaces';
-import { UserMapper } from '../mapper/user.mapper';
-import { UserDto } from '../uc/dto/user.dto';
+import { Logger } from '@src/core/logger';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+import { RegistrationPinService } from '@modules/registration-pin';
+import { User } from '@shared/domain/entity';
+import { IFindOptions, LanguageType } from '@shared/domain/interface';
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DataDeletionDomainOperationLoggable,
+	DomainName,
+	DomainDeletionReportBuilder,
+	DomainOperationReportBuilder,
+	OperationType,
+	DeletionErrorLoggableException,
+	DomainOperationReport,
+	StatusModel,
+	OperationReportHelper,
+} from '@modules/deletion';
 import { UserQuery } from './user-query.type';
+import { UserDto } from '../uc/dto/user.dto';
+import { UserMapper } from '../mapper/user.mapper';
+import { UserConfig } from '../interfaces';
 
 @Injectable()
-export class UserService {
+@EventsHandler(UserDeletedEvent)
+export class UserService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly userRepo: UserRepo,
 		private readonly userDORepo: UserDORepo,
 		private readonly configService: ConfigService<UserConfig, true>,
 		private readonly roleService: RoleService,
-		private readonly accountService: AccountService
-	) {}
+		private readonly accountService: AccountService,
+		private readonly registrationPinService: RegistrationPinService,
+		private readonly logger: Logger,
+		private readonly eventBus: EventBus
+	) {
+		this.logger.setContext(UserService.name);
+	}
+
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
+	}
+
+	async getUserEntityWithRoles(userId: EntityId): Promise<User> {
+		// only roles required, no need for the other populates
+		const userWithRoles = await this.userRepo.findById(userId, true);
+
+		return userWithRoles;
+	}
 
 	async me(userId: EntityId): Promise<[User, string[]]> {
 		const user = await this.userRepo.findById(userId, true);
@@ -123,15 +158,91 @@ export class UserService {
 		}
 	}
 
-	async deleteUser(userId: EntityId): Promise<number> {
-		const deletedUserNumber: Promise<number> = this.userRepo.deleteUser(userId);
+	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable('Deleting user', DomainName.USER, userId, StatusModel.PENDING)
+		);
 
-		return deletedUserNumber;
+		const userToDelete: User | null = await this.userRepo.findByIdOrNull(userId, true);
+
+		if (userToDelete === null) {
+			const result = DomainDeletionReportBuilder.build(DomainName.USER, [
+				DomainOperationReportBuilder.build(OperationType.DELETE, 0, []),
+			]);
+
+			this.logger.info(
+				new DataDeletionDomainOperationLoggable(
+					'User already deleted',
+					DomainName.USER,
+					userId,
+					StatusModel.FINISHED,
+					0,
+					0
+				)
+			);
+
+			return result;
+		}
+
+		const registrationPinDeleted = await this.removeUserRegistrationPin(userId);
+
+		const numberOfDeletedUsers = await this.userRepo.deleteUser(userId);
+
+		if (numberOfDeletedUsers === 0) {
+			throw new DeletionErrorLoggableException(`Failed to delete user '${userId}' from User collection`);
+		}
+
+		const result = DomainDeletionReportBuilder.build(
+			DomainName.USER,
+			[DomainOperationReportBuilder.build(OperationType.DELETE, numberOfDeletedUsers, [userId])],
+			[registrationPinDeleted]
+		);
+
+		this.logger.info(
+			new DataDeletionDomainOperationLoggable(
+				'Successfully deleted user',
+				DomainName.USER,
+				userId,
+				StatusModel.FINISHED,
+				0,
+				numberOfDeletedUsers
+			)
+		);
+
+		return result;
 	}
 
-	async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
+	public async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
 		const parentEmails = this.userRepo.getParentEmailsFromUser(userId);
 
 		return parentEmails;
+	}
+
+	public async findUserBySchoolAndName(schoolId: EntityId, firstName: string, lastName: string): Promise<User[]> {
+		const users: User[] = await this.userRepo.findUserBySchoolAndName(schoolId, firstName, lastName);
+
+		return users;
+	}
+
+	public async removeUserRegistrationPin(userId: EntityId): Promise<DomainDeletionReport> {
+		const userToDeletion = await this.userRepo.findByIdOrNull(userId);
+		const parentEmails = await this.getParentEmailsFromUser(userId);
+		let emailsToDeletion: string[] = [];
+		if (userToDeletion && userToDeletion.email) {
+			emailsToDeletion = [userToDeletion.email, ...parentEmails];
+		}
+
+		let extractedOperationReport: DomainOperationReport[] = [];
+		if (emailsToDeletion.length > 0) {
+			const results = await Promise.all(
+				emailsToDeletion.map((email) => this.registrationPinService.deleteUserData(email))
+			);
+
+			extractedOperationReport = OperationReportHelper.extractOperationReports(results);
+		} else {
+			extractedOperationReport = [DomainOperationReportBuilder.build(OperationType.DELETE, 0, [])];
+		}
+
+		return DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, extractedOperationReport);
 	}
 }

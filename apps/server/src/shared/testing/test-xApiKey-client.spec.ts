@@ -1,6 +1,6 @@
 import { Controller, Delete, ExecutionContext, Get, Headers, HttpStatus, INestApplication, Post } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthGuard } from '@nestjs/passport';
 import { TestXApiKeyClient } from './test-xApiKey-client';
 
@@ -25,7 +25,7 @@ class TestController {
 describe(TestXApiKeyClient.name, () => {
 	describe('when test request instance exists', () => {
 		let app: INestApplication;
-		const API_KEY = '1ab2c3d4e5f61ab2c3d4e5f6';
+		const API_KEY = '7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4';
 
 		beforeAll(async () => {
 			const moduleFixture = await Test.createTestingModule({

@@ -23,13 +23,11 @@ import {
 	UseInterceptors,
 } from '@nestjs/common';
 import { ApiConsumes, ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError, RequestLoggingInterceptor, RequestTimeout } from '@shared/common';
+import { ApiValidationError, RequestLoggingInterceptor } from '@shared/common';
 import { PaginationParams } from '@shared/controller';
 import { Request, Response } from 'express';
-import { config } from '../files-storage.config';
 import { GetFileResponse } from '../interface';
-import { FilesStorageMapper } from '../mapper';
-import { FileRecordMapper } from '../mapper/file-record.mapper';
+import { FilesStorageMapper, FileRecordMapper } from '../mapper';
 import { FilesStorageUC } from '../uc';
 import {
 	CopyFileListResponse,
@@ -127,8 +125,8 @@ export class FilesStorageController {
 	@ApiResponse({ status: 422, type: UnprocessableEntityException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiHeader({ name: 'Range', required: false })
+	@ApiHeader({ name: 'If-None-Match', required: false })
 	@Get('/preview/:fileRecordId/:fileName')
-	@RequestTimeout(config().INCOMING_REQUEST_TIMEOUT)
 	async downloadPreview(
 		@Param() params: DownloadFileParams,
 		@CurrentUser() currentUser: ICurrentUser,

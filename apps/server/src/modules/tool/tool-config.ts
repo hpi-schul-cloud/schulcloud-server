@@ -10,6 +10,7 @@ export interface IToolFeatures {
 	toolStatusWithoutVersions: boolean;
 	maxExternalToolLogoSizeInBytes: number;
 	backEndUrl: string;
+	ctlToolsCopyEnabled: boolean;
 }
 
 export default class ToolConfiguration {
@@ -21,5 +22,6 @@ export default class ToolConfiguration {
 		toolStatusWithoutVersions: Configuration.get('FEATURE_COMPUTE_TOOL_STATUS_WITHOUT_VERSIONS_ENABLED') as boolean,
 		maxExternalToolLogoSizeInBytes: Configuration.get('CTL_TOOLS__EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES') as number,
 		backEndUrl: Configuration.get('PUBLIC_BACKEND_URL') as string,
+		ctlToolsCopyEnabled: Configuration.get('FEATURE_CTL_TOOLS_COPY_ENABLED') as boolean,
 	};
 }

@@ -54,6 +54,8 @@ spec:
             name: api-configmap
         - secretRef:
             name: api-secret
+        - secretRef:
+            name: api-h5p-editor-secret
         command: ['npm', 'run', 'nest:start:h5p:prod']
         readinessProbe:
           httpGet:

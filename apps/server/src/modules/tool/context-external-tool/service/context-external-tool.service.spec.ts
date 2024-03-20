@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ContextExternalToolRepo } from '@shared/repo';
 import {
 	contextExternalToolFactory,
+	customParameterFactory,
 	externalToolFactory,
 	legacySchoolDoFactory,
 	schoolExternalToolFactory,
@@ -20,6 +21,7 @@ import { ExternalToolService } from '../../external-tool/service';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { RestrictedContextMismatchLoggable } from './restricted-context-mismatch-loggabble';
 import { CommonToolService } from '../../common/service';
+import { CustomParameter } from '../../common/domain';
 
 describe('ContextExternalToolService', () => {
 	let module: TestingModule;
@@ -398,6 +400,102 @@ describe('ContextExternalToolService', () => {
 					new RestrictedContextMismatchLoggable(externalTool.name, contextExternalTool.contextRef.type)
 				);
 			});
+		});
+	});
+
+	describe('copyContextExternalTool', () => {
+		const setup = () => {
+			const courseId: string = new ObjectId().toHexString();
+			const contextCopyId: string = new ObjectId().toHexString();
+
+			const protectedParam: CustomParameter = customParameterFactory.build({ isProtected: true });
+			const unprotectedParam: CustomParameter = customParameterFactory.build();
+			const externalTool: ExternalTool = externalToolFactory.buildWithId({
+				parameters: [protectedParam, unprotectedParam],
+			});
+
+			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId({ toolId: externalTool.id });
+
+			const unusedParam: CustomParameter = customParameterFactory.build();
+			const contextExternalTool: ContextExternalTool = contextExternalToolFactory.buildWithId({
+				contextRef: { type: ToolContextType.COURSE, id: courseId },
+				schoolToolRef: { schoolToolId: schoolExternalTool.id, schoolId: schoolExternalTool.schoolId },
+				parameters: [
+					{ name: protectedParam.name, value: 'paramValue1' },
+					{ name: unprotectedParam.name, value: 'paramValue2' },
+					{ name: unusedParam.name, value: 'paramValue3' },
+				],
+			});
+
+			schoolExternalToolService.findById.mockResolvedValue(schoolExternalTool);
+			externalToolService.findById.mockResolvedValue(externalTool);
+			jest
+				.spyOn(contextExternalToolRepo, 'save')
+				.mockImplementation((tool: ContextExternalTool) => Promise.resolve(tool));
+
+			return {
+				contextCopyId,
+				contextExternalTool,
+				schoolExternalTool,
+				unusedParam,
+			};
+		};
+
+		it('should find schoolExternalTool', async () => {
+			const { contextExternalTool, contextCopyId } = setup();
+
+			await service.copyContextExternalTool(contextExternalTool, contextCopyId);
+
+			expect(schoolExternalToolService.findById).toHaveBeenCalledWith(contextExternalTool.schoolToolRef.schoolToolId);
+		});
+
+		it('should find externalTool', async () => {
+			const { contextExternalTool, contextCopyId, schoolExternalTool } = setup();
+
+			await service.copyContextExternalTool(contextExternalTool, contextCopyId);
+
+			expect(externalToolService.findById).toHaveBeenCalledWith(schoolExternalTool.toolId);
+		});
+
+		it('should remove values from protected parameters', async () => {
+			const { contextExternalTool, contextCopyId } = setup();
+
+			const copiedTool: ContextExternalTool = await service.copyContextExternalTool(contextExternalTool, contextCopyId);
+
+			expect(copiedTool).toEqual<Partial<ContextExternalTool>>({
+				id: undefined,
+				contextRef: { id: contextCopyId, type: ToolContextType.COURSE },
+				displayName: contextExternalTool.displayName,
+				schoolToolRef: contextExternalTool.schoolToolRef,
+				toolVersion: contextExternalTool.toolVersion,
+				parameters: [
+					{
+						name: contextExternalTool.parameters[0].name,
+						value: undefined,
+					},
+					{
+						name: contextExternalTool.parameters[1].name,
+						value: contextExternalTool.parameters[1].value,
+					},
+				],
+			});
+		});
+
+		it('should not copy unused parameter', async () => {
+			const { contextExternalTool, contextCopyId, unusedParam } = setup();
+
+			const copiedTool: ContextExternalTool = await service.copyContextExternalTool(contextExternalTool, contextCopyId);
+
+			expect(copiedTool.parameters.length).toEqual(2);
+			expect(copiedTool.parameters).not.toContain(unusedParam);
+		});
+
+		it('should save copied tool', async () => {
+			const { contextExternalTool, contextCopyId } = setup();
+
+			await service.copyContextExternalTool(contextExternalTool, contextCopyId);
+
+			expect(contextExternalToolRepo.save).toHaveBeenCalledWith(contextExternalTool);
 		});
 	});
 });

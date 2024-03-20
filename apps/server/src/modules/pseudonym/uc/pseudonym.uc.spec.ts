@@ -5,7 +5,13 @@ import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LegacySchoolDo, Pseudonym } from '@shared/domain/domainobject';
 import { SchoolEntity, User } from '@shared/domain/entity';
-import { legacySchoolDoFactory, pseudonymFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
+import {
+	legacySchoolDoFactory,
+	pseudonymFactory,
+	schoolEntityFactory,
+	setupEntities,
+	userFactory,
+} from '@shared/testing';
 import { PseudonymService } from '../service';
 import { PseudonymUc } from './pseudonym.uc';
 
@@ -57,7 +63,7 @@ describe('PseudonymUc', () => {
 			const setup = () => {
 				const userId = 'userId';
 				const school: LegacySchoolDo = legacySchoolDoFactory.buildWithId();
-				const schoolEntity: SchoolEntity = schoolFactory.buildWithId();
+				const schoolEntity: SchoolEntity = schoolEntityFactory.buildWithId();
 				const user: User = userFactory.buildWithId({ school: schoolEntity });
 				user.school = schoolEntity;
 				const pseudonym: Pseudonym = new Pseudonym(pseudonymFactory.build({ userId: user.id }));
@@ -115,7 +121,7 @@ describe('PseudonymUc', () => {
 			const setup = () => {
 				const userId = 'userId';
 				const user: User = userFactory.buildWithId();
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				user.school = school;
 				const pseudonym: Pseudonym = new Pseudonym(pseudonymFactory.build());
 

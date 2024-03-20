@@ -141,6 +141,55 @@
 			"value": "test"
 		}],
 		"toolVersion": 1
+	},
+	{
+		"_id": {
+			"$oid": "659bf86749e52dedff83a92b"
+		},
+		"createdAt": {
+			"$date": "2023-11-30T15:30:08.532Z"
+		},
+		"updatedAt": {
+			"$date": "2023-11-30T15:30:08.532Z"
+		},
+		"schoolTool": {
+			"$oid": "659bf73f49e52dedff83a8f2"
+		},
+		"contextId": "5fa3a2c0a9c31a26f4d1d2f0",
+		"contextType": "course",
+		"displayName": "CY Test Tool Protected Parameter",
+		"parameters": [
+			{
+			"name": "search",
+			"value": "test"
+			},
+			{
+				"name": "protected",
+				"value": "true"
+			}
+		],
+		"toolVersion": 1
+	},
+	{
+		"_id": {
+			"$oid": "659bf84a49e52dedff83a92a"
+		},
+		"createdAt": {
+			"$date": "2023-11-30T15:29:54.630Z"
+		},
+		"updatedAt": {
+			"$date": "2023-11-30T15:29:54.630Z"
+		},
+		"schoolTool": {
+			"$oid": "647de374cf6a427b9d39e5bd"
+		},
+		"contextId": "5fa3a2f3a9c31a26f4d1d309",
+		"contextType": "course",
+		"displayName": "Cypress Test Tool Context Scope",
+		"parameters": [{
+			"name": "search",
+			"value": "test"
+		}],
+		"toolVersion": 1
 	}
-
 ]

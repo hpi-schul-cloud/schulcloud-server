@@ -1,5 +1,8 @@
 import { FileRecordParentType } from '@infra/rabbitmq';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { IToolFeatures } from '@modules/tool/tool-config';
 import {
 	AnyBoardDo,
 	BoardCompositeVisitorAsync,
@@ -15,7 +18,7 @@ import {
 } from '@shared/domain/domainobject';
 import { LinkElement } from '@shared/domain/domainobject/board/link-element.do';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
 
 export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
@@ -23,7 +26,11 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 
 	copyMap = new Map<EntityId, AnyBoardDo>();
 
-	constructor(private readonly fileCopyService: SchoolSpecificFileCopyService) {}
+	constructor(
+		private readonly fileCopyService: SchoolSpecificFileCopyService,
+		private readonly contextExternalToolService: ContextExternalToolService,
+		private readonly toolFeatures: IToolFeatures
+	) {}
 
 	async copy(original: AnyBoardDo): Promise<CopyStatus> {
 		await original.acceptAsync(this);
@@ -46,6 +53,7 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			children: this.getCopiesForChildrenOf(original),
+			isVisible: false,
 		});
 
 		this.resultMap.set(original.id, {
@@ -235,7 +243,9 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 		return Promise.resolve();
 	}
 
-	visitExternalToolElementAsync(original: ExternalToolElement): Promise<void> {
+	async visitExternalToolElementAsync(original: ExternalToolElement): Promise<void> {
+		let status: CopyStatusEnum = CopyStatusEnum.SUCCESS;
+
 		const copy = new ExternalToolElement({
 			id: new ObjectId().toHexString(),
 			contextExternalToolId: undefined,
@@ -243,10 +253,28 @@ export class RecursiveCopyVisitor implements BoardCompositeVisitorAsync {
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});
+
+		if (this.toolFeatures.ctlToolsCopyEnabled && original.contextExternalToolId) {
+			const tool: ContextExternalTool | null = await this.contextExternalToolService.findById(
+				original.contextExternalToolId
+			);
+
+			if (tool) {
+				const copiedTool: ContextExternalTool = await this.contextExternalToolService.copyContextExternalTool(
+					tool,
+					copy.id
+				);
+
+				copy.contextExternalToolId = copiedTool.id;
+			} else {
+				status = CopyStatusEnum.FAIL;
+			}
+		}
+
 		this.resultMap.set(original.id, {
 			copyEntity: copy,
 			type: CopyElementType.EXTERNAL_TOOL_ELEMENT,
-			status: CopyStatusEnum.SUCCESS,
+			status,
 		});
 		this.copyMap.set(original.id, copy);
 

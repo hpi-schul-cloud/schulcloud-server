@@ -5,23 +5,23 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Course, SchoolEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import {
-	TestApiClient,
-	UserAndAccountTestFactory,
 	cleanupCollections,
-	contextExternalToolEntityFactory,
+	contextExternalToolConfigurationStatusResponseFactory,
 	courseFactory,
 	customParameterFactory,
-	externalToolEntityFactory,
-	schoolExternalToolEntityFactory,
-	schoolFactory,
-	contextExternalToolConfigurationStatusResponseFactory,
+	schoolEntityFactory,
+	TestApiClient,
+	UserAndAccountTestFactory,
 } from '@shared/testing';
 
 import { Response } from 'supertest';
 import { CustomParameterLocation, CustomParameterScope, ToolContextType } from '../../../common/enum';
 import { ExternalToolEntity } from '../../../external-tool/entity';
+import { externalToolEntityFactory } from '../../../external-tool/testing';
 import { SchoolExternalToolEntity } from '../../../school-external-tool/entity';
+import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../entity';
+import { contextExternalToolEntityFactory } from '../../testing';
 import { ContextExternalToolContextParams, ToolReferenceListResponse, ToolReferenceResponse } from '../dto';
 
 describe('ToolReferenceController (API)', () => {
@@ -62,8 +62,8 @@ describe('ToolReferenceController (API)', () => {
 
 		describe('when user has no access to a tool', () => {
 			const setup = async () => {
-				const schoolWithoutTool: SchoolEntity = schoolFactory.buildWithId();
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const schoolWithoutTool: SchoolEntity = schoolEntityFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school: schoolWithoutTool });
 				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
@@ -110,7 +110,7 @@ describe('ToolReferenceController (API)', () => {
 
 		describe('when user has access for a tool', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);
@@ -199,8 +199,8 @@ describe('ToolReferenceController (API)', () => {
 
 		describe('when user has no access to a tool', () => {
 			const setup = async () => {
-				const schoolWithoutTool: SchoolEntity = schoolFactory.buildWithId();
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const schoolWithoutTool: SchoolEntity = schoolEntityFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school: schoolWithoutTool });
 				const course: Course = courseFactory.buildWithId({ school, teachers: [adminUser] });
 				const externalToolEntity: ExternalToolEntity = externalToolEntityFactory.buildWithId();
@@ -244,7 +244,7 @@ describe('ToolReferenceController (API)', () => {
 
 		describe('when user has access for a tool', () => {
 			const setup = async () => {
-				const school: SchoolEntity = schoolFactory.buildWithId();
+				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school }, [
 					Permission.CONTEXT_TOOL_USER,
 				]);

@@ -1,9 +1,11 @@
 import { Module } from '@nestjs/common';
-import { SchoolService, SchoolYearService, SCHOOL_REPO, SCHOOL_YEAR_REPO } from './domain';
+import { SystemModule } from '../system';
+import { SCHOOL_REPO, SCHOOL_YEAR_REPO, SchoolService, SchoolYearService } from './domain';
 import { SchoolYearMikroOrmRepo } from './repo/mikro-orm/school-year.repo';
 import { SchoolMikroOrmRepo } from './repo/mikro-orm/school.repo';
 
 @Module({
+	imports: [SystemModule],
 	providers: [
 		SchoolService,
 		SchoolYearService,

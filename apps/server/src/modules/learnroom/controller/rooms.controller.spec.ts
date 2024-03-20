@@ -30,7 +30,7 @@ describe('rooms controller', () => {
 						getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
 							throw new Error('please write mock for RoomsUc.getBoard');
 						},
-						updateVisibilityOfBoardElement(
+						updateVisibilityOfLegacyBoardElement(
 							roomId: EntityId, // eslint-disable-line @typescript-eslint/no-unused-vars
 							elementId: EntityId, // eslint-disable-line @typescript-eslint/no-unused-vars
 							userId: EntityId, // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -81,6 +81,7 @@ describe('rooms controller', () => {
 					displayColor: '#FFFFFF',
 					elements: [],
 					isArchived: false,
+					isSynchronized: false,
 				} as RoomBoardDTO;
 				const ucSpy = jest.spyOn(uc, 'getBoard').mockImplementation(() => Promise.resolve(ucResult));
 
@@ -90,6 +91,7 @@ describe('rooms controller', () => {
 					displayColor: '#FFFFFF',
 					elements: [],
 					isArchived: false,
+					isSynchronized: false,
 				});
 				const mapperSpy = jest.spyOn(mapper, 'mapToResponse').mockImplementation(() => mapperResult);
 				return { currentUser, ucResult, ucSpy, mapperResult, mapperSpy };
@@ -124,7 +126,7 @@ describe('rooms controller', () => {
 	describe('patchVisibility', () => {
 		it('should call uc', async () => {
 			const currentUser = { userId: 'userId' } as ICurrentUser;
-			const ucSpy = jest.spyOn(uc, 'updateVisibilityOfBoardElement').mockImplementation(() => Promise.resolve());
+			const ucSpy = jest.spyOn(uc, 'updateVisibilityOfLegacyBoardElement').mockImplementation(() => Promise.resolve());
 			await controller.patchElementVisibility(
 				{ roomId: 'roomid', elementId: 'elementId' },
 				{ visibility: true },

@@ -4,7 +4,7 @@ metadata:
   name: {{ NAMESPACE }}-api-files-ingress
   namespace: {{ NAMESPACE }}
   annotations:
-    nginx.ingress.kubernetes.io/ssl-redirect: "{{ TLS_ENABELD|default("false") }}"
+    nginx.ingress.kubernetes.io/ssl-redirect: "{{ TLS_ENABLED|default("false") }}"
     nginx.ingress.kubernetes.io/proxy-body-size: "{{ INGRESS_MAX_BODY_SIZE|default("2560") }}m"
     nginx.org/client-max-body-size: "{{ INGRESS_MAX_BODY_SIZE|default("2560") }}m"
     # The following properties added with BC-3606.
@@ -14,13 +14,14 @@ metadata:
     nginx.ingress.kubernetes.io/http2-max-header-size: 96k
     nginx.ingress.kubernetes.io/large-client-header-buffers: 4 100k
     nginx.ingress.kubernetes.io/proxy-buffer-size: 96k
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
 {% if CLUSTER_ISSUER is defined %}
     cert-manager.io/cluster-issuer: {{ CLUSTER_ISSUER }}
 {% endif %}
 
 spec:
   ingressClassName: {{ INGRESS_CLASS }}
-{% if CLUSTER_ISSUER is defined or (TLS_ENABELD is defined and TLS_ENABELD|bool) %}
+{% if CLUSTER_ISSUER is defined or (TLS_ENABLED is defined and TLS_ENABLED|bool) %}
   tls:
   - hosts:
       - {{ DOMAIN }}

@@ -34,6 +34,8 @@ describe('DatabaseManagementConsole', () => {
 	});
 
 	describe('database', () => {
+		let consoleInfoSpy: jest.SpyInstance;
+		let consoleErrorSpy: jest.SpyInstance;
 		beforeAll(() => {
 			databaseManagementUc.seedDatabaseCollectionsFromFileSystem.mockImplementation((collections?: string[]) => {
 				if (collections === undefined) {
@@ -49,48 +51,71 @@ describe('DatabaseManagementConsole', () => {
 			});
 		});
 
-		it('should export existing collections', async () => {
-			const consoleInfoSpy = jest.spyOn(consoleWriter, 'info');
-			await service.exportCollections({});
-			const result = JSON.stringify(['someCollection:1', 'otherCollection:2']);
-			expect(consoleInfoSpy).toHaveBeenCalledWith(result);
-			consoleInfoSpy.mockReset();
+		beforeEach(() => {
+			consoleInfoSpy = jest.spyOn(consoleWriter, 'info');
+			consoleErrorSpy = jest.spyOn(consoleWriter, 'error');
 		});
-		it('should export specific collection', async () => {
-			const consoleInfoSpy = jest.spyOn(consoleWriter, 'info');
-			await service.exportCollections({ collection: 'singleCollection' });
-			const result = JSON.stringify(['singleCollection:4']);
-			expect(consoleInfoSpy).toHaveBeenCalledWith(result);
-			consoleInfoSpy.mockReset();
+		afterEach(() => {
+			jest.clearAllMocks();
 		});
-		it('should pass override flag to uc', async () => {
-			const consoleInfoSpy = jest.spyOn(consoleWriter, 'info');
-			await service.exportCollections({ collection: 'singleCollection', override: true });
-			const result = JSON.stringify(['singleCollection:4']);
-			expect(consoleInfoSpy).toHaveBeenCalledWith(result);
-			consoleInfoSpy.mockReset();
+
+		describe('when exporting collections', () => {
+			it('should export existing collections', async () => {
+				await service.exportCollections({});
+				const result = JSON.stringify(['someCollection:1', 'otherCollection:2']);
+				expect(consoleInfoSpy).toHaveBeenCalledWith(result);
+			});
+			it('should export specific collection', async () => {
+				await service.exportCollections({ collection: 'singleCollection' });
+				const result = JSON.stringify(['singleCollection:4']);
+				expect(consoleInfoSpy).toHaveBeenCalledWith(result);
+			});
+			it('should pass override flag to uc', async () => {
+				await service.exportCollections({ collection: 'singleCollection', override: true });
+				const result = JSON.stringify(['singleCollection:4']);
+				expect(consoleInfoSpy).toHaveBeenCalledWith(result);
+			});
 		});
-		it('should seed existing collections', async () => {
-			const consoleInfoSpy = jest.spyOn(consoleWriter, 'info');
-			await service.seedCollections({});
-			const result = JSON.stringify(['someCollection:1', 'otherCollection:2']);
-			expect(consoleInfoSpy).toHaveBeenCalledWith(result);
-			consoleInfoSpy.mockReset();
-		});
-		it('should seed specific collection', async () => {
-			const consoleInfoSpy = jest.spyOn(consoleWriter, 'info');
-			const retValue = await service.seedCollections({ collection: 'singleCollection' });
-			expect(retValue).toEqual(['singleCollection:4']);
-			const result = JSON.stringify(['singleCollection:4']);
-			expect(consoleInfoSpy).toHaveBeenCalledWith(result);
-			consoleInfoSpy.mockReset();
+		describe('When seeding collections', () => {
+			it('should seed existing collections', async () => {
+				await service.seedCollections({});
+				const result = JSON.stringify(['someCollection:1', 'otherCollection:2']);
+				expect(consoleInfoSpy).toHaveBeenCalledWith(result);
+			});
+			it('should seed specific collection', async () => {
+				const retValue = await service.seedCollections({ collection: 'singleCollection' });
+				expect(retValue).toEqual(['singleCollection:4']);
+				const result = JSON.stringify(['singleCollection:4']);
+				expect(consoleInfoSpy).toHaveBeenCalledWith(result);
+			});
 		});
 		it('should sync indexes', async () => {
-			const consoleInfoSpy = jest.spyOn(consoleWriter, 'info');
 			await service.syncIndexes();
 			expect(consoleInfoSpy).toHaveBeenCalledWith('sync of indexes is completed');
 			expect(databaseManagementUc.syncIndexes).toHaveBeenCalled();
-			consoleInfoSpy.mockReset();
+		});
+		describe('When calling migration', () => {
+			it('should migrate up', async () => {
+				await service.migration({ up: true });
+				expect(consoleInfoSpy).toHaveBeenCalledWith('migration up is completed');
+				expect(databaseManagementUc.migrationUp).toHaveBeenCalled();
+			});
+			it('should migrate down', async () => {
+				await service.migration({ down: true });
+				expect(consoleInfoSpy).toHaveBeenCalledWith('migration down is completed');
+				expect(databaseManagementUc.migrationDown).toHaveBeenCalled();
+			});
+			it('should check pending migrations', async () => {
+				await service.migration({ pending: true });
+				expect(consoleInfoSpy).toHaveBeenCalledWith(expect.stringContaining('Pending:'));
+				expect(databaseManagementUc.migrationPending).toHaveBeenCalled();
+			});
+			it('should no migrate if no param specified', async () => {
+				await service.migration({});
+				expect(consoleErrorSpy).toHaveBeenCalledWith('no migration option was given');
+				expect(databaseManagementUc.migrationUp).not.toHaveBeenCalled();
+				expect(databaseManagementUc.migrationDown).not.toHaveBeenCalled();
+			});
 		});
 	});
 });

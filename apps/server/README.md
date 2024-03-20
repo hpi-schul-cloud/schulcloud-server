@@ -14,7 +14,7 @@ You find the whole [documentation published as GitHub Page](https://hpi-schul-cl
 ### preconditions
 
 1. Have a MongoDB started, run `mongod`
-2. Have some seed data in database, use `npm run setup` to reset the db and apply seed data
+2. Have some seed data in database, use `npm run setup:db:seed` to reset the db and apply seed data
 3. Have RabbitMQ started, run `docker run -d -p 5672:5672 -p 15672:15672 --name rabbitmq rabbitmq:3.8.9-management`. This starts RabbitMQ on port 5672 and a web admin console at localhost:15672 (use guest:guest to login).
 4. Have MinIO (S3 compatible object storage), run [optional if you need files-storage module]
 

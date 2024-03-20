@@ -15,7 +15,7 @@ import {
 	fileRecordFactory,
 	mapUserToCurrentUser,
 	roleFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	userFactory,
 } from '@shared/testing';
 import NodeClam from 'clamscan';
@@ -125,7 +125,7 @@ describe(`${baseRouteName} (api)`, () => {
 
 			beforeEach(async () => {
 				await cleanupCollections(em);
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const roles = roleFactory.buildList(1, {
 					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW, Permission.FILESTORAGE_REMOVE],
 				});
@@ -177,7 +177,7 @@ describe(`${baseRouteName} (api)`, () => {
 
 			beforeEach(async () => {
 				await cleanupCollections(em);
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const roles = roleFactory.buildList(1, {
 					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW, Permission.FILESTORAGE_REMOVE],
 				});
@@ -250,7 +250,7 @@ describe(`${baseRouteName} (api)`, () => {
 		describe('with bad request data', () => {
 			beforeEach(async () => {
 				await cleanupCollections(em);
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const roles = roleFactory.buildList(1, {
 					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW, Permission.FILESTORAGE_REMOVE],
 				});
@@ -277,7 +277,7 @@ describe(`${baseRouteName} (api)`, () => {
 
 			beforeEach(async () => {
 				await cleanupCollections(em);
-				const school = schoolFactory.build();
+				const school = schoolEntityFactory.build();
 				const roles = roleFactory.buildList(1, {
 					permissions: [Permission.FILESTORAGE_CREATE, Permission.FILESTORAGE_VIEW, Permission.FILESTORAGE_REMOVE],
 				});

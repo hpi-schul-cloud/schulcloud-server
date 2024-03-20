@@ -20,12 +20,10 @@ import { LegacySystemService } from '@src/modules/system';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { OAuthTokenDto } from '../interface';
 import {
-	AuthCodeFailureLoggableException,
 	IdTokenInvalidLoggableException,
 	OauthConfigMissingLoggableException,
 	UserNotFoundAfterProvisioningLoggableException,
 } from '../loggable';
-import { OauthTokenResponse } from './dto';
 import { OauthAdapterService } from './oauth-adapter.service';
 import { OAuthService } from './oauth.service';
 
@@ -138,34 +136,34 @@ describe('OAuthService', () => {
 	describe('requestToken', () => {
 		const setupRequest = () => {
 			const code = '43534543jnj543342jn2';
-			const tokenResponse: OauthTokenResponse = {
-				access_token: 'accessToken',
-				refresh_token: 'refreshToken',
-				id_token: 'idToken',
+			const oauthToken: OAuthTokenDto = {
+				accessToken: 'accessToken',
+				idToken: 'idToken',
+				refreshToken: 'refreshToken',
 			};
 
 			return {
 				code,
-				tokenResponse,
+				oauthToken,
 			};
 		};
 
 		beforeEach(() => {
-			const { tokenResponse } = setupRequest();
+			const { oauthToken } = setupRequest();
 			oAuthEncryptionService.decrypt.mockReturnValue('decryptedSecret');
-			oauthAdapterService.sendAuthenticationCodeTokenRequest.mockResolvedValue(tokenResponse);
+			oauthAdapterService.sendTokenRequest.mockResolvedValue(oauthToken);
 		});
 
 		describe('when it requests a token', () => {
 			it('should get token from the external server', async () => {
-				const { code, tokenResponse } = setupRequest();
+				const { code, oauthToken } = setupRequest();
 
 				const result: OAuthTokenDto = await service.requestToken(code, testOauthConfig, 'redirectUri');
 
 				expect(result).toEqual<OAuthTokenDto>({
-					idToken: tokenResponse.id_token,
-					accessToken: tokenResponse.access_token,
-					refreshToken: tokenResponse.refresh_token,
+					idToken: oauthToken.idToken,
+					accessToken: oauthToken.accessToken,
+					refreshToken: oauthToken.refreshToken,
 				});
 			});
 		});
@@ -222,34 +220,34 @@ describe('OAuthService', () => {
 				oauthConfig,
 			});
 
-			const oauthTokenResponse: OauthTokenResponse = {
-				access_token: 'accessToken',
-				refresh_token: 'refreshToken',
-				id_token: 'idToken',
+			const oauthToken: OAuthTokenDto = {
+				accessToken: 'accessToken',
+				idToken: 'idToken',
+				refreshToken: 'refreshToken',
 			};
 
 			return {
 				authCode,
 				system,
-				oauthTokenResponse,
+				oauthToken,
 				oauthConfig,
 			};
 		};
 
 		describe('when system does not have oauth config', () => {
 			it('should authenticate a user', async () => {
-				const { authCode, system, oauthTokenResponse } = setup();
+				const { authCode, system, oauthToken } = setup();
 				systemService.findById.mockResolvedValue(testSystem);
 				oAuthEncryptionService.decrypt.mockReturnValue('decryptedSecret');
 				oauthAdapterService.getPublicKey.mockResolvedValue('publicKey');
-				oauthAdapterService.sendAuthenticationCodeTokenRequest.mockResolvedValue(oauthTokenResponse);
+				oauthAdapterService.sendTokenRequest.mockResolvedValue(oauthToken);
 
 				const result: OAuthTokenDto = await service.authenticateUser(system.id!, 'redirectUri', authCode);
 
 				expect(result).toEqual<OAuthTokenDto>({
-					accessToken: oauthTokenResponse.access_token,
-					idToken: oauthTokenResponse.id_token,
-					refreshToken: oauthTokenResponse.refresh_token,
+					accessToken: oauthToken.accessToken,
+					idToken: oauthToken.idToken,
+					refreshToken: oauthToken.refreshToken,
 				});
 			});
 		});
@@ -264,22 +262,6 @@ describe('OAuthService', () => {
 				const func = () => service.authenticateUser(testSystem.id, 'redirectUri', authCode);
 
 				await expect(func).rejects.toThrow(new OauthConfigMissingLoggableException(testSystem.id));
-			});
-		});
-
-		describe('when query has an error code', () => {
-			it('should throw an error', async () => {
-				const func = () => service.authenticateUser('systemId', 'redirectUri', undefined, 'errorCode');
-
-				await expect(func).rejects.toThrow(new AuthCodeFailureLoggableException('errorCode'));
-			});
-		});
-
-		describe('when query has no code and no error', () => {
-			it('should throw an error', async () => {
-				const func = () => service.authenticateUser('systemId', 'redirectUri');
-
-				await expect(func).rejects.toThrow(new AuthCodeFailureLoggableException());
 			});
 		});
 	});

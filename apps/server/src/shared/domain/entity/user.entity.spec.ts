@@ -1,8 +1,8 @@
 import { MikroORM } from '@mikro-orm/core';
-import { roleFactory, schoolFactory, setupEntities, userFactory } from '@shared/testing';
-import { ObjectId } from 'bson';
+import { roleFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Role } from '.';
-import { Permission } from '../interface';
+import { LanguageType, Permission } from '../interface';
 import { User } from './user.entity';
 
 describe('User Entity', () => {
@@ -24,7 +24,7 @@ describe('User Entity', () => {
 		});
 
 		it('should create a user when passing required properties', () => {
-			const school = schoolFactory.build();
+			const school = schoolEntityFactory.build();
 			const user = new User({
 				firstName: 'John',
 				lastName: 'Cale',
@@ -89,6 +89,50 @@ describe('User Entity', () => {
 			const permissions = user.resolvePermissions();
 
 			expect(permissions.sort()).toEqual([permissionA, permissionB, permissionC].sort());
+		});
+	});
+
+	describe('getRoles', () => {
+		const setup = () => {
+			const roles = roleFactory.buildListWithId(2);
+			const user = userFactory.build({ roles });
+
+			return { user };
+		};
+
+		it('should return the roles as array', () => {
+			const { user } = setup();
+
+			const result = user.getRoles();
+
+			expect(Array.isArray(result)).toBe(true);
+			expect(result).toHaveLength(2);
+			expect(result[0]).toBeInstanceOf(Role);
+		});
+	});
+
+	describe('getInfo', () => {
+		const setup = () => {
+			const expectedResult = {
+				customAvatarBackgroundColor: '#fe8a71',
+				firstName: 'a',
+				lastName: 'b',
+				id: '',
+				language: LanguageType.EN,
+			};
+
+			const user = userFactory.buildWithId(expectedResult);
+			expectedResult.id = user.id;
+
+			return { user, expectedResult };
+		};
+
+		it('should return a less critical subset of informations about the user', () => {
+			const { user, expectedResult } = setup();
+
+			const result = user.getInfo();
+
+			expect(result).toEqual(expectedResult);
 		});
 	});
 });

@@ -1,15 +1,23 @@
-import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
-import { OauthSsoErrorLoggableException } from './oauth-sso-error-loggable-exception';
+import { HttpStatus } from '@nestjs/common';
+import { BusinessError } from '@shared/common';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@src/core/logger';
 
-export class IdTokenUserNotFoundLoggableException extends OauthSsoErrorLoggableException {
+export class IdTokenUserNotFoundLoggableException extends BusinessError implements Loggable {
 	constructor(private readonly uuid: string, private readonly additionalInfo?: string) {
-		super();
+		super(
+			{
+				type: 'USER_NOT_FOUND',
+				title: 'User not found',
+				defaultMessage: 'Failed to find user with uuid from id token.',
+			},
+			HttpStatus.NOT_FOUND
+		);
 	}
 
-	override getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			type: 'SSO_USER_NOTFOUND',
-			message: 'Failed to find user with uuid from id token',
+			type: this.type,
+			message: this.message,
 			stack: this.stack,
 			data: {
 				uuid: this.uuid,

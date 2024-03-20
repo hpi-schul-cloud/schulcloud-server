@@ -1,8 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { BadRequestException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
 
 import {
 	Action,
@@ -14,10 +11,13 @@ import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helpe
 import { CourseCopyService, CourseService } from '@modules/learnroom';
 import { LessonCopyService } from '@modules/lesson';
 import { TaskCopyService } from '@modules/task';
+import { BadRequestException, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Permission } from '@shared/domain/interface';
 import {
 	courseFactory,
 	lessonFactory,
-	schoolFactory,
+	schoolEntityFactory,
 	setupEntities,
 	shareTokenFactory,
 	taskFactory,
@@ -98,7 +98,7 @@ describe('ShareTokenUC', () => {
 		jest.resetAllMocks();
 		jest.clearAllMocks();
 		// configuration sets must be part of the setup functions and part of the describe when ...and feature x is activated
-		Configuration.set('FEATURE_COURSE_SHARE_NEW', true);
+		Configuration.set('FEATURE_COURSE_SHARE', true);
 		Configuration.set('FEATURE_LESSON_SHARE', true);
 		Configuration.set('FEATURE_TASK_SHARE', true);
 	});
@@ -116,7 +116,7 @@ describe('ShareTokenUC', () => {
 		describe('when parent is a course', () => {
 			it('should throw if the feature is not enabled', async () => {
 				const { user, course } = setup();
-				Configuration.set('FEATURE_COURSE_SHARE_NEW', false);
+				Configuration.set('FEATURE_COURSE_SHARE', false);
 
 				await expect(
 					uc.createShareToken(user.id, {
@@ -298,7 +298,7 @@ describe('ShareTokenUC', () => {
 
 		describe('when restricted to same school', () => {
 			it('should check parent write permission', async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ school });
 				const course = courseFactory.buildWithId();
 				authorization.getUserWithPermissions.mockResolvedValue(user);
@@ -326,7 +326,7 @@ describe('ShareTokenUC', () => {
 			});
 
 			it('should check context read permission', async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ school });
 				const course = courseFactory.buildWithId();
 				authorization.getUserWithPermissions.mockResolvedValue(user);
@@ -354,7 +354,7 @@ describe('ShareTokenUC', () => {
 			});
 
 			it('should call the service', async () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ school });
 				const course = courseFactory.buildWithId();
 				authorization.getUserWithPermissions.mockResolvedValue(user);
@@ -424,7 +424,7 @@ describe('ShareTokenUC', () => {
 	describe('lookup a sharetoken', () => {
 		describe('when parent is a course', () => {
 			const setup = () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
 				const user = userFactory.buildWithId({ school });
 				authorization.getUserWithPermissions.mockResolvedValue(user);
@@ -442,7 +442,7 @@ describe('ShareTokenUC', () => {
 
 			it('should throw if the feature is not enabled', async () => {
 				const { user, shareToken } = setup();
-				Configuration.set('FEATURE_COURSE_SHARE_NEW', false);
+				Configuration.set('FEATURE_COURSE_SHARE', false);
 
 				await expect(uc.lookupShareToken(user.id, shareToken.token)).rejects.toThrowError();
 			});
@@ -470,7 +470,7 @@ describe('ShareTokenUC', () => {
 
 		describe('when parent is a lesson', () => {
 			const setup = () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
 				const user = userFactory.buildWithId({ school });
 				authorization.getUserWithPermissions.mockResolvedValue(user);
@@ -517,7 +517,7 @@ describe('ShareTokenUC', () => {
 
 		describe('when parent is a task', () => {
 			const setup = () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
 				const user = userFactory.buildWithId({ school });
 				authorization.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -564,7 +564,7 @@ describe('ShareTokenUC', () => {
 
 		describe('when restricted to same school', () => {
 			const setup = () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ school });
 				const shareToken = shareTokenFactory.build({
 					context: { contextType: ShareTokenContextType.School, contextId: school.id },
@@ -593,7 +593,7 @@ describe('ShareTokenUC', () => {
 
 		describe('when not restricted to same school', () => {
 			const setup = () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 				const user = userFactory.buildWithId({ school });
 				const shareToken = shareTokenFactory.build();
 				const parentName = 'name';
@@ -614,7 +614,7 @@ describe('ShareTokenUC', () => {
 	describe('import share token', () => {
 		describe('when parent is a course', () => {
 			const setup = () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
 				const user = userFactory.buildWithId({ school });
 				authorization.getUserWithPermissions.mockResolvedValue(user);
@@ -635,7 +635,7 @@ describe('ShareTokenUC', () => {
 
 			it('should throw if the feature is not enabled', async () => {
 				const { user, shareToken } = setup();
-				Configuration.set('FEATURE_COURSE_SHARE_NEW', false);
+				Configuration.set('FEATURE_COURSE_SHARE', false);
 
 				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
 					InternalServerErrorException
@@ -718,7 +718,7 @@ describe('ShareTokenUC', () => {
 
 		describe('when parent is a lesson', () => {
 			const setup = () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
 				const user = userFactory.buildWithId({ school });
 				authorization.getUserWithPermissions.mockResolvedValue(user);
@@ -834,7 +834,7 @@ describe('ShareTokenUC', () => {
 
 		describe('when parent is a task', () => {
 			const setupTask = () => {
-				const school = schoolFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
 
 				const user = userFactory.buildWithId({ school });
 				authorization.getUserWithPermissions.mockResolvedValue(user);

@@ -1,8 +1,12 @@
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { Injectable } from '@nestjs/common';
+import { ToolContextType } from '@modules/tool/common/enum';
+import { ContextExternalTool, ContextRef } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
+import { Inject, Injectable } from '@nestjs/common';
 import { Course, User } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { BoardRepo, CourseRepo, UserRepo } from '@shared/repo';
+import { LegacyBoardRepo, CourseRepo, UserRepo } from '@shared/repo';
+import { IToolFeatures, ToolFeatures } from '@modules/tool/tool-config';
 import { BoardCopyService } from './board-copy.service';
 import { RoomsService } from './rooms.service';
 
@@ -15,12 +19,14 @@ type CourseCopyParams = {
 @Injectable()
 export class CourseCopyService {
 	constructor(
+		@Inject(ToolFeatures) private readonly toolFeatures: IToolFeatures,
 		private readonly courseRepo: CourseRepo,
-		private readonly boardRepo: BoardRepo,
+		private readonly legacyBoardRepo: LegacyBoardRepo,
 		private readonly roomsService: RoomsService,
 		private readonly boardCopyService: BoardCopyService,
 		private readonly copyHelperService: CopyHelperService,
-		private readonly userRepo: UserRepo
+		private readonly userRepo: UserRepo,
+		private readonly contextExternalToolService: ContextExternalToolService
 	) {}
 
 	async copyCourse({
@@ -36,8 +42,8 @@ export class CourseCopyService {
 
 		// fetch original course and board
 		const originalCourse = await this.courseRepo.findById(courseId);
-		let originalBoard = await this.boardRepo.findByCourseId(courseId);
-		originalBoard = await this.roomsService.updateBoard(originalBoard, courseId, userId);
+		let originalBoard = await this.legacyBoardRepo.findByCourseId(courseId);
+		originalBoard = await this.roomsService.updateLegacyBoard(originalBoard, courseId, userId);
 
 		// handle potential name conflict
 		const [existingCourses] = await this.courseRepo.findAllByUserId(userId);
@@ -46,6 +52,23 @@ export class CourseCopyService {
 
 		// copy course and board
 		const courseCopy = await this.copyCourseEntity({ user, originalCourse, copyName });
+		if (this.toolFeatures.ctlToolsCopyEnabled) {
+			const contextRef: ContextRef = { id: courseId, type: ToolContextType.COURSE };
+			const contextExternalToolsInContext: ContextExternalTool[] =
+				await this.contextExternalToolService.findAllByContext(contextRef);
+
+			await Promise.all(
+				contextExternalToolsInContext.map(async (tool: ContextExternalTool): Promise<ContextExternalTool> => {
+					const copiedTool: ContextExternalTool = await this.contextExternalToolService.copyContextExternalTool(
+						tool,
+						courseCopy.id
+					);
+
+					return copiedTool;
+				})
+			);
+		}
+
 		const boardStatus = await this.boardCopyService.copyBoard({ originalBoard, destinationCourse: courseCopy, user });
 		const finishedCourseCopy = await this.finishCourseCopying(courseCopy);
 
@@ -97,9 +120,19 @@ export class CourseCopyService {
 			boardStatus,
 		];
 
+		if (this.toolFeatures.ctlToolsCopyEnabled) {
+			elements.push({
+				type: CopyElementType.EXTERNAL_TOOL,
+				status: CopyStatusEnum.SUCCESS,
+			});
+		}
+
 		const courseGroupsExist = originalCourse.getCourseGroupItems().length > 0;
 		if (courseGroupsExist) {
-			elements.push({ type: CopyElementType.COURSEGROUP_GROUP, status: CopyStatusEnum.NOT_IMPLEMENTED });
+			elements.push({
+				type: CopyElementType.COURSEGROUP_GROUP,
+				status: CopyStatusEnum.NOT_IMPLEMENTED,
+			});
 		}
 
 		const status = {

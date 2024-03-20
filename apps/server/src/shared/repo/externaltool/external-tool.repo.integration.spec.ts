@@ -13,12 +13,13 @@ import {
 } from '@modules/tool/common/enum';
 import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '@modules/tool/external-tool/domain';
 import { ExternalToolEntity } from '@modules/tool/external-tool/entity';
+import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, SortOrder } from '@shared/domain/interface';
 
 import { ExternalToolRepo, ExternalToolRepoMapper } from '@shared/repo';
-import { cleanupCollections, externalToolEntityFactory } from '@shared/testing';
+import { cleanupCollections } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
 
 describe('ExternalToolRepo', () => {
@@ -204,7 +205,6 @@ describe('ExternalToolRepo', () => {
 				key: 'key',
 				lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 				privacy_permission: LtiPrivacyPermission.PSEUDONYMOUS,
-				resource_link_id: 'resource_link_id',
 				launch_presentation_locale: 'de-DE',
 			});
 			const { domainObject } = setupDO(config);
