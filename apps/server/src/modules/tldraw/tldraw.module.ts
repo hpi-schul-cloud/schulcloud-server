@@ -11,6 +11,8 @@ import { TldrawDrawing } from './entities';
 import { TldrawController } from './controller';
 import { TldrawService } from './service';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
+// TODO must be fixed, direct import of a file from another module in not allowed
+import { XApiKeyStrategy } from '../authentication/strategy/x-api-key.strategy';
 
 const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	findOneOrFailHandler: (entityName: string, where: Dictionary | IPrimaryKey) =>
