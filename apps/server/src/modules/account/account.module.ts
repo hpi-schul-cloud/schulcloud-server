@@ -5,6 +5,7 @@ import { PermissionService } from '@shared/domain/service';
 import { LegacySystemRepo, UserRepo } from '@shared/repo';
 
 import { LoggerModule } from '@src/core/logger/logger.module';
+import { CqrsModule } from '@nestjs/cqrs';
 import { ServerConfig } from '../server/server.config';
 import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb, AccountIdmToDtoMapperIdm } from './mapper';
 import { AccountRepo } from './repo/account.repo';
@@ -22,7 +23,7 @@ function accountIdmToDtoMapperFactory(configService: ConfigService<ServerConfig,
 }
 
 @Module({
-	imports: [IdentityManagementModule, LoggerModule],
+	imports: [CqrsModule, IdentityManagementModule, LoggerModule],
 	providers: [
 		UserRepo,
 		LegacySystemRepo,

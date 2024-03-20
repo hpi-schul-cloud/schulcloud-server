@@ -15,6 +15,7 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
+import { CqrsModule } from '@nestjs/cqrs';
 import { BoardNodeRepo } from '../board/repo';
 import { COURSE_REPO } from './domain';
 import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';
@@ -41,6 +42,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		LoggerModule,
 		TaskModule,
 		ToolConfigModule,
+		CqrsModule,
 	],
 	providers: [
 		{
