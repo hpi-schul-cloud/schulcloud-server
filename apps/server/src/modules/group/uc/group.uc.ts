@@ -228,6 +228,8 @@ export class GroupUc {
 	private async findGroupsForSchool(schoolId: EntityId): Promise<ClassInfoDto[]> {
 		const groups: Group[] = await this.groupService.findGroupsBySchoolIdAndGroupTypes(
 			schoolId,
+			0,
+			undefined,
 			this.ALLOWED_GROUP_TYPES
 		);
 
@@ -239,7 +241,12 @@ export class GroupUc {
 	private async findGroupsForUser(userId: EntityId): Promise<ClassInfoDto[]> {
 		const user: UserDO = await this.userService.findById(userId);
 
-		const groups: Group[] = await this.groupService.findGroupsByUserAndGroupTypes(user, this.ALLOWED_GROUP_TYPES);
+		const groups: Group[] = await this.groupService.findGroupsByUserAndGroupTypes(
+			user,
+			0,
+			undefined,
+			this.ALLOWED_GROUP_TYPES
+		);
 
 		const classInfosFromGroups: ClassInfoDto[] = await this.getClassInfosFromGroups(groups);
 
@@ -365,6 +372,8 @@ export class GroupUc {
 	public async getAllGroups(
 		userId: EntityId,
 		schoolId: EntityId,
+		skip?: number,
+		limit?: number,
 		availableGroupsForCourseSync?: boolean
 	): Promise<ResolvedGroupDto[]> {
 		const school: School = await this.schoolService.getSchoolById(schoolId);
@@ -376,9 +385,9 @@ export class GroupUc {
 
 		let groups: Group[];
 		if (canSeeFullList) {
-			groups = await this.getGroupsForSchool(schoolId, availableGroupsForCourseSync);
+			groups = await this.getGroupsForSchool(schoolId, skip, limit, availableGroupsForCourseSync);
 		} else {
-			groups = await this.getGroupsForUser(userId, availableGroupsForCourseSync);
+			groups = await this.getGroupsForUser(userId, skip, limit, availableGroupsForCourseSync);
 		}
 
 		const resolvedGroups: ResolvedGroupDto[] = await Promise.all(
@@ -393,24 +402,39 @@ export class GroupUc {
 		return resolvedGroups;
 	}
 
-	private async getGroupsForSchool(schoolId: EntityId, availableGroupsForCourseSync?: boolean): Promise<Group[]> {
+	private async getGroupsForSchool(
+		schoolId: EntityId,
+		skip?: number,
+		limit?: number,
+		availableGroupsForCourseSync?: boolean
+	): Promise<Group[]> {
 		let foundGroups: Group[];
 		if (availableGroupsForCourseSync) {
-			foundGroups = await this.groupService.findAvailableGroupsBySchoolId(schoolId);
+			foundGroups = await this.groupService.findAvailableGroupsBySchoolId(schoolId, skip, limit);
 		} else {
-			foundGroups = await this.groupService.findGroupsBySchoolIdAndGroupTypes(schoolId, this.ALLOWED_GROUP_TYPES);
+			foundGroups = await this.groupService.findGroupsBySchoolIdAndGroupTypes(
+				schoolId,
+				skip,
+				limit,
+				this.ALLOWED_GROUP_TYPES
+			);
 		}
 
 		return foundGroups;
 	}
 
-	private async getGroupsForUser(userId: EntityId, availableGroupsForCourseSync?: boolean): Promise<Group[]> {
+	private async getGroupsForUser(
+		userId: EntityId,
+		skip?: number,
+		limit?: number,
+		availableGroupsForCourseSync?: boolean
+	): Promise<Group[]> {
 		let foundGroups: Group[];
 		const user: UserDO = await this.userService.findById(userId);
 		if (availableGroupsForCourseSync) {
-			foundGroups = await this.groupService.findAvailableGroupsByUser(user);
+			foundGroups = await this.groupService.findAvailableGroupsByUser(user, skip, limit);
 		} else {
-			foundGroups = await this.groupService.findGroupsByUserAndGroupTypes(user, this.ALLOWED_GROUP_TYPES);
+			foundGroups = await this.groupService.findGroupsByUserAndGroupTypes(user, skip, limit, this.ALLOWED_GROUP_TYPES);
 		}
 
 		return foundGroups;

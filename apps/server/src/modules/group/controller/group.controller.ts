@@ -1,5 +1,4 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
-import { GroupDto } from '@modules/group/uc/dto/group.dto';
 import { Controller, Get, HttpStatus, Param, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Page } from '@shared/domain/domainobject';
@@ -11,7 +10,6 @@ import {
 	ClassFilterParams,
 	ClassInfoSearchListResponse,
 	ClassSortParams,
-	GroupEntryResponse,
 	GroupIdParams,
 	GroupPaginationParams,
 	GroupParams,
@@ -75,19 +73,22 @@ export class GroupController {
 
 	@Get()
 	@ApiOperation({ summary: 'Get a list of all groups.' })
-	@ApiResponse({ status: HttpStatus.OK, type: [GroupEntryResponse] })
+	@ApiResponse({ status: HttpStatus.OK, type: [GroupResponse] })
 	@ApiResponse({ status: '4XX', type: ErrorResponse })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	public async getAllGroups(
 		@CurrentUser() currentUser: ICurrentUser,
+		@Query() pagination: GroupPaginationParams,
 		@Query() params: GroupParams
-	): Promise<GroupEntryResponse[]> {
-		const groups: GroupDto[] = await this.groupUc.getAllGroups(
+	): Promise<GroupResponse[]> {
+		const groups: ResolvedGroupDto[] = await this.groupUc.getAllGroups(
 			currentUser.userId,
 			currentUser.schoolId,
+			pagination.skip,
+			pagination.limit,
 			params.availableGroupsForCourseSync
 		);
-		const response: GroupEntryResponse[] = GroupResponseMapper.mapToGroupListResponse(groups);
+		const response: GroupResponse[] = GroupResponseMapper.mapToGroupResponseList(groups);
 
 		return response;
 	}

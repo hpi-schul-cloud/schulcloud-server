@@ -1,11 +1,10 @@
 import { Page } from '@shared/domain/domainobject';
 import { GroupTypes } from '../../domain';
-import { ClassInfoDto, CourseInfoDto, GroupDto ResolvedGroupDto } from '../../uc/dto';
+import { ClassInfoDto, CourseInfoDto, ResolvedGroupDto } from '../../uc/dto';
 import {
 	ClassInfoResponse,
 	ClassInfoSearchListResponse,
 	ExternalSourceResponse,
-	GroupEntryResponse,
 	GroupResponse,
 	GroupTypeResponse,
 	GroupUserResponse,
@@ -82,9 +81,9 @@ export class GroupResponseMapper {
 		return mapped;
 	}
 
-	static mapToGroupListResponse(groups: GroupDto[]): GroupEntryResponse[] {
-		const mapped: GroupEntryResponse[] = groups.map(
-			(group: GroupDto): GroupEntryResponse => new GroupEntryResponse({ id: group.id, name: group.name })
+	static mapToGroupResponseList(groups: ResolvedGroupDto[]): GroupResponse[] {
+		const mapped: GroupResponse[] = groups.map(
+			(group: ResolvedGroupDto): GroupResponse => this.mapToGroupResponse(group)
 		);
 
 		return mapped;

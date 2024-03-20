@@ -190,6 +190,7 @@ describe('Group (API)', () => {
 					expect(response.body).toEqual({
 						id: group.id,
 						name: group.name,
+						organizationId: group.organization?.id,
 						type: group.type,
 						users: [
 							{
@@ -274,13 +275,37 @@ describe('Group (API)', () => {
 				const otherSchool: SchoolEntity = schoolEntityFactory.buildWithId();
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				const groupInSchool: GroupEntity = groupEntityFactory.buildWithId({ organization: school });
-				const availableGroupInSchool: GroupEntity = groupEntityFactory.buildWithId({ organization: school });
-				const groupInOtherSchool: GroupEntity = groupEntityFactory.buildWithId({ organization: otherSchool });
+				const groupInSchool: GroupEntity = groupEntityFactory.buildWithId({
+					organization: school,
+					users: [
+						{
+							user: adminUser,
+							role: adminUser.roles[0],
+						},
+					],
+				});
+				const availableGroupInSchool: GroupEntity = groupEntityFactory.buildWithId({
+					organization: school,
+					users: [
+						{
+							user: adminUser,
+							role: adminUser.roles[0],
+						},
+					],
+				});
+				const groupInOtherSchool: GroupEntity = groupEntityFactory.buildWithId({
+					organization: otherSchool,
+					users: [
+						{
+							user: adminUser,
+							role: adminUser.roles[0],
+						},
+					],
+				});
 
 				const syncedCourse: CourseEntity = courseEntityFactory.build({
 					school,
-					syncedWithGroup: availableGroupInSchool,
+					syncedWithGroup: groupInSchool,
 				});
 
 				await em.persistAndFlush([
@@ -311,16 +336,7 @@ describe('Group (API)', () => {
 					const response = await loggedInClient.get();
 
 					expect(response.status).toEqual(HttpStatus.OK);
-					expect(response.body).toEqual([
-						{
-							id: groupInSchool.id,
-							name: groupInSchool.name,
-						},
-						{
-							id: availableGroupInSchool.id,
-							name: availableGroupInSchool.name,
-						},
-					]);
+					expect(response.body).toEqual([groupInSchool, availableGroupInSchool]);
 				});
 			});
 
@@ -331,12 +347,7 @@ describe('Group (API)', () => {
 					const response = await loggedInClient.get().query({ availableGroupsForCourseSync: true });
 
 					expect(response.status).toEqual(HttpStatus.OK);
-					expect(response.body).toEqual([
-						{
-							id: availableGroupInSchool.id,
-							name: availableGroupInSchool.name,
-						},
-					]);
+					expect(response.body).toEqual([availableGroupInSchool]);
 				});
 			});
 		});
@@ -358,7 +369,7 @@ describe('Group (API)', () => {
 
 				const syncedCourse: CourseEntity = courseEntityFactory.build({
 					school,
-					syncedWithGroup: availableTeachersGroup,
+					syncedWithGroup: teachersGroup,
 				});
 
 				await em.persistAndFlush([
@@ -388,16 +399,7 @@ describe('Group (API)', () => {
 					const response = await loggedInClient.get();
 
 					expect(response.status).toEqual(HttpStatus.OK);
-					expect(response.body).toEqual([
-						{
-							id: teachersGroup.id,
-							name: teachersGroup.name,
-						},
-						{
-							id: availableTeachersGroup.id,
-							name: availableTeachersGroup.name,
-						},
-					]);
+					expect(response.body).toEqual([teachersGroup, availableTeachersGroup]);
 				});
 			});
 
@@ -408,12 +410,7 @@ describe('Group (API)', () => {
 					const response = await loggedInClient.get().query({ availableGroupsForCourseSync: true });
 
 					expect(response.status).toEqual(HttpStatus.OK);
-					expect(response.body).toEqual([
-						{
-							id: availableTeachersGroup.id,
-							name: availableTeachersGroup.name,
-						},
-					]);
+					expect(response.body).toEqual([availableTeachersGroup]);
 				});
 			});
 		});
