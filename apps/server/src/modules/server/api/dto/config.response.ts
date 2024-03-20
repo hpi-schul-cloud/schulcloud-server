@@ -1,6 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
-import { IsEnum } from 'class-validator';
 import type { ServerConfig } from '../..';
 import { SchulcloudTheme } from '../../types/schulcloud-theme.enum';
 import { Timezone } from '../../types/timezone.enum';
@@ -163,25 +162,21 @@ export class ConfigResponse {
 		enum: LanguageType,
 		enumName: 'LanguageType',
 	})
-	@IsEnum(LanguageType, { each: true })
 	I18N__AVAILABLE_LANGUAGES: LanguageType[];
 
 	@ApiProperty({
 		enum: LanguageType,
 		enumName: 'LanguageType',
 	})
-	@IsEnum(LanguageType)
 	I18N__DEFAULT_LANGUAGE: LanguageType;
 
 	@ApiProperty({
 		enum: LanguageType,
 		enumName: 'LanguageType',
 	})
-	@IsEnum(LanguageType)
 	I18N__FALLBACK_LANGUAGE: LanguageType;
 
 	@ApiProperty({ enum: Timezone, enumName: 'Timezone' })
-	@IsEnum(Timezone)
 	I18N__DEFAULT_TIMEZONE: Timezone;
 
 	@ApiProperty()
@@ -197,7 +192,6 @@ export class ConfigResponse {
 	DOCUMENT_BASE_DIR: string;
 
 	@ApiProperty({ enum: SchulcloudTheme, enumName: 'SchulcloudTheme' })
-	@IsEnum(SchulcloudTheme)
 	SC_THEME: SchulcloudTheme;
 
 	@ApiProperty()
