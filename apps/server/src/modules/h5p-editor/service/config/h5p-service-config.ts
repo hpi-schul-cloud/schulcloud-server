@@ -8,7 +8,6 @@ h5pConfig.baseUrl = '/api/v3/h5p-editor';
 
 h5pConfig.ajaxUrl = '/ajax';
 h5pConfig.contentFilesUrl = '/content';
-// h5pConfig.contentFilesUrlPlayerOverride = '/content/{{contentId}}';
 h5pConfig.contentUserDataUrl = '/contentUserData';
 
 h5pConfig.librariesUrl = '/libraries';
