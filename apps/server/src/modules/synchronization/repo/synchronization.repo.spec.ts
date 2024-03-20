@@ -3,13 +3,13 @@ import { Test } from '@nestjs/testing';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { cleanupCollections } from '@shared/testing';
-import { StatusModel } from '@modules/deletion';
 import { Synchronization } from '../domain';
 import { synchronizationFactory } from '../domain/testing';
-import { SynchronizationEntity } from '../entity';
-import { synchronizationEntityFactory } from '../entity/testing';
+import { SynchronizationEntity } from './entity';
+import { synchronizationEntityFactory } from './entity/testing';
 import { SynchronizationMapper } from './mapper';
 import { SynchronizationRepo } from './synchronization.repo';
+import { SynchronizationStatusModel } from '../domain/types';
 
 describe(SynchronizationRepo.name, () => {
 	let module: TestingModule;
@@ -87,24 +87,27 @@ describe(SynchronizationRepo.name, () => {
 				const entity: SynchronizationEntity = synchronizationEntityFactory.build();
 				await em.persistAndFlush(entity);
 
-				// Arrange expected DeletionRequestEntity after changing status
-				entity.status = StatusModel.SUCCESS;
-				const synchronizationToUpdate = SynchronizationMapper.mapToDO(entity);
+				const expectedSynchronization = {
+					id: entity.id,
+					count: entity.count,
+					failureCause: entity.failureCause,
+					status: entity.status,
+					createdAt: entity.createdAt,
+					updatedAt: entity.updatedAt,
+				};
 
 				return {
 					entity,
-					synchronizationToUpdate,
+					expectedSynchronization,
 				};
 			};
 
 			it('should find the synchronization', async () => {
-				const { entity, synchronizationToUpdate } = await setup();
-
-				await repo.update(synchronizationToUpdate);
+				const { entity, expectedSynchronization } = await setup();
 
 				const result: Synchronization = await repo.findById(entity.id);
 
-				expect(result.status).toEqual(entity.status);
+				expect(result).toEqual(expect.objectContaining(expectedSynchronization));
 			});
 		});
 	});
@@ -116,7 +119,7 @@ describe(SynchronizationRepo.name, () => {
 				await em.persistAndFlush(entity);
 
 				// Arrange expected DeletionRequestEntity after changing status
-				entity.status = StatusModel.SUCCESS;
+				entity.status = SynchronizationStatusModel.SUCCESS;
 				const synchronizationToUpdate = SynchronizationMapper.mapToDO(entity);
 
 				return { entity, synchronizationToUpdate };

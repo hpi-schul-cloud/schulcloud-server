@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Synchronization } from '../domain';
-import { SynchronizationEntity } from '../entity';
+import { SynchronizationEntity } from './entity';
 import { SynchronizationMapper } from './mapper';
 
 @Injectable()

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { UserModule } from '../user/user.module';
 import { SynchronizationRepo } from './repo';
-import { SynchronizationService } from './service';
+import { SynchronizationService } from './domain/service';
 
 @Module({
 	imports: [UserModule],

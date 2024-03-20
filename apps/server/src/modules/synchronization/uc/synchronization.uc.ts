@@ -2,9 +2,9 @@ import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { LegacyLogger } from '@src/core/logger';
 import { SanisResponse, SchulconnexRestClient } from '@src/infra/schulconnex-client';
-import { StatusModel } from '@src/modules/deletion';
-import { SynchronizationService } from '../service';
+import { SynchronizationService } from '../domain/service';
 import { Synchronization } from '../domain';
+import { SynchronizationStatusModel } from '../domain/types';
 
 @Injectable()
 export class SynchronizationUc {
@@ -17,25 +17,42 @@ export class SynchronizationUc {
 		this.logger.setContext(SynchronizationUc.name);
 	}
 
-	async updateSystemUsersLastSyncedAt(systemId: string): Promise<void> {
+	public async updateSystemUsersLastSyncedAt(systemId: string): Promise<void> {
 		this.logger.debug({ action: 'updateSystemUsersLastSyncedAt', systemId });
 
 		const synchronizationId = await this.synchronizationService.createSynchronization();
 
-		const usersDownloaded: SanisResponse[] = await this.schulconnexRestClient.getPersonenInfo({});
+		const usersToCheck = await this.findUsersToSynchronize();
+		if (usersToCheck instanceof Error) {
+			// TODO
+		} else {
+			const usersToSync = await this.userService.findByExternalIdsAndProvidedBySystemId(usersToCheck, systemId);
 
-		const userToCheck = usersDownloaded.map((user) => user.pid);
+			await this.userService.updateLastSyncedAt(usersToSync);
 
-		const usersToSync = await this.userService.findByExternalIdsAndProvidedBySystemId(userToCheck, systemId);
+			const synchronizationToUpdate = await this.synchronizationService.findById(synchronizationId);
 
-		await this.userService.updateLastSyncedAt(usersToSync);
+			await this.synchronizationService.update({
+				...synchronizationToUpdate,
+				count: usersToSync.length,
+				status: SynchronizationStatusModel.SUCCESS,
+			} as Synchronization);
+		}
+	}
 
-		const synchronizationToUpdate = await this.synchronizationService.findById(synchronizationId);
+	private async findUsersToSynchronize(): Promise<string[]> {
+		let usersToCheck: string[] = [];
+		try {
+			const usersDownloaded: SanisResponse[] = await this.schulconnexRestClient.getPersonenInfo({});
 
-		await this.synchronizationService.update({
-			...synchronizationToUpdate,
-			count: usersToSync.length,
-			status: StatusModel.SUCCESS,
-		} as Synchronization);
+			if (usersDownloaded.length === 0) {
+				throw new Error('No users to check');
+			}
+			usersToCheck = usersDownloaded.map((user) => user.pid);
+		} catch (error) {
+			this.logger.warn(error);
+		}
+
+		return usersToCheck;
 	}
 }

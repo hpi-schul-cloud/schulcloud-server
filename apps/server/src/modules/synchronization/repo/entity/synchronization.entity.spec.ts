@@ -1,7 +1,7 @@
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { StatusModel } from '@modules/deletion';
 import { SynchronizationEntity } from './synchronization.entity';
+import { SynchronizationStatusModel } from '../../domain/types';
 
 describe(SynchronizationEntity.name, () => {
 	beforeAll(async () => {
@@ -15,7 +15,7 @@ describe(SynchronizationEntity.name, () => {
 					id: new ObjectId().toHexString(),
 					count: 1,
 					failureCause: '',
-					status: StatusModel.PENDING,
+					status: SynchronizationStatusModel.REGISTERED,
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				};

@@ -1,7 +1,7 @@
 import { DoBaseFactory } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { StatusModel } from '@modules/deletion';
 import { Synchronization, SynchronizationProps } from '../../synchronization.do';
+import { SynchronizationStatusModel } from '../../types';
 
 export const synchronizationFactory = DoBaseFactory.define<Synchronization, SynchronizationProps>(
 	Synchronization,
@@ -10,7 +10,7 @@ export const synchronizationFactory = DoBaseFactory.define<Synchronization, Sync
 			id: new ObjectId().toHexString(),
 			count: 1,
 			failureCause: '',
-			status: StatusModel.PENDING,
+			status: SynchronizationStatusModel.REGISTERED,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};

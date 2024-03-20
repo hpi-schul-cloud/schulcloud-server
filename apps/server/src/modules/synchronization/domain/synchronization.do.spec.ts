@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { StatusModel } from '@modules/deletion';
 import { Synchronization } from './synchronization.do';
 import { synchronizationFactory } from './testing';
+import { SynchronizationStatusModel } from './types';
 
 describe(Synchronization.name, () => {
 	describe('constructor', () => {
@@ -37,7 +37,7 @@ describe(Synchronization.name, () => {
 					id: new ObjectId().toHexString(),
 					count: 1,
 					failureCause: '',
-					status: StatusModel.PENDING,
+					status: SynchronizationStatusModel.REGISTERED,
 					createdAt: new Date(),
 					updatedAt: new Date(),
 				};

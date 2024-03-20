@@ -1,7 +1,7 @@
 import { Synchronization } from '../../domain';
 import { synchronizationFactory } from '../../domain/testing';
-import { SynchronizationEntity } from '../../entity';
-import { synchronizationEntityFactory } from '../../entity/testing';
+import { SynchronizationEntity } from '../entity';
+import { synchronizationEntityFactory } from '../entity/testing';
 import { SynchronizationMapper } from './synchronization.mapper';
 
 describe(SynchronizationMapper.name, () => {

@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@shared/testing';
-import { StatusModel } from '@modules/deletion';
 import { SynchronizationEntity, SynchronizationEntityProps } from '../../synchronization.entity';
+import { SynchronizationStatusModel } from '../../../../domain/types';
 
 export const synchronizationEntityFactory = BaseFactory.define<SynchronizationEntity, SynchronizationEntityProps>(
 	SynchronizationEntity,
@@ -10,7 +10,7 @@ export const synchronizationEntityFactory = BaseFactory.define<SynchronizationEn
 			id: new ObjectId().toHexString(),
 			count: 1,
 			failureCause: '',
-			status: StatusModel.PENDING,
+			status: SynchronizationStatusModel.REGISTERED,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};

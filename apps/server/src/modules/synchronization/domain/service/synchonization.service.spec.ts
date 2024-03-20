@@ -3,9 +3,9 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from 'bson';
 import { SynchronizationService } from './synchronization.service';
-import { Synchronization } from '../domain';
-import { SynchronizationRepo } from '../repo';
-import { synchronizationFactory } from '../domain/testing';
+import { Synchronization } from '..';
+import { SynchronizationRepo } from '../../repo';
+import { synchronizationFactory } from '../testing';
 
 describe(SynchronizationService.name, () => {
 	let module: TestingModule;

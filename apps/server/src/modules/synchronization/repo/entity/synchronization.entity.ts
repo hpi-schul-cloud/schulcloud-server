@@ -1,13 +1,13 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
-import { StatusModel } from '@modules/deletion';
+import { SynchronizationStatusModel } from '../../domain/types';
 
 export interface SynchronizationEntityProps {
 	id?: EntityId;
 	count?: number;
 	failureCause?: string;
-	status?: StatusModel;
+	status?: SynchronizationStatusModel;
 	createdAt?: Date;
 	updatedAt?: Date;
 }
@@ -21,7 +21,7 @@ export class SynchronizationEntity extends BaseEntityWithTimestamps {
 	failureCause?: string;
 
 	@Property({ nullable: true })
-	status?: StatusModel;
+	status?: SynchronizationStatusModel;
 
 	constructor(props: SynchronizationEntityProps) {
 		super();
