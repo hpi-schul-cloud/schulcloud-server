@@ -5,7 +5,6 @@ import { LoggerModule } from '@src/core/logger';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { CoreModule } from '@src/core';
-import { XApiKeyStrategy } from '../authentication/strategy/x-api-key.strategy';
 import { config, TLDRAW_DB_URL } from './config';
 import { TldrawDrawing } from './entities';
 import { TldrawController } from './controller';
