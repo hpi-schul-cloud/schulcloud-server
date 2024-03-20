@@ -8,7 +8,7 @@ import { Permission } from '@shared/domain/interface';
 import { courseFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationService } from '@src/modules/authorization';
 import { LearnroomConfig } from '../learnroom.config';
-import { CommonCartridgeImportService, CourseService } from '../service';
+import { CommonCartridgeImportService } from '../service';
 import { CourseImportUc } from './course-import.uc';
 
 describe('CourseImportUc', () => {
@@ -17,7 +17,6 @@ describe('CourseImportUc', () => {
 	let orm: MikroORM;
 	let configServiceMock: DeepMocked<ConfigService<LearnroomConfig, true>>;
 	let authorizationServiceMock: DeepMocked<AuthorizationService>;
-	let courseServiceMock: DeepMocked<CourseService>;
 	let courseImportServiceMock: DeepMocked<CommonCartridgeImportService>;
 
 	beforeAll(async () => {
@@ -34,10 +33,6 @@ describe('CourseImportUc', () => {
 					useValue: createMock<AuthorizationService>(),
 				},
 				{
-					provide: CourseService,
-					useValue: createMock<CourseService>(),
-				},
-				{
 					provide: CommonCartridgeImportService,
 					useValue: createMock<CommonCartridgeImportService>(),
 				},
@@ -47,7 +42,6 @@ describe('CourseImportUc', () => {
 		sut = module.get(CourseImportUc);
 		configServiceMock = module.get(ConfigService);
 		authorizationServiceMock = module.get(AuthorizationService);
-		courseServiceMock = module.get(CourseService);
 		courseImportServiceMock = module.get(CommonCartridgeImportService);
 	});
 
@@ -73,7 +67,7 @@ describe('CourseImportUc', () => {
 
 				configServiceMock.getOrThrow.mockReturnValue(true);
 				authorizationServiceMock.getUserWithPermissions.mockResolvedValue(user);
-				courseImportServiceMock.createCourse.mockReturnValue(course);
+				courseImportServiceMock.importFile.mockResolvedValue();
 
 				return { user, course, file };
 			};
@@ -86,12 +80,12 @@ describe('CourseImportUc', () => {
 				expect(authorizationServiceMock.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.COURSE_CREATE]);
 			});
 
-			it('should create the course', async () => {
-				const { user, course, file } = setup();
+			it('should call import service', async () => {
+				const { user, file } = setup();
 
 				await sut.importFromCommonCartridge(user.id, file);
 
-				expect(courseServiceMock.create).toHaveBeenCalledWith(course);
+				expect(courseImportServiceMock.importFile).toHaveBeenCalledTimes(1);
 			});
 		});
 

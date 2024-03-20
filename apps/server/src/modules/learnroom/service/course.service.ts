@@ -1,22 +1,39 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { DataDeletionDomainOperationLoggable } from '@shared/common/loggable';
-import { DomainOperationBuilder } from '@shared/domain/builder';
+import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Course as CourseEntity } from '@shared/domain/entity';
-import { DomainOperation } from '@shared/domain/interface';
-import { Counted, DomainName, EntityId, OperationType, StatusModel } from '@shared/domain/types';
+import { Counted, EntityId } from '@shared/domain/types';
 import { CourseRepo as LegacyCourseRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { Group } from '@src/modules/group/domain';
+import { Group } from '@modules/group/domain';
+import {
+	UserDeletedEvent,
+	DeletionService,
+	DataDeletedEvent,
+	DomainDeletionReport,
+	DataDeletionDomainOperationLoggable,
+	DomainName,
+	DomainDeletionReportBuilder,
+	DomainOperationReportBuilder,
+	OperationType,
+	StatusModel,
+} from '@modules/deletion';
 import { Course, COURSE_REPO, CourseRepo } from '../domain';
 
 @Injectable()
-export class CourseService {
+@EventsHandler(UserDeletedEvent)
+export class CourseService implements DeletionService, IEventHandler<UserDeletedEvent> {
 	constructor(
 		private readonly repo: LegacyCourseRepo,
 		private readonly logger: Logger,
-		@Inject(COURSE_REPO) private readonly courseRepo: CourseRepo
+		@Inject(COURSE_REPO) private readonly courseRepo: CourseRepo,
+		private readonly eventBus: EventBus
 	) {
 		this.logger.setContext(CourseService.name);
+	}
+
+	public async handle({ deletionRequestId, targetRefId }: UserDeletedEvent): Promise<void> {
+		const dataDeleted = await this.deleteUserData(targetRefId);
+		await this.eventBus.publish(new DataDeletedEvent(deletionRequestId, dataDeleted));
 	}
 
 	async findById(courseId: EntityId): Promise<CourseEntity> {
@@ -29,7 +46,7 @@ export class CourseService {
 		return [courses, count];
 	}
 
-	public async deleteUserDataFromCourse(userId: EntityId): Promise<DomainOperation> {
+	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
 				'Deleting data from Courses',
@@ -44,12 +61,9 @@ export class CourseService {
 
 		await this.repo.save(courses);
 
-		const result = DomainOperationBuilder.build(
-			DomainName.COURSE,
-			OperationType.UPDATE,
-			count,
-			this.getCoursesId(courses)
-		);
+		const result = DomainDeletionReportBuilder.build(DomainName.COURSE, [
+			DomainOperationReportBuilder.build(OperationType.UPDATE, count, this.getCoursesId(courses)),
+		]);
 
 		this.logger.info(
 			new DataDeletionDomainOperationLoggable(
