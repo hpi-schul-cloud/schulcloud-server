@@ -37,7 +37,12 @@ export class TldrawFilesStorageAdapterService {
 	}
 
 	private isOlderThanRequiredDate(fileRecord: FileDto, createdBeforeDate: Date) {
-		return new Date(fileRecord.createdAt) < createdBeforeDate;
+		if (!fileRecord.createdAt) {
+			return false;
+		}
+
+		const isOlder = new Date(fileRecord.createdAt) < createdBeforeDate;
+		return isOlder;
 	}
 
 	private matchAssetWithFileRecord(asset: TldrawAsset, fileRecord: FileDto) {

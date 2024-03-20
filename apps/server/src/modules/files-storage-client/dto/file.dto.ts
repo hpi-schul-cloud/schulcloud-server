@@ -11,9 +11,9 @@ export class FileDto {
 
 	parentId: EntityId;
 
-	createdAt: Date;
+	createdAt?: Date;
 
-	updatedAt: Date;
+	updatedAt?: Date;
 
 	constructor(props: FileDomainObjectProps) {
 		this.id = props.id;

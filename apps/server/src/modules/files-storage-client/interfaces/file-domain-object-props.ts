@@ -6,6 +6,6 @@ export interface FileDomainObjectProps {
 	name: string;
 	parentType: FileRecordParentType;
 	parentId: EntityId;
-	createdAt: Date;
-	updatedAt: Date;
+	createdAt?: Date;
+	updatedAt?: Date;
 }
