@@ -1,15 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { LdapConfig, OauthConfig } from '@src/modules/system';
 
-export class SchoolSystemsResponse {
+export class ProviderConfigResponse {
 	@ApiProperty()
-	id: string;
+	provider?: string;
 
-	@ApiProperty()
-	systems: SchoolSystemResponse[];
-
-	constructor(props: SchoolSystemsResponse) {
-		this.id = props.id;
-		this.systems = props.systems;
+	constructor(props: Partial<LdapConfig> | Partial<OauthConfig>) {
+		this.provider = props.provider;
 	}
 }
 
@@ -23,9 +20,17 @@ export class SchoolSystemResponse {
 	@ApiProperty()
 	alias?: string;
 
+	@ApiProperty({ type: ProviderConfigResponse })
+	ldapConfig?: ProviderConfigResponse;
+
+	@ApiProperty({ type: ProviderConfigResponse })
+	oauthConfig?: ProviderConfigResponse;
+
 	constructor(props: SchoolSystemResponse) {
 		this.id = props.id;
 		this.type = props.type;
 		this.alias = props.alias;
+		this.ldapConfig = props.ldapConfig ? new ProviderConfigResponse(props.ldapConfig) : undefined;
+		this.oauthConfig = props.oauthConfig ? new ProviderConfigResponse(props.oauthConfig) : undefined;
 	}
 }
