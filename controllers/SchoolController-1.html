@@ -183,6 +183,18 @@
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
+                                <a href="#getSchoolSystems" >getSchoolSystems</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#updateSchool" >updateSchool</a>
                             </li>
                         </ul>
@@ -514,6 +526,102 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="getSchoolSystems"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getSchoolSystems</b></span>
+                        <a href="#getSchoolSystems"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getSchoolSystems(urlParams: <a href="../classes/SchoolUrlParams.html" target="_self">SchoolUrlParams</a>, user: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@ApiOperation({summary: &#x27;Get systems from school&#x27;})<br />@ApiResponse({status: 200, type: SchoolResponse})<br />@ApiResponse({status: 400, type: ApiValidationError})<br />@ApiResponse({status: 403, type: ForbiddenException})<br />@ApiResponse({status: 404, type: NotFoundException})<br />@Authenticate(&#x27;jwt&#x27;)<br />@Get(&#x27;/:schoolId/systems&#x27;)<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="59"
+                                    class="link-to-prism">apps/server/src/modules/school/api/school.controller.ts:59</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>urlParams</td>
+                                            <td>
+                                                            <code><a href="../classes/SchoolUrlParams.html" target="_self" >SchoolUrlParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>user</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;SchoolSystemsResponse&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="updateSchool"></a>
                     <span class="name">
                             <span class="modifier"></span>
@@ -547,8 +655,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="59"
-                                    class="link-to-prism">apps/server/src/modules/school/api/school.controller.ts:59</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">apps/server/src/modules/school/api/school.controller.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -627,7 +735,7 @@ import { Body, Controller, ForbiddenException, Get, NotFoundException, Param, Pa
 import { ApiOperation, ApiResponse, ApiTags } from &#x27;@nestjs/swagger&#x27;;
 import { ApiValidationError } from &#x27;@shared/common&#x27;;
 import { SchoolQueryParams, SchoolUpdateBodyParams, SchoolUrlParams } from &#x27;./dto/param&#x27;;
-import { SchoolForExternalInviteResponse, SchoolResponse } from &#x27;./dto/response&#x27;;
+import { SchoolForExternalInviteResponse, SchoolResponse, SchoolSystemsResponse } from &#x27;./dto/response&#x27;;
 import { SchoolExistsResponse } from &#x27;./dto/response/school-exists.response&#x27;;
 import { SchoolForLdapLoginResponse } from &#x27;./dto/response/school-for-ldap-login.response&#x27;;
 import { SchoolUc } from &#x27;./school.uc&#x27;;
@@ -669,6 +777,23 @@ export class SchoolController {
 	@Get(&#x27;/list-for-ldap-login&#x27;)
 	public async getSchoolListForLadpLogin(): Promise&lt;SchoolForLdapLoginResponse[]&gt; {
 		const res &#x3D; await this.schoolUc.getSchoolListForLdapLogin();
+
+		return res;
+	}
+
+	@ApiOperation({ summary: &#x27;Get systems from school&#x27; })
+	@ApiResponse({ status: 200, type: SchoolResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Authenticate(&#x27;jwt&#x27;)
+	@Get(&#x27;/:schoolId/systems&#x27;)
+	public async getSchoolSystems(
+		@Param() urlParams: SchoolUrlParams,
+		@CurrentUser() user: ICurrentUser
+	): Promise&lt;SchoolSystemsResponse&gt; {
+		const { schoolId } &#x3D; urlParams;
+		const res &#x3D; await this.schoolUc.getSchoolSystems(schoolId, user.userId);
 
 		return res;
 	}

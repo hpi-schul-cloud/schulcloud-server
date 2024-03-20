@@ -157,6 +157,7 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier"></span>
                                     <span class="modifier">Optional</span>
                                 <a href="#name" >name</a>
                             </li>
@@ -211,7 +212,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/school/api/dto/param/school-update-body.params.ts:18</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="19" class="link-to-prism">apps/server/src/modules/school/api/dto/param/school-update-body.params.ts:19</a></div>
                         </td>
                     </tr>
 
@@ -224,6 +225,7 @@
                 <td class="col-md-4">
                     <a name="name"></a>
                     <span class="name">
+                            <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
@@ -244,13 +246,13 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @ApiPropertyOptional()<br />@IsString()<br />@IsOptional()<br />
+                            @ApiPropertyOptional()<br />@IsString()<br />@IsOptional()<br />@SanitizeHtml()<br />
                         </code>
                     </td>
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">apps/server/src/modules/school/api/dto/param/school-update-body.params.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="25" class="link-to-prism">apps/server/src/modules/school/api/dto/param/school-update-body.params.ts:25</a></div>
                         </td>
                     </tr>
 
@@ -270,6 +272,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
+import { SanitizeHtml } from &#x27;@shared/controller&#x27;;
 import { LanguageType, Permission } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId, SchoolFeature } from &#x27;@shared/domain/types&#x27;;
 import { Transform, Type } from &#x27;class-transformer&#x27;;
@@ -291,6 +294,7 @@ export class SchoolLogo {
 	@ApiPropertyOptional()
 	@IsString()
 	@IsOptional()
+	@SanitizeHtml()
 	name?: string;
 }
 
@@ -322,6 +326,7 @@ export class SchoolUpdateBodyParams implements SchoolUpdateBody {
 	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional()
+	@SanitizeHtml()
 	name?: string;
 
 	@IsString()

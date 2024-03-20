@@ -153,6 +153,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Static</span>
+                                <a href="#isArrayWithElements" >isArrayWithElements</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
                                 <a href="#isNumber" >isNumber</a>
                             </li>
                         </ul>
@@ -230,6 +234,71 @@
                             </div>
                         <div class="io-description">
                             <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="isArrayWithElements"></a>
+                    <span class="name">
+                            <span class="modifier">Static</span>
+                        <span ><b>isArrayWithElements</b></span>
+                        <a href="#isArrayWithElements"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>isArrayWithElements(value)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="14"
+                                    class="link-to-prism">apps/server/src/shared/common/guards/type.guard.ts:14</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>value</td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>[]</code>
 
                         </div>
                             <div class="io-description">
@@ -325,6 +394,12 @@
 		const isNumber &#x3D; typeof value &#x3D;&#x3D;&#x3D; &#x27;number&#x27;;
 
 		return isNumber;
+	}
+
+	static isArrayWithElements(value: unknown): value is [] {
+		const isArrayWithElements &#x3D; Array.isArray(value) &amp;&amp; value.length &gt; 0;
+
+		return isArrayWithElements;
 	}
 }
 </code></pre>

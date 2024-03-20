@@ -157,6 +157,11 @@
                                     <span class="modifier">Async</span>
                                 <a href="#findById" >findById</a>
                             </li>
+                            <li>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#getSystems" >getSystems</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -175,12 +180,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(systemRepo: <a href="../injectables/SystemRepo.html" target="_self">SystemRepo</a>)</code>
+<code>constructor(systemRepo: <a href="../interfaces/SystemRepo.html" target="_self">SystemRepo</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/system/service/system.service.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="6" class="link-to-prism">apps/server/src/modules/system/service/system.service.ts:6</a></div>
                             </td>
                         </tr>
 
@@ -201,7 +206,7 @@
                                                         <td>systemRepo</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/SystemRepo.html" target="_self" >SystemRepo</a></code>
+                                                                        <code><a href="../interfaces/SystemRepo.html" target="_self" >SystemRepo</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -246,8 +251,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">apps/server/src/modules/system/service/system.service.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/modules/system/service/system.service.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -316,8 +321,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/modules/system/service/system.service.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="21"
+                                    class="link-to-prism">apps/server/src/modules/system/service/system.service.ts:21</a></div>
                         </td>
                     </tr>
 
@@ -356,8 +361,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="10"
-                                    class="link-to-prism">apps/server/src/modules/system/service/system.service.ts:10</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="9"
+                                    class="link-to-prism">apps/server/src/modules/system/service/system.service.ts:9</a></div>
                         </td>
                     </tr>
 
@@ -403,25 +408,100 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="getSystems"></a>
+                    <span class="name">
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>getSystems</b></span>
+                        <a href="#getSystems"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getSystems(id: <a href="../undefineds/EntityId.html" target="_self">EntityId[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="15"
+                                    class="link-to-prism">apps/server/src/modules/system/service/system.service.ts:15</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>id</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/System.html" target="_self" >Promise&lt;System[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Inject, Injectable } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { System } from &#x27;../domain&#x27;;
-import { SystemRepo } from &#x27;../repo&#x27;;
+import { SYSTEM_REPO, System, SystemRepo } from &#x27;../domain&#x27;;
 
 @Injectable()
 export class SystemService {
-	constructor(private readonly systemRepo: SystemRepo) {}
+	constructor(@Inject(SYSTEM_REPO) private readonly systemRepo: SystemRepo) {}
 
 	public async findById(id: EntityId): Promise&lt;System | null&gt; {
-		const system: System | null &#x3D; await this.systemRepo.findById(id);
+		const system &#x3D; await this.systemRepo.getSystemById(id);
 
 		return system;
+	}
+
+	public async getSystems(id: EntityId[]): Promise&lt;System[]&gt; {
+		const systems &#x3D; await this.systemRepo.getSystemsByIds(id);
+
+		return systems;
 	}
 
 	public async findAllForLdapLogin(): Promise&lt;System[]&gt; {
@@ -431,9 +511,9 @@ export class SystemService {
 	}
 
 	public async delete(domainObject: System): Promise&lt;boolean&gt; {
-		const deleted: boolean &#x3D; await this.systemRepo.delete(domainObject);
+		await this.systemRepo.delete(domainObject);
 
-		return deleted;
+		return true;
 	}
 }
 </code></pre>

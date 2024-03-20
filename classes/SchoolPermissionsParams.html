@@ -217,7 +217,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="47" class="link-to-prism">apps/server/src/modules/school/api/dto/param/school-update-body.params.ts:47</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="49" class="link-to-prism">apps/server/src/modules/school/api/dto/param/school-update-body.params.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -256,7 +256,7 @@
                 </tr>
                     <tr>
                         <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="42" class="link-to-prism">apps/server/src/modules/school/api/dto/param/school-update-body.params.ts:42</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="44" class="link-to-prism">apps/server/src/modules/school/api/dto/param/school-update-body.params.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -276,6 +276,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
+import { SanitizeHtml } from &#x27;@shared/controller&#x27;;
 import { LanguageType, Permission } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId, SchoolFeature } from &#x27;@shared/domain/types&#x27;;
 import { Transform, Type } from &#x27;class-transformer&#x27;;
@@ -297,6 +298,7 @@ export class SchoolLogo {
 	@ApiPropertyOptional()
 	@IsString()
 	@IsOptional()
+	@SanitizeHtml()
 	name?: string;
 }
 
@@ -328,6 +330,7 @@ export class SchoolUpdateBodyParams implements SchoolUpdateBody {
 	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional()
+	@SanitizeHtml()
 	name?: string;
 
 	@IsString()

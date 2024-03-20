@@ -126,7 +126,7 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/school/api/mapper/system.response.mapper.ts</code>
+            <code>apps/server/src/modules/school/api/mapper/school-systems.response.mapper.ts</code>
         </p>
 
 
@@ -154,6 +154,10 @@
                             <li>
                                     <span class="modifier">Static</span>
                                 <a href="#mapToLdapLoginResponses" >mapToLdapLoginResponses</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Static</span>
+                                <a href="#mapToSchoolSystemsResponse" >mapToSchoolSystemsResponse</a>
                             </li>
                         </ul>
                     </td>
@@ -196,8 +200,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="11"
-                                    class="link-to-prism">apps/server/src/modules/school/api/mapper/system.response.mapper.ts:11</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="12"
+                                    class="link-to-prism">apps/server/src/modules/school/api/mapper/school-systems.response.mapper.ts:12</a></div>
                         </td>
                     </tr>
 
@@ -265,8 +269,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="5"
-                                    class="link-to-prism">apps/server/src/modules/school/api/mapper/system.response.mapper.ts:5</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="6"
+                                    class="link-to-prism">apps/server/src/modules/school/api/mapper/school-systems.response.mapper.ts:6</a></div>
                         </td>
                     </tr>
 
@@ -312,6 +316,87 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="mapToSchoolSystemsResponse"></a>
+                    <span class="name">
+                            <span class="modifier">Static</span>
+                        <span ><b>mapToSchoolSystemsResponse</b></span>
+                        <a href="#mapToSchoolSystemsResponse"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>mapToSchoolSystemsResponse(school: <a href="../classes/School.html" target="_self">School</a>, systems: <a href="../classes/System.html" target="_self">System[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">apps/server/src/modules/school/api/mapper/school-systems.response.mapper.ts:24</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>school</td>
+                                            <td>
+                                                            <code><a href="../classes/School.html" target="_self" >School</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>systems</td>
+                                            <td>
+                                                            <code><a href="../classes/System.html" target="_self" >System[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/SchoolSystemsResponse.html" target="_self" >SchoolSystemsResponse</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>
 
 
@@ -322,8 +407,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { SystemForLdapLogin } from &#x27;../../domain&#x27;;
-import { SystemForLdapLoginResponse } from &#x27;../dto/response&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { System } from &#x27;@src/modules/system&#x27;;
+import { School, SystemForLdapLogin } from &#x27;../../domain&#x27;;
+import { SchoolSystemResponse, SchoolSystemsResponse, SystemForLdapLoginResponse } from &#x27;../dto/response&#x27;;
 
 export class SystemResponseMapper {
 	public static mapToLdapLoginResponses(systems: SystemForLdapLogin[]): SystemForLdapLoginResponse[] {
@@ -339,6 +425,17 @@ export class SystemResponseMapper {
 			id: system.id,
 			type: systemProps.type,
 			alias: systemProps.alias,
+		});
+
+		return res;
+	}
+
+	public static mapToSchoolSystemsResponse(school: School, systems: System[]): SchoolSystemsResponse {
+		const systemsDto &#x3D; systems.map((system) &#x3D;&gt; new SchoolSystemResponse(system.getProps()));
+
+		const res &#x3D; new SchoolSystemsResponse({
+			id: school.id,
+			systems: systemsDto,
 		});
 
 		return res;

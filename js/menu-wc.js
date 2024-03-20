@@ -2584,13 +2584,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/SystemModule.html" data-type="entity-link" >SystemModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-SystemModule-13d78ab2f8c123c79d994a5f0f6b142371c3a8f1a165956b401ce3560ade49fe4a70cad882cca986a45faacbaeeccf0198516a907efbd2e52c42a8633b6e79b6"' : 'data-bs-target="#xs-injectables-links-module-SystemModule-13d78ab2f8c123c79d994a5f0f6b142371c3a8f1a165956b401ce3560ade49fe4a70cad882cca986a45faacbaeeccf0198516a907efbd2e52c42a8633b6e79b6"' }>
+                                        'data-bs-target="#injectables-links-module-SystemModule-909885c11e9382b5ecdbd824dc777fd57893870d4b41aa6009c2400eb89432468cc5b591036697617d2b5eb9dc2de772f3e29009d0435cae60dd2dcc152f8b63"' : 'data-bs-target="#xs-injectables-links-module-SystemModule-909885c11e9382b5ecdbd824dc777fd57893870d4b41aa6009c2400eb89432468cc5b591036697617d2b5eb9dc2de772f3e29009d0435cae60dd2dcc152f8b63"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-SystemModule-13d78ab2f8c123c79d994a5f0f6b142371c3a8f1a165956b401ce3560ade49fe4a70cad882cca986a45faacbaeeccf0198516a907efbd2e52c42a8633b6e79b6"' :
-                                        'id="xs-injectables-links-module-SystemModule-13d78ab2f8c123c79d994a5f0f6b142371c3a8f1a165956b401ce3560ade49fe4a70cad882cca986a45faacbaeeccf0198516a907efbd2e52c42a8633b6e79b6"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-SystemModule-909885c11e9382b5ecdbd824dc777fd57893870d4b41aa6009c2400eb89432468cc5b591036697617d2b5eb9dc2de772f3e29009d0435cae60dd2dcc152f8b63"' :
+                                        'id="xs-injectables-links-module-SystemModule-909885c11e9382b5ecdbd824dc777fd57893870d4b41aa6009c2400eb89432468cc5b591036697617d2b5eb9dc2de772f3e29009d0435cae60dd2dcc152f8b63"' }>
                                         <li class="link">
                                             <a href="injectables/LegacySystemRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" class="deprecated-name">LegacySystemRepo</a>
                                         </li>
@@ -2599,9 +2599,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                         </li>
                                         <li class="link">
                                             <a href="injectables/SystemOidcService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SystemOidcService</a>
-                                        </li>
-                                        <li class="link">
-                                            <a href="injectables/SystemRepo.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SystemRepo</a>
                                         </li>
                                         <li class="link">
                                             <a href="injectables/SystemService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >SystemService</a>
@@ -5668,6 +5665,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/SchoolSystemParams.html" data-type="entity-link" >SchoolSystemParams</a>
                             </li>
                             <li class="link">
+                                <a href="classes/SchoolSystemResponse.html" data-type="entity-link" >SchoolSystemResponse</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SchoolSystemsResponse.html" data-type="entity-link" >SchoolSystemsResponse</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/SchoolToolConfigurationStatusResponseMapper.html" data-type="entity-link" >SchoolToolConfigurationStatusResponseMapper</a>
                             </li>
                             <li class="link">
@@ -5860,13 +5863,16 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/System.html" data-type="entity-link" >System</a>
                             </li>
                             <li class="link">
-                                <a href="classes/SystemDomainMapper.html" data-type="entity-link" >SystemDomainMapper</a>
-                            </li>
-                            <li class="link">
                                 <a href="classes/SystemDto.html" data-type="entity-link" >SystemDto</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SystemEntityFactory.html" data-type="entity-link" >SystemEntityFactory</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SystemEntityMapper.html" data-type="entity-link" >SystemEntityMapper</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SystemFactory.html" data-type="entity-link" >SystemFactory</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SystemFilterParams.html" data-type="entity-link" >SystemFilterParams</a>
@@ -5894,6 +5900,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/SystemScope.html" data-type="entity-link" >SystemScope</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/SystemScope-1.html" data-type="entity-link" >SystemScope</a>
                             </li>
                             <li class="link">
                                 <a href="classes/TargetInfoMapper.html" data-type="entity-link" >TargetInfoMapper</a>
@@ -7025,7 +7034,7 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <a href="injectables/SymetricKeyEncryptionService.html" data-type="entity-link" >SymetricKeyEncryptionService</a>
                                 </li>
                                 <li class="link">
-                                    <a href="injectables/SystemRepo.html" data-type="entity-link" >SystemRepo</a>
+                                    <a href="injectables/SystemMikroOrmRepo.html" data-type="entity-link" >SystemMikroOrmRepo</a>
                                 </li>
                                 <li class="link">
                                     <a href="injectables/SystemRule.html" data-type="entity-link" >SystemRule</a>
@@ -8032,6 +8041,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/SystemProps.html" data-type="entity-link" >SystemProps</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/SystemQuery.html" data-type="entity-link" >SystemQuery</a>
+                            </li>
+                            <li class="link">
+                                <a href="interfaces/SystemRepo.html" data-type="entity-link" >SystemRepo</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/TargetGroupProperties.html" data-type="entity-link" >TargetGroupProperties</a>
