@@ -1,5 +1,4 @@
 import { LdapConfigEntity, OauthConfigEntity, SystemEntity } from '@shared/domain/entity';
-import { SystemType } from '@shared/domain/types';
 import { LdapConfig, OauthConfig, System, SystemFactory } from '../../../domain';
 
 export class SystemEntityMapper {
@@ -7,7 +6,7 @@ export class SystemEntityMapper {
 		const system = SystemFactory.build({
 			id: entity.id,
 			url: entity.url,
-			type: entity.type as SystemType,
+			type: entity.type,
 			provisioningUrl: entity.provisioningUrl,
 			provisioningStrategy: entity.provisioningStrategy,
 			displayName: entity.displayName,
