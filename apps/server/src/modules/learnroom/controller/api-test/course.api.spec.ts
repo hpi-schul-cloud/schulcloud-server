@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker/locale/af_ZA';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { CourseMetadataListResponse } from '@modules/learnroom/controller/dto';
 import { ServerTestModule } from '@modules/server/server.module';
@@ -104,10 +105,10 @@ describe('Course Controller (API)', () => {
 			const { teacher, course } = setup();
 			await em.persistAndFlush([teacher.account, teacher.user, course]);
 			em.clear();
-			const version = { version: '1.1.0' };
+			const query = { version: '1.1.0', topics: faker.string.uuid() };
 
 			const loggedInClient = await testApiClient.login(teacher.account);
-			const response = await loggedInClient.get(`${course.id}/export`).query(version);
+			const response = await loggedInClient.get(`${course.id}/export`).query(query);
 
 			expect(response.statusCode).toEqual(200);
 			const file = response.body as StreamableFile;

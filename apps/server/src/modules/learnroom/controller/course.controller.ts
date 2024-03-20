@@ -61,7 +61,12 @@ export class CourseController {
 		@Query() queryParams: CourseQueryParams,
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile> {
-		const result = await this.courseExportUc.exportCourse(urlParams.courseId, currentUser.userId, queryParams.version);
+		const result = await this.courseExportUc.exportCourse(
+			urlParams.courseId,
+			currentUser.userId,
+			queryParams.version,
+			queryParams.topics?.split(',')
+		);
 
 		response.set({
 			'Content-Type': 'application/zip',
