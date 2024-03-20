@@ -1,5 +1,6 @@
-import { SystemForLdapLogin } from '../../domain';
-import { SystemForLdapLoginResponse } from '../dto/response';
+import { System } from '@src/modules/system';
+import { School, SystemForLdapLogin } from '../../domain';
+import { SchoolSystemResponse, SchoolSystemsResponse, SystemForLdapLoginResponse } from '../dto/response';
 
 export class SystemResponseMapper {
 	public static mapToLdapLoginResponses(systems: SystemForLdapLogin[]): SystemForLdapLoginResponse[] {
@@ -15,6 +16,17 @@ export class SystemResponseMapper {
 			id: system.id,
 			type: systemProps.type,
 			alias: systemProps.alias,
+		});
+
+		return res;
+	}
+
+	public static mapToSchoolSystemsResponse(school: School, systems: System[]): SchoolSystemsResponse {
+		const systemsDto = systems.map((system) => new SchoolSystemResponse(system.getProps()));
+
+		const res = new SchoolSystemsResponse({
+			id: school.id,
+			systems: systemsDto,
 		});
 
 		return res;
