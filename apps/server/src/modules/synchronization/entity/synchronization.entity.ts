@@ -1,6 +1,7 @@
 import { Entity, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
-import { EntityId, StatusModel } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
+import { StatusModel } from '@modules/deletion';
 
 export interface SynchronizationEntityProps {
 	id?: EntityId;

@@ -1,5 +1,5 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { StatusModel } from '@shared/domain/types';
+import { StatusModel } from '@modules/deletion';
 
 export interface SynchronizationProps extends AuthorizableObject {
 	createdAt?: Date;

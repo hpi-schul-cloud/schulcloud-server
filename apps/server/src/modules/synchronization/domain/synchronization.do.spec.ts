@@ -1,5 +1,5 @@
-import { StatusModel } from '@shared/domain/types';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { StatusModel } from '@modules/deletion';
 import { Synchronization } from './synchronization.do';
 import { synchronizationFactory } from './testing';
 

@@ -3,7 +3,7 @@ import { Test } from '@nestjs/testing';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { cleanupCollections } from '@shared/testing';
-import { StatusModel } from '@shared/domain/types';
+import { StatusModel } from '@modules/deletion';
 import { Synchronization } from '../domain';
 import { synchronizationFactory } from '../domain/testing';
 import { SynchronizationEntity } from '../entity';

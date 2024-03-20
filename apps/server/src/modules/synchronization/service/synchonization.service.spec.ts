@@ -5,6 +5,7 @@ import { ObjectId } from 'bson';
 import { SynchronizationService } from './synchronization.service';
 import { Synchronization } from '../domain';
 import { SynchronizationRepo } from '../repo';
+import { synchronizationFactory } from '../domain/testing';
 
 describe(SynchronizationService.name, () => {
 	let module: TestingModule;
@@ -81,6 +82,24 @@ describe(SynchronizationService.name, () => {
 				const result = await service.findById(synchronizationId);
 
 				expect(result).toEqual(synchronization);
+			});
+		});
+	});
+
+	describe('update', () => {
+		describe('when updating synchronization', () => {
+			const setup = () => {
+				const synchronization = synchronizationFactory.buildWithId();
+
+				return { synchronization };
+			};
+
+			it('should call synchronizationRepo.update', async () => {
+				const { synchronization } = setup();
+
+				await service.update(synchronization);
+
+				expect(repo.update).toBeCalledWith(synchronization);
 			});
 		});
 	});

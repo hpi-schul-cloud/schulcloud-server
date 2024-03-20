@@ -1,6 +1,6 @@
 import { setupEntities } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { StatusModel } from '@shared/domain/types';
+import { StatusModel } from '@modules/deletion';
 import { SynchronizationEntity } from './synchronization.entity';
 
 describe(SynchronizationEntity.name, () => {

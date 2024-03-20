@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId, StatusModel } from '@shared/domain/types';
+import { EntityId } from '@shared/domain/types';
 import { ObjectId } from 'bson';
+import { StatusModel } from '@modules/deletion';
 import { Synchronization } from '../domain';
 import { SynchronizationRepo } from '../repo';
 
@@ -25,5 +26,7 @@ export class SynchronizationService {
 		return synchronization;
 	}
 
-	// TODO update
+	async update(synchronization: Synchronization): Promise<void> {
+		await this.synchronizationRepo.update(synchronization);
+	}
 }
