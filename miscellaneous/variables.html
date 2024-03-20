@@ -242,6 +242,9 @@
                             <a href="#config" title="apps/server/src/modules/h5p-library-management/service/h5p-library-management.config.ts" ><b>config</b>&nbsp;&nbsp;&nbsp;(apps/.../h5p-library-management.config.ts)</a>
                         </li>
                         <li>
+                            <a href="#consentFactory" title="apps/server/src/shared/testing/factory/user.factory.ts" ><b>consentFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../user.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#contentTypeDetector" title="apps/server/src/modules/tool/external-tool/service/external-tool-logo.service.ts" ><b>contentTypeDetector</b>&nbsp;&nbsp;&nbsp;(apps/.../external-tool-logo.service.ts)</a>
                         </li>
                         <li>
@@ -731,6 +734,9 @@
                             <a href="#overallHealthDescription" title="apps/server/src/modules/health/uc/health.uc.ts" ><b>overallHealthDescription</b>&nbsp;&nbsp;&nbsp;(apps/.../health.uc.ts)</a>
                         </li>
                         <li>
+                            <a href="#parentConsentFactory" title="apps/server/src/shared/testing/factory/user.factory.ts" ><b>parentConsentFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../user.factory.ts)</a>
+                        </li>
+                        <li>
                             <a href="#passwordPattern" title="apps/server/src/modules/account/controller/dto/password-pattern.ts" ><b>passwordPattern</b>&nbsp;&nbsp;&nbsp;(apps/.../password-pattern.ts)</a>
                         </li>
                         <li>
@@ -1107,6 +1113,9 @@
                         </li>
                         <li>
                             <a href="#" title="apps/server/src/modules/authentication/constants.ts" ><b></b>&nbsp;&nbsp;&nbsp;(apps/.../constants.ts)</a>
+                        </li>
+                        <li>
+                            <a href="#userConsentFactory" title="apps/server/src/shared/testing/factory/user.factory.ts" ><b>userConsentFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../user.factory.ts)</a>
                         </li>
                         <li>
                             <a href="#userDoFactory" title="apps/server/src/shared/testing/factory/user.do.factory.ts" ><b>userDoFactory</b>&nbsp;&nbsp;&nbsp;(apps/.../user.do.factory.ts)</a>
@@ -4098,6 +4107,120 @@ must use</p>
                 <tr>
                     <td class="col-md-4">
                         <i>Default value : </i><code>() &#x3D;&gt; config</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+</section>
+    <h3>apps/server/src/shared/testing/factory/user.factory.ts</h3>
+    <section data-compodoc="block-properties">
+    <h3></h3>    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="consentFactory"></a>
+                    <span class="name">
+                        <span ><b>consentFactory</b></span>
+                        <a href="#consentFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;ConsentEntity, ConsentEntity&gt;(ConsentEntity, () &#x3D;&gt; {
+	return {
+		userConsent: userConsentFactory.build(),
+		parentConsents: parentConsentFactory.buildList(1),
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="parentConsentFactory"></a>
+                    <span class="name">
+                        <span ><b>parentConsentFactory</b></span>
+                        <a href="#parentConsentFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;ParentConsentEntity, ParentConsentEntity&gt;(ParentConsentEntity, () &#x3D;&gt; {
+	return {
+		_id: new ObjectId(),
+		form: &#x27;digital&#x27;,
+		privacyConsent: true,
+		termsOfUseConsent: true,
+		dateOfPrivacyConsent: new Date(&#x27;2017-01-01T00:06:37.148Z&#x27;),
+		dateOfTermsOfUseConsent: new Date(&#x27;2017-01-01T00:06:37.148Z&#x27;),
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="userConsentFactory"></a>
+                    <span class="name">
+                        <span ><b>userConsentFactory</b></span>
+                        <a href="#userConsentFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>BaseFactory.define&lt;UserConsentEntity, UserConsentEntity&gt;(UserConsentEntity, () &#x3D;&gt; {
+	return {
+		form: &#x27;digital&#x27;,
+		privacyConsent: true,
+		termsOfUseConsent: true,
+		dateOfPrivacyConsent: new Date(&#x27;2017-01-01T00:06:37.148Z&#x27;),
+		dateOfTermsOfUseConsent: new Date(&#x27;2017-01-01T00:06:37.148Z&#x27;),
+	};
+})</code>
+                    </td>
+                </tr>
+
+
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="userFactory"></a>
+                    <span class="name">
+                        <span ><b>userFactory</b></span>
+                        <a href="#userFactory"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Default value : </i><code>UserFactory.define(User, ({ sequence }) &#x3D;&gt; {
+	return {
+		firstName: &#x27;John&#x27;,
+		lastName: &#x60;Doe ${sequence}&#x60;,
+		email: &#x60;user-${sequence}@example.com&#x60;,
+		roles: [],
+		school: schoolEntityFactory.build(),
+		consent: consentFactory.build(),
+	};
+})</code>
                     </td>
                 </tr>
 
@@ -13180,37 +13303,6 @@ You shall not explicitly declare the AMQPConnection in your modules since it wil
 		email: &#x60;user-${sequence}@example.com&#x60;,
 		roles: [],
 		schoolId: new ObjectId().toString(),
-	};
-})</code>
-                    </td>
-                </tr>
-
-
-        </tbody>
-    </table>
-</section>
-    <h3>apps/server/src/shared/testing/factory/user.factory.ts</h3>
-    <section data-compodoc="block-properties">
-    <h3></h3>    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="userFactory"></a>
-                    <span class="name">
-                        <span ><b>userFactory</b></span>
-                        <a href="#userFactory"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-                <tr>
-                    <td class="col-md-4">
-                        <i>Default value : </i><code>UserFactory.define(User, ({ sequence }) &#x3D;&gt; {
-	return {
-		firstName: &#x27;John&#x27;,
-		lastName: &#x60;Doe ${sequence}&#x60;,
-		email: &#x60;user-${sequence}@example.com&#x60;,
-		roles: [],
-		school: schoolEntityFactory.build(),
 	};
 })</code>
                     </td>

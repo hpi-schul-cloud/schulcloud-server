@@ -303,8 +303,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="78"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:78</a></div>
                         </td>
                     </tr>
 
@@ -367,8 +367,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="24"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:24</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -431,8 +431,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="69"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -495,8 +495,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="54"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:54</a></div>
                         </td>
                     </tr>
 
@@ -555,8 +555,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:12</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="48"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/user.factory.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -1620,7 +1620,15 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Role, User, UserProperties } from &#x27;@shared/domain/entity&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+import {
+	ConsentEntity,
+	ParentConsentEntity,
+	Role,
+	User,
+	UserConsentEntity,
+	UserProperties,
+} from &#x27;@shared/domain/entity&#x27;;
 import { Permission, RoleName } from &#x27;@shared/domain/interface&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
 import _ from &#x27;lodash&#x27;;
@@ -1628,6 +1636,34 @@ import { adminPermissions, studentPermissions, teacherPermissions, userPermissio
 import { BaseFactory } from &#x27;./base.factory&#x27;;
 import { roleFactory } from &#x27;./role.factory&#x27;;
 import { schoolEntityFactory } from &#x27;./school-entity.factory&#x27;;
+
+const userConsentFactory &#x3D; BaseFactory.define&lt;UserConsentEntity, UserConsentEntity&gt;(UserConsentEntity, () &#x3D;&gt; {
+	return {
+		form: &#x27;digital&#x27;,
+		privacyConsent: true,
+		termsOfUseConsent: true,
+		dateOfPrivacyConsent: new Date(&#x27;2017-01-01T00:06:37.148Z&#x27;),
+		dateOfTermsOfUseConsent: new Date(&#x27;2017-01-01T00:06:37.148Z&#x27;),
+	};
+});
+
+const parentConsentFactory &#x3D; BaseFactory.define&lt;ParentConsentEntity, ParentConsentEntity&gt;(ParentConsentEntity, () &#x3D;&gt; {
+	return {
+		_id: new ObjectId(),
+		form: &#x27;digital&#x27;,
+		privacyConsent: true,
+		termsOfUseConsent: true,
+		dateOfPrivacyConsent: new Date(&#x27;2017-01-01T00:06:37.148Z&#x27;),
+		dateOfTermsOfUseConsent: new Date(&#x27;2017-01-01T00:06:37.148Z&#x27;),
+	};
+});
+
+const consentFactory &#x3D; BaseFactory.define&lt;ConsentEntity, ConsentEntity&gt;(ConsentEntity, () &#x3D;&gt; {
+	return {
+		userConsent: userConsentFactory.build(),
+		parentConsents: parentConsentFactory.buildList(1),
+	};
+});
 
 class UserFactory extends BaseFactory&lt;User, UserProperties&gt; {
 	withRoleByName(name: RoleName): this {
@@ -1677,6 +1713,7 @@ export const userFactory &#x3D; UserFactory.define(User, ({ sequence }) &#x3D;&g
 		email: &#x60;user-${sequence}@example.com&#x60;,
 		roles: [],
 		school: schoolEntityFactory.build(),
+		consent: consentFactory.build(),
 	};
 });
 </code></pre>

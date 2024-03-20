@@ -4024,6 +4024,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ConfigResponseMapper-1.html" data-type="entity-link" >ConfigResponseMapper</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ConsentEntity.html" data-type="entity-link" >ConsentEntity</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ConsentRequestBody.html" data-type="entity-link" >ConsentRequestBody</a>
                             </li>
                             <li class="link">
@@ -5224,6 +5227,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/ParameterTypeNotImplementedLoggableException.html" data-type="entity-link" >ParameterTypeNotImplementedLoggableException</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ParentConsentEntity.html" data-type="entity-link" >ParentConsentEntity</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ParentConsentResponse.html" data-type="entity-link" >ParentConsentResponse</a>
                             </li>
                             <li class="link">
@@ -6128,6 +6134,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/UserByIdParams.html" data-type="entity-link" >UserByIdParams</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/UserConsentEntity.html" data-type="entity-link" >UserConsentEntity</a>
                             </li>
                             <li class="link">
                                 <a href="classes/UserConsentResponse.html" data-type="entity-link" >UserConsentResponse</a>
@@ -7359,9 +7368,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/ComponentTextProperties.html" data-type="entity-link" >ComponentTextProperties</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/Consent.html" data-type="entity-link" >Consent</a>
-                            </li>
-                            <li class="link">
                                 <a href="interfaces/ContextExternalToolProperties.html" data-type="entity-link" >ContextExternalToolProperties</a>
                             </li>
                             <li class="link">
@@ -7806,9 +7812,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="interfaces/ParameterEntryValidator.html" data-type="entity-link" >ParameterEntryValidator</a>
                             </li>
                             <li class="link">
-                                <a href="interfaces/ParentConsent.html" data-type="entity-link" >ParentConsent</a>
-                            </li>
-                            <li class="link">
                                 <a href="interfaces/ParentInfo.html" data-type="entity-link" >ParentInfo</a>
                             </li>
                             <li class="link">
@@ -8110,9 +8113,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="interfaces/UserConfig.html" data-type="entity-link" >UserConfig</a>
-                            </li>
-                            <li class="link">
-                                <a href="interfaces/UserConsent.html" data-type="entity-link" >UserConsent</a>
                             </li>
                             <li class="link">
                                 <a href="interfaces/UserData.html" data-type="entity-link" >UserData</a>
