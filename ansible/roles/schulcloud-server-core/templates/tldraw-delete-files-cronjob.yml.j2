@@ -15,7 +15,7 @@ metadata:
   name: tldraw-delete-files-cronjob
 spec:
   concurrencyPolicy: Forbid
-  schedule: "{{ TLDRAW_FILE_DELETION_CRONJOB_SCHEDULE|default("@daily", true) }}"
+  schedule: "{{ TLDRAW_FILE_DELETION_CRONJOB_SCHEDULE|default("@midnight", true) }}"
   jobTemplate:
     spec:
       template:
