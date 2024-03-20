@@ -1,3 +1,3 @@
 export enum Timezone {
-	'Europe/Berlin' = 'Europe/Berlin',
+	EUROPE_BERLIN = 'Europe/Berlin',
 }
