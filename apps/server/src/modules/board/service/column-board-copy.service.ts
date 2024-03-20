@@ -31,7 +31,7 @@ export class ColumnBoardCopyService {
 	}): Promise<CopyStatus> {
 		const originalBoard = await this.boardDoRepo.findByClassAndId(ColumnBoard, props.originalColumnBoardId);
 
-		originalBoard.title = await this.getCopyTitle(originalBoard.title, props.destinationExternalReference);
+		originalBoard.title = await this.deriveColumnBoardTitle(originalBoard.title, props.destinationExternalReference);
 
 		const user = await this.userService.findById(props.userId);
 		/* istanbul ignore next */
