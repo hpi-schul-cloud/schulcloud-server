@@ -15,6 +15,7 @@ export class SynchronizationUc {
 		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(SynchronizationUc.name);
+		// this.config = 10000;
 	}
 
 	public async updateSystemUsersLastSyncedAt(systemId: string): Promise<void> {
@@ -26,6 +27,9 @@ export class SynchronizationUc {
 		if (usersToCheck instanceof Error) {
 			// TODO
 		} else {
+			// usersToCheck podzilić na mniejsze paczki po 10k i po paczce uruchamiamy metody 
+			// this.userService.findByExternalIdsAndProvidedBySystemId
+			// await this.userService.updateLastSyncedAt(usersToSync);
 			const usersToSync = await this.userService.findByExternalIdsAndProvidedBySystemId(usersToCheck, systemId);
 
 			await this.userService.updateLastSyncedAt(usersToSync);
