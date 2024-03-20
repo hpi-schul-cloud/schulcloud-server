@@ -59,7 +59,7 @@ export class ColumnBoardCopyService {
 		return copyStatus;
 	}
 
-	private async getCopyTitle(
+	private async deriveColumnBoardTitle(
 		originalTitle: string,
 		destinationExternalReference: BoardExternalReference
 	): Promise<string> {
