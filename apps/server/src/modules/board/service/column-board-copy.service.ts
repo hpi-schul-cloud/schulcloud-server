@@ -1,4 +1,4 @@
-import { CopyStatus } from '@modules/copy-helper';
+import { CopyHelperService, CopyStatus } from '@modules/copy-helper';
 import { UserService } from '@modules/user';
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import {
@@ -17,6 +17,7 @@ import { SwapInternalLinksVisitor } from './board-do-copy-service/swap-internal-
 export class ColumnBoardCopyService {
 	constructor(
 		private readonly boardDoRepo: BoardDoRepo,
+		private readonly copyHelperService: CopyHelperService,
 		private readonly courseRepo: CourseRepo,
 		private readonly userService: UserService,
 		private readonly boardDoCopyService: BoardDoCopyService,
@@ -29,6 +30,8 @@ export class ColumnBoardCopyService {
 		userId: EntityId;
 	}): Promise<CopyStatus> {
 		const originalBoard = await this.boardDoRepo.findByClassAndId(ColumnBoard, props.originalColumnBoardId);
+
+		originalBoard.title = await this.getCopyTitle(originalBoard.title, props.destinationExternalReference);
 
 		const user = await this.userService.findById(props.userId);
 		/* istanbul ignore next */
@@ -54,6 +57,16 @@ export class ColumnBoardCopyService {
 		await this.boardDoRepo.save(copyStatus.copyEntity);
 
 		return copyStatus;
+	}
+
+	private async getCopyTitle(
+		originalTitle: string,
+		destinationExternalReference: BoardExternalReference
+	): Promise<string> {
+		const existingBoardIds = await this.boardDoRepo.findIdsByExternalReference(destinationExternalReference);
+		const existingTitles = await this.boardDoRepo.getTitlesByIds(existingBoardIds);
+		const copyName = this.copyHelperService.deriveCopyName(originalTitle, Object.values(existingTitles));
+		return copyName;
 	}
 
 	public async swapLinkedIds(boardId: EntityId, idMap: Map<EntityId, EntityId>) {
