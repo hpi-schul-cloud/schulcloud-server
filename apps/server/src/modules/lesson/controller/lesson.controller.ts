@@ -2,7 +2,7 @@ import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication
 import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { LessonUC } from '../uc';
-import { LessonUrlParams, LessonsUrlParams, LessonMetadataListResponse } from './dto';
+import { LessonUrlParams, LessonsUrlParams, LessonMetadataListResponse, LessonResponse } from './dto';
 import { LessonMapper } from './mapper/lesson.mapper';
 
 @ApiTags('Lesson')
@@ -24,6 +24,13 @@ export class LessonController {
 
 		const dtoList = lessons.map((lesson) => LessonMapper.mapToMetadataResponse(lesson));
 		const response = new LessonMetadataListResponse(dtoList, dtoList.length);
+		return response;
+	}
+
+	@Get(':lessonId')
+	async getLesson(@Param() urlParams: LessonUrlParams, @CurrentUser() currentUser: ICurrentUser) {
+		const lesson = await this.lessonUC.getLesson(currentUser.userId, urlParams.lessonId);
+		const response = new LessonResponse(lesson);
 		return response;
 	}
 }

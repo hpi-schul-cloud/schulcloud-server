@@ -32,6 +32,7 @@ export type GridElementContent = {
 	group?: LearnroomMetadata[];
 	groupId?: string;
 	copyingSince?: Date;
+	isSynchronized: boolean;
 };
 
 export class GridElement implements IGridElement {
@@ -123,14 +124,15 @@ export class GridElement implements IGridElement {
 			};
 			return metadata;
 		}
-		const groupData = this.references.map((reference) => reference.getMetadata());
-		const checkShortTitle = this.title ? this.title.substring(0, 2) : '';
-		const groupMetadata = {
+		const groupData: LearnroomMetadata[] = this.references.map((reference) => reference.getMetadata());
+		const checkShortTitle: string = this.title ? this.title.substring(0, 2) : '';
+		const groupMetadata: GridElementContent = {
 			groupId: this.getId(),
 			title: this.title,
 			shortTitle: checkShortTitle,
 			displayColor: 'exampleColor',
 			group: groupData,
+			isSynchronized: false,
 		};
 		return groupMetadata;
 	}

@@ -1,27 +1,34 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityData, EntityName } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { type UserDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo';
-import { Group, GroupProps, GroupTypes } from '../domain';
-import { GroupEntity, GroupEntityProps, GroupEntityTypes } from '../entity';
+import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
+import { Group, GroupTypes } from '../domain';
+import { GroupEntity, GroupEntityTypes } from '../entity';
 import { GroupDomainMapper, GroupTypesToGroupEntityTypesMapping } from './group-domain.mapper';
 import { GroupScope } from './group.scope';
 
 @Injectable()
-export class GroupRepo {
-	constructor(private readonly em: EntityManager) {}
+export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
+	protected get entityName(): EntityName<GroupEntity> {
+		return GroupEntity;
+	}
 
-	public async findById(id: EntityId): Promise<Group | null> {
+	protected mapDOToEntityProperties(entityDO: Group): EntityData<GroupEntity> {
+		const entityProps: EntityData<GroupEntity> = GroupDomainMapper.mapDoToEntityData(entityDO, this.em);
+
+		return entityProps;
+	}
+
+	public async findGroupById(id: EntityId): Promise<Group | null> {
 		const entity: GroupEntity | null = await this.em.findOne(GroupEntity, { id });
 
 		if (!entity) {
 			return null;
 		}
 
-		const props: GroupProps = GroupDomainMapper.mapEntityToDomainObjectProperties(entity);
-
-		const domainObject: Group = new Group(props);
+		const domainObject: Group = GroupDomainMapper.mapEntityToDo(entity);
 
 		return domainObject;
 	}
@@ -38,9 +45,7 @@ export class GroupRepo {
 			return null;
 		}
 
-		const props: GroupProps = GroupDomainMapper.mapEntityToDomainObjectProperties(entity);
-
-		const domainObject: Group = new Group(props);
+		const domainObject: Group = GroupDomainMapper.mapEntityToDo(entity);
 
 		return domainObject;
 	}
@@ -55,11 +60,7 @@ export class GroupRepo {
 
 		const entities: GroupEntity[] = await this.em.find(GroupEntity, scope.query);
 
-		const domainObjects: Group[] = entities.map((entity) => {
-			const props: GroupProps = GroupDomainMapper.mapEntityToDomainObjectProperties(entity);
-
-			return new Group(props);
-		});
+		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
 
 		return domainObjects;
 	}
@@ -74,11 +75,7 @@ export class GroupRepo {
 
 		const entities: GroupEntity[] = await this.em.find(GroupEntity, scope.query);
 
-		const domainObjects: Group[] = entities.map((entity) => {
-			const props: GroupProps = GroupDomainMapper.mapEntityToDomainObjectProperties(entity);
-
-			return new Group(props);
-		});
+		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
 
 		return domainObjects;
 	}
@@ -97,49 +94,8 @@ export class GroupRepo {
 
 		const entities: GroupEntity[] = await this.em.find(GroupEntity, scope.query);
 
-		const domainObjects: Group[] = entities.map((entity) => {
-			const props: GroupProps = GroupDomainMapper.mapEntityToDomainObjectProperties(entity);
-
-			return new Group(props);
-		});
+		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
 
 		return domainObjects;
-	}
-
-	public async save(domainObject: Group): Promise<Group> {
-		const entityProps: GroupEntityProps = GroupDomainMapper.mapDomainObjectToEntityProperties(domainObject, this.em);
-
-		const newEntity: GroupEntity = new GroupEntity(entityProps);
-
-		const existingEntity: GroupEntity | null = await this.em.findOne(GroupEntity, { id: domainObject.id });
-
-		let savedEntity: GroupEntity;
-		if (existingEntity) {
-			savedEntity = this.em.assign(existingEntity, newEntity);
-		} else {
-			this.em.persist(newEntity);
-
-			savedEntity = newEntity;
-		}
-
-		await this.em.flush();
-
-		const savedProps: GroupProps = GroupDomainMapper.mapEntityToDomainObjectProperties(savedEntity);
-
-		const savedDomainObject: Group = new Group(savedProps);
-
-		return savedDomainObject;
-	}
-
-	public async delete(domainObject: Group): Promise<boolean> {
-		const entity: GroupEntity | null = await this.em.findOne(GroupEntity, { id: domainObject.id });
-
-		if (!entity) {
-			return false;
-		}
-
-		await this.em.removeAndFlush(entity);
-
-		return true;
 	}
 }

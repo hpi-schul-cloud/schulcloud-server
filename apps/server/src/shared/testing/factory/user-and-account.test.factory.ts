@@ -1,7 +1,7 @@
 import { Account, SchoolEntity, User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import _ from 'lodash';
 import { accountFactory } from './account.factory';
 import { userFactory } from './user.factory';

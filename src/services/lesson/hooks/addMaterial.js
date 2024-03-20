@@ -11,7 +11,7 @@ const addLessonToParams = async (context) => {
 	if (!ObjectId.isValid(lessonId)) {
 		throw new BadRequest(`Invalid lessonId: "${lessonId}"`);
 	}
-
+	// @deprecated - use nest endpoint instead to get lesson
 	const lesson = await context.app.service('lessons').get(lessonId);
 	context.params.lesson = lesson;
 
@@ -64,14 +64,16 @@ const validateData = async (context) => {
 };
 
 module.exports = {
-	before: () => ({
-		all: [authenticate('jwt')],
-		create: [
-			validateData,
-			addLessonToParams,
-			iff(isProvider('external'), restrictToUsersCoursesLessons),
-			// checks permission for COURSE and TOPIC for creation
-			checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', true),
-		],
-	}),
+	before: () => {
+		return {
+			all: [authenticate('jwt')],
+			create: [
+				validateData,
+				addLessonToParams,
+				iff(isProvider('external'), restrictToUsersCoursesLessons),
+				// checks permission for COURSE and TOPIC for creation
+				checkIfCourseGroupLesson.bind(this, 'COURSEGROUP_EDIT', 'TOPIC_EDIT', true),
+			],
+		};
+	},
 };

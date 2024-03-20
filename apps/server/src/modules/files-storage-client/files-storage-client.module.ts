@@ -1,12 +1,12 @@
 import { Module } from '@nestjs/common';
 import { LoggerModule } from '@src/core/logger';
+// The files-storage-client should not know the copy-helper
 import { CopyHelperModule } from '@modules/copy-helper';
-import { CopyFilesService } from './service/copy-files.service';
-import { FilesStorageClientAdapterService } from './service/files-storage-client.service';
-import { FilesStorageProducer } from './service/files-storage.producer';
+import { CqrsModule } from '@nestjs/cqrs';
+import { CopyFilesService, FilesStorageClientAdapterService, FilesStorageProducer } from './service';
 
 @Module({
-	imports: [LoggerModule, CopyHelperModule],
+	imports: [LoggerModule, CopyHelperModule, CqrsModule],
 	providers: [FilesStorageClientAdapterService, CopyFilesService, FilesStorageProducer],
 	exports: [FilesStorageClientAdapterService, CopyFilesService],
 })

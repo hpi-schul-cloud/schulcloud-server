@@ -26,6 +26,12 @@ export const schulconnexResponseFactory = Factory.define<SanisResponse>(() => {
 						ort: 'Hannover',
 					},
 				},
+				erreichbarkeiten: [
+					{
+						typ: 'E-Mail',
+						kennung: 'hans.peter@muster-schule.de',
+					},
+				],
 				gruppen: [
 					{
 						gruppe: {

@@ -19,6 +19,7 @@ export class BoardResponseMapper {
 				return ColumnResponseMapper.mapToResponse(column);
 			}),
 			timestamps: new TimestampsResponse({ lastUpdatedAt: board.updatedAt, createdAt: board.createdAt }),
+			isVisible: board.isVisible,
 		});
 		return result;
 	}

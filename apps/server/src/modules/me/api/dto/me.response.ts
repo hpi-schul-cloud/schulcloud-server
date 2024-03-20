@@ -50,16 +50,12 @@ export class MeUserResponse {
 	lastName: string;
 
 	@ApiPropertyOptional()
-	language?: string;
-
-	@ApiPropertyOptional()
 	customAvatarBackgroundColor?: string;
 
 	constructor(props: MeUserResponse) {
 		this.id = props.id;
 		this.firstName = props.firstName;
 		this.lastName = props.lastName;
-		this.language = props.language;
 		this.customAvatarBackgroundColor = props.customAvatarBackgroundColor;
 	}
 }
@@ -90,6 +86,9 @@ export class MeResponse {
 	@ApiProperty()
 	permissions: string[];
 
+	@ApiPropertyOptional()
+	language?: string;
+
 	@ApiProperty()
 	account: MeAccountResponse;
 
@@ -98,6 +97,7 @@ export class MeResponse {
 		this.user = props.user;
 		this.roles = props.roles;
 		this.permissions = props.permissions;
+		this.language = props.language;
 		this.account = props.account;
 	}
 }

@@ -1,1 +1,1 @@
-export * from './timeout.decorator';
+export { RequestTimeout } from './timeout.decorator';

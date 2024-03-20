@@ -1,6 +1,5 @@
 import { RabbitPayload, RabbitRPC } from '@golevelup/nestjs-rabbitmq';
-import { CopyFileDO, FileDO, FilesStorageEvents, FilesStorageExchange } from '@infra/rabbitmq';
-import { RpcMessage } from '@infra/rabbitmq/rpc-message';
+import { CopyFileDO, FileDO, FilesStorageEvents, FilesStorageExchange, RpcMessage } from '@infra/rabbitmq';
 import { MikroORM, UseRequestContext } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
@@ -75,21 +74,22 @@ export class FilesStorageConsumer {
 
 	@RabbitRPC({
 		exchange: FilesStorageExchange,
-		routingKey: FilesStorageEvents.DELETE_ONE_FILE,
-		queue: FilesStorageEvents.DELETE_ONE_FILE,
+		routingKey: FilesStorageEvents.DELETE_FILES,
+		queue: FilesStorageEvents.DELETE_FILES,
 	})
 	@UseRequestContext()
-	public async deleteOneFile(@RabbitPayload() payload: EntityId): Promise<RpcMessage<FileDO>> {
-		this.logger.debug({ action: 'deleteOneFile', payload });
+	public async deleteFiles(@RabbitPayload() payload: EntityId[]): Promise<RpcMessage<FileDO[]>> {
+		this.logger.debug({ action: 'deleteFiles', payload });
 
-		const fileRecord = await this.filesStorageService.getFileRecord({ fileRecordId: payload });
+		const promise = payload.map((fileRecordId) => this.filesStorageService.getFileRecord({ fileRecordId }));
+		const fileRecords = await Promise.all(promise);
 
-		await this.previewService.deletePreviews([fileRecord]);
-		await this.filesStorageService.deleteFilesOfParent([fileRecord]);
+		await this.previewService.deletePreviews(fileRecords);
+		await this.filesStorageService.delete(fileRecords);
 
-		const response = FilesStorageMapper.mapToFileRecordResponse(fileRecord);
+		const response = FilesStorageMapper.mapToFileRecordListResponse(fileRecords, fileRecords.length);
 
-		return { message: response };
+		return { message: response.data };
 	}
 
 	@RabbitRPC({

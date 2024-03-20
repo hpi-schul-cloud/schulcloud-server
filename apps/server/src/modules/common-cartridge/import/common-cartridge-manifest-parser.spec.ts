@@ -1,18 +1,21 @@
 import AdmZip from 'adm-zip';
 import { readFile } from 'fs/promises';
+import { DEFAULT_FILE_PARSER_OPTIONS } from './common-cartridge-import.types';
 import { CommonCartridgeManifestParser } from './common-cartridge-manifest-parser';
 
 describe('CommonCartridgeManifestParser', () => {
 	const setupFile = async (loadFile: boolean) => {
 		if (!loadFile) {
-			const sut = new CommonCartridgeManifestParser('<manifest></manifest>');
+			const sut = new CommonCartridgeManifestParser('<manifest></manifest>', DEFAULT_FILE_PARSER_OPTIONS);
 
 			return { sut };
 		}
 
-		const buffer = await readFile('./apps/server/test/assets/common-cartridge/us_history_since_1877.imscc');
+		const buffer = await readFile(
+			'./apps/server/src/modules/common-cartridge/testing/assets/us_history_since_1877.imscc'
+		);
 		const archive = new AdmZip(buffer);
-		const sut = new CommonCartridgeManifestParser(archive.readAsText('imsmanifest.xml'));
+		const sut = new CommonCartridgeManifestParser(archive.readAsText('imsmanifest.xml'), DEFAULT_FILE_PARSER_OPTIONS);
 
 		return { sut };
 	};
@@ -85,6 +88,30 @@ describe('CommonCartridgeManifestParser', () => {
 				const result = sut.getTitle();
 
 				expect(result).toBeUndefined();
+			});
+		});
+	});
+
+	describe('getOrganizations', () => {
+		describe('when organizations are present', () => {
+			const setup = async () => setupFile(true);
+
+			it('should return the organization', async () => {
+				const { sut } = await setup();
+				const result = sut.getOrganizations();
+
+				expect(result).toHaveLength(117);
+			});
+		});
+
+		describe('when organizations are not present', () => {
+			const setup = async () => setupFile(false);
+
+			it('should return empty list', async () => {
+				const { sut } = await setup();
+				const result = sut.getOrganizations();
+
+				expect(result).toHaveLength(0);
 			});
 		});
 	});

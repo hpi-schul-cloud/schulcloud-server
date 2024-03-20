@@ -3,7 +3,7 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 export class CloseConnectionLoggable implements Loggable {
 	private error: Error | undefined;
 
-	constructor(private readonly err: unknown) {
+	constructor(private readonly errorLocation: string, private readonly err: unknown) {
 		if (err instanceof Error) {
 			this.error = err;
 		}
@@ -11,8 +11,8 @@ export class CloseConnectionLoggable implements Loggable {
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			message: `Close web socket connection error`,
-			type: `CLOSE_WEB_SOCKET_CONNECTION_ERROR`,
+			message: `Close web socket error in ${this.errorLocation}`,
+			type: `CLOSE_WEB_SOCKET_ERROR`,
 			error: this.error,
 		};
 	}

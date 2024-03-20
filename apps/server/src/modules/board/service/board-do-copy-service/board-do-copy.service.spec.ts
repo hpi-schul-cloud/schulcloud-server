@@ -38,7 +38,7 @@ import {
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ToolFeatures } from '@modules/tool/tool-config';
 import { BoardDoCopyService } from './board-do-copy.service';
 import { SchoolSpecificFileCopyService } from './school-specific-file-copy.interface';
@@ -145,6 +145,15 @@ describe('recursive board copy visitor', () => {
 				const result = await service.copy({ original, fileCopyService });
 
 				expect(result.type).toEqual(CopyElementType.COLUMNBOARD);
+			});
+
+			it('should set the copy to unpublished', async () => {
+				const { original, fileCopyService } = setup();
+
+				const result = await service.copy({ original, fileCopyService });
+				const copy = getColumnBoardCopyFromStatus(result);
+
+				expect(copy.isVisible).toEqual(false);
 			});
 		});
 

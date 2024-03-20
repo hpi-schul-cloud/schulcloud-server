@@ -56,7 +56,7 @@ describe('GroupRepo', () => {
 			it('should return the group', async () => {
 				const { group } = await setup();
 
-				const result: Group | null = await repo.findById(group.id);
+				const result: Group | null = await repo.findGroupById(group.id);
 
 				expect(result?.getProps()).toEqual<GroupProps>({
 					id: group.id,
@@ -85,7 +85,7 @@ describe('GroupRepo', () => {
 
 		describe('when no entity with the id exists', () => {
 			it('should return null', async () => {
-				const result: Group | null = await repo.findById(new ObjectId().toHexString());
+				const result: Group | null = await repo.findGroupById(new ObjectId().toHexString());
 
 				expect(result).toBeNull();
 			});
@@ -470,32 +470,6 @@ describe('GroupRepo', () => {
 				await repo.delete(group);
 
 				expect(await em.findOne(GroupEntity, groupId)).toBeNull();
-			});
-
-			it('should return true', async () => {
-				const { group } = await setup();
-
-				const result: boolean = await repo.delete(group);
-
-				expect(result).toEqual(true);
-			});
-		});
-
-		describe('when no entity exists', () => {
-			const setup = () => {
-				const group: Group = groupFactory.build();
-
-				return {
-					group,
-				};
-			};
-
-			it('should return false', async () => {
-				const { group } = setup();
-
-				const result: boolean = await repo.delete(group);
-
-				expect(result).toEqual(false);
 			});
 		});
 	});
