@@ -1,9 +1,11 @@
 import { JSDOM } from 'jsdom';
+import { CommonCartridgeFileParserOptions, OrganizationProps } from './common-cartridge-import.types';
+import { CommonCartridgeOrganizationVisitor } from './utils/common-cartridge-organization-visitor';
 
 export class CommonCartridgeManifestParser {
 	private readonly doc: Document;
 
-	public constructor(manifest: string) {
+	constructor(manifest: string, private readonly options: CommonCartridgeFileParserOptions) {
 		this.doc = new JSDOM(manifest, { contentType: 'text/xml' }).window.document;
 	}
 
@@ -23,5 +25,12 @@ export class CommonCartridgeManifestParser {
 		const result = this.doc.querySelector('manifest > metadata > lom > general > title > string');
 
 		return result?.textContent ?? undefined;
+	}
+
+	public getOrganizations(): OrganizationProps[] {
+		const visitor = new CommonCartridgeOrganizationVisitor(this.doc, this.options);
+		const result = visitor.findAllOrganizations();
+
+		return result;
 	}
 }
