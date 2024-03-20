@@ -1,5 +1,5 @@
 import { AccountDto } from '@modules/account/services/dto';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { defaultTestPasswordHash } from './account.factory';
 import { BaseFactory } from './base.factory';
 

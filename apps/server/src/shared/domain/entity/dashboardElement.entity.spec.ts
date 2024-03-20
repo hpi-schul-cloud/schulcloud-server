@@ -12,6 +12,7 @@ const learnroomMock = (id: string, name: string) => {
 				title: name,
 				shortTitle: name.substr(0, 2),
 				displayColor: '#ACACAC',
+				isSynchronized: false,
 			};
 		},
 	};

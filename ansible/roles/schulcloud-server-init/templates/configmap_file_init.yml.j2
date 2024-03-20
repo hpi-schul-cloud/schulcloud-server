@@ -475,7 +475,7 @@ data:
                        "'$PUBLIC_BACKEND_URL'/api/v3/sso/hydra"
                      ],
                      "client_uri": "'$NEXTCLOUD_BASE_URL'",
-                     "frontchannel_logout_uri": "'$NEXTCLOUD_BASE_URL'/apps/schulcloud/logout",
+                     "frontchannel_logout_uri": "'$NEXTCLOUD_BASE_URL'apps/schulcloud/logout",
                      "subject_type": "pairwise"
                    }'
          echo "POSTed nextcloud to hydra."
@@ -485,11 +485,11 @@ data:
          echo "Inserting nextcloud to external-tools..."
          mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
              {
-               "name": "nextcloud",
+               "name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
                "config_type": "oauth2"
              },
              { $setOnInsert: {
-               "name": "nextcloud",
+               "name": "'$NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'",
                "url": "'$NEXTCLOUD_BASE_URL'",
                "logoUrl": "",
                "config_type": "oauth2",

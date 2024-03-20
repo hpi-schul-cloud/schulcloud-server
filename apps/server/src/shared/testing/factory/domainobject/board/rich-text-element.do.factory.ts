@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import { RichTextElement, RichTextElementProps } from '@shared/domain/domainobject';
 import { InputFormat } from '@shared/domain/types';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '../../base.factory';
 
 export const richTextElementFactory = BaseFactory.define<RichTextElement, RichTextElementProps>(
