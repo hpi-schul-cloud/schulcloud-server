@@ -45,18 +45,12 @@ export class SynchronizationUc {
 
 	public async findUsersToSynchronize(systemId: string): Promise<string[]> {
 		let usersToCheck: string[] = [];
-		try {
-			const usersDownloaded: SanisResponse[] = await this.schulconnexRestClient.getPersonenInfo({});
+		const usersDownloaded: SanisResponse[] = await this.schulconnexRestClient.getPersonenInfo({});
 
-			if (usersDownloaded.length === 0) {
-				throw new SynchronizationErrorLoggableException(`No users to check from systemId: ${systemId}`);
-			}
-			usersToCheck = usersDownloaded.map((user) => user.pid);
-		} catch (error) {
-			if (!(error instanceof SynchronizationErrorLoggableException)) {
-				throw new SynchronizationErrorLoggableException(`Problems in connection with systemId: ${systemId}`);
-			}
+		if (usersDownloaded.length === 0) {
+			throw new SynchronizationErrorLoggableException(`No users to check from systemId: ${systemId}`);
 		}
+		usersToCheck = usersDownloaded.map((user) => user.pid);
 
 		return usersToCheck;
 	}

@@ -7,6 +7,7 @@ import { UserService } from '@modules/user';
 import { SanisResponse, SchulconnexRestClient, schulconnexResponseFactory } from '@src/infra/schulconnex-client';
 import { SynchronizationService } from '../domain/service';
 import { SynchronizationUc } from './synchronization.uc';
+import { SynchronizationErrorLoggableException } from '../domain/loggable-exception';
 
 describe(SynchronizationUc.name, () => {
 	let module: TestingModule;
@@ -74,7 +75,7 @@ describe(SynchronizationUc.name, () => {
 	});
 
 	describe('findUsersToSynchronize', () => {
-		describe('when fetching the data', () => {
+		describe('when users was found', () => {
 			const setup = () => {
 				const systemId = new ObjectId().toHexString();
 				const externalUserData: SanisResponse = schulconnexResponseFactory.build();
@@ -102,6 +103,27 @@ describe(SynchronizationUc.name, () => {
 
 				expect(result).toHaveLength(1);
 				expect(result).toEqual([externalUserData.pid]);
+			});
+		});
+
+		describe('when users was not found', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+
+				schulconnexRestClient.getPersonenInfo.mockResolvedValueOnce([]);
+
+				const expectedError = new SynchronizationErrorLoggableException(`No users to check from systemId: ${systemId}`);
+
+				return {
+					expectedError,
+					systemId,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { systemId, expectedError } = setup();
+
+				await expect(uc.findUsersToSynchronize(systemId)).rejects.toThrowError(expectedError);
 			});
 		});
 	});
