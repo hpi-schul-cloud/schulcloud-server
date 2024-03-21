@@ -87,7 +87,7 @@ export class SynchronizationUc {
 		} as Synchronization);
 	}
 
-	private chunkArray(array: string[], chunkSize: number): string[][] {
+	public chunkArray(array: string[], chunkSize: number): string[][] {
 		const chunkedArray: string[][] = [];
 		let index = 0;
 
