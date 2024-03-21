@@ -1,5 +1,6 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import {
+	Body,
 	Controller,
 	Get,
 	Param,
@@ -29,6 +30,7 @@ import { CourseExportUc } from '../uc/course-export.uc';
 import { CourseUc } from '../uc/course.uc';
 import { CommonCartridgeFileValidatorPipe } from '../utils';
 import { CourseImportBodyParams, CourseMetadataListResponse, CourseQueryParams, CourseUrlParams } from './dto';
+import { CourseExportBodyParams } from './dto/course-export.body.params';
 
 @ApiTags('Courses')
 @Authenticate('jwt')
@@ -54,18 +56,19 @@ export class CourseController {
 		return result;
 	}
 
-	@Get(':courseId/export')
+	@Post(':courseId/export')
 	async exportCourse(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: CourseUrlParams,
 		@Query() queryParams: CourseQueryParams,
+		@Body() bodyParams: CourseExportBodyParams,
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile> {
 		const result = await this.courseExportUc.exportCourse(
 			urlParams.courseId,
 			currentUser.userId,
 			queryParams.version,
-			queryParams.topics?.split(',')
+			bodyParams.topics
 		);
 
 		response.set({

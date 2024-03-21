@@ -85,8 +85,8 @@ describe('Course Controller (API)', () => {
 		});
 	});
 
-	describe('[GET] /courses/:id/export', () => {
-		const setup = () => {
+	describe('[POST] /courses/:id/export', () => {
+		const setup = async () => {
 			const student1 = createStudent();
 			const student2 = createStudent();
 			const teacher = createTeacher();
@@ -98,19 +98,21 @@ describe('Course Controller (API)', () => {
 				students: [student1.user, student2.user],
 			});
 
-			return { course, teacher, teacherUnknownToCourse, substitutionTeacher, student1 };
+			await em.persistAndFlush([teacher.account, teacher.user, course]);
+			em.clear();
+
+			const loggedInClient = await testApiClient.login(teacher.account);
+
+			return { course, teacher, teacherUnknownToCourse, substitutionTeacher, student1, loggedInClient };
 		};
 
 		it('should find course export', async () => {
-			const { teacher, course } = setup();
-			await em.persistAndFlush([teacher.account, teacher.user, course]);
-			em.clear();
-			const query = { version: '1.1.0', topics: faker.string.uuid() };
+			const { course, loggedInClient } = await setup();
 
-			const loggedInClient = await testApiClient.login(teacher.account);
-			const response = await loggedInClient.get(`${course.id}/export`).query(query);
+			const body = { topics: [faker.string.uuid()] };
+			const response = await loggedInClient.post(`${course.id}/export?version=1.1.0`, body);
 
-			expect(response.statusCode).toEqual(200);
+			expect(response.statusCode).toEqual(201);
 			const file = response.body as StreamableFile;
 			expect(file).toBeDefined();
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access

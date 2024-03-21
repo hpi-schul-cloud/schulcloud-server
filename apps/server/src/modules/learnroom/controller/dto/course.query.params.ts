@@ -1,6 +1,6 @@
 import { CommonCartridgeVersion } from '@modules/common-cartridge';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, Matches } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsString, Matches } from 'class-validator';
 
 export class CourseQueryParams {
 	@IsString()
@@ -11,12 +11,5 @@ export class CourseQueryParams {
 		nullable: false,
 		enum: CommonCartridgeVersion,
 	})
-	version!: CommonCartridgeVersion;
-
-	@IsString()
-	@IsOptional()
-	@ApiPropertyOptional({
-		description: 'The ids of topics which should be exported separated by a comma.',
-	})
-	topics?: string;
+	public readonly version!: CommonCartridgeVersion;
 }

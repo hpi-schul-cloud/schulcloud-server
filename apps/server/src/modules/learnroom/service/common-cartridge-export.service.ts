@@ -25,7 +25,7 @@ export class CommonCartridgeExportService {
 		courseId: EntityId,
 		userId: EntityId,
 		version: CommonCartridgeVersion,
-		topics?: string[]
+		topics: string[]
 	): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);
 		const builder = new CommonCartridgeFileBuilder(this.commonCartridgeMapper.mapCourseToManifest(version, course));
@@ -42,12 +42,12 @@ export class CommonCartridgeExportService {
 		builder: CommonCartridgeFileBuilder,
 		courseId: EntityId,
 		version: CommonCartridgeVersion,
-		topics?: string[]
+		topics: string[]
 	): Promise<void> {
 		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
 
 		lessons.forEach((lesson) => {
-			if (topics && !topics.includes(lesson.id)) {
+			if (!topics.includes(lesson.id)) {
 				return;
 			}
 

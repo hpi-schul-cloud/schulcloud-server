@@ -20,7 +20,7 @@ export class CourseExportUc {
 		courseId: EntityId,
 		userId: EntityId,
 		version: CommonCartridgeVersion,
-		topics?: string[]
+		topics: string[]
 	): Promise<Buffer> {
 		this.checkFeatureEnabled();
 		const context = AuthorizationContextBuilder.read([Permission.COURSE_EDIT]);

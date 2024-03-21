@@ -111,7 +111,7 @@ describe('CommonCartridgeExportService', () => {
 
 	describe('exportCourse', () => {
 		describe('when using version 1.1', () => {
-			const setup = async (exportTopics = true) => setupParams(CommonCartridgeVersion.V_1_1_0, exportTopics);
+			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, true);
 
 			it('should use schema version 1.1.0', async () => {
 				const { archive } = await setup();
@@ -130,14 +130,6 @@ describe('CommonCartridgeExportService', () => {
 
 				lessons.forEach((lesson) => {
 					expect(getFileContent(archive, 'imsmanifest.xml')).toContain(createXmlString('title', lesson.name));
-				});
-			});
-
-			it("shouldn't add lessons if topics array is empty", async () => {
-				const { archive, lessons } = await setup(false);
-
-				lessons.forEach((lesson) => {
-					expect(getFileContent(archive, 'imsmanifest.xml')).not.toContain(createXmlString('title', lesson.name));
 				});
 			});
 
@@ -161,7 +153,7 @@ describe('CommonCartridgeExportService', () => {
 		});
 
 		describe('when using version 1.3', () => {
-			const setup = async (exportTopics = true) => setupParams(CommonCartridgeVersion.V_1_3_0, exportTopics);
+			const setup = async () => setupParams(CommonCartridgeVersion.V_1_3_0, true);
 
 			it('should use schema version 1.3.0', async () => {
 				const { archive } = await setup();
@@ -183,14 +175,6 @@ describe('CommonCartridgeExportService', () => {
 				});
 			});
 
-			it("shouldn't add lessons if topics array is empty", async () => {
-				const { archive, lessons } = await setup(false);
-
-				lessons.forEach((lesson) => {
-					expect(getFileContent(archive, 'imsmanifest.xml')).not.toContain(createXmlString('title', lesson.name));
-				});
-			});
-
 			it('should add tasks', async () => {
 				const { archive, tasks } = await setup();
 
@@ -206,6 +190,18 @@ describe('CommonCartridgeExportService', () => {
 				lessons[0].tasks.getItems().forEach((task) => {
 					expect(manifest).toContain(`<title>${task.name}</title>`);
 					expect(manifest).toContain(`identifier="i${task.id}" type="webcontent" intendeduse="assignment"`);
+				});
+			});
+		});
+
+		describe('When topics array is empty', () => {
+			const setup = async () => setupParams(CommonCartridgeVersion.V_1_1_0, false);
+
+			it("shouldn't add lessons", async () => {
+				const { archive, lessons } = await setup();
+
+				lessons.forEach((lesson) => {
+					expect(getFileContent(archive, 'imsmanifest.xml')).not.toContain(createXmlString('title', lesson.name));
 				});
 			});
 		});
