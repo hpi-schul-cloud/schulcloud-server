@@ -19,7 +19,7 @@ export class SynchronizationUc {
 		this.logger.setContext(SynchronizationUc.name);
 	}
 
-	public async updateSystemUsersLastSyncedAt(systemId: string): Promise<void> {
+	public async synchronization(systemId: string): Promise<void> {
 		this.logger.info(new SynchronizationLoggable('Start synchronization users from systemId', systemId));
 
 		const synchronizationId = await this.synchronizationService.createSynchronization();
@@ -43,7 +43,7 @@ export class SynchronizationUc {
 		}
 	}
 
-	private async findUsersToSynchronize(systemId: string): Promise<string[]> {
+	public async findUsersToSynchronize(systemId: string): Promise<string[]> {
 		let usersToCheck: string[] = [];
 		try {
 			const usersDownloaded: SanisResponse[] = await this.schulconnexRestClient.getPersonenInfo({});
