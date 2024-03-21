@@ -8,12 +8,15 @@ import { SanisResponse, SchulconnexRestClient, schulconnexResponseFactory } from
 import { SynchronizationService } from '../domain/service';
 import { SynchronizationUc } from './synchronization.uc';
 import { SynchronizationErrorLoggableException } from '../domain/loggable-exception';
+import { SynchronizationStatusModel } from '../domain/types';
+import { synchronizationFactory } from '../domain/testing';
+import { Synchronization } from '../domain';
 
 describe(SynchronizationUc.name, () => {
 	let module: TestingModule;
 	let uc: SynchronizationUc;
-	let synchronizationService: DeepMocked<SynchronizationService>;
 	let userService: DeepMocked<UserService>;
+	let synchronizationService: DeepMocked<SynchronizationService>;
 	let schulconnexRestClient: DeepMocked<SchulconnexRestClient>;
 
 	beforeAll(async () => {
@@ -41,8 +44,8 @@ describe(SynchronizationUc.name, () => {
 
 		uc = module.get(SynchronizationUc);
 		synchronizationService = module.get(SynchronizationService);
-		schulconnexRestClient = module.get(SchulconnexRestClient);
 		userService = module.get(UserService);
+		schulconnexRestClient = module.get(SchulconnexRestClient);
 		await setupEntities();
 	});
 
@@ -55,21 +58,49 @@ describe(SynchronizationUc.name, () => {
 			const setup = () => {
 				const systemId = new ObjectId().toHexString();
 				const synchronizationId = new ObjectId().toHexString();
+				const usersToCheck = [new ObjectId().toHexString(), new ObjectId().toHexString()];
+				const userSyncCount = 2;
+				const status = SynchronizationStatusModel.SUCCESS;
 
 				synchronizationService.createSynchronization.mockResolvedValueOnce(synchronizationId);
+				jest.spyOn(uc, 'findUsersToSynchronize').mockResolvedValueOnce(usersToCheck);
+				const spyUpdateLastSyncedAt = jest.spyOn(uc, 'updateLastSyncedAt');
+				const spyUpdateSynchronization = jest.spyOn(uc, 'updateSynchronization');
 
 				return {
+					spyUpdateLastSyncedAt,
+					spyUpdateSynchronization,
+					status,
 					synchronizationId,
 					systemId,
+					userSyncCount,
+					usersToCheck,
 				};
 			};
 
-			it('should call the service.createSynchronization to create the synchronization', async () => {
+			it('should call the synchronizationService.createSynchronization to create the synchronization', async () => {
 				const { systemId } = setup();
 
-				await uc.synchronization(systemId);
+				await uc.updateSystemUsersLastSyncedAt(systemId);
 
 				expect(synchronizationService.createSynchronization).toHaveBeenCalled();
+			});
+
+			it('should call the uc.updateLastSyncedAt to update users for systemId', async () => {
+				const { spyUpdateLastSyncedAt, systemId, usersToCheck } = setup();
+
+				await uc.updateSystemUsersLastSyncedAt(systemId);
+
+				expect(spyUpdateLastSyncedAt).toHaveBeenCalledWith(usersToCheck, systemId);
+			});
+
+			it('should call the uc.updateSynchronization to log detainls about synchronization of systemId', async () => {
+				const { spyUpdateSynchronization, status, synchronizationId, systemId, userSyncCount } = setup();
+				jest.spyOn(uc, 'updateLastSyncedAt').mockResolvedValueOnce(userSyncCount);
+
+				await uc.updateSystemUsersLastSyncedAt(systemId);
+
+				expect(spyUpdateSynchronization).toHaveBeenCalledWith(synchronizationId, status, userSyncCount);
 			});
 		});
 	});
@@ -130,6 +161,97 @@ describe(SynchronizationUc.name, () => {
 				const { systemId, expectedError } = setup();
 
 				await expect(uc.findUsersToSynchronize(systemId)).rejects.toThrowError(expectedError);
+			});
+		});
+	});
+
+	describe('updateSynchronization', () => {
+		describe('when update synchronization', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const synchronization = synchronizationFactory.buildWithId();
+				const synchronizationId = synchronization.id;
+				const usersToCheck = [new ObjectId().toHexString(), new ObjectId().toHexString()];
+				const userSyncCount = 2;
+				const status = SynchronizationStatusModel.SUCCESS;
+				const synchronizationToUpdate = {
+					...synchronization,
+					count: userSyncCount,
+					status,
+				} as Synchronization;
+
+				synchronizationService.findById.mockResolvedValueOnce(synchronization);
+
+				return {
+					status,
+					synchronizationId,
+					synchronizationToUpdate,
+					systemId,
+					userSyncCount,
+					usersToCheck,
+				};
+			};
+
+			it('should call the synchronizationService.findById to find the synchronization', async () => {
+				const { synchronizationId, status, userSyncCount } = setup();
+
+				await uc.updateSynchronization(synchronizationId, status, userSyncCount);
+
+				expect(synchronizationService.findById).toHaveBeenCalledWith(synchronizationId);
+			});
+
+			it('should call the synchronizationService.update to log detainls about synchronization of systemId', async () => {
+				const { synchronizationId, synchronizationToUpdate, status, userSyncCount } = setup();
+
+				await uc.updateSynchronization(synchronizationId, status, userSyncCount);
+
+				expect(synchronizationService.update).toHaveBeenCalledWith(synchronizationToUpdate);
+			});
+		});
+	});
+
+	describe('updateLastSyncedAt', () => {
+		describe('when searching users to update and update them', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const userAId = new ObjectId().toHexString();
+				const userBId = new ObjectId().toHexString();
+				const usersToCheck = [userAId, userBId];
+				const usersToSync = [userAId, userBId];
+				const userSyncCount = 2;
+
+				userService.findByExternalIdsAndProvidedBySystemId.mockResolvedValueOnce(usersToSync);
+
+				return {
+					systemId,
+					userSyncCount,
+					usersToCheck,
+					usersToSync,
+				};
+			};
+
+			it('should call the userService.findByExternalIdsAndProvidedBySystemId to get array of users to sync', async () => {
+				const { systemId, usersToCheck } = setup();
+
+				await uc.updateLastSyncedAt(usersToCheck, systemId);
+
+				expect(userService.findByExternalIdsAndProvidedBySystemId).toHaveBeenCalledWith(usersToCheck, systemId);
+			});
+
+			it('should call the userService.updateLastSyncedAt to update users', async () => {
+				const { systemId, usersToCheck, usersToSync } = setup();
+
+				await uc.updateLastSyncedAt(usersToCheck, systemId);
+
+				expect(userService.updateLastSyncedAt).toHaveBeenCalledWith(usersToSync);
+			});
+
+			it('should return number of user with updateLastCyncedAt', async () => {
+				const { systemId, usersToCheck, userSyncCount } = setup();
+
+				const result = await uc.updateLastSyncedAt(usersToCheck, systemId);
+
+				expect(result).toEqual(userSyncCount);
 			});
 		});
 	});
