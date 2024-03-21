@@ -4,6 +4,7 @@ import { type UserDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupTypes } from '../domain';
 import { GroupEntity, GroupEntityTypes } from '../entity';
 import { GroupDomainMapper, GroupTypesToGroupEntityTypesMapping } from './group-domain.mapper';
@@ -116,7 +117,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 				},
 			},
 			{ $match: { syncedCourses: { $size: 0 } } },
-			{ $match: { organization: schoolId } },
+			{ $match: { organization: new ObjectId(schoolId) } }, // @IGOR: you have to wrap it in objectId. Now its working. Dont forget to add seed data
 			{ $skip: skip },
 			{ $limit: limit },
 		];
