@@ -19,7 +19,7 @@ export class SynchronizationUc {
 		this.logger.setContext(SynchronizationUc.name);
 	}
 
-	public async synchronization(systemId: string): Promise<void> {
+	public async updateSystemUsersLastSyncedAt(systemId: string): Promise<void> {
 		this.logger.info(new SynchronizationLoggable('Start synchronization users from systemId', systemId));
 
 		const synchronizationId = await this.synchronizationService.createSynchronization();
@@ -55,7 +55,7 @@ export class SynchronizationUc {
 		return usersToCheck;
 	}
 
-	private async updateLastSyncedAt(usersToCheck: string[], systemId: string): Promise<number> {
+	public async updateLastSyncedAt(usersToCheck: string[], systemId: string): Promise<number> {
 		try {
 			const usersToSync = await this.userService.findByExternalIdsAndProvidedBySystemId(usersToCheck, systemId);
 
@@ -67,15 +67,16 @@ export class SynchronizationUc {
 		}
 	}
 
-	private async updateSynchronization(
+	public async updateSynchronization(
 		synchronizationId: string,
 		status: SynchronizationStatusModel,
 		userSyncCount: number,
 		failureCause?: string
 	): Promise<void> {
-		const synchronizatioToUpdate = await this.synchronizationService.findById(synchronizationId);
+		const synchronizationToUpdate = await this.synchronizationService.findById(synchronizationId);
+
 		await this.synchronizationService.update({
-			...synchronizatioToUpdate,
+			...synchronizationToUpdate,
 			count: userSyncCount,
 			status,
 			failureCause,
