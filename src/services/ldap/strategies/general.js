@@ -90,19 +90,18 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 					return;
 				}
 			} else {
-				if (obj[userAttributeNameMapping.role] === roleAttributeNameMapping.roleStudent) {
+				const userRole = obj[userAttributeNameMapping.role];
+				if (!userRole || userRole === roleAttributeNameMapping.roleNoSc) {
+					return;
+				}
+				if (userRole === roleAttributeNameMapping.roleStudent) {
 					roles.push('student');
 				}
-				splittedTeacherRoles.forEach((role) => {
-					if (obj[userAttributeNameMapping.role].includes(role)) {
-						roles.push('teacher');
-					}
-				});
-				if (obj[userAttributeNameMapping.role] === roleAttributeNameMapping.roleAdmin) {
-					roles.push('administrator');
+				if (splittedTeacherRoles.includes(userRole)) {
+					roles.push('teacher');
 				}
-				if (obj[userAttributeNameMapping.role] === roleAttributeNameMapping.roleNoSc) {
-					return;
+				if (userRole === roleAttributeNameMapping.roleAdmin) {
+					roles.push('administrator');
 				}
 			}
 
