@@ -1,10 +1,12 @@
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import { SanisResponse, SchulconnexRestClient } from '@src/infra/schulconnex-client';
 import { SynchronizationService } from '../domain/service';
 import { Synchronization } from '../domain';
 import { SynchronizationStatusModel } from '../domain/types';
+import { SynchronizationLoggable } from '../domain/loggable/synchronization-loggable';
+import { SynchronizationErrorLoggableException } from '../domain/loggable-exception/synchronization-error.loggable-exception';
 
 @Injectable()
 export class SynchronizationUc {
@@ -12,51 +14,77 @@ export class SynchronizationUc {
 		private readonly schulconnexRestClient: SchulconnexRestClient,
 		private readonly synchronizationService: SynchronizationService,
 		private readonly userService: UserService,
-		private readonly logger: LegacyLogger
+		private readonly logger: Logger
 	) {
 		this.logger.setContext(SynchronizationUc.name);
-		// this.config = 10000;
 	}
 
 	public async updateSystemUsersLastSyncedAt(systemId: string): Promise<void> {
-		this.logger.debug({ action: 'updateSystemUsersLastSyncedAt', systemId });
+		this.logger.info(new SynchronizationLoggable('Start synchronization users from systemId', systemId));
 
 		const synchronizationId = await this.synchronizationService.createSynchronization();
 
-		const usersToCheck = await this.findUsersToSynchronize();
-		if (usersToCheck instanceof Error) {
-			// TODO
+		const usersToCheck = await this.findUsersToSynchronize(systemId);
+		if (usersToCheck instanceof SynchronizationErrorLoggableException) {
+			const logMessage = usersToCheck.getLogMessage();
+
+			await this.updateSynchronization(
+				synchronizationId,
+				SynchronizationStatusModel.FAILED,
+				0,
+				logMessage?.data?.errorMessage as string
+			);
+			this.logger.info(new SynchronizationLoggable('Failed synchronization users from systemId', systemId));
 		} else {
-			// usersToCheck podzilić na mniejsze paczki po 10k i po paczce uruchamiamy metody 
-			// this.userService.findByExternalIdsAndProvidedBySystemId
-			// await this.userService.updateLastSyncedAt(usersToSync);
-			const usersToSync = await this.userService.findByExternalIdsAndProvidedBySystemId(usersToCheck, systemId);
+			const userSyncCount = await this.updateLastSyncedAt(usersToCheck, systemId);
 
-			await this.userService.updateLastSyncedAt(usersToSync);
-
-			const synchronizationToUpdate = await this.synchronizationService.findById(synchronizationId);
-
-			await this.synchronizationService.update({
-				...synchronizationToUpdate,
-				count: usersToSync.length,
-				status: SynchronizationStatusModel.SUCCESS,
-			} as Synchronization);
+			await this.updateSynchronization(synchronizationId, SynchronizationStatusModel.SUCCESS, userSyncCount);
+			this.logger.info(new SynchronizationLoggable('End synchronization users from systemId', systemId, userSyncCount));
 		}
 	}
 
-	private async findUsersToSynchronize(): Promise<string[]> {
+	private async findUsersToSynchronize(systemId: string): Promise<string[]> {
 		let usersToCheck: string[] = [];
 		try {
 			const usersDownloaded: SanisResponse[] = await this.schulconnexRestClient.getPersonenInfo({});
 
 			if (usersDownloaded.length === 0) {
-				throw new Error('No users to check');
+				throw new SynchronizationErrorLoggableException(`No users to check from systemId: ${systemId}`);
 			}
 			usersToCheck = usersDownloaded.map((user) => user.pid);
 		} catch (error) {
-			this.logger.warn(error);
+			if (!(error instanceof SynchronizationErrorLoggableException)) {
+				throw new SynchronizationErrorLoggableException(`Problems in connection with systemId: ${systemId}`);
+			}
 		}
 
 		return usersToCheck;
+	}
+
+	private async updateLastSyncedAt(usersToCheck: string[], systemId: string): Promise<number> {
+		try {
+			const usersToSync = await this.userService.findByExternalIdsAndProvidedBySystemId(usersToCheck, systemId);
+
+			await this.userService.updateLastSyncedAt(usersToSync);
+
+			return usersToSync.length;
+		} catch {
+			throw new SynchronizationErrorLoggableException(`Problems with synchronization for systemId: ${systemId}`);
+		}
+	}
+
+	private async updateSynchronization(
+		synchronizationId: string,
+		status: SynchronizationStatusModel,
+		userSyncCount: number,
+		failureCause?: string
+	): Promise<void> {
+		const synchronizatioToUpdate = await this.synchronizationService.findById(synchronizationId);
+		await this.synchronizationService.update({
+			...synchronizatioToUpdate,
+			count: userSyncCount,
+			status,
+			failureCause,
+		} as Synchronization);
 	}
 }
