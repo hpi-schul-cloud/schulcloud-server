@@ -21,11 +21,6 @@ export class Lti11ToolConfigUpdateParams extends ExternalToolConfigCreateParams 
 	@ApiPropertyOptional()
 	secret?: string;
 
-	@IsString()
-	@IsOptional()
-	@ApiPropertyOptional()
-	resource_link_id?: string;
-
 	@IsEnum(LtiMessageType)
 	@ApiProperty()
 	lti_message_type!: LtiMessageType;

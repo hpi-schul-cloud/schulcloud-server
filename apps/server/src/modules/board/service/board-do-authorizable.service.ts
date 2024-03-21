@@ -28,16 +28,17 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 	}
 
 	async getBoardAuthorizable(boardDo: AnyBoardDo): Promise<BoardDoAuthorizable> {
-		const rootBoardDo = await this.getRootBoardDo(boardDo);
+		const rootDo = await this.getRootBoardDo(boardDo);
+		// TODO used only for SubmissionItem; for rest BoardDo avoid extra call to improve performance
 		const parentDo = await this.getParentDo(boardDo);
 		let users: UserWithBoardRoles[] = [];
 
-		if (rootBoardDo.context?.type === BoardExternalReferenceType.Course) {
-			const course = await this.courseRepo.findById(rootBoardDo.context.id);
+		if (rootDo.context?.type === BoardExternalReferenceType.Course) {
+			const course = await this.courseRepo.findById(rootDo.context.id);
 			users = this.mapCourseUsersToUserBoardRoles(course);
 		}
 
-		const boardDoAuthorizable = new BoardDoAuthorizable({ users, id: boardDo.id, boardDo, parentDo });
+		const boardDoAuthorizable = new BoardDoAuthorizable({ users, id: boardDo.id, boardDo, rootDo, parentDo });
 
 		return boardDoAuthorizable;
 	}
@@ -78,6 +79,7 @@ export class BoardDoAuthorizableService implements AuthorizationLoaderService {
 		return parentDo;
 	}
 
+	// TODO there is a similar method in board-do.service.ts
 	private async getRootBoardDo(boardDo: AnyBoardDo): Promise<ColumnBoard> {
 		const ancestorIds = await this.boardDoRepo.getAncestorIds(boardDo);
 		const ids = [...ancestorIds, boardDo.id];

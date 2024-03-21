@@ -2,13 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { DecodeHtmlEntities } from '@shared/controller';
 
 export class DashboardGridSubElementResponse {
-	constructor({ id, title, shortTitle, displayColor }: DashboardGridSubElementResponse) {
-		this.id = id;
-		this.title = title;
-		this.shortTitle = shortTitle;
-		this.displayColor = displayColor;
-	}
-
 	@ApiProperty({
 		description: 'The id of the Grid element',
 		pattern: '[a-f0-9]{24}',
@@ -30,31 +23,16 @@ export class DashboardGridSubElementResponse {
 		description: 'Color of the Grid element',
 	})
 	displayColor: string;
+
+	constructor(props: DashboardGridSubElementResponse) {
+		this.id = props.id;
+		this.title = props.title;
+		this.shortTitle = props.shortTitle;
+		this.displayColor = props.displayColor;
+	}
 }
 
 export class DashboardGridElementResponse {
-	constructor({
-		id,
-		title,
-		shortTitle,
-		displayColor,
-		xPosition,
-		yPosition,
-		groupId,
-		groupElements,
-		copyingSince = undefined,
-	}: DashboardGridElementResponse) {
-		this.id = id;
-		this.title = title;
-		this.shortTitle = shortTitle;
-		this.displayColor = displayColor;
-		this.xPosition = xPosition;
-		this.yPosition = yPosition;
-		this.groupId = groupId;
-		this.groupElements = groupElements;
-		this.copyingSince = copyingSince;
-	}
-
 	@ApiProperty({
 		description: 'The id of the Grid element',
 		pattern: '[a-f0-9]{24}',
@@ -103,6 +81,24 @@ export class DashboardGridElementResponse {
 		description: 'Start of the copying process if it is still ongoing - otherwise property is not set.',
 	})
 	copyingSince?: Date;
+
+	@ApiProperty({
+		description: 'Is the course synchronized with a group?',
+	})
+	isSynchronized: boolean;
+
+	constructor(props: DashboardGridElementResponse) {
+		this.id = props.id;
+		this.title = props.title;
+		this.shortTitle = props.shortTitle;
+		this.displayColor = props.displayColor;
+		this.xPosition = props.xPosition;
+		this.yPosition = props.yPosition;
+		this.groupId = props.groupId;
+		this.groupElements = props.groupElements;
+		this.copyingSince = props.copyingSince;
+		this.isSynchronized = props.isSynchronized;
+	}
 }
 
 export class DashboardResponse {

@@ -12,6 +12,7 @@ const getLearnroomMock = (id: string): Learnroom => {
 				title: 'Reference',
 				shortTitle: 'Re',
 				displayColor: '#FFFFFF',
+				isSynchronized: false,
 			};
 		},
 	};

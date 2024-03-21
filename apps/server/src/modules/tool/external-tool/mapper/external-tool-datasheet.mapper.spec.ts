@@ -1,4 +1,6 @@
 import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { School } from '@modules/school';
+import { schoolFactory } from '@modules/school/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { UserDO } from '@shared/domain/domainobject';
 import {
@@ -63,6 +65,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 	describe('when tool is deactivated on school level', () => {
 		const setup = () => {
 			const user: UserDO = userDoFactory.build();
+			const school: School = schoolFactory.build();
 			const externalTool = externalToolFactory.build();
 			const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.build({
 				status: { isDeactivated: true },
@@ -70,20 +73,22 @@ describe(ExternalToolDatasheetMapper.name, () => {
 			const expectDatasheet: ExternalToolDatasheetTemplateData = externalToolDatasheetTemplateDataFactory.build({
 				instance: 'dBildungscloud',
 				isDeactivated: 'Das Tool ist deaktiviert',
+				schoolName: school.getInfo().name,
 			});
 
-			return { user, externalTool, schoolExternalTool, expectDatasheet };
+			return { user, externalTool, schoolExternalTool, expectDatasheet, school };
 		};
 
 		it('should map all parameters correctly', () => {
-			const { user, externalTool, schoolExternalTool, expectDatasheet } = setup();
+			const { user, externalTool, schoolExternalTool, expectDatasheet, school } = setup();
 
 			const mappedData: ExternalToolDatasheetTemplateData =
 				ExternalToolDatasheetMapper.mapToExternalToolDatasheetTemplateData(
 					externalTool,
 					user.firstName,
 					user.lastName,
-					schoolExternalTool
+					schoolExternalTool,
+					school.getInfo().name
 				);
 
 			expect(mappedData).toEqual(expectDatasheet);

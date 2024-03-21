@@ -1,15 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import {
 	BoardNodeType,
 	CardNode,
 	ColumnBoardNode,
 	ColumnNode,
+	DrawingElementNode,
 	ExternalToolElementNodeEntity,
 	FileElementNode,
 	LinkElementNode,
 	RichTextElementNode,
-	DrawingElementNode,
 	SubmissionContainerElementNode,
 	SubmissionItemNode,
 } from '@shared/domain/entity';
@@ -18,13 +19,12 @@ import {
 	columnBoardFactory,
 	columnBoardNodeFactory,
 	columnFactory,
-	contextExternalToolEntityFactory,
+	drawingElementFactory,
 	externalToolElementFactory,
 	fileElementFactory,
 	linkElementFactory,
 	richTextElementFactory,
 	setupEntities,
-	drawingElementFactory,
 	submissionContainerElementFactory,
 	submissionItemFactory,
 } from '@shared/testing';
@@ -265,6 +265,7 @@ describe(RecursiveSaveVisitor.name, () => {
 			it('should persist the board node', () => {
 				const board = columnBoardFactory.build();
 				const boardNode = columnBoardNodeFactory.build();
+
 				em.getUnitOfWork().getById.mockReturnValue(boardNode);
 
 				visitor.visitColumnBoard(board);

@@ -1,15 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { LegacySchoolService } from '@modules/legacy-school';
 import { SystemDto } from '@modules/system/service/dto/system.dto';
 import { SystemUc } from '@modules/system/uc/system.uc';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { SystemEntity } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId, SystemTypeEnum } from '@shared/domain/types';
-import { setupEntities, systemEntityFactory, systemFactory, userFactory } from '@shared/testing';
-import { AuthorizationContextBuilder, AuthorizationService } from '../../authorization';
+import { legacySchoolDoFactory, setupEntities, systemEntityFactory, systemFactory, userFactory } from '@shared/testing';
+import { SystemType } from '../domain';
 import { SystemMapper } from '../mapper';
 import { LegacySystemService, SystemService } from '../service';
 
@@ -25,6 +28,7 @@ describe('SystemUc', () => {
 	let legacySystemService: DeepMocked<LegacySystemService>;
 	let systemService: DeepMocked<SystemService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
+	let schoolService: DeepMocked<LegacySchoolService>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -44,6 +48,10 @@ describe('SystemUc', () => {
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
 				},
+				{
+					provide: LegacySchoolService,
+					useValue: createMock<LegacySchoolService>(),
+				},
 			],
 		}).compile();
 
@@ -51,6 +59,7 @@ describe('SystemUc', () => {
 		legacySystemService = module.get(LegacySystemService);
 		systemService = module.get(SystemService);
 		authorizationService = module.get(AuthorizationService);
+		schoolService = module.get(LegacySchoolService);
 	});
 
 	afterAll(async () => {
@@ -161,20 +170,29 @@ describe('SystemUc', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
 				const system = systemFactory.build();
+				const otherSystemId = new ObjectId().toHexString();
+				const school = legacySchoolDoFactory.build({
+					systems: [system.id, otherSystemId],
+					ldapLastSync: new Date().toString(),
+					externalId: 'test',
+				});
 
 				systemService.findById.mockResolvedValueOnce(system);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
 
 				return {
 					user,
 					system,
+					school,
+					otherSystemId,
 				};
 			};
 
 			it('should check the permission', async () => {
 				const { user, system } = setup();
 
-				await systemUc.delete(user.id, system.id);
+				await systemUc.delete(user.id, user.school.id, system.id);
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
 					user,
@@ -186,9 +204,56 @@ describe('SystemUc', () => {
 			it('should delete the system', async () => {
 				const { user, system } = setup();
 
-				await systemUc.delete(user.id, system.id);
+				await systemUc.delete(user.id, user.school.id, system.id);
 
 				expect(systemService.delete).toHaveBeenCalledWith(system);
+			});
+
+			it('should remove the system from the school', async () => {
+				const { user, system, school, otherSystemId } = setup();
+
+				await systemUc.delete(user.id, user.school.id, system.id);
+
+				expect(schoolService.save).toHaveBeenCalledWith(
+					expect.objectContaining<Partial<LegacySchoolDo>>({
+						systems: [otherSystemId],
+						ldapLastSync: undefined,
+						externalId: school.externalId,
+					})
+				);
+			});
+		});
+
+		describe('when the system is the last ldap system at the school', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const system = systemFactory.build({ type: SystemType.LDAP });
+				const school = legacySchoolDoFactory.build({
+					systems: [system.id],
+					ldapLastSync: new Date().toString(),
+					externalId: 'test',
+				});
+
+				systemService.findById.mockResolvedValueOnce(system);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
+
+				return {
+					user,
+					system,
+				};
+			};
+
+			it('should remove the external id of the school', async () => {
+				const { user, system } = setup();
+
+				await systemUc.delete(user.id, user.school.id, system.id);
+
+				expect(schoolService.save).toHaveBeenCalledWith(
+					expect.objectContaining<Partial<LegacySchoolDo>>({
+						externalId: undefined,
+					})
+				);
 			});
 		});
 
@@ -200,15 +265,17 @@ describe('SystemUc', () => {
 			it('should throw a not found exception', async () => {
 				setup();
 
-				await expect(systemUc.delete(new ObjectId().toHexString(), new ObjectId().toHexString())).rejects.toThrow(
-					NotFoundLoggableException
-				);
+				await expect(
+					systemUc.delete(new ObjectId().toHexString(), new ObjectId().toHexString(), new ObjectId().toHexString())
+				).rejects.toThrow(NotFoundLoggableException);
 			});
 
 			it('should not delete any system', async () => {
 				setup();
 
-				await expect(systemUc.delete(new ObjectId().toHexString(), new ObjectId().toHexString())).rejects.toThrow();
+				await expect(
+					systemUc.delete(new ObjectId().toHexString(), new ObjectId().toHexString(), new ObjectId().toHexString())
+				).rejects.toThrow();
 
 				expect(systemService.delete).not.toHaveBeenCalled();
 			});
@@ -236,13 +303,13 @@ describe('SystemUc', () => {
 			it('should throw an error', async () => {
 				const { user, system, error } = setup();
 
-				await expect(systemUc.delete(user.id, system.id)).rejects.toThrow(error);
+				await expect(systemUc.delete(user.id, user.school.id, system.id)).rejects.toThrow(error);
 			});
 
 			it('should not delete any system', async () => {
 				const { user, system } = setup();
 
-				await expect(systemUc.delete(user.id, system.id)).rejects.toThrow();
+				await expect(systemUc.delete(user.id, user.school.id, system.id)).rejects.toThrow();
 
 				expect(systemService.delete).not.toHaveBeenCalled();
 			});

@@ -157,7 +157,13 @@ export class UserRepo extends BaseRepo<User> {
 
 		const userDocuments = await this._em.aggregate(User, pipeline);
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-		const users = userDocuments.map((userDocument) => this._em.map(User, userDocument));
+		const users = userDocuments.map((userDocument) => {
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+			const { createdAt, updatedAt, ...newUserDocument } = userDocument;
+
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+			return this._em.map(User, newUserDocument);
+		});
 		await this._em.populate(users, ['roles']);
 		return [users, count];
 	}

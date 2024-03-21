@@ -51,6 +51,7 @@ export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity> {
 			systems: entity.systems.isInitialized() ? entity.systems.getItems().map((system: SystemEntity) => system.id) : [],
 			userLoginMigrationId: entity.userLoginMigration?.id,
 			federalState: entity.federalState,
+			ldapLastSync: entity.ldapLastSync,
 		});
 	}
 
@@ -71,6 +72,7 @@ export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity> {
 				? this._em.getReference(UserLoginMigrationEntity, entityDO.userLoginMigrationId)
 				: undefined,
 			federalState: entityDO.federalState,
+			ldapLastSync: entityDO.ldapLastSync,
 		};
 	}
 }

@@ -69,6 +69,7 @@ describe(DatasheetPdfService.name, () => {
 						toolName: externalTool.name,
 						instance: 'dBildungscloud',
 						creatorName: `${user.firstName} ${user.lastName}`,
+						schoolName: 'schoolName',
 					});
 
 				setupMockCreatePdf(false);

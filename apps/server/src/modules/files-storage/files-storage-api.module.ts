@@ -5,7 +5,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { CoreModule } from '@src/core';
-import { FileSecurityController, FilesStorageController } from './controller';
+import { FileSecurityController, FilesStorageConfigController, FilesStorageController } from './controller';
 import { config } from './files-storage.config';
 import { FilesStorageModule } from './files-storage.module';
 import { FilesStorageUC } from './uc';
@@ -19,7 +19,7 @@ import { FilesStorageUC } from './uc';
 		HttpModule,
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 	],
-	controllers: [FilesStorageController, FileSecurityController],
+	controllers: [FilesStorageController, FilesStorageConfigController, FileSecurityController],
 	providers: [FilesStorageUC],
 })
 export class FilesStorageApiModule {}

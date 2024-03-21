@@ -1,5 +1,5 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BuildOptions, DeepPartial, Factory, GeneratorFn, HookFn } from 'fishery';
-import { ObjectId } from 'mongodb';
 
 /**
  * Entity factory based on thoughtbot/fishery

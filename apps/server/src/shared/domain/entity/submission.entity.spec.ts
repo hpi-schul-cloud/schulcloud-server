@@ -490,7 +490,7 @@ describe('Submission entity', () => {
 
 				const courseGroup = courseGroupFactory.build();
 				const submission = submissionFactory.studentWithId().buildWithId({ courseGroup });
-				const creatorId = submission.student.id;
+				const creatorId = submission.student?.id;
 
 				const spy = jest.spyOn(courseGroup, 'getStudentIds').mockReturnValueOnce(studentIds);
 
@@ -588,6 +588,60 @@ describe('Submission entity', () => {
 				const result = submission.isUserSubmitter(user);
 
 				expect(result).toBe(false);
+			});
+		});
+	});
+	describe('removeStudentById', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const submission = submissionFactory.buildWithId({ student: user });
+
+			return { submission, user };
+		};
+		describe('when userId matches studentId', () => {
+			it('should remove student', () => {
+				const { user, submission } = setup();
+				submission.removeStudentById(user.id);
+
+				expect(submission.student).toBeUndefined();
+			});
+		});
+		describe('when userId not matches studentId', () => {
+			it('should not remove student', () => {
+				const { user, submission } = setup();
+
+				submission.removeStudentById(new ObjectId().toString());
+
+				expect(submission.student).toEqual(user);
+			});
+		});
+	});
+	describe('removeUserFromTeamMembers', () => {
+		const setup = () => {
+			const user1 = userFactory.buildWithId();
+			const user2 = userFactory.buildWithId();
+			const submission = submissionFactory.buildWithId({ student: user1, teamMembers: [user1, user2] });
+
+			return { submission, user1, user2 };
+		};
+		describe('when userId matches teamMemberId', () => {
+			it('should remove student', () => {
+				const { user1, submission, user2 } = setup();
+				submission.removeUserFromTeamMembers(user1.id);
+
+				expect(submission.teamMembers.length).toEqual(1);
+				expect(submission.teamMembers[0]).toEqual(user2);
+			});
+		});
+		describe('when userId not matches teamMemberId', () => {
+			it('should not remove student', () => {
+				const { user1, submission, user2 } = setup();
+
+				submission.removeUserFromTeamMembers(new ObjectId().toString());
+
+				expect(submission.teamMembers.length).toEqual(2);
+				expect(submission.teamMembers[0]).toEqual(user1);
+				expect(submission.teamMembers[1]).toEqual(user2);
 			});
 		});
 	});

@@ -1,1 +1,1 @@
-export { SystemRepo } from './system.repo';
+export { SystemMikroOrmRepo } from './mikro-orm/system.repo';

@@ -3,6 +3,8 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ICurrentUser } from '@modules/authentication';
 import { Action, AuthorizationService } from '@modules/authorization';
+import { School, SchoolService } from '@modules/school';
+import { schoolFactory } from '@modules/school/testing';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
@@ -45,6 +47,7 @@ describe('ExternalToolUc', () => {
 
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
+	let schoolService: DeepMocked<SchoolService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let toolValidationService: DeepMocked<ExternalToolValidationService>;
 	let logoService: DeepMocked<ExternalToolLogoService>;
@@ -66,6 +69,10 @@ describe('ExternalToolUc', () => {
 				{
 					provide: SchoolExternalToolService,
 					useValue: createMock<SchoolExternalToolService>(),
+				},
+				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
 				},
 				{
 					provide: AuthorizationService,
@@ -93,6 +100,7 @@ describe('ExternalToolUc', () => {
 		uc = module.get(ExternalToolUc);
 		externalToolService = module.get(ExternalToolService);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
+		schoolService = module.get(SchoolService);
 		authorizationService = module.get(AuthorizationService);
 		toolValidationService = module.get(ExternalToolValidationService);
 		logoService = module.get(ExternalToolLogoService);
@@ -644,6 +652,7 @@ describe('ExternalToolUc', () => {
 			const setup = () => {
 				const toolId: string = new ObjectId().toHexString();
 				const user: User = userFactory.buildWithId();
+				const school: School = schoolFactory.build();
 
 				const param: CustomParameter = customParameterFactory.build();
 				const externalTool: ExternalTool = externalToolFactory.build({ parameters: [param] });
@@ -654,17 +663,21 @@ describe('ExternalToolUc', () => {
 						toolName: externalTool.name,
 						instance: 'dBildungscloud',
 						creatorName: `${user.firstName} ${user.lastName}`,
+						schoolName: school.getInfo().name,
 					});
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				authorizationService.hasAllPermissions.mockReturnValue(true);
 				externalToolService.findById.mockResolvedValue(externalTool);
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([schoolExternalTool]);
-				pdfService.generatePdf.mockResolvedValueOnce(Buffer.from('mockData'));
+				schoolService.getSchoolById.mockResolvedValue(school);
+				pdfService.generatePdf.mockResolvedValue(Buffer.from('mockData'));
 
 				return {
 					user,
 					toolId,
 					datasheetData,
+					schoolExternalTool,
 				};
 			};
 
@@ -704,6 +717,14 @@ describe('ExternalToolUc', () => {
 					schoolId: user.school.id,
 					toolId,
 				});
+			});
+
+			it('should get school', async () => {
+				const { toolId, user, schoolExternalTool } = setup();
+
+				await uc.getDatasheet(user.id, toolId);
+
+				expect(schoolService.getSchoolById).toHaveBeenCalledWith(schoolExternalTool.schoolId);
 			});
 
 			it('should create pdf buffer', async () => {

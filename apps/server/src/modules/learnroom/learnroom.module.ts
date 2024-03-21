@@ -1,66 +1,83 @@
-import { BoardModule } from '@modules/board';
+import { BoardModule } from '@modules/board/board.module';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { LessonModule } from '@modules/lesson';
 import { TaskModule } from '@modules/task';
-import { Module } from '@nestjs/common';
+import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
+import { ToolConfigModule } from '@modules/tool/tool-config.module';
+import { Module, forwardRef } from '@nestjs/common';
 import {
-	BoardRepo,
 	CourseGroupRepo,
 	CourseRepo,
 	DashboardElementRepo,
 	DashboardModelMapper,
 	DashboardRepo,
+	LegacyBoardRepo,
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
+import { CqrsModule } from '@nestjs/cqrs';
+import { BoardNodeRepo } from '../board/repo';
+import { COURSE_REPO } from './domain';
+import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';
+import { CommonCartridgeMapper } from './mapper/common-cartridge.mapper';
+import { CourseMikroOrmRepo } from './repo/mikro-orm/course.repo';
 import {
 	BoardCopyService,
-	ColumnBoardTargetService,
 	CommonCartridgeExportService,
+	CommonCartridgeImportService,
 	CourseCopyService,
 	CourseGroupService,
 	CourseService,
 	DashboardService,
 	RoomsService,
 } from './service';
-import { ToolConfigModule } from '../tool/tool-config.module';
+import { CommonCartridgeFileValidatorPipe } from './utils';
 
 @Module({
 	imports: [
-		LessonModule,
-		TaskModule,
+		forwardRef(() => BoardModule),
 		CopyHelperModule,
-		BoardModule,
-		LoggerModule,
 		ContextExternalToolModule,
+		LessonModule,
+		LoggerModule,
+		TaskModule,
 		ToolConfigModule,
+		CqrsModule,
 	],
 	providers: [
 		{
 			provide: 'DASHBOARD_REPO',
 			useClass: DashboardRepo,
 		},
+		BoardCopyService,
+		BoardNodeRepo,
+		CommonCartridgeExportService,
+		CommonCartridgeFileValidatorPipe,
+		CommonCartridgeImportService,
+		CommonCartridgeMapper,
+		CommonCartridgeImportMapper,
+		CourseCopyService,
+		CourseGroupRepo,
+		CourseGroupService,
+		CourseRepo,
+		{
+			provide: COURSE_REPO,
+			useClass: CourseMikroOrmRepo,
+		},
+		CourseService,
 		DashboardElementRepo,
 		DashboardModelMapper,
-		CourseRepo,
-		BoardRepo,
-		UserRepo,
-		BoardCopyService,
-		CourseCopyService,
-		RoomsService,
-		CourseService,
-		CommonCartridgeExportService,
-		ColumnBoardTargetService,
-		CourseGroupService,
-		CourseGroupRepo,
 		DashboardService,
+		LegacyBoardRepo,
+		RoomsService,
+		UserRepo,
 	],
 	exports: [
 		CourseCopyService,
 		CourseService,
 		RoomsService,
 		CommonCartridgeExportService,
+		CommonCartridgeImportService,
 		CourseGroupService,
 		DashboardService,
 	],

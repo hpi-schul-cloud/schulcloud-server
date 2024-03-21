@@ -14,12 +14,14 @@ export class ExternalToolDatasheetMapper {
 		externalTool: ExternalTool,
 		firstName: string,
 		lastname: string,
-		schoolExternalTool?: SchoolExternalTool
+		schoolExternalTool?: SchoolExternalTool,
+		schoolName?: string
 	): ExternalToolDatasheetTemplateData {
 		const externalToolData: ExternalToolDatasheetTemplateData = new ExternalToolDatasheetTemplateData({
 			createdAt: new Date().toLocaleDateString('de-DE'),
 			creatorName: `${firstName} ${lastname}`,
 			instance: ExternalToolDatasheetMapper.mapToInstanceName(),
+			schoolName,
 			toolName: externalTool.name,
 			toolUrl: externalTool.config.baseUrl,
 			isDeactivated: ExternalToolDatasheetMapper.mapToIsDeactivated(externalTool, schoolExternalTool),

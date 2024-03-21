@@ -1,16 +1,17 @@
 import { MikroORM } from '@mikro-orm/core';
+import { MigrateOptions, UmzugMigration } from '@mikro-orm/migrations-mongodb';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { Collection, Db } from '@mikro-orm/mongodb/node_modules/mongodb';
 import { Injectable } from '@nestjs/common';
 import { BaseEntity } from '@shared/domain/entity';
-import { Collection, Db } from 'mongodb';
-import { MigrateOptions } from '@mikro-orm/migrations-mongodb';
 
 @Injectable()
 export class DatabaseManagementService {
 	constructor(private em: EntityManager, private readonly orm: MikroORM) {}
 
 	private get db(): Db {
-		return this.em.getConnection('write').getDb();
+		const connection = this.em.getConnection('write').getDb();
+		return connection;
 	}
 
 	getDatabaseCollection(collectionName: string): Collection {
@@ -27,6 +28,7 @@ export class DatabaseManagementService {
 			forceServerObjectId: true,
 			bypassDocumentValidation: true,
 		});
+
 		return insertedCount;
 	}
 
@@ -79,6 +81,12 @@ export class DatabaseManagementService {
 		const params = this.migrationParams(only, from, to);
 
 		await migrator.down(params);
+	}
+
+	async migrationPending(): Promise<UmzugMigration[]> {
+		const migrator = this.orm.getMigrator();
+		const pendingMigrations = await migrator.getPendingMigrations();
+		return pendingMigrations;
 	}
 
 	private migrationParams(only?: string, from?: string, to?: string) {

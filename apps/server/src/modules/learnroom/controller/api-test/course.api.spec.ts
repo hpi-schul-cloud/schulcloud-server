@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker/locale/af_ZA';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { CourseMetadataListResponse } from '@modules/learnroom/controller/dto';
 import { ServerTestModule } from '@modules/server/server.module';
@@ -5,6 +6,7 @@ import { INestApplication, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { TestApiClient, UserAndAccountTestFactory, cleanupCollections, courseFactory } from '@shared/testing';
+import { readFile } from 'node:fs/promises';
 
 const createStudent = () => {
 	const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({}, [Permission.COURSE_VIEW]);
@@ -51,6 +53,7 @@ describe('Course Controller (API)', () => {
 
 			return { student, course, teacher };
 		};
+
 		it('should find courses as student', async () => {
 			const { student, course } = setup();
 			await em.persistAndFlush([student.account, student.user, course]);
@@ -65,6 +68,7 @@ describe('Course Controller (API)', () => {
 			expect(data[0].startDate).toBe(course.startDate);
 			expect(data[0].untilDate).toBe(course.untilDate);
 		});
+
 		it('should find courses as teacher', async () => {
 			const { teacher, course } = setup();
 			await em.persistAndFlush([teacher.account, teacher.user, course]);
@@ -81,37 +85,65 @@ describe('Course Controller (API)', () => {
 		});
 	});
 
-	describe('[GET] /courses/:id/export', () => {
-		const setup = () => {
+	describe('[POST] /courses/:id/export', () => {
+		const setup = async () => {
 			const student1 = createStudent();
 			const student2 = createStudent();
 			const teacher = createTeacher();
 			const substitutionTeacher = createTeacher();
-			const teacherUnkownToCourse = createTeacher();
+			const teacherUnknownToCourse = createTeacher();
 			const course = courseFactory.build({
 				name: 'course #1',
 				teachers: [teacher.user],
 				students: [student1.user, student2.user],
 			});
 
-			return { course, teacher, teacherUnkownToCourse, substitutionTeacher, student1 };
-		};
-		it('should find course export', async () => {
-			const { teacher, course } = setup();
 			await em.persistAndFlush([teacher.account, teacher.user, course]);
 			em.clear();
-			const version = { version: '1.1.0' };
 
 			const loggedInClient = await testApiClient.login(teacher.account);
-			const response = await loggedInClient.get(`${course.id}/export`).query(version);
 
-			expect(response.statusCode).toEqual(200);
+			return { course, teacher, teacherUnknownToCourse, substitutionTeacher, student1, loggedInClient };
+		};
+
+		it('should find course export', async () => {
+			const { course, loggedInClient } = await setup();
+
+			const body = { topics: [faker.string.uuid()] };
+			const response = await loggedInClient.post(`${course.id}/export?version=1.1.0`, body);
+
+			expect(response.statusCode).toEqual(201);
 			const file = response.body as StreamableFile;
 			expect(file).toBeDefined();
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			expect(response.header['content-type']).toBe('application/zip');
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 			expect(response.header['content-disposition']).toBe('attachment;');
+		});
+	});
+
+	describe('[POST] /courses/import', () => {
+		const setup = async () => {
+			const teacher = createTeacher();
+			const course = await readFile(
+				'./apps/server/src/modules/common-cartridge/testing/assets/us_history_since_1877.imscc'
+			);
+			const courseFileName = 'us_history_since_1877.imscc';
+
+			await em.persistAndFlush([teacher.account, teacher.user]);
+			em.clear();
+
+			const loggedInClient = await testApiClient.login(teacher.account);
+
+			return { loggedInClient, course, courseFileName };
+		};
+
+		it('should import course', async () => {
+			const { loggedInClient, course, courseFileName } = await setup();
+
+			const response = await loggedInClient.postWithAttachment('import', 'file', course, courseFileName);
+
+			expect(response.statusCode).toEqual(201);
 		});
 	});
 });

@@ -179,4 +179,44 @@ describe('FilesStorageUC', () => {
 			});
 		});
 	});
+
+	describe('getPublicConfig', () => {
+		describe('when service is aviable', () => {
+			const setup = () => {
+				const fileSize = 500;
+				filesStorageService.getMaxFileSize.mockReturnValueOnce(fileSize);
+
+				const expectedResult = {
+					MAX_FILE_SIZE: fileSize,
+				};
+
+				return { expectedResult };
+			};
+
+			it('should be create a config response dto', () => {
+				const { expectedResult } = setup();
+
+				const result = filesStorageUC.getPublicConfig();
+
+				expect(result).toEqual(expectedResult);
+			});
+		});
+
+		describe('when service throw an error', () => {
+			const setup = () => {
+				const error = new Error('Service throw error');
+				filesStorageService.getMaxFileSize.mockImplementationOnce(() => {
+					throw error;
+				});
+
+				return { error };
+			};
+
+			it('should be create a config response dto', () => {
+				const { error } = setup();
+
+				expect(() => filesStorageUC.getPublicConfig()).toThrowError(error);
+			});
+		});
+	});
 });

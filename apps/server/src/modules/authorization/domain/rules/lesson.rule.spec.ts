@@ -1,4 +1,5 @@
 import { DeepPartial } from '@mikro-orm/core';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { LessonEntity, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
@@ -10,13 +11,12 @@ import {
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
-import { NotImplementedException } from '@nestjs/common';
-import { Action, AuthorizationContext } from '../type';
+import { AuthorizationContextBuilder } from '../mapper';
 import { AuthorizationHelper } from '../service/authorization.helper';
+import { Action, AuthorizationContext } from '../type';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
-import { AuthorizationContextBuilder } from '../mapper';
 
 describe('LessonRule', () => {
 	let rule: LessonRule;

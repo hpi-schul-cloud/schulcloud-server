@@ -6,6 +6,7 @@ import { RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school/domain';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { SortHelper } from '@shared/common';
 import { Page, UserDO } from '@shared/domain/domainobject';
 import { SchoolYearEntity, User } from '@shared/domain/entity';
@@ -13,6 +14,9 @@ import { Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { LegacySystemService, SystemDto } from '@src/modules/system';
+import { CourseService } from '../../learnroom';
+import { Course } from '../../learnroom/domain';
+import { ProvisioningConfig } from '../../provisioning';
 import { RoleDto } from '../../role/service/dto/role.dto';
 import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupTypes, GroupUser } from '../domain';
@@ -32,6 +36,8 @@ export class GroupUc {
 		private readonly schoolService: SchoolService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolYearService: SchoolYearService,
+		private readonly courseService: CourseService,
+		private readonly configService: ConfigService<ProvisioningConfig, true>,
 		private readonly logger: Logger
 	) {}
 
@@ -225,32 +231,32 @@ export class GroupUc {
 			this.ALLOWED_GROUP_TYPES
 		);
 
-		const systemMap: Map<EntityId, SystemDto> = await this.findSystemNamesForGroups(groups);
+		const classInfosFromGroups: ClassInfoDto[] = await this.getClassInfosFromGroups(groups);
 
-		const classInfosFromGroups: ClassInfoDto[] = groups.map(
-			(group: Group): ClassInfoDto => this.getClassInfoFromGroup(group, systemMap)
-		);
 		return classInfosFromGroups;
 	}
 
 	private async findGroupsForUser(userId: EntityId): Promise<ClassInfoDto[]> {
 		const user: UserDO = await this.userService.findById(userId);
 
-		const groupsOfTypeClass: Group[] = await this.groupService.findGroupsByUserAndGroupTypes(
-			user,
-			this.ALLOWED_GROUP_TYPES
-		);
+		const groups: Group[] = await this.groupService.findGroupsByUserAndGroupTypes(user, this.ALLOWED_GROUP_TYPES);
 
-		const systemMap: Map<EntityId, SystemDto> = await this.findSystemNamesForGroups(groupsOfTypeClass);
+		const classInfosFromGroups: ClassInfoDto[] = await this.getClassInfosFromGroups(groups);
 
-		const classInfosFromGroups: ClassInfoDto[] = groupsOfTypeClass.map(
-			(group: Group): ClassInfoDto => this.getClassInfoFromGroup(group, systemMap)
+		return classInfosFromGroups;
+	}
+
+	private async getClassInfosFromGroups(groups: Group[]): Promise<ClassInfoDto[]> {
+		const systemMap: Map<EntityId, SystemDto> = await this.findSystemNamesForGroups(groups);
+
+		const classInfosFromGroups: ClassInfoDto[] = await Promise.all(
+			groups.map(async (group: Group): Promise<ClassInfoDto> => this.getClassInfoFromGroup(group, systemMap))
 		);
 
 		return classInfosFromGroups;
 	}
 
-	private getClassInfoFromGroup(group: Group, systemMap: Map<EntityId, SystemDto>): ClassInfoDto {
+	private async getClassInfoFromGroup(group: Group, systemMap: Map<EntityId, SystemDto>): Promise<ClassInfoDto> {
 		let system: SystemDto | undefined;
 		if (group.externalSource) {
 			system = systemMap.get(group.externalSource.systemId);
@@ -258,7 +264,17 @@ export class GroupUc {
 
 		const resolvedUsers: ResolvedGroupUser[] = [];
 
-		const mapped: ClassInfoDto = GroupUcMapper.mapGroupToClassInfoDto(group, resolvedUsers, system);
+		let synchronizedCourses: Course[] = [];
+		if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED')) {
+			synchronizedCourses = await this.courseService.findBySyncedGroup(group);
+		}
+
+		const mapped: ClassInfoDto = GroupUcMapper.mapGroupToClassInfoDto(
+			group,
+			resolvedUsers,
+			synchronizedCourses,
+			system
+		);
 
 		return mapped;
 	}
@@ -273,7 +289,7 @@ export class GroupUc {
 		const systems: Map<EntityId, SystemDto> = new Map<EntityId, SystemDto>();
 
 		await Promise.all(
-			uniqueSystemIds.map(async (systemId: string) => {
+			uniqueSystemIds.map(async (systemId: string): Promise<void> => {
 				const system: SystemDto = await this.systemService.findById(systemId);
 
 				systems.set(systemId, system);

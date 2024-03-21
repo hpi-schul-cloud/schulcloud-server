@@ -6,10 +6,11 @@ import {
 	SchoolYearEntity,
 	SystemEntity,
 } from '@shared/domain/entity';
+import { LanguageType } from '@shared/domain/interface';
 import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
 import { federalStateFactory, schoolEntityFactory } from '@shared/testing';
 import { FileStorageType } from '@src/modules/school/domain/type/file-storage-type.enum';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { DeepPartial } from 'fishery';
 import { EFederalState } from './federalstates';
 import { SeedSchoolYearEnum } from './schoolyears';
@@ -152,7 +153,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		documentBaseDirType: '',
 		experimental: false,
 		pilot: false,
-		language: 'de',
+		language: LanguageType.DE,
 		logo_dataUrl: '',
 		officialSchoolNumber: '',
 	},
@@ -181,7 +182,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		documentBaseDirType: '',
 		experimental: false,
 		pilot: false,
-		language: 'de',
+		language: LanguageType.DE,
 		logo_dataUrl: '',
 		logo_name: '',
 		officialSchoolNumber: '',
@@ -206,7 +207,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		experimental: false,
 		pilot: false,
 		timezone: 'America/Belem',
-		language: 'en',
+		language: LanguageType.EN,
 		logo_dataUrl: '',
 		logo_name: '',
 		officialSchoolNumber: '',

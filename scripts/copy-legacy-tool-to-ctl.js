@@ -90,7 +90,6 @@ const ExternalTool = mongoose.model(
 			config_skipConsent: Boolean,
 			config_key: String,
 			config_secret: String,
-			config_resource_link_id: String,
 			config_lti_message_type: {
 				type: String,
 				enum: ['basic-lti-launch-request', 'LtiResourceLinkRequest', 'LtiDeepLinkingRequest'],
@@ -243,7 +242,6 @@ function toolConfigMapper(ltiToolTemplate) {
 			config_type: 'lti11',
 			config_key: ltiToolTemplate.key,
 			config_secret: ltiToolTemplate.secret,
-			config_ressource_link_id: ltiToolTemplate.ressource_link_id,
 			config_lti_message_type: ltiToolTemplate.lti_message_type,
 			config_privacy_permission: ltiToolTemplate.privacy_permission || 'anonymous',
 		};

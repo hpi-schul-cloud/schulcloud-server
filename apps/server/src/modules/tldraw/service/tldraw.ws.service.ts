@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotAcceptableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import WebSocket from 'ws';
 import { applyAwarenessUpdate, encodeAwarenessUpdate, removeAwarenessStates } from 'y-protocols/awareness';
-import { decoding, encoding, map } from 'lib0';
-import { readSyncMessage, writeSyncStep1, writeUpdate } from 'y-protocols/sync';
-import { applyUpdate, encodeStateAsUpdate } from 'yjs';
+import { decoding, encoding } from 'lib0';
+import { readSyncMessage, writeSyncStep1, writeSyncStep2, writeUpdate } from 'y-protocols/sync';
+import { applyUpdate } from 'yjs';
 import { Buffer } from 'node:buffer';
 import { Redis } from 'ioredis';
 import { Logger } from '@src/core/logger';
@@ -23,21 +23,17 @@ import {
 	RedisConnectionTypeEnum,
 	TldrawAsset,
 	TldrawShape,
-	WSConnectionState,
+	UpdateOrigin,
+	UpdateType,
 	WSMessageType,
 } from '../types';
 import { WsSharedDocDo } from '../domain';
 import { TldrawBoardRepo } from '../repo';
 import { MetricsService } from '../metrics';
-import { TldrawFilesStorageAdapterService } from './tldraw-files-storage.service';
 
 @Injectable()
 export class TldrawWsService {
-	public docs = new Map();
-
-	private readonly pingTimeout: number;
-
-	private readonly gcEnabled: boolean;
+	public docs = new Map<string, WsSharedDocDo>();
 
 	public readonly sub: Redis;
 
@@ -48,55 +44,57 @@ export class TldrawWsService {
 		private readonly tldrawBoardRepo: TldrawBoardRepo,
 		private readonly logger: Logger,
 		private readonly metricsService: MetricsService,
-		private readonly tldrawRedisFactory: TldrawRedisFactory,
-		private readonly filesStorageTldrawAdapterService: TldrawFilesStorageAdapterService
+		private readonly tldrawRedisFactory: TldrawRedisFactory
 	) {
 		this.logger.setContext(TldrawWsService.name);
-		this.pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
-		this.gcEnabled = this.configService.get<boolean>('TLDRAW_GC_ENABLED');
 
 		this.sub = this.tldrawRedisFactory.build(RedisConnectionTypeEnum.SUBSCRIBE);
 		this.pub = this.tldrawRedisFactory.build(RedisConnectionTypeEnum.PUBLISH);
+
+		this.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message));
 	}
 
-	public async closeConn(doc: WsSharedDocDo, ws: WebSocket): Promise<void> {
+	public async closeConnection(doc: WsSharedDocDo, ws: WebSocket): Promise<void> {
 		if (doc.connections.has(ws)) {
-			const controlledIds = doc.connections.get(ws) as Set<number>;
+			const controlledIds = doc.connections.get(ws);
 			doc.connections.delete(ws);
-			removeAwarenessStates(doc.awareness, Array.from(controlledIds), null);
-			await this.storeStateAndDestroyYDocIfPersisted(doc);
+			removeAwarenessStates(doc.awareness, this.forceToArray(controlledIds), null);
+
 			this.metricsService.decrementNumberOfUsersOnServerCounter();
 		}
 
 		ws.close();
+		await this.finalizeIfNoConnections(doc);
 	}
 
-	public send(doc: WsSharedDocDo, conn: WebSocket, message: Uint8Array): void {
-		if (conn.readyState !== WSConnectionState.CONNECTING && conn.readyState !== WSConnectionState.OPEN) {
-			this.closeConn(doc, conn).catch((err) => {
-				this.logger.warning(new CloseConnectionLoggable(err));
+	public send(doc: WsSharedDocDo, ws: WebSocket, message: Uint8Array): void {
+		if (this.isClosedOrClosing(ws)) {
+			this.closeConnection(doc, ws).catch((err) => {
+				this.logger.warning(new CloseConnectionLoggable('send | isClosedOrClosing', err));
 			});
 		}
 
-		conn.send(message, (err) => {
+		ws.send(message, (err) => {
 			if (err) {
-				this.closeConn(doc, conn).catch((e) => {
-					this.logger.warning(new CloseConnectionLoggable(e));
+				this.closeConnection(doc, ws).catch((e) => {
+					this.logger.warning(new CloseConnectionLoggable('send', e));
 				});
 			}
 		});
 	}
 
 	public updateHandler(update: Uint8Array, origin, doc: WsSharedDocDo): void {
-		const isOriginWSConn = doc.connections.has(origin as WebSocket);
-		if (isOriginWSConn) {
-			this.publishUpdateToRedis(doc, update, 'document');
+		if (this.isFromConnectedWebSocket(doc, origin)) {
+			this.publishUpdateToRedis(doc, update, UpdateType.DOCUMENT);
 		}
 
-		this.propagateUpdate(update, doc);
+		this.sendUpdateToConnectedClients(update, doc);
 	}
 
-	public async databaseUpdateHandler(docName: string, update: Uint8Array) {
+	public async databaseUpdateHandler(docName: string, update: Uint8Array, origin) {
+		if (this.isFromRedis(origin)) {
+			return;
+		}
 		await this.tldrawBoardRepo.storeUpdate(docName, update);
 	}
 
@@ -110,76 +108,96 @@ export class TldrawWsService {
 		this.sendAwarenessMessage(buff, doc);
 	};
 
-	public async getYDoc(docName: string) {
-		const wsSharedDocDo = await map.setIfUndefined(this.docs, docName, async () => {
-			const doc = new WsSharedDocDo(docName, this.gcEnabled);
-			this.registerAwarenessUpdateHandler(doc);
-			this.registerUpdateHandler(doc);
-			this.subscribeToRedisChannels(doc);
+	public async getDocument(docName: string) {
+		const existingDoc = this.docs.get(docName);
 
-			await this.updateDocument(docName, doc);
-			this.registerDatabaseUpdateHandler(doc);
+		if (this.isFinalizingOrNotYetLoaded(existingDoc)) {
+			// drop the connection, the client will have to reconnect
+			// and check again if the finalizing or loading has finished
+			throw new NotAcceptableException();
+		}
 
-			this.docs.set(docName, doc);
-			this.metricsService.incrementNumberOfBoardsOnServerCounter();
-			return doc;
-		});
+		if (existingDoc) {
+			return existingDoc;
+		}
 
-		return wsSharedDocDo;
+		const doc = await this.tldrawBoardRepo.getDocumentFromDb(docName);
+		doc.isLoaded = false;
+
+		this.registerAwarenessUpdateHandler(doc);
+		this.registerUpdateHandler(doc);
+		this.subscribeToRedisChannels(doc);
+		this.registerDatabaseUpdateHandler(doc);
+
+		this.docs.set(docName, doc);
+		this.metricsService.incrementNumberOfBoardsOnServerCounter();
+		doc.isLoaded = true;
+		return doc;
 	}
 
 	public async createDbIndex(): Promise<void> {
 		await this.tldrawBoardRepo.createDbIndex();
 	}
 
-	public messageHandler(conn: WebSocket, doc: WsSharedDocDo, message: Uint8Array): void {
-		try {
-			const encoder = encoding.createEncoder();
-			const decoder = decoding.createDecoder(message);
-			const messageType = decoding.readVarUint(decoder);
-			switch (messageType) {
-				case WSMessageType.SYNC:
-					encoding.writeVarUint(encoder, WSMessageType.SYNC);
-					readSyncMessage(decoder, encoder, doc, conn);
-
-					// If the `encoder` only contains the type of reply message and no
-					// message, there is no need to send the message. When `encoder` only
-					// contains the type of reply, its length is 1.
-					if (encoding.length(encoder) > 1) {
-						this.send(doc, conn, encoding.toUint8Array(encoder));
-					}
-					break;
-				case WSMessageType.AWARENESS: {
-					const update = decoding.readVarUint8Array(decoder);
-					this.publishUpdateToRedis(doc, update, 'awareness');
-					break;
-				}
-				default:
-					break;
+	public messageHandler(ws: WebSocket, doc: WsSharedDocDo, message: Uint8Array): void {
+		const encoder = encoding.createEncoder();
+		const decoder = decoding.createDecoder(message);
+		const messageType = decoding.readVarUint(decoder);
+		switch (messageType) {
+			case WSMessageType.SYNC:
+				this.handleSyncMessage(doc, encoder, decoder, ws);
+				break;
+			case WSMessageType.AWARENESS: {
+				this.handleAwarenessMessage(doc, decoder);
+				break;
 			}
-		} catch (err) {
-			this.logger.warning(new WebsocketMessageErrorLoggable(err));
-			throw err;
+			default:
+				break;
 		}
 	}
 
-	public redisMessageHandler = (channel: Buffer, update: Buffer, doc: WsSharedDocDo): void => {
-		const channelId = channel.toString();
+	private handleSyncMessage(
+		doc: WsSharedDocDo,
+		encoder: encoding.Encoder,
+		decoder: decoding.Decoder,
+		ws: WebSocket
+	): void {
+		encoding.writeVarUint(encoder, WSMessageType.SYNC);
+		readSyncMessage(decoder, encoder, doc, ws);
 
-		if (channelId === doc.name) {
-			applyUpdate(doc, update, this.sub);
+		// If the `encoder` only contains the type of reply message and no
+		// message, there is no need to send the message. When `encoder` only
+		// contains the type of reply, its length is 1.
+		if (encoding.length(encoder) > 1) {
+			this.send(doc, ws, encoding.toUint8Array(encoder));
+		}
+	}
+
+	private handleAwarenessMessage(doc: WsSharedDocDo, decoder: decoding.Decoder) {
+		const update = decoding.readVarUint8Array(decoder);
+		this.publishUpdateToRedis(doc, update, UpdateType.AWARENESS);
+	}
+
+	public redisMessageHandler = (channel: Buffer, update: Buffer): void => {
+		const channelId = channel.toString();
+		const docName = channel.toString().split('-')[0];
+		const doc = this.docs.get(docName);
+		if (!doc) {
+			return;
 		}
 
-		if (channelId === doc.awarenessChannel) {
-			applyAwarenessUpdate(doc.awareness, update, this.sub);
+		if (channelId.includes(UpdateType.AWARENESS)) {
+			applyAwarenessUpdate(doc.awareness, update, UpdateOrigin.REDIS);
+		} else {
+			applyUpdate(doc, update, UpdateOrigin.REDIS);
 		}
 	};
 
-	public async setupWSConnection(ws: WebSocket, docName: string) {
+	public async setupWsConnection(ws: WebSocket, docName: string) {
 		ws.binaryType = 'arraybuffer';
 
 		// get doc, initialize if it does not exist yet
-		const doc = await this.getYDoc(docName);
+		const doc = await this.getDocument(docName);
 		doc.connections.set(ws, new Set());
 
 		ws.on('error', (err) => {
@@ -187,13 +205,15 @@ export class TldrawWsService {
 		});
 
 		ws.on('message', (message: ArrayBufferLike) => {
-			this.messageHandler(ws, doc, new Uint8Array(message));
+			try {
+				this.messageHandler(ws, doc, new Uint8Array(message));
+			} catch (err) {
+				this.logger.warning(new WebsocketMessageErrorLoggable(err));
+			}
 		});
 
-		// send initial doc state to client as update
-		this.sendInitialState(ws, doc);
-
 		// check if connection is still alive
+		const pingTimeout = this.configService.get<number>('TLDRAW_PING_TIMEOUT');
 		let pongReceived = true;
 		const pingInterval = setInterval(() => {
 			if (pongReceived && doc.connections.has(ws)) {
@@ -202,15 +222,15 @@ export class TldrawWsService {
 				return;
 			}
 
-			this.closeConn(doc, ws).catch((err) => {
-				this.logger.warning(new CloseConnectionLoggable(err));
+			this.closeConnection(doc, ws).catch((err) => {
+				this.logger.warning(new CloseConnectionLoggable('pingInterval', err));
 			});
 			clearInterval(pingInterval);
-		}, this.pingTimeout);
+		}, pingTimeout);
 
 		ws.on('close', () => {
-			this.closeConn(doc, ws).catch((err) => {
-				this.logger.warning(new CloseConnectionLoggable(err));
+			this.closeConnection(doc, ws).catch((err) => {
+				this.logger.warning(new CloseConnectionLoggable('websocket close', err));
 			});
 			clearInterval(pingInterval);
 		});
@@ -220,6 +240,9 @@ export class TldrawWsService {
 		});
 
 		{
+			// send initial doc state to client as update
+			this.sendInitialState(ws, doc);
+
 			const syncEncoder = encoding.createEncoder();
 			encoding.writeVarUint(syncEncoder, WSMessageType.SYNC);
 			writeSyncStep1(syncEncoder, doc);
@@ -239,20 +262,28 @@ export class TldrawWsService {
 		this.metricsService.incrementNumberOfUsersOnServerCounter();
 	}
 
-	private async storeStateAndDestroyYDocIfPersisted(doc: WsSharedDocDo) {
-		if (doc.connections.size === 0) {
-			// if persisted, we store state and destroy yDoc
-			try {
-				const usedAssets = this.syncDocumentAssetsWithShapes(doc);
-				await this.filesStorageTldrawAdapterService.deleteUnusedFilesForDocument(doc.name, usedAssets);
-				await this.tldrawBoardRepo.flushDocument(doc.name);
-				this.unsubscribeFromRedisChannels(doc);
-				doc.destroy();
-			} catch (err) {
-				this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while flushing doc', err));
-				throw err;
-			}
+	private async finalizeIfNoConnections(doc: WsSharedDocDo) {
+		// wait before doing the check
+		// the only user on the pod might have lost connection for a moment
+		// or simply refreshed the page
+		await this.delay(this.configService.get<number>('TLDRAW_FINALIZE_DELAY'));
 
+		if (doc.connections.size > 0) {
+			return;
+		}
+
+		if (doc.isFinalizing) {
+			return;
+		}
+		doc.isFinalizing = true;
+
+		try {
+			this.unsubscribeFromRedisChannels(doc);
+			await this.tldrawBoardRepo.compressDocument(doc.name);
+		} catch (err) {
+			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while finalizing document', err));
+		} finally {
+			doc.destroy();
 			this.docs.delete(doc.name);
 			this.metricsService.decrementNumberOfBoardsOnServerCounter();
 		}
@@ -266,35 +297,35 @@ export class TldrawWsService {
 		const usedShapesAsAssets: TldrawShape[] = [];
 		const usedAssets: TldrawAsset[] = [];
 
-		shapes.forEach((shape) => {
+		for (const [, shape] of shapes) {
 			if (shape.assetId) {
 				usedShapesAsAssets.push(shape);
 			}
-		});
+		}
 
 		doc.transact(() => {
-			assets.forEach((asset) => {
-				const foundAsset = usedShapesAsAssets.find((shape) => shape.assetId === asset.id);
+			for (const [, asset] of assets) {
+				const foundAsset = usedShapesAsAssets.some((shape) => shape.assetId === asset.id);
 				if (!foundAsset) {
 					assets.delete(asset.id);
 				} else {
 					usedAssets.push(asset);
 				}
-			});
+			}
 		});
 
 		return usedAssets;
 	}
 
-	private propagateUpdate(update: Uint8Array, doc: WsSharedDocDo): void {
+	private sendUpdateToConnectedClients(update: Uint8Array, doc: WsSharedDocDo): void {
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, WSMessageType.SYNC);
 		writeUpdate(encoder, update);
 		const message = encoding.toUint8Array(encoder);
 
-		doc.connections.forEach((_, conn) => {
+		for (const [conn] of doc.connections) {
 			this.send(doc, conn, message);
-		});
+		}
 	}
 
 	private prepareAwarenessMessage(changedClients: number[], doc: WsSharedDocDo): Uint8Array {
@@ -305,29 +336,31 @@ export class TldrawWsService {
 		return message;
 	}
 
-	private sendAwarenessMessage(buff: Uint8Array, doc: WsSharedDocDo): void {
-		doc.connections.forEach((_, c) => {
-			this.send(doc, c, buff);
-		});
+	private sendAwarenessMessage(message: Uint8Array, doc: WsSharedDocDo): void {
+		for (const [conn] of doc.connections) {
+			this.send(doc, conn, message);
+		}
 	}
 
 	private manageClientsConnections(
 		connectionsUpdate: AwarenessConnectionsUpdate,
-		wsConnection: WebSocket | null,
+		ws: WebSocket | null,
 		doc: WsSharedDocDo
 	): number[] {
 		const changedClients = connectionsUpdate.added.concat(connectionsUpdate.updated, connectionsUpdate.removed);
-		if (wsConnection !== null) {
-			const connControlledIDs = doc.connections.get(wsConnection);
+		if (ws !== null) {
+			const connControlledIDs = doc.connections.get(ws);
 			if (connControlledIDs !== undefined) {
-				connectionsUpdate.added.forEach((clientID) => {
+				for (const clientID of connectionsUpdate.added) {
 					connControlledIDs.add(clientID);
-				});
-				connectionsUpdate.removed.forEach((clientID) => {
+				}
+
+				for (const clientID of connectionsUpdate.removed) {
 					connControlledIDs.delete(clientID);
-				});
+				}
 			}
 		}
+
 		return changedClients;
 	}
 
@@ -342,64 +375,60 @@ export class TldrawWsService {
 	}
 
 	private registerDatabaseUpdateHandler(doc: WsSharedDocDo) {
-		doc.on('update', (update: Uint8Array) => this.databaseUpdateHandler(doc.name, update));
+		doc.on('update', (update: Uint8Array, origin) => this.databaseUpdateHandler(doc.name, update, origin));
 	}
 
 	private subscribeToRedisChannels(doc: WsSharedDocDo) {
-		this.sub
-			.subscribe(doc.name, doc.awarenessChannel, (err) => {
-				if (err) {
-					this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while subscribing to Redis channels', err));
-				}
-			})
-			.catch((err) => {
-				this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while subscribing to Redis channels', err));
-			});
-		this.sub.on('messageBuffer', (channel, message) => this.redisMessageHandler(channel, message, doc));
+		this.sub.subscribe(doc.name, doc.awarenessChannel).catch((err) => {
+			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while subscribing to Redis channels', err));
+		});
 	}
 
 	private unsubscribeFromRedisChannels(doc: WsSharedDocDo) {
-		this.sub
-			.unsubscribe(doc.name, doc.awarenessChannel, (err) => {
-				if (err) {
-					this.logger.warning(
-						new WsSharedDocErrorLoggable(doc.name, 'Error while unsubscribing from Redis channels', err)
-					);
-				}
-			})
-			.catch((err) => {
-				this.logger.warning(
-					new WsSharedDocErrorLoggable(doc.name, 'Error while unsubscribing from Redis channels', err)
-				);
-			});
+		this.sub.unsubscribe(doc.name, doc.awarenessChannel).catch((err) => {
+			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while unsubscribing from Redis channels', err));
+		});
 	}
 
-	private async updateDocument(docName: string, doc: WsSharedDocDo) {
-		try {
-			await this.tldrawBoardRepo.updateDocument(docName, doc);
-		} catch (err) {
-			this.logger.warning(new WsSharedDocErrorLoggable(doc.name, 'Error while updating document', err));
-			throw err;
-		}
-	}
-
-	private publishUpdateToRedis(doc: WsSharedDocDo, update: Uint8Array, type: 'awareness' | 'document') {
-		const channel = type === 'awareness' ? doc.awarenessChannel : doc.name;
-		this.pub
-			.publish(channel, Buffer.from(update), (err) => {
-				if (err) {
-					this.logger.warning(new RedisPublishErrorLoggable('awareness', err));
-				}
-			})
-			.catch((err) => {
-				this.logger.warning(new RedisPublishErrorLoggable('awareness', err));
-			});
+	private publishUpdateToRedis(doc: WsSharedDocDo, update: Uint8Array, type: UpdateType) {
+		const channel = type === UpdateType.AWARENESS ? doc.awarenessChannel : doc.name;
+		this.pub.publish(channel, Buffer.from(update)).catch((err) => {
+			this.logger.warning(new RedisPublishErrorLoggable(type, err));
+		});
 	}
 
 	private sendInitialState(ws: WebSocket, doc: WsSharedDocDo): void {
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, WSMessageType.SYNC);
-		writeUpdate(encoder, encodeStateAsUpdate(doc));
+		writeSyncStep2(encoder, doc);
 		this.send(doc, ws, encoding.toUint8Array(encoder));
+	}
+
+	private isFinalizingOrNotYetLoaded(doc: WsSharedDocDo | undefined): boolean {
+		const isFinalizing = doc !== undefined && doc.isFinalizing;
+		const isNotLoaded = doc !== undefined && !doc.isLoaded;
+		return isFinalizing || isNotLoaded;
+	}
+
+	private delay(ms: number) {
+		return new Promise((resolve) => {
+			setTimeout(resolve, ms);
+		});
+	}
+
+	private isClosedOrClosing(ws: WebSocket): boolean {
+		return ws.readyState === WebSocket.CLOSING || ws.readyState === WebSocket.CLOSED;
+	}
+
+	private forceToArray(connections: Set<number> | undefined): number[] {
+		return connections ? Array.from(connections) : [];
+	}
+
+	private isFromConnectedWebSocket(doc: WsSharedDocDo, origin: unknown) {
+		return origin instanceof WebSocket && doc.connections.has(origin);
+	}
+
+	private isFromRedis(origin: unknown): boolean {
+		return typeof origin === 'string' && origin === UpdateOrigin.REDIS;
 	}
 }

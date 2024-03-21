@@ -1,25 +1,22 @@
-import { ConfigService } from '@nestjs/config';
-import * as promise from 'lib0/promise';
-import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector } from 'yjs';
+import { BulkWriteResult } from '@mikro-orm/mongodb/node_modules/mongodb';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { Logger } from '@src/core/logger';
 import { Buffer } from 'buffer';
 import * as binary from 'lib0/binary';
 import * as encoding from 'lib0/encoding';
-import { BulkWriteResult } from 'mongodb';
-import { MongoTransactionErrorLoggable } from '../loggable';
-import { TldrawDrawing } from '../entities';
+import * as promise from 'lib0/promise';
+import { applyUpdate, Doc, encodeStateAsUpdate, encodeStateVector, mergeUpdates } from 'yjs';
 import { TldrawConfig } from '../config';
+import { WsSharedDocDo } from '../domain';
+import { TldrawDrawing } from '../entities';
+import { MongoTransactionErrorLoggable } from '../loggable';
 import { YTransaction } from '../types';
-import { TldrawRepo } from './tldraw.repo';
 import { KeyFactory } from './key.factory';
+import { TldrawRepo } from './tldraw.repo';
 
 @Injectable()
 export class YMongodb {
-	private readonly maxDocumentSize: number;
-
-	private readonly flushSize: number;
-
 	private readonly _transact: <T extends Promise<YTransaction>>(docName: string, fn: () => T) => T;
 
 	// scope the queue of the transaction to each docName
@@ -32,9 +29,6 @@ export class YMongodb {
 		private readonly logger: Logger
 	) {
 		this.logger.setContext(YMongodb.name);
-
-		this.flushSize = this.configService.get<number>('TLDRAW_DB_FLUSH_SIZE');
-		this.maxDocumentSize = this.configService.get<number>('TLDRAW_MAX_DOCUMENT_SIZE');
 
 		// execute a transaction on a database
 		// this will ensure that other processes are currently not writing
@@ -74,18 +68,15 @@ export class YMongodb {
 		await this.repo.ensureIndexes();
 	}
 
-	public getYDoc(docName: string): Promise<Doc> {
-		return this._transact(docName, async (): Promise<Doc> => {
+	public getDocument(docName: string): Promise<WsSharedDocDo> {
+		return this._transact(docName, async (): Promise<WsSharedDocDo> => {
 			const updates = await this.getMongoUpdates(docName);
-			const ydoc = new Doc();
-			ydoc.transact(() => {
-				for (const element of updates) {
-					applyUpdate(ydoc, element);
-				}
-			});
-			if (updates.length > this.flushSize) {
-				await this.flushDocument(docName, encodeStateAsUpdate(ydoc), encodeStateVector(ydoc));
-			}
+			const mergedUpdates = mergeUpdates(updates);
+
+			const gcEnabled = this.configService.get<boolean>('TLDRAW_GC_ENABLED');
+			const ydoc = new WsSharedDocDo(docName, gcEnabled);
+			applyUpdate(ydoc, mergedUpdates);
+
 			return ydoc;
 		});
 	}
@@ -94,12 +85,39 @@ export class YMongodb {
 		return this._transact(docName, () => this.storeUpdate(docName, update));
 	}
 
-	public flushDocumentTransactional(docName: string): Promise<void> {
+	public compressDocumentTransactional(docName: string): Promise<void> {
 		return this._transact(docName, async () => {
 			const updates = await this.getMongoUpdates(docName);
-			const { update, sv } = this.mergeUpdates(updates);
-			await this.flushDocument(docName, update, sv);
+			const mergedUpdates = mergeUpdates(updates);
+
+			const ydoc = new Doc();
+			applyUpdate(ydoc, mergedUpdates);
+
+			const stateAsUpdate = encodeStateAsUpdate(ydoc);
+			const sv = encodeStateVector(ydoc);
+			const clock = await this.storeUpdate(docName, stateAsUpdate);
+			await this.writeStateVector(docName, sv, clock);
+			await this.clearUpdatesRange(docName, 0, clock);
+
+			ydoc.destroy();
 		});
+	}
+
+	public async getCurrentUpdateClock(docName: string): Promise<number> {
+		const updates = await this.getMongoBulkData(
+			{
+				...KeyFactory.createForUpdate(docName, 0),
+				clock: {
+					$gte: 0,
+					$lt: binary.BITS32,
+				},
+			},
+			{ reverse: true, limit: 1 }
+		);
+
+		const clock = this.extractClock(updates);
+
+		return clock;
 	}
 
 	private async clearUpdatesRange(docName: string, from: number, to: number): Promise<BulkWriteResult> {
@@ -168,23 +186,6 @@ export class YMongodb {
 		return this.convertMongoUpdates(docs);
 	}
 
-	private async getCurrentUpdateClock(docName: string): Promise<number> {
-		const updates = await this.getMongoBulkData(
-			{
-				...KeyFactory.createForUpdate(docName, 0),
-				clock: {
-					$gte: 0,
-					$lt: binary.BITS32,
-				},
-			},
-			{ reverse: true, limit: 1 }
-		);
-
-		const clock = this.extractClock(updates);
-
-		return clock;
-	}
-
 	private async writeStateVector(docName: string, sv: Uint8Array, clock: number): Promise<void> {
 		const encoder = encoding.createEncoder();
 		encoding.writeVarUint(encoder, clock);
@@ -208,21 +209,22 @@ export class YMongodb {
 			await this.writeStateVector(docName, sv, 0);
 		}
 
+		const maxDocumentSize = this.configService.get<number>('TLDRAW_MAX_DOCUMENT_SIZE');
 		const value = Buffer.from(update);
 		//  if our buffer exceeds maxDocumentSize, we store the update in multiple documents
-		if (value.length <= this.maxDocumentSize) {
+		if (value.length <= maxDocumentSize) {
 			const uniqueKey = KeyFactory.createForUpdate(docName, clock + 1);
 
 			await this.repo.put(uniqueKey, {
 				value,
 			});
 		} else {
-			const totalChunks = Math.ceil(value.length / this.maxDocumentSize);
+			const totalChunks = Math.ceil(value.length / maxDocumentSize);
 
 			const putPromises: Promise<TldrawDrawing | null>[] = [];
 			for (let i = 0; i < totalChunks; i += 1) {
-				const start = i * this.maxDocumentSize;
-				const end = Math.min(start + this.maxDocumentSize, value.length);
+				const start = i * maxDocumentSize;
+				const end = Math.min(start + maxDocumentSize, value.length);
 				const chunk = value.subarray(start, end);
 
 				putPromises.push(
@@ -234,30 +236,6 @@ export class YMongodb {
 		}
 
 		return clock + 1;
-	}
-
-	/**
-	 * For now this is a helper method that creates a Y.Doc and then re-encodes a document update.
-	 * In the future this will be handled by Yjs without creating a Y.Doc (constant memory consumption).
-	 */
-	private mergeUpdates(updates: Array<Uint8Array>): { update: Uint8Array; sv: Uint8Array } {
-		const ydoc = new Doc();
-		ydoc.transact(() => {
-			for (const element of updates) {
-				applyUpdate(ydoc, element);
-			}
-		});
-		return { update: encodeStateAsUpdate(ydoc), sv: encodeStateVector(ydoc) };
-	}
-
-	/**
-	 * Merge all MongoDB documents of the same yjs document together.
-	 */
-	private async flushDocument(docName: string, stateAsUpdate: Uint8Array, stateVector: Uint8Array): Promise<number> {
-		const clock = await this.storeUpdate(docName, stateAsUpdate);
-		await this.writeStateVector(docName, stateVector, clock);
-		await this.clearUpdatesRange(docName, 0, clock);
-		return clock;
 	}
 
 	private isSameClock(doc1: TldrawDrawing, doc2: TldrawDrawing): boolean {

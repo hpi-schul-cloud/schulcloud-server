@@ -39,10 +39,12 @@ export class FileEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	deletedAt?: Date;
 
-	@Property()
+	// you have to set the type explicitly to boolean, otherwise metadata will be wrong
+	@Property({ type: 'boolean' })
 	deleted = false;
 
-	@Property()
+	// you have to set the type explicitly to boolean, otherwise metadata will be wrong
+	@Property({ type: 'boolean' })
 	isDirectory = false;
 
 	@Property()

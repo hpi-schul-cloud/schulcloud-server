@@ -2,12 +2,21 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchoolEntity } from '@shared/domain/entity/school.entity';
-import { SortOrder } from '@shared/domain/interface';
-import { cleanupCollections, federalStateFactory, schoolEntityFactory, systemEntityFactory } from '@shared/testing';
+import { LanguageType, SortOrder } from '@shared/domain/interface';
+import { SchoolFeature, SchoolPurpose } from '@shared/domain/types';
+import {
+	cleanupCollections,
+	federalStateFactory as federalStateEntityFactory,
+	schoolEntityFactory,
+	schoolYearFactory as schoolYearEntityFactory,
+	systemEntityFactory,
+} from '@shared/testing';
 import { countyEmbeddableFactory } from '@shared/testing/factory/county.embeddable.factory';
 import { MongoMemoryDatabaseModule } from '@src/infra/database';
-import { SCHOOL_REPO } from '../../domain';
-import { SchoolEntityMapper } from './mapper';
+import { FileStorageType, SCHOOL_REPO } from '../../domain';
+import { federalStateFactory, schoolFactory } from '../../testing';
+import { countyFactory } from '../../testing/county.factory';
+import { FederalStateEntityMapper, SchoolEntityMapper, SchoolYearEntityMapper } from './mapper';
 import { SchoolMikroOrmRepo } from './school.repo';
 
 describe('SchoolMikroOrmRepo', () => {
@@ -220,6 +229,86 @@ describe('SchoolMikroOrmRepo', () => {
 				const result = await repo.getSchoolsBySystemIds([specifiedSystem.id]);
 
 				expect(result).toEqual(expected);
+			});
+		});
+	});
+
+	describe('save', () => {
+		describe('when entity is new', () => {
+			const setup = async () => {
+				const federalState = federalStateEntityFactory.build();
+				const currentYear = schoolYearEntityFactory.build();
+
+				await em.persistAndFlush([federalState, currentYear]);
+				em.clear();
+
+				const entity = schoolEntityFactory.build({ federalState, currentYear });
+				const schoolDo = SchoolEntityMapper.mapToDo(entity);
+
+				return { schoolDo };
+			};
+
+			it('should save entity', async () => {
+				const { schoolDo } = await setup();
+
+				const result = await repo.save(schoolDo);
+
+				expect(result).toEqual(schoolDo);
+			});
+		});
+
+		describe('when entity is existing', () => {
+			const setup = async () => {
+				const entity = schoolEntityFactory.build();
+
+				const newFederalStateEntity = federalStateEntityFactory.build();
+				const newSchoolYearEntity = schoolYearEntityFactory.build();
+				const newSystemEntity = systemEntityFactory.build();
+
+				await em.persistAndFlush([entity, newFederalStateEntity, newSchoolYearEntity, newSystemEntity]);
+				em.clear();
+
+				const newCounty = countyFactory.build();
+				const newFederalState = FederalStateEntityMapper.mapToDo(newFederalStateEntity);
+				const newSchoolYear = SchoolYearEntityMapper.mapToDo(newSchoolYearEntity);
+				const expectedProps = {
+					id: entity.id,
+					name: 'new name',
+					officialSchoolNumber: 'new officialSchoolNumber',
+					externalId: 'new externalId',
+					previousExternalId: 'new previousExternalId',
+					inMaintenanceSince: new Date(),
+					inUserMigration: true,
+					purpose: SchoolPurpose.EXPERT,
+					logo: {
+						dataUrl: 'new logo_dataUrl',
+						name: 'new logo_name',
+					},
+					fileStorageType: FileStorageType.AWS_S3,
+					language: LanguageType.EN,
+					timezone: 'new timezone',
+					permissions: {},
+					enableStudentTeamCreation: true,
+					federalState: newFederalState,
+					features: new Set([SchoolFeature.ENABLE_LDAP_SYNC_DURING_MIGRATION]),
+					currentYear: newSchoolYear,
+					county: newCounty,
+					systemIds: [newSystemEntity._id.toHexString()],
+				};
+				const newSchool = schoolFactory.build(expectedProps);
+
+				return { newSchool, expectedProps };
+			};
+
+			it('should update entity', async () => {
+				const { newSchool, expectedProps } = await setup();
+
+				const result = await repo.save(newSchool);
+
+				expect(result).toEqual(newSchool);
+
+				const updatedSchool = await repo.getSchoolById(newSchool.id);
+				expect(updatedSchool.getProps()).toEqual(expect.objectContaining(expectedProps));
 			});
 		});
 	});

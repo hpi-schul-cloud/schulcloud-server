@@ -1,7 +1,7 @@
 import { ClassSerializerInterceptor, Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { InterceptorConfig, TimeoutInterceptor } from '@shared/common';
+import { TimeoutInterceptor } from '@shared/common';
 
 /** *********************************************
  * Global Interceptor setup
@@ -17,11 +17,8 @@ import { InterceptorConfig, TimeoutInterceptor } from '@shared/common';
 			useClass: ClassSerializerInterceptor,
 		},
 		{
-			provide: APP_INTERCEPTOR, // TODO remove (for testing)
-			useFactory: (configService: ConfigService<InterceptorConfig, true>) => {
-				const timeout = configService.get<number>('INCOMING_REQUEST_TIMEOUT');
-				return new TimeoutInterceptor(timeout);
-			},
+			provide: APP_INTERCEPTOR,
+			useFactory: (configService: ConfigService) => new TimeoutInterceptor(configService),
 			inject: [ConfigService],
 		},
 	],

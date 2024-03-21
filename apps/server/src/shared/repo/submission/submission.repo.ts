@@ -23,6 +23,7 @@ export class SubmissionRepo extends BaseRepo<Submission> {
 		const [submissions, count] = await this._em.findAndCount(this.entityName, {
 			task: { $in: taskIds },
 		});
+
 		await this.populateReferences(submissions);
 
 		return [submissions, count];

@@ -220,8 +220,14 @@ export class FilesStorageService {
 		}
 	}
 
+	public getMaxFileSize(): number {
+		const maxFileSize = this.configService.get<number>('MAX_FILE_SIZE');
+
+		return maxFileSize;
+	}
+
 	private throwErrorIfFileIsTooBig(fileSize: number): void {
-		if (fileSize > this.configService.get<number>('MAX_FILE_SIZE')) {
+		if (fileSize > this.getMaxFileSize()) {
 			throw new BadRequestException(ErrorType.FILE_TOO_BIG);
 		}
 	}

@@ -156,4 +156,12 @@ describe('DatabaseManagementService', () => {
 			expect(orm.getMigrator().down).toHaveBeenCalledWith({ migrations: [params.only] });
 		});
 	});
+
+	describe('When call migrationPending()', () => {
+		it('should call migrator.getPendingMigrations()', async () => {
+			const spy = jest.spyOn(orm.getMigrator(), 'getPendingMigrations');
+			await service.migrationPending();
+			expect(spy).toHaveBeenCalled();
+		});
+	});
 });

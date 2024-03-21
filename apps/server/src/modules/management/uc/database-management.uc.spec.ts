@@ -3,13 +3,12 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { DatabaseManagementService } from '@infra/database';
 import { DefaultEncryptionService, LdapEncryptionService, SymetricKeyEncryptionService } from '@infra/encryption';
 import { FileSystemAdapter } from '@infra/file-system';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { StorageProviderEntity, SystemEntity } from '@shared/domain/entity';
 import { setupEntities } from '@shared/testing';
 import { LegacyLogger } from '@src/core/logger';
-import { ObjectId } from 'mongodb';
 import { BsonConverter } from '../converter/bson.converter';
 import { generateSeedData } from '../seed-data/generateSeedData';
 import { DatabaseManagementUc } from './database-management.uc';
@@ -678,6 +677,11 @@ describe('DatabaseManagementService', () => {
 			dbService.migrationDown = jest.fn();
 			await uc.migrationDown('foo', 'bar', 'baz');
 			expect(dbService.migrationDown).toHaveBeenCalledWith('foo', 'bar', 'baz');
+		});
+		it('should call migrationPending', async () => {
+			dbService.migrationDown = jest.fn();
+			await uc.migrationPending();
+			expect(dbService.migrationPending).toHaveBeenCalled();
 		});
 	});
 });

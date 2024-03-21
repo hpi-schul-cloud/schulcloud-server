@@ -4,15 +4,15 @@ import { IdentityManagementModule } from '@infra/identity-management';
 import { IdentityManagementService } from '@infra/identity-management/identity-management.service';
 import { KeycloakAdministrationService } from '@infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account } from '@shared/domain/entity';
 import { IdmAccount } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, cleanupCollections } from '@shared/testing';
-import { ObjectId } from 'bson';
 import { v1 } from 'uuid';
+import { EventBus } from '@nestjs/cqrs';
 import { LegacyLogger } from '../../../core/logger';
 import { AccountIdmToDtoMapper, AccountIdmToDtoMapperDb } from '../mapper';
 import { AccountRepo } from '../repo/account.repo';
@@ -103,6 +103,12 @@ describe('AccountService Integration', () => {
 				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
+				},
+				{
+					provide: EventBus,
+					useValue: {
+						publish: jest.fn(),
+					},
 				},
 			],
 		}).compile();

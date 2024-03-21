@@ -3,8 +3,8 @@ import { SchoolForExternalInviteResponse, SchoolResponse, YearsResponse } from '
 import { SchoolForLdapLoginResponse } from '../dto/response/school-for-ldap-login.response';
 import { CountyResponseMapper } from './county.response.mapper';
 import { FederalStateResponseMapper } from './federal-state.response.mapper';
+import { SystemResponseMapper } from './school-systems.response.mapper';
 import { SchoolYearResponseMapper } from './school-year.response.mapper';
-import { SystemResponseMapper } from './system.response.mapper';
 
 export class SchoolResponseMapper {
 	public static mapToResponse(school: School, years: YearsResponse): SchoolResponse {
@@ -15,6 +15,7 @@ export class SchoolResponseMapper {
 		const features = Array.from(schoolProps.features);
 		const county = schoolProps.county && CountyResponseMapper.mapToResponse(schoolProps.county);
 		const systemIds = schoolProps.systemIds ?? [];
+		const instanceFeatures = Array.from(schoolProps.instanceFeatures ?? []);
 
 		const dto = new SchoolResponse({
 			...schoolProps,
@@ -27,6 +28,7 @@ export class SchoolResponseMapper {
 			inMaintenance: school.isInMaintenance(),
 			isExternal: school.isExternal(),
 			years,
+			instanceFeatures,
 		});
 
 		return dto;

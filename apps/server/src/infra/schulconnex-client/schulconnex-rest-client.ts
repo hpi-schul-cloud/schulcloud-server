@@ -40,7 +40,11 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 		const url: URL = new URL(`${this.SCHULCONNEX_API_BASE_URL}/personen-info`);
 		url.search = QueryString.stringify(params, { arrayFormat: 'comma' });
 
-		const response: Promise<SanisResponse[]> = this.getRequest<SanisResponse[]>(url, token.accessToken);
+		const response: Promise<SanisResponse[]> = this.getRequest<SanisResponse[]>(
+			url,
+			token.accessToken,
+			this.options.personenInfoTimeoutInMs
+		);
 
 		return response;
 	}
@@ -51,12 +55,13 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 		}
 	}
 
-	private async getRequest<T>(url: URL, accessToken: string): Promise<T> {
+	private async getRequest<T>(url: URL, accessToken: string, timeout?: number): Promise<T> {
 		const observable: Observable<AxiosResponse<T>> = this.httpService.get(url.toString(), {
 			headers: {
 				Authorization: `Bearer ${accessToken}`,
 				'Accept-Encoding': 'gzip',
 			},
+			timeout,
 		});
 
 		const responseToken: AxiosResponse<T> = await lastValueFrom(observable);

@@ -1,5 +1,6 @@
-export * from './decorators';
+export { RequestTimeout } from './decorators';
 export * from './error';
+export * from './guards';
 export * from './interceptor';
-export * from './validator';
 export * from './utils';
+export * from './validator';
