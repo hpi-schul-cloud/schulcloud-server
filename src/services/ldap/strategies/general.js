@@ -97,11 +97,9 @@ class GeneralLDAPStrategy extends AbstractLDAPStrategy {
 				if (userRole === roleAttributeNameMapping.roleStudent) {
 					roles.push('student');
 				}
-				splittedTeacherRoles.forEach((role) => {
-					if (userRole.includes(role)) {
-						roles.push('teacher');
-					}
-				});
+				if (splittedTeacherRoles.includes(userRole)) {
+					roles.push('teacher');
+				}
 				if (userRole === roleAttributeNameMapping.roleAdmin) {
 					roles.push('administrator');
 				}
