@@ -23,7 +23,7 @@ export class CommonCartridgeOrganizationVisitor {
 	constructor(private readonly document: Document, private readonly options: CommonCartridgeFileParserOptions) {}
 
 	public findAllOrganizations(): OrganizationProps[] {
-		return this.search().map((element) => this.createOrganizationProps(element.element, element.path));
+		return this.search().map((element) => this.createOrganizationProps(element.element, element.path, element.depth));
 	}
 
 	private search(): SearchElement[] {
@@ -58,7 +58,7 @@ export class CommonCartridgeOrganizationVisitor {
 	}
 
 	private shouldContinueSearch(depth: number): boolean {
-		const shouldContinueSearch = depth < this.options.maxSearchDepth;
+		const shouldContinueSearch = depth <= this.options.maxSearchDepth;
 
 		return shouldContinueSearch;
 	}
@@ -91,13 +91,14 @@ export class CommonCartridgeOrganizationVisitor {
 		return title;
 	}
 
-	private createOrganizationProps(element: Element, path: string): OrganizationProps {
+	private createOrganizationProps(element: Element, path: string, pathDepth: number): OrganizationProps {
 		const title = this.getElementTitle(element);
 		const identifier = this.getElementIdentifier(element);
 		const identifierRef = this.getElementIdentifierRef(element);
 
 		return {
 			path,
+			pathDepth,
 			identifier,
 			identifierRef,
 			title,
