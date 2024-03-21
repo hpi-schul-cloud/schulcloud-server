@@ -6,6 +6,8 @@ const appPromise = require('../../../../src/app');
 const AbstractLDAPStrategy = require('../../../../src/services/ldap/strategies/interface');
 const GeneralLDAPStrategy = require('../../../../src/services/ldap/strategies/general');
 
+const teacherRole1 = 'cn=ROLE_TEACHER,ou=roles,o=school0,dc=de,dc=example,dc=org';
+const teacherRole2 = 'cn=OTHER_TEACHERS,ou=roles,o=school0,dc=de,dc=example,dc=org';
 const mockLDAPConfig = {
 	url: 'ldaps://foo.bar:636',
 	rootPath: 'o=school0,dc=de,dc=example,dc=org',
@@ -23,8 +25,7 @@ const mockLDAPConfig = {
 		},
 		roleAttributeNameMapping: {
 			roleStudent: 'cn=ROLE_STUDENT,ou=roles,o=school0,dc=de,dc=example,dc=org',
-			roleTeacher:
-				'cn=ROLE_TEACHER,ou=roles,o=school0,dc=de,dc=example,dc=org;;cn=OTHER_TEACHERS,ou=roles,o=school0,dc=de,dc=example,dc=org',
+			roleTeacher: `${teacherRole1};;${teacherRole2}`,
 			roleAdmin: 'cn=ROLE_ADMIN,ou=roles,o=school0,dc=de,dc=example,dc=org',
 		},
 		classAttributeNameMapping: {
@@ -214,13 +215,15 @@ describe('GeneralLDAPStrategy', () => {
 					get: () => {},
 					searchCollection: sinon.fake.resolves([
 						createLDAPUserResult({ role: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleStudent }),
-						createLDAPUserResult({ role: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleTeacher }),
+						createLDAPUserResult({ role: teacherRole1 }),
+						createLDAPUserResult({ role: teacherRole2 }),
 						createLDAPUserResult({ role: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleAdmin }),
 					]),
 				});
-				const [student, teacher, admin] = await new GeneralLDAPStrategy(app, ldapConfig).getUsers();
+				const [student, teacher1, teacher2, admin] = await new GeneralLDAPStrategy(app, ldapConfig).getUsers();
 				expect(student.roles).to.include('student');
-				expect(teacher.roles).to.include('teacher');
+				expect(teacher1.roles).to.include('teacher');
+				expect(teacher2.roles).to.include('teacher');
 				expect(admin.roles).to.include('administrator');
 			});
 
