@@ -4165,6 +4165,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/CourseEntityMapper.html" data-type="entity-link" >CourseEntityMapper</a>
                             </li>
                             <li class="link">
+                                <a href="classes/CourseExportBodyParams.html" data-type="entity-link" >CourseExportBodyParams</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/CourseFactory.html" data-type="entity-link" >CourseFactory</a>
                             </li>
                             <li class="link">

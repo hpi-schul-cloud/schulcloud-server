@@ -303,8 +303,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="82"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:82</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="92"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:92</a></div>
                         </td>
                     </tr>
 
@@ -384,8 +384,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="98"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:98</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="108"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:108</a></div>
                         </td>
                     </tr>
 
@@ -459,15 +459,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>addLessons(builder: <a href="../classes/CommonCartridgeFileBuilder.html" target="_self">CommonCartridgeFileBuilder</a>, courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>)</code>
+                    <code>addLessons(builder: <a href="../classes/CommonCartridgeFileBuilder.html" target="_self">CommonCartridgeFileBuilder</a>, courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>, topics: string[])</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="40"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:40</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="45"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:45</a></div>
                         </td>
                     </tr>
 
@@ -523,6 +523,18 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>topics</td>
+                                            <td>
+                                                        <code>string[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -560,8 +572,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="60"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:60</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:70</a></div>
                         </td>
                     </tr>
 
@@ -659,7 +671,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>exportCourse(courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>)</code>
+                    <code>exportCourse(courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>, topics: string[])</code>
                 </td>
             </tr>
 
@@ -723,6 +735,18 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>topics</td>
+                                            <td>
+                                                        <code>string[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -769,13 +793,18 @@ export class CommonCartridgeExportService {
 		private readonly commonCartridgeMapper: CommonCartridgeMapper
 	) {}
 
-	public async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise&lt;Buffer&gt; {
+	public async exportCourse(
+		courseId: EntityId,
+		userId: EntityId,
+		version: CommonCartridgeVersion,
+		topics: string[]
+	): Promise&lt;Buffer&gt; {
 		const course &#x3D; await this.courseService.findById(courseId);
 		const builder &#x3D; new CommonCartridgeFileBuilder(this.commonCartridgeMapper.mapCourseToManifest(version, course));
 
 		builder.addMetadata(this.commonCartridgeMapper.mapCourseToMetadata(course));
 
-		await this.addLessons(builder, courseId, version);
+		await this.addLessons(builder, courseId, version, topics);
 		await this.addTasks(builder, courseId, userId, version);
 		await this.addColumnBoards(builder, courseId);
 
@@ -785,11 +814,16 @@ export class CommonCartridgeExportService {
 	private async addLessons(
 		builder: CommonCartridgeFileBuilder,
 		courseId: EntityId,
-		version: CommonCartridgeVersion
+		version: CommonCartridgeVersion,
+		topics: string[]
 	): Promise&lt;void&gt; {
 		const [lessons] &#x3D; await this.lessonService.findByCourseIds([courseId]);
 
 		lessons.forEach((lesson) &#x3D;&gt; {
+			if (!topics.includes(lesson.id)) {
+				return;
+			}
+
 			const organizationBuilder &#x3D; builder.addOrganization(this.commonCartridgeMapper.mapLessonToOrganization(lesson));
 
 			lesson.contents.forEach((content) &#x3D;&gt; {

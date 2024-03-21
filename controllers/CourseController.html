@@ -203,7 +203,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>exportCourse(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, urlParams: <a href="../classes/CourseUrlParams.html" target="_self">CourseUrlParams</a>, queryParams: <a href="../classes/CourseQueryParams.html" target="_self">CourseQueryParams</a>, response: Response)</code>
+                    <code>exportCourse(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, urlParams: <a href="../classes/CourseUrlParams.html" target="_self">CourseUrlParams</a>, queryParams: <a href="../classes/CourseQueryParams.html" target="_self">CourseQueryParams</a>, bodyParams: <a href="../classes/CourseExportBodyParams.html" target="_self">CourseExportBodyParams</a>, response: Response)</code>
                 </td>
             </tr>
 
@@ -211,14 +211,14 @@
                 <td class="col-md-4">
                     <b>Decorators : </b>
                     <br />
-                    <code>@Get(&#x27;:courseId/export&#x27;)<br /></code>
+                    <code>@Post(&#x27;:courseId/export&#x27;)<br /></code>
                 </td>
             </tr>
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="58"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:58</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -266,6 +266,18 @@
                                                 <td>queryParams</td>
                                             <td>
                                                             <code><a href="../classes/CourseQueryParams.html" target="_self" >CourseQueryParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>bodyParams</td>
+                                            <td>
+                                                            <code><a href="../classes/CourseExportBodyParams.html" target="_self" >CourseExportBodyParams</a></code>
                                             </td>
 
                                             <td>
@@ -330,8 +342,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="47"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:47</a></div>
                         </td>
                     </tr>
 
@@ -427,8 +439,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="82"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:82</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="90"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:90</a></div>
                         </td>
                     </tr>
 
@@ -492,6 +504,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Authenticate, CurrentUser, ICurrentUser } from &#x27;@modules/authentication&#x27;;
 import {
+	Body,
 	Controller,
 	Get,
 	Param,
@@ -521,6 +534,7 @@ import { CourseExportUc } from &#x27;../uc/course-export.uc&#x27;;
 import { CourseUc } from &#x27;../uc/course.uc&#x27;;
 import { CommonCartridgeFileValidatorPipe } from &#x27;../utils&#x27;;
 import { CourseImportBodyParams, CourseMetadataListResponse, CourseQueryParams, CourseUrlParams } from &#x27;./dto&#x27;;
+import { CourseExportBodyParams } from &#x27;./dto/course-export.body.params&#x27;;
 
 @ApiTags(&#x27;Courses&#x27;)
 @Authenticate(&#x27;jwt&#x27;)
@@ -546,14 +560,20 @@ export class CourseController {
 		return result;
 	}
 
-	@Get(&#x27;:courseId/export&#x27;)
+	@Post(&#x27;:courseId/export&#x27;)
 	async exportCourse(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: CourseUrlParams,
 		@Query() queryParams: CourseQueryParams,
+		@Body() bodyParams: CourseExportBodyParams,
 		@Res({ passthrough: true }) response: Response
 	): Promise&lt;StreamableFile&gt; {
-		const result &#x3D; await this.courseExportUc.exportCourse(urlParams.courseId, currentUser.userId, queryParams.version);
+		const result &#x3D; await this.courseExportUc.exportCourse(
+			urlParams.courseId,
+			currentUser.userId,
+			queryParams.version,
+			bodyParams.topics
+		);
 
 		response.set({
 			&#x27;Content-Type&#x27;: &#x27;application/zip&#x27;,

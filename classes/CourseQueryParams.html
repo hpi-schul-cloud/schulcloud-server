@@ -150,6 +150,8 @@
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
                                     <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
                                 <a href="#version" >version</a>
                             </li>
                         </ul>
@@ -180,6 +182,8 @@
                             <span class="modifier"></span>
                             <span class="modifier"></span>
                             <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
                         <span ><b>version</b></span>
                         <a href="#version"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -234,7 +238,7 @@ export class CourseQueryParams {
 		nullable: false,
 		enum: CommonCartridgeVersion,
 	})
-	version!: CommonCartridgeVersion;
+	public readonly version!: CommonCartridgeVersion;
 }
 </code></pre>
     </div>

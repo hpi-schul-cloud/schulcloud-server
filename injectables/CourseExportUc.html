@@ -147,6 +147,7 @@
                                 <a href="#checkFeatureEnabled" >checkFeatureEnabled</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#exportCourse" >exportCourse</a>
                             </li>
@@ -262,8 +263,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="32"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:32</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="37"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:37</a></div>
                         </td>
                     </tr>
 
@@ -285,6 +286,7 @@
                 <td class="col-md-4">
                     <a name="exportCourse"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Async</span>
                         <span ><b>exportCourse</b></span>
                         <a href="#exportCourse"><span class="icon ion-ios-link"></span></a>
@@ -294,7 +296,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>exportCourse(courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>)</code>
+                    <code>exportCourse(courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>, topics: string[])</code>
                 </td>
             </tr>
 
@@ -358,6 +360,18 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>topics</td>
+                                            <td>
+                                                        <code>string[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -396,7 +410,12 @@ export class CourseExportUc {
 		private readonly authorizationService: AuthorizationReferenceService
 	) {}
 
-	async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise&lt;Buffer&gt; {
+	public async exportCourse(
+		courseId: EntityId,
+		userId: EntityId,
+		version: CommonCartridgeVersion,
+		topics: string[]
+	): Promise&lt;Buffer&gt; {
 		this.checkFeatureEnabled();
 		const context &#x3D; AuthorizationContextBuilder.read([Permission.COURSE_EDIT]);
 		await this.authorizationService.checkPermissionByReferences(
@@ -406,7 +425,7 @@ export class CourseExportUc {
 			context
 		);
 
-		return this.courseExportService.exportCourse(courseId, userId, version);
+		return this.courseExportService.exportCourse(courseId, userId, version, topics);
 	}
 
 	private checkFeatureEnabled(): void {
