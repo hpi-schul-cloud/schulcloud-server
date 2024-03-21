@@ -7,7 +7,8 @@ import { TaskService } from '@modules/task';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ComponentType } from '@shared/domain/entity';
-import { courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
+import { columnBoardFactory, courseFactory, lessonFactory, setupEntities, taskFactory } from '@shared/testing';
+import { ColumnBoardService } from '@src/modules/board';
 import AdmZip from 'adm-zip';
 import { CommonCartridgeMapper } from '../mapper/common-cartridge.mapper';
 
@@ -18,6 +19,7 @@ describe('CommonCartridgeExportService', () => {
 	let lessonServiceMock: DeepMocked<LessonService>;
 	let taskServiceMock: DeepMocked<TaskService>;
 	let configServiceMock: DeepMocked<ConfigService<LearnroomConfig, true>>;
+	let columnBoardServiceMock: DeepMocked<ColumnBoardService>;
 
 	const createXmlString = (nodeName: string, value: boolean | number | string): string =>
 		`<${nodeName}>${value.toString()}</${nodeName}>`;
@@ -61,17 +63,20 @@ describe('CommonCartridgeExportService', () => {
 		});
 		const [lesson] = lessons;
 		const taskFromLesson = taskFactory.buildWithId({ course, lesson });
+		const columnBoard = columnBoardFactory.build();
 
 		lessonServiceMock.findById.mockResolvedValue(lesson);
 		courseServiceMock.findById.mockResolvedValue(course);
 		lessonServiceMock.findByCourseIds.mockResolvedValue([lessons, lessons.length]);
 		taskServiceMock.findBySingleParent.mockResolvedValue([tasks, tasks.length]);
 		configServiceMock.getOrThrow.mockReturnValue(faker.internet.url());
+		columnBoardServiceMock.findIdsByExternalReference.mockResolvedValue([faker.string.uuid()]);
+		columnBoardServiceMock.findById.mockResolvedValue(columnBoard);
 
 		const buffer = await sut.exportCourse(course.id, faker.string.uuid(), version, exportTopics ? [lesson.id] : []);
 		const archive = new AdmZip(buffer);
 
-		return { archive, course, lessons, tasks, taskFromLesson };
+		return { archive, course, lessons, tasks, taskFromLesson, columnBoard };
 	};
 
 	beforeAll(async () => {
@@ -96,6 +101,10 @@ describe('CommonCartridgeExportService', () => {
 					provide: ConfigService,
 					useValue: createMock<ConfigService<LearnroomConfig, true>>(),
 				},
+				{
+					provide: ColumnBoardService,
+					useValue: createMock<ColumnBoardService>(),
+				},
 			],
 		}).compile();
 		sut = module.get(CommonCartridgeExportService);
@@ -103,6 +112,7 @@ describe('CommonCartridgeExportService', () => {
 		lessonServiceMock = module.get(LessonService);
 		taskServiceMock = module.get(TaskService);
 		configServiceMock = module.get(ConfigService);
+		columnBoardServiceMock = module.get(ColumnBoardService);
 	});
 
 	afterAll(async () => {
@@ -150,6 +160,13 @@ describe('CommonCartridgeExportService', () => {
 					expect(manifest).toContain(`identifier="i${task.id}" type="webcontent" intendeduse="unspecified"`);
 				});
 			});
+
+			it('should add column boards', async () => {
+				const { archive, columnBoard } = await setup();
+				const manifest = getFileContent(archive, 'imsmanifest.xml');
+
+				expect(manifest).toContain(createXmlString('title', columnBoard.title));
+			});
 		});
 
 		describe('when using version 1.3', () => {
@@ -191,6 +208,13 @@ describe('CommonCartridgeExportService', () => {
 					expect(manifest).toContain(`<title>${task.name}</title>`);
 					expect(manifest).toContain(`identifier="i${task.id}" type="webcontent" intendeduse="assignment"`);
 				});
+			});
+
+			it('should add column boards', async () => {
+				const { archive, columnBoard } = await setup();
+				const manifest = getFileContent(archive, 'imsmanifest.xml');
+
+				expect(manifest).toContain(createXmlString('title', columnBoard.title));
 			});
 		});
 
