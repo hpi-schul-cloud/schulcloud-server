@@ -64,4 +64,16 @@ export class Course extends DomainObject<CourseProps> {
 	set syncedWithGroup(value: EntityId | undefined) {
 		this.props.syncedWithGroup = value;
 	}
+
+	get teachers(): EntityId[] {
+		return this.props.teacherIds;
+	}
+
+	get substitutionTeachers(): EntityId[] {
+		return this.props.substitutionTeacherIds;
+	}
+
+	get students(): EntityId[] {
+		return this.props.studentIds;
+	}
 }

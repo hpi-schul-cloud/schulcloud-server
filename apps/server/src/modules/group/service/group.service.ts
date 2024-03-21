@@ -1,6 +1,6 @@
 import { AuthorizationLoaderServiceGeneric } from '@modules/authorization';
 import { Course } from '@modules/learnroom/domain';
-import { CourseService } from '@modules/learnroom/service/course.service';
+import { CourseDoService } from '@modules/learnroom/service/course-do.service';
 import { Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { type UserDO } from '@shared/domain/domainobject';
@@ -10,7 +10,7 @@ import { GroupRepo } from '../repo';
 
 @Injectable()
 export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
-	constructor(private readonly groupRepo: GroupRepo, private readonly courseService: CourseService) {}
+	constructor(private readonly groupRepo: GroupRepo, private readonly courseService: CourseDoService) {}
 
 	public async findById(id: EntityId): Promise<Group> {
 		const group: Group | null = await this.groupRepo.findGroupById(id);

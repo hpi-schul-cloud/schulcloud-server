@@ -3,6 +3,7 @@ export * from './common-cartridge-export.service';
 export * from './common-cartridge-import.service';
 export * from './course-copy.service';
 export * from './course.service';
+export * from './course-do.service';
 export * from './coursegroup.service';
 export * from './dashboard.service';
 export * from './rooms.service';
