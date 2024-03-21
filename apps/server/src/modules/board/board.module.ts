@@ -1,4 +1,5 @@
 import { ConsoleWriterModule } from '@infra/console';
+import { CopyHelperModule } from '@modules/copy-helper';
 import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { TldrawClientModule } from '@modules/tldraw-client';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
@@ -25,6 +26,7 @@ import { ColumnBoardCopyService } from './service/column-board-copy.service';
 @Module({
 	imports: [
 		ConsoleWriterModule,
+		CopyHelperModule,
 		FilesStorageClientModule,
 		LoggerModule,
 		UserModule,
