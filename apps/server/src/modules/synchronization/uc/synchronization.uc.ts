@@ -38,8 +38,8 @@ export class SynchronizationUc {
 		} else {
 			const chunks = this.chunkArray(usersToCheck, 10000);
 			let userSyncCount = 0;
-			for (let i = 0; i < chunks.length; i++) {
-				userSyncCount += await this.updateLastSyncedAt(chunks[i], systemId);
+			for (let i = 0; i < chunks.length; i += 1) {
+				userSyncCount += +this.updateLastSyncedAt(chunks[i], systemId);
 			}
 
 			await this.updateSynchronization(synchronizationId, SynchronizationStatusModel.SUCCESS, userSyncCount);
@@ -86,7 +86,7 @@ export class SynchronizationUc {
 		} as Synchronization);
 	}
 
-	private chunkArray(array: string[], chunkSize: number): string[][] {
+	chunkArray(array: string[], chunkSize: number): string[][] {
 		const chunkedArray: string[][] = [];
 		let index = 0;
 
