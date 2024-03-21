@@ -202,25 +202,55 @@ describe('GeneralLDAPStrategy', () => {
 			expect(teacher2.roles).to.include('teacher');
 		});
 
-		it('should assign roles based on specific group memberships for non-group role type', async () => {
-			const ldapConfig = {
-				...mockLDAPConfig,
-				providerOptions: { ...mockLDAPConfig.providerOptions, roleType: 'non-group' },
-			};
-			app.unuse('/ldap');
-			app.use('/ldap', {
-				setup: () => {},
-				get: () => {},
-				searchCollection: sinon.fake.resolves([
-					createLDAPUserResult({ role: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleStudent }),
-					createLDAPUserResult({ role: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleTeacher }),
-					createLDAPUserResult({ role: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleAdmin }),
-				]),
+		describe('non-group role type', () => {
+			it('should assign roles based on specific group memberships', async () => {
+				const ldapConfig = {
+					...mockLDAPConfig,
+					providerOptions: { ...mockLDAPConfig.providerOptions, roleType: 'non-group' },
+				};
+				app.unuse('/ldap');
+				app.use('/ldap', {
+					setup: () => {},
+					get: () => {},
+					searchCollection: sinon.fake.resolves([
+						createLDAPUserResult({ role: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleStudent }),
+						createLDAPUserResult({ role: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleTeacher }),
+						createLDAPUserResult({ role: mockLDAPConfig.providerOptions.roleAttributeNameMapping.roleAdmin }),
+					]),
+				});
+				const [student, teacher, admin] = await new GeneralLDAPStrategy(app, ldapConfig).getUsers();
+				expect(student.roles).to.include('student');
+				expect(teacher.roles).to.include('teacher');
+				expect(admin.roles).to.include('administrator');
 			});
-			const [student, teacher, admin] = await new GeneralLDAPStrategy(app, ldapConfig).getUsers();
-			expect(student.roles).to.include('student');
-			expect(teacher.roles).to.include('teacher');
-			expect(admin.roles).to.include('administrator');
+
+			it('should skip ldap users with missing userAttributeNameMapping.role', async () => {
+				const ldapConfig = {
+					...mockLDAPConfig,
+					providerOptions: {
+						...mockLDAPConfig.providerOptions,
+						roleType: 'text',
+						userAttributeNameMapping: { ...mockLDAPConfig.providerOptions.userAttributeNameMapping, role: 'vcEXtype' },
+						roleAttributeNameMapping: {
+							...mockLDAPConfig.providerOptions.roleAttributeNameMapping,
+							roleStudent: '311',
+						},
+					},
+				};
+				app.unuse('/ldap');
+				app.use('/ldap', {
+					setup: () => {},
+					get: () => {},
+					searchCollection: sinon.fake.resolves([
+						createLDAPUserResult({ vcEXtype: '311' }),
+						createLDAPUserResult({ vcEXtype: undefined }),
+					]),
+				});
+
+				const result = await new GeneralLDAPStrategy(app, ldapConfig).getUsers();
+
+				expect(result.length).to.equal(1);
+			});
 		});
 
 		it('should assign name defaults if entities lack first names', async () => {
