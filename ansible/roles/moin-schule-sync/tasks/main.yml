@@ -1,4 +1,4 @@
-- name: Secret provisioned by 1Password
+- name: moin-schule-sync secret provisioned by 1Password
   when: WITH_MOIN_SCHULE is defined and WITH_MOIN_SCHULE|bool == true
   kubernetes.core.k8s:
     kubeconfig: ~/.kube/config
