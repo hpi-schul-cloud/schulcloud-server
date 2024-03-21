@@ -394,8 +394,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="139"
-                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:139</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="140"
+                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:140</a></div>
                         </td>
                     </tr>
 
@@ -654,8 +654,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="188"
-                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:188</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="189"
+                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:189</a></div>
                         </td>
                     </tr>
 
@@ -736,8 +736,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="150"
-                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:150</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="151"
+                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:151</a></div>
                         </td>
                     </tr>
 
@@ -830,8 +830,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="198"
-                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:198</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="199"
+                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:199</a></div>
                         </td>
                     </tr>
 
@@ -898,8 +898,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="170"
-                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:170</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="171"
+                                    class="link-to-prism">apps/server/src/modules/news/uc/news.uc.ts:171</a></div>
                         </td>
                     </tr>
 
@@ -1193,6 +1193,7 @@ export class NewsUc {
 				news[key] &#x3D; value;
 			}
 		}
+		Object.assign(news, { updater: userId });
 
 		await this.newsRepo.save(news);
 
