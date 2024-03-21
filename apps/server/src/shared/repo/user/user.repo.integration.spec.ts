@@ -239,6 +239,7 @@ describe('user repo', () => {
 		const persistUserAndSchool = async () => {
 			const school = schoolEntityFactory.build();
 			const user = userFactory.build({ school });
+
 			await em.persistAndFlush([user, school]);
 			em.clear();
 			return { user, school };
@@ -246,6 +247,7 @@ describe('user repo', () => {
 
 		it('should find users not referenced in importusers', async () => {
 			const { user } = await persistUserAndSchool();
+
 			const [result, count] = await repo.findWithoutImportUser(user.school);
 			expect(result.map((u) => u.id)).toContain(user.id);
 			expect(count).toEqual(1);
