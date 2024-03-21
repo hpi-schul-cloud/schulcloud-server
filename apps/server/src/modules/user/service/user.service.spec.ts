@@ -805,4 +805,54 @@ describe('UserService', () => {
 			});
 		});
 	});
+
+	describe('findByExternalIdsAndProvidedBySystemId', () => {
+		const setup = () => {
+			const systemId = new ObjectId().toHexString();
+			const userA = userFactory.buildWithId({ externalId: '111' });
+			const userB = userFactory.buildWithId({ externalId: '222' });
+
+			const externalIds: string[] = ['111', '222'];
+			const foundUsers = [userA.id, userB.id];
+
+			return {
+				externalIds,
+				foundUsers,
+				systemId,
+			};
+		};
+
+		describe('when find users By externalIds and systemId', () => {
+			it('should call findByExternalIds in userService with externalIds', async () => {
+				const { externalIds, foundUsers, systemId } = setup();
+
+				jest.spyOn(service, 'findByExternalIds').mockResolvedValueOnce(foundUsers);
+
+				await service.findByExternalIdsAndProvidedBySystemId(externalIds, systemId);
+
+				expect(service.findByExternalIds).toHaveBeenCalledWith(externalIds);
+			});
+
+			it('should call accountService.findByUserIdsAndSystemId with foundUsers and systemId', async () => {
+				const { externalIds, foundUsers, systemId } = setup();
+
+				jest.spyOn(service, 'findByExternalIds').mockResolvedValueOnce(foundUsers);
+
+				await service.findByExternalIdsAndProvidedBySystemId(externalIds, systemId);
+
+				expect(accountService.findByUserIdsAndSystemId).toHaveBeenCalledWith(foundUsers, systemId);
+			});
+
+			it('should return array with verified Users', async () => {
+				const { externalIds, foundUsers, systemId } = setup();
+
+				jest.spyOn(service, 'findByExternalIds').mockResolvedValueOnce(foundUsers);
+				jest.spyOn(accountService, 'findByUserIdsAndSystemId').mockResolvedValueOnce(foundUsers);
+
+				const result = await service.findByExternalIdsAndProvidedBySystemId(externalIds, systemId);
+
+				expect(result).toEqual(foundUsers);
+			});
+		});
+	});
 });

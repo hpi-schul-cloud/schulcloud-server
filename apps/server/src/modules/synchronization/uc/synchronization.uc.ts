@@ -5,8 +5,8 @@ import { SanisResponse, SchulconnexRestClient } from '@src/infra/schulconnex-cli
 import { SynchronizationService } from '../domain/service';
 import { Synchronization } from '../domain';
 import { SynchronizationStatusModel } from '../domain/types';
-import { SynchronizationLoggable } from '../domain/loggable/synchronization-loggable';
-import { SynchronizationErrorLoggableException } from '../domain/loggable-exception/synchronization-error.loggable-exception';
+import { SynchronizationLoggable } from '../domain/loggable';
+import { SynchronizationErrorLoggableException } from '../domain/loggable-exception';
 
 @Injectable()
 export class SynchronizationUc {
