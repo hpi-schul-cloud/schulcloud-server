@@ -10,6 +10,7 @@ export const DEFAULT_FILE_PARSER_OPTIONS: CommonCartridgeFileParserOptions = {
 
 export type OrganizationProps = {
 	path: string;
+	pathDepth: number;
 	identifier: string;
 	identifierRef?: string;
 	title: string;
