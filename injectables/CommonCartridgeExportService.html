@@ -144,6 +144,11 @@
                         <ul class="index-list">
                             <li>
                                     <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#addColumnBoards" >addColumnBoards</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
                                 <a href="#addComponentToOrganization" >addComponentToOrganization</a>
                             </li>
                             <li>
@@ -179,12 +184,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, lessonService: <a href="../injectables/LessonService.html" target="_self">LessonService</a>, taskService: <a href="../injectables/TaskService.html" target="_self">TaskService</a>, commonCartridgeMapper: <a href="../injectables/CommonCartridgeMapper.html" target="_self">CommonCartridgeMapper</a>)</code>
+<code>constructor(courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, lessonService: <a href="../injectables/LessonService.html" target="_self">LessonService</a>, taskService: <a href="../injectables/TaskService.html" target="_self">TaskService</a>, columnBoardService: <a href="../injectables/ColumnBoardService.html" target="_self">ColumnBoardService</a>, commonCartridgeMapper: <a href="../injectables/CommonCartridgeMapper.html" target="_self">CommonCartridgeMapper</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="18" class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:18</a></div>
                             </td>
                         </tr>
 
@@ -238,6 +243,18 @@
                                                     
                                                 </tr>
                                                 <tr>
+                                                        <td>columnBoardService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ColumnBoardService.html" target="_self" >ColumnBoardService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>commonCartridgeMapper</td>
                                                   
                                                         <td>
@@ -267,6 +284,88 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="addColumnBoards"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>addColumnBoards</b></span>
+                        <a href="#addColumnBoards"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>addColumnBoards(builder: <a href="../classes/CommonCartridgeFileBuilder.html" target="_self">CommonCartridgeFileBuilder</a>, courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="82"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:82</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>builder</td>
+                                            <td>
+                                                            <code><a href="../classes/CommonCartridgeFileBuilder.html" target="_self" >CommonCartridgeFileBuilder</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>courseId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="addComponentToOrganization"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -285,8 +384,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="73"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:73</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="98"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:98</a></div>
                         </td>
                     </tr>
 
@@ -367,8 +466,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="36"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:36</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="40"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:40</a></div>
                         </td>
                     </tr>
 
@@ -461,8 +560,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="56"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:56</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -567,8 +666,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="24"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:24</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -652,8 +751,10 @@
 import { LessonService } from &#x27;@modules/lesson&#x27;;
 import { TaskService } from &#x27;@modules/task&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { BoardExternalReferenceType } from &#x27;@shared/domain/domainobject&#x27;;
 import { ComponentProperties } from &#x27;@shared/domain/entity&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { ColumnBoardService } from &#x27;@src/modules/board&#x27;;
 import { createIdentifier } from &#x27;@src/modules/common-cartridge/export/utils&#x27;;
 import { CommonCartridgeMapper } from &#x27;../mapper/common-cartridge.mapper&#x27;;
 import { CourseService } from &#x27;./course.service&#x27;;
@@ -664,6 +765,7 @@ export class CommonCartridgeExportService {
 		private readonly courseService: CourseService,
 		private readonly lessonService: LessonService,
 		private readonly taskService: TaskService,
+		private readonly columnBoardService: ColumnBoardService,
 		private readonly commonCartridgeMapper: CommonCartridgeMapper
 	) {}
 
@@ -675,6 +777,7 @@ export class CommonCartridgeExportService {
 
 		await this.addLessons(builder, courseId, version);
 		await this.addTasks(builder, courseId, userId, version);
+		await this.addColumnBoards(builder, courseId);
 
 		return builder.build();
 	}
@@ -706,6 +809,11 @@ export class CommonCartridgeExportService {
 		version: CommonCartridgeVersion
 	): Promise&lt;void&gt; {
 		const [tasks] &#x3D; await this.taskService.findBySingleParent(userId, courseId);
+
+		if (tasks.length &#x3D;&#x3D;&#x3D; 0) {
+			return;
+		}
+
 		const organization &#x3D; builder.addOrganization({
 			title: &#x27;&#x27;,
 			identifier: createIdentifier(),
@@ -714,6 +822,22 @@ export class CommonCartridgeExportService {
 		tasks.forEach((task) &#x3D;&gt; {
 			organization.addResource(this.commonCartridgeMapper.mapTaskToResource(task, version));
 		});
+	}
+
+	private async addColumnBoards(builder: CommonCartridgeFileBuilder, courseId: EntityId): Promise&lt;void&gt; {
+		const columnBoardIds &#x3D; await this.columnBoardService.findIdsByExternalReference({
+			type: BoardExternalReferenceType.Course,
+			id: courseId,
+		});
+
+		for await (const columnBoardId of columnBoardIds) {
+			const columnBoard &#x3D; await this.columnBoardService.findById(columnBoardId);
+
+			builder.addOrganization({
+				title: columnBoard.title,
+				identifier: createIdentifier(columnBoard.id),
+			});
+		}
 	}
 
 	private addComponentToOrganization(
