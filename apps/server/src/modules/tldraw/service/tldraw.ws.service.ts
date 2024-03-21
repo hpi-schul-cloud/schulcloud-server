@@ -284,7 +284,7 @@ export class TldrawWsService {
 			this.unsubscribeFromRedisChannels(doc);
 			await this.tldrawBoardRepo.compressDocument(doc.name);
 
-			if (this.configService.get<number>('TLDRAW_ASSETS_SYNC_ENABLED')) {
+			if (this.configService.get('TLDRAW_ASSETS_SYNC_ENABLED') === true) {
 				const usedAssets = this.syncDocumentAssetsWithShapes(doc);
 				void this.filesStorageTldrawAdapterService.deleteUnusedFilesForDocument(doc.name, usedAssets).catch((err) => {
 					this.logger.warning(new FileStorageErrorLoggable(doc.name, err));
