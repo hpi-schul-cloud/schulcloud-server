@@ -392,6 +392,7 @@ describe('GroupRepo', () => {
 				};
 			};
 
+			// Test here for aggregate query (or in api test)
 			it('should return the available groups from selected school', async () => {
 				const { school } = await setup();
 

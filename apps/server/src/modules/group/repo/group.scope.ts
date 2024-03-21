@@ -32,9 +32,9 @@ export class GroupScope extends Scope<GroupEntity> {
 		return this;
 	}
 
-	/* byNotSyncedGroups(): this {
+	byNotSyncedGroups(): this {
 		this.addQuery({ syncedCourses: { $eq: [] } });
 
 		return this;
-	} */
+	}
 }
