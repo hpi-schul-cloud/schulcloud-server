@@ -36,7 +36,11 @@ export class SynchronizationUc {
 			);
 			this.logger.info(new SynchronizationLoggable('Failed synchronization users from systemId', systemId));
 		} else {
-			const userSyncCount = await this.updateLastSyncedAt(usersToCheck, systemId);
+			const chunks = this.chunkArray(usersToCheck, 10000);
+			let userSyncCount = 0;
+			for (let i = 0; i < chunks.length; i++) {
+				userSyncCount += await this.updateLastSyncedAt(chunks[i], systemId);
+			}
 
 			await this.updateSynchronization(synchronizationId, SynchronizationStatusModel.SUCCESS, userSyncCount);
 			this.logger.info(new SynchronizationLoggable('End synchronization users from systemId', systemId, userSyncCount));
@@ -81,5 +85,17 @@ export class SynchronizationUc {
 			status,
 			failureCause,
 		} as Synchronization);
+	}
+
+	private chunkArray(array: string[], chunkSize: number): string[][] {
+		const chunkedArray: string[][] = [];
+		let index = 0;
+
+		while (index < array.length) {
+			chunkedArray.push(array.slice(index, index + chunkSize));
+			index += chunkSize;
+		}
+
+		return chunkedArray;
 	}
 }

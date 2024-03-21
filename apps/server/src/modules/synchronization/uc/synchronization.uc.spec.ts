@@ -127,6 +127,12 @@ describe(SynchronizationUc.name, () => {
 				expect(schulconnexRestClient.getPersonenInfo).toHaveBeenCalled();
 			});
 
+			it('should split array to 3 chunks', () => {
+				const array = ['a', 'b', 'c'];
+
+				expect(uc.chunkArray(array, 1).length).toBe(3);
+			});
+
 			it('should return users to synchronization', async () => {
 				const { systemId, externalUserData } = setup();
 
