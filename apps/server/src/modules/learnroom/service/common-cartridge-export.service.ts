@@ -24,13 +24,18 @@ export class CommonCartridgeExportService {
 		private readonly commonCartridgeMapper: CommonCartridgeMapper
 	) {}
 
-	public async exportCourse(courseId: EntityId, userId: EntityId, version: CommonCartridgeVersion): Promise<Buffer> {
+	public async exportCourse(
+		courseId: EntityId,
+		userId: EntityId,
+		version: CommonCartridgeVersion,
+		topics: string[]
+	): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);
 		const builder = new CommonCartridgeFileBuilder(this.commonCartridgeMapper.mapCourseToManifest(version, course));
 
 		builder.addMetadata(this.commonCartridgeMapper.mapCourseToMetadata(course));
 
-		await this.addLessons(builder, courseId, version);
+		await this.addLessons(builder, courseId, version, topics);
 		await this.addTasks(builder, courseId, userId, version);
 		await this.addColumnBoards(builder, courseId);
 
@@ -40,11 +45,16 @@ export class CommonCartridgeExportService {
 	private async addLessons(
 		builder: CommonCartridgeFileBuilder,
 		courseId: EntityId,
-		version: CommonCartridgeVersion
+		version: CommonCartridgeVersion,
+		topics: string[]
 	): Promise<void> {
 		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
 
 		lessons.forEach((lesson) => {
+			if (!topics.includes(lesson.id)) {
+				return;
+			}
+
 			const organizationBuilder = builder.addOrganization(this.commonCartridgeMapper.mapLessonToOrganization(lesson));
 
 			lesson.contents.forEach((content) => {
