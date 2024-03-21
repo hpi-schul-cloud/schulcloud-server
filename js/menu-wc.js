@@ -485,13 +485,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/BoardModule.html" data-type="entity-link" >BoardModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-BoardModule-f12ac04aceb5f557821619e0b901dc66daee34a03d4f84b72d6f27196c1a5b51c4495cc60cb574c7b5464b762f4e89bd3fbdb884623709bac2518d698b6f0990"' : 'data-bs-target="#xs-injectables-links-module-BoardModule-f12ac04aceb5f557821619e0b901dc66daee34a03d4f84b72d6f27196c1a5b51c4495cc60cb574c7b5464b762f4e89bd3fbdb884623709bac2518d698b6f0990"' }>
+                                        'data-bs-target="#injectables-links-module-BoardModule-fc69406226431585832df02c7739ea7d41fe97b47ad41ea8222307a865f4128c0f7cb9cb8513dceb14efc1583496fc9472b0b97eab26fea64a07837a68e7a3eb"' : 'data-bs-target="#xs-injectables-links-module-BoardModule-fc69406226431585832df02c7739ea7d41fe97b47ad41ea8222307a865f4128c0f7cb9cb8513dceb14efc1583496fc9472b0b97eab26fea64a07837a68e7a3eb"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-BoardModule-f12ac04aceb5f557821619e0b901dc66daee34a03d4f84b72d6f27196c1a5b51c4495cc60cb574c7b5464b762f4e89bd3fbdb884623709bac2518d698b6f0990"' :
-                                        'id="xs-injectables-links-module-BoardModule-f12ac04aceb5f557821619e0b901dc66daee34a03d4f84b72d6f27196c1a5b51c4495cc60cb574c7b5464b762f4e89bd3fbdb884623709bac2518d698b6f0990"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-BoardModule-fc69406226431585832df02c7739ea7d41fe97b47ad41ea8222307a865f4128c0f7cb9cb8513dceb14efc1583496fc9472b0b97eab26fea64a07837a68e7a3eb"' :
+                                        'id="xs-injectables-links-module-BoardModule-fc69406226431585832df02c7739ea7d41fe97b47ad41ea8222307a865f4128c0f7cb9cb8513dceb14efc1583496fc9472b0b97eab26fea64a07837a68e7a3eb"' }>
                                         <li class="link">
                                             <a href="injectables/BoardDoAuthorizableService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >BoardDoAuthorizableService</a>
                                         </li>
@@ -5051,6 +5051,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/Migration20240304123509.html" data-type="entity-link" >Migration20240304123509</a>
+                            </li>
+                            <li class="link">
+                                <a href="classes/Migration20240320122229.html" data-type="entity-link" >Migration20240320122229</a>
                             </li>
                             <li class="link">
                                 <a href="classes/MigrationAlreadyActivatedException.html" data-type="entity-link" >MigrationAlreadyActivatedException</a>

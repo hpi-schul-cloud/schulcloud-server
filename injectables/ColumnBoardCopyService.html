@@ -147,6 +147,11 @@
                                 <a href="#copyColumnBoard" >copyColumnBoard</a>
                             </li>
                             <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#deriveColumnBoardTitle" >deriveColumnBoardTitle</a>
+                            </li>
+                            <li>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Async</span>
                                 <a href="#swapLinkedIds" >swapLinkedIds</a>
@@ -169,7 +174,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(boardDoRepo: <a href="../injectables/BoardDoRepo.html" target="_self">BoardDoRepo</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, boardDoCopyService: <a href="../injectables/BoardDoCopyService.html" target="_self">BoardDoCopyService</a>, fileCopyServiceFactory: <a href="../injectables/SchoolSpecificFileCopyServiceFactory.html" target="_self">SchoolSpecificFileCopyServiceFactory</a>)</code>
+<code>constructor(boardDoRepo: <a href="../injectables/BoardDoRepo.html" target="_self">BoardDoRepo</a>, copyHelperService: <a href="../injectables/CopyHelperService.html" target="_self">CopyHelperService</a>, courseRepo: <a href="../injectables/CourseRepo.html" target="_self">CourseRepo</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, boardDoCopyService: <a href="../injectables/BoardDoCopyService.html" target="_self">BoardDoCopyService</a>, fileCopyServiceFactory: <a href="../injectables/SchoolSpecificFileCopyServiceFactory.html" target="_self">SchoolSpecificFileCopyServiceFactory</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -196,6 +201,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/BoardDoRepo.html" target="_self" >BoardDoRepo</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>copyHelperService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/CopyHelperService.html" target="_self" >CopyHelperService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -287,8 +304,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="26"
-                                    class="link-to-prism">apps/server/src/modules/board/service/column-board-copy.service.ts:26</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/modules/board/service/column-board-copy.service.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -338,6 +355,88 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="deriveColumnBoardTitle"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>deriveColumnBoardTitle</b></span>
+                        <a href="#deriveColumnBoardTitle"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>deriveColumnBoardTitle(originalTitle: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, destinationExternalReference: <a href="../interfaces/BoardExternalReference.html" target="_self">BoardExternalReference</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="62"
+                                    class="link-to-prism">apps/server/src/modules/board/service/column-board-copy.service.ts:62</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>originalTitle</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>destinationExternalReference</td>
+                                            <td>
+                                                            <code><a href="../interfaces/BoardExternalReference.html" target="_self" >BoardExternalReference</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;string&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="swapLinkedIds"></a>
                     <span class="name">
                             <span class="modifier">Public</span>
@@ -357,8 +456,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="59"
-                                    class="link-to-prism">apps/server/src/modules/board/service/column-board-copy.service.ts:59</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">apps/server/src/modules/board/service/column-board-copy.service.ts:72</a></div>
                         </td>
                     </tr>
 
@@ -422,7 +521,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CopyStatus } from &#x27;@modules/copy-helper&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { CopyHelperService, CopyStatus } from &#x27;@modules/copy-helper&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
 import { Injectable, InternalServerErrorException, NotImplementedException } from &#x27;@nestjs/common&#x27;;
 import {
@@ -441,6 +540,7 @@ import { SwapInternalLinksVisitor } from &#x27;./board-do-copy-service/swap-inte
 export class ColumnBoardCopyService {
 	constructor(
 		private readonly boardDoRepo: BoardDoRepo,
+		private readonly copyHelperService: CopyHelperService,
 		private readonly courseRepo: CourseRepo,
 		private readonly userService: UserService,
 		private readonly boardDoCopyService: BoardDoCopyService,
@@ -453,6 +553,8 @@ export class ColumnBoardCopyService {
 		userId: EntityId;
 	}): Promise&lt;CopyStatus&gt; {
 		const originalBoard &#x3D; await this.boardDoRepo.findByClassAndId(ColumnBoard, props.originalColumnBoardId);
+
+		originalBoard.title &#x3D; await this.deriveColumnBoardTitle(originalBoard.title, props.destinationExternalReference);
 
 		const user &#x3D; await this.userService.findById(props.userId);
 		/* istanbul ignore next */
@@ -478,6 +580,16 @@ export class ColumnBoardCopyService {
 		await this.boardDoRepo.save(copyStatus.copyEntity);
 
 		return copyStatus;
+	}
+
+	private async deriveColumnBoardTitle(
+		originalTitle: string,
+		destinationExternalReference: BoardExternalReference
+	): Promise&lt;string&gt; {
+		const existingBoardIds &#x3D; await this.boardDoRepo.findIdsByExternalReference(destinationExternalReference);
+		const existingTitles &#x3D; await this.boardDoRepo.getTitlesByIds(existingBoardIds);
+		const copyName &#x3D; this.copyHelperService.deriveCopyName(originalTitle, Object.values(existingTitles));
+		return copyName;
 	}
 
 	public async swapLinkedIds(boardId: EntityId, idMap: Map&lt;EntityId, EntityId&gt;) {
