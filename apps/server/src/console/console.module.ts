@@ -3,7 +3,6 @@ import { ConsoleWriterModule } from '@infra/console/console-writer/console-write
 import { KeycloakModule } from '@infra/identity-management/keycloak/keycloak.module';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { FilesModule } from '@modules/files';
-import { SynchronizationModule } from '@modules/synchronization';
 import { ManagementModule } from '@modules/management/management.module';
 import { serverConfig } from '@modules/server';
 import { Module } from '@nestjs/common';
@@ -19,7 +18,6 @@ import { mikroOrmCliConfig } from '../config/mikro-orm-cli.config';
 		ConsoleModule,
 		ConsoleWriterModule,
 		FilesModule,
-		SynchronizationModule,
 		ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 		...((Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean) ? [KeycloakModule] : []),
 		MikroOrmModule.forRoot(mikroOrmCliConfig),
