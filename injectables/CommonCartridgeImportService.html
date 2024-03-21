@@ -145,7 +145,17 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
+                                <a href="#createColumn" >createColumn</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
                                 <a href="#createColumnBoard" >createColumnBoard</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#createColumns" >createColumns</a>
                             </li>
                             <li>
                                     <span class="modifier">Public</span>
@@ -170,12 +180,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, columnBoardService: <a href="../injectables/ColumnBoardService.html" target="_self">ColumnBoardService</a>, columnService: <a href="../injectables/ColumnService.html" target="_self">ColumnService</a>)</code>
+<code>constructor(courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, columnBoardService: <a href="../injectables/ColumnBoardService.html" target="_self">ColumnBoardService</a>, columnService: <a href="../injectables/ColumnService.html" target="_self">ColumnService</a>, cardService: <a href="../injectables/CardService.html" target="_self">CardService</a>, mapper: <a href="../injectables/CommonCartridgeImportMapper.html" target="_self">CommonCartridgeImportMapper</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -228,6 +238,30 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>cardService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/CardService.html" target="_self" >CardService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>mapper</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/CommonCartridgeImportMapper.html" target="_self" >CommonCartridgeImportMapper</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -246,27 +280,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="createColumnBoard"></a>
+                    <a name="createColumn"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
                             <span class="modifier">Async</span>
-                        <span ><b>createColumnBoard</b></span>
-                        <a href="#createColumnBoard"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>createColumn</b></span>
+                        <a href="#createColumn"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createColumnBoard(course: <a href="../classes/Course.html" target="_self">Course</a>, parser: <a href="../classes/CommonCartridgeFileParser.html" target="_self">CommonCartridgeFileParser</a>)</code>
+                    <code>createColumn(columnBoard: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>, columnProps: <a href="../undefineds/OrganizationProps.html" target="_self">OrganizationProps</a>, organizations: <a href="../undefineds/OrganizationProps.html" target="_self">OrganizationProps[]</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="27"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:27</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="55"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:55</a></div>
                         </td>
                     </tr>
 
@@ -287,6 +321,112 @@
                                     </thead>
                                     <tbody>
                                         <tr>
+                                                <td>columnBoard</td>
+                                            <td>
+                                                            <code><a href="../classes/ColumnBoard.html" target="_self" >ColumnBoard</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>columnProps</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#OrganizationProps" target="_self" >OrganizationProps</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>organizations</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#OrganizationProps" target="_self" >OrganizationProps[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createColumnBoard"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>createColumnBoard</b></span>
+                        <a href="#createColumnBoard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createColumnBoard(parser: <a href="../classes/CommonCartridgeFileParser.html" target="_self">CommonCartridgeFileParser</a>, course: <a href="../classes/Course.html" target="_self">Course</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="34"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:34</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>parser</td>
+                                            <td>
+                                                            <code><a href="../classes/CommonCartridgeFileParser.html" target="_self" >CommonCartridgeFileParser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
                                                 <td>course</td>
                                             <td>
                                                             <code><a href="../classes/Course.html" target="_self" >Course</a></code>
@@ -298,10 +438,80 @@
 
 
                                         </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="createColumns"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>createColumns</b></span>
+                        <a href="#createColumns"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createColumns(parser: <a href="../classes/CommonCartridgeFileParser.html" target="_self">CommonCartridgeFileParser</a>, columnBoard: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:46</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                         <tr>
                                                 <td>parser</td>
                                             <td>
                                                             <code><a href="../classes/CommonCartridgeFileParser.html" target="_self" >CommonCartridgeFileParser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>columnBoard</td>
+                                            <td>
+                                                            <code><a href="../classes/ColumnBoard.html" target="_self" >ColumnBoard</a></code>
                                             </td>
 
                                             <td>
@@ -347,8 +557,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="23"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-import.service.ts:23</a></div>
                         </td>
                     </tr>
 
@@ -413,10 +623,15 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { BoardExternalReferenceType } from &#x27;@shared/domain/domainobject&#x27;;
+import { BoardExternalReferenceType, ColumnBoard } from &#x27;@shared/domain/domainobject&#x27;;
 import { Course, User } from &#x27;@shared/domain/entity&#x27;;
-import { ColumnBoardService, ColumnService } from &#x27;@src/modules/board&#x27;;
-import { CommonCartridgeFileParser, DEFAULT_FILE_PARSER_OPTIONS } from &#x27;@src/modules/common-cartridge&#x27;;
+import { CardService, ColumnBoardService, ColumnService } from &#x27;@src/modules/board&#x27;;
+import {
+	CommonCartridgeFileParser,
+	DEFAULT_FILE_PARSER_OPTIONS,
+	OrganizationProps,
+} from &#x27;@src/modules/common-cartridge&#x27;;
+import { CommonCartridgeImportMapper } from &#x27;../mapper/common-cartridge-import.mapper&#x27;;
 import { CourseService } from &#x27;./course.service&#x27;;
 
 @Injectable()
@@ -424,7 +639,9 @@ export class CommonCartridgeImportService {
 	constructor(
 		private readonly courseService: CourseService,
 		private readonly columnBoardService: ColumnBoardService,
-		private readonly columnService: ColumnService
+		private readonly columnService: ColumnService,
+		private readonly cardService: CardService,
+		private readonly mapper: CommonCartridgeImportMapper
 	) {}
 
 	public async importFile(user: User, file: Buffer): Promise&lt;void&gt; {
@@ -435,11 +652,10 @@ export class CommonCartridgeImportService {
 		const course &#x3D; new Course({ teachers: [user], school: user.school, name: parser.manifest.getTitle() });
 
 		await this.courseService.create(course);
-		await this.createColumnBoard(course, parser);
+		await this.createColumnBoard(parser, course);
 	}
 
-	private async createColumnBoard(course: Course, parser: CommonCartridgeFileParser): Promise&lt;void&gt; {
-		const organizations &#x3D; parser.manifest.getOrganizations();
+	private async createColumnBoard(parser: CommonCartridgeFileParser, course: Course): Promise&lt;void&gt; {
 		const columnBoard &#x3D; await this.columnBoardService.create(
 			{
 				type: BoardExternalReferenceType.Course,
@@ -447,10 +663,30 @@ export class CommonCartridgeImportService {
 			},
 			parser.manifest.getTitle()
 		);
-		const columnProps &#x3D; organizations.map((organization) &#x3D;&gt; {
-			return { title: organization.title };
-		});
-		await this.columnService.createMany(columnBoard, columnProps);
+
+		await this.createColumns(parser, columnBoard);
+	}
+
+	private async createColumns(parser: CommonCartridgeFileParser, columnBoard: ColumnBoard): Promise&lt;void&gt; {
+		const organizations &#x3D; parser.manifest.getOrganizations();
+		const columns &#x3D; organizations.filter((organization) &#x3D;&gt; organization.pathDepth &#x3D;&#x3D;&#x3D; 0);
+
+		for await (const column of columns) {
+			await this.createColumn(columnBoard, column, organizations);
+		}
+	}
+
+	private async createColumn(
+		columnBoard: ColumnBoard,
+		columnProps: OrganizationProps,
+		organizations: OrganizationProps[]
+	): Promise&lt;void&gt; {
+		const column &#x3D; await this.columnService.create(columnBoard, this.mapper.mapOrganizationToColumn(columnProps));
+		const cardProps &#x3D; organizations
+			.filter((organization) &#x3D;&gt; organization.pathDepth &#x3D;&#x3D;&#x3D; 1 &amp;&amp; organization.path.startsWith(columnProps.identifier))
+			.map((organization) &#x3D;&gt; this.mapper.mapOrganizationToCard(organization));
+
+		await this.cardService.createMany(column, cardProps);
 	}
 }
 </code></pre>

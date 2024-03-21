@@ -277,7 +277,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createOrganizationProps(element: Element, path: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>createOrganizationProps(element: Element, path: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, pathDepth: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank">number</a>)</code>
                 </td>
             </tr>
 
@@ -321,6 +321,18 @@
                                                 <td>path</td>
                                             <td>
                                                             <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>pathDepth</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/number" target="_blank" >number</a></code>
                                             </td>
 
                                             <td>
@@ -852,7 +864,7 @@ export class CommonCartridgeOrganizationVisitor {
 	constructor(private readonly document: Document, private readonly options: CommonCartridgeFileParserOptions) {}
 
 	public findAllOrganizations(): OrganizationProps[] {
-		return this.search().map((element) &#x3D;&gt; this.createOrganizationProps(element.element, element.path));
+		return this.search().map((element) &#x3D;&gt; this.createOrganizationProps(element.element, element.path, element.depth));
 	}
 
 	private search(): SearchElement[] {
@@ -887,7 +899,7 @@ export class CommonCartridgeOrganizationVisitor {
 	}
 
 	private shouldContinueSearch(depth: number): boolean {
-		const shouldContinueSearch &#x3D; depth &lt; this.options.maxSearchDepth;
+		const shouldContinueSearch &#x3D; depth &lt;&#x3D; this.options.maxSearchDepth;
 
 		return shouldContinueSearch;
 	}
@@ -920,13 +932,14 @@ export class CommonCartridgeOrganizationVisitor {
 		return title;
 	}
 
-	private createOrganizationProps(element: Element, path: string): OrganizationProps {
+	private createOrganizationProps(element: Element, path: string, pathDepth: number): OrganizationProps {
 		const title &#x3D; this.getElementTitle(element);
 		const identifier &#x3D; this.getElementIdentifier(element);
 		const identifierRef &#x3D; this.getElementIdentifierRef(element);
 
 		return {
 			path,
+			pathDepth,
 			identifier,
 			identifierRef,
 			title,

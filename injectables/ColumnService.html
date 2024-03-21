@@ -259,7 +259,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>create(parent: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>)</code>
+                    <code>create(parent: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>, props?: <a href="../undefineds/ColumnInitProps.html" target="_self">ColumnInitProps</a>)</code>
                 </td>
             </tr>
 
@@ -299,6 +299,18 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>props</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#ColumnInitProps" target="_self" >ColumnInitProps</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -328,7 +340,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>createMany(parent: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>, props: Omit<ColumnProps, BoardCompositeProps>[])</code>
+                    <code>createMany(parent: <a href="../classes/ColumnBoard.html" target="_self">ColumnBoard</a>, props: <a href="../classes/Column.html" target="_self">ColumnInitProps[]</a>)</code>
                 </td>
             </tr>
 
@@ -371,7 +383,7 @@
                                         <tr>
                                                 <td>props</td>
                                             <td>
-                                                        <code>Omit&lt;ColumnProps, BoardCompositeProps&gt;[]</code>
+                                                            <code><a href="../classes/Column.html" target="_self" >ColumnInitProps[]</a></code>
                                             </td>
 
                                             <td>
@@ -712,10 +724,10 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { BoardCompositeProps, Column, ColumnBoard, ColumnProps } from &#x27;@shared/domain/domainobject&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { Column, ColumnBoard, ColumnInitProps } from &#x27;@shared/domain/domainobject&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { BoardDoRepo } from &#x27;../repo&#x27;;
 import { BoardDoService } from &#x27;./board-do.service&#x27;;
 
@@ -728,10 +740,10 @@ export class ColumnService {
 		return column;
 	}
 
-	async create(parent: ColumnBoard): Promise&lt;Column&gt; {
+	async create(parent: ColumnBoard, props?: ColumnInitProps): Promise&lt;Column&gt; {
 		const column &#x3D; new Column({
 			id: new ObjectId().toHexString(),
-			title: &#x27;&#x27;,
+			title: props?.title || &#x27;&#x27;,
 			children: [],
 			createdAt: new Date(),
 			updatedAt: new Date(),
@@ -744,7 +756,7 @@ export class ColumnService {
 		return column;
 	}
 
-	async createMany(parent: ColumnBoard, props: Omit&lt;ColumnProps, keyof BoardCompositeProps&gt;[]): Promise&lt;Column[]&gt; {
+	async createMany(parent: ColumnBoard, props: ColumnInitProps[]): Promise&lt;Column[]&gt; {
 		const columns &#x3D; props.map((prop) &#x3D;&gt; {
 			const column &#x3D; new Column({
 				id: new ObjectId().toHexString(),

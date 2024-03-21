@@ -153,6 +153,10 @@
                             </li>
                             <li>
                                     <span class="modifier">Async</span>
+                                <a href="#createMany" >createMany</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Async</span>
                                 <a href="#delete" >delete</a>
                             </li>
                             <li>
@@ -369,8 +373,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="71"
-                                    class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:71</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="92"
+                                    class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:92</a></div>
                         </td>
                     </tr>
 
@@ -432,6 +436,87 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="createMany"></a>
+                    <span class="name">
+                            <span class="modifier">Async</span>
+                        <span ><b>createMany</b></span>
+                        <a href="#createMany"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>createMany(parent: <a href="../classes/Column.html" target="_self">Column</a>, props: <a href="../classes/Card.html" target="_self">CardInitProps[]</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="51"
+                                    class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:51</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>parent</td>
+                                            <td>
+                                                            <code><a href="../classes/Column.html" target="_self" >Column</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>props</td>
+                                            <td>
+                                                            <code><a href="../classes/Card.html" target="_self" >CardInitProps[]</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../classes/Card.html" target="_self" >Promise&lt;Card[]&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="delete"></a>
                     <span class="name">
                             <span class="modifier">Async</span>
@@ -450,8 +535,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="51"
-                                    class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:51</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="72"
+                                    class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:72</a></div>
                         </td>
                     </tr>
 
@@ -657,8 +742,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="55"
-                                    class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:55</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -750,8 +835,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="59"
-                                    class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:59</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="80"
+                                    class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:80</a></div>
                         </td>
                     </tr>
 
@@ -831,8 +916,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="65"
-                                    class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:65</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="86"
+                                    class="link-to-prism">apps/server/src/modules/board/service/card.service.ts:86</a></div>
                         </td>
                     </tr>
 
@@ -897,7 +982,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, NotFoundException } from &#x27;@nestjs/common&#x27;;
-import { Card, Column, ContentElementType } from &#x27;@shared/domain/domainobject&#x27;;
+import { Card, CardInitProps, Column, ContentElementType } from &#x27;@shared/domain/domainobject&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ObjectId } from &#x27;@mikro-orm/mongodb&#x27;;
 import { BoardDoRepo } from &#x27;../repo&#x27;;
@@ -944,6 +1029,27 @@ export class CardService {
 		}
 
 		return card;
+	}
+
+	async createMany(parent: Column, props: CardInitProps[]): Promise&lt;Card[]&gt; {
+		const cards &#x3D; props.map((prop) &#x3D;&gt; {
+			const card &#x3D; new Card({
+				id: new ObjectId().toHexString(),
+				title: prop.title,
+				height: prop.height,
+				children: [],
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			});
+
+			parent.addChild(card);
+
+			return card;
+		});
+
+		await this.boardDoRepo.save(parent.children, parent);
+
+		return cards;
 	}
 
 	async delete(card: Card): Promise&lt;void&gt; {

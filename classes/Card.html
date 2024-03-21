@@ -968,6 +968,8 @@ export interface CardProps extends BoardCompositeProps {
 	height: number;
 }
 
+export type CardInitProps &#x3D; Omit&lt;CardProps, keyof BoardCompositeProps&gt;;
+
 export function isCard(reference: unknown): reference is Card {
 	return reference instanceof Card;
 }
