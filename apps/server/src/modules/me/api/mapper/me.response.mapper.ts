@@ -5,7 +5,7 @@ import { School } from '@src/modules/school';
 import {
 	MeAccountResponse,
 	MeResponse,
-	MeRolesReponse,
+	MeRoleResponse,
 	MeSchoolLogoResponse,
 	MeSchoolResponse,
 	MeUserResponse,
@@ -63,15 +63,15 @@ export class MeResponseMapper {
 		return userResponse;
 	}
 
-	private static mapUserRoles(user: User): MeRolesReponse[] {
+	private static mapUserRoles(user: User): MeRoleResponse[] {
 		const roles = user.getRoles();
 		const rolesResponse = roles.map((role) => MeResponseMapper.mapRole(role));
 
 		return rolesResponse;
 	}
 
-	private static mapRole(role: Role): MeRolesReponse {
-		const roleResponse = new MeRolesReponse({
+	private static mapRole(role: Role): MeRoleResponse {
+		const roleResponse = new MeRoleResponse({
 			id: role.id,
 			name: role.name,
 		});
