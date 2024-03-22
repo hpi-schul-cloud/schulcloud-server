@@ -10,7 +10,7 @@ import {
 } from '@shared/domain/domainobject';
 import { columnBoardNodeFactory, setupEntities } from '@shared/testing';
 import { columnBoardFactory, columnFactory, richTextElementFactory } from '@shared/testing/factory/domainobject';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 import { ColumnBoardService } from './column-board.service';

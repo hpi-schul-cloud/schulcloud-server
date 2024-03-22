@@ -1,2 +1,3 @@
-export * from './deletion-operation-model.enum';
-export * from './deletion-status-model.enum';
+export * from './domain-name.enum';
+export * from './operation-type.enum';
+export * from './status-model.enum';

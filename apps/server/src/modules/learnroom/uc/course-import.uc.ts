@@ -4,12 +4,11 @@ import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { AuthorizationService } from '@src/modules/authorization';
 import { LearnroomConfig } from '../learnroom.config';
-import { CommonCartridgeImportService, CourseService } from '../service';
+import { CommonCartridgeImportService } from '../service';
 
 @Injectable()
 export class CourseImportUc {
 	public constructor(
-		private readonly courseService: CourseService,
 		private readonly configService: ConfigService<LearnroomConfig, true>,
 		private readonly authorizationService: AuthorizationService,
 		private readonly courseImportService: CommonCartridgeImportService
@@ -24,8 +23,6 @@ export class CourseImportUc {
 
 		this.authorizationService.checkAllPermissions(user, [Permission.COURSE_CREATE]);
 
-		const course = this.courseImportService.createCourse(user, file);
-
-		await this.courseService.create(course);
+		await this.courseImportService.importFile(user, file);
 	}
 }

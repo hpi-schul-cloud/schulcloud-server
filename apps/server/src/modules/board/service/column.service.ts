@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { Column, ColumnBoard } from '@shared/domain/domainobject';
+import { BoardCompositeProps, Column, ColumnBoard, ColumnProps } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardDoRepo } from '../repo';
 import { BoardDoService } from './board-do.service';
 
@@ -28,6 +28,26 @@ export class ColumnService {
 		await this.boardDoRepo.save(parent.children, parent);
 
 		return column;
+	}
+
+	async createMany(parent: ColumnBoard, props: Omit<ColumnProps, keyof BoardCompositeProps>[]): Promise<Column[]> {
+		const columns = props.map((prop) => {
+			const column = new Column({
+				id: new ObjectId().toHexString(),
+				title: prop.title,
+				children: [],
+				createdAt: new Date(),
+				updatedAt: new Date(),
+			});
+
+			parent.addChild(column);
+
+			return column;
+		});
+
+		await this.boardDoRepo.save(parent.children, parent);
+
+		return columns;
 	}
 
 	async delete(column: Column): Promise<void> {
