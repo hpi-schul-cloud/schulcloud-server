@@ -21,6 +21,7 @@ describe(SynchronizationMapper.name, () => {
 
 				return { entity, expectedDomainObject };
 			};
+
 			it('should properly map the entity to the domain object', () => {
 				const { entity, expectedDomainObject } = setup();
 

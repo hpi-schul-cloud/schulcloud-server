@@ -69,6 +69,7 @@ describe(SynchronizationRepo.name, () => {
 
 				return { domainObject, synchronizationId, expectedDomainObject };
 			};
+
 			it('should create a new deletionLog', async () => {
 				const { domainObject, synchronizationId, expectedDomainObject } = setup();
 				await repo.create(domainObject);

@@ -10,7 +10,16 @@ describe(SynchronizationLoggable.name, () => {
 
 			const loggable: SynchronizationLoggable = new SynchronizationLoggable(message, systemId, usersSynchronizedCount);
 
+			const expecteLogMessage = {
+				message,
+				data: {
+					systemId,
+					usersSynchronizedCount,
+				},
+			};
+
 			return {
+				expecteLogMessage,
 				loggable,
 				message,
 				systemId,
@@ -19,15 +28,9 @@ describe(SynchronizationLoggable.name, () => {
 		};
 
 		it('should return the correct log message', () => {
-			const { loggable, message, systemId, usersSynchronizedCount } = setup();
+			const { expecteLogMessage, loggable } = setup();
 
-			expect(loggable.getLogMessage()).toEqual({
-				message,
-				data: {
-					systemId,
-					usersSynchronizedCount,
-				},
-			});
+			expect(loggable.getLogMessage()).toEqual(expecteLogMessage);
 		});
 	});
 });

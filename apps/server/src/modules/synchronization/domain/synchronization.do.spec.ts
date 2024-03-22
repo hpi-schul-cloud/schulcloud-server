@@ -46,6 +46,7 @@ describe(Synchronization.name, () => {
 
 				return { props, synchronizationsDo };
 			};
+
 			it('getters should return proper values', () => {
 				const { props, synchronizationsDo } = setup();
 

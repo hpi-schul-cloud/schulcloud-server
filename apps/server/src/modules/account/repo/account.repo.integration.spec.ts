@@ -291,11 +291,23 @@ describe('account repo', () => {
 		});
 
 		describe('when accounts do not exist', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const userAId = new ObjectId().toHexString();
+				const userBId = new ObjectId().toHexString();
+
+				const userIds = [userAId, userBId];
+
+				return {
+					systemId,
+					userIds,
+				};
+			};
+
 			it('should return empty array', async () => {
-				const result = await repo.findByUserIdsAndSystemId(
-					[new ObjectId().toHexString(), new ObjectId().toHexString()],
-					new ObjectId().toHexString()
-				);
+				const { systemId, userIds } = setup();
+
+				const result = await repo.findByUserIdsAndSystemId(userIds, systemId);
 
 				expect(result).toHaveLength(0);
 			});

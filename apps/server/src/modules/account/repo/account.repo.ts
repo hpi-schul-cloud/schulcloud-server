@@ -85,7 +85,7 @@ export class AccountRepo extends BaseRepo<Account> {
 		const scope = new AccountScope();
 		const userIdScope = new AccountScope();
 
-		userIdScope.byUserIdAndSystemId(userIds, systemId);
+		userIdScope.byUserIdsAndSystemId(userIds, systemId);
 
 		scope.addQuery(userIdScope.query);
 

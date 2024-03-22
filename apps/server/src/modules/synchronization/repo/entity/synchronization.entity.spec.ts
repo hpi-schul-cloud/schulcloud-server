@@ -22,6 +22,7 @@ describe(SynchronizationEntity.name, () => {
 
 				return { props };
 			};
+
 			it('should throw an error by empty constructor', () => {
 				// @ts-expect-error: Test case
 				const test = () => new SynchronizationEntity();

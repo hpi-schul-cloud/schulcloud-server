@@ -35,7 +35,7 @@ describe(AccountScope.name, () => {
 			});
 			it('should create correct query for byUserIdAndSystemId', () => {
 				const { scope, userIds, systemId, expected } = setup();
-				scope.byUserIdAndSystemId(userIds, systemId);
+				scope.byUserIdsAndSystemId(userIds, systemId);
 				const result = scope.query;
 
 				expect(JSON.stringify(result)).toBe(JSON.stringify(expected));
