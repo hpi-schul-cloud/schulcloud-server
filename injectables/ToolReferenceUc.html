@@ -178,12 +178,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, toolReferenceService: <a href="../injectables/ToolReferenceService.html" target="_self">ToolReferenceService</a>, toolPermissionHelper: <a href="../injectables/ToolPermissionHelper.html" target="_self">ToolPermissionHelper</a>)</code>
+<code>constructor(contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, toolReferenceService: <a href="../injectables/ToolReferenceService.html" target="_self">ToolReferenceService</a>, toolPermissionHelper: <a href="../injectables/ToolPermissionHelper.html" target="_self">ToolPermissionHelper</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/tool-reference.uc.ts:11</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/tool-reference.uc.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -236,6 +236,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>authorizationService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AuthorizationService.html" target="_self" >AuthorizationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -266,15 +278,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>ensureToolPermissions(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
+                    <code>ensureToolPermissions(user: <a href="../interfaces/User.html" target="_self">User</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/tool-reference.uc.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/tool-reference.uc.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -295,9 +307,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>userId</td>
+                                                <td>user</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                            <code><a href="../interfaces/User.html" target="_self" >User</a></code>
                                             </td>
 
                                             <td>
@@ -354,8 +366,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="58"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/tool-reference.uc.ts:58</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/tool-reference.uc.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -435,8 +447,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="18"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/tool-reference.uc.ts:18</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="20"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/tool-reference.uc.ts:20</a></div>
                         </td>
                     </tr>
 
@@ -522,15 +534,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>tryBuildToolReference(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
+                    <code>tryBuildToolReference(user: <a href="../interfaces/User.html" target="_self">User</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="41"
-                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/tool-reference.uc.ts:41</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="44"
+                                    class="link-to-prism">apps/server/src/modules/tool/context-external-tool/uc/tool-reference.uc.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -551,9 +563,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>userId</td>
+                                                <td>user</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                            <code><a href="../interfaces/User.html" target="_self" >User</a></code>
                                             </td>
 
                                             <td>
@@ -594,8 +606,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContext, AuthorizationContextBuilder } from &#x27;@modules/authorization&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { User } from &#x27;@shared/domain/entity&#x27;;
 import { Permission } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ToolContextType } from &#x27;../../common/enum&#x27;;
@@ -608,7 +621,8 @@ export class ToolReferenceUc {
 	constructor(
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly toolReferenceService: ToolReferenceService,
-		private readonly toolPermissionHelper: ToolPermissionHelper
+		private readonly toolPermissionHelper: ToolPermissionHelper,
+		private readonly authorizationService: AuthorizationService
 	) {}
 
 	async getToolReferencesForContext(
@@ -622,8 +636,9 @@ export class ToolReferenceUc {
 			contextRef
 		);
 
+		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
 		const toolReferencesPromises: Promise&lt;ToolReference | null&gt;[] &#x3D; contextExternalTools.map(
-			async (contextExternalTool: ContextExternalTool) &#x3D;&gt; this.tryBuildToolReference(userId, contextExternalTool)
+			async (contextExternalTool: ContextExternalTool) &#x3D;&gt; this.tryBuildToolReference(user, contextExternalTool)
 		);
 
 		const toolReferencesWithNull: (ToolReference | null)[] &#x3D; await Promise.all(toolReferencesPromises);
@@ -635,11 +650,11 @@ export class ToolReferenceUc {
 	}
 
 	private async tryBuildToolReference(
-		userId: EntityId,
+		user: User,
 		contextExternalTool: ContextExternalTool
 	): Promise&lt;ToolReference | null&gt; {
 		try {
-			await this.ensureToolPermissions(userId, contextExternalTool);
+			await this.ensureToolPermissions(user, contextExternalTool);
 
 			const toolReference: ToolReference &#x3D; await this.toolReferenceService.getToolReference(
 				contextExternalTool.id as string
@@ -656,7 +671,8 @@ export class ToolReferenceUc {
 			contextExternalToolId
 		);
 
-		await this.ensureToolPermissions(userId, contextExternalTool);
+		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		await this.ensureToolPermissions(user, contextExternalTool);
 
 		const toolReference: ToolReference &#x3D; await this.toolReferenceService.getToolReference(
 			contextExternalTool.id as string
@@ -665,11 +681,11 @@ export class ToolReferenceUc {
 		return toolReference;
 	}
 
-	private async ensureToolPermissions(userId: EntityId, contextExternalTool: ContextExternalTool): Promise&lt;void&gt; {
+	private async ensureToolPermissions(user: User, contextExternalTool: ContextExternalTool): Promise&lt;void&gt; {
 		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
 
 		const promise: Promise&lt;void&gt; &#x3D; this.toolPermissionHelper.ensureContextPermissions(
-			userId,
+			user,
 			contextExternalTool,
 			context
 		);

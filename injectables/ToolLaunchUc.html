@@ -164,12 +164,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(toolLaunchService: <a href="../injectables/ToolLaunchService.html" target="_self">ToolLaunchService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, toolPermissionHelper: <a href="../injectables/ToolPermissionHelper.html" target="_self">ToolPermissionHelper</a>)</code>
+<code>constructor(toolLaunchService: <a href="../injectables/ToolLaunchService.html" target="_self">ToolLaunchService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, toolPermissionHelper: <a href="../injectables/ToolPermissionHelper.html" target="_self">ToolPermissionHelper</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/tool/tool-launch/uc/tool-launch.uc.ts:12</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/tool/tool-launch/uc/tool-launch.uc.ts:13</a></div>
                             </td>
                         </tr>
 
@@ -222,6 +222,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>authorizationService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/AuthorizationService.html" target="_self" >AuthorizationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -258,8 +270,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="19"
-                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/uc/tool-launch.uc.ts:19</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="21"
+                                    class="link-to-prism">apps/server/src/modules/tool/tool-launch/uc/tool-launch.uc.ts:21</a></div>
                         </td>
                     </tr>
 
@@ -323,8 +335,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContext, AuthorizationContextBuilder } from &#x27;@modules/authorization&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { User } from &#x27;@shared/domain/entity&#x27;;
 import { Permission } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ToolPermissionHelper } from &#x27;../../common/uc/tool-permission-helper&#x27;;
@@ -338,7 +351,8 @@ export class ToolLaunchUc {
 	constructor(
 		private readonly toolLaunchService: ToolLaunchService,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly toolPermissionHelper: ToolPermissionHelper
+		private readonly toolPermissionHelper: ToolPermissionHelper,
+		private readonly authorizationService: AuthorizationService
 	) {}
 
 	async getToolLaunchRequest(userId: EntityId, contextExternalToolId: EntityId): Promise&lt;ToolLaunchRequest&gt; {
@@ -346,8 +360,9 @@ export class ToolLaunchUc {
 			contextExternalToolId
 		);
 		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
+		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
 
-		await this.toolPermissionHelper.ensureContextPermissions(userId, contextExternalTool, context);
+		await this.toolPermissionHelper.ensureContextPermissions(user, contextExternalTool, context);
 
 		const toolLaunchData: ToolLaunchData &#x3D; await this.toolLaunchService.getLaunchData(userId, contextExternalTool);
 		const launchRequest: ToolLaunchRequest &#x3D; this.toolLaunchService.generateLaunchRequest(toolLaunchData);

@@ -189,12 +189,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, schoolExternalToolValidationService: <a href="../injectables/SchoolExternalToolValidationService.html" target="_self">SchoolExternalToolValidationService</a>, commonToolMetadataService: <a href="../injectables/CommonToolMetadataService.html" target="_self">CommonToolMetadataService</a>, toolPermissionHelper: <a href="../injectables/ToolPermissionHelper.html" target="_self">ToolPermissionHelper</a>)</code>
+<code>constructor(schoolExternalToolService: <a href="../injectables/SchoolExternalToolService.html" target="_self">SchoolExternalToolService</a>, contextExternalToolService: <a href="../injectables/ContextExternalToolService.html" target="_self">ContextExternalToolService</a>, schoolExternalToolValidationService: <a href="../injectables/SchoolExternalToolValidationService.html" target="_self">SchoolExternalToolValidationService</a>, commonToolMetadataService: <a href="../injectables/CommonToolMetadataService.html" target="_self">CommonToolMetadataService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="13" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:13</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="14" class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:14</a></div>
                             </td>
                         </tr>
 
@@ -260,10 +260,22 @@
                                                     
                                                 </tr>
                                                 <tr>
-                                                        <td>toolPermissionHelper</td>
+                                                        <td>authorizationService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/ToolPermissionHelper.html" target="_self" >ToolPermissionHelper</a></code>
+                                                                        <code><a href="../injectables/AuthorizationService.html" target="_self" >AuthorizationService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>schoolService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/SchoolService.html" target="_self" >SchoolService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -307,8 +319,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="33"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:33</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="39"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:39</a></div>
                         </td>
                     </tr>
 
@@ -388,8 +400,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:62</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="69"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -463,15 +475,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>ensureSchoolPermissions(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, tools: SchoolExternalTool[], context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                    <code>ensureSchoolPermissions(user: <a href="../interfaces/User.html" target="_self">User</a>, tools: SchoolExternalTool[], school: <a href="../classes/School.html" target="_self">School</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="50"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:50</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="60"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:60</a></div>
                         </td>
                     </tr>
 
@@ -492,9 +504,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>userId</td>
+                                                <td>user</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                            <code><a href="../interfaces/User.html" target="_self" >User</a></code>
                                             </td>
 
                                             <td>
@@ -507,6 +519,18 @@
                                                 <td>tools</td>
                                             <td>
                                                         <code>SchoolExternalTool[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>school</td>
+                                            <td>
+                                                            <code><a href="../classes/School.html" target="_self" >School</a></code>
                                             </td>
 
                                             <td>
@@ -563,8 +587,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="22"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:22</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -644,8 +668,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="102"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:102</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="120"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:120</a></div>
                         </td>
                     </tr>
 
@@ -725,8 +749,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="74"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:74</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="84"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:84</a></div>
                         </td>
                     </tr>
 
@@ -806,8 +830,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="82"
-                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:82</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="96"
+                                    class="link-to-prism">apps/server/src/modules/tool/school-external-tool/uc/school-external-tool.uc.ts:96</a></div>
                         </td>
                     </tr>
 
@@ -883,12 +907,13 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContext, AuthorizationContextBuilder } from &#x27;@modules/authorization&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { forwardRef, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+import { User } from &#x27;@shared/domain/entity&#x27;;
 import { Permission } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
+import { School, SchoolService } from &#x27;@src/modules/school&#x27;;
 import { CommonToolMetadataService } from &#x27;../../common/service/common-tool-metadata.service&#x27;;
-import { ToolPermissionHelper } from &#x27;../../common/uc/tool-permission-helper&#x27;;
 import { ContextExternalToolService } from &#x27;../../context-external-tool/service&#x27;;
 import { SchoolExternalTool, SchoolExternalToolMetadata } from &#x27;../domain&#x27;;
 import { SchoolExternalToolService, SchoolExternalToolValidationService } from &#x27;../service&#x27;;
@@ -901,16 +926,21 @@ export class SchoolExternalToolUc {
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly schoolExternalToolValidationService: SchoolExternalToolValidationService,
 		private readonly commonToolMetadataService: CommonToolMetadataService,
-		private readonly toolPermissionHelper: ToolPermissionHelper
+		@Inject(forwardRef(() &#x3D;&gt; AuthorizationService)) private readonly authorizationService: AuthorizationService,
+		private readonly schoolService: SchoolService
 	) {}
 
 	async findSchoolExternalTools(userId: EntityId, query: SchoolExternalToolQueryInput): Promise&lt;SchoolExternalTool[]&gt; {
 		let tools: SchoolExternalTool[] &#x3D; [];
 		if (query.schoolId) {
 			tools &#x3D; await this.schoolExternalToolService.findSchoolExternalTools({ schoolId: query.schoolId });
+
+			const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+			const school: School &#x3D; await this.schoolService.getSchoolById(query.schoolId);
+
 			const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 
-			await this.ensureSchoolPermissions(userId, tools, context);
+			await this.ensureSchoolPermissions(user, tools, school, context);
 		}
 		return tools;
 	}
@@ -920,9 +950,13 @@ export class SchoolExternalToolUc {
 		schoolExternalToolDto: SchoolExternalToolDto
 	): Promise&lt;SchoolExternalTool&gt; {
 		const schoolExternalTool &#x3D; new SchoolExternalTool({ ...schoolExternalToolDto });
-		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 
-		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context);
+		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		const school: School &#x3D; await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
+
+		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
+		this.authorizationService.checkPermission(user, school, context);
+
 		await this.schoolExternalToolValidationService.validate(schoolExternalTool);
 
 		const createdSchoolExternalTool: SchoolExternalTool &#x3D; await this.schoolExternalToolService.saveSchoolExternalTool(
@@ -933,22 +967,22 @@ export class SchoolExternalToolUc {
 	}
 
 	private async ensureSchoolPermissions(
-		userId: EntityId,
+		user: User,
 		tools: SchoolExternalTool[],
+		school: School,
 		context: AuthorizationContext
 	): Promise&lt;void&gt; {
-		await Promise.all(
-			tools.map(async (tool: SchoolExternalTool) &#x3D;&gt;
-				this.toolPermissionHelper.ensureSchoolPermissions(userId, tool, context)
-			)
-		);
+		await Promise.all(tools.map(() &#x3D;&gt; this.authorizationService.checkPermission(user, school, context)));
 	}
 
 	async deleteSchoolExternalTool(userId: EntityId, schoolExternalToolId: EntityId): Promise&lt;void&gt; {
 		const schoolExternalTool: SchoolExternalTool &#x3D; await this.schoolExternalToolService.findById(schoolExternalToolId);
-		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 
-		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context);
+		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		const school: School &#x3D; await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
+
+		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
+		this.authorizationService.checkPermission(user, school, context);
 
 		await Promise.all([
 			this.contextExternalToolService.deleteBySchoolExternalToolId(schoolExternalToolId),
@@ -958,9 +992,13 @@ export class SchoolExternalToolUc {
 
 	async getSchoolExternalTool(userId: EntityId, schoolExternalToolId: EntityId): Promise&lt;SchoolExternalTool&gt; {
 		const schoolExternalTool: SchoolExternalTool &#x3D; await this.schoolExternalToolService.findById(schoolExternalToolId);
-		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 
-		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context);
+		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		const school: School &#x3D; await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
+
+		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
+		this.authorizationService.checkPermission(user, school, context);
+
 		return schoolExternalTool;
 	}
 
@@ -970,9 +1008,13 @@ export class SchoolExternalToolUc {
 		schoolExternalToolDto: SchoolExternalToolDto
 	): Promise&lt;SchoolExternalTool&gt; {
 		const schoolExternalTool &#x3D; new SchoolExternalTool({ ...schoolExternalToolDto });
-		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 
-		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context);
+		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		const school: School &#x3D; await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
+
+		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
+		this.authorizationService.checkPermission(user, school, context);
+
 		await this.schoolExternalToolValidationService.validate(schoolExternalTool);
 
 		const updated: SchoolExternalTool &#x3D; new SchoolExternalTool({
@@ -980,7 +1022,7 @@ export class SchoolExternalToolUc {
 			id: schoolExternalToolId,
 		});
 
-		const saved &#x3D; await this.schoolExternalToolService.saveSchoolExternalTool(updated);
+		const saved: SchoolExternalTool &#x3D; await this.schoolExternalToolService.saveSchoolExternalTool(updated);
 		return saved;
 	}
 
@@ -990,8 +1032,11 @@ export class SchoolExternalToolUc {
 	): Promise&lt;SchoolExternalToolMetadata&gt; {
 		const schoolExternalTool: SchoolExternalTool &#x3D; await this.schoolExternalToolService.findById(schoolExternalToolId);
 
+		const user: User &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		const school: School &#x3D; await this.schoolService.getSchoolById(schoolExternalTool.schoolId);
+
 		const context: AuthorizationContext &#x3D; AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
-		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context);
+		this.authorizationService.checkPermission(user, school, context);
 
 		const metadata: SchoolExternalToolMetadata &#x3D; await this.commonToolMetadataService.getMetadataForSchoolExternalTool(
 			schoolExternalToolId

@@ -147,11 +147,6 @@
                                     <span class="modifier">Async</span>
                                 <a href="#ensureContextPermissions" >ensureContextPermissions</a>
                             </li>
-                            <li>
-                                    <span class="modifier">Public</span>
-                                    <span class="modifier">Async</span>
-                                <a href="#ensureSchoolPermissions" >ensureSchoolPermissions</a>
-                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -170,12 +165,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolService: <a href="../injectables/LegacySchoolService.html" target="_self">LegacySchoolService</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, boardElementService: <a href="../injectables/ContentElementService.html" target="_self">ContentElementService</a>, boardService: <a href="../injectables/BoardDoAuthorizableService.html" target="_self">BoardDoAuthorizableService</a>)</code>
+<code>constructor(authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, boardElementService: <a href="../injectables/ContentElementService.html" target="_self">ContentElementService</a>, boardService: <a href="../injectables/BoardDoAuthorizableService.html" target="_self">BoardDoAuthorizableService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="15" class="link-to-prism">apps/server/src/modules/tool/common/uc/tool-permission-helper.ts:15</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="12" class="link-to-prism">apps/server/src/modules/tool/common/uc/tool-permission-helper.ts:12</a></div>
                             </td>
                         </tr>
 
@@ -197,18 +192,6 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/AuthorizationService.html" target="_self" >AuthorizationService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>schoolService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/LegacySchoolService.html" target="_self" >LegacySchoolService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -282,15 +265,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>ensureContextPermissions(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                    <code>ensureContextPermissions(user: <a href="../interfaces/User.html" target="_self">User</a>, contextExternalTool: <a href="../classes/ContextExternalTool.html" target="_self">ContextExternalTool</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="28"
-                                    class="link-to-prism">apps/server/src/modules/tool/common/uc/tool-permission-helper.ts:28</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="24"
+                                    class="link-to-prism">apps/server/src/modules/tool/common/uc/tool-permission-helper.ts:24</a></div>
                         </td>
                     </tr>
 
@@ -311,9 +294,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>userId</td>
+                                                <td>user</td>
                                             <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                                            <code><a href="../interfaces/User.html" target="_self" >User</a></code>
                                             </td>
 
                                             <td>
@@ -360,100 +343,6 @@
             </tr>
         </tbody>
     </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="ensureSchoolPermissions"></a>
-                    <span class="name">
-                            <span class="modifier">Public</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>ensureSchoolPermissions</b></span>
-                        <a href="#ensureSchoolPermissions"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>ensureSchoolPermissions(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, schoolExternalTool: <a href="../classes/SchoolExternalTool.html" target="_self">SchoolExternalTool</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="53"
-                                    class="link-to-prism">apps/server/src/modules/tool/common/uc/tool-permission-helper.ts:53</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>schoolExternalTool</td>
-                                            <td>
-                                                            <code><a href="../classes/SchoolExternalTool.html" target="_self" >SchoolExternalTool</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>context</td>
-                                            <td>
-                                                            <code><a href="../interfaces/AuthorizationContext.html" target="_self" >AuthorizationContext</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
 </section>
 
     </div>
@@ -464,20 +353,16 @@
 import { AuthorizableReferenceType } from &#x27;@modules/authorization/domain&#x27;;
 import { BoardDoAuthorizableService, ContentElementService } from &#x27;@modules/board&#x27;;
 import { CourseService } from &#x27;@modules/learnroom&#x27;;
-import { LegacySchoolService } from &#x27;@modules/legacy-school&#x27;;
-import { Inject, Injectable, forwardRef } from &#x27;@nestjs/common&#x27;;
-import { BoardDoAuthorizable, LegacySchoolDo } from &#x27;@shared/domain/domainobject&#x27;;
+import { forwardRef, Inject, Injectable } from &#x27;@nestjs/common&#x27;;
+import { BoardDoAuthorizable } from &#x27;@shared/domain/domainobject&#x27;;
 import { Course, User } from &#x27;@shared/domain/entity&#x27;;
-import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { ContextExternalTool } from &#x27;../../context-external-tool/domain&#x27;;
-import { SchoolExternalTool } from &#x27;../../school-external-tool/domain&#x27;;
 import { ToolContextType } from &#x27;../enum&#x27;;
 
 @Injectable()
 export class ToolPermissionHelper {
 	constructor(
 		@Inject(forwardRef(() &#x3D;&gt; AuthorizationService)) private readonly authorizationService: AuthorizationService,
-		private readonly schoolService: LegacySchoolService,
 		// invalid dependency on this place it is in UC layer in a other module
 		// loading of ressources should be part of service layer
 		// if it must resolve different loadings based on the request it can be added in own service and use in UC
@@ -488,42 +373,26 @@ export class ToolPermissionHelper {
 
 	// TODO build interface to get contextDO by contextType
 	public async ensureContextPermissions(
-		userId: EntityId,
+		user: User,
 		contextExternalTool: ContextExternalTool,
 		context: AuthorizationContext
 	): Promise&lt;void&gt; {
-		const authorizableUser &#x3D; await this.authorizationService.getUserWithPermissions(userId);
-
-		this.authorizationService.checkPermission(authorizableUser, contextExternalTool, context);
+		this.authorizationService.checkPermission(user, contextExternalTool, context);
 
 		if (contextExternalTool.contextRef.type &#x3D;&#x3D;&#x3D; ToolContextType.COURSE) {
 			// loading of ressources should be part of the UC -&gt; unnessasary awaits
 			const course: Course &#x3D; await this.courseService.findById(contextExternalTool.contextRef.id);
 
-			this.authorizationService.checkPermission(authorizableUser, course, context);
+			this.authorizationService.checkPermission(user, course, context);
 		} else if (contextExternalTool.contextRef.type &#x3D;&#x3D;&#x3D; ToolContextType.BOARD_ELEMENT) {
 			const boardElement &#x3D; await this.boardElementService.findById(contextExternalTool.contextRef.id);
 
 			const board: BoardDoAuthorizable &#x3D; await this.boardService.getBoardAuthorizable(boardElement);
 
-			this.authorizationService.checkPermission(authorizableUser, board, context);
+			this.authorizationService.checkPermission(user, board, context);
 		} else {
-			throw new ForbiddenLoggableException(userId, AuthorizableReferenceType.ContextExternalToolEntity, context);
+			throw new ForbiddenLoggableException(user.id, AuthorizableReferenceType.ContextExternalToolEntity, context);
 		}
-	}
-
-	public async ensureSchoolPermissions(
-		userId: EntityId,
-		schoolExternalTool: SchoolExternalTool,
-		context: AuthorizationContext
-	): Promise&lt;void&gt; {
-		// loading of ressources should be part of the UC  -&gt; unnessasary awaits
-		const [user, school]: [User, LegacySchoolDo] &#x3D; await Promise.all([
-			this.authorizationService.getUserWithPermissions(userId),
-			this.schoolService.getSchoolById(schoolExternalTool.schoolId),
-		]);
-
-		this.authorizationService.checkPermission(user, school, context);
 	}
 }
 </code></pre>

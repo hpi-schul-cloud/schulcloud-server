@@ -673,13 +673,13 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="modules/CommonToolModule.html" data-type="entity-link" >CommonToolModule</a>
                                 <li class="chapter inner">
                                     <div class="simple menu-toggler" data-bs-toggle="collapse" ${ isNormalMode ?
-                                        'data-bs-target="#injectables-links-module-CommonToolModule-e6ae219e5d122c9c580754c93f8aa5cfa279a8efa38ffc31a704aff4a9767bdc9cccc4694301e43a6097caa616c54e846e89fe73c9280b6817f121a1bf3aa58e"' : 'data-bs-target="#xs-injectables-links-module-CommonToolModule-e6ae219e5d122c9c580754c93f8aa5cfa279a8efa38ffc31a704aff4a9767bdc9cccc4694301e43a6097caa616c54e846e89fe73c9280b6817f121a1bf3aa58e"' }>
+                                        'data-bs-target="#injectables-links-module-CommonToolModule-64d7cb7ba2e2f7dbe604cb6aef2d555f91d01fec97d7c4943f8926408d3e375af0c2584b91539e21f1073f385217b565be771ef31fc9cda99859a627959901fc"' : 'data-bs-target="#xs-injectables-links-module-CommonToolModule-64d7cb7ba2e2f7dbe604cb6aef2d555f91d01fec97d7c4943f8926408d3e375af0c2584b91539e21f1073f385217b565be771ef31fc9cda99859a627959901fc"' }>
                                         <span class="icon ion-md-arrow-round-down"></span>
                                         <span>Injectables</span>
                                         <span class="icon ion-ios-arrow-down"></span>
                                     </div>
-                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-CommonToolModule-e6ae219e5d122c9c580754c93f8aa5cfa279a8efa38ffc31a704aff4a9767bdc9cccc4694301e43a6097caa616c54e846e89fe73c9280b6817f121a1bf3aa58e"' :
-                                        'id="xs-injectables-links-module-CommonToolModule-e6ae219e5d122c9c580754c93f8aa5cfa279a8efa38ffc31a704aff4a9767bdc9cccc4694301e43a6097caa616c54e846e89fe73c9280b6817f121a1bf3aa58e"' }>
+                                    <ul class="links collapse" ${ isNormalMode ? 'id="injectables-links-module-CommonToolModule-64d7cb7ba2e2f7dbe604cb6aef2d555f91d01fec97d7c4943f8926408d3e375af0c2584b91539e21f1073f385217b565be771ef31fc9cda99859a627959901fc"' :
+                                        'id="xs-injectables-links-module-CommonToolModule-64d7cb7ba2e2f7dbe604cb6aef2d555f91d01fec97d7c4943f8926408d3e375af0c2584b91539e21f1073f385217b565be771ef31fc9cda99859a627959901fc"' }>
                                         <li class="link">
                                             <a href="injectables/CommonToolMetadataService.html" data-type="entity-link" data-context="sub-entity" data-context-id="modules" >CommonToolMetadataService</a>
                                         </li>
