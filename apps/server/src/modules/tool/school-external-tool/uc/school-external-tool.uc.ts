@@ -1,5 +1,7 @@
 import { AuthorizationContext, AuthorizationContextBuilder } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
+import { LegacySchoolDo } from '@shared/domain/domainobject';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { CommonToolMetadataService } from '../../common/service/common-tool-metadata.service';
@@ -25,7 +27,10 @@ export class SchoolExternalToolUc {
 			tools = await this.schoolExternalToolService.findSchoolExternalTools({ schoolId: query.schoolId });
 			const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 
-			await this.ensureSchoolPermissions(userId, tools, context);
+			const [user, school] = await this.toolPermissionHelper.getIrgendwas(userId, query.schoolId);
+			this.toolPermissionHelper.ensureSchoolPermissions(user as User, school as LegacySchoolDo, context);
+
+			await this.ensureSchoolPermissions(user as User, tools, school as LegacySchoolDo, context);
 		}
 		return tools;
 	}
@@ -37,7 +42,9 @@ export class SchoolExternalToolUc {
 		const schoolExternalTool = new SchoolExternalTool({ ...schoolExternalToolDto });
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 
-		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context);
+		const [user, school] = await this.toolPermissionHelper.getIrgendwas(userId, schoolExternalTool.schoolId);
+		this.toolPermissionHelper.ensureSchoolPermissions(user as User, school as LegacySchoolDo, context);
+
 		await this.schoolExternalToolValidationService.validate(schoolExternalTool);
 
 		const createdSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.saveSchoolExternalTool(
@@ -48,22 +55,20 @@ export class SchoolExternalToolUc {
 	}
 
 	private async ensureSchoolPermissions(
-		userId: EntityId,
+		user: User,
 		tools: SchoolExternalTool[],
+		school: LegacySchoolDo,
 		context: AuthorizationContext
 	): Promise<void> {
-		await Promise.all(
-			tools.map(async (tool: SchoolExternalTool) =>
-				this.toolPermissionHelper.ensureSchoolPermissions(userId, tool, context)
-			)
-		);
+		await Promise.all(tools.map(() => this.toolPermissionHelper.ensureSchoolPermissions(user, school, context)));
 	}
 
 	async deleteSchoolExternalTool(userId: EntityId, schoolExternalToolId: EntityId): Promise<void> {
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 
-		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context);
+		const [user, school] = await this.toolPermissionHelper.getIrgendwas(userId, schoolExternalTool.schoolId);
+		this.toolPermissionHelper.ensureSchoolPermissions(user as User, school as LegacySchoolDo, context);
 
 		await Promise.all([
 			this.contextExternalToolService.deleteBySchoolExternalToolId(schoolExternalToolId),
@@ -75,7 +80,9 @@ export class SchoolExternalToolUc {
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 
-		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context);
+		const [user, school] = await this.toolPermissionHelper.getIrgendwas(userId, schoolExternalTool.schoolId);
+		this.toolPermissionHelper.ensureSchoolPermissions(user as User, school as LegacySchoolDo, context);
+
 		return schoolExternalTool;
 	}
 
@@ -87,7 +94,9 @@ export class SchoolExternalToolUc {
 		const schoolExternalTool = new SchoolExternalTool({ ...schoolExternalToolDto });
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 
-		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context);
+		const [user, school] = await this.toolPermissionHelper.getIrgendwas(userId, schoolExternalTool.schoolId);
+		this.toolPermissionHelper.ensureSchoolPermissions(user as User, school as LegacySchoolDo, context);
+
 		await this.schoolExternalToolValidationService.validate(schoolExternalTool);
 
 		const updated: SchoolExternalTool = new SchoolExternalTool({
@@ -106,7 +115,9 @@ export class SchoolExternalToolUc {
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
 
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
-		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context);
+
+		const [user, school] = await this.toolPermissionHelper.getIrgendwas(userId, schoolExternalTool.schoolId);
+		this.toolPermissionHelper.ensureSchoolPermissions(user as User, school as LegacySchoolDo, context);
 
 		const metadata: SchoolExternalToolMetadata = await this.commonToolMetadataService.getMetadataForSchoolExternalTool(
 			schoolExternalToolId
