@@ -8,24 +8,20 @@ import {
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import { BoardDoAuthorizableService, ContentElementService } from '@modules/board';
 import { CourseService } from '@modules/learnroom';
-import { LegacySchoolService } from '@modules/legacy-school';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { BoardDoAuthorizable, ExternalToolElement, LegacySchoolDo } from '@shared/domain/domainobject';
+import { BoardDoAuthorizable, ExternalToolElement } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import {
 	contextExternalToolFactory,
 	courseFactory,
 	externalToolElementFactory,
-	legacySchoolDoFactory,
-	schoolExternalToolFactory,
 	setupEntities,
 	userFactory,
 } from '@shared/testing';
 import { boardDoAuthorizableFactory } from '@shared/testing/factory/domainobject/board/board-do-authorizable.factory';
 import { ContextExternalTool, ContextRef } from '../../context-external-tool/domain';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ToolContextType } from '../enum';
 import { ToolPermissionHelper } from './tool-permission-helper';
 
@@ -34,7 +30,6 @@ describe('ToolPermissionHelper', () => {
 	let helper: ToolPermissionHelper;
 
 	let authorizationService: DeepMocked<AuthorizationService>;
-	let schoolService: DeepMocked<LegacySchoolService>;
 	let courseService: DeepMocked<CourseService>;
 	let contentElementService: DeepMocked<ContentElementService>;
 	let boardDoAuthorizableService: DeepMocked<BoardDoAuthorizableService>;
@@ -47,10 +42,6 @@ describe('ToolPermissionHelper', () => {
 				{
 					provide: AuthorizationService,
 					useValue: createMock<AuthorizationService>(),
-				},
-				{
-					provide: LegacySchoolService,
-					useValue: createMock<LegacySchoolService>(),
 				},
 				{
 					provide: CourseService,
@@ -69,7 +60,6 @@ describe('ToolPermissionHelper', () => {
 
 		helper = module.get(ToolPermissionHelper);
 		authorizationService = module.get(AuthorizationService);
-		schoolService = module.get(LegacySchoolService);
 		courseService = module.get(CourseService);
 		contentElementService = module.get(ContentElementService);
 		boardDoAuthorizableService = module.get(BoardDoAuthorizableService);
@@ -110,7 +100,7 @@ describe('ToolPermissionHelper', () => {
 			it('should check permission for context external tool', async () => {
 				const { user, course, contextExternalTool, context } = setup();
 
-				await helper.ensureContextPermissions(user.id, contextExternalTool, context);
+				await helper.ensureContextPermissions(user, contextExternalTool, context);
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledTimes(2);
 				expect(authorizationService.checkPermission).toHaveBeenNthCalledWith(1, user, contextExternalTool, context);
@@ -146,7 +136,7 @@ describe('ToolPermissionHelper', () => {
 			it('should check permission for context external tool', async () => {
 				const { user, board, contextExternalTool, context } = setup();
 
-				await helper.ensureContextPermissions(user.id, contextExternalTool, context);
+				await helper.ensureContextPermissions(user, contextExternalTool, context);
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledTimes(2);
 				expect(authorizationService.checkPermission).toHaveBeenNthCalledWith(1, user, contextExternalTool, context);
@@ -176,7 +166,7 @@ describe('ToolPermissionHelper', () => {
 			it('should throw a forbidden loggable exception', async () => {
 				const { user, contextExternalTool, context } = setup();
 
-				await expect(helper.ensureContextPermissions(user.id, contextExternalTool, context)).rejects.toThrowError(
+				await expect(helper.ensureContextPermissions(user, contextExternalTool, context)).rejects.toThrowError(
 					new ForbiddenLoggableException(user.id, AuthorizableReferenceType.ContextExternalToolEntity, context)
 				);
 			});
@@ -205,47 +195,7 @@ describe('ToolPermissionHelper', () => {
 			it('should check permission for context external tool and fail', async () => {
 				const { user, contextExternalTool, context, error } = setup();
 
-				await expect(helper.ensureContextPermissions(user.id, contextExternalTool, context)).rejects.toThrowError(
-					error
-				);
-			});
-		});
-	});
-
-	describe('ensureSchoolPermissions', () => {
-		describe('when school external tool is given', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId();
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-				const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
-				const school: LegacySchoolDo = legacySchoolDoFactory.build({ id: schoolExternalTool.schoolId });
-
-				schoolService.getSchoolById.mockResolvedValue(school);
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-
-				return {
-					user,
-					schoolExternalTool,
-					school,
-					context,
-				};
-			};
-
-			it('should check permission for school external tool', async () => {
-				const { user, schoolExternalTool, context, school } = setup();
-
-				await helper.ensureSchoolPermissions(user.id, schoolExternalTool, context);
-
-				expect(authorizationService.checkPermission).toHaveBeenCalledTimes(1);
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, school, context);
-			});
-
-			it('should return undefined', async () => {
-				const { user, schoolExternalTool, context } = setup();
-
-				const result = await helper.ensureSchoolPermissions(user.id, schoolExternalTool, context);
-
-				expect(result).toBeUndefined();
+				await expect(helper.ensureContextPermissions(user, contextExternalTool, context)).rejects.toThrowError(error);
 			});
 		});
 	});
