@@ -137,7 +137,7 @@ describe('column board copy service', () => {
 			const existingTitle = 'existingTitle';
 			boardRepo.getTitlesByIds.mockResolvedValueOnce({ [existingBoardIds[0]]: existingTitle });
 
-			const derivedCopyTitle = 'originalTitle (1)';
+			const derivedCopyTitle = 'derivedCopyTitle (1)';
 			copyHelperService.deriveCopyName.mockReturnValueOnce(derivedCopyTitle);
 
 			return {
@@ -232,26 +232,28 @@ describe('column board copy service', () => {
 
 			it('should call helper to obtain copy name', async () => {
 				const { originalBoard, destinationExternalReference, user, existingTitle } = setup();
-
+				const originalTitle = originalBoard.title;
 				await service.copyColumnBoard({
 					originalColumnBoardId: originalBoard.id,
 					destinationExternalReference,
 					userId: user.id,
 				});
 
-				expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(originalBoard.title, [existingTitle]);
+				expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(originalTitle, [existingTitle]);
 			});
 
 			it('should call copyService with the derived title', async () => {
 				const { derivedCopyTitle, originalBoard, destinationExternalReference, user } = setup();
 
+				const copyBoard = originalBoard;
+				copyBoard.title = derivedCopyTitle;
+
 				await service.copyColumnBoard({
 					originalColumnBoardId: originalBoard.id,
 					destinationExternalReference,
 					userId: user.id,
 				});
 
-				const copyBoard = { ...originalBoard, title: derivedCopyTitle };
 				expect(doCopyService.copy).toHaveBeenCalledWith(expect.objectContaining({ original: copyBoard }));
 			});
 		});
