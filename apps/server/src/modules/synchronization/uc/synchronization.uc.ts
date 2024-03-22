@@ -24,18 +24,8 @@ export class SynchronizationUc {
 
 		const synchronizationId = await this.synchronizationService.createSynchronization();
 
-		const usersToCheck = await this.findUsersToSynchronize(systemId);
-		if (usersToCheck instanceof SynchronizationErrorLoggableException) {
-			const logMessage = usersToCheck.getLogMessage();
-
-			await this.updateSynchronization(
-				synchronizationId,
-				SynchronizationStatusModel.FAILED,
-				0,
-				logMessage?.data?.errorMessage as string
-			);
-			this.logger.info(new SynchronizationLoggable('Failed synchronization users from systemId', systemId));
-		} else {
+		try {
+			const usersToCheck = await this.findUsersToSynchronize(systemId);
 			const chunks = this.chunkArray(usersToCheck, 10000);
 			let userSyncCount = 0;
 			for (const chunk of chunks) {
@@ -44,6 +34,18 @@ export class SynchronizationUc {
 
 			await this.updateSynchronization(synchronizationId, SynchronizationStatusModel.SUCCESS, userSyncCount);
 			this.logger.info(new SynchronizationLoggable('End synchronization users from systemId', systemId, userSyncCount));
+		} catch (error) {
+			if (error instanceof SynchronizationErrorLoggableException) {
+				const logMessage = error.getLogMessage();
+
+				await this.updateSynchronization(
+					synchronizationId,
+					SynchronizationStatusModel.FAILED,
+					0,
+					logMessage?.data?.errorMessage as string
+				);
+				this.logger.info(new SynchronizationLoggable('Failed synchronization users from systemId', systemId));
+			}
 		}
 	}
 

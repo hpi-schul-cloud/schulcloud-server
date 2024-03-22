@@ -54,7 +54,7 @@ describe(SynchronizationUc.name, () => {
 	});
 
 	describe('updateSystemUsersLastSyncedAt', () => {
-		describe('when update users lastSynceAt for system', () => {
+		describe('when update users lastSynceAt for systemId', () => {
 			const setup = () => {
 				const systemId = new ObjectId().toHexString();
 				const synchronizationId = new ObjectId().toHexString();
@@ -101,6 +101,40 @@ describe(SynchronizationUc.name, () => {
 				await uc.updateSystemUsersLastSyncedAt(systemId);
 
 				expect(spyUpdateSynchronization).toHaveBeenCalledWith(synchronizationId, status, userSyncCount);
+			});
+		});
+
+		describe('when found no users to update for systemId', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const synchronizationId = new ObjectId().toHexString();
+				const usersToCheck = [new ObjectId().toHexString(), new ObjectId().toHexString()];
+				const userSyncCount = 0;
+				const status = SynchronizationStatusModel.FAILED;
+
+				const errorMessage = `No users to check from systemId: ${systemId}`;
+
+				synchronizationService.createSynchronization.mockResolvedValueOnce(synchronizationId);
+				schulconnexRestClient.getPersonenInfo.mockResolvedValueOnce([]);
+				const spyUpdateSynchronization = jest.spyOn(uc, 'updateSynchronization');
+
+				return {
+					errorMessage,
+					spyUpdateSynchronization,
+					status,
+					synchronizationId,
+					systemId,
+					userSyncCount,
+					usersToCheck,
+				};
+			};
+
+			it('should call the uc.updateSynchronization to log detainls about synchronization of systemId', async () => {
+				const { errorMessage, spyUpdateSynchronization, status, synchronizationId, systemId, userSyncCount } = setup();
+
+				await uc.updateSystemUsersLastSyncedAt(systemId);
+
+				expect(spyUpdateSynchronization).toHaveBeenCalledWith(synchronizationId, status, userSyncCount, errorMessage);
 			});
 		});
 	});
@@ -255,7 +289,7 @@ describe(SynchronizationUc.name, () => {
 			});
 		});
 
-		describe('when searching users to update and update them', () => {
+		describe('when updating users and got error from userService', () => {
 			const setup = () => {
 				const systemId = new ObjectId().toHexString();
 				const userAId = new ObjectId().toHexString();
