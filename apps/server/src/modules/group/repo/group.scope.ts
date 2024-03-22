@@ -32,9 +32,10 @@ export class GroupScope extends Scope<GroupEntity> {
 		return this;
 	}
 
-	byNotSyncedGroups(): this {
-		this.addQuery({ syncedCourses: { $eq: [] } });
-
+	byNameQuery(nameQuery: string): this {
+		if (nameQuery) {
+			this.addQuery({ name: new RegExp(nameQuery, 'i') });
+		}
 		return this;
 	}
 }
