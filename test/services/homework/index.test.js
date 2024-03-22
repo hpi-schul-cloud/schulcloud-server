@@ -2,7 +2,6 @@ const assert = require('assert');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const appPromise = require('../../../src/app');
-const { NotAuthenticated, NotFound } = require('../../../src/errors');
 const testObjects = require('../helpers/testObjects')(appPromise());
 
 chai.use(chaiAsPromised);
