@@ -26,14 +26,22 @@ export class TldrawFilesStorageAdapterService {
 
 		for (const fileRecord of fileRecords) {
 			if (this.isOlderThanRequiredDate(fileRecord, createdBeforeDate)) {
-				const foundAsset = usedAssets.some((asset) => this.matchAssetWithFileRecord(asset, fileRecord));
-				if (!foundAsset) {
-					fileRecordIdsForDeletion.push(fileRecord.id);
-				}
+				this.addFileRecordIdToDeletionList(fileRecord, fileRecordIdsForDeletion, usedAssets);
 			}
 		}
 
 		return fileRecordIdsForDeletion;
+	}
+
+	private addFileRecordIdToDeletionList(
+		fileRecord: FileDto,
+		fileRecordIdsForDeletion: string[],
+		usedAssets: TldrawAsset[]
+	) {
+		const foundAsset = usedAssets.some((asset) => this.matchAssetWithFileRecord(asset, fileRecord));
+		if (!foundAsset) {
+			fileRecordIdsForDeletion.push(fileRecord.id);
+		}
 	}
 
 	private isOlderThanRequiredDate(fileRecord: FileDto, createdBeforeDate: Date) {

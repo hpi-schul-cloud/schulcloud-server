@@ -84,6 +84,21 @@ describe('TldrawFilesStorageAdapterService', () => {
 				expect(listFilesOfParentSpy).toHaveBeenCalled();
 				expect(deleteFilesSpy).toHaveBeenCalled();
 			});
+
+			describe('when no files are older than the threshold date', () => {
+				it('should not call deleteFiles on filesStorageClientAdapterService', async () => {
+					const { usedAssets, listFilesOfParentSpy, deleteFilesSpy } = setup();
+
+					await tldrawFilesStorageAdapterService.deleteUnusedFilesForDocument(
+						'docname',
+						usedAssets,
+						new Date(2019, 1, 1, 0, 0)
+					);
+
+					expect(listFilesOfParentSpy).toHaveBeenCalled();
+					expect(deleteFilesSpy).not.toHaveBeenCalled();
+				});
+			});
 		});
 
 		describe('when there are no files found for this document', () => {
