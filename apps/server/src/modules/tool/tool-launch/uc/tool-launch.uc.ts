@@ -1,5 +1,6 @@
-import { AuthorizationContext, AuthorizationContextBuilder } from '@modules/authorization';
+import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
@@ -13,7 +14,8 @@ export class ToolLaunchUc {
 	constructor(
 		private readonly toolLaunchService: ToolLaunchService,
 		private readonly contextExternalToolService: ContextExternalToolService,
-		private readonly toolPermissionHelper: ToolPermissionHelper
+		private readonly toolPermissionHelper: ToolPermissionHelper,
+		private readonly authorizationService: AuthorizationService
 	) {}
 
 	async getToolLaunchRequest(userId: EntityId, contextExternalToolId: EntityId): Promise<ToolLaunchRequest> {
@@ -21,8 +23,9 @@ export class ToolLaunchUc {
 			contextExternalToolId
 		);
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
+		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 
-		await this.toolPermissionHelper.ensureContextPermissions(userId, contextExternalTool, context);
+		await this.toolPermissionHelper.ensureContextPermissions(user, contextExternalTool, context);
 
 		const toolLaunchData: ToolLaunchData = await this.toolLaunchService.getLaunchData(userId, contextExternalTool);
 		const launchRequest: ToolLaunchRequest = this.toolLaunchService.generateLaunchRequest(toolLaunchData);
