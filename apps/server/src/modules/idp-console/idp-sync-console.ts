@@ -1,6 +1,6 @@
 import { Console, Command } from 'nestjs-console';
 import { ConsoleWriterService } from '@infra/console';
-import { SyncOptions, SystemType } from './interface';
+import { UsersSyncOptions, SystemType } from './interface';
 
 @Console({
 	command: 'sync',
@@ -25,7 +25,7 @@ export class IdpSyncConsole {
 			},
 		],
 	})
-	async users(options: SyncOptions): Promise<void> {
+	async users(options: UsersSyncOptions): Promise<void> {
 		if (options.systemType !== SystemType.MOIN_SCHULE) {
 			throw new Error(`invalid system type (currently the only supported system type is "${SystemType.MOIN_SCHULE}")`);
 		}
