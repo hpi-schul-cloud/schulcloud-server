@@ -29,7 +29,7 @@ spec:
             - secretRef:
                 name: api-secret
             command: ['/bin/sh', '-c']
-            args: ['npm run nest:start:tldraw-console -- files deletion-job 4']
+            args: ['npm run nest:start:tldraw-console -- files deletion-job 24']
             resources:
               limits:
                 cpu: {{ API_CPU_LIMITS|default("2000m", true) }}
