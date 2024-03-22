@@ -45,12 +45,24 @@ export class Course extends DomainObject<CourseProps> {
 		this.props.name = value;
 	}
 
-	set studentIds(value: EntityId[]) {
+	get students(): EntityId[] {
+		return this.props.studentIds;
+	}
+
+	set students(value: EntityId[]) {
 		this.props.studentIds = value;
 	}
 
-	set teacherIds(value: EntityId[]) {
+	get teachers(): EntityId[] {
+		return this.props.teacherIds;
+	}
+
+	set teachers(value: EntityId[]) {
 		this.props.teacherIds = value;
+	}
+
+	get substitutionTeachers(): EntityId[] {
+		return this.props.substitutionTeacherIds;
 	}
 
 	set startDate(value: Date | undefined) {
@@ -65,15 +77,7 @@ export class Course extends DomainObject<CourseProps> {
 		this.props.syncedWithGroup = value;
 	}
 
-	get teachers(): EntityId[] {
-		return this.props.teacherIds;
-	}
-
-	get substitutionTeachers(): EntityId[] {
-		return this.props.substitutionTeacherIds;
-	}
-
-	get students(): EntityId[] {
-		return this.props.studentIds;
+	get syncedWithGroup(): EntityId | undefined {
+		return this.props.syncedWithGroup;
 	}
 }

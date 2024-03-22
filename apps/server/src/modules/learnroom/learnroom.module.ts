@@ -77,6 +77,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 	exports: [
 		CourseCopyService,
 		CourseService,
+		CourseDoService,
 		RoomsService,
 		CommonCartridgeExportService,
 		CommonCartridgeImportService,
