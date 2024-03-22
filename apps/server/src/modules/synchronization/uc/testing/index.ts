@@ -1,1 +1,1 @@
-export * from './testConfig';
+export * from './test-config';
