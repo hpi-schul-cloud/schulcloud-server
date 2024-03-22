@@ -62,8 +62,8 @@ describe(SynchronizationUc.name, () => {
 			const setup = () => {
 				const systemId = new ObjectId().toHexString();
 				const synchronizationId = new ObjectId().toHexString();
-				const usersToCheck = [new ObjectId().toHexString(), new ObjectId().toHexString()];
-				const userSyncCount = 2;
+				const usersToCheck = [new ObjectId().toHexString()];
+				const userSyncCount = 1;
 				const status = SynchronizationStatusModel.SUCCESS;
 
 				synchronizationService.createSynchronization.mockResolvedValueOnce(synchronizationId);
@@ -90,12 +90,13 @@ describe(SynchronizationUc.name, () => {
 				expect(synchronizationService.createSynchronization).toHaveBeenCalled();
 			});
 
-			it('should call the uc.updateLastSyncedAt to update users for systemId', async () => {
+			it('should call the uc.updateLastSyncedAt to update users for systemId twice', async () => {
 				const { spyUpdateLastSyncedAt, systemId, usersToCheck } = setup();
 
 				await uc.updateSystemUsersLastSyncedAt(systemId);
 
-				expect(spyUpdateLastSyncedAt).toHaveBeenCalledWith(usersToCheck, systemId);
+				expect(spyUpdateLastSyncedAt).toHaveBeenCalledWith([usersToCheck[0]], systemId);
+				expect(spyUpdateLastSyncedAt).toHaveBeenCalledTimes(1);
 			});
 
 			it('should call the uc.updateSynchronization to log detainls about synchronization of systemId', async () => {
@@ -320,6 +321,26 @@ describe(SynchronizationUc.name, () => {
 				const { expectedError, usersToCheck, systemId } = setup();
 
 				await expect(uc.updateLastSyncedAt(usersToCheck, systemId)).rejects.toThrowError(expectedError);
+			});
+		});
+	});
+
+	describe('chunkArray', () => {
+		describe('when chunkArray is called', () => {
+			const setup = () => {
+				const array = ['a', 'b', 'c'];
+				const chunkSize = 1;
+
+				return {
+					array,
+					chunkSize,
+				};
+			};
+
+			it('should split array to 3 chunks', () => {
+				const { array, chunkSize } = setup();
+
+				expect(uc.chunkArray(array, chunkSize).length).toBe(3);
 			});
 		});
 	});

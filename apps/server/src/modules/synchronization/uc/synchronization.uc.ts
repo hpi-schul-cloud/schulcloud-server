@@ -31,7 +31,8 @@ export class SynchronizationUc {
 			const usersToCheck = await this.findUsersToSynchronize(systemId);
 			const chunkSize = this.configService.get<number>('SYNCHRONIZATION_CHUNK');
 			const chunks = this.chunkArray(usersToCheck, chunkSize);
-			const results = chunks.map((chunk) => this.updateLastSyncedAt(chunk, systemId));
+			const promises = chunks.map((chunk) => this.updateLastSyncedAt(chunk, systemId));
+			const results = await Promise.all(promises);
 			const userSyncCount = results.reduce((acc, curr) => +acc + +curr, 0);
 
 			await this.updateSynchronization(synchronizationId, SynchronizationStatusModel.SUCCESS, userSyncCount);
