@@ -147,6 +147,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: tldraw-delete-files-cronjob.yml.j2
+    when: WITH_TLDRAW is defined and WITH_TLDRAW|bool
 
   - name: Data deletion trigger CronJob
     kubernetes.core.k8s:
