@@ -1,8 +1,28 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
-import { Console, Command } from 'nestjs-console';
+import { Console, Command, CommandOption } from 'nestjs-console';
 import { ConsoleWriterService } from '@infra/console';
-import { PushDeletionRequestsOptions } from './interface';
+import { PushDeletionRequestsOptions, UnsyncedEntitiesOptions } from './interface';
 import { BatchDeletionUc } from './uc';
+
+const sharedCommandOptions: CommandOption[] = [
+	{
+		flags: '-trd, --targetRefDomain <value>',
+		description: 'Name of the target ref domain.',
+		required: false,
+		defaultValue: 'user',
+	},
+	{
+		flags: '-dim, --deleteInMinutes <value>',
+		description: 'Number of minutes after which the data deletion process should begin.',
+		required: false,
+		defaultValue: 43200, // 43200 minutes = 30 days
+	},
+	{
+		flags: '-cdm, --callsDelayMs <value>',
+		description: 'Delay between all the performed client calls, in milliseconds.',
+		required: false,
+	},
+];
 
 @Console({ command: 'queue', description: 'Console providing an access to the deletion queue.' })
 export class DeletionQueueConsole {
@@ -17,21 +37,7 @@ export class DeletionQueueConsole {
 				description: 'Path of the file containing all the references to the data that should be deleted.',
 				required: true,
 			},
-			{
-				flags: '-trd, --targetRefDomain <value>',
-				description: 'Name of the target ref domain.',
-				required: false,
-			},
-			{
-				flags: '-dim, --deleteInMinutes <value>',
-				description: 'Number of minutes after which the data deletion process should begin.',
-				required: false,
-			},
-			{
-				flags: '-cdm, --callsDelayMs <value>',
-				description: 'Delay between all the performed client calls, in milliseconds.',
-				required: false,
-			},
+			...sharedCommandOptions,
 		],
 	})
 	async pushDeletionRequests(options: PushDeletionRequestsOptions): Promise<void> {
@@ -43,5 +49,40 @@ export class DeletionQueueConsole {
 		);
 
 		this.consoleWriter.info(JSON.stringify(summary));
+	}
+
+	@Command({
+		command: 'unsynced',
+		description: 'Finds unsynchronized users and queue them for deletion.',
+		options: [
+			{
+				flags: '-si, --systemId <value>',
+				description: 'ID of a synchronized system.',
+				required: true,
+			},
+			{
+				flags: '-ufm, --unsyncedForMinutes <value>',
+				description:
+					'Number of minutes that must have passed before entity can be considered unsynchronized. Minimum value: 60.',
+				required: false,
+				defaultValue: 10080, // 10080 minutes = 7 days
+			},
+			...sharedCommandOptions,
+		],
+	})
+	async unsyncedEntities(options: UnsyncedEntitiesOptions): Promise<void> {
+		if (options.unsyncedForMinutes < 60) {
+			throw new Error(`invalid "unsyncedForMinutes" option value - minimum value is 60`);
+		}
+
+		this.consoleWriter.info(
+			JSON.stringify({ message: 'starting queueing unsynchronized entities for deletion', options })
+		);
+
+		await Promise.resolve(); // TODO: add UC call here, this call is just a placeholder to suppress @typescript-eslint/require-await rule.
+
+		this.consoleWriter.info(
+			JSON.stringify({ message: 'successfully finished queueing unsynchronized entities for deletion' })
+		);
 	}
 }
