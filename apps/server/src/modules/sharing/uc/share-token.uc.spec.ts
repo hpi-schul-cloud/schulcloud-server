@@ -1066,6 +1066,7 @@ describe('ShareTokenUC', () => {
 					originalColumnBoardId: columnBoard.id,
 					destinationExternalReference: { type: BoardExternalReferenceType.Course, id: course.id },
 					userId: user.id,
+					copyTitle: newName,
 				});
 			});
 			it('should return the result', async () => {

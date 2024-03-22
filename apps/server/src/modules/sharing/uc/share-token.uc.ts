@@ -126,7 +126,7 @@ export class ShareTokenUC {
 				if (destinationCourseId === undefined) {
 					throw new BadRequestException('Destination course id is required to copy task');
 				}
-				result = await this.copyColumnBoard(userId, shareToken.payload.parentId, destinationCourseId);
+				result = await this.copyColumnBoard(userId, shareToken.payload.parentId, destinationCourseId, newName);
 				break;
 		}
 
@@ -189,7 +189,12 @@ export class ShareTokenUC {
 		return copyStatus;
 	}
 
-	private async copyColumnBoard(userId: string, originalColumnBoardId: string, courseId: string): Promise<CopyStatus> {
+	private async copyColumnBoard(
+		userId: string,
+		originalColumnBoardId: string,
+		courseId: string,
+		copyTitle?: string
+	): Promise<CopyStatus> {
 		await this.authorizationReferenceService.checkPermissionByReferences(
 			userId,
 			AuthorizableReferenceType.Course,
@@ -200,7 +205,7 @@ export class ShareTokenUC {
 			originalColumnBoardId,
 			destinationExternalReference: { type: BoardExternalReferenceType.Course, id: courseId },
 			userId,
-			// copyName // TODO: implement copyName once it's supported
+			copyTitle,
 		});
 		return copyStatus;
 	}

@@ -13,6 +13,7 @@ import {
 	linkElementFactory,
 	schoolEntityFactory,
 	setupEntities,
+	userDoFactory,
 	userFactory,
 } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -76,6 +77,11 @@ describe('column board copy service', () => {
 		await setupEntities();
 	});
 
+	beforeEach(() => {
+		jest.clearAllMocks();
+		jest.resetAllMocks();
+	});
+
 	describe('when copying a column board', () => {
 		const setup = () => {
 			const originalSchool = schoolEntityFactory.buildWithId();
@@ -118,12 +124,21 @@ describe('column board copy service', () => {
 			const user = userFactory.buildWithId({ school: targetSchool });
 
 			const fileCopyServiceMock = createMock<SchoolSpecificFileCopyService>();
-			fileCopyServiceFactory.build.mockReturnValue(fileCopyServiceMock);
+			fileCopyServiceFactory.build.mockReturnValueOnce(fileCopyServiceMock);
 
-			boardRepo.findByClassAndId.mockResolvedValue(originalBoard);
-			courseRepo.findById.mockResolvedValue(course);
-			userService.findById.mockResolvedValue({ schoolId: user.school.id } as UserDO);
-			doCopyService.copy.mockResolvedValue(resultCopyStatus);
+			boardRepo.findByClassAndId.mockResolvedValueOnce(originalBoard);
+			courseRepo.findById.mockResolvedValueOnce(course);
+			userService.findById.mockResolvedValueOnce({ schoolId: user.school.id } as UserDO);
+			doCopyService.copy.mockResolvedValueOnce(resultCopyStatus);
+
+			const existingBoardIds = [new ObjectId().toHexString()];
+			boardRepo.findIdsByExternalReference.mockResolvedValueOnce(existingBoardIds);
+
+			const existingTitle = 'existingTitle';
+			boardRepo.getTitlesByIds.mockResolvedValueOnce({ [existingBoardIds[0]]: existingTitle });
+
+			const derivedCopyTitle = 'originalTitle (1)';
+			copyHelperService.deriveCopyName.mockReturnValueOnce(derivedCopyTitle);
 
 			return {
 				course,
@@ -135,6 +150,9 @@ describe('column board copy service', () => {
 				expectedBoardCopy,
 				expectedCopyStatus,
 				fileCopyServiceMock,
+				existingBoardIds,
+				existingTitle,
+				derivedCopyTitle,
 			};
 		};
 
@@ -155,6 +173,7 @@ describe('column board copy service', () => {
 				originalColumnBoardId: originalBoard.id,
 				destinationExternalReference,
 				userId: user.id,
+				copyTitle: 'newTitle',
 			});
 
 			expect(doCopyService.copy).toHaveBeenCalledWith({
@@ -163,7 +182,31 @@ describe('column board copy service', () => {
 			});
 		});
 
-		describe('board title should be incremented', () => {
+		it('should persist copy of board, with replaced externalReference', async () => {
+			const { originalBoard, destinationExternalReference, user, expectedBoardCopy } = setup();
+			await service.copyColumnBoard({
+				originalColumnBoardId: originalBoard.id,
+				destinationExternalReference,
+				userId: user.id,
+				copyTitle: 'newTitle',
+			});
+
+			expect(boardRepo.save).toHaveBeenCalledWith(expectedBoardCopy);
+		});
+
+		it('should return copyStatus', async () => {
+			const { originalBoard, destinationExternalReference, user, expectedCopyStatus } = setup();
+			const result = await service.copyColumnBoard({
+				originalColumnBoardId: originalBoard.id,
+				destinationExternalReference,
+				userId: user.id,
+				copyTitle: 'newTitle',
+			});
+
+			expect(result).toEqual(expectedCopyStatus);
+		});
+
+		describe('when copyTitle is not provided', () => {
 			it('should get board ids for reference', async () => {
 				const { originalBoard, destinationExternalReference, user } = setup();
 				await service.copyColumnBoard({
@@ -176,9 +219,8 @@ describe('column board copy service', () => {
 			});
 
 			it('should get board titles for reference', async () => {
-				const { originalBoard, destinationExternalReference, user } = setup();
-				const existingBoardIds = [new ObjectId().toString()];
-				boardRepo.findIdsByExternalReference.mockResolvedValue(existingBoardIds);
+				const { existingBoardIds, originalBoard, destinationExternalReference, user } = setup();
+
 				await service.copyColumnBoard({
 					originalColumnBoardId: originalBoard.id,
 					destinationExternalReference,
@@ -189,29 +231,53 @@ describe('column board copy service', () => {
 			});
 
 			it('should call helper to obtain copy name', async () => {
-				const { originalBoard, destinationExternalReference, user } = setup();
-				const existingBoardIds = [new ObjectId().toString()];
-				const existingTitles = { [existingBoardIds[0]]: 'existingTitle' };
-				boardRepo.findIdsByExternalReference.mockResolvedValue(existingBoardIds);
-				boardRepo.getTitlesByIds.mockResolvedValue(existingTitles);
+				const { originalBoard, destinationExternalReference, user, existingTitle } = setup();
+
 				await service.copyColumnBoard({
 					originalColumnBoardId: originalBoard.id,
 					destinationExternalReference,
 					userId: user.id,
 				});
 
-				expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(originalBoard.title, ['existingTitle']);
+				expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(originalBoard.title, [existingTitle]);
 			});
 
 			it('should call copyService with the derived title', async () => {
-				const { fileCopyServiceMock, originalBoard, destinationExternalReference, user } = setup();
-				const copyTitle = 'copyTitle';
-				copyHelperService.deriveCopyName.mockReturnValue(copyTitle);
+				const { derivedCopyTitle, originalBoard, destinationExternalReference, user } = setup();
 
 				await service.copyColumnBoard({
 					originalColumnBoardId: originalBoard.id,
 					destinationExternalReference,
 					userId: user.id,
+				});
+
+				const copyBoard = { ...originalBoard, title: derivedCopyTitle };
+				expect(doCopyService.copy).toHaveBeenCalledWith(expect.objectContaining({ original: copyBoard }));
+			});
+		});
+
+		describe('when copyTitle is provided', () => {
+			it('should not call deriveCopyName if copyTitle is provided', async () => {
+				const { originalBoard, destinationExternalReference, user } = setup();
+				const copyTitle = 'copyTitle';
+
+				await service.copyColumnBoard({
+					originalColumnBoardId: originalBoard.id,
+					destinationExternalReference,
+					userId: user.id,
+					copyTitle,
+				});
+				expect(copyHelperService.deriveCopyName).not.toHaveBeenCalled();
+			});
+			it('should call copyService with given copyTitle', async () => {
+				const { fileCopyServiceMock, originalBoard, destinationExternalReference, user } = setup();
+				const copyTitle = 'copyTitle';
+
+				await service.copyColumnBoard({
+					originalColumnBoardId: originalBoard.id,
+					destinationExternalReference,
+					userId: user.id,
+					copyTitle,
 				});
 				const copyBoard = originalBoard;
 				copyBoard.title = copyTitle;
@@ -220,28 +286,6 @@ describe('column board copy service', () => {
 					original: copyBoard,
 				});
 			});
-		});
-
-		it('should persist copy of board, with replaced externalReference', async () => {
-			const { originalBoard, destinationExternalReference, user, expectedBoardCopy } = setup();
-			await service.copyColumnBoard({
-				originalColumnBoardId: originalBoard.id,
-				destinationExternalReference,
-				userId: user.id,
-			});
-
-			expect(boardRepo.save).toHaveBeenCalledWith(expectedBoardCopy);
-		});
-
-		it('should return copyStatus', async () => {
-			const { originalBoard, destinationExternalReference, user, expectedCopyStatus } = setup();
-			const result = await service.copyColumnBoard({
-				originalColumnBoardId: originalBoard.id,
-				destinationExternalReference,
-				userId: user.id,
-			});
-
-			expect(result).toEqual(expectedCopyStatus);
 		});
 	});
 
