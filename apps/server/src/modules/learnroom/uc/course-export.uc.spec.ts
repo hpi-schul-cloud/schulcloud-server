@@ -4,6 +4,7 @@ import { CommonCartridgeVersion } from '@modules/common-cartridge';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { faker } from '@faker-js/faker';
 import { AuthorizationReferenceService } from '../../authorization/domain';
 import { LearnroomConfig } from '../learnroom.config';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
@@ -54,8 +55,9 @@ describe('CourseExportUc', () => {
 			const courseId = new ObjectId().toHexString();
 			const userId = new ObjectId().toHexString();
 			const version: CommonCartridgeVersion = CommonCartridgeVersion.V_1_1_0;
+			const topics: string[] = [faker.string.uuid()];
 
-			return { version, userId, courseId };
+			return { version, userId, courseId, topics };
 		};
 
 		describe('when authorization throw a error', () => {
@@ -68,9 +70,9 @@ describe('CourseExportUc', () => {
 			};
 
 			it('should pass this error', async () => {
-				const { courseId, userId, version } = setup();
+				const { courseId, userId, version, topics } = setup();
 
-				await expect(courseExportUc.exportCourse(courseId, userId, version)).rejects.toThrowError(
+				await expect(courseExportUc.exportCourse(courseId, userId, version, topics)).rejects.toThrowError(
 					new ForbiddenException()
 				);
 			});
@@ -86,9 +88,9 @@ describe('CourseExportUc', () => {
 			};
 
 			it('should pass this error', async () => {
-				const { courseId, userId, version } = setup();
+				const { courseId, userId, version, topics } = setup();
 
-				await expect(courseExportUc.exportCourse(courseId, userId, version)).rejects.toThrowError(new Error());
+				await expect(courseExportUc.exportCourse(courseId, userId, version, topics)).rejects.toThrowError(new Error());
 			});
 		});
 
@@ -102,16 +104,16 @@ describe('CourseExportUc', () => {
 			};
 
 			it('should check for permissions', async () => {
-				const { courseId, userId, version } = setup();
+				const { courseId, userId, version, topics } = setup();
 
-				await expect(courseExportUc.exportCourse(courseId, userId, version)).resolves.not.toThrow();
+				await expect(courseExportUc.exportCourse(courseId, userId, version, topics)).resolves.not.toThrow();
 				expect(authorizationServiceMock.checkPermissionByReferences).toBeCalledTimes(1);
 			});
 
 			it('should return a binary file as buffer', async () => {
-				const { courseId, userId, version } = setup();
+				const { courseId, userId, version, topics } = setup();
 
-				await expect(courseExportUc.exportCourse(courseId, userId, version)).resolves.toBeInstanceOf(Buffer);
+				await expect(courseExportUc.exportCourse(courseId, userId, version, topics)).resolves.toBeInstanceOf(Buffer);
 			});
 		});
 
@@ -125,9 +127,9 @@ describe('CourseExportUc', () => {
 			};
 
 			it('should throw a NotFoundException', async () => {
-				const { courseId, userId, version } = setup();
+				const { courseId, userId, version, topics } = setup();
 
-				await expect(courseExportUc.exportCourse(courseId, userId, version)).rejects.toThrowError(
+				await expect(courseExportUc.exportCourse(courseId, userId, version, topics)).rejects.toThrowError(
 					new NotFoundException()
 				);
 			});

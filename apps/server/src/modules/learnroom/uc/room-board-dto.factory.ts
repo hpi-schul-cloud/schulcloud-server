@@ -2,12 +2,12 @@ import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import {
+	ColumnboardBoardElement,
+	ColumnBoardNode,
+	Course,
 	LegacyBoard,
 	LegacyBoardElement,
 	LegacyBoardElementType,
-	ColumnBoardNode,
-	ColumnboardBoardElement,
-	Course,
 	LessonEntity,
 	Task,
 	TaskWithStatusVo,
@@ -171,12 +171,13 @@ class DtoCreator {
 	}
 
 	private buildDTOWithElements(elements: RoomBoardElementDTO[]): RoomBoardDTO {
-		const dto = {
+		const dto: RoomBoardDTO = {
 			roomId: this.room.id,
 			displayColor: this.room.color,
 			title: this.room.name,
 			elements,
 			isArchived: this.room.isFinished(),
+			isSynchronized: !!this.room.syncedWithGroup,
 		};
 		return dto;
 	}
