@@ -142,6 +142,40 @@ describe(SynchronizationUc.name, () => {
 				expect(spyUpdateSynchronization).toHaveBeenCalledWith(synchronizationId, status, userSyncCount, errorMessage);
 			});
 		});
+
+		describe('When an error occurred during the synchronisation process ', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const synchronizationId = new ObjectId().toHexString();
+				const usersToCheck = [new ObjectId().toHexString(), new ObjectId().toHexString()];
+				const userSyncCount = 0;
+				const status = SynchronizationStatusModel.FAILED;
+
+				const errorMessage = `Synchronisation process failed for users provided by the system ${systemId}`;
+
+				synchronizationService.createSynchronization.mockResolvedValueOnce(synchronizationId);
+				schulconnexRestClient.getPersonenInfo.mockRejectedValueOnce(new Error('fail'));
+				const spyUpdateSynchronization = jest.spyOn(uc, 'updateSynchronization');
+
+				return {
+					errorMessage,
+					spyUpdateSynchronization,
+					status,
+					synchronizationId,
+					systemId,
+					userSyncCount,
+					usersToCheck,
+				};
+			};
+
+			it('should call the uc.updateSynchronization to log detainls about synchronization of systemId', async () => {
+				const { errorMessage, spyUpdateSynchronization, status, synchronizationId, systemId, userSyncCount } = setup();
+
+				await uc.updateSystemUsersLastSyncedAt(systemId);
+
+				expect(spyUpdateSynchronization).toHaveBeenCalledWith(synchronizationId, status, userSyncCount, errorMessage);
+			});
+		});
 	});
 
 	describe('findUsersToSynchronize', () => {
