@@ -1,10 +1,11 @@
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { Inject, Injectable, forwardRef } from '@nestjs/common';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
+import { LegacySchoolDo } from '@shared/domain/domainobject';
 import { Page } from '@shared/domain/domainobject/page';
+import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { User } from '@shared/domain/entity';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool } from '../../context-external-tool/domain';
@@ -48,7 +49,8 @@ export class ExternalToolConfigurationUc {
 
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 
-		await this.ensureSchoolPermissions(userId, schoolExternalToolsInUse, context);
+		const [user, school] = await this.toolPermissionHelper.getIrgendwas(userId, schoolId);
+		await this.ensureSchoolPermissions(user as User, schoolExternalToolsInUse, school as LegacySchoolDo, context);
 
 		const toolIdsInUse: EntityId[] = schoolExternalToolsInUse.map(
 			(schoolExternalTool: SchoolExternalTool): EntityId => schoolExternalTool.toolId
@@ -137,7 +139,8 @@ export class ExternalToolConfigurationUc {
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(schoolExternalToolId);
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 
-		await this.toolPermissionHelper.ensureSchoolPermissions(userId, schoolExternalTool, context);
+		const [user, school] = await this.toolPermissionHelper.getIrgendwas(userId, schoolExternalTool.schoolId);
+		this.toolPermissionHelper.ensureSchoolPermissions(user as User, school as LegacySchoolDo, context);
 
 		const externalTool: ExternalTool = await this.externalToolService.findById(schoolExternalTool.toolId);
 
@@ -180,15 +183,12 @@ export class ExternalToolConfigurationUc {
 	}
 
 	private async ensureSchoolPermissions(
-		userId: EntityId,
+		user: User,
 		tools: SchoolExternalTool[],
+		school: LegacySchoolDo,
 		context: AuthorizationContext
 	): Promise<void> {
-		await Promise.all(
-			tools.map(async (tool: SchoolExternalTool) =>
-				this.toolPermissionHelper.ensureSchoolPermissions(userId, tool, context)
-			)
-		);
+		await Promise.all(tools.map(() => this.toolPermissionHelper.ensureSchoolPermissions(user, school, context)));
 	}
 
 	private async ensureContextPermissions(

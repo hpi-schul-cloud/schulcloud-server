@@ -50,17 +50,16 @@ export class ToolPermissionHelper {
 		}
 	}
 
-	public async ensureSchoolPermissions(
-		userId: EntityId,
-		schoolExternalTool: SchoolExternalTool,
-		context: AuthorizationContext
-	): Promise<void> {
-		// loading of ressources should be part of the UC  -> unnessasary awaits
+	public async getIrgendwas(userId: EntityId, schoolId: EntityId) {
 		const [user, school]: [User, LegacySchoolDo] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
-			this.schoolService.getSchoolById(schoolExternalTool.schoolId),
+			this.schoolService.getSchoolById(schoolId),
 		]);
 
+		return [user, school];
+	}
+
+	public ensureSchoolPermissions(user: User, school: LegacySchoolDo, context: AuthorizationContext): void {
 		this.authorizationService.checkPermission(user, school, context);
 	}
 }
