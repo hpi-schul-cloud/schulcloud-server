@@ -38,8 +38,8 @@ export class SynchronizationUc {
 		} else {
 			const chunks = this.chunkArray(usersToCheck, 10000);
 			let userSyncCount = 0;
-			for (let i = 0; i < chunks.length; i++) {
-				userSyncCount += await this.updateLastSyncedAt(chunks[i], systemId);
+			for (const chunk of chunks) {
+				userSyncCount += await this.updateLastSyncedAt(chunk, systemId);
 			}
 
 			await this.updateSynchronization(synchronizationId, SynchronizationStatusModel.SUCCESS, userSyncCount);

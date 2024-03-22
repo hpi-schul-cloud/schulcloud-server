@@ -254,5 +254,35 @@ describe(SynchronizationUc.name, () => {
 				expect(result).toEqual(userSyncCount);
 			});
 		});
+
+		describe('when searching users to update and update them', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const userAId = new ObjectId().toHexString();
+				const userBId = new ObjectId().toHexString();
+				const usersToCheck = [userAId, userBId];
+				const usersToSync = [userAId, userBId];
+
+				userService.findByExternalIdsAndProvidedBySystemId.mockResolvedValueOnce(usersToSync);
+
+				const error = new Error('testError');
+				const expectedError = new SynchronizationErrorLoggableException(
+					`Problems with synchronization for systemId: ${systemId}`
+				);
+				userService.updateLastSyncedAt.mockRejectedValueOnce(error);
+
+				return {
+					expectedError,
+					systemId,
+					usersToCheck,
+				};
+			};
+
+			it('should throw an error', async () => {
+				const { expectedError, usersToCheck, systemId } = setup();
+
+				await expect(uc.updateLastSyncedAt(usersToCheck, systemId)).rejects.toThrowError(expectedError);
+			});
+		});
 	});
 });
