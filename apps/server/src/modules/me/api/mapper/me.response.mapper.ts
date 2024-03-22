@@ -1,4 +1,5 @@
 import { Role, User } from '@shared/domain/entity';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { School } from '@src/modules/school';
 import {
@@ -15,7 +16,7 @@ export class MeResponseMapper {
 		const schoolResponse = MeResponseMapper.mapSchool(school);
 		const userResponse = MeResponseMapper.mapUser(user);
 		const rolesResponse = MeResponseMapper.mapUserRoles(user);
-		const permissionsResponse = MeResponseMapper.mapPermissions(user);
+		const permissionsResponse = MeResponseMapper.mapPermissions(user, school);
 		const language = user.getInfo().language || school.getInfo().language;
 		const accountResponse = MeResponseMapper.mapAccount(accountId);
 
@@ -78,10 +79,21 @@ export class MeResponseMapper {
 		return roleResponse;
 	}
 
-	private static mapPermissions(user: User): string[] {
-		const permissionStrings = user.resolvePermissions();
+	private static mapPermissions(user: User, school: School): string[] {
+		const userPermissions = user.resolvePermissions();
+		const schoolPermissions = school.getPermissions();
 
-		return permissionStrings;
+		if (schoolPermissions?.student?.LERNSTORE_VIEW) {
+			userPermissions.push(Permission.LERNSTORE_VIEW);
+		}
+
+		if (schoolPermissions?.teacher?.STUDENT_LIST) {
+			userPermissions.push(Permission.STUDENT_LIST);
+		}
+
+		const uniquePermissions = [...new Set(userPermissions)];
+
+		return uniquePermissions;
 	}
 
 	private static mapAccount(accountId: EntityId): MeAccountResponse {
