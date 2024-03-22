@@ -666,7 +666,7 @@ describe('user repo', () => {
 				};
 			};
 
-			it('should update lastSyncedAt ', async () => {
+			it('should update lastSyncedAt field', async () => {
 				const { userIds, userA, userC } = await setup();
 
 				await repo.updateAllUserByLastSyncedAt(userIds);
