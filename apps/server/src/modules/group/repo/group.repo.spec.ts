@@ -229,7 +229,7 @@ describe('GroupRepo', () => {
 				const result: Group[] = await repo.findAvailableByUser(user, 1, 1);
 
 				expect(result.length).toEqual(1);
-				expect(result[0].id).toEqual(groups[1].id);
+				expect(result[0].id).toEqual(groups[2].id);
 			});
 		});
 
@@ -392,7 +392,6 @@ describe('GroupRepo', () => {
 				};
 			};
 
-			// Test here for aggregate query (or in api test)
 			it('should return the available groups from selected school', async () => {
 				const { school } = await setup();
 
@@ -408,7 +407,7 @@ describe('GroupRepo', () => {
 				const result: Group[] = await repo.findAvailableBySchoolId(school.id, 1, 1);
 
 				expect(result.length).toEqual(1);
-				expect(result[0].id).toEqual(groups[1].id);
+				expect(result[0].id).toEqual(groups[2].id);
 			});
 		});
 

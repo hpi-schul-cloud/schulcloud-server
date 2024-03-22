@@ -1,14 +1,17 @@
 import { EntityData, EntityName } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { type UserDO } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupTypes } from '../domain';
 import { GroupEntity, GroupEntityTypes } from '../entity';
 import { GroupDomainMapper, GroupTypesToGroupEntityTypesMapping } from './group-domain.mapper';
 import { GroupScope } from './group.scope';
+
+// the query flow doesn't work. The returned entity is missing attributes and ids are given in Buffer form
+const queryFlow = false;
 
 @Injectable()
 export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
@@ -71,15 +74,43 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		return domainObjects;
 	}
 
-	public async findAvailableByUser(user: UserDO, skip?: number, limit?: number): Promise<Group[]> {
-		const scope: Scope<GroupEntity> = new GroupScope().byUserId(user.id);
+	public async findAvailableByUser(user: UserDO, skip = 0, limit = 1000000): Promise<Group[]> {
+		let domainObjects: Group[] = [];
 
-		const entities: GroupEntity[] = await this.em.find(GroupEntity, scope.query, { offset: skip, limit });
-		await this.em.populate(entities, ['syncedCourses']);
+		if (queryFlow) {
+			const pipeline = [
+				{
+					$lookup: {
+						from: 'courses',
+						localField: '_id',
+						foreignField: 'syncedWithGroup',
+						as: 'syncedCourses',
+					},
+				},
+				{ $match: { syncedCourses: { $size: 0 } } },
+				{ $match: { users: { user: new ObjectId(user.id) } } },
+				{ $skip: skip },
+				{ $limit: limit },
+			];
+			const entities: GroupEntity[] = (await this.em.aggregate(GroupEntity, pipeline)) as GroupEntity[];
 
-		const filteredEntities: GroupEntity[] = entities.filter((entity: GroupEntity) => entity.syncedCourses.length === 0);
+			domainObjects = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
+		} else {
+			const scope: Scope<GroupEntity> = new GroupScope().byUserId(user.id);
 
-		const domainObjects: Group[] = filteredEntities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
+			const entities: GroupEntity[] = await this.em.find(GroupEntity, scope.query);
+			await this.em.populate(entities, ['syncedCourses']);
+
+			const filteredEntities: GroupEntity[] = entities.filter(
+				(entity: GroupEntity) => entity.syncedCourses.length === 0
+			);
+
+			const sliceEnd = limit ? skip + limit : filteredEntities.length;
+
+			const paginatedFilteredEntities: GroupEntity[] = filteredEntities.slice(skip, sliceEnd);
+
+			domainObjects = paginatedFilteredEntities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
+		}
 
 		return domainObjects;
 	}
@@ -105,34 +136,42 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 	}
 
 	public async findAvailableBySchoolId(schoolId: EntityId, skip = 0, limit = 1000000): Promise<Group[]> {
-		// const scope: Scope<GroupEntity> = new GroupScope().byOrganizationId(schoolId).byNotSyncedGroups();
+		let domainObjects: Group[] = [];
 
-		const pipeline = [
-			{
-				$lookup: {
-					from: 'courses',
-					localField: '_id',
-					foreignField: 'syncedWithGroup', // ._id
-					as: 'syncedCourses',
+		if (queryFlow) {
+			const pipeline = [
+				{
+					$lookup: {
+						from: 'courses',
+						localField: '_id',
+						foreignField: 'syncedWithGroup',
+						as: 'syncedCourses',
+					},
 				},
-			},
-			{ $match: { syncedCourses: { $size: 0 } } },
-			{ $match: { organization: new ObjectId(schoolId) } }, // @IGOR: you have to wrap it in objectId. Now its working. Dont forget to add seed data
-			{ $skip: skip },
-			{ $limit: limit },
-		];
-		const entities: GroupEntity[] = (await this.em.aggregate(GroupEntity, pipeline)) as GroupEntity[];
+				{ $match: { syncedCourses: { $size: 0 } } },
+				{ $match: { organization: new ObjectId(schoolId) } },
+				{ $skip: skip },
+				{ $limit: limit },
+			];
+			const entities: GroupEntity[] = (await this.em.aggregate(GroupEntity, pipeline)) as GroupEntity[];
 
-		/* const entities: GroupEntity[] = await this.em.find(GroupEntity, scope.query, {
-			offset: skip,
-			limit,
-			populate: ['syncedCourses'],
-		});
-		await this.em.populate(entities, ['syncedCourses']);
+			domainObjects = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
+		} else {
+			const scope: Scope<GroupEntity> = new GroupScope().byOrganizationId(schoolId);
 
-		const filteredEntities: GroupEntity[] = entities.filter((entity: GroupEntity) => entity.syncedCourses.length === 0); */
+			const entities: GroupEntity[] = await this.em.find(GroupEntity, scope.query);
+			await this.em.populate(entities, ['syncedCourses']);
 
-		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
+			const filteredEntities: GroupEntity[] = entities.filter(
+				(entity: GroupEntity) => entity.syncedCourses.length === 0
+			);
+
+			const sliceEnd = limit ? skip + limit : filteredEntities.length;
+
+			const paginatedFilteredEntities: GroupEntity[] = filteredEntities.slice(skip, sliceEnd);
+
+			domainObjects = paginatedFilteredEntities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
+		}
 
 		return domainObjects;
 	}
