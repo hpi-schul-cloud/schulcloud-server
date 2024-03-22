@@ -5,19 +5,15 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { LoggerModule } from '@src/core/logger';
 import { HttpModule } from '@nestjs/axios';
-import { RabbitMQWrapperModule } from '@infra/rabbitmq';
-import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { MetricsService } from './metrics';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
-import { TldrawFilesStorageAdapterService, TldrawWsService } from './service';
+import { TldrawWsService } from './service';
 import { config } from './config';
 import { TldrawWs } from './controller';
 import { TldrawDrawing } from './entities';
 import { TldrawRedisFactory } from './redis';
 
 const imports = [
-	RabbitMQWrapperModule,
-	FilesStorageClientModule,
 	HttpModule,
 	LoggerModule,
 	CoreModule,
@@ -32,7 +28,6 @@ const providers = [
 	YMongodb,
 	MetricsService,
 	TldrawRedisFactory,
-	TldrawFilesStorageAdapterService,
 ];
 @Module({
 	imports,
