@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LdapConfig, OauthConfig } from '@src/modules/system';
 
 export class ProviderConfigResponse {
@@ -17,13 +17,13 @@ export class SchoolSystemResponse {
 	@ApiProperty()
 	type: string;
 
-	@ApiProperty()
+	@ApiPropertyOptional()
 	alias?: string;
 
-	@ApiProperty({ type: ProviderConfigResponse })
+	@ApiPropertyOptional({ type: ProviderConfigResponse })
 	ldapConfig?: ProviderConfigResponse;
 
-	@ApiProperty({ type: ProviderConfigResponse })
+	@ApiPropertyOptional({ type: ProviderConfigResponse })
 	oauthConfig?: ProviderConfigResponse;
 
 	constructor(props: SchoolSystemResponse) {
