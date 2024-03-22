@@ -415,9 +415,10 @@ describe('GroupUc', () => {
 
 					await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
 
-					expect(groupService.findGroupsByUserAndGroupTypes).toHaveBeenCalledWith<[UserDO, GroupTypes[]]>(
+					expect(groupService.findGroupsByUserAndGroupTypes).toHaveBeenCalledWith<[UserDO, GroupTypes[], number]>(
 						expect.any(UserDO),
-						[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER]
+						[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
+						0
 					);
 				});
 			});
@@ -782,9 +783,10 @@ describe('GroupUc', () => {
 
 					await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
 
-					expect(groupService.findGroupsBySchoolIdAndGroupTypes).toHaveBeenCalledWith<[EntityId, GroupTypes[]]>(
+					expect(groupService.findGroupsBySchoolIdAndGroupTypes).toHaveBeenCalledWith<[EntityId, GroupTypes[], number]>(
 						teacherUser.school.id,
-						[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER]
+						[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
+						0
 					);
 				});
 			});
@@ -1209,13 +1211,15 @@ describe('GroupUc', () => {
 					roles: [{ id: user.roles[0].id, name: user.roles[0].name }],
 				});
 
-				schoolService.getSchoolById.mockResolvedValueOnce(school);
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				schoolService.getSchoolById.mockResolvedValue(school);
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
-				groupService.findAvailableGroupsBySchoolId.mockResolvedValueOnce([availableGroupInSchool]);
-				groupService.findGroupsBySchoolIdAndGroupTypes.mockResolvedValueOnce([groupInSchool, availableGroupInSchool]);
+				groupService.findAvailableGroupsBySchoolId.mockResolvedValue([availableGroupInSchool]);
+				groupService.findGroupsBySchoolIdAndGroupTypes.mockResolvedValue([groupInSchool, availableGroupInSchool]);
 				userService.findByIdOrNull.mockResolvedValue(userDto);
 				roleService.findById.mockResolvedValue(userRole);
+
+				configService.get.mockReturnValueOnce(true);
 
 				return {
 					user,
@@ -1313,7 +1317,7 @@ describe('GroupUc', () => {
 				it('should return all available groups for course sync', async () => {
 					const { user, availableGroupInSchool, school } = setup();
 
-					const response = await uc.getAllGroups(user.id, school.id, true);
+					const response = await uc.getAllGroups(user.id, school.id, undefined, undefined, true);
 
 					expect(response).toMatchObject([
 						{
@@ -1370,13 +1374,15 @@ describe('GroupUc', () => {
 					roles: [{ id: user.roles[0].id, name: user.roles[0].name }],
 				});
 
-				schoolService.getSchoolById.mockResolvedValueOnce(school);
-				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
-				groupService.findAvailableGroupsByUser.mockResolvedValueOnce([availableTeachersGroup]);
-				groupService.findGroupsByUserAndGroupTypes.mockResolvedValueOnce([teachersGroup, availableTeachersGroup]);
+				schoolService.getSchoolById.mockResolvedValue(school);
+				authorizationService.getUserWithPermissions.mockResolvedValue(user);
+				authorizationService.hasAllPermissions.mockReturnValue(false);
+				groupService.findAvailableGroupsByUser.mockResolvedValue([availableTeachersGroup]);
+				groupService.findGroupsByUserAndGroupTypes.mockResolvedValue([teachersGroup, availableTeachersGroup]);
 				userService.findByIdOrNull.mockResolvedValue(userDto);
 				roleService.findById.mockResolvedValue(userRole);
+
+				configService.get.mockReturnValueOnce(true);
 
 				return {
 					user,
@@ -1474,7 +1480,7 @@ describe('GroupUc', () => {
 				it('should return all available groups for course sync the teacher is part of', async () => {
 					const { user, availableTeachersGroup, school } = setup();
 
-					const response = await uc.getAllGroups(user.id, school.id, true);
+					const response = await uc.getAllGroups(user.id, school.id, undefined, undefined, true);
 
 					expect(response).toMatchObject([
 						{

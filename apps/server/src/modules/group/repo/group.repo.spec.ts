@@ -118,7 +118,7 @@ describe('GroupRepo', () => {
 			it('should return the groups', async () => {
 				const { user, groups } = await setup();
 
-				const result: Group[] = await repo.findByUserAndGroupTypes(user, undefined, undefined, [
+				const result: Group[] = await repo.findByUserAndGroupTypes(user, [
 					GroupTypes.CLASS,
 					GroupTypes.COURSE,
 					GroupTypes.OTHER,
@@ -132,11 +132,12 @@ describe('GroupRepo', () => {
 			it('should return groups according to pagination', async () => {
 				const { user, groups } = await setup();
 
-				const result: Group[] = await repo.findByUserAndGroupTypes(user, 1, 1, [
-					GroupTypes.CLASS,
-					GroupTypes.COURSE,
-					GroupTypes.OTHER,
-				]);
+				const result: Group[] = await repo.findByUserAndGroupTypes(
+					user,
+					[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
+					1,
+					1
+				);
 
 				expect(result.length).toEqual(1);
 				expect(result[0].id).toEqual(groups[1].id);
@@ -145,7 +146,7 @@ describe('GroupRepo', () => {
 			it('should return only groups of the given group types', async () => {
 				const { user } = await setup();
 
-				const result: Group[] = await repo.findByUserAndGroupTypes(user, undefined, undefined, [GroupTypes.CLASS]);
+				const result: Group[] = await repo.findByUserAndGroupTypes(user, [GroupTypes.CLASS]);
 
 				expect(result).toEqual([expect.objectContaining<Partial<Group>>({ type: GroupTypes.CLASS })]);
 			});
@@ -181,7 +182,7 @@ describe('GroupRepo', () => {
 			it('should return an empty array', async () => {
 				const { user } = await setup();
 
-				const result: Group[] = await repo.findByUserAndGroupTypes(user, undefined, undefined, [
+				const result: Group[] = await repo.findByUserAndGroupTypes(user, [
 					GroupTypes.CLASS,
 					GroupTypes.COURSE,
 					GroupTypes.OTHER,
@@ -288,10 +289,8 @@ describe('GroupRepo', () => {
 			it('should return the groups', async () => {
 				const { school, groups } = await setup();
 
-				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(school.id, undefined, undefined, [
-					GroupTypes.CLASS,
-					GroupTypes.COURSE,
-					GroupTypes.OTHER,
+				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(school.id, [
+					(GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER),
 				]);
 
 				expect(result).toHaveLength(groups.length);
@@ -300,7 +299,7 @@ describe('GroupRepo', () => {
 			it('should not return groups from another school', async () => {
 				const { school, otherSchool } = await setup();
 
-				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(school.id, undefined, undefined, [
+				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(school.id, [
 					GroupTypes.CLASS,
 					GroupTypes.COURSE,
 				]);
@@ -311,11 +310,12 @@ describe('GroupRepo', () => {
 			it('should return groups according to pagination', async () => {
 				const { school, groups } = await setup();
 
-				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(school.id, 1, 1, [
-					GroupTypes.CLASS,
-					GroupTypes.COURSE,
-					GroupTypes.OTHER,
-				]);
+				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(
+					school.id,
+					[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
+					1,
+					1
+				);
 
 				expect(result.length).toEqual(1);
 				expect(result[0].id).toEqual(groups[1].id);
@@ -324,9 +324,7 @@ describe('GroupRepo', () => {
 			it('should return only groups of the given group types', async () => {
 				const { school } = await setup();
 
-				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(school.id, undefined, undefined, [
-					GroupTypes.CLASS,
-				]);
+				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(school.id, [GroupTypes.CLASS]);
 
 				expect(result).toEqual([expect.objectContaining<Partial<Group>>({ type: GroupTypes.CLASS })]);
 			});
@@ -357,9 +355,7 @@ describe('GroupRepo', () => {
 			it('should return an empty array', async () => {
 				const { school } = await setup();
 
-				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(school.id, undefined, undefined, [
-					GroupTypes.CLASS,
-				]);
+				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(school.id, [GroupTypes.CLASS]);
 
 				expect(result).toHaveLength(0);
 			});

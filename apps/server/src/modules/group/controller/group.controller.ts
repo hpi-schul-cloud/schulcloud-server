@@ -89,7 +89,8 @@ export class GroupController {
 			currentUser.schoolId,
 			pagination.skip,
 			pagination.limit,
-			params.availableGroupsForCourseSync
+			params.availableGroupsForCourseSync,
+			params.nameQuery
 		);
 		const response: GroupResponse[] = GroupResponseMapper.mapToGroupResponseList(groups);
 

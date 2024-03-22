@@ -36,34 +36,52 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 
 	public async findGroupsByUserAndGroupTypes(
 		user: UserDO,
+		groupTypes?: GroupTypes[],
 		skip?: number,
 		limit?: number,
-		groupTypes?: GroupTypes[]
+		nameQuery?: string
 	): Promise<Group[]> {
-		const groups: Group[] = await this.groupRepo.findByUserAndGroupTypes(user, skip, limit, groupTypes);
+		const groups: Group[] = await this.groupRepo.findByUserAndGroupTypes(user, groupTypes, skip, limit, nameQuery);
 
 		return groups;
 	}
 
-	public async findAvailableGroupsByUser(user: UserDO, skip?: number, limit?: number): Promise<Group[]> {
-		const groups: Group[] = await this.groupRepo.findAvailableByUser(user, skip, limit);
+	public async findAvailableGroupsByUser(
+		user: UserDO,
+		skip?: number,
+		limit?: number,
+		nameQuery?: string
+	): Promise<Group[]> {
+		const groups: Group[] = await this.groupRepo.findAvailableByUser(user, skip, limit, nameQuery);
 
 		return groups;
 	}
 
 	public async findGroupsBySchoolIdAndGroupTypes(
 		schoolId: EntityId,
+		groupTypes?: GroupTypes[],
 		skip?: number,
 		limit?: number,
-		groupTypes?: GroupTypes[]
+		nameQuery?: string
 	): Promise<Group[]> {
-		const group: Group[] = await this.groupRepo.findBySchoolIdAndGroupTypes(schoolId, skip, limit, groupTypes);
+		const group: Group[] = await this.groupRepo.findBySchoolIdAndGroupTypes(
+			schoolId,
+			groupTypes,
+			skip,
+			limit,
+			nameQuery
+		);
 
 		return group;
 	}
 
-	public async findAvailableGroupsBySchoolId(schoolId: EntityId, skip?: number, limit?: number): Promise<Group[]> {
-		const groups: Group[] = await this.groupRepo.findAvailableBySchoolId(schoolId, skip, limit);
+	public async findAvailableGroupsBySchoolId(
+		schoolId: EntityId,
+		skip?: number,
+		limit?: number,
+		nameQuery?: string
+	): Promise<Group[]> {
+		const groups: Group[] = await this.groupRepo.findAvailableBySchoolId(schoolId, skip, limit, nameQuery);
 
 		return groups;
 	}

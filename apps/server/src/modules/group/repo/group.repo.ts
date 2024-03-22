@@ -56,9 +56,10 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 
 	public async findByUserAndGroupTypes(
 		user: UserDO,
+		groupTypes?: GroupTypes[],
 		skip?: number,
 		limit?: number,
-		groupTypes?: GroupTypes[]
+		nameQuery?: string
 	): Promise<Group[]> {
 		let groupEntityTypes: GroupEntityTypes[] | undefined;
 		if (groupTypes) {
@@ -74,7 +75,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		return domainObjects;
 	}
 
-	public async findAvailableByUser(user: UserDO, skip = 0, limit = 1000000): Promise<Group[]> {
+	public async findAvailableByUser(user: UserDO, skip = 0, limit = 1000000, nameQuery?: string): Promise<Group[]> {
 		let domainObjects: Group[] = [];
 
 		if (queryFlow) {
@@ -117,9 +118,10 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 
 	public async findBySchoolIdAndGroupTypes(
 		schoolId: EntityId,
+		groupTypes?: GroupTypes[],
 		skip?: number,
 		limit?: number,
-		groupTypes?: GroupTypes[]
+		nameQuery?: string
 	): Promise<Group[]> {
 		let groupEntityTypes: GroupEntityTypes[] | undefined;
 		if (groupTypes) {
@@ -135,7 +137,12 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		return domainObjects;
 	}
 
-	public async findAvailableBySchoolId(schoolId: EntityId, skip = 0, limit = 1000000): Promise<Group[]> {
+	public async findAvailableBySchoolId(
+		schoolId: EntityId,
+		skip = 0,
+		limit = 1000000,
+		nameQuery?: string
+	): Promise<Group[]> {
 		let domainObjects: Group[] = [];
 
 		if (queryFlow) {

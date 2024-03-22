@@ -157,11 +157,13 @@ describe('GroupService', () => {
 
 				await service.findGroupsByUserAndGroupTypes(user, [GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER]);
 
-				expect(groupRepo.findByUserAndGroupTypes).toHaveBeenCalledWith(user, [
-					GroupTypes.CLASS,
-					GroupTypes.COURSE,
-					GroupTypes.OTHER,
-				]);
+				expect(groupRepo.findByUserAndGroupTypes).toHaveBeenCalledWith(
+					user,
+					[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
+					undefined,
+					undefined,
+					undefined
+				);
 			});
 		});
 
@@ -205,7 +207,7 @@ describe('GroupService', () => {
 
 				await service.findAvailableGroupsByUser(user);
 
-				expect(groupRepo.findAvailableByUser).toHaveBeenCalledWith(user);
+				expect(groupRepo.findAvailableByUser).toHaveBeenCalledWith(user, undefined, undefined, undefined);
 			});
 
 			it('should return groups', async () => {
@@ -261,11 +263,13 @@ describe('GroupService', () => {
 					GroupTypes.OTHER,
 				]);
 
-				expect(groupRepo.findBySchoolIdAndGroupTypes).toHaveBeenCalledWith(schoolId, [
-					GroupTypes.CLASS,
-					GroupTypes.COURSE,
-					GroupTypes.OTHER,
-				]);
+				expect(groupRepo.findBySchoolIdAndGroupTypes).toHaveBeenCalledWith(
+					schoolId,
+					[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
+					undefined,
+					undefined,
+					undefined
+				);
 			});
 
 			it('should return the groups', async () => {
@@ -297,7 +301,7 @@ describe('GroupService', () => {
 
 				await service.findAvailableGroupsBySchoolId(schoolId);
 
-				expect(groupRepo.findAvailableBySchoolId).toHaveBeenCalledWith(schoolId);
+				expect(groupRepo.findAvailableBySchoolId).toHaveBeenCalledWith(schoolId, undefined, undefined, undefined);
 			});
 
 			it('should return groups', async () => {
