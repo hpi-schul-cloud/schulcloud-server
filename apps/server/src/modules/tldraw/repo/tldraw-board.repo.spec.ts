@@ -10,7 +10,7 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { createConfigModuleOptions } from '@src/config';
 import { TldrawBoardRepo } from './tldraw-board.repo';
 import { WsSharedDocDo } from '../domain';
-import { TldrawFilesStorageAdapterService, TldrawWsService } from '../service';
+import { TldrawWsService } from '../service';
 import { tldrawTestConfig } from '../testing';
 import { TldrawDrawing } from '../entities';
 import { TldrawWs } from '../controller';
@@ -47,10 +47,6 @@ describe('TldrawBoardRepo', () => {
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
-				},
-				{
-					provide: TldrawFilesStorageAdapterService,
-					useValue: createMock<TldrawFilesStorageAdapterService>(),
 				},
 			],
 		}).compile();
