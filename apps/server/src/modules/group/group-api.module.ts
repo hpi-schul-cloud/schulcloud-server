@@ -1,5 +1,6 @@
 import { AuthorizationModule } from '@modules/authorization';
 import { ClassModule } from '@modules/class';
+import { LearnroomModule } from '@modules/learnroom';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { RoleModule } from '@modules/role';
 import { SchoolModule } from '@modules/school';
@@ -22,6 +23,7 @@ import { GroupUc } from './uc';
 		AuthorizationModule,
 		SystemModule,
 		LoggerModule,
+		LearnroomModule,
 	],
 	controllers: [GroupController],
 	providers: [GroupUc],

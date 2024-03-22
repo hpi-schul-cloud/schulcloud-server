@@ -146,6 +146,15 @@ describe('recursive board copy visitor', () => {
 
 				expect(result.type).toEqual(CopyElementType.COLUMNBOARD);
 			});
+
+			it('should set the copy to unpublished', async () => {
+				const { original, fileCopyService } = setup();
+
+				const result = await service.copy({ original, fileCopyService });
+				const copy = getColumnBoardCopyFromStatus(result);
+
+				expect(copy.isVisible).toEqual(false);
+			});
 		});
 
 		describe('when copying a columnboard with children', () => {

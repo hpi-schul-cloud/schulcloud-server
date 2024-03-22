@@ -1,7 +1,7 @@
-import { DeletionRequest } from '../../domain/deletion-request.do';
-import { deletionRequestFactory } from '../../domain/testing/factory/deletion-request.factory';
-import { DeletionRequestEntity } from '../../entity';
-import { deletionRequestEntityFactory } from '../../entity/testing/factory/deletion-request.entity.factory';
+import { DeletionRequest } from '../../domain/do';
+import { deletionRequestFactory } from '../../domain/testing';
+import { DeletionRequestEntity } from '../entity';
+import { deletionRequestEntityFactory } from '../entity/testing';
 import { DeletionRequestMapper } from './deletion-request.mapper';
 
 describe(DeletionRequestMapper.name, () => {

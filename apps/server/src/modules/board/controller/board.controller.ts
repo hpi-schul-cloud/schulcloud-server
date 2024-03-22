@@ -12,7 +12,8 @@ import {
 	Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ApiValidationError } from '@shared/common';
+import { ApiValidationError, RequestTimeout } from '@shared/common';
+import { CopyApiResponse, CopyMapper } from '@src/modules/copy-helper';
 import { BoardUc } from '../uc';
 import {
 	BoardResponse,
@@ -124,6 +125,22 @@ export class BoardController {
 		const response = ColumnResponseMapper.mapToResponse(column);
 
 		return response;
+	}
+
+	@ApiOperation({ summary: 'Create a board copy.' })
+	@ApiResponse({ status: 201, type: CopyApiResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Post(':boardId/copy')
+	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	async copyBoard(
+		@Param() urlParams: BoardUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<CopyApiResponse> {
+		const copyStatus = await this.boardUc.copyBoard(currentUser.userId, urlParams.boardId);
+		const dto = CopyMapper.mapToResponse(copyStatus);
+		return dto;
 	}
 
 	@ApiOperation({ summary: 'Update the visibility of a board.' })
