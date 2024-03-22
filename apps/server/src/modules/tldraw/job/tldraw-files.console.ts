@@ -2,7 +2,7 @@ import { Command, Console } from 'nestjs-console';
 import { LegacyLogger } from '@src/core/logger';
 import { TldrawDeleteFilesUc } from '../uc';
 
-@Console({ command: 'tldraw-files', description: 'tldraw file deletion console' })
+@Console({ command: 'files', description: 'tldraw file deletion console' })
 export class TldrawFilesConsole {
 	constructor(private deleteFilesUc: TldrawDeleteFilesUc, private logger: LegacyLogger) {
 		this.logger.setContext(TldrawFilesConsole.name);

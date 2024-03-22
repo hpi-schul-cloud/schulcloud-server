@@ -9,7 +9,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { ConsoleModule } from 'nestjs-console';
-import { TldrawConsoleModule } from '@modules/tldraw';
 import { ServerConsole } from './server.console';
 import { mikroOrmCliConfig } from '../config/mikro-orm-cli.config';
 
@@ -19,7 +18,6 @@ import { mikroOrmCliConfig } from '../config/mikro-orm-cli.config';
 		ConsoleModule,
 		ConsoleWriterModule,
 		FilesModule,
-		TldrawConsoleModule,
 		ConfigModule.forRoot(createConfigModuleOptions(serverConfig)),
 		...((Configuration.get('FEATURE_IDENTITY_MANAGEMENT_ENABLED') as boolean) ? [KeycloakModule] : []),
 		MikroOrmModule.forRoot(mikroOrmCliConfig),
