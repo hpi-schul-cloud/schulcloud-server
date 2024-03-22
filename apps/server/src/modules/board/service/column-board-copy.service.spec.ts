@@ -13,7 +13,6 @@ import {
 	linkElementFactory,
 	schoolEntityFactory,
 	setupEntities,
-	userDoFactory,
 	userFactory,
 } from '@shared/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
