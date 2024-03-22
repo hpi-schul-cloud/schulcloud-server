@@ -38,17 +38,14 @@ export class SynchronizationUc {
 			await this.updateSynchronization(synchronizationId, SynchronizationStatusModel.SUCCESS, userSyncCount);
 			this.logger.info(new SynchronizationLoggable('End synchronization users from systemId', systemId, userSyncCount));
 		} catch (error) {
+			let logMessage = '';
 			if (error instanceof SynchronizationErrorLoggableException) {
-				const logMessage = error.getLogMessage();
-
-				await this.updateSynchronization(
-					synchronizationId,
-					SynchronizationStatusModel.FAILED,
-					0,
-					logMessage?.data?.errorMessage as string
-				);
-				this.logger.info(new SynchronizationLoggable('Failed synchronization users from systemId', systemId));
+				logMessage = error.getLogMessage()?.data?.errorMessage as string;
+			} else {
+				logMessage = `Synchronisation process failed for users provided by the system ${systemId}`;
 			}
+			await this.updateSynchronization(synchronizationId, SynchronizationStatusModel.FAILED, 0, logMessage);
+			this.logger.info(new SynchronizationLoggable(logMessage, systemId));
 		}
 	}
 
@@ -57,7 +54,7 @@ export class SynchronizationUc {
 		const usersDownloaded: SanisResponse[] = await this.schulconnexRestClient.getPersonenInfo({});
 
 		if (usersDownloaded.length === 0) {
-			throw new SynchronizationErrorLoggableException(`No users to check from systemId: ${systemId}`);
+			throw new SynchronizationErrorLoggableException(`No users to check from system: ${systemId}`);
 		}
 		usersToCheck = usersDownloaded.map((user) => user.pid);
 
@@ -72,7 +69,9 @@ export class SynchronizationUc {
 
 			return usersToSync.length;
 		} catch {
-			throw new SynchronizationErrorLoggableException(`Problems with synchronization for systemId: ${systemId}`);
+			throw new SynchronizationErrorLoggableException(
+				`Failed to update lastSyncedAt field for users provisioned by system ${systemId}`
+			);
 		}
 	}
 

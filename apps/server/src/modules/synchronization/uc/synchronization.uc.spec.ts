@@ -117,7 +117,7 @@ describe(SynchronizationUc.name, () => {
 				const userSyncCount = 0;
 				const status = SynchronizationStatusModel.FAILED;
 
-				const errorMessage = `No users to check from systemId: ${systemId}`;
+				const errorMessage = `No users to check from system: ${systemId}`;
 
 				synchronizationService.createSynchronization.mockResolvedValueOnce(synchronizationId);
 				schulconnexRestClient.getPersonenInfo.mockResolvedValueOnce([]);
