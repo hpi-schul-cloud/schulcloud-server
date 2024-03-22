@@ -11,8 +11,6 @@ import { GroupEntity, GroupEntityTypes } from '../entity';
 import { GroupDomainMapper, GroupTypesToGroupEntityTypesMapping } from './group-domain.mapper';
 import { GroupScope } from './group.scope';
 
-// the query flow doesn't work. The returned entity is missing attributes and ids are given in Buffer form
-// TODO: fix query flow
 const queryFlow = true;
 
 @Injectable()
@@ -91,7 +89,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		if (nameQuery && StringValidator.isNotEmptyString(nameQuery, true)) {
 			const escapedName = nameQuery.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
 			if (StringValidator.isNotEmptyString(escapedName, true)) {
-				nameQueryMatch = { name: { $regex: nameQuery, $options: 'i' } };
+				nameQueryMatch = { name: { $regex: escapedName, $options: 'i' } };
 			}
 		}
 
@@ -114,7 +112,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 
 			const mongoEntities = await this.em.aggregate(GroupEntity, pipeline);
 			const entities: GroupEntity[] = mongoEntities.map((entity: GroupEntity) => {
-				const { createdAt, updatedAt, ...newGroupEntity } = entity;
+				const { ...newGroupEntity } = entity;
 				return this.em.map(GroupEntity, newGroupEntity);
 			});
 

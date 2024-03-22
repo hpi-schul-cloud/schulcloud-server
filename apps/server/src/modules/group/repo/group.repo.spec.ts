@@ -290,7 +290,9 @@ describe('GroupRepo', () => {
 				const { school, groups } = await setup();
 
 				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(school.id, [
-					(GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER),
+					GroupTypes.CLASS,
+					GroupTypes.COURSE,
+					GroupTypes.OTHER,
 				]);
 
 				expect(result).toHaveLength(groups.length);
