@@ -16,7 +16,7 @@ import { AuthorizationError, EntityNotFoundError, ForbiddenOperationError, Valid
 import { User } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import { UserRepo } from '@shared/repo/user/user.repo';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
 import { isEmail, validateOrReject } from 'class-validator';
 import { AccountConfig } from '../account-config';
 import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '../domain';
@@ -25,6 +25,23 @@ import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
+import {
+	IdmCallbackLoggableException,
+	DeletedAccountLoggable,
+	DeletedAccountWithUserIdLoggable,
+	DeletedUserDataLoggable,
+	DeletingAccountLoggable,
+	DeletingAccountWithUserIdLoggable,
+	DeletingUserDataLoggable,
+	SavedAccountLoggable,
+	SavingAccountLoggable,
+	UpdatedAccountPasswordLoggable,
+	UpdatedAccountUsernameLoggable,
+	UpdatedLastFailedLoginLoggable,
+	UpdatingAccountPasswordLoggable,
+	UpdatingAccountUsernameLoggable,
+	UpdatingLastFailedLoginLoggable,
+} from '../loggable';
 
 /* TODO: extract a service that contains all things required by feathers,
 which is responsible for the additionally required validation 
@@ -46,7 +63,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 		private readonly accountIdm: AccountServiceIdm,
 		private readonly configService: ConfigService<AccountConfig, true>,
 		private readonly accountValidationService: AccountValidationService,
-		private readonly logger: LegacyLogger,
+		private readonly logger: Logger,
 		private readonly userRepo: UserRepo,
 		private readonly eventBus: EventBus
 	) {
@@ -238,9 +255,9 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 			password: accountSave.password,
 		};
 		const idmAccount = await this.executeIdmMethod(async () => {
-			this.logger.debug(`Saving account with accountID ${ret.id} ...`);
+			this.logger.debug(new SavingAccountLoggable(ret.id));
 			const account = await this.accountIdm.save(newAccount);
-			this.logger.debug(`Saved account with accountID ${ret.id}`);
+			this.logger.debug(new SavedAccountLoggable(ret.id));
 			return account;
 		});
 		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
@@ -293,9 +310,9 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	async updateUsername(accountId: string, username: string): Promise<Account> {
 		const ret = await this.accountDb.updateUsername(accountId, username);
 		const idmAccount = await this.executeIdmMethod(async () => {
-			this.logger.debug(`Updating username for account with accountID ${accountId} ...`);
+			this.logger.debug(new UpdatingAccountUsernameLoggable(accountId));
 			const account = await this.accountIdm.updateUsername(accountId, username);
-			this.logger.debug(`Updated username for account with accountID ${accountId}`);
+			this.logger.debug(new UpdatedAccountUsernameLoggable(accountId));
 			return account;
 		});
 		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
@@ -304,9 +321,9 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<Account> {
 		const ret = await this.accountDb.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
 		const idmAccount = await this.executeIdmMethod(async () => {
-			this.logger.debug(`Updating last tried failed login for account with accountID ${accountId} ...`);
+			this.logger.debug(new UpdatingLastFailedLoginLoggable(accountId));
 			const account = await this.accountIdm.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
-			this.logger.debug(`Updated last tried failed login for account with accountID ${accountId}`);
+			this.logger.debug(new UpdatedLastFailedLoginLoggable(accountId));
 			return account;
 		});
 		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
@@ -315,9 +332,9 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	async updatePassword(accountId: string, password: string): Promise<Account> {
 		const ret = await this.accountDb.updatePassword(accountId, password);
 		const idmAccount = await this.executeIdmMethod(async () => {
-			this.logger.debug(`Updating password for account with accountID ${accountId} ...`);
+			this.logger.debug(new UpdatingAccountPasswordLoggable(accountId));
 			const account = await this.accountIdm.updatePassword(accountId, password);
-			this.logger.debug(`Updated password for account with accountID ${accountId}`);
+			this.logger.debug(new UpdatedAccountPasswordLoggable(accountId));
 			return account;
 		});
 		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
@@ -330,33 +347,33 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 	async delete(accountId: string): Promise<void> {
 		await this.accountDb.delete(accountId);
 		await this.executeIdmMethod(async () => {
-			this.logger.debug(`Deleting account with accountId ${accountId} ...`);
+			this.logger.debug(new DeletingAccountLoggable(accountId));
 			await this.accountIdm.delete(accountId);
-			this.logger.debug(`Deleted account with accountId ${accountId}`);
+			this.logger.debug(new DeletedAccountLoggable(accountId));
 		});
 	}
 
 	public async deleteByUserId(userId: string): Promise<EntityId[]> {
 		const deletedAccounts = await this.accountDb.deleteByUserId(userId);
 		await this.executeIdmMethod(async () => {
-			this.logger.debug(`Deleting account with userId ${userId} ...`);
+			this.logger.debug(new DeletingAccountWithUserIdLoggable(userId));
 			const deletedAccountIdm = await this.accountIdm.deleteByUserId(userId);
 			deletedAccounts.push(...deletedAccountIdm);
-			this.logger.debug(`Deleted account with userId ${userId}`);
+			this.logger.debug(new DeletedAccountWithUserIdLoggable(userId));
 		});
 
 		return deletedAccounts;
 	}
 
 	public async deleteUserData(userId: EntityId): Promise<DomainDeletionReport> {
-		this.logger.debug(`Start deleting data for userId - ${userId} in account collection`);
+		this.logger.debug(new DeletingUserDataLoggable(userId));
 		const deletedAccounts = await this.deleteByUserId(userId);
 
 		const result = DomainDeletionReportBuilder.build(DomainName.ACCOUNT, [
 			DomainOperationReportBuilder.build(OperationType.DELETE, deletedAccounts.length, deletedAccounts),
 		]);
 
-		this.logger.debug(`Deleted data for userId - ${userId} from account collection`);
+		this.logger.debug(new DeletedUserDataLoggable(userId));
 
 		return result;
 	}
@@ -373,11 +390,7 @@ export class AccountService extends AbstractAccountService implements DeletionSe
 			try {
 				return await idmCallback();
 			} catch (error) {
-				if (error instanceof Error) {
-					this.logger.error(error, error.stack);
-				} else {
-					this.logger.error(error);
-				}
+				this.logger.debug(new IdmCallbackLoggableException(error));
 			}
 		}
 		return null;

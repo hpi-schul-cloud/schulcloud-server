@@ -1,28 +1,26 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { IdentityManagementModule } from '@infra/identity-management';
-import { IdentityManagementService } from '@infra/identity-management/identity-management.service';
-import { KeycloakAdministrationService } from '@infra/identity-management/keycloak-administration/service/keycloak-administration.service';
+import { IdentityManagementModule, IdentityManagementService } from '@infra/identity-management';
+import { KeycloakAdministrationService } from '@src/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';
+import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IdmAccount } from '@shared/domain/interface';
 import { UserRepo } from '@shared/repo';
 import { accountFactory, cleanupCollections } from '@shared/testing';
 import { v1 } from 'uuid';
-import { EventBus } from '@nestjs/cqrs';
-import { LegacyLogger } from '../../../core/logger';
-import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../repo/mapper';
+import { Logger } from '../../../core/logger';
+import { Account, AccountSave } from '../domain';
+import { AccountEntity } from '../entity/account.entity';
 import { AccountRepo } from '../repo/account.repo';
+import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../repo/mapper';
 import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
 import { AccountValidationService } from './account.validation.service';
-import { Account, AccountSave } from '../domain';
-import { AccountEntity } from '../entity/account.entity';
 
 describe('AccountService Integration', () => {
 	let module: TestingModule;
@@ -100,8 +98,8 @@ describe('AccountService Integration', () => {
 					useValue: new AccountIdmToDoMapperDb(),
 				},
 				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 				{
 					provide: EventBus,

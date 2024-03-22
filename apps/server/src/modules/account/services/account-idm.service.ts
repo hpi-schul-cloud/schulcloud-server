@@ -5,11 +5,12 @@ import { ConfigService } from '@nestjs/config/dist/config.service';
 import { EntityNotFoundError } from '@shared/common';
 import { IdmAccount, IdmAccountUpdate } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
-import { LegacyLogger } from '@src/core/logger';
+import { Logger } from '@src/core/logger';
+import { AccountConfig } from '../account-config';
 import { Account, AccountSave } from '../domain';
 import { AccountIdmToDoMapper } from '../repo/mapper';
 import { AbstractAccountService } from './account.service.abstract';
-import { AccountConfig } from '../account-config';
+import { FindAccountByDbcUserIdLoggable, GetOptionalIdmAccountLoggable } from '../loggable';
 
 @Injectable()
 export class AccountServiceIdm extends AbstractAccountService {
@@ -17,7 +18,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		private readonly identityManager: IdentityManagementService,
 		private readonly accountIdmToDoMapper: AccountIdmToDoMapper,
 		private readonly idmOauthService: IdentityManagementOauthService,
-		private readonly logger: LegacyLogger,
+		private readonly logger: Logger,
 		private readonly configService: ConfigService<AccountConfig, true>
 	) {
 		super();
@@ -37,7 +38,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 				// eslint-disable-next-line no-await-in-loop
 				results.push(await this.identityManager.findAccountByDbcUserId(userId));
 			} catch {
-				this.logger.error(`Error while searching for account with userId ${userId}`);
+				this.logger.warning(new FindAccountByDbcUserIdLoggable(userId));
 				// ignore entry
 			}
 		}
@@ -50,7 +51,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 			const result = await this.identityManager.findAccountByDbcUserId(userId);
 			return this.accountIdmToDoMapper.mapToDo(result);
 		} catch {
-			this.logger.error(`Error while searching for account with userId ${userId}`);
+			this.logger.warning(new FindAccountByDbcUserIdLoggable(userId));
 			return null;
 		}
 	}
@@ -167,7 +168,7 @@ export class AccountServiceIdm extends AbstractAccountService {
 		try {
 			return await this.getIdmAccountId(accountId);
 		} catch {
-			this.logger.log(`Account ID ${accountId} could not be resolved. Creating new account and ID ...`);
+			this.logger.debug(new GetOptionalIdmAccountLoggable(accountId));
 			return undefined;
 		}
 	}

@@ -9,7 +9,7 @@ import { accountDtoFactory, setupEntities, userFactory } from '@shared/testing';
 import { IdentityManagementService } from '@src/infra/identity-management';
 import bcrypt from 'bcryptjs';
 import { v1 } from 'uuid';
-import { LegacyLogger } from '../../../core/logger';
+import { Logger } from '../../../core/logger';
 import { AccountConfig } from '../account-config';
 import { Account } from '../domain';
 import { AccountEntity } from '../entity/account.entity';
@@ -45,8 +45,8 @@ describe('AccountDbService', () => {
 					useValue: createMock<AccountRepo>(),
 				},
 				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 				{
 					provide: ConfigService,

@@ -16,7 +16,7 @@ import {
 	DataDeletedEvent,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@src/modules/deletion/domain/testing';
-import { LegacyLogger } from '../../../core/logger';
+import { Logger } from '../../../core/logger';
 import { AccountConfig } from '../account-config';
 import { Account, AccountSave, UpdateAccount } from '../domain';
 import { AccountEntity } from '../entity/account.entity';
@@ -25,6 +25,7 @@ import { AccountServiceDb } from './account-db.service';
 import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AccountValidationService } from './account.validation.service';
+import { IdmCallbackLoggableException } from '../loggable';
 
 describe('AccountService', () => {
 	let module: TestingModule;
@@ -33,7 +34,7 @@ describe('AccountService', () => {
 	let accountServiceDb: DeepMocked<AccountServiceDb>;
 	let accountValidationService: DeepMocked<AccountValidationService>;
 	let configService: DeepMocked<ConfigService>;
-	let logger: DeepMocked<LegacyLogger>;
+	let logger: DeepMocked<Logger>;
 	let userRepo: DeepMocked<UserRepo>;
 	let eventBus: DeepMocked<EventBus>;
 
@@ -69,8 +70,8 @@ describe('AccountService', () => {
 					useValue: createMock<AccountServiceIdm>(),
 				},
 				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 				{
 					provide: ConfigService,
@@ -99,7 +100,7 @@ describe('AccountService', () => {
 		accountService = module.get(AccountService);
 		accountValidationService = module.get(AccountValidationService);
 		configService = module.get(ConfigService);
-		logger = module.get(LegacyLogger);
+		logger = module.get(Logger);
 		userRepo = module.get(UserRepo);
 		eventBus = module.get(EventBus);
 
@@ -760,38 +761,6 @@ describe('AccountService', () => {
 		});
 	});
 
-	describe('executeIdmMethod', () => {
-		it('should throw an error object', async () => {
-			const spy = jest.spyOn(configService, 'get');
-			spy.mockReturnValueOnce(true);
-			const spyLogger = jest.spyOn(logger, 'error');
-			const testError = new Error('error');
-
-			const deleteByUserIdMock = jest.spyOn(accountServiceIdm, 'deleteByUserId');
-			deleteByUserIdMock.mockImplementationOnce(() => {
-				throw testError;
-			});
-
-			await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
-			expect(spyLogger).toHaveBeenCalledWith(testError, expect.anything());
-		});
-
-		it('should throw an non error object', async () => {
-			const spy = jest.spyOn(configService, 'get');
-			spy.mockReturnValueOnce(true);
-			const spyLogger = jest.spyOn(logger, 'error');
-
-			const deleteByUserIdMock = jest.spyOn(accountServiceIdm, 'deleteByUserId');
-			deleteByUserIdMock.mockImplementationOnce(() => {
-				// eslint-disable-next-line @typescript-eslint/no-throw-literal
-				throw 'a non error object';
-			});
-
-			await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
-			expect(spyLogger).toHaveBeenCalledWith('a non error object');
-		});
-	});
-
 	describe('when identity management is primary', () => {
 		describe('findById', () => {
 			const setup = () => {
@@ -848,7 +817,7 @@ describe('AccountService', () => {
 					throw testError;
 				});
 
-				const spyLogger = jest.spyOn(logger, 'error');
+				const spyLogger = jest.spyOn(logger, 'debug');
 
 				return { testError, spyLogger };
 			};
@@ -856,14 +825,14 @@ describe('AccountService', () => {
 				const { testError, spyLogger } = setup();
 
 				await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
-				expect(spyLogger).toHaveBeenCalledWith(testError, expect.anything());
+				expect(spyLogger).toHaveBeenCalledWith(new IdmCallbackLoggableException(testError));
 			});
 		});
 
 		describe('When idm feature is enabled', () => {
 			const setup = () => {
 				configService.get.mockReturnValueOnce(true);
-				const spyLogger = jest.spyOn(logger, 'error');
+				const spyLogger = jest.spyOn(logger, 'debug');
 				const deleteByUserIdMock = jest.spyOn(accountServiceIdm, 'deleteByUserId');
 				deleteByUserIdMock.mockImplementationOnce(() => {
 					// eslint-disable-next-line @typescript-eslint/no-throw-literal
@@ -871,11 +840,11 @@ describe('AccountService', () => {
 				});
 				return { spyLogger };
 			};
-			it('should call executeIdmMethod and throw an error object', async () => {
+			it('should call executeIdmMethod and throw a non error object', async () => {
 				const { spyLogger } = setup();
 
 				await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
-				expect(spyLogger).toHaveBeenCalledWith('a non error object');
+				expect(spyLogger).toHaveBeenCalledWith(new IdmCallbackLoggableException('a non error object'));
 			});
 		});
 	});
