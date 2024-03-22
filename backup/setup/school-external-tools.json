@@ -276,7 +276,7 @@
 		"$oid": "5f2987e020834114b8efd6f8"
 	},
 	"schoolParameters": [],
-	"toolVersion": 1,
+	"toolVersion": 3,
 	"status": {
 		"isOutdatedOnScopeSchool": false,
 		"isDeactivated": false
