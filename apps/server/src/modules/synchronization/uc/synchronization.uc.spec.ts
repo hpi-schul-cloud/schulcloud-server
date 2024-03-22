@@ -5,12 +5,15 @@ import { ObjectId } from 'bson';
 import { Logger } from '@src/core/logger';
 import { UserService } from '@modules/user';
 import { SanisResponse, SchulconnexRestClient, schulconnexResponseFactory } from '@src/infra/schulconnex-client';
+import { ConfigModule } from '@nestjs/config';
+import { createConfigModuleOptions } from '@src/config';
 import { SynchronizationService } from '../domain/service';
 import { SynchronizationUc } from './synchronization.uc';
 import { SynchronizationErrorLoggableException } from '../domain/loggable-exception';
 import { SynchronizationStatusModel } from '../domain/types';
 import { synchronizationFactory } from '../domain/testing';
 import { Synchronization } from '../domain';
+import { synchronizationTestConfig } from './testing';
 
 describe(SynchronizationUc.name, () => {
 	let module: TestingModule;
@@ -21,6 +24,7 @@ describe(SynchronizationUc.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
+			imports: [ConfigModule.forRoot(createConfigModuleOptions(synchronizationTestConfig))],
 			providers: [
 				SynchronizationUc,
 				{

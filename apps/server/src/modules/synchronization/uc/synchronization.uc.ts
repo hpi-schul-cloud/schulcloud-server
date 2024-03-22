@@ -2,15 +2,18 @@ import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@src/core/logger';
 import { SanisResponse, SchulconnexRestClient } from '@src/infra/schulconnex-client';
+import { ConfigService } from '@nestjs/config';
 import { SynchronizationService } from '../domain/service';
 import { Synchronization } from '../domain';
 import { SynchronizationStatusModel } from '../domain/types';
 import { SynchronizationLoggable } from '../domain/loggable';
 import { SynchronizationErrorLoggableException } from '../domain/loggable-exception';
+import { SynchronizationConfig } from '../config';
 
 @Injectable()
 export class SynchronizationUc {
 	constructor(
+		private readonly configService: ConfigService<SynchronizationConfig, true>,
 		private readonly schulconnexRestClient: SchulconnexRestClient,
 		private readonly synchronizationService: SynchronizationService,
 		private readonly userService: UserService,
@@ -26,7 +29,8 @@ export class SynchronizationUc {
 
 		try {
 			const usersToCheck = await this.findUsersToSynchronize(systemId);
-			const chunks = this.chunkArray(usersToCheck, 10000);
+			const chunkSize = this.configService.get<number>('SYNCHRONIZATION_CHUNK');
+			const chunks = this.chunkArray(usersToCheck, chunkSize);
 			let userSyncCount = 0;
 			for (const chunk of chunks) {
 				userSyncCount += await this.updateLastSyncedAt(chunk, systemId);
