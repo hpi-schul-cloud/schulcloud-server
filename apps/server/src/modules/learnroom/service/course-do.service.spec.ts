@@ -1,9 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Group } from '@modules/group';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { groupFactory } from '@shared/testing';
-import { Course, COURSE_REPO, CourseRepo } from '../domain';
+import { Course, COURSE_REPO, CourseNotSynchronizedLoggableException, CourseRepo } from '../domain';
 import { courseFactory } from '../testing';
 import { CourseDoService } from './course-do.service';
 
@@ -131,7 +132,7 @@ describe(CourseDoService.name, () => {
 	describe('stopSynchronization', () => {
 		describe('when a course is synchronized with a group', () => {
 			const setup = () => {
-				const course: Course = courseFactory.build();
+				const course: Course = courseFactory.build({ syncedWithGroup: new ObjectId().toHexString() });
 
 				return {
 					course,
@@ -164,7 +165,7 @@ describe(CourseDoService.name, () => {
 			it('should throw an unprocessable entity exception', async () => {
 				const { course } = setup();
 
-				await expect(service.stopSynchronization(course)).rejects.toThrow();
+				await expect(service.stopSynchronization(course)).rejects.toThrow(CourseNotSynchronizedLoggableException);
 			});
 		});
 	});
