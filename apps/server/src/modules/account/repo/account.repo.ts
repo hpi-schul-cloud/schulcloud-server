@@ -42,9 +42,7 @@ export class AccountRepo {
 	 * Finds an account by user id.
 	 * @param userId the user id
 	 */
-	// TODO: here only EntityIds should arrive => hard to determine because this is used by feathers/js part
 	public async findByUserId(userId: EntityId | ObjectId): Promise<Account | null> {
-		// TODO: you can use userId directly, without constructing an objectId => AccountEntity still uses ObjectId
 		const entity = await this.em.findOne(AccountEntity, { userId: new ObjectId(userId) });
 
 		if (!entity) {

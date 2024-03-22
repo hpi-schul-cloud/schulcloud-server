@@ -30,16 +30,13 @@ export class AccountServiceIdm extends AbstractAccountService {
 		return account;
 	}
 
-	// TODO: this needs a better solution. probably needs followup meeting to come up with something
 	async findMultipleByUserId(userIds: EntityId[]): Promise<Account[]> {
 		const results = new Array<IdmAccount>();
-		for (const userId of userIds) {
+		for await (const userId of userIds) {
 			try {
-				// eslint-disable-next-line no-await-in-loop
 				results.push(await this.identityManager.findAccountByDbcUserId(userId));
 			} catch {
 				this.logger.warning(new FindAccountByDbcUserIdLoggable(userId));
-				// ignore entry
 			}
 		}
 		const accounts = results.map((result) => this.accountIdmToDoMapper.mapToDo(result));
