@@ -1,33 +1,11 @@
 import { Collection, Embedded, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityWithSchool, LanguageType } from '../interface';
 import { EntityId } from '../types';
 import { BaseEntityWithTimestamps } from './base.entity';
+import { ConsentEntity } from './consent';
 import { Role } from './role.entity';
 import { SchoolEntity } from './school.entity';
 import { UserParentsEntity } from './user-parents.entity';
-
-export interface Consent {
-	userConsent?: UserConsent;
-	parentConsents?: ParentConsent[];
-}
-
-export interface UserConsent {
-	form: string;
-	privacyConsent: boolean;
-	termsOfUseConsent: boolean;
-	dateOfPrivacyConsent: Date;
-	dateOfTermsOfUseConsent: Date;
-}
-
-export interface ParentConsent {
-	_id: ObjectId;
-	form: string;
-	privacyConsent: boolean;
-	termsOfUseConsent: boolean;
-	dateOfPrivacyConsent: Date;
-	dateOfTermsOfUseConsent: Date;
-}
 
 export interface UserProperties {
 	email: string;
@@ -47,7 +25,7 @@ export interface UserProperties {
 	birthday?: Date;
 	customAvatarBackgroundColor?: string;
 	parents?: UserParentsEntity[];
-	consent?: Consent;
+	consent?: ConsentEntity;
 }
 
 interface UserInfo {
@@ -132,8 +110,8 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Property({ nullable: true })
 	customAvatarBackgroundColor?: string; // in legacy it is NOT optional, but all new users stored without default value
 
-	@Property({ nullable: true })
-	consent?: Consent;
+	@Embedded(() => ConsentEntity, { nullable: true, object: true })
+	consent?: ConsentEntity;
 
 	@Embedded(() => UserParentsEntity, { array: true, nullable: true })
 	parents?: UserParentsEntity[];
