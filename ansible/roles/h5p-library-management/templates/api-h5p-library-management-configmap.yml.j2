@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-h5p-library-management-configmap
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api-h5p-library-management-cronjob
+data:
+  h5p-libraries.yaml: |
+    h5p_libraries: {{ H5P_LIBRARIES }}

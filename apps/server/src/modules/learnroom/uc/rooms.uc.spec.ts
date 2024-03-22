@@ -1,9 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyBoardRepo, CourseRepo, TaskRepo, UserRepo } from '@shared/repo';
+import { CourseRepo, LegacyBoardRepo, TaskRepo, UserRepo } from '@shared/repo';
 import { boardFactory, courseFactory, lessonFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
 import { RoomsService } from '../service/rooms.service';
+import { RoomBoardDTO } from '../types';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 import { RoomsAuthorisationService } from './rooms.authorisation.service';
 import { RoomsUc } from './rooms.uc';
@@ -77,12 +78,13 @@ describe('rooms usecase', () => {
 			const tasks = taskFactory.buildList(3, { course: room });
 			const lessons = lessonFactory.buildList(3, { course: room });
 			const board = boardFactory.buildWithId({ course: room });
-			const roomBoardDTO = {
+			const roomBoardDTO: RoomBoardDTO = {
 				roomId: room.id,
 				displayColor: room.color,
 				title: room.name,
 				elements: [],
 				isArchived: room.isFinished(),
+				isSynchronized: !!room.syncedWithGroup,
 			};
 
 			board.syncBoardElementReferences([...lessons, ...tasks]);
