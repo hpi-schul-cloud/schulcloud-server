@@ -58,11 +58,11 @@ export class FileRecordResponse {
 	@ApiPropertyOptional()
 	deletedSince?: Date;
 
-	@ApiProperty()
-	createdAt: Date;
+	@ApiPropertyOptional()
+	createdAt?: Date;
 
-	@ApiProperty()
-	updatedAt: Date;
+	@ApiPropertyOptional()
+	updatedAt?: Date;
 }
 
 export class FileRecordListResponse extends PaginationResponse<FileRecordResponse[]> {
