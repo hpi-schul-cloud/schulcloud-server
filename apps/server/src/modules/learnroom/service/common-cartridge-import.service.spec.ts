@@ -2,8 +2,9 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities, userFactory } from '@shared/testing';
-import { ColumnBoardService, ColumnService } from '@src/modules/board';
+import { CardService, ColumnBoardService, ColumnService } from '@src/modules/board';
 import { readFile } from 'fs/promises';
+import { CommonCartridgeImportMapper } from '../mapper/common-cartridge-import.mapper';
 import { CommonCartridgeImportService } from './common-cartridge-import.service';
 import { CourseService } from './course.service';
 
@@ -14,12 +15,14 @@ describe('CommonCartridgeImportService', () => {
 	let courseServiceMock: DeepMocked<CourseService>;
 	let columnBoardServiceMock: DeepMocked<ColumnBoardService>;
 	let columnServiceMock: DeepMocked<ColumnService>;
+	let cardServiceMock: DeepMocked<CardService>;
 
 	beforeEach(async () => {
 		orm = await setupEntities();
 		moduleRef = await Test.createTestingModule({
 			providers: [
 				CommonCartridgeImportService,
+				CommonCartridgeImportMapper,
 				{
 					provide: CourseService,
 					useValue: createMock<CourseService>(),
@@ -32,6 +35,10 @@ describe('CommonCartridgeImportService', () => {
 					provide: ColumnService,
 					useValue: createMock<ColumnService>(),
 				},
+				{
+					provide: CardService,
+					useValue: createMock<CardService>(),
+				},
 			],
 		}).compile();
 
@@ -39,6 +46,7 @@ describe('CommonCartridgeImportService', () => {
 		courseServiceMock = moduleRef.get(CourseService);
 		columnBoardServiceMock = moduleRef.get(ColumnBoardService);
 		columnServiceMock = moduleRef.get(ColumnService);
+		cardServiceMock = moduleRef.get(CardService);
 	});
 
 	afterAll(async () => {
@@ -86,7 +94,15 @@ describe('CommonCartridgeImportService', () => {
 
 				await sut.importFile(user, buffer);
 
-				expect(columnServiceMock.createMany).toHaveBeenCalledTimes(1);
+				expect(columnServiceMock.create).toBeCalledTimes(14);
+			});
+
+			it('should create cards', async () => {
+				const { user, buffer } = await setup();
+
+				await sut.importFile(user, buffer);
+
+				expect(cardServiceMock.createMany).toBeCalledTimes(14);
 			});
 		});
 	});

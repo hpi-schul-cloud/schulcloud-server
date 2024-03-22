@@ -38,7 +38,7 @@ describe('CommonCartridgeOrganizationVisitor', () => {
 
 				const result = sut.findAllOrganizations();
 
-				expect(result).toHaveLength(14);
+				expect(result).toHaveLength(117);
 			});
 		});
 
