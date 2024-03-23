@@ -40,7 +40,9 @@ export class SynchronizationUc {
 		} catch (error) {
 			let logMessage = '';
 			if (error instanceof SynchronizationErrorLoggableException) {
-				logMessage = error.getLogMessage()?.data?.errorMessage as string;
+				logMessage = `${error.getLogMessage()?.data?.errorMessage as string}: ${
+					error.getLogMessage()?.data?.systemId as string
+				}`;
 			} else {
 				logMessage = `Synchronisation process failed for users provided by the system ${systemId}`;
 			}
@@ -54,7 +56,7 @@ export class SynchronizationUc {
 		const usersDownloaded: SanisResponse[] = await this.schulconnexRestClient.getPersonenInfo({});
 
 		if (usersDownloaded.length === 0) {
-			throw new SynchronizationErrorLoggableException(`No users to check from system: ${systemId}`);
+			throw new SynchronizationErrorLoggableException('No users to check from system', systemId);
 		}
 		usersToCheck = usersDownloaded.map((user) => user.pid);
 
@@ -70,7 +72,8 @@ export class SynchronizationUc {
 			return usersToSync.length;
 		} catch {
 			throw new SynchronizationErrorLoggableException(
-				`Failed to update lastSyncedAt field for users provisioned by system ${systemId}`
+				'Failed to update lastSyncedAt field for users provisioned by system.',
+				systemId
 			);
 		}
 	}

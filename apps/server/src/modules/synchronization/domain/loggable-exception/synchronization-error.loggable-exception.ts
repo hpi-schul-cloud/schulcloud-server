@@ -3,7 +3,7 @@ import { Loggable } from '@src/core/logger/interfaces';
 import { ErrorLogMessage } from '@src/core/logger/types';
 
 export class SynchronizationErrorLoggableException extends InternalServerErrorException implements Loggable {
-	constructor(private readonly errorMessage: string) {
+	constructor(private readonly errorMessage: string, private readonly systemId?: string) {
 		super();
 	}
 
@@ -12,6 +12,7 @@ export class SynchronizationErrorLoggableException extends InternalServerErrorEx
 			type: 'SYNCHRONIZATION_ERROR',
 			stack: this.stack,
 			data: {
+				systemId: this.systemId,
 				errorMessage: this.errorMessage,
 			},
 		};
