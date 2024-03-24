@@ -224,6 +224,22 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 		return users;
 	}
 
+	public async findByExternalIdsAndProvidedBySystemId(externalIds: string[], systemId: string): Promise<string[]> {
+		const foundUsers = await this.findByExternalIds(externalIds);
+
+		const verifiedUsers = await this.accountService.findByUserIdsAndSystemId(foundUsers, systemId);
+
+		return verifiedUsers;
+	}
+
+	public async findByExternalIds(externalIds: string[]): Promise<string[]> {
+		return this.userRepo.findByExternalIds(externalIds);
+	}
+
+	public async updateLastSyncedAt(userIds: string[]): Promise<void> {
+		await this.userRepo.updateAllUserByLastSyncedAt(userIds);
+	}
+
 	public async removeUserRegistrationPin(userId: EntityId): Promise<DomainDeletionReport> {
 		const userToDeletion = await this.userRepo.findByIdOrNull(userId);
 		const parentEmails = await this.getParentEmailsFromUser(userId);

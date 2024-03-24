@@ -1,10 +1,11 @@
 import { AnyEntity, EntityName, Primary } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Account } from '@shared/domain/entity/account.entity';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
+import { ObjectId } from 'bson';
+import { AccountScope } from './account-scope';
 
 @Injectable()
 export class AccountRepo extends BaseRepo<Account> {
@@ -80,6 +81,21 @@ export class AccountRepo extends BaseRepo<Account> {
 		return result;
 	}
 
+	async findByUserIdsAndSystemId(userIds: string[], systemId: string): Promise<string[]> {
+		const scope = new AccountScope();
+		const userIdScope = new AccountScope();
+
+		userIdScope.byUserIdsAndSystemId(userIds, systemId);
+
+		scope.addQuery(userIdScope.query);
+
+		const foundUsers = await this._em.find(Account, scope.query);
+
+		const result = foundUsers.filter((user) => user.userId !== undefined).map(({ userId }) => userId!.toHexString());
+
+		return result;
+	}
+
 	private async searchByUsername(
 		username: string,
 		offset: number,
@@ -105,4 +121,6 @@ export class AccountRepo extends BaseRepo<Account> {
 			}
 		);
 	}
+
+	private;
 }
