@@ -60,14 +60,14 @@ export class MeUserResponse {
 	}
 }
 
-export class MeRolesReponse {
+export class MeRoleResponse {
 	@ApiProperty()
 	id: string;
 
 	@ApiProperty()
 	name: string;
 
-	constructor(props: MeRolesReponse) {
+	constructor(props: MeRoleResponse) {
 		this.id = props.id;
 		this.name = props.name;
 	}
@@ -80,8 +80,8 @@ export class MeResponse {
 	@ApiProperty()
 	user: MeUserResponse;
 
-	@ApiProperty({ type: [MeRolesReponse] })
-	roles: MeRolesReponse[];
+	@ApiProperty({ type: [MeRoleResponse] })
+	roles: MeRoleResponse[];
 
 	@ApiProperty()
 	permissions: string[];
