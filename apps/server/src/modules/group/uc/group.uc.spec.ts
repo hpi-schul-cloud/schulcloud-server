@@ -4,10 +4,11 @@ import { Action, AuthorizationContext, AuthorizationService } from '@modules/aut
 import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
 import { classFactory } from '@modules/class/domain/testing/factory/class.factory';
-import { CourseService } from '@modules/learnroom';
 import { Course } from '@modules/learnroom/domain';
+import { CourseDoService } from '@modules/learnroom/service/course-do.service';
 import { courseFactory } from '@modules/learnroom/testing';
 import { SchoolYearService } from '@modules/legacy-school';
+import { ProvisioningConfig } from '@modules/provisioning';
 import { RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { School, SchoolService } from '@modules/school/domain';
@@ -33,7 +34,6 @@ import {
 	userFactory,
 } from '@shared/testing';
 import { Logger } from '@src/core/logger';
-import { ProvisioningConfig } from '../../provisioning';
 import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupTypes } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
@@ -54,7 +54,7 @@ describe('GroupUc', () => {
 	let schoolService: DeepMocked<SchoolService>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
-	let courseService: DeepMocked<CourseService>;
+	let courseService: DeepMocked<CourseDoService>;
 	let configService: DeepMocked<ConfigService<ProvisioningConfig, true>>;
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	let logger: DeepMocked<Logger>;
@@ -96,8 +96,8 @@ describe('GroupUc', () => {
 					useValue: createMock<SchoolYearService>(),
 				},
 				{
-					provide: CourseService,
-					useValue: createMock<CourseService>(),
+					provide: CourseDoService,
+					useValue: createMock<CourseDoService>(),
 				},
 				{
 					provide: ConfigService,
@@ -119,7 +119,7 @@ describe('GroupUc', () => {
 		schoolService = module.get(SchoolService);
 		authorizationService = module.get(AuthorizationService);
 		schoolYearService = module.get(SchoolYearService);
-		courseService = module.get(CourseService);
+		courseService = module.get(CourseDoService);
 		configService = module.get(ConfigService);
 		logger = module.get(Logger);
 

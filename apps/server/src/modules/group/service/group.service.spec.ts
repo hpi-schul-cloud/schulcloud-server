@@ -1,7 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Course } from '@modules/learnroom/domain';
-import { CourseService } from '@modules/learnroom/service/course.service';
+import { CourseDoService } from '@modules/learnroom/service/course-do.service';
 import { courseFactory } from '@modules/learnroom/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
@@ -16,7 +16,7 @@ describe('GroupService', () => {
 	let service: GroupService;
 
 	let groupRepo: DeepMocked<GroupRepo>;
-	let courseService: DeepMocked<CourseService>;
+	let courseService: DeepMocked<CourseDoService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -27,15 +27,15 @@ describe('GroupService', () => {
 					useValue: createMock<GroupRepo>(),
 				},
 				{
-					provide: CourseService,
-					useValue: createMock<CourseService>(),
+					provide: CourseDoService,
+					useValue: createMock<CourseDoService>(),
 				},
 			],
 		}).compile();
 
 		service = module.get(GroupService);
 		groupRepo = module.get(GroupRepo);
-		courseService = module.get(CourseService);
+		courseService = module.get(CourseDoService);
 	});
 
 	afterAll(async () => {
