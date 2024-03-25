@@ -34,4 +34,8 @@ export class System extends DomainObject<SystemProps> {
 	get provisioningStrategy(): SystemProvisioningStrategy | undefined {
 		return this.props.provisioningStrategy;
 	}
+
+	get oauthConfig(): OauthConfig | undefined {
+		return this.props.oauthConfig;
+	}
 }

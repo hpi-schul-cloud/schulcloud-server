@@ -19,6 +19,7 @@ import { LdapStrategy } from './strategy/ldap.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { Oauth2Strategy } from './strategy/oauth2.strategy';
 import { XApiKeyStrategy } from './strategy/x-api-key.strategy';
+import {UserModule} from "@modules/user/user.module";
 
 // values copied from Algorithm definition. Type does not exist at runtime and can't be checked anymore otherwise
 const algorithms = [
@@ -65,6 +66,7 @@ const jwtModuleOptions: JwtModuleOptions = {
 		RoleModule,
 		IdentityManagementModule,
 		CacheWrapperModule,
+		UserModule,
 	],
 	providers: [
 		JwtStrategy,

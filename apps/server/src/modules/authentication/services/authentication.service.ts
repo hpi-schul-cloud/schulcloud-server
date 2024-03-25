@@ -8,10 +8,21 @@ import { AccountDto } from '@modules/account/services/dto';
 import type { ServerConfig } from '@modules/server';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { System, SystemService } from '@modules/system';
+import { UserDO } from '@shared/domain/domainobject';
+import { UserService } from '@modules/user';
+import { HttpService } from '@nestjs/axios';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { CreateJwtPayload } from '../interface/jwt-payload';
 import { JwtValidationAdapter } from '../strategy/jwt-validation.adapter';
 import { LoginDto } from '../uc/dto';
+import {firstValueFrom} from "rxjs";
+
+interface KeycloakLogoutDto {
+	client_id?: string;
+	client_secret?: string;
+	refresh_token?: string;
+}
 
 @Injectable()
 export class AuthenticationService {
@@ -19,7 +30,10 @@ export class AuthenticationService {
 		private readonly jwtService: JwtService,
 		private readonly jwtValidationAdapter: JwtValidationAdapter,
 		private readonly accountService: AccountService,
-		private readonly configService: ConfigService<ServerConfig, true>
+		private readonly configService: ConfigService<ServerConfig, true>,
+		private readonly userService: UserService,
+		private readonly systemService: SystemService,
+		private readonly httpService: HttpService
 	) {}
 
 	async loadAccount(username: string, systemId?: string): Promise<AccountDto> {
@@ -60,6 +74,24 @@ export class AuthenticationService {
 		if (decodedJwt && decodedJwt.jti && decodedJwt.accountId && typeof decodedJwt.accountId === 'string') {
 			await this.jwtValidationAdapter.removeFromWhitelist(decodedJwt.accountId, decodedJwt.jti);
 		}
+	}
+
+	async logoutFromKeycloak(userId: string, systemId: string): Promise<void> {
+		const user: UserDO = await this.userService.findById(userId);
+		const system: System | null = await this.systemService.findById(systemId);
+
+		const dto: KeycloakLogoutDto = {
+			client_id: system?.oauthConfig?.clientId,
+			client_secret: system?.oauthConfig?.clientSecret,
+			refresh_token: user.sessionToken,
+		};
+
+		await firstValueFrom(
+			this.httpService.post(
+				'https://auth.stage.niedersachsen-login.schule/realms/SANIS/protocol/openid-connect/logout',
+				dto
+			)
+		);
 	}
 
 	checkBrutForce(account: AccountDto): void {

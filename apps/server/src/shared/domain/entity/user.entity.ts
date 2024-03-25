@@ -26,6 +26,7 @@ export interface UserProperties {
 	customAvatarBackgroundColor?: string;
 	parents?: UserParentsEntity[];
 	consent?: ConsentEntity;
+	sessionToken?: string;
 }
 
 interface UserInfo {
@@ -116,6 +117,9 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 	@Embedded(() => UserParentsEntity, { array: true, nullable: true })
 	parents?: UserParentsEntity[];
 
+	@Property({ nullable: true })
+	sessionToken?: string;
+
 	constructor(props: UserProperties) {
 		super();
 		this.firstName = props.firstName;
@@ -136,6 +140,7 @@ export class User extends BaseEntityWithTimestamps implements EntityWithSchool {
 		this.customAvatarBackgroundColor = props.customAvatarBackgroundColor;
 		this.parents = props.parents;
 		this.consent = props.consent;
+		this.sessionToken = props.sessionToken;
 	}
 
 	public resolvePermissions(): string[] {

@@ -20,4 +20,9 @@ export class LoginUc {
 
 		return loginDto;
 	}
+
+	async logoutUser(jwt: string, user: ICurrentUser): Promise<void> {
+		await this.authService.removeJwtFromWhitelist(jwt);
+		if (user.systemId) await this.authService.logoutFromKeycloak(user.userId, user.systemId);
+	}
 }

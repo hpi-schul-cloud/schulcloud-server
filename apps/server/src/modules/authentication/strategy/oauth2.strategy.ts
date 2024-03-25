@@ -21,7 +21,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, 'oauth2') {
 
 		const tokenDto: OAuthTokenDto = await this.oauthService.authenticateUser(systemId, redirectUri, code);
 
-		const user: UserDO | null = await this.oauthService.provisionUser(systemId, tokenDto.idToken, tokenDto.accessToken);
+		const user: UserDO | null = await this.oauthService.provisionUser(systemId, tokenDto);
 
 		if (!user || !user.id) {
 			throw new SchoolInMigrationLoggableException();
