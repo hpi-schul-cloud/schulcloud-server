@@ -28,15 +28,16 @@ export class CommonCartridgeExportService {
 		courseId: EntityId,
 		userId: EntityId,
 		version: CommonCartridgeVersion,
-		topics: string[]
+		exportedTopics: string[],
+		exportedTasks: string[]
 	): Promise<Buffer> {
 		const course = await this.courseService.findById(courseId);
 		const builder = new CommonCartridgeFileBuilder(this.commonCartridgeMapper.mapCourseToManifest(version, course));
 
 		builder.addMetadata(this.commonCartridgeMapper.mapCourseToMetadata(course));
 
-		await this.addLessons(builder, courseId, version, topics);
-		await this.addTasks(builder, courseId, userId, version);
+		await this.addLessons(builder, courseId, version, exportedTopics);
+		await this.addTasks(builder, courseId, userId, version, exportedTasks);
 		await this.addColumnBoards(builder, courseId);
 
 		return builder.build();
@@ -71,7 +72,8 @@ export class CommonCartridgeExportService {
 		builder: CommonCartridgeFileBuilder,
 		courseId: EntityId,
 		userId: EntityId,
-		version: CommonCartridgeVersion
+		version: CommonCartridgeVersion,
+		exportedTasks: string[]
 	): Promise<void> {
 		const [tasks] = await this.taskService.findBySingleParent(userId, courseId);
 
@@ -85,6 +87,10 @@ export class CommonCartridgeExportService {
 		});
 
 		tasks.forEach((task) => {
+			if (!exportedTasks.includes(task.id)) {
+				return;
+			}
+
 			organization.addResource(this.commonCartridgeMapper.mapTaskToResource(task, version));
 		});
 	}
