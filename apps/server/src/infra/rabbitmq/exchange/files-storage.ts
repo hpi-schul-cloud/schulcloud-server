@@ -26,6 +26,7 @@ export enum FileRecordParentType {
 	'Task' = 'tasks',
 	'Lesson' = 'lessons',
 	'Submission' = 'submissions',
+	'Grading' = 'gradings',
 	'BoardNode' = 'boardnodes',
 }
 
