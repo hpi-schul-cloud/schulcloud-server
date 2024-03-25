@@ -1,10 +1,10 @@
-import { Account } from '@shared/domain/entity';
 import { Counted } from '@shared/domain/types';
-import { AccountDto } from '../services/dto/account.dto';
+import { Account } from '../../domain/account';
+import { AccountEntity } from '../../entity/account.entity';
 
-export class AccountEntityToDtoMapper {
-	static mapToDto(account: Account): AccountDto {
-		return new AccountDto({
+export class AccountEntityToDoMapper {
+	static mapToDo(account: AccountEntity): Account {
+		return new Account({
 			id: account.id,
 			createdAt: account.createdAt,
 			updatedAt: account.updatedAt,
@@ -20,13 +20,13 @@ export class AccountEntityToDtoMapper {
 		});
 	}
 
-	static mapSearchResult(accountEntities: [Account[], number]): Counted<AccountDto[]> {
+	static mapCountedEntities(accountEntities: Counted<AccountEntity[]>): Counted<Account[]> {
 		const foundAccounts = accountEntities[0];
-		const accountDtos: AccountDto[] = AccountEntityToDtoMapper.mapAccountsToDto(foundAccounts);
+		const accountDtos: Account[] = AccountEntityToDoMapper.mapEntitiesToDos(foundAccounts);
 		return [accountDtos, accountEntities[1]];
 	}
 
-	static mapAccountsToDto(accounts: Account[]): AccountDto[] {
-		return accounts.map((accountEntity) => AccountEntityToDtoMapper.mapToDto(accountEntity));
+	static mapEntitiesToDos(accounts: AccountEntity[]): Account[] {
+		return accounts.map((accountEntity) => AccountEntityToDoMapper.mapToDo(accountEntity));
 	}
 }

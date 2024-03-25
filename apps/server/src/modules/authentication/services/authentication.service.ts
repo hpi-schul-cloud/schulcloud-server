@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 // invalid import
-import { AccountDto } from '@modules/account/services/dto';
+import { Account } from '@src/modules/account/domain';
 // invalid import, can produce dependency cycles
 import type { ServerConfig } from '@modules/server';
 import { randomUUID } from 'crypto';
@@ -22,8 +22,8 @@ export class AuthenticationService {
 		private readonly configService: ConfigService<ServerConfig, true>
 	) {}
 
-	async loadAccount(username: string, systemId?: string): Promise<AccountDto> {
-		let account: AccountDto | undefined | null;
+	async loadAccount(username: string, systemId?: string): Promise<Account> {
+		let account: Account | undefined | null;
 
 		if (systemId) {
 			account = await this.accountService.findByUsernameAndSystemId(username, systemId);
@@ -62,7 +62,7 @@ export class AuthenticationService {
 		}
 	}
 
-	checkBrutForce(account: AccountDto): void {
+	checkBrutForce(account: Account): void {
 		if (account.lasttriedFailedLogin) {
 			const timeDifference = (new Date().getTime() - account.lasttriedFailedLogin.getTime()) / 1000;
 

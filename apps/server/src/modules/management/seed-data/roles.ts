@@ -127,6 +127,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 			Permission.SYSTEM_CREATE,
 			Permission.SYSTEM_VIEW,
 			Permission.SCHOOL_TOOL_ADMIN,
+			Permission.USER_CHANGE_OWN_NAME,
 		],
 	},
 	superhero: {
@@ -136,6 +137,8 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 		name: RoleName.SUPERHERO,
 		roles: [RoleName.USER],
 		permissions: [
+			Permission.ACCOUNT_DELETE,
+			Permission.ACCOUNT_VIEW,
 			Permission.ADMIN_EDIT,
 			Permission.CLASS_LIST,
 			Permission.CREATE_SUPPORT_JWT,
@@ -171,6 +174,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 			Permission.TEAM_EDIT,
 			Permission.TOOL_CREATE,
 			Permission.TOOL_EDIT,
+			Permission.USER_CHANGE_OWN_NAME,
 			Permission.YEARS_EDIT,
 		],
 	},
@@ -209,6 +213,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 			Permission.TOPIC_EDIT,
 			Permission.USERGROUP_CREATE,
 			Permission.USERGROUP_EDIT,
+			Permission.USER_CHANGE_OWN_NAME,
 			Permission.USER_CREATE,
 			Permission.TASK_DASHBOARD_TEACHER_VIEW_V3,
 			Permission.TEAM_CREATE,

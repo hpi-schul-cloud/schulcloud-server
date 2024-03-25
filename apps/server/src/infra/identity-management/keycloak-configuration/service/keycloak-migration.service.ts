@@ -2,7 +2,7 @@ import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRep
 import { Injectable } from '@nestjs/common';
 import { LegacyLogger } from '@src/core/logger';
 import { AccountService } from '@modules/account/services/account.service';
-import { AccountDto } from '@modules/account/services/dto';
+import { Account } from '@src/modules/account/domain';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 
 @Injectable()
@@ -20,7 +20,7 @@ export class KeycloakMigrationService {
 		let skip = start;
 		let foundAccounts = 1;
 		let migratedAccounts = 0;
-		let accounts: AccountDto[] = [];
+		let accounts: Account[] = [];
 		while (foundAccounts > 0) {
 			// eslint-disable-next-line no-await-in-loop
 			accounts = await this.accountService.findMany(skip, amount);
@@ -45,7 +45,7 @@ export class KeycloakMigrationService {
 		return migratedAccounts;
 	}
 
-	private async createOrUpdateIdmAccount(account: AccountDto): Promise<string> {
+	private async createOrUpdateIdmAccount(account: Account): Promise<string> {
 		const idmUserRepresentation: UserRepresentation = {
 			username: account.username,
 			enabled: true,

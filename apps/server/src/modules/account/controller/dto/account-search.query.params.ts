@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsString } from 'class-validator';
-import { PaginationParams } from '@shared/controller';
+import { PaginationParams, SanitizeHtml } from '@shared/controller';
 import { AccountSearchType } from './account-search-type';
 
 export class AccountSearchQueryParams extends PaginationParams {
@@ -14,6 +14,7 @@ export class AccountSearchQueryParams extends PaginationParams {
 	type!: AccountSearchType;
 
 	@IsString()
+	@SanitizeHtml()
 	@ApiProperty({
 		description: 'The search value.',
 		required: true,

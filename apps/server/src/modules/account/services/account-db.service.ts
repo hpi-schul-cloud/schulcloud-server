@@ -1,109 +1,104 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config/dist/config.service';
 import { EntityNotFoundError } from '@shared/common';
-import { Account } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
+import { IdentityManagementService } from '@src/infra/identity-management/identity-management.service';
 import bcrypt from 'bcryptjs';
-import { AccountEntityToDtoMapper } from '../mapper';
+import { AccountConfig } from '../account-config';
+import { Account, AccountSave } from '../domain/account';
 import { AccountRepo } from '../repo/account.repo';
-import { AccountLookupService } from './account-lookup.service';
-import { AbstractAccountService } from './account.service.abstract';
-import { AccountDto, AccountSaveDto } from './dto';
+
+// HINT: do more empty lines :)
 
 @Injectable()
-export class AccountServiceDb extends AbstractAccountService {
-	constructor(private readonly accountRepo: AccountRepo, private readonly accountLookupService: AccountLookupService) {
-		super();
-	}
+export class AccountServiceDb {
+	constructor(
+		private readonly accountRepo: AccountRepo,
+		private readonly idmService: IdentityManagementService,
+		private readonly configService: ConfigService<AccountConfig, true>
+	) {}
 
-	async findById(id: EntityId): Promise<AccountDto> {
+	async findById(id: EntityId): Promise<Account> {
 		const internalId = await this.getInternalId(id);
-		const accountEntity = await this.accountRepo.findById(internalId);
-		return AccountEntityToDtoMapper.mapToDto(accountEntity);
+
+		return this.accountRepo.findById(internalId);
 	}
 
-	async findMultipleByUserId(userIds: EntityId[]): Promise<AccountDto[]> {
-		const accountEntities = await this.accountRepo.findMultipleByUserId(userIds);
-		return AccountEntityToDtoMapper.mapAccountsToDto(accountEntities);
+	async findMultipleByUserId(userIds: EntityId[]): Promise<Account[]> {
+		return this.accountRepo.findMultipleByUserId(userIds);
 	}
 
-	async findByUserId(userId: EntityId): Promise<AccountDto | null> {
-		const accountEntity = await this.accountRepo.findByUserId(userId);
-		return accountEntity ? AccountEntityToDtoMapper.mapToDto(accountEntity) : null;
+	async findByUserId(userId: EntityId): Promise<Account | null> {
+		return this.accountRepo.findByUserId(userId);
 	}
 
-	async findByUserIdOrFail(userId: EntityId): Promise<AccountDto> {
-		const accountEntity = await this.accountRepo.findByUserId(userId);
-		if (!accountEntity) {
-			throw new EntityNotFoundError('Account');
-		}
-		return AccountEntityToDtoMapper.mapToDto(accountEntity);
+	async findByUserIdOrFail(userId: EntityId): Promise<Account> {
+		return this.accountRepo.findByUserIdOrFail(userId);
 	}
 
-	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<AccountDto | null> {
-		const accountEntity = await this.accountRepo.findByUsernameAndSystemId(username, systemId);
-		return accountEntity ? AccountEntityToDtoMapper.mapToDto(accountEntity) : null;
+	async findByUsernameAndSystemId(username: string, systemId: EntityId | ObjectId): Promise<Account | null> {
+		return this.accountRepo.findByUsernameAndSystemId(username, systemId);
 	}
 
-	async save(accountDto: AccountSaveDto): Promise<AccountDto> {
+	async save(accountSave: AccountSave): Promise<Account> {
 		let account: Account;
-		if (accountDto.id) {
-			const internalId = await this.getInternalId(accountDto.id);
+		// HINT: mapping could be done by a mapper (though this whole file is subject to be removed in the future)
+		// HINT: today we have logic to map back into unit work in the baseDO
+		if (accountSave.id) {
+			const internalId = await this.getInternalId(accountSave.id);
 			account = await this.accountRepo.findById(internalId);
-			account.userId = new ObjectId(accountDto.userId);
-			account.systemId = accountDto.systemId ? new ObjectId(accountDto.systemId) : undefined;
-			account.username = accountDto.username;
-			account.activated = accountDto.activated;
-			account.expiresAt = accountDto.expiresAt;
-			account.lasttriedFailedLogin = accountDto.lasttriedFailedLogin;
-			if (accountDto.password) {
-				account.password = await this.encryptPassword(accountDto.password);
+			account.userId = accountSave.userId;
+			account.systemId = accountSave.systemId;
+			account.username = accountSave.username;
+			account.activated = accountSave.activated;
+			account.expiresAt = accountSave.expiresAt;
+			account.lasttriedFailedLogin = accountSave.lasttriedFailedLogin;
+			if (accountSave.password) {
+				account.password = await this.encryptPassword(accountSave.password);
 			}
-			account.credentialHash = accountDto.credentialHash;
-			account.token = accountDto.token;
-
-			await this.accountRepo.save(account);
+			account.credentialHash = accountSave.credentialHash;
+			account.token = accountSave.token;
 		} else {
 			account = new Account({
-				userId: new ObjectId(accountDto.userId),
-				systemId: accountDto.systemId ? new ObjectId(accountDto.systemId) : undefined,
-				username: accountDto.username,
-				activated: accountDto.activated,
-				expiresAt: accountDto.expiresAt,
-				lasttriedFailedLogin: accountDto.lasttriedFailedLogin,
-				password: accountDto.password ? await this.encryptPassword(accountDto.password) : undefined,
-				token: accountDto.token,
-				credentialHash: accountDto.credentialHash,
+				id: new ObjectId().toHexString(),
+				userId: accountSave.userId,
+				systemId: accountSave.systemId,
+				username: accountSave.username,
+				activated: accountSave.activated,
+				expiresAt: accountSave.expiresAt,
+				lasttriedFailedLogin: accountSave.lasttriedFailedLogin,
+				password: accountSave.password ? await this.encryptPassword(accountSave.password) : undefined,
+				token: accountSave.token,
+				credentialHash: accountSave.credentialHash,
 			});
-
-			await this.accountRepo.save(account);
 		}
-		return AccountEntityToDtoMapper.mapToDto(account);
+		return this.accountRepo.save(account);
 	}
 
-	async updateUsername(accountId: EntityId, username: string): Promise<AccountDto> {
+	async updateUsername(accountId: EntityId, username: string): Promise<Account> {
 		const internalId = await this.getInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.username = username;
 		await this.accountRepo.save(account);
-		return AccountEntityToDtoMapper.mapToDto(account);
+		return account;
 	}
 
-	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<AccountDto> {
+	async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<Account> {
 		const internalId = await this.getInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.lasttriedFailedLogin = lastTriedFailedLogin;
 		await this.accountRepo.save(account);
-		return AccountEntityToDtoMapper.mapToDto(account);
+		return account;
 	}
 
-	async updatePassword(accountId: EntityId, password: string): Promise<AccountDto> {
+	async updatePassword(accountId: EntityId, password: string): Promise<Account> {
 		const internalId = await this.getInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.password = await this.encryptPassword(password);
 
 		await this.accountRepo.save(account);
-		return AccountEntityToDtoMapper.mapToDto(account);
+		return account;
 	}
 
 	async delete(id: EntityId): Promise<void> {
@@ -115,36 +110,51 @@ export class AccountServiceDb extends AbstractAccountService {
 		return this.accountRepo.deleteByUserId(userId);
 	}
 
-	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<AccountDto[]>> {
-		const accountEntities = await this.accountRepo.searchByUsernamePartialMatch(userName, skip, limit);
-		return AccountEntityToDtoMapper.mapSearchResult(accountEntities);
+	async searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>> {
+		return this.accountRepo.searchByUsernamePartialMatch(userName, skip, limit);
 	}
 
-	async searchByUsernameExactMatch(userName: string): Promise<Counted<AccountDto[]>> {
-		const accountEntities = await this.accountRepo.searchByUsernameExactMatch(userName);
-		return AccountEntityToDtoMapper.mapSearchResult(accountEntities);
+	async searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
+		return this.accountRepo.searchByUsernameExactMatch(userName);
 	}
 
-	validatePassword(account: AccountDto, comparePassword: string): Promise<boolean> {
+	validatePassword(account: Account, comparePassword: string): Promise<boolean> {
 		if (!account.password) {
 			return Promise.resolve(false);
 		}
-		return bcrypt.compare(comparePassword, account.password);
+		return bcrypt.compare(comparePassword, account.password); // hint: first get result, then return seperately
 	}
 
 	private async getInternalId(id: EntityId | ObjectId): Promise<ObjectId> {
-		const internalId = await this.accountLookupService.getInternalId(id);
+		const internalId = await this.getInternalIdImpl(id);
 		if (!internalId) {
 			throw new EntityNotFoundError(`Account with id ${id.toString()} not found`);
 		}
 		return internalId;
 	}
 
+	/**
+	 * Converts an external id to the internal id, if the id is already an internal id, it will be returned as is.
+	 * IMPORTANT: This method will not guarantee that the id is valid, it will only try to convert it.
+	 * @param id the id the should be converted to the internal id.
+	 * @returns the converted id or null if conversion failed.
+	 */
+	private async getInternalIdImpl(id: EntityId | ObjectId): Promise<ObjectId | null> {
+		if (id instanceof ObjectId || ObjectId.isValid(id)) {
+			return new ObjectId(id);
+		}
+		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
+			const account = await this.idmService.findAccountById(id);
+			return new ObjectId(account.attDbcAccountId);
+		}
+		return null;
+	}
+
 	private encryptPassword(password: string): Promise<string> {
 		return bcrypt.hash(password, 10);
 	}
 
-	async findMany(offset = 0, limit = 100): Promise<AccountDto[]> {
-		return AccountEntityToDtoMapper.mapAccountsToDto(await this.accountRepo.findMany(offset, limit));
+	async findMany(offset = 0, limit = 100): Promise<Account[]> {
+		return this.accountRepo.findMany(offset, limit);
 	}
 }

@@ -24,6 +24,7 @@ import {
 } from '@shared/testing';
 import { systemEntityFactory } from '@shared/testing/factory/systemEntityFactory';
 import { Logger } from '@src/core/logger';
+import { Account } from '@src/modules/account/domain';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import { SchoolNotMigratedLoggableException } from '../loggable';
 import { UserImportService } from '../service';
@@ -517,13 +518,15 @@ describe('[ImportUserModule]', () => {
 				permissionServiceSpy = authorizationService.checkAllPermissions.mockReturnValue();
 				importUserRepoFindImportUsersSpy = importUserRepo.findImportUsers.mockResolvedValue([[], 0]);
 				accountServiceFindByUserIdSpy = accountService.findByUserId
-					.mockResolvedValue({
-						id: 'dummyId',
-						userId: currentUser.id,
-						username: currentUser.email,
-						createdAt: new Date(),
-						updatedAt: new Date(),
-					})
+					.mockResolvedValue(
+						new Account({
+							id: 'dummyId',
+							userId: currentUser.id,
+							username: currentUser.email,
+							createdAt: new Date(),
+							updatedAt: new Date(),
+						})
+					)
 					.mockResolvedValueOnce(null);
 				importUserRepoDeleteImportUsersBySchoolSpy = importUserRepo.deleteImportUsersBySchool.mockResolvedValue();
 				importUserRepoDeleteImportUserSpy = importUserRepo.delete.mockResolvedValue();

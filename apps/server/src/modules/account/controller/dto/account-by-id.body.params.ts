@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { PrivacyProtect } from '@shared/controller';
+import { PrivacyProtect, SanitizeHtml } from '@shared/controller';
 import { IsBoolean, IsString, IsOptional, Matches, IsEmail } from 'class-validator';
 import { passwordPattern } from './password-pattern';
 
 export class AccountByIdBodyParams {
 	@IsOptional()
 	@IsString()
+	@SanitizeHtml()
 	@IsEmail()
 	@ApiProperty({
 		description: 'The new user name for the user.',

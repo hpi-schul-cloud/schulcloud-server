@@ -1,12 +1,13 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import type { User } from '@shared/domain/entity';
 import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
+import { AccountEntity } from '@src/modules/account/entity/account.entity';
 import { ServerTestModule } from '@src/modules/server';
-import type { Account, User } from '@shared/domain/entity';
 import { MeResponse } from '../dto';
 
-const mapToMeResponseObject = (user: User, account: Account): MeResponse => {
+const mapToMeResponseObject = (user: User, account: AccountEntity): MeResponse => {
 	const permissions = user.resolvePermissions();
 	const roles = user.getRoles();
 	const role = roles[0];
