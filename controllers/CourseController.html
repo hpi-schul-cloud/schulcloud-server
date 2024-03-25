@@ -170,6 +170,16 @@
                                     <span class="modifier">Async</span>
                                 <a href="#importCourse" >importCourse</a>
                             </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#stopSynchronization" >stopSynchronization</a>
+                            </li>
                         </ul>
                     </td>
                 </tr>
@@ -217,8 +227,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="60"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:60</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="61"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:61</a></div>
                         </td>
                     </tr>
 
@@ -342,8 +352,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="47"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:47</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="48"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:48</a></div>
                         </td>
                     </tr>
 
@@ -439,8 +449,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="91"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:91</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="92"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:92</a></div>
                         </td>
                     </tr>
 
@@ -498,6 +508,100 @@
             </tr>
         </tbody>
     </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="stopSynchronization"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>stopSynchronization</b></span>
+                        <a href="#stopSynchronization"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>stopSynchronization(currentUser: <a href="../interfaces/ICurrentUser.html" target="_self">ICurrentUser</a>, params: <a href="../classes/CourseUrlParams.html" target="_self">CourseUrlParams</a>)</code>
+                </td>
+            </tr>
+
+            <tr>
+                <td class="col-md-4">
+                    <b>Decorators : </b>
+                    <br />
+                    <code>@Post(&#x27;:courseId/stop-sync&#x27;)<br />@HttpCode(HttpStatus.NO_CONTENT)<br />@ApiOperation({summary: &#x27;Stop the synchronization of a course with a group.&#x27;})<br />@ApiNoContentResponse({description: &#x27;The course was successfully disconnected from a group.&#x27;})<br />@ApiUnprocessableEntityResponse({description: &#x27;The course is not synchronized with a group.&#x27;})<br /></code>
+                </td>
+            </tr>
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="105"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/controller/course.controller.ts:105</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>currentUser</td>
+                                            <td>
+                                                            <code><a href="../interfaces/ICurrentUser.html" target="_self" >ICurrentUser</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>params</td>
+                                            <td>
+                                                            <code><a href="../classes/CourseUrlParams.html" target="_self" >CourseUrlParams</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </section>    </div>
 
 
@@ -507,6 +611,8 @@ import {
 	Body,
 	Controller,
 	Get,
+	HttpCode,
+	HttpStatus,
 	Param,
 	Post,
 	Query,
@@ -515,7 +621,6 @@ import {
 	UploadedFile,
 	UseInterceptors,
 } from &#x27;@nestjs/common&#x27;;
-import { ConfigService } from &#x27;@nestjs/config&#x27;;
 import { FileInterceptor } from &#x27;@nestjs/platform-express&#x27;;
 import {
 	ApiBadRequestResponse,
@@ -523,15 +628,15 @@ import {
 	ApiConsumes,
 	ApiCreatedResponse,
 	ApiInternalServerErrorResponse,
+	ApiNoContentResponse,
 	ApiOperation,
 	ApiTags,
+	ApiUnprocessableEntityResponse,
 } from &#x27;@nestjs/swagger&#x27;;
 import { PaginationParams } from &#x27;@shared/controller/&#x27;;
 import { Response } from &#x27;express&#x27;;
 import { CourseMapper } from &#x27;../mapper/course.mapper&#x27;;
-import { CourseImportUc } from &#x27;../uc&#x27;;
-import { CourseExportUc } from &#x27;../uc/course-export.uc&#x27;;
-import { CourseUc } from &#x27;../uc/course.uc&#x27;;
+import { CourseExportUc, CourseImportUc, CourseSyncUc, CourseUc } from &#x27;../uc&#x27;;
 import { CommonCartridgeFileValidatorPipe } from &#x27;../utils&#x27;;
 import { CourseImportBodyParams, CourseMetadataListResponse, CourseQueryParams, CourseUrlParams } from &#x27;./dto&#x27;;
 import { CourseExportBodyParams } from &#x27;./dto/course-export.body.params&#x27;;
@@ -544,7 +649,7 @@ export class CourseController {
 		private readonly courseUc: CourseUc,
 		private readonly courseExportUc: CourseExportUc,
 		private readonly courseImportUc: CourseImportUc,
-		private readonly configService: ConfigService
+		private readonly courseSyncUc: CourseSyncUc
 	) {}
 
 	@Get()
@@ -598,6 +703,18 @@ export class CourseController {
 		file: Express.Multer.File
 	): Promise&lt;void&gt; {
 		await this.courseImportUc.importFromCommonCartridge(currentUser.userId, file.buffer);
+	}
+
+	@Post(&#x27;:courseId/stop-sync&#x27;)
+	@HttpCode(HttpStatus.NO_CONTENT)
+	@ApiOperation({ summary: &#x27;Stop the synchronization of a course with a group.&#x27; })
+	@ApiNoContentResponse({ description: &#x27;The course was successfully disconnected from a group.&#x27; })
+	@ApiUnprocessableEntityResponse({ description: &#x27;The course is not synchronized with a group.&#x27; })
+	public async stopSynchronization(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: CourseUrlParams
+	): Promise&lt;void&gt; {
+		await this.courseSyncUc.stopSynchronization(currentUser.userId, params.courseId);
 	}
 }
 </code></pre>

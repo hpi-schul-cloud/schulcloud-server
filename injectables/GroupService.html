@@ -205,7 +205,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(groupRepo: <a href="../injectables/GroupRepo.html" target="_self">GroupRepo</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>)</code>
+<code>constructor(groupRepo: <a href="../injectables/GroupRepo.html" target="_self">GroupRepo</a>, courseService: <a href="../injectables/CourseDoService.html" target="_self">CourseDoService</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -243,7 +243,7 @@
                                                         <td>courseService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/CourseService.html" target="_self" >CourseService</a></code>
+                                                                        <code><a href="../injectables/CourseDoService.html" target="_self" >CourseDoService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -963,7 +963,7 @@
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationLoaderServiceGeneric } from &#x27;@modules/authorization&#x27;;
 import { Course } from &#x27;@modules/learnroom/domain&#x27;;
-import { CourseService } from &#x27;@modules/learnroom/service/course.service&#x27;;
+import { CourseDoService } from &#x27;@modules/learnroom/service/course-do.service&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
 import { NotFoundLoggableException } from &#x27;@shared/common/loggable-exception&#x27;;
 import { type UserDO } from &#x27;@shared/domain/domainobject&#x27;;
@@ -973,7 +973,7 @@ import { GroupRepo } from &#x27;../repo&#x27;;
 
 @Injectable()
 export class GroupService implements AuthorizationLoaderServiceGeneric&lt;Group&gt; {
-	constructor(private readonly groupRepo: GroupRepo, private readonly courseService: CourseService) {}
+	constructor(private readonly groupRepo: GroupRepo, private readonly courseService: CourseDoService) {}
 
 	public async findById(id: EntityId): Promise&lt;Group&gt; {
 		const group: Group | null &#x3D; await this.groupRepo.findGroupById(id);
@@ -1039,7 +1039,7 @@ export class GroupService implements AuthorizationLoaderServiceGeneric&lt;Group&
 		const courses: Course[] &#x3D; await this.courseService.findBySyncedGroup(group);
 
 		courses.forEach((course: Course): void &#x3D;&gt; {
-			course.studentIds &#x3D; [];
+			course.students &#x3D; [];
 			course.syncedWithGroup &#x3D; undefined;
 		});
 

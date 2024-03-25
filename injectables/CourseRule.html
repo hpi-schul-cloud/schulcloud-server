@@ -173,7 +173,7 @@
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="7" class="link-to-prism">apps/server/src/modules/authorization/domain/rules/course.rule.ts:7</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="8" class="link-to-prism">apps/server/src/modules/authorization/domain/rules/course.rule.ts:8</a></div>
                             </td>
                         </tr>
 
@@ -231,15 +231,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../classes/Course.html" target="_self">Course</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
+                    <code>hasPermission(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../classes/Course.html" target="_self">CourseEntity | Course</a>, context: <a href="../interfaces/AuthorizationContext.html" target="_self">AuthorizationContext</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="16"
-                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/course.rule.ts:16</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/course.rule.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -274,7 +274,7 @@
                                         <tr>
                                                 <td>entity</td>
                                             <td>
-                                                            <code><a href="../classes/Course.html" target="_self" >Course</a></code>
+                                                            <code><a href="../classes/Course.html" target="_self" >CourseEntity | Course</a></code>
                                             </td>
 
                                             <td>
@@ -324,15 +324,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, entity: <a href="../classes/Course.html" target="_self">Course</a>)</code>
+                    <code>isApplicable(user: <a href="../interfaces/User.html" target="_self">User</a>, entity)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="10"
-                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/course.rule.ts:10</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="11"
+                                    class="link-to-prism">apps/server/src/modules/authorization/domain/rules/course.rule.ts:11</a></div>
                         </td>
                     </tr>
 
@@ -367,7 +367,6 @@
                                         <tr>
                                                 <td>entity</td>
                                             <td>
-                                                            <code><a href="../classes/Course.html" target="_self" >Course</a></code>
                                             </td>
 
                                             <td>
@@ -396,22 +395,23 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { Course, User } from &#x27;@shared/domain/entity&#x27;;
-import { Action, AuthorizationContext, Rule } from &#x27;../type&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Course } from &#x27;@modules/learnroom/domain&#x27;;
+import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { Course as CourseEntity, User } from &#x27;@shared/domain/entity&#x27;;
 import { AuthorizationHelper } from &#x27;../service/authorization.helper&#x27;;
+import { Action, AuthorizationContext, Rule } from &#x27;../type&#x27;;
 
 @Injectable()
 export class CourseRule implements Rule {
 	constructor(private readonly authorizationHelper: AuthorizationHelper) {}
 
-	public isApplicable(user: User, entity: Course): boolean {
-		const isMatched &#x3D; entity instanceof Course;
+	public isApplicable(user: User, entity: unknown): boolean {
+		const isMatched &#x3D; entity instanceof CourseEntity || entity instanceof Course;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: Course, context: AuthorizationContext): boolean {
+	public hasPermission(user: User, entity: CourseEntity | Course, context: AuthorizationContext): boolean {
 		const { action, requiredPermissions } &#x3D; context;
 		const hasPermission &#x3D;
 			this.authorizationHelper.hasAllPermissions(user, requiredPermissions) &amp;&amp;

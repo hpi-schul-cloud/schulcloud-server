@@ -262,7 +262,7 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(groupService: <a href="../injectables/GroupService.html" target="_self">GroupService</a>, classService: <a href="../injectables/ClassService.html" target="_self">ClassService</a>, systemService: <a href="../injectables/LegacySystemService.html" target="_self">LegacySystemService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, roleService: <a href="../injectables/RoleService.html" target="_self">RoleService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolYearService: <a href="../injectables/SchoolYearService.html" target="_self">SchoolYearService</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, configService: <a href="../interfaces/ProvisioningConfig.html" target="_self">ConfigService&lt;ProvisioningConfig | &gt;</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
+<code>constructor(groupService: <a href="../injectables/GroupService.html" target="_self">GroupService</a>, classService: <a href="../injectables/ClassService.html" target="_self">ClassService</a>, systemService: <a href="../injectables/LegacySystemService.html" target="_self">LegacySystemService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, roleService: <a href="../injectables/RoleService.html" target="_self">RoleService</a>, schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, schoolYearService: <a href="../injectables/SchoolYearService.html" target="_self">SchoolYearService</a>, courseService: <a href="../injectables/CourseDoService.html" target="_self">CourseDoService</a>, configService: <a href="../interfaces/ProvisioningConfig.html" target="_self">ConfigService&lt;ProvisioningConfig | &gt;</a>, logger: <a href="../injectables/Logger.html" target="_self">Logger</a>)</code>
                     </td>
                 </tr>
                         <tr>
@@ -384,7 +384,7 @@
                                                         <td>courseService</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/CourseService.html" target="_self" >CourseService</a></code>
+                                                                        <code><a href="../injectables/CourseDoService.html" target="_self" >CourseDoService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -1981,8 +1981,12 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { ClassService } from &#x27;@modules/class&#x27;;
 import { Class } from &#x27;@modules/class/domain&#x27;;
+import { Course } from &#x27;@modules/learnroom/domain&#x27;;
+import { CourseDoService } from &#x27;@modules/learnroom/service/course-do.service&#x27;;
 import { SchoolYearService } from &#x27;@modules/legacy-school&#x27;;
+import { ProvisioningConfig } from &#x27;@modules/provisioning&#x27;;
 import { RoleService } from &#x27;@modules/role&#x27;;
+import { RoleDto } from &#x27;@modules/role/service/dto/role.dto&#x27;;
 import { School, SchoolService } from &#x27;@modules/school/domain&#x27;;
 import { UserService } from &#x27;@modules/user&#x27;;
 import { Injectable } from &#x27;@nestjs/common&#x27;;
@@ -1994,10 +1998,6 @@ import { Permission, SortOrder } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { Logger } from &#x27;@src/core/logger&#x27;;
 import { LegacySystemService, SystemDto } from &#x27;@src/modules/system&#x27;;
-import { CourseService } from &#x27;../../learnroom&#x27;;
-import { Course } from &#x27;../../learnroom/domain&#x27;;
-import { ProvisioningConfig } from &#x27;../../provisioning&#x27;;
-import { RoleDto } from &#x27;../../role/service/dto/role.dto&#x27;;
 import { ClassRequestContext, SchoolYearQueryType } from &#x27;../controller/dto/interface&#x27;;
 import { Group, GroupTypes, GroupUser } from &#x27;../domain&#x27;;
 import { UnknownQueryTypeLoggableException } from &#x27;../loggable&#x27;;
@@ -2016,7 +2016,7 @@ export class GroupUc {
 		private readonly schoolService: SchoolService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolYearService: SchoolYearService,
-		private readonly courseService: CourseService,
+		private readonly courseService: CourseDoService,
 		private readonly configService: ConfigService&lt;ProvisioningConfig, true&gt;,
 		private readonly logger: Logger
 	) {}

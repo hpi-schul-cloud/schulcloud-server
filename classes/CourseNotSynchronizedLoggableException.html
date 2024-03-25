@@ -86,7 +86,7 @@
                    <compodoc-menu mode="normal"></compodoc-menu>
                </div>
                <!-- START CONTENT -->
-               <div class="content injectable">
+               <div class="content class">
                    <div class="content-data">
 
 
@@ -96,9 +96,13 @@
 
 
 
+
+
+
+
 <ol class="breadcrumb">
-  <li class="breadcrumb-item">Injectables</li>
-  <li class="breadcrumb-item" >SchulconnexCourseSyncService</li>
+  <li class="breadcrumb-item">Classes</li>
+  <li class="breadcrumb-item" >CourseNotSynchronizedLoggableException</li>
 </ol>
 
 <ul class="nav nav-tabs" role="tablist">
@@ -122,11 +126,24 @@
             <h3>File</h3>
         </p>
         <p class="comment">
-            <code>apps/server/src/modules/provisioning/strategy/oidc/service/schulconnex-course-sync.service.ts</code>
+            <code>apps/server/src/modules/learnroom/domain/error/course-not-synchronized.loggable-exception.ts</code>
         </p>
 
 
 
+            <p class="comment">
+                <h3>Extends</h3>
+            </p>
+            <p class="comment">
+                        <code>UnprocessableEntityException</code>
+            </p>
+
+            <p class="comment">
+                <h3>Implements</h3>
+            </p>
+            <p class="comment">
+                            <code><a href="../interfaces/Loggable.html" target="_self" >Loggable</a></code>
+            </p>
 
 
             <section data-compodoc="block-index">
@@ -143,8 +160,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
-                                    <span class="modifier">Async</span>
-                                <a href="#synchronizeCourseWithGroup" >synchronizeCourseWithGroup</a>
+                                <a href="#getLogMessage" >getLogMessage</a>
                             </li>
                         </ul>
                     </td>
@@ -164,12 +180,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(courseService: <a href="../injectables/CourseDoService.html" target="_self">CourseDoService</a>, roleService: <a href="../injectables/RoleService.html" target="_self">RoleService</a>)</code>
+<code>constructor(courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/schulconnex-course-sync.service.ts:10</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="5" class="link-to-prism">apps/server/src/modules/learnroom/domain/error/course-not-synchronized.loggable-exception.ts:5</a></div>
                             </td>
                         </tr>
 
@@ -187,22 +203,10 @@
                                         </thead>
                                         <tbody>
                                                 <tr>
-                                                        <td>courseService</td>
+                                                        <td>courseId</td>
                                                   
                                                         <td>
-                                                                        <code><a href="../injectables/CourseDoService.html" target="_self" >CourseDoService</a></code>
-                                                        </td>
-                                                  
-                                                    <td>
-                                                            No
-                                                    </td>
-                                                    
-                                                </tr>
-                                                <tr>
-                                                        <td>roleService</td>
-                                                  
-                                                        <td>
-                                                                        <code><a href="../injectables/RoleService.html" target="_self" >RoleService</a></code>
+                                                                        <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -219,6 +223,7 @@
         </table>
 </section>
 
+
             <section data-compodoc="block-methods">
     
     <h3 id="methods">
@@ -228,26 +233,24 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="synchronizeCourseWithGroup"></a>
+                    <a name="getLogMessage"></a>
                     <span class="name">
-                            <span class="modifier">Async</span>
-                        <span ><b>synchronizeCourseWithGroup</b></span>
-                        <a href="#synchronizeCourseWithGroup"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>getLogMessage</b></span>
+                        <a href="#getLogMessage"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>synchronizeCourseWithGroup(newGroup: <a href="../interfaces/Group.html" target="_self">Group</a>, oldGroup?: <a href="../interfaces/Group.html" target="_self">Group</a>)</code>
+<code>getLogMessage()</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="13"
-                                    class="link-to-prism">apps/server/src/modules/provisioning/strategy/oidc/service/schulconnex-course-sync.service.ts:13</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="10"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/domain/error/course-not-synchronized.loggable-exception.ts:10</a></div>
                         </td>
                     </tr>
 
@@ -255,118 +258,48 @@
             <tr>
                 <td class="col-md-4">
 
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>newGroup</td>
-                                            <td>
-                                                            <code><a href="../interfaces/Group.html" target="_self" >Group</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>oldGroup</td>
-                                            <td>
-                                                            <code><a href="../interfaces/Group.html" target="_self" >Group</a></code>
-                                            </td>
-
-                                            <td>
-                                                    Yes
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;void&gt;</code>
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#ErrorLogMessage" target="_self" >ErrorLogMessage</a></code>
 
                         </div>
-                            <div class="io-description">
-                                
-                            </div>
                 </td>
             </tr>
         </tbody>
     </table>
 </section>
 
+
+
+
+
     </div>
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Group, GroupUser } from &#x27;@modules/group&#x27;;
-import { CourseDoService } from &#x27;@modules/learnroom/service/course-do.service&#x27;;
-import { RoleDto, RoleService } from &#x27;@modules/role&#x27;;
-import { Injectable } from &#x27;@nestjs/common&#x27;;
-import { RoleName } from &#x27;@shared/domain/interface&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { Course } from &#x27;@src/modules/learnroom/domain&#x27;;
+import { ErrorLogMessage, Loggable } from &#x27;@src/core/logger&#x27;;
 
-@Injectable()
-export class SchulconnexCourseSyncService {
-	constructor(private readonly courseService: CourseDoService, private readonly roleService: RoleService) {}
+export class CourseNotSynchronizedLoggableException extends UnprocessableEntityException implements Loggable {
+	constructor(private readonly courseId: EntityId) {
+		super();
+	}
 
-	async synchronizeCourseWithGroup(newGroup: Group, oldGroup?: Group): Promise&lt;void&gt; {
-		const courses: Course[] &#x3D; await this.courseService.findBySyncedGroup(newGroup);
+	getLogMessage(): ErrorLogMessage {
+		const message: ErrorLogMessage &#x3D; {
+			type: &#x27;COURSE_NOT_SYNCHRONIZED&#x27;,
+			stack: this.stack,
+			data: {
+				courseId: this.courseId,
+			},
+		};
 
-		if (courses.length) {
-			const studentRole: RoleDto &#x3D; await this.roleService.findByName(RoleName.STUDENT);
-			const teacherRole: RoleDto &#x3D; await this.roleService.findByName(RoleName.TEACHER);
-
-			courses.forEach((course: Course): void &#x3D;&gt; {
-				if (!oldGroup || oldGroup.name &#x3D;&#x3D;&#x3D; course.name) {
-					course.name &#x3D; newGroup.name;
-				}
-
-				course.startDate &#x3D; newGroup.validFrom;
-				course.untilDate &#x3D; newGroup.validUntil;
-
-				const students: GroupUser[] &#x3D; newGroup.users.filter(
-					(user: GroupUser): boolean &#x3D;&gt; user.roleId &#x3D;&#x3D;&#x3D; studentRole.id
-				);
-				const teachers: GroupUser[] &#x3D; newGroup.users.filter(
-					(user: GroupUser): boolean &#x3D;&gt; user.roleId &#x3D;&#x3D;&#x3D; teacherRole.id
-				);
-
-				if (teachers.length &gt;&#x3D; 1) {
-					course.students &#x3D; students.map((user: GroupUser): EntityId &#x3D;&gt; user.userId);
-					course.teachers &#x3D; teachers.map((user: GroupUser): EntityId &#x3D;&gt; user.userId);
-				} else {
-					// Remove all remaining students and break the link, when the last teacher of the group should be removed
-					course.students &#x3D; [];
-					course.syncedWithGroup &#x3D; undefined;
-				}
-			});
-
-			await this.courseService.saveAll(courses);
-		}
+		return message;
 	}
 }
 </code></pre>
     </div>
-
 </div>
-
-
-
-
 
 
 
@@ -401,8 +334,8 @@ export class SchulconnexCourseSyncService {
 
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
-            var COMPODOC_CURRENT_PAGE_CONTEXT = 'injectable';
-            var COMPODOC_CURRENT_PAGE_URL = 'SchulconnexCourseSyncService.html';
+            var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
+            var COMPODOC_CURRENT_PAGE_URL = 'CourseNotSynchronizedLoggableException.html';
             var MAX_SEARCH_RESULTS = 15;
        </script>
 
