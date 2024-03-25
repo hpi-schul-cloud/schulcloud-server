@@ -19,6 +19,7 @@ import { VideoConferenceConfiguration, type IVideoConferenceSettings } from '@mo
 import type { CoreModuleConfig } from '@src/core';
 import type { MailConfig } from '@src/infra/mail/interfaces/mail-config';
 import { ProvisioningConfig } from '../provisioning';
+import { SynchronizationConfig } from '../synchronization/synchronization.config';
 
 export enum NodeEnvType {
 	TEST = 'test',
@@ -49,6 +50,7 @@ export interface ServerConfig
 		SharingConfig,
 		IUserImportFeatures,
 		SchulconnexClientConfig,
+		SynchronizationConfig,
 		SystemConfig,
 		ProvisioningConfig {
 	NODE_ENV: string;
@@ -160,6 +162,7 @@ const config: ServerConfig = {
 	FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') as boolean,
 	FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: Configuration.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') as boolean,
 	STUDENT_TEAM_CREATION: Configuration.get('STUDENT_TEAM_CREATION') as string,
+	SYNCHRONIZATION_CHUNK: Configuration.get('SYNCHRONIZATION_CHUNK') as number,
 	ADMIN_API__ALLOWED_API_KEYS: (Configuration.get('ADMIN_API__ALLOWED_API_KEYS') as string)
 		.split(',')
 		.map((apiKey) => apiKey.trim()),

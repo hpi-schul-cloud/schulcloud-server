@@ -1,13 +1,13 @@
 import { ObjectId } from 'bson';
-import { SynchronizationErrorLoggableException } from './synchronization-error.loggable-exception';
+import { FailedUpdateLastSyncedAtLoggableException } from './failed-update-lastsyncedat.loggable-exception';
 
-describe(SynchronizationErrorLoggableException.name, () => {
+describe(FailedUpdateLastSyncedAtLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const message = 'Error during synchronization process';
+			const message = 'Failed to update lastSyncedAt field for users provisioned by system';
 			const systemId = new ObjectId().toHexString();
 
-			const exception = new SynchronizationErrorLoggableException(message, systemId);
+			const exception = new FailedUpdateLastSyncedAtLoggableException(systemId);
 
 			const expectedErrorLogMessage = {
 				type: 'SYNCHRONIZATION_ERROR',

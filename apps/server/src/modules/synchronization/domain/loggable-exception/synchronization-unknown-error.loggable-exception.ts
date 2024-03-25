@@ -2,8 +2,8 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Loggable } from '@src/core/logger/interfaces';
 import { ErrorLogMessage } from '@src/core/logger/types';
 
-export class SynchronizationErrorLoggableException extends InternalServerErrorException implements Loggable {
-	constructor(private readonly errorMessage: string, private readonly systemId?: string) {
+export class SynchronizationUnknownErrorLoggableException extends InternalServerErrorException implements Loggable {
+	constructor(private readonly systemId: string) {
 		super();
 	}
 
@@ -13,7 +13,7 @@ export class SynchronizationErrorLoggableException extends InternalServerErrorEx
 			stack: this.stack,
 			data: {
 				systemId: this.systemId,
-				errorMessage: this.errorMessage,
+				errorMessage: 'Unknonw error during synchronisation process for users provisioned by system',
 			},
 		};
 

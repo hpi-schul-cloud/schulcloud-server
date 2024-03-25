@@ -9,11 +9,11 @@ import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { SynchronizationService } from '../domain/service';
 import { SynchronizationUc } from './synchronization.uc';
-import { SynchronizationErrorLoggableException } from '../domain/loggable-exception';
 import { SynchronizationStatusModel } from '../domain/types';
 import { synchronizationFactory } from '../domain/testing';
 import { Synchronization } from '../domain';
 import { synchronizationTestConfig } from './testing';
+import { NoUsersToSynchronizationLoggableException } from '../domain/loggable-exception';
 
 describe(SynchronizationUc.name, () => {
 	let module: TestingModule;
@@ -117,7 +117,14 @@ describe(SynchronizationUc.name, () => {
 				const userSyncCount = 0;
 				const status = SynchronizationStatusModel.FAILED;
 
-				const errorMessage = `No users to check from system: ${systemId}`;
+				const errorMessage = {
+					type: 'SYNCHRONIZATION_ERROR',
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					data: expect.objectContaining({
+						systemId,
+						errorMessage: 'No users to check from system',
+					}),
+				};
 
 				synchronizationService.createSynchronization.mockResolvedValueOnce(synchronizationId);
 				schulconnexRestClient.getPersonenInfo.mockResolvedValueOnce([]);
@@ -134,16 +141,21 @@ describe(SynchronizationUc.name, () => {
 				};
 			};
 
-			it('should call the uc.updateSynchronization to log detainls about synchronization of systemId', async () => {
+			it('should call the uc.updateSynchronization to log details about synchronization of systemId', async () => {
 				const { errorMessage, spyUpdateSynchronization, status, synchronizationId, systemId, userSyncCount } = setup();
 
 				await uc.updateSystemUsersLastSyncedAt(systemId);
 
-				expect(spyUpdateSynchronization).toHaveBeenCalledWith(synchronizationId, status, userSyncCount, errorMessage);
+				expect(spyUpdateSynchronization).toHaveBeenCalledWith(
+					synchronizationId,
+					status,
+					userSyncCount,
+					expect.objectContaining(errorMessage)
+				);
 			});
 		});
 
-		describe('When an error occurred during the synchronisation process ', () => {
+		describe('when an error occurred during the synchronisation process ', () => {
 			const setup = () => {
 				const systemId = new ObjectId().toHexString();
 				const synchronizationId = new ObjectId().toHexString();
@@ -151,7 +163,14 @@ describe(SynchronizationUc.name, () => {
 				const userSyncCount = 0;
 				const status = SynchronizationStatusModel.FAILED;
 
-				const errorMessage = `Synchronisation process failed for users provided by the system ${systemId}`;
+				const errorMessage = {
+					type: 'SYNCHRONIZATION_ERROR',
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					data: expect.objectContaining({
+						systemId,
+						errorMessage: 'Unknonw error during synchronisation process for users provisioned by system',
+					}),
+				};
 
 				synchronizationService.createSynchronization.mockResolvedValueOnce(synchronizationId);
 				schulconnexRestClient.getPersonenInfo.mockRejectedValueOnce(new Error('fail'));
@@ -173,7 +192,12 @@ describe(SynchronizationUc.name, () => {
 
 				await uc.updateSystemUsersLastSyncedAt(systemId);
 
-				expect(spyUpdateSynchronization).toHaveBeenCalledWith(synchronizationId, status, userSyncCount, errorMessage);
+				expect(spyUpdateSynchronization).toHaveBeenCalledWith(
+					synchronizationId,
+					status,
+					userSyncCount,
+					expect.objectContaining(errorMessage)
+				);
 			});
 		});
 	});
@@ -222,7 +246,7 @@ describe(SynchronizationUc.name, () => {
 
 				schulconnexRestClient.getPersonenInfo.mockResolvedValueOnce([]);
 
-				const expectedError = new SynchronizationErrorLoggableException(`No users to check from systemId: ${systemId}`);
+				const expectedError = new NoUsersToSynchronizationLoggableException(systemId);
 
 				return {
 					expectedError,
@@ -339,7 +363,7 @@ describe(SynchronizationUc.name, () => {
 				userService.findByExternalIdsAndProvidedBySystemId.mockResolvedValueOnce(usersToSync);
 
 				const error = new Error('testError');
-				const expectedError = new SynchronizationErrorLoggableException(
+				const expectedError = new NoUsersToSynchronizationLoggableException(
 					`Problems with synchronization for systemId: ${systemId}`
 				);
 				userService.updateLastSyncedAt.mockRejectedValueOnce(error);

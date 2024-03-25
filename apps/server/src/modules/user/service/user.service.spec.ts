@@ -695,7 +695,7 @@ describe('UserService', () => {
 		});
 	});
 
-	describe('findByExternalIds', () => {
+	describe('findMultipleByExternalIds', () => {
 		describe('when a users with external id exist', () => {
 			const setup = () => {
 				const userA = userFactory.buildWithId({ externalId: '111' });
@@ -715,7 +715,7 @@ describe('UserService', () => {
 			it('should call userRepo.findByExternalIds', async () => {
 				const { externalIds } = setup();
 
-				await service.findByExternalIds(externalIds);
+				await service.findMultipleByExternalIds(externalIds);
 
 				expect(userRepo.findByExternalIds).toBeCalledWith(externalIds);
 			});
@@ -723,7 +723,7 @@ describe('UserService', () => {
 			it('should return array with Users id', async () => {
 				const { externalIds, expectedResult } = setup();
 
-				const result = await service.findByExternalIds(externalIds);
+				const result = await service.findMultipleByExternalIds(externalIds);
 				expect(result).toEqual(expectedResult);
 			});
 		});
@@ -732,7 +732,7 @@ describe('UserService', () => {
 			it('should return empty array', async () => {
 				userRepo.findByExternalIds.mockResolvedValue([]);
 
-				const result = await service.findByExternalIds(['externalId1', 'externalId2']);
+				const result = await service.findMultipleByExternalIds(['externalId1', 'externalId2']);
 
 				expect(result).toHaveLength(0);
 			});
@@ -830,7 +830,7 @@ describe('UserService', () => {
 
 				await service.findByExternalIdsAndProvidedBySystemId(externalIds, systemId);
 
-				expect(service.findByExternalIds).toHaveBeenCalledWith(externalIds);
+				expect(service.findMultipleByExternalIds).toHaveBeenCalledWith(externalIds);
 			});
 
 			it('should call accountService.findByUserIdsAndSystemId with foundUsers and systemId', async () => {
