@@ -79,7 +79,14 @@ export class DeletionQueueConsole {
 			JSON.stringify({ message: 'starting queueing unsynchronized entities for deletion', options })
 		);
 
-		await Promise.resolve(); // TODO: add UC call here, this call is just a placeholder to suppress @typescript-eslint/require-await rule.
+		const summary = await this.batchDeletionUc.deleteUnsynchronizedRefs(
+			options.systemId,
+			options.unsyncedForMinutes,
+			options.targetRefDomain,
+			options.deleteInMinutes,
+			options.callsDelayMs
+		);
+		this.consoleWriter.info(JSON.stringify(summary));
 
 		this.consoleWriter.info(
 			JSON.stringify({ message: 'successfully finished queueing unsynchronized entities for deletion' })

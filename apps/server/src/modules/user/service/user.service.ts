@@ -261,4 +261,11 @@ export class UserService implements DeletionService, IEventHandler<UserDeletedEv
 
 		return DomainDeletionReportBuilder.build(DomainName.REGISTRATIONPIN, extractedOperationReport);
 	}
+
+	public async findUnsynchronizedUserIds(unsyncedForMinutes: number): Promise<string[]> {
+		const unsyncedForMiliseconds = unsyncedForMinutes * 60000;
+		const differenceBetweenCurrentDateAndUnsyncedTime = new Date().getTime() - unsyncedForMiliseconds;
+		const dateOfLastSyncToBeLookedFrom = new Date(differenceBetweenCurrentDateAndUnsyncedTime);
+		return this.userRepo.findUnsynchronizedUserIds(dateOfLastSyncToBeLookedFrom);
+	}
 }
