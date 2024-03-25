@@ -4,18 +4,18 @@ import { School } from '@src/modules/school';
 import {
 	MeAccountResponse,
 	MeResponse,
-	MeRolesReponse,
+	MeRoleResponse,
 	MeSchoolLogoResponse,
 	MeSchoolResponse,
 	MeUserResponse,
 } from '../dto';
 
 export class MeResponseMapper {
-	public static mapToResponse(school: School, user: User, accountId: EntityId): MeResponse {
+	public static mapToResponse(school: School, user: User, accountId: EntityId, permissions: Set<string>): MeResponse {
 		const schoolResponse = MeResponseMapper.mapSchool(school);
 		const userResponse = MeResponseMapper.mapUser(user);
 		const rolesResponse = MeResponseMapper.mapUserRoles(user);
-		const permissionsResponse = MeResponseMapper.mapPermissions(user);
+		const permissionsResponse = MeResponseMapper.mapPermissions(permissions);
 		const language = user.getInfo().language || school.getInfo().language;
 		const accountResponse = MeResponseMapper.mapAccount(accountId);
 
@@ -62,15 +62,15 @@ export class MeResponseMapper {
 		return userResponse;
 	}
 
-	private static mapUserRoles(user: User): MeRolesReponse[] {
+	private static mapUserRoles(user: User): MeRoleResponse[] {
 		const roles = user.getRoles();
 		const rolesResponse = roles.map((role) => MeResponseMapper.mapRole(role));
 
 		return rolesResponse;
 	}
 
-	private static mapRole(role: Role): MeRolesReponse {
-		const roleResponse = new MeRolesReponse({
+	private static mapRole(role: Role): MeRoleResponse {
+		const roleResponse = new MeRoleResponse({
 			id: role.id,
 			name: role.name,
 		});
@@ -78,10 +78,10 @@ export class MeResponseMapper {
 		return roleResponse;
 	}
 
-	private static mapPermissions(user: User): string[] {
-		const permissionStrings = user.resolvePermissions();
+	private static mapPermissions(permissions: Set<string>): string[] {
+		const permissionsResponse = Array.from(permissions);
 
-		return permissionStrings;
+		return permissionsResponse;
 	}
 
 	private static mapAccount(accountId: EntityId): MeAccountResponse {
