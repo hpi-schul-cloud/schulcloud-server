@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupUser } from '@modules/group';
 import { Course } from '@modules/learnroom/domain';
-import { CourseService } from '@modules/learnroom/service/course.service';
+import { CourseDoService } from '@modules/learnroom/service/course-do.service';
 import { courseFactory } from '@modules/learnroom/testing';
 import { RoleDto, RoleService } from '@modules/role';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -13,7 +13,7 @@ describe(SchulconnexCourseSyncService.name, () => {
 	let module: TestingModule;
 	let service: SchulconnexCourseSyncService;
 
-	let courseService: DeepMocked<CourseService>;
+	let courseService: DeepMocked<CourseDoService>;
 	let roleService: DeepMocked<RoleService>;
 
 	beforeAll(async () => {
@@ -21,8 +21,8 @@ describe(SchulconnexCourseSyncService.name, () => {
 			providers: [
 				SchulconnexCourseSyncService,
 				{
-					provide: CourseService,
-					useValue: createMock<CourseService>(),
+					provide: CourseDoService,
+					useValue: createMock<CourseDoService>(),
 				},
 				{
 					provide: RoleService,
@@ -32,7 +32,7 @@ describe(SchulconnexCourseSyncService.name, () => {
 		}).compile();
 
 		service = module.get(SchulconnexCourseSyncService);
-		courseService = module.get(CourseService);
+		courseService = module.get(CourseDoService);
 		roleService = module.get(RoleService);
 	});
 

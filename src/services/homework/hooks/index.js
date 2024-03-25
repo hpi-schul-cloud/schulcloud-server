@@ -399,5 +399,6 @@ exports.after = {
 	create: [],
 	update: [],
 	patch: [],
+	// TODO use nest-endpoint instead
 	remove: [],
 };
