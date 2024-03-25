@@ -24,71 +24,71 @@
 <title>cluster_GroupModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="29,-70 29,-268 467,-268 467,-70 29,-70"/>
 </g>
+<g id="clust3" class="cluster">
+<title>cluster_GroupModule_imports</title>
+<polygon fill="none" stroke="black" points="321,-78 321,-130 459,-130 459,-78 321,-78"/>
+</g>
 <g id="clust6" class="cluster">
 <title>cluster_GroupModule_providers</title>
-<polygon fill="none" stroke="black" points="183,-78 183,-130 459,-130 459,-78 183,-78"/>
+<polygon fill="none" stroke="black" points="37,-78 37,-130 313,-130 313,-78 37,-78"/>
 </g>
 <g id="clust4" class="cluster">
 <title>cluster_GroupModule_exports</title>
-<polygon fill="none" stroke="black" points="199,-208 199,-260 313,-260 313,-208 199,-208"/>
-</g>
-<g id="clust3" class="cluster">
-<title>cluster_GroupModule_imports</title>
-<polygon fill="none" stroke="black" points="37,-78 37,-130 175,-130 175,-78 37,-78"/>
+<polygon fill="none" stroke="black" points="192,-208 192,-260 306,-260 306,-208 192,-208"/>
 </g>
 <!-- LearnroomModule -->
 <g id="node1" class="node">
 <title>LearnroomModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="166.74,-122 163.74,-126 142.74,-126 139.74,-122 45.26,-122 45.26,-86 166.74,-86 166.74,-122"/>
-<text text-anchor="middle" x="106" y="-99.8" font-family="Times,serif" font-size="14.00">LearnroomModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="450.74,-122 447.74,-126 426.74,-126 423.74,-122 329.26,-122 329.26,-86 450.74,-86 450.74,-122"/>
+<text text-anchor="middle" x="390" y="-99.8" font-family="Times,serif" font-size="14.00">LearnroomModule</text>
 </g>
 <!-- GroupModule -->
 <g id="node2" class="node">
 <title>GroupModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="303.82,-187 300.82,-191 279.82,-191 276.82,-187 208.18,-187 208.18,-151 303.82,-151 303.82,-187"/>
-<text text-anchor="middle" x="256" y="-164.8" font-family="Times,serif" font-size="14.00">GroupModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="296.82,-187 293.82,-191 272.82,-191 269.82,-187 201.18,-187 201.18,-151 296.82,-151 296.82,-187"/>
+<text text-anchor="middle" x="249" y="-164.8" font-family="Times,serif" font-size="14.00">GroupModule</text>
 </g>
 <!-- LearnroomModule&#45;&gt;GroupModule -->
 <g id="edge1" class="edge">
 <title>LearnroomModule&#45;&gt;GroupModule</title>
-<path fill="none" stroke="black" d="M106,-122.11C106,-141.34 106,-169 106,-169 106,-169 198.13,-169 198.13,-169"/>
-<polygon fill="black" stroke="black" points="198.13,-172.5 208.13,-169 198.13,-165.5 198.13,-172.5"/>
+<path fill="none" stroke="black" d="M390,-122.11C390,-141.34 390,-169 390,-169 390,-169 306.74,-169 306.74,-169"/>
+<polygon fill="black" stroke="black" points="306.74,-165.5 296.74,-169 306.74,-172.5 306.74,-165.5"/>
 </g>
 <!-- GroupService  -->
 <g id="node3" class="node">
 <title>GroupService </title>
-<polygon fill="#fb8072" stroke="black" points="304.75,-252 207.25,-252 207.25,-216 304.75,-216 304.75,-252"/>
-<text text-anchor="middle" x="256" y="-229.8" font-family="Times,serif" font-size="14.00">GroupService </text>
+<polygon fill="#fb8072" stroke="black" points="297.75,-252 200.25,-252 200.25,-216 297.75,-216 297.75,-252"/>
+<text text-anchor="middle" x="249" y="-229.8" font-family="Times,serif" font-size="14.00">GroupService </text>
 </g>
 <!-- GroupModule&#45;&gt;GroupService  -->
 <g id="edge2" class="edge">
 <title>GroupModule&#45;&gt;GroupService </title>
-<path fill="none" stroke="black" stroke-dasharray="5,2" d="M256,-187.11C256,-187.11 256,-205.99 256,-205.99"/>
-<polygon fill="black" stroke="black" points="252.5,-205.99 256,-215.99 259.5,-205.99 252.5,-205.99"/>
+<path fill="none" stroke="black" stroke-dasharray="5,2" d="M249,-187.11C249,-187.11 249,-205.99 249,-205.99"/>
+<polygon fill="black" stroke="black" points="245.5,-205.99 249,-215.99 252.5,-205.99 245.5,-205.99"/>
 </g>
 <!-- GroupRepo -->
 <g id="node4" class="node">
 <title>GroupRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="395" cy="-104" rx="56.18" ry="18"/>
-<text text-anchor="middle" x="395" y="-99.8" font-family="Times,serif" font-size="14.00">GroupRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="249" cy="-104" rx="56.18" ry="18"/>
+<text text-anchor="middle" x="249" y="-99.8" font-family="Times,serif" font-size="14.00">GroupRepo</text>
 </g>
 <!-- GroupRepo&#45;&gt;GroupModule -->
 <g id="edge3" class="edge">
 <title>GroupRepo&#45;&gt;GroupModule</title>
-<path fill="none" stroke="black" d="M395,-122.11C395,-141.34 395,-169 395,-169 395,-169 313.84,-169 313.84,-169"/>
-<polygon fill="black" stroke="black" points="313.84,-165.5 303.84,-169 313.84,-172.5 313.84,-165.5"/>
+<path fill="none" stroke="black" d="M249,-122.11C249,-122.11 249,-140.99 249,-140.99"/>
+<polygon fill="black" stroke="black" points="245.5,-140.99 249,-150.99 252.5,-140.99 245.5,-140.99"/>
 </g>
 <!-- GroupService -->
 <g id="node5" class="node">
 <title>GroupService</title>
-<ellipse fill="#fdb462" stroke="black" cx="256" cy="-104" rx="64.83" ry="18"/>
-<text text-anchor="middle" x="256" y="-99.8" font-family="Times,serif" font-size="14.00">GroupService</text>
+<ellipse fill="#fdb462" stroke="black" cx="110" cy="-104" rx="64.83" ry="18"/>
+<text text-anchor="middle" x="110" y="-99.8" font-family="Times,serif" font-size="14.00">GroupService</text>
 </g>
 <!-- GroupService&#45;&gt;GroupModule -->
 <g id="edge4" class="edge">
 <title>GroupService&#45;&gt;GroupModule</title>
-<path fill="none" stroke="black" d="M256,-122.11C256,-122.11 256,-140.99 256,-140.99"/>
-<polygon fill="black" stroke="black" points="252.5,-140.99 256,-150.99 259.5,-140.99 252.5,-140.99"/>
+<path fill="none" stroke="black" d="M110,-122.11C110,-141.34 110,-169 110,-169 110,-169 191.16,-169 191.16,-169"/>
+<polygon fill="black" stroke="black" points="191.16,-172.5 201.16,-169 191.16,-165.5 191.16,-172.5"/>
 </g>
 </g>
 </svg>

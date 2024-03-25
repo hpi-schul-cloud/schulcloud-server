@@ -217,7 +217,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsInt()<br />@IsOptional()<br />@IsPositive()<br />@ApiProperty({description: &#x27;when defined, the sharetoken will expire after the given number of days.&#x27;, required: false, nullable: true, minimum: 1})<br />
+                            @IsInt()<br />@IsOptional()<br />@IsPositive()<br />@ApiPropertyOptional({description: &#x27;when defined, the sharetoken will expire after the given number of days.&#x27;, required: false, nullable: true, minimum: 1})<br />
                         </code>
                     </td>
                 </tr>
@@ -330,7 +330,7 @@
                         <b>Decorators : </b>
                         <br />
                         <code>
-                            @IsBoolean()<br />@IsOptional()<br />@ApiProperty({description: &#x27;when defined, the sharetoken will be usable exclusively by members of the users school.&#x27;, required: false, nullable: true})<br />
+                            @IsBoolean()<br />@IsOptional()<br />@ApiPropertyOptional({description: &#x27;when defined, the sharetoken will be usable exclusively by members of the users school.&#x27;, required: false, nullable: true})<br />
                         </code>
                     </td>
                 </tr>
@@ -355,7 +355,7 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty } from &#x27;@nestjs/swagger&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ApiProperty, ApiPropertyOptional } from &#x27;@nestjs/swagger&#x27;;
 import { IsBoolean, IsEnum, IsInt, IsMongoId, IsOptional, IsPositive } from &#x27;class-validator&#x27;;
 import { ShareTokenParentType } from &#x27;../../domainobject/share-token.do&#x27;;
 
@@ -380,7 +380,7 @@ export class ShareTokenBodyParams {
 	@IsInt()
 	@IsOptional()
 	@IsPositive()
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: &#x27;when defined, the sharetoken will expire after the given number of days.&#x27;,
 		required: false,
 		nullable: true,
@@ -390,7 +390,7 @@ export class ShareTokenBodyParams {
 
 	@IsBoolean()
 	@IsOptional()
-	@ApiProperty({
+	@ApiPropertyOptional({
 		description: &#x27;when defined, the sharetoken will be usable exclusively by members of the users school.&#x27;,
 		required: false,
 		nullable: true,

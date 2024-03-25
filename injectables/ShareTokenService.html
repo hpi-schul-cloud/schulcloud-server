@@ -176,12 +176,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(tokenGenerator: <a href="../injectables/TokenGenerator.html" target="_self">TokenGenerator</a>, shareTokenRepo: <a href="../injectables/ShareTokenRepo.html" target="_self">ShareTokenRepo</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, lessonService: <a href="../injectables/LessonService.html" target="_self">LessonService</a>, taskService: <a href="../injectables/TaskService.html" target="_self">TaskService</a>)</code>
+<code>constructor(tokenGenerator: <a href="../injectables/TokenGenerator.html" target="_self">TokenGenerator</a>, shareTokenRepo: <a href="../injectables/ShareTokenRepo.html" target="_self">ShareTokenRepo</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, lessonService: <a href="../injectables/LessonService.html" target="_self">LessonService</a>, taskService: <a href="../injectables/TaskService.html" target="_self">TaskService</a>, columnBoardService: <a href="../injectables/ColumnBoardService.html" target="_self">ColumnBoardService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="16" class="link-to-prism">apps/server/src/modules/sharing/service/share-token.service.ts:16</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/sharing/service/share-token.service.ts:17</a></div>
                             </td>
                         </tr>
 
@@ -258,6 +258,18 @@
                                                     </td>
                                                     
                                                 </tr>
+                                                <tr>
+                                                        <td>columnBoardService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ColumnBoardService.html" target="_self" >ColumnBoardService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
                                         </tbody>
                                     </table>
                             </div>
@@ -294,8 +306,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="70"
-                                    class="link-to-prism">apps/server/src/modules/sharing/service/share-token.service.ts:70</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="76"
+                                    class="link-to-prism">apps/server/src/modules/sharing/service/share-token.service.ts:76</a></div>
                         </td>
                     </tr>
 
@@ -363,8 +375,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="25"
-                                    class="link-to-prism">apps/server/src/modules/sharing/service/share-token.service.ts:25</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="27"
+                                    class="link-to-prism">apps/server/src/modules/sharing/service/share-token.service.ts:27</a></div>
                         </td>
                     </tr>
 
@@ -444,8 +456,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="42"
-                                    class="link-to-prism">apps/server/src/modules/sharing/service/share-token.service.ts:42</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="44"
+                                    class="link-to-prism">apps/server/src/modules/sharing/service/share-token.service.ts:44</a></div>
                         </td>
                     </tr>
 
@@ -513,8 +525,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="50"
-                                    class="link-to-prism">apps/server/src/modules/sharing/service/share-token.service.ts:50</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="52"
+                                    class="link-to-prism">apps/server/src/modules/sharing/service/share-token.service.ts:52</a></div>
                         </td>
                     </tr>
 
@@ -566,8 +578,9 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, UnprocessableEntityException } from &#x27;@nestjs/common&#x27;;
 import { CourseService } from &#x27;@modules/learnroom/service&#x27;;
+import { ColumnBoardService } from &#x27;@modules/board/service&#x27;;
 import { LessonService } from &#x27;@modules/lesson/service&#x27;;
 import { TaskService } from &#x27;@modules/task/service&#x27;;
 import {
@@ -587,7 +600,8 @@ export class ShareTokenService {
 		private readonly shareTokenRepo: ShareTokenRepo,
 		private readonly courseService: CourseService,
 		private readonly lessonService: LessonService,
-		private readonly taskService: TaskService
+		private readonly taskService: TaskService,
+		private readonly columnBoardService: ColumnBoardService
 	) {}
 
 	async createToken(
@@ -629,7 +643,11 @@ export class ShareTokenService {
 			case ShareTokenParentType.Task:
 				parentName &#x3D; (await this.taskService.findById(shareToken.payload.parentId)).name;
 				break;
+			case ShareTokenParentType.ColumnBoard:
+				parentName &#x3D; (await this.columnBoardService.findById(shareToken.payload.parentId)).title;
+				break;
 			default:
+				throw new UnprocessableEntityException(&#x27;Invalid parent type&#x27;);
 		}
 
 		return { shareToken, parentName };

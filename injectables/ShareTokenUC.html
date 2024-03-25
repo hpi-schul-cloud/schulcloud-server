@@ -159,7 +159,12 @@
                             <li>
                                     <span class="modifier">Private</span>
                                     <span class="modifier">Async</span>
-                                <a href="#checkParentWritePermission" >checkParentWritePermission</a>
+                                <a href="#checkLookupPermission" >checkLookupPermission</a>
+                            </li>
+                            <li>
+                                    <span class="modifier">Private</span>
+                                    <span class="modifier">Async</span>
+                                <a href="#copyColumnBoard" >copyColumnBoard</a>
                             </li>
                             <li>
                                     <span class="modifier">Private</span>
@@ -210,12 +215,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(shareTokenService: <a href="../injectables/ShareTokenService.html" target="_self">ShareTokenService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, authorizationReferenceService: <a href="../injectables/AuthorizationReferenceService.html" target="_self">AuthorizationReferenceService</a>, courseCopyService: <a href="../injectables/CourseCopyService.html" target="_self">CourseCopyService</a>, lessonCopyService: <a href="../injectables/LessonCopyService.html" target="_self">LessonCopyService</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, taskCopyService: <a href="../injectables/TaskCopyService.html" target="_self">TaskCopyService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
+<code>constructor(shareTokenService: <a href="../injectables/ShareTokenService.html" target="_self">ShareTokenService</a>, authorizationService: <a href="../injectables/AuthorizationService.html" target="_self">AuthorizationService</a>, authorizationReferenceService: <a href="../injectables/AuthorizationReferenceService.html" target="_self">AuthorizationReferenceService</a>, courseCopyService: <a href="../injectables/CourseCopyService.html" target="_self">CourseCopyService</a>, lessonCopyService: <a href="../injectables/LessonCopyService.html" target="_self">LessonCopyService</a>, courseService: <a href="../injectables/CourseService.html" target="_self">CourseService</a>, taskCopyService: <a href="../injectables/TaskCopyService.html" target="_self">TaskCopyService</a>, columnBoardCopyService: <a href="../injectables/ColumnBoardCopyService.html" target="_self">ColumnBoardCopyService</a>, logger: <a href="../injectables/LegacyLogger.html" target="_self">LegacyLogger</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="24" class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:24</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="26" class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:26</a></div>
                             </td>
                         </tr>
 
@@ -317,6 +322,18 @@
                                                     
                                                 </tr>
                                                 <tr>
+                                                        <td>columnBoardCopyService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/ColumnBoardCopyService.html" target="_self" >ColumnBoardCopyService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
                                                         <td>logger</td>
                                                   
                                                         <td>
@@ -365,8 +382,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="192"
-                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:192</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="243"
+                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:243</a></div>
                         </td>
                     </tr>
 
@@ -440,166 +457,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkCreatePermission(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, parentType: <a href="../undefineds/ShareTokenParentType.html" target="_self">ShareTokenParentType</a>)</code>
+                    <code>checkCreatePermission(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, payload: <a href="../undefineds/ShareTokenPayload.html" target="_self">ShareTokenPayload</a>)</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="204"
-                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:204</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>userId</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                        <tr>
-                                                <td>parentType</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#ShareTokenParentType" target="_self" >ShareTokenParentType</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="checkFeatureEnabled"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                        <span ><b>checkFeatureEnabled</b></span>
-                        <a href="#checkFeatureEnabled"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkFeatureEnabled(parentType: <a href="../undefineds/ShareTokenParentType.html" target="_self">ShareTokenParentType</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="231"
-                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:231</a></div>
-                        </td>
-                    </tr>
-
-
-            <tr>
-                <td class="col-md-4">
-
-                            <div class="io-description">
-                                <b>Parameters :</b>
-                                
-                                <table class="params">
-                                    <thead>
-                                        <tr>
-                                            <td>Name</td>
-                                                <td>Type</td>
-                                            <td>Optional</td>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                                <td>parentType</td>
-                                            <td>
-                                                            <code><a href="../miscellaneous/enumerations.html#ShareTokenParentType" target="_self" >ShareTokenParentType</a></code>
-                                            </td>
-
-                                            <td>
-                                                    No
-                                            </td>
-
-
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <div class="io-description">
-                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
-
-                        </div>
-                            <div class="io-description">
-                                
-                            </div>
-                </td>
-            </tr>
-        </tbody>
-    </table>
-    <table class="table table-sm table-bordered">
-        <tbody>
-            <tr>
-                <td class="col-md-4">
-                    <a name="checkParentWritePermission"></a>
-                    <span class="name">
-                            <span class="modifier">Private</span>
-                            <span class="modifier">Async</span>
-                        <span ><b>checkParentWritePermission</b></span>
-                        <a href="#checkParentWritePermission"><span class="icon ion-ios-link"></span></a>
-                    </span>
-                </td>
-            </tr>
-            <tr>
-                <td class="col-md-4">
-                        <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>checkParentWritePermission(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, payload: <a href="../undefineds/ShareTokenPayload.html" target="_self">ShareTokenPayload</a>)</code>
-                </td>
-            </tr>
-
-
-                    <tr>
-                        <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="166"
-                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:166</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="213"
+                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:213</a></div>
                         </td>
                     </tr>
 
@@ -661,6 +527,263 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
+                    <a name="checkFeatureEnabled"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                        <span ><b>checkFeatureEnabled</b></span>
+                        <a href="#checkFeatureEnabled"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkFeatureEnabled(parentType: <a href="../undefineds/ShareTokenParentType.html" target="_self">ShareTokenParentType</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="282"
+                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:282</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>parentType</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#ShareTokenParentType" target="_self" >ShareTokenParentType</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >void</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="checkLookupPermission"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>checkLookupPermission</b></span>
+                        <a href="#checkLookupPermission"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>checkLookupPermission(userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, parentType: <a href="../undefineds/ShareTokenParentType.html" target="_self">ShareTokenParentType</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="255"
+                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:255</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>parentType</td>
+                                            <td>
+                                                            <code><a href="../miscellaneous/enumerations.html#ShareTokenParentType" target="_self" >ShareTokenParentType</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="https://www.typescriptlang.org/docs/handbook/basic-types.html" target="_blank" >any</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="copyColumnBoard"></a>
+                    <span class="name">
+                            <span class="modifier">Private</span>
+                            <span class="modifier">Async</span>
+                        <span ><b>copyColumnBoard</b></span>
+                        <a href="#copyColumnBoard"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="col-md-4">
+                        <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>copyColumnBoard(userId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, originalColumnBoardId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, courseId: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, copyTitle?: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                </td>
+            </tr>
+
+
+                    <tr>
+                        <td class="col-md-4">
+                            <div class="io-line">Defined in <a href="" data-line="192"
+                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:192</a></div>
+                        </td>
+                    </tr>
+
+
+            <tr>
+                <td class="col-md-4">
+
+                            <div class="io-description">
+                                <b>Parameters :</b>
+                                
+                                <table class="params">
+                                    <thead>
+                                        <tr>
+                                            <td>Name</td>
+                                                <td>Type</td>
+                                            <td>Optional</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                                <td>userId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>originalColumnBoardId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>courseId</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>copyTitle</td>
+                                            <td>
+                                                            <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
+                                            </td>
+
+                                            <td>
+                                                    Yes
+                                            </td>
+
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <div class="io-description">
+                            <b>Returns : </b>        <code><a href="../miscellaneous/typealiases.html#CopyStatus" target="_self" >Promise&lt;CopyStatus&gt;</a></code>
+
+                        </div>
+                            <div class="io-description">
+                                
+                            </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
                     <a name="copyCourse"></a>
                     <span class="name">
                             <span class="modifier">Private</span>
@@ -680,8 +803,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="131"
-                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:131</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="136"
+                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:136</a></div>
                         </td>
                     </tr>
 
@@ -774,8 +897,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="139"
-                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:139</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="149"
+                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:149</a></div>
                         </td>
                     </tr>
 
@@ -880,8 +1003,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="150"
-                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:150</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="168"
+                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:168</a></div>
                         </td>
                     </tr>
 
@@ -985,8 +1108,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="39"
-                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:39</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="41"
+                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:41</a></div>
                         </td>
                     </tr>
 
@@ -1078,8 +1201,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="89"
-                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:89</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="91"
+                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:91</a></div>
                         </td>
                     </tr>
 
@@ -1183,8 +1306,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="67"
-                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:67</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="69"
+                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:69</a></div>
                         </td>
                     </tr>
 
@@ -1264,8 +1387,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="225"
-                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:225</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="276"
+                                    class="link-to-prism">apps/server/src/modules/sharing/uc/share-token.uc.ts:276</a></div>
                         </td>
                     </tr>
 
@@ -1318,7 +1441,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Configuration } from &#x27;@hpi-schul-cloud/commons/lib&#x27;;
-import { AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
+import { AuthorizableReferenceType, AuthorizationContextBuilder, AuthorizationService } from &#x27;@modules/authorization&#x27;;
 import { AuthorizationReferenceService } from &#x27;@modules/authorization/domain&#x27;;
 import { CopyStatus } from &#x27;@modules/copy-helper&#x27;;
 import { CourseCopyService, CourseService } from &#x27;@modules/learnroom&#x27;;
@@ -1328,6 +1451,8 @@ import { BadRequestException, Injectable, InternalServerErrorException, NotImple
 import { Permission } from &#x27;@shared/domain/interface&#x27;;
 import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { LegacyLogger } from &#x27;@src/core/logger&#x27;;
+import { ColumnBoardCopyService } from &#x27;@modules/board&#x27;;
+import { BoardExternalReferenceType } from &#x27;@shared/domain/domainobject&#x27;;
 import {
 	ShareTokenContext,
 	ShareTokenContextType,
@@ -1349,7 +1474,7 @@ export class ShareTokenUC {
 		private readonly lessonCopyService: LessonCopyService,
 		private readonly courseService: CourseService,
 		private readonly taskCopyService: TaskCopyService,
-
+		private readonly columnBoardCopyService: ColumnBoardCopyService,
 		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(ShareTokenUC.name);
@@ -1364,7 +1489,7 @@ export class ShareTokenUC {
 
 		this.logger.debug({ action: &#x27;createShareToken&#x27;, userId, payload, options });
 
-		await this.checkParentWritePermission(userId, payload);
+		await this.checkCreatePermission(userId, payload);
 
 		const serviceOptions: { context?: ShareTokenContext; expiresAt?: Date } &#x3D; {};
 		if (options?.schoolExclusive) {
@@ -1390,7 +1515,7 @@ export class ShareTokenUC {
 
 		this.checkFeatureEnabled(shareToken.payload.parentType);
 
-		await this.checkCreatePermission(userId, shareToken.payload.parentType);
+		await this.checkLookupPermission(userId, shareToken.payload.parentType);
 
 		if (shareToken.context) {
 			await this.checkContextReadPermission(userId, shareToken.context);
@@ -1421,9 +1546,8 @@ export class ShareTokenUC {
 			await this.checkContextReadPermission(userId, shareToken.context);
 		}
 
-		await this.checkCreatePermission(userId, shareToken.payload.parentType);
-
 		let result: CopyStatus;
+		// eslint-disable-next-line default-case
 		switch (shareToken.payload.parentType) {
 			case ShareTokenParentType.Course:
 				result &#x3D; await this.copyCourse(userId, shareToken.payload.parentId, newName);
@@ -1440,30 +1564,47 @@ export class ShareTokenUC {
 				}
 				result &#x3D; await this.copyTask(userId, shareToken.payload.parentId, destinationCourseId, newName);
 				break;
-			default:
-				throw new NotImplementedException(&#x27;Copy not implemented&#x27;);
+			case ShareTokenParentType.ColumnBoard:
+				if (destinationCourseId &#x3D;&#x3D;&#x3D; undefined) {
+					throw new BadRequestException(&#x27;Destination course id is required to copy task&#x27;);
+				}
+				result &#x3D; await this.copyColumnBoard(userId, shareToken.payload.parentId, destinationCourseId, newName);
+				break;
 		}
 
 		return result;
 	}
 
 	private async copyCourse(userId: EntityId, courseId: string, newName: string): Promise&lt;CopyStatus&gt; {
-		return this.courseCopyService.copyCourse({
+		const user &#x3D; await this.authorizationService.getUserWithPermissions(userId);
+		const requiredPermissions &#x3D; [Permission.COURSE_CREATE];
+		this.authorizationService.checkAllPermissions(user, requiredPermissions);
+		const copyStatus &#x3D; await this.courseCopyService.copyCourse({
 			userId,
 			courseId,
 			newName,
 		});
+
+		return copyStatus;
 	}
 
 	private async copyLesson(userId: string, lessonId: string, courseId: string, copyName?: string): Promise&lt;CopyStatus&gt; {
+		await this.authorizationReferenceService.checkPermissionByReferences(
+			userId,
+			AuthorizableReferenceType.Course,
+			courseId,
+			AuthorizationContextBuilder.write([Permission.TOPIC_CREATE])
+		);
 		const user &#x3D; await this.authorizationService.getUserWithPermissions(userId);
 		const destinationCourse &#x3D; await this.courseService.findById(courseId);
-		return this.lessonCopyService.copyLesson({
+		const copyStatus &#x3D; await this.lessonCopyService.copyLesson({
 			user,
 			originalLessonId: lessonId,
 			destinationCourse,
 			copyName,
 		});
+
+		return copyStatus;
 	}
 
 	private async copyTask(
@@ -1472,17 +1613,46 @@ export class ShareTokenUC {
 		courseId: string,
 		copyName?: string
 	): Promise&lt;CopyStatus&gt; {
+		await this.authorizationReferenceService.checkPermissionByReferences(
+			userId,
+			AuthorizableReferenceType.Course,
+			courseId,
+			AuthorizationContextBuilder.write([Permission.HOMEWORK_CREATE])
+		);
 		const user &#x3D; await this.authorizationService.getUserWithPermissions(userId);
 		const destinationCourse &#x3D; await this.courseService.findById(courseId);
-		return this.taskCopyService.copyTask({
+		const copyStatus &#x3D; await this.taskCopyService.copyTask({
 			user,
 			originalTaskId,
 			destinationCourse,
 			copyName,
 		});
+
+		return copyStatus;
 	}
 
-	private async checkParentWritePermission(userId: EntityId, payload: ShareTokenPayload) {
+	private async copyColumnBoard(
+		userId: string,
+		originalColumnBoardId: string,
+		courseId: string,
+		copyTitle?: string
+	): Promise&lt;CopyStatus&gt; {
+		await this.authorizationReferenceService.checkPermissionByReferences(
+			userId,
+			AuthorizableReferenceType.Course,
+			courseId,
+			AuthorizationContextBuilder.write([Permission.COURSE_EDIT])
+		);
+		const copyStatus &#x3D; this.columnBoardCopyService.copyColumnBoard({
+			originalColumnBoardId,
+			destinationExternalReference: { type: BoardExternalReferenceType.Course, id: courseId },
+			userId,
+			copyTitle,
+		});
+		return copyStatus;
+	}
+
+	private async checkCreatePermission(userId: EntityId, payload: ShareTokenPayload) {
 		const allowedParentType &#x3D; ShareTokenParentTypeMapper.mapToAllowedAuthorizationEntityType(payload.parentType);
 
 		let requiredPermissions: Permission[] &#x3D; [];
@@ -1496,6 +1666,10 @@ export class ShareTokenUC {
 				break;
 			case ShareTokenParentType.Task:
 				requiredPermissions &#x3D; [Permission.HOMEWORK_CREATE];
+				break;
+			case ShareTokenParentType.ColumnBoard:
+				requiredPermissions &#x3D; [Permission.COURSE_EDIT];
+				break;
 		}
 
 		const authorizationContext &#x3D; AuthorizationContextBuilder.write(requiredPermissions);
@@ -1520,12 +1694,8 @@ export class ShareTokenUC {
 		);
 	}
 
-	private async checkCreatePermission(userId: EntityId, parentType: ShareTokenParentType) {
-		// checks if parent type is supported
-		ShareTokenParentTypeMapper.mapToAllowedAuthorizationEntityType(parentType);
-
+	private async checkLookupPermission(userId: EntityId, parentType: ShareTokenParentType) {
 		const user &#x3D; await this.authorizationService.getUserWithPermissions(userId);
-
 		let requiredPermissions: Permission[] &#x3D; [];
 		// eslint-disable-next-line default-case
 		switch (parentType) {
@@ -1537,6 +1707,10 @@ export class ShareTokenUC {
 				break;
 			case ShareTokenParentType.Task:
 				requiredPermissions &#x3D; [Permission.HOMEWORK_CREATE];
+				break;
+			case ShareTokenParentType.ColumnBoard:
+				requiredPermissions &#x3D; [Permission.COURSE_EDIT];
+				break;
 		}
 		this.authorizationService.checkAllPermissions(user, requiredPermissions);
 	}
@@ -1564,6 +1738,12 @@ export class ShareTokenUC {
 			case ShareTokenParentType.Task:
 				// Configuration.get is the deprecated way to read envirment variables
 				if (!(Configuration.get(&#x27;FEATURE_TASK_SHARE&#x27;) as boolean)) {
+					throw new InternalServerErrorException(&#x27;Import Task Feature not enabled&#x27;);
+				}
+				break;
+			case ShareTokenParentType.ColumnBoard:
+				// Configuration.get is the deprecated way to read envirment variables
+				if (!(Configuration.get(&#x27;FEATURE_COLUMN_BOARD_SHARE&#x27;) as boolean)) {
 					throw new InternalServerErrorException(&#x27;Import Task Feature not enabled&#x27;);
 				}
 				break;

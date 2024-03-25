@@ -24,79 +24,79 @@
 <title>cluster_MeApiModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-195 681,-195 681,-70 8,-70"/>
 </g>
-<g id="clust6" class="cluster">
-<title>cluster_MeApiModule_providers</title>
-<polygon fill="none" stroke="black" points="403,-78 403,-130 673,-130 673,-78 403,-78"/>
-</g>
 <g id="clust3" class="cluster">
 <title>cluster_MeApiModule_imports</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 395,-130 395,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="294,-78 294,-130 673,-130 673,-78 294,-78"/>
+</g>
+<g id="clust6" class="cluster">
+<title>cluster_MeApiModule_providers</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 286,-130 286,-78 16,-78"/>
 </g>
 <!-- AuthenticationModule -->
 <g id="node1" class="node">
 <title>AuthenticationModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="387.25,-122 384.25,-126 363.25,-126 360.25,-122 244.75,-122 244.75,-86 387.25,-86 387.25,-122"/>
-<text text-anchor="middle" x="316" y="-99.8" font-family="Times,serif" font-size="14.00">AuthenticationModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="665.25,-122 662.25,-126 641.25,-126 638.25,-122 522.75,-122 522.75,-86 665.25,-86 665.25,-122"/>
+<text text-anchor="middle" x="594" y="-99.8" font-family="Times,serif" font-size="14.00">AuthenticationModule</text>
 </g>
 <!-- MeApiModule -->
 <g id="node4" class="node">
 <title>MeApiModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="365.71,-187 362.71,-191 341.71,-191 338.71,-187 266.29,-187 266.29,-151 365.71,-151 365.71,-187"/>
-<text text-anchor="middle" x="316" y="-164.8" font-family="Times,serif" font-size="14.00">MeApiModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="394.71,-187 391.71,-191 370.71,-191 367.71,-187 295.29,-187 295.29,-151 394.71,-151 394.71,-187"/>
+<text text-anchor="middle" x="345" y="-164.8" font-family="Times,serif" font-size="14.00">MeApiModule</text>
 </g>
 <!-- AuthenticationModule&#45;&gt;MeApiModule -->
 <g id="edge1" class="edge">
 <title>AuthenticationModule&#45;&gt;MeApiModule</title>
-<path fill="none" stroke="black" d="M316,-122.11C316,-122.11 316,-140.99 316,-140.99"/>
-<polygon fill="black" stroke="black" points="312.5,-140.99 316,-150.99 319.5,-140.99 312.5,-140.99"/>
+<path fill="none" stroke="black" d="M594,-122.28C594,-143.32 594,-175 594,-175 594,-175 404.79,-175 404.79,-175"/>
+<polygon fill="black" stroke="black" points="404.79,-171.5 394.79,-175 404.79,-178.5 404.79,-171.5"/>
 </g>
 <!-- SchoolModule -->
 <g id="node2" class="node">
 <title>SchoolModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="226.44,-122 223.44,-126 202.44,-126 199.44,-122 127.56,-122 127.56,-86 226.44,-86 226.44,-122"/>
-<text text-anchor="middle" x="177" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="504.44,-122 501.44,-126 480.44,-126 477.44,-122 405.56,-122 405.56,-86 504.44,-86 504.44,-122"/>
+<text text-anchor="middle" x="455" y="-99.8" font-family="Times,serif" font-size="14.00">SchoolModule</text>
 </g>
 <!-- SchoolModule&#45;&gt;MeApiModule -->
 <g id="edge2" class="edge">
 <title>SchoolModule&#45;&gt;MeApiModule</title>
-<path fill="none" stroke="black" d="M177,-122.02C177,-139.37 177,-163 177,-163 177,-163 256.21,-163 256.21,-163"/>
-<polygon fill="black" stroke="black" points="256.21,-166.5 266.21,-163 256.21,-159.5 256.21,-166.5"/>
+<path fill="none" stroke="black" d="M455,-122.02C455,-139.37 455,-163 455,-163 455,-163 404.85,-163 404.85,-163"/>
+<polygon fill="black" stroke="black" points="404.85,-159.5 394.85,-163 404.85,-166.5 404.85,-159.5"/>
 </g>
 <!-- UserModule -->
 <g id="node3" class="node">
 <title>UserModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="109.98,-122 106.98,-126 85.98,-126 82.98,-122 24.02,-122 24.02,-86 109.98,-86 109.98,-122"/>
-<text text-anchor="middle" x="67" y="-99.8" font-family="Times,serif" font-size="14.00">UserModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="387.98,-122 384.98,-126 363.98,-126 360.98,-122 302.02,-122 302.02,-86 387.98,-86 387.98,-122"/>
+<text text-anchor="middle" x="345" y="-99.8" font-family="Times,serif" font-size="14.00">UserModule</text>
 </g>
 <!-- UserModule&#45;&gt;MeApiModule -->
 <g id="edge3" class="edge">
 <title>UserModule&#45;&gt;MeApiModule</title>
-<path fill="none" stroke="black" d="M67,-122.28C67,-143.32 67,-175 67,-175 67,-175 256.21,-175 256.21,-175"/>
-<polygon fill="black" stroke="black" points="256.21,-178.5 266.21,-175 256.21,-171.5 256.21,-178.5"/>
+<path fill="none" stroke="black" d="M345,-122.11C345,-122.11 345,-140.99 345,-140.99"/>
+<polygon fill="black" stroke="black" points="341.5,-140.99 345,-150.99 348.5,-140.99 341.5,-140.99"/>
 </g>
 <!-- MeUc -->
 <g id="node5" class="node">
 <title>MeUc</title>
-<ellipse fill="#fdb462" stroke="black" cx="630" cy="-104" rx="35.33" ry="18"/>
-<text text-anchor="middle" x="630" y="-99.8" font-family="Times,serif" font-size="14.00">MeUc</text>
+<ellipse fill="#fdb462" stroke="black" cx="243" cy="-104" rx="35.33" ry="18"/>
+<text text-anchor="middle" x="243" y="-99.8" font-family="Times,serif" font-size="14.00">MeUc</text>
 </g>
 <!-- MeUc&#45;&gt;MeApiModule -->
 <g id="edge4" class="edge">
 <title>MeUc&#45;&gt;MeApiModule</title>
-<path fill="none" stroke="black" d="M630,-122.28C630,-143.32 630,-175 630,-175 630,-175 375.75,-175 375.75,-175"/>
-<polygon fill="black" stroke="black" points="375.75,-171.5 365.75,-175 375.75,-178.5 375.75,-171.5"/>
+<path fill="none" stroke="black" d="M243,-122.02C243,-139.37 243,-163 243,-163 243,-163 285.2,-163 285.2,-163"/>
+<polygon fill="black" stroke="black" points="285.2,-166.5 295.2,-163 285.2,-159.5 285.2,-166.5"/>
 </g>
 <!-- PermissionService -->
 <g id="node6" class="node">
 <title>PermissionService</title>
-<ellipse fill="#fdb462" stroke="black" cx="494" cy="-104" rx="82.82" ry="18"/>
-<text text-anchor="middle" x="494" y="-99.8" font-family="Times,serif" font-size="14.00">PermissionService</text>
+<ellipse fill="#fdb462" stroke="black" cx="107" cy="-104" rx="82.82" ry="18"/>
+<text text-anchor="middle" x="107" y="-99.8" font-family="Times,serif" font-size="14.00">PermissionService</text>
 </g>
 <!-- PermissionService&#45;&gt;MeApiModule -->
 <g id="edge5" class="edge">
 <title>PermissionService&#45;&gt;MeApiModule</title>
-<path fill="none" stroke="black" d="M494,-122.02C494,-139.37 494,-163 494,-163 494,-163 376.06,-163 376.06,-163"/>
-<polygon fill="black" stroke="black" points="376.06,-159.5 366.06,-163 376.06,-166.5 376.06,-159.5"/>
+<path fill="none" stroke="black" d="M107,-122.28C107,-143.32 107,-175 107,-175 107,-175 285.11,-175 285.11,-175"/>
+<polygon fill="black" stroke="black" points="285.11,-178.5 295.11,-175 285.11,-171.5 285.11,-178.5"/>
 </g>
 </g>
 </svg>

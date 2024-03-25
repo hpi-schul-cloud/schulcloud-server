@@ -374,8 +374,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="62"
-                                    class="link-to-prism">apps/server/src/modules/board/service/column-board-copy.service.ts:62</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="70"
+                                    class="link-to-prism">apps/server/src/modules/board/service/column-board-copy.service.ts:70</a></div>
                         </td>
                     </tr>
 
@@ -456,8 +456,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="72"
-                                    class="link-to-prism">apps/server/src/modules/board/service/column-board-copy.service.ts:72</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="80"
+                                    class="link-to-prism">apps/server/src/modules/board/service/column-board-copy.service.ts:80</a></div>
                         </td>
                     </tr>
 
@@ -551,10 +551,18 @@ export class ColumnBoardCopyService {
 		originalColumnBoardId: EntityId;
 		destinationExternalReference: BoardExternalReference;
 		userId: EntityId;
+		copyTitle?: string;
 	}): Promise&lt;CopyStatus&gt; {
-		const originalBoard &#x3D; await this.boardDoRepo.findByClassAndId(ColumnBoard, props.originalColumnBoardId);
+		const originalBoard: ColumnBoard &#x3D; await this.boardDoRepo.findByClassAndId(
+			ColumnBoard,
+			props.originalColumnBoardId
+		);
 
-		originalBoard.title &#x3D; await this.deriveColumnBoardTitle(originalBoard.title, props.destinationExternalReference);
+		if (props.copyTitle) {
+			originalBoard.title &#x3D; props.copyTitle;
+		} else {
+			originalBoard.title &#x3D; await this.deriveColumnBoardTitle(originalBoard.title, props.destinationExternalReference);
+		}
 
 		const user &#x3D; await this.userService.findById(props.userId);
 		/* istanbul ignore next */
