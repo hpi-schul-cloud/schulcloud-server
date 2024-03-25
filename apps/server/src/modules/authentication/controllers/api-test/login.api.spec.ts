@@ -11,7 +11,7 @@ import MockAdapter from 'axios-mock-adapter';
 import crypto, { KeyPairKeyObjectResult } from 'crypto';
 import jwt from 'jsonwebtoken';
 import request, { Response } from 'supertest';
-import { AccountEntity } from '@src/modules/account/entity/account.entity';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import { ICurrentUser } from '../../interface';
 import { LdapAuthorizationBodyParams, LocalAuthorizationBodyParams, OauthLoginResponse } from '../dto';
 

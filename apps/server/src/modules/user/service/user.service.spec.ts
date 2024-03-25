@@ -14,7 +14,7 @@ import { IFindOptions, LanguageType, Permission, RoleName, SortOrder } from '@sh
 import { UserRepo } from '@shared/repo';
 import { UserDORepo } from '@shared/repo/user/user-do.repo';
 import { roleFactory, setupEntities, userDoFactory, userFactory } from '@shared/testing';
-import { Account } from '@src/modules/account/domain';
+import { Account } from '@modules/account/domain';
 import { Logger } from '@src/core/logger';
 import { EventBus } from '@nestjs/cqrs';
 import { RegistrationPinService } from '@modules/registration-pin';

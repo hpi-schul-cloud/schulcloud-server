@@ -4,7 +4,7 @@ import { EntityId } from '@shared/domain/types';
 
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DeepPartial } from 'fishery';
-import { AccountEntity, IdmAccountProperties } from '@src/modules/account/entity/account.entity';
+import { AccountEntity, IdmAccountProperties } from '@modules/account/entity/account.entity';
 import { BaseFactory } from './base.factory';
 
 export const defaultTestPassword = 'DummyPasswd!1';

@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 // invalid import
-import { Account } from '@src/modules/account/domain';
+import { Account } from '@modules/account/domain';
 // invalid import, can produce dependency cycles
 import type { ServerConfig } from '@modules/server';
 import { randomUUID } from 'crypto';

@@ -13,7 +13,7 @@ import {
 	UserAndAccountTestFactory,
 	userFactory,
 } from '@shared/testing';
-import { AccountEntity } from '@src/modules/account/entity/account.entity';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../../common/enum';
 import { ExternalToolEntity } from '../../../external-tool/entity';

@@ -10,7 +10,7 @@ import { Role, User } from '@shared/domain/entity';
 import { Permission, RoleName } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { accountFactory, schoolEntityFactory, setupEntities, userFactory } from '@shared/testing';
-import { AuthorizationService } from '@src/modules/authorization';
+import { AuthorizationService } from '@modules/authorization';
 import { AccountSearchType } from '../controller/dto';
 import { AccountService } from '../services';
 import { AccountValidationService } from '../services/account.validation.service';

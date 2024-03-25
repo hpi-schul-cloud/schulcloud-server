@@ -17,8 +17,8 @@ import {
 	AccountSearchType,
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
-} from '@src/modules/account/controller/dto';
-import { ServerTestModule } from '@src/modules/server/server.module';
+} from '@modules/account/controller/dto';
+import { ServerTestModule } from '@modules/server/server.module';
 import { AccountEntity } from '../../entity/account.entity';
 
 describe('Account Controller (API)', () => {

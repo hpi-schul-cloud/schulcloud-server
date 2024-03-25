@@ -11,7 +11,7 @@ import { IFindOptions, Permission } from '@shared/domain/interface';
 import { Counted, EntityId, IImportUserScope, MatchCreatorScope, NameMatch } from '@shared/domain/types';
 import { ImportUserRepo, LegacySystemRepo, UserRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { Account, AccountSave } from '@src/modules/account/domain/account';
+import { Account, AccountSave } from '@modules/account/domain/account';
 import { IUserImportFeatures, UserImportFeatures } from '../config';
 import {
 	MigrationMayBeCompleted,

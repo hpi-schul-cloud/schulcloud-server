@@ -3,7 +3,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import type { User } from '@shared/domain/entity';
 import { TestApiClient, UserAndAccountTestFactory } from '@shared/testing';
-import { AccountEntity } from '@src/modules/account/entity/account.entity';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import { ServerTestModule } from '@src/modules/server';
 import { MeResponse } from '../dto';
 

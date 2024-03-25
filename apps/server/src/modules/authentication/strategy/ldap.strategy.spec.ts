@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Account } from '@src/modules/account/domain';
+import { Account } from '@modules/account/domain';
 import { UnauthorizedException } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { Test, TestingModule } from '@nestjs/testing';

@@ -3,7 +3,7 @@ import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ObjectId } from '@mikro-orm/mongodb';
 import _ from 'lodash';
-import { AccountEntity } from '@src/modules/account/entity/account.entity';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import { accountFactory } from './account.factory';
 import { userFactory } from './user.factory';
 

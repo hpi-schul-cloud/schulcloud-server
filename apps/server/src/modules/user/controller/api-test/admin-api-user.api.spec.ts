@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { RoleName } from '@shared/domain/interface';
 import { TestApiClient, TestXApiKeyClient, schoolEntityFactory } from '@shared/testing';
-import { AccountEntity } from '@src/modules/account/entity/account.entity';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import { AdminApiServerTestModule } from '@src/modules/server/admin-api.server.module';
 import { nanoid } from 'nanoid';
 import { AdminApiUserCreateResponse } from '../dto/admin-api-user-create.response.dto';

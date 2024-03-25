@@ -1,4 +1,4 @@
-import { Account } from '@src/modules/account/domain';
+import { Account } from '@modules/account/domain';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { LegacySchoolDo } from '@shared/domain/domainobject';

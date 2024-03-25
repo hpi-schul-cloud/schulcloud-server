@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AccountService } from '@modules/account/services/account.service';
-import { Account } from '@src/modules/account/domain';
+import { Account } from '@modules/account/domain';
 import { ICurrentUser } from '@modules/authentication';
 import { UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';

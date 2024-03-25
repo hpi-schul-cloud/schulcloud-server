@@ -15,7 +15,7 @@ import {
 	OperationType,
 	DataDeletedEvent,
 } from '@modules/deletion';
-import { deletionRequestFactory } from '@src/modules/deletion/domain/testing';
+import { deletionRequestFactory } from '@modules/deletion/domain/testing';
 import { Logger } from '../../../core/logger';
 import { AccountConfig } from '../account-config';
 import { Account, AccountSave, UpdateAccount } from '../domain';
