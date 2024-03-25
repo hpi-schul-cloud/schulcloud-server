@@ -1624,6 +1624,11 @@
 			"type": "boolean",
 			"default": true,
 			"description": "Enables the synchronization of courses with linked groups during provisioning."
+		},
+		"SYNCHRONIZATION_CHUNK": {
+			"type": "number",
+			"default": 10000,
+			"description": "Size of chunk for synchronization"
 		}
 	},
 	"required": []
