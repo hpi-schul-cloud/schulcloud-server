@@ -36,4 +36,4 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 	providers: [TldrawService, TldrawBoardRepo, TldrawRepo, YMongodb, XApiKeyStrategy],
 	controllers: [TldrawController],
 })
-export class TldrawModule {}
+export class TldrawApiModule {}

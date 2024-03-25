@@ -1,6 +1,6 @@
 /* istanbul ignore file */
 import { BootstrapConsole } from 'nestjs-console';
-import { TldrawConsoleModule } from '@src/modules/tldraw';
+import { TldrawConsoleModule } from '@modules/tldraw/tldraw-console.module';
 
 async function run() {
 	const bootstrap = new BootstrapConsole({
