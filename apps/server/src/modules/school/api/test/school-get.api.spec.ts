@@ -316,7 +316,7 @@ describe('School Controller (API)', () => {
 
 		describe('when some schools have LDAP login systems', () => {
 			const setup = async () => {
-				const ldapLoginSystem = systemEntityFactory.build({ type: 'ldap', ldapConfig: { active: true } });
+				const ldapLoginSystem = systemEntityFactory.withLdapConfig().build();
 				const schoolWithLdapLoginSystem = schoolEntityFactory.build({ systems: [ldapLoginSystem] });
 				const schoolWithoutLdapLoginSystem = schoolEntityFactory.build();
 				await em.persistAndFlush([schoolWithLdapLoginSystem, schoolWithoutLdapLoginSystem]);
@@ -426,8 +426,8 @@ describe('School Controller (API)', () => {
 
 		describe('when user is in requested school', () => {
 			const setup = async () => {
-				const systemWithLdapConfig = systemEntityFactory.build({ type: 'ldap', ldapConfig: { provider: 'LDAP' } });
-				const systemWithOauthConfig = systemEntityFactory.build({ type: 'oauth', oauthConfig: { provider: 'Google' } });
+				const systemWithLdapConfig = systemEntityFactory.withLdapConfig().build();
+				const systemWithOauthConfig = systemEntityFactory.withOauthConfig().build();
 				const systemWithoutProvider = systemEntityFactory.build();
 
 				const systems = [systemWithLdapConfig, systemWithOauthConfig, systemWithoutProvider];
