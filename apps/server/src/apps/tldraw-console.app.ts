@@ -20,7 +20,7 @@ async function run() {
 		console.error(err);
 
 		// Set the exit code to 1 to indicate a console app failure.
-		process.exitCode = 1;
+		process.exit(1);
 	}
 
 	// Always close the app, even if some exception
