@@ -1,5 +1,12 @@
+import { courseFactory } from '@modules/learnroom/testing';
 import { Permission } from '@shared/domain/interface';
-import { courseFactory, roleFactory, setupEntities, taskFactory, userFactory } from '@shared/testing';
+import {
+	courseFactory as courseEntityFactory,
+	roleFactory,
+	setupEntities,
+	taskFactory,
+	userFactory,
+} from '@shared/testing';
 import { AuthorizationHelper } from './authorization.helper';
 
 describe('AuthorizationHelper', () => {
@@ -123,7 +130,7 @@ describe('AuthorizationHelper', () => {
 		describe('when only one prop is given and prop is instance of Collection', () => {
 			it('should return true if user is contained in prop', () => {
 				const user = userFactory.build();
-				const course = courseFactory.build({ students: [user] });
+				const course = courseEntityFactory.build({ students: [user] });
 
 				const permissions = service.hasAccessToEntity(user, course, ['students']);
 
@@ -132,7 +139,7 @@ describe('AuthorizationHelper', () => {
 
 			it('should return false if user is not contained in prop', () => {
 				const user = userFactory.build();
-				const course = courseFactory.build({ students: [user] });
+				const course = courseEntityFactory.build({ students: [user] });
 
 				const permissions = service.hasAccessToEntity(user, course, ['teachers']);
 
@@ -156,6 +163,26 @@ describe('AuthorizationHelper', () => {
 				const task = taskFactory.build({ creator: user2 });
 
 				const permissions = service.hasAccessToEntity(user, task, ['creator']);
+
+				expect(permissions).toEqual(false);
+			});
+		});
+
+		describe('when only one prop is given and prop is an Array', () => {
+			it('should return true if user is contained in prop', () => {
+				const user = userFactory.build();
+				const course = courseFactory.build({ studentIds: [user.id] });
+
+				const permissions = service.hasAccessToEntity(user, course, ['students']);
+
+				expect(permissions).toEqual(true);
+			});
+
+			it('should return false if user is not contained in prop', () => {
+				const user = userFactory.build();
+				const course = courseFactory.build({ studentIds: [user.id] });
+
+				const permissions = service.hasAccessToEntity(user, course, ['teachers']);
 
 				expect(permissions).toEqual(false);
 			});

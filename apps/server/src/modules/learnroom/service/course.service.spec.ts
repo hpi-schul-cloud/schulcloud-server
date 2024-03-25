@@ -1,23 +1,20 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Course as CourseEntity } from '@shared/domain/entity';
-import { CourseRepo as LegacyCourseRepo, UserRepo } from '@shared/repo';
-import { courseFactory as courseEntityFactory, groupFactory, setupEntities, userFactory } from '@shared/testing';
-import { Logger } from '@src/core/logger';
-import { EventBus } from '@nestjs/cqrs';
-import { ObjectId } from 'bson';
-import { Group } from '@modules/group';
 import {
+	DataDeletedEvent,
 	DomainDeletionReportBuilder,
 	DomainName,
 	DomainOperationReportBuilder,
 	OperationType,
-	DataDeletedEvent,
 } from '@modules/deletion';
 import { deletionRequestFactory } from '@modules/deletion/domain/testing';
+import { EventBus } from '@nestjs/cqrs';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Course as CourseEntity } from '@shared/domain/entity';
+import { CourseRepo as LegacyCourseRepo, UserRepo } from '@shared/repo';
+import { courseFactory as courseEntityFactory, setupEntities, userFactory } from '@shared/testing';
+import { Logger } from '@src/core/logger';
+import { ObjectId } from 'bson';
 import { CourseService } from './course.service';
-import { courseFactory } from '../testing';
-import { Course, COURSE_REPO, CourseRepo } from '../domain';
 
 describe('CourseService', () => {
 	let module: TestingModule;
@@ -26,7 +23,6 @@ describe('CourseService', () => {
 	let userRepo: DeepMocked<UserRepo>;
 	let eventBus: DeepMocked<EventBus>;
 	let legacyCourseRepo: DeepMocked<LegacyCourseRepo>;
-	let courseRepo: DeepMocked<CourseRepo>;
 
 	beforeAll(async () => {
 		await setupEntities();
@@ -51,14 +47,9 @@ describe('CourseService', () => {
 						publish: jest.fn(),
 					},
 				},
-				{
-					provide: COURSE_REPO,
-					useValue: createMock<CourseRepo>(),
-				},
 			],
 		}).compile();
 		legacyCourseRepo = module.get(LegacyCourseRepo);
-		courseRepo = module.get(COURSE_REPO);
 		courseService = module.get(CourseService);
 		userRepo = module.get(UserRepo);
 		eventBus = module.get(EventBus);
@@ -191,56 +182,6 @@ describe('CourseService', () => {
 			await expect(courseService.create(course)).resolves.not.toThrow();
 
 			expect(legacyCourseRepo.createCourse).toBeCalledWith(course);
-		});
-	});
-
-	describe('saveAll', () => {
-		const setup = () => {
-			const course: Course = courseFactory.build();
-
-			courseRepo.saveAll.mockResolvedValueOnce([course]);
-
-			return {
-				course,
-			};
-		};
-
-		it('should save all courses', async () => {
-			const { course } = setup();
-
-			await courseService.saveAll([course]);
-
-			expect(courseRepo.saveAll).toHaveBeenCalledWith([course]);
-		});
-
-		it('should return the saved courses', async () => {
-			const { course } = setup();
-
-			const result: Course[] = await courseService.saveAll([course]);
-
-			expect(result).toEqual([course]);
-		});
-	});
-
-	describe('findBySyncedGroup', () => {
-		const setup = () => {
-			const course: Course = courseFactory.build();
-			const group: Group = groupFactory.build();
-
-			courseRepo.findBySyncedGroup.mockResolvedValueOnce([course]);
-
-			return {
-				course,
-				group,
-			};
-		};
-
-		it('should return the synced courses', async () => {
-			const { course, group } = setup();
-
-			const result: Course[] = await courseService.findBySyncedGroup(group);
-
-			expect(result).toEqual([course]);
 		});
 	});
 
