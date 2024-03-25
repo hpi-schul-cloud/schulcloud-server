@@ -28,10 +28,18 @@ export class ColumnBoardCopyService {
 		originalColumnBoardId: EntityId;
 		destinationExternalReference: BoardExternalReference;
 		userId: EntityId;
+		copyTitle?: string;
 	}): Promise<CopyStatus> {
-		const originalBoard = await this.boardDoRepo.findByClassAndId(ColumnBoard, props.originalColumnBoardId);
+		const originalBoard: ColumnBoard = await this.boardDoRepo.findByClassAndId(
+			ColumnBoard,
+			props.originalColumnBoardId
+		);
 
-		originalBoard.title = await this.deriveColumnBoardTitle(originalBoard.title, props.destinationExternalReference);
+		if (props.copyTitle) {
+			originalBoard.title = props.copyTitle;
+		} else {
+			originalBoard.title = await this.deriveColumnBoardTitle(originalBoard.title, props.destinationExternalReference);
+		}
 
 		const user = await this.userService.findById(props.userId);
 		/* istanbul ignore next */
