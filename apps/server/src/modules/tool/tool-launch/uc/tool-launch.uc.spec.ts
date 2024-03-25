@@ -2,7 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { User } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
-import { contextExternalToolFactory, userFactory } from '@shared/testing';
+import { contextExternalToolFactory, setupEntities, userFactory } from '@shared/testing';
 import { AuthorizationContextBuilder, AuthorizationService } from '@src/modules/authorization';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
 import { ContextExternalTool } from '../../context-external-tool/domain';
@@ -48,6 +48,10 @@ describe('ToolLaunchUc', () => {
 		contextExternalToolService = module.get(ContextExternalToolService);
 		toolPermissionHelper = module.get(ToolPermissionHelper);
 		authorizationService = module.get(AuthorizationService);
+	});
+
+	beforeAll(async () => {
+		await setupEntities();
 	});
 
 	afterAll(async () => {

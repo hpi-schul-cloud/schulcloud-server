@@ -20,6 +20,7 @@ export class FilesStorageMapper {
 		types.set(FileRecordParentType.School, AuthorizableReferenceType.School);
 		types.set(FileRecordParentType.Lesson, AuthorizableReferenceType.Lesson);
 		types.set(FileRecordParentType.Submission, AuthorizableReferenceType.Submission);
+		types.set(FileRecordParentType.Grading, AuthorizableReferenceType.Submission);
 		types.set(FileRecordParentType.BoardNode, AuthorizableReferenceType.BoardNode);
 
 		const res = types.get(type);
