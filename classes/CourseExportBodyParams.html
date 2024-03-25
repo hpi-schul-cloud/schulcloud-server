@@ -151,6 +151,13 @@
                                     <span class="modifier"></span>
                                     <span class="modifier">Public</span>
                                     <span class="modifier">Readonly</span>
+                                <a href="#tasks" >tasks</a>
+                            </li>
+                            <li>
+                                    <span class="modifier"></span>
+                                    <span class="modifier"></span>
+                                    <span class="modifier">Public</span>
+                                    <span class="modifier">Readonly</span>
                                 <a href="#topics" >topics</a>
                             </li>
                         </ul>
@@ -172,6 +179,45 @@
     <h3 id="inputs">
         Properties
     </h3>
+    <table class="table table-sm table-bordered">
+        <tbody>
+            <tr>
+                <td class="col-md-4">
+                    <a name="tasks"></a>
+                    <span class="name">
+                            <span class="modifier"></span>
+                            <span class="modifier"></span>
+                            <span class="modifier">Public</span>
+                            <span class="modifier">Readonly</span>
+                        <span ><b>tasks</b></span>
+                        <a href="#tasks"><span class="icon ion-ios-link"></span></a>
+                    </span>
+                </td>
+            </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <i>Type : </i>    <code>string[]</code>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td class="col-md-4">
+                        <b>Decorators : </b>
+                        <br />
+                        <code>
+                            @IsArray()<br />@ApiProperty({description: &#x27;The list of ids of tasks which should be exported. If empty no tasks are exported.&#x27;, type: undefined})<br />
+                        </code>
+                    </td>
+                </tr>
+                    <tr>
+                        <td class="col-md-4">
+                                <div class="io-line">Defined in <a href="" data-line="17" class="link-to-prism">apps/server/src/modules/learnroom/controller/dto/course-export.body.params.ts:17</a></div>
+                        </td>
+                    </tr>
+
+
+        </tbody>
+    </table>
     <table class="table table-sm table-bordered">
         <tbody>
             <tr>
@@ -233,6 +279,13 @@ export class CourseExportBodyParams {
 		type: [String],
 	})
 	public readonly topics!: string[];
+
+	@IsArray()
+	@ApiProperty({
+		description: &#x27;The list of ids of tasks which should be exported. If empty no tasks are exported.&#x27;,
+		type: [String],
+	})
+	public readonly tasks!: string[];
 }
 </code></pre>
     </div>

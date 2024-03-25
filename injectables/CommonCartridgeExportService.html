@@ -303,8 +303,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="92"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:92</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="98"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:98</a></div>
                         </td>
                     </tr>
 
@@ -384,8 +384,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="108"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:108</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="114"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:114</a></div>
                         </td>
                     </tr>
 
@@ -466,8 +466,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="45"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:45</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="46"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:46</a></div>
                         </td>
                     </tr>
 
@@ -565,15 +565,15 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>addTasks(builder: <a href="../classes/CommonCartridgeFileBuilder.html" target="_self">CommonCartridgeFileBuilder</a>, courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>)</code>
+                    <code>addTasks(builder: <a href="../classes/CommonCartridgeFileBuilder.html" target="_self">CommonCartridgeFileBuilder</a>, courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>, exportedTasks: string[])</code>
                 </td>
             </tr>
 
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="70"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:70</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="71"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/service/common-cartridge-export.service.ts:71</a></div>
                         </td>
                     </tr>
 
@@ -641,6 +641,18 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>exportedTasks</td>
+                                            <td>
+                                                        <code>string[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -671,7 +683,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>exportCourse(courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>, topics: string[])</code>
+                    <code>exportCourse(courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>, exportedTopics: string[], exportedTasks: string[])</code>
                 </td>
             </tr>
 
@@ -736,7 +748,19 @@
 
                                         </tr>
                                         <tr>
-                                                <td>topics</td>
+                                                <td>exportedTopics</td>
+                                            <td>
+                                                        <code>string[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>exportedTasks</td>
                                             <td>
                                                         <code>string[]</code>
                                             </td>
@@ -797,15 +821,16 @@ export class CommonCartridgeExportService {
 		courseId: EntityId,
 		userId: EntityId,
 		version: CommonCartridgeVersion,
-		topics: string[]
+		exportedTopics: string[],
+		exportedTasks: string[]
 	): Promise&lt;Buffer&gt; {
 		const course &#x3D; await this.courseService.findById(courseId);
 		const builder &#x3D; new CommonCartridgeFileBuilder(this.commonCartridgeMapper.mapCourseToManifest(version, course));
 
 		builder.addMetadata(this.commonCartridgeMapper.mapCourseToMetadata(course));
 
-		await this.addLessons(builder, courseId, version, topics);
-		await this.addTasks(builder, courseId, userId, version);
+		await this.addLessons(builder, courseId, version, exportedTopics);
+		await this.addTasks(builder, courseId, userId, version, exportedTasks);
 		await this.addColumnBoards(builder, courseId);
 
 		return builder.build();
@@ -840,7 +865,8 @@ export class CommonCartridgeExportService {
 		builder: CommonCartridgeFileBuilder,
 		courseId: EntityId,
 		userId: EntityId,
-		version: CommonCartridgeVersion
+		version: CommonCartridgeVersion,
+		exportedTasks: string[]
 	): Promise&lt;void&gt; {
 		const [tasks] &#x3D; await this.taskService.findBySingleParent(userId, courseId);
 
@@ -854,6 +880,10 @@ export class CommonCartridgeExportService {
 		});
 
 		tasks.forEach((task) &#x3D;&gt; {
+			if (!exportedTasks.includes(task.id)) {
+				return;
+			}
+
 			organization.addResource(this.commonCartridgeMapper.mapTaskToResource(task, version));
 		});
 	}

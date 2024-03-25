@@ -263,8 +263,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="37"
-                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:37</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="38"
+                                    class="link-to-prism">apps/server/src/modules/learnroom/uc/course-export.uc.ts:38</a></div>
                         </td>
                     </tr>
 
@@ -296,7 +296,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>exportCourse(courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>, topics: string[])</code>
+                    <code>exportCourse(courseId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, userId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, version: <a href="../undefineds/CommonCartridgeVersion.html" target="_self">CommonCartridgeVersion</a>, topics: string[], tasks: string[])</code>
                 </td>
             </tr>
 
@@ -372,6 +372,18 @@
 
 
                                         </tr>
+                                        <tr>
+                                                <td>tasks</td>
+                                            <td>
+                                                        <code>string[]</code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -414,7 +426,8 @@ export class CourseExportUc {
 		courseId: EntityId,
 		userId: EntityId,
 		version: CommonCartridgeVersion,
-		topics: string[]
+		topics: string[],
+		tasks: string[]
 	): Promise&lt;Buffer&gt; {
 		this.checkFeatureEnabled();
 		const context &#x3D; AuthorizationContextBuilder.read([Permission.COURSE_EDIT]);
@@ -425,7 +438,7 @@ export class CourseExportUc {
 			context
 		);
 
-		return this.courseExportService.exportCourse(courseId, userId, version, topics);
+		return this.courseExportService.exportCourse(courseId, userId, version, topics, tasks);
 	}
 
 	private checkFeatureEnabled(): void {
