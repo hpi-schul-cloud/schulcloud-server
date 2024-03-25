@@ -121,6 +121,4 @@ export class AccountRepo extends BaseRepo<Account> {
 			}
 		);
 	}
-
-	private;
 }
