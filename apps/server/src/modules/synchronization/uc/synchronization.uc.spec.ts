@@ -13,7 +13,10 @@ import { SynchronizationStatusModel } from '../domain/types';
 import { synchronizationFactory } from '../domain/testing';
 import { Synchronization } from '../domain';
 import { synchronizationTestConfig } from './testing';
-import { NoUsersToSynchronizationLoggableException } from '../domain/loggable-exception';
+import {
+	FailedUpdateLastSyncedAtLoggableException,
+	NoUsersToSynchronizationLoggableException,
+} from '../domain/loggable-exception';
 
 describe(SynchronizationUc.name, () => {
 	let module: TestingModule;
@@ -113,7 +116,6 @@ describe(SynchronizationUc.name, () => {
 			const setup = () => {
 				const systemId = new ObjectId().toHexString();
 				const synchronizationId = new ObjectId().toHexString();
-				const usersToCheck = [new ObjectId().toHexString(), new ObjectId().toHexString()];
 				const userSyncCount = 0;
 				const status = SynchronizationStatusModel.FAILED;
 
@@ -128,6 +130,53 @@ describe(SynchronizationUc.name, () => {
 
 				synchronizationService.createSynchronization.mockResolvedValueOnce(synchronizationId);
 				schulconnexRestClient.getPersonenInfo.mockResolvedValueOnce([]);
+				const spyUpdateSynchronization = jest.spyOn(uc, 'updateSynchronization');
+
+				return {
+					errorMessage,
+					spyUpdateSynchronization,
+					status,
+					synchronizationId,
+					systemId,
+					userSyncCount,
+				};
+			};
+
+			it('should call the uc.updateSynchronization to log details about synchronization of systemId', async () => {
+				const { errorMessage, spyUpdateSynchronization, status, synchronizationId, systemId, userSyncCount } = setup();
+
+				await uc.updateSystemUsersLastSyncedAt(systemId);
+
+				expect(spyUpdateSynchronization).toHaveBeenCalledWith(
+					synchronizationId,
+					status,
+					userSyncCount,
+					expect.objectContaining(errorMessage)
+				);
+			});
+		});
+
+		describe('when failed to update lastSyncedAt field for users provisioned by system', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const synchronizationId = new ObjectId().toHexString();
+				const usersToCheck = [new ObjectId().toHexString()];
+				const userSyncCount = 0;
+				const status = SynchronizationStatusModel.FAILED;
+
+				const error = new Error('testError');
+				const errorMessage = {
+					type: 'SYNCHRONIZATION_ERROR',
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+					data: expect.objectContaining({
+						systemId,
+						errorMessage: 'Failed to update lastSyncedAt field for users provisioned by system',
+					}),
+				};
+
+				synchronizationService.createSynchronization.mockResolvedValueOnce(synchronizationId);
+				jest.spyOn(uc, 'findUsersToSynchronize').mockResolvedValueOnce(usersToCheck);
+				userService.updateLastSyncedAt.mockRejectedValueOnce(error);
 				const spyUpdateSynchronization = jest.spyOn(uc, 'updateSynchronization');
 
 				return {
@@ -159,7 +208,6 @@ describe(SynchronizationUc.name, () => {
 			const setup = () => {
 				const systemId = new ObjectId().toHexString();
 				const synchronizationId = new ObjectId().toHexString();
-				const usersToCheck = [new ObjectId().toHexString(), new ObjectId().toHexString()];
 				const userSyncCount = 0;
 				const status = SynchronizationStatusModel.FAILED;
 
@@ -183,7 +231,6 @@ describe(SynchronizationUc.name, () => {
 					synchronizationId,
 					systemId,
 					userSyncCount,
-					usersToCheck,
 				};
 			};
 
@@ -363,9 +410,7 @@ describe(SynchronizationUc.name, () => {
 				userService.findByExternalIdsAndProvidedBySystemId.mockResolvedValueOnce(usersToSync);
 
 				const error = new Error('testError');
-				const expectedError = new NoUsersToSynchronizationLoggableException(
-					`Problems with synchronization for systemId: ${systemId}`
-				);
+				const expectedError = new FailedUpdateLastSyncedAtLoggableException(systemId);
 				userService.updateLastSyncedAt.mockRejectedValueOnce(error);
 
 				return {
