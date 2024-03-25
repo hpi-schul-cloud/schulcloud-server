@@ -286,7 +286,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapPermissions(user: <a href="../interfaces/User.html" target="_self">User</a>)</code>
+                    <code>mapPermissions(permissions: Set<string>)</code>
                 </td>
             </tr>
 
@@ -315,9 +315,9 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                                <td>user</td>
+                                                <td>permissions</td>
                                             <td>
-                                                            <code><a href="../interfaces/User.html" target="_self" >User</a></code>
+                                                        <code>Set&lt;string&gt;</code>
                                             </td>
 
                                             <td>
@@ -400,7 +400,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/MeRolesReponse.html" target="_self" >MeRolesReponse</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/MeRoleResponse.html" target="_self" >MeRoleResponse</a></code>
 
                         </div>
                             <div class="io-description">
@@ -495,7 +495,7 @@
             <tr>
                 <td class="col-md-4">
                         <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>mapToResponse(school: <a href="../classes/School.html" target="_self">School</a>, user: <a href="../interfaces/User.html" target="_self">User</a>, accountId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>)</code>
+                    <code>mapToResponse(school: <a href="../classes/School.html" target="_self">School</a>, user: <a href="../interfaces/User.html" target="_self">User</a>, accountId: <a href="../undefineds/EntityId.html" target="_self">EntityId</a>, permissions: Set<string>)</code>
                 </td>
             </tr>
 
@@ -551,6 +551,18 @@
                                                 <td>accountId</td>
                                             <td>
                                                             <code><a href="../miscellaneous/typealiases.html#EntityId" target="_self" >EntityId</a></code>
+                                            </td>
+
+                                            <td>
+                                                    No
+                                            </td>
+
+
+                                        </tr>
+                                        <tr>
+                                                <td>permissions</td>
+                                            <td>
+                                                        <code>Set&lt;string&gt;</code>
                                             </td>
 
                                             <td>
@@ -703,7 +715,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>        <code><a href="../classes/MeRolesReponse.html" target="_self" >MeRolesReponse[]</a></code>
+                            <b>Returns : </b>        <code><a href="../classes/MeRoleResponse.html" target="_self" >MeRoleResponse[]</a></code>
 
                         </div>
                             <div class="io-description">
@@ -729,18 +741,18 @@ import { School } from &#x27;@src/modules/school&#x27;;
 import {
 	MeAccountResponse,
 	MeResponse,
-	MeRolesReponse,
+	MeRoleResponse,
 	MeSchoolLogoResponse,
 	MeSchoolResponse,
 	MeUserResponse,
 } from &#x27;../dto&#x27;;
 
 export class MeResponseMapper {
-	public static mapToResponse(school: School, user: User, accountId: EntityId): MeResponse {
+	public static mapToResponse(school: School, user: User, accountId: EntityId, permissions: Set&lt;string&gt;): MeResponse {
 		const schoolResponse &#x3D; MeResponseMapper.mapSchool(school);
 		const userResponse &#x3D; MeResponseMapper.mapUser(user);
 		const rolesResponse &#x3D; MeResponseMapper.mapUserRoles(user);
-		const permissionsResponse &#x3D; MeResponseMapper.mapPermissions(user);
+		const permissionsResponse &#x3D; MeResponseMapper.mapPermissions(permissions);
 		const language &#x3D; user.getInfo().language || school.getInfo().language;
 		const accountResponse &#x3D; MeResponseMapper.mapAccount(accountId);
 
@@ -787,15 +799,15 @@ export class MeResponseMapper {
 		return userResponse;
 	}
 
-	private static mapUserRoles(user: User): MeRolesReponse[] {
+	private static mapUserRoles(user: User): MeRoleResponse[] {
 		const roles &#x3D; user.getRoles();
 		const rolesResponse &#x3D; roles.map((role) &#x3D;&gt; MeResponseMapper.mapRole(role));
 
 		return rolesResponse;
 	}
 
-	private static mapRole(role: Role): MeRolesReponse {
-		const roleResponse &#x3D; new MeRolesReponse({
+	private static mapRole(role: Role): MeRoleResponse {
+		const roleResponse &#x3D; new MeRoleResponse({
 			id: role.id,
 			name: role.name,
 		});
@@ -803,10 +815,10 @@ export class MeResponseMapper {
 		return roleResponse;
 	}
 
-	private static mapPermissions(user: User): string[] {
-		const permissionStrings &#x3D; user.resolvePermissions();
+	private static mapPermissions(permissions: Set&lt;string&gt;): string[] {
+		const permissionsResponse &#x3D; Array.from(permissions);
 
-		return permissionStrings;
+		return permissionsResponse;
 	}
 
 	private static mapAccount(accountId: EntityId): MeAccountResponse {

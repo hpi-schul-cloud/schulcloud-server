@@ -165,12 +165,12 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>)</code>
+<code>constructor(schoolService: <a href="../injectables/SchoolService.html" target="_self">SchoolService</a>, userService: <a href="../injectables/UserService.html" target="_self">UserService</a>, permissionService: <a href="../injectables/PermissionService.html" target="_self">PermissionService</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="9" class="link-to-prism">apps/server/src/modules/me/api/me.uc.ts:9</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="10" class="link-to-prism">apps/server/src/modules/me/api/me.uc.ts:10</a></div>
                             </td>
                         </tr>
 
@@ -204,6 +204,18 @@
                                                   
                                                         <td>
                                                                         <code><a href="../injectables/UserService.html" target="_self" >UserService</a></code>
+                                                        </td>
+                                                  
+                                                    <td>
+                                                            No
+                                                    </td>
+                                                    
+                                                </tr>
+                                                <tr>
+                                                        <td>permissionService</td>
+                                                  
+                                                        <td>
+                                                                        <code><a href="../injectables/PermissionService.html" target="_self" >PermissionService</a></code>
                                                         </td>
                                                   
                                                     <td>
@@ -248,8 +260,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="12"
-                                    class="link-to-prism">apps/server/src/modules/me/api/me.uc.ts:12</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="17"
+                                    class="link-to-prism">apps/server/src/modules/me/api/me.uc.ts:17</a></div>
                         </td>
                     </tr>
 
@@ -326,15 +338,20 @@
 
     <div class="tab-pane fade  tab-source-code" id="source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@nestjs/common&#x27;;
+import { EntityId } from &#x27;@shared/domain/types&#x27;;
 import { SchoolService } from &#x27;@src/modules/school&#x27;;
 import { UserService } from &#x27;@src/modules/user&#x27;;
-import { EntityId } from &#x27;@shared/domain/types&#x27;;
-import { MeResponseMapper } from &#x27;./mapper&#x27;;
+import { PermissionService } from &#x27;../domain/permission.service&#x27;;
 import { MeResponse } from &#x27;./dto&#x27;;
+import { MeResponseMapper } from &#x27;./mapper&#x27;;
 
 @Injectable()
 export class MeUc {
-	constructor(private readonly schoolService: SchoolService, private readonly userService: UserService) {}
+	constructor(
+		private readonly schoolService: SchoolService,
+		private readonly userService: UserService,
+		private readonly permissionService: PermissionService
+	) {}
 
 	public async getMe(userId: EntityId, schoolId: EntityId, accountId: EntityId): Promise&lt;MeResponse&gt; {
 		const [school, user] &#x3D; await Promise.all([
@@ -342,7 +359,9 @@ export class MeUc {
 			this.userService.getUserEntityWithRoles(userId), // TODO: replace when user domain object is available
 		]);
 
-		const dto &#x3D; MeResponseMapper.mapToResponse(school, user, accountId);
+		const permissions &#x3D; this.permissionService.resolvePermissions(user, school);
+
+		const dto &#x3D; MeResponseMapper.mapToResponse(school, user, accountId, permissions);
 
 		return dto;
 	}
