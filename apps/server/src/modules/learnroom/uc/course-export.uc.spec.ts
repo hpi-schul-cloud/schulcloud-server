@@ -56,8 +56,9 @@ describe('CourseExportUc', () => {
 			const userId = new ObjectId().toHexString();
 			const version: CommonCartridgeVersion = CommonCartridgeVersion.V_1_1_0;
 			const topics: string[] = [faker.string.uuid()];
+			const tasks: string[] = [faker.string.uuid()];
 
-			return { version, userId, courseId, topics };
+			return { version, userId, courseId, topics, tasks };
 		};
 
 		describe('when authorization throw a error', () => {
@@ -70,9 +71,9 @@ describe('CourseExportUc', () => {
 			};
 
 			it('should pass this error', async () => {
-				const { courseId, userId, version, topics } = setup();
+				const { courseId, userId, version, topics, tasks } = setup();
 
-				await expect(courseExportUc.exportCourse(courseId, userId, version, topics)).rejects.toThrowError(
+				await expect(courseExportUc.exportCourse(courseId, userId, version, topics, tasks)).rejects.toThrowError(
 					new ForbiddenException()
 				);
 			});
@@ -88,9 +89,11 @@ describe('CourseExportUc', () => {
 			};
 
 			it('should pass this error', async () => {
-				const { courseId, userId, version, topics } = setup();
+				const { courseId, userId, version, topics, tasks } = setup();
 
-				await expect(courseExportUc.exportCourse(courseId, userId, version, topics)).rejects.toThrowError(new Error());
+				await expect(courseExportUc.exportCourse(courseId, userId, version, topics, tasks)).rejects.toThrowError(
+					new Error()
+				);
 			});
 		});
 
@@ -104,16 +107,18 @@ describe('CourseExportUc', () => {
 			};
 
 			it('should check for permissions', async () => {
-				const { courseId, userId, version, topics } = setup();
+				const { courseId, userId, version, topics, tasks } = setup();
 
-				await expect(courseExportUc.exportCourse(courseId, userId, version, topics)).resolves.not.toThrow();
+				await expect(courseExportUc.exportCourse(courseId, userId, version, topics, tasks)).resolves.not.toThrow();
 				expect(authorizationServiceMock.checkPermissionByReferences).toBeCalledTimes(1);
 			});
 
 			it('should return a binary file as buffer', async () => {
-				const { courseId, userId, version, topics } = setup();
+				const { courseId, userId, version, topics, tasks } = setup();
 
-				await expect(courseExportUc.exportCourse(courseId, userId, version, topics)).resolves.toBeInstanceOf(Buffer);
+				await expect(courseExportUc.exportCourse(courseId, userId, version, topics, tasks)).resolves.toBeInstanceOf(
+					Buffer
+				);
 			});
 		});
 
@@ -127,9 +132,9 @@ describe('CourseExportUc', () => {
 			};
 
 			it('should throw a NotFoundException', async () => {
-				const { courseId, userId, version, topics } = setup();
+				const { courseId, userId, version, topics, tasks } = setup();
 
-				await expect(courseExportUc.exportCourse(courseId, userId, version, topics)).rejects.toThrowError(
+				await expect(courseExportUc.exportCourse(courseId, userId, version, topics, tasks)).rejects.toThrowError(
 					new NotFoundException()
 				);
 			});

@@ -1,23 +1,21 @@
-import { Inject, Injectable } from '@nestjs/common';
+import {
+	DataDeletedEvent,
+	DataDeletionDomainOperationLoggable,
+	DeletionService,
+	DomainDeletionReport,
+	DomainDeletionReportBuilder,
+	DomainName,
+	DomainOperationReportBuilder,
+	OperationType,
+	StatusModel,
+	UserDeletedEvent,
+} from '@modules/deletion';
+import { Injectable } from '@nestjs/common';
 import { EventBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Course as CourseEntity } from '@shared/domain/entity';
 import { Counted, EntityId } from '@shared/domain/types';
 import { CourseRepo as LegacyCourseRepo } from '@shared/repo';
 import { Logger } from '@src/core/logger';
-import { Group } from '@modules/group/domain';
-import {
-	UserDeletedEvent,
-	DeletionService,
-	DataDeletedEvent,
-	DomainDeletionReport,
-	DataDeletionDomainOperationLoggable,
-	DomainName,
-	DomainDeletionReportBuilder,
-	DomainOperationReportBuilder,
-	OperationType,
-	StatusModel,
-} from '@modules/deletion';
-import { Course, COURSE_REPO, CourseRepo } from '../domain';
 
 @Injectable()
 @EventsHandler(UserDeletedEvent)
@@ -25,7 +23,6 @@ export class CourseService implements DeletionService, IEventHandler<UserDeleted
 	constructor(
 		private readonly repo: LegacyCourseRepo,
 		private readonly logger: Logger,
-		@Inject(COURSE_REPO) private readonly courseRepo: CourseRepo,
 		private readonly eventBus: EventBus
 	) {
 		this.logger.setContext(CourseService.name);
@@ -96,17 +93,5 @@ export class CourseService implements DeletionService, IEventHandler<UserDeleted
 	async findOneForUser(courseId: EntityId, userId: EntityId): Promise<CourseEntity> {
 		const course = await this.repo.findOne(courseId, userId);
 		return course;
-	}
-
-	public async saveAll(courses: Course[]): Promise<Course[]> {
-		const savedCourses: Course[] = await this.courseRepo.saveAll(courses);
-
-		return savedCourses;
-	}
-
-	public async findBySyncedGroup(group: Group): Promise<Course[]> {
-		const courses: Course[] = await this.courseRepo.findBySyncedGroup(group);
-
-		return courses;
 	}
 }
