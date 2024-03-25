@@ -109,7 +109,7 @@ describe('Course Controller (API)', () => {
 		it('should find course export', async () => {
 			const { course, loggedInClient } = await setup();
 
-			const body = { topics: [faker.string.uuid()] };
+			const body = { topics: [faker.string.uuid()], tasks: [faker.string.uuid()] };
 			const response = await loggedInClient.post(`${course.id}/export?version=1.1.0`, body);
 
 			expect(response.statusCode).toEqual(201);
