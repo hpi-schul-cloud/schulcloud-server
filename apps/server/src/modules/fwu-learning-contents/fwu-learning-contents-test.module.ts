@@ -2,8 +2,10 @@ import { MongoMemoryDatabaseModule } from '@infra/database';
 import { MongoDatabaseModuleOptions } from '@infra/database/mongo-memory-database/types';
 import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { S3ClientModule } from '@infra/s3-client';
+import { AccountEntity } from '@modules/account/entity/account.entity';
 import { AuthenticationModule } from '@modules/authentication/authentication.module';
 import { AuthorizationModule } from '@modules/authorization';
+import { FwuLearningContentsUc } from '@modules/fwu-learning-contents/uc/fwu-learning-contents.uc';
 import { HttpModule } from '@nestjs/axios';
 import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
@@ -13,8 +15,6 @@ import { CoreModule } from '@src/core';
 import { LoggerModule } from '@src/core/logger';
 import { FwuLearningContentsController } from './controller/fwu-learning-contents.controller';
 import { config, s3Config } from './fwu-learning-contents.config';
-import { FwuLearningContentsUc } from './uc/fwu-learning-contents.uc';
-import { AccountEntity } from '../account/entity/account.entity';
 
 const imports = [
 	MongoMemoryDatabaseModule.forRoot({

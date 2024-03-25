@@ -6,7 +6,7 @@ import { EntityNotFoundError } from '@shared/common';
 import { IdmAccount } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { accountDtoFactory, setupEntities, userFactory } from '@shared/testing';
-import { IdentityManagementService } from '@src/infra/identity-management';
+import { IdentityManagementService } from '@infra/identity-management';
 import bcrypt from 'bcryptjs';
 import { v1 } from 'uuid';
 import { Logger } from '../../../core/logger';

@@ -5,7 +5,6 @@ export class IdmCallbackLoggableException implements Loggable {
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		if (this.callbackError instanceof Error) {
-			// AI next 4 lines
 			return {
 				type: this.callbackError.name,
 				message: this.callbackError.message,

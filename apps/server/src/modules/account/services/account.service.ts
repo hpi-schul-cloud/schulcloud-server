@@ -43,13 +43,7 @@ import {
 	UpdatingLastFailedLoginLoggable,
 } from '../loggable';
 
-/* TODO: extract a service that contains all things required by feathers,
-which is responsible for the additionally required validation 
-
-it should be clearly visible which functions are only needed for feathers, and easy to remove them */
-
 type UserPreferences = {
-	// first login completed
 	firstLogin: boolean;
 };
 

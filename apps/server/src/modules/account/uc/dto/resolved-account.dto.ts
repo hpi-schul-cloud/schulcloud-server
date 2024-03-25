@@ -6,7 +6,7 @@ import { passwordPattern } from '../../controller/dto/password-pattern';
 export class ResolvedAccountDto {
 	@IsOptional()
 	@IsMongoId()
-	readonly id?: EntityId;
+	readonly id: EntityId;
 
 	@IsOptional()
 	@IsDate()

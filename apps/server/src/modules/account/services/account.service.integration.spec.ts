@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { MongoMemoryDatabaseModule } from '@infra/database';
 import { IdentityManagementModule, IdentityManagementService } from '@infra/identity-management';
-import { KeycloakAdministrationService } from '@src/infra/identity-management/keycloak-administration/service/keycloak-administration.service';
+import { KeycloakAdministrationService } from '@infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ConfigModule } from '@nestjs/config';

@@ -288,7 +288,7 @@ describe('UserService', () => {
 					userId,
 					systemId,
 					schoolId: user.schoolId,
-					accountId: account.id ?? '',
+					accountId: account.id,
 					roles: [role.id],
 					isExternalUser: true,
 				});

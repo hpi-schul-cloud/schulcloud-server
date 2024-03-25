@@ -3,13 +3,11 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config/dist/config.service';
 import { EntityNotFoundError } from '@shared/common';
 import { Counted, EntityId } from '@shared/domain/types';
-import { IdentityManagementService } from '@src/infra/identity-management/identity-management.service';
+import { IdentityManagementService } from '@infra/identity-management/identity-management.service';
 import bcrypt from 'bcryptjs';
 import { AccountConfig } from '../account-config';
 import { Account, AccountSave } from '../domain/account';
 import { AccountRepo } from '../repo/account.repo';
-
-// HINT: do more empty lines :)
 
 @Injectable()
 export class AccountServiceDb {
@@ -43,8 +41,6 @@ export class AccountServiceDb {
 
 	async save(accountSave: AccountSave): Promise<Account> {
 		let account: Account;
-		// HINT: mapping could be done by a mapper (though this whole file is subject to be removed in the future)
-		// HINT: today we have logic to map back into unit work in the baseDO
 		if (accountSave.id) {
 			const internalId = await this.getInternalId(accountSave.id);
 			account = await this.accountRepo.findById(internalId);

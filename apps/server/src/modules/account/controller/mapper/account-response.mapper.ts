@@ -4,7 +4,7 @@ import { ResolvedAccountDto, ResolvedSearchListAccountDto } from '../../uc/dto/r
 export class AccountResponseMapper {
 	static mapToAccountResponse(resolvedAccount: ResolvedAccountDto): AccountResponse {
 		return new AccountResponse({
-			id: resolvedAccount.id as string,
+			id: resolvedAccount.id,
 			userId: resolvedAccount.userId,
 			activated: resolvedAccount.activated,
 			username: resolvedAccount.username,
