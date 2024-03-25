@@ -61,7 +61,7 @@ class LDAPSyncer extends Syncer {
 			await this.sendLdapUsers(ldapUsers, school.ldapSchoolIdentifier);
 		} catch (err) {
 			syncLogger.error('Error while syncing process Ldap Users', { error: err, syncId: this.syncId });
-			this.stats.errors.push(err);
+			this.stats.errors.push(err.stack ? err.stack : err);
 		}
 	}
 

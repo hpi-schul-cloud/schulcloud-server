@@ -16,7 +16,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ConfigModule } from '@nestjs/config';
 import { createConfigModuleOptions } from '@src/config';
 import { MongoMemoryDatabaseModule } from '@infra/database';
-import { YMap } from 'yjs/dist/src/types/YMap';
 import { TldrawRedisFactory } from '../redis';
 import { TldrawWs } from '../controller';
 import { TldrawDrawing } from '../entities';
@@ -24,8 +23,7 @@ import { TldrawBoardRepo, TldrawRepo, YMongodb } from '../repo';
 import { TestConnection, tldrawTestConfig } from '../testing';
 import { WsSharedDocDo } from '../domain';
 import { MetricsService } from '../metrics';
-import { TldrawFilesStorageAdapterService, TldrawWsService } from '.';
-import { TldrawAsset, TldrawShape, TldrawShapeType } from '../types';
+import { TldrawWsService } from '.';
 
 jest.mock('yjs', () => {
 	const moduleMock: unknown = {
@@ -55,7 +53,6 @@ describe('TldrawWSService', () => {
 	let service: TldrawWsService;
 	let boardRepo: DeepMocked<TldrawBoardRepo>;
 	let logger: DeepMocked<Logger>;
-	let tldrawFilesStorageAdapterService: DeepMocked<TldrawFilesStorageAdapterService>;
 
 	const gatewayPort = 3346;
 	const wsUrl = TestConnection.getWsUrl(gatewayPort);
@@ -93,17 +90,12 @@ describe('TldrawWSService', () => {
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
 				},
-				{
-					provide: TldrawFilesStorageAdapterService,
-					useValue: createMock<TldrawFilesStorageAdapterService>(),
-				},
 			],
 		}).compile();
 
 		service = testingModule.get(TldrawWsService);
 		boardRepo = testingModule.get(TldrawBoardRepo);
 		logger = testingModule.get(Logger);
-		tldrawFilesStorageAdapterService = testingModule.get(TldrawFilesStorageAdapterService);
 		app = testingModule.createNestApplication();
 		app.useWebSocketAdapter(new WsAdapter(app));
 		await app.init();
@@ -575,35 +567,6 @@ describe('TldrawWSService', () => {
 			});
 		});
 
-		describe('when deleteUnusedFilesForDocument fails', () => {
-			const setup = async () => {
-				ws = await TestConnection.setupWs(wsUrl);
-				const doc = TldrawWsFactory.createWsSharedDocDo();
-				doc.connections.set(ws, new Set<number>());
-
-				const errorLogSpy = jest.spyOn(logger, 'warning');
-				const storageSpy = jest
-					.spyOn(tldrawFilesStorageAdapterService, 'deleteUnusedFilesForDocument')
-					.mockRejectedValueOnce(new Error('error'));
-
-				return {
-					doc,
-					errorLogSpy,
-					storageSpy,
-				};
-			};
-
-			it('should log error', async () => {
-				const { doc, errorLogSpy } = await setup();
-
-				await service.closeConnection(doc, ws);
-				await delay(100);
-
-				expect(errorLogSpy).toHaveBeenCalled();
-				ws.close();
-			});
-		});
-
 		describe('when close connection fails', () => {
 			const setup = async () => {
 				boardRepo.getDocumentFromDb.mockResolvedValueOnce(new WsSharedDocDo('TEST'));
@@ -756,47 +719,6 @@ describe('TldrawWSService', () => {
 				closeConnSpy.mockRestore();
 				sendSpy.mockRestore();
 				clearIntervalSpy.mockRestore();
-			});
-		});
-
-		describe('when synchronising assets', () => {
-			const setup = async () => {
-				ws = await TestConnection.setupWs(wsUrl, 'TEST');
-				const doc = new WsSharedDocDo('TEST');
-				doc.connections.set(ws, new Set<number>());
-				const shapes: YMap<TldrawShape> = doc.getMap('shapes');
-				const assets: YMap<TldrawAsset> = doc.getMap('assets');
-				shapes.set('shape1', { id: 'shape1', type: TldrawShapeType.Image, assetId: 'asset1' });
-				shapes.set('shape2', { id: 'shape2', type: TldrawShapeType.Draw });
-				assets.set('asset1', {
-					id: 'asset1',
-					type: TldrawShapeType.Image,
-					name: 'asset1.jpg',
-					src: '/filerecordid1/file1.jpg',
-				});
-				assets.set('asset2', {
-					id: 'asset2',
-					type: TldrawShapeType.Image,
-					name: 'asset2.jpg',
-					src: '/filerecordid2/file2.jpg',
-				});
-
-				return {
-					doc,
-					assets,
-				};
-			};
-
-			it('should remove unused assets from document', async () => {
-				const { doc, assets } = await setup();
-
-				const initialSize = assets.size;
-				await service.closeConnection(doc, ws);
-				const finalSize = assets.size;
-
-				expect(initialSize).toBe(2);
-				expect(finalSize).toBe(1);
-				ws.close();
 			});
 		});
 

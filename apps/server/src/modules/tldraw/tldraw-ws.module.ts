@@ -6,12 +6,10 @@ import { LoggerModule } from '@src/core/logger';
 import { MikroOrmModule, MikroOrmModuleSyncOptions } from '@mikro-orm/nestjs';
 import { Dictionary, IPrimaryKey } from '@mikro-orm/core';
 import { HttpModule } from '@nestjs/axios';
-import { FilesStorageClientModule } from '@modules/files-storage-client';
-import { RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { TldrawDrawing } from './entities';
 import { MetricsService } from './metrics';
 import { TldrawBoardRepo, TldrawRepo, YMongodb } from './repo';
-import { TldrawFilesStorageAdapterService, TldrawWsService } from './service';
+import { TldrawWsService } from './service';
 import { TldrawWs } from './controller';
 import { config, TLDRAW_DB_URL } from './config';
 import { TldrawRedisFactory } from './redis';
@@ -23,8 +21,6 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 };
 @Module({
 	imports: [
-		RabbitMQWrapperModule,
-		FilesStorageClientModule,
 		HttpModule,
 		LoggerModule,
 		CoreModule,
@@ -38,15 +34,6 @@ const defaultMikroOrmOptions: MikroOrmModuleSyncOptions = {
 		}),
 		ConfigModule.forRoot(createConfigModuleOptions(config)),
 	],
-	providers: [
-		TldrawWs,
-		TldrawWsService,
-		TldrawBoardRepo,
-		TldrawRepo,
-		YMongodb,
-		MetricsService,
-		TldrawRedisFactory,
-		TldrawFilesStorageAdapterService,
-	],
+	providers: [TldrawWs, TldrawWsService, TldrawBoardRepo, TldrawRepo, YMongodb, MetricsService, TldrawRedisFactory],
 })
 export class TldrawWsModule {}
