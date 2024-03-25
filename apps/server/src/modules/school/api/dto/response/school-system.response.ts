@@ -30,7 +30,7 @@ export class SchoolSystemResponse {
 		this.id = props.id;
 		this.type = props.type;
 		this.alias = props.alias;
-		this.ldapConfig = props.ldapConfig ? new ProviderConfigResponse(props.ldapConfig) : undefined;
-		this.oauthConfig = props.oauthConfig ? new ProviderConfigResponse(props.oauthConfig) : undefined;
+		this.ldapConfig = props.ldapConfig;
+		this.oauthConfig = props.oauthConfig;
 	}
 }
