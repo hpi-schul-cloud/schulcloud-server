@@ -8,4 +8,11 @@ export class CourseExportBodyParams {
 		type: [String],
 	})
 	public readonly topics!: string[];
+
+	@IsArray()
+	@ApiProperty({
+		description: 'The list of ids of tasks which should be exported. If empty no tasks are exported.',
+		type: [String],
+	})
+	public readonly tasks!: string[];
 }

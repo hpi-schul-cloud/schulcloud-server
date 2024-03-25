@@ -68,7 +68,8 @@ export class CourseController {
 			urlParams.courseId,
 			currentUser.userId,
 			queryParams.version,
-			bodyParams.topics
+			bodyParams.topics,
+			bodyParams.tasks
 		);
 
 		response.set({
