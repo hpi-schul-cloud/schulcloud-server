@@ -823,10 +823,10 @@ describe('UserService', () => {
 		};
 
 		describe('when find users By externalIds and systemId', () => {
-			it('should call findByExternalIds in userService with externalIds', async () => {
+			it('should call findMultipleByExternalIds in userService with externalIds', async () => {
 				const { externalIds, foundUsers, systemId } = setup();
 
-				jest.spyOn(service, 'findByExternalIds').mockResolvedValueOnce(foundUsers);
+				jest.spyOn(service, 'findMultipleByExternalIds').mockResolvedValueOnce(foundUsers);
 
 				await service.findByExternalIdsAndProvidedBySystemId(externalIds, systemId);
 
@@ -836,7 +836,7 @@ describe('UserService', () => {
 			it('should call accountService.findByUserIdsAndSystemId with foundUsers and systemId', async () => {
 				const { externalIds, foundUsers, systemId } = setup();
 
-				jest.spyOn(service, 'findByExternalIds').mockResolvedValueOnce(foundUsers);
+				jest.spyOn(service, 'findMultipleByExternalIds').mockResolvedValueOnce(foundUsers);
 
 				await service.findByExternalIdsAndProvidedBySystemId(externalIds, systemId);
 
@@ -846,7 +846,7 @@ describe('UserService', () => {
 			it('should return array with verified Users', async () => {
 				const { externalIds, foundUsers, systemId } = setup();
 
-				jest.spyOn(service, 'findByExternalIds').mockResolvedValueOnce(foundUsers);
+				jest.spyOn(service, 'findMultipleByExternalIds').mockResolvedValueOnce(foundUsers);
 				jest.spyOn(accountService, 'findByUserIdsAndSystemId').mockResolvedValueOnce(foundUsers);
 
 				const result = await service.findByExternalIdsAndProvidedBySystemId(externalIds, systemId);
