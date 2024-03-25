@@ -1,9 +1,9 @@
-import { FileRecordParentType } from '@infra/rabbitmq';
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock } from '@golevelup/ts-jest';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { TldrawShapeType } from '../types';
+import { tldrawFileDtoFactory } from '@shared/testing/factory';
 import { TldrawFilesStorageAdapterService } from './tldraw-files-storage.service';
+import { tldrawAssetFactory } from '../testing';
 
 describe('TldrawFilesStorageAdapterService', () => {
 	let module: TestingModule;
@@ -32,37 +32,12 @@ describe('TldrawFilesStorageAdapterService', () => {
 	describe('deleteUnusedFilesForDocument', () => {
 		describe('when there are files found for this document', () => {
 			const setup = () => {
-				const usedAssets = [
-					{
-						id: 'asset1',
-						type: TldrawShapeType.Image,
-						name: 'asset1.jpg',
-						src: '/filerecordid1/file1.jpg',
-					},
-				];
+				const asset = tldrawAssetFactory.build();
+				const usedAssets = [asset];
 
-				const fileDtos = [
-					{
-						id: 'filerecordid1',
-						parentId: 'docname',
-						name: 'file',
-						parentType: FileRecordParentType.BoardNode,
-						createdAt: new Date(2020, 1, 1, 0, 0),
-					},
-					{
-						id: 'filerecordid2',
-						parentId: 'docname',
-						name: 'file',
-						parentType: FileRecordParentType.BoardNode,
-						createdAt: new Date(2020, 1, 1, 0, 0),
-					},
-					{
-						id: 'filerecordid3',
-						parentId: 'docname',
-						name: 'file',
-						parentType: FileRecordParentType.BoardNode,
-					},
-				];
+				const fileDtos = tldrawFileDtoFactory.buildListWithId(2);
+				const fileWithWrongDate = tldrawFileDtoFactory.build({ createdAt: undefined });
+				fileDtos.push(fileWithWrongDate);
 
 				const listFilesOfParentSpy = jest
 					.spyOn(filesStorageClientAdapterService, 'listFilesOfParent')

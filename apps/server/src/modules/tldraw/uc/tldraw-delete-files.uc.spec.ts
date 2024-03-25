@@ -6,6 +6,7 @@ import { YMongodb } from '../repo';
 import { TldrawDeleteFilesUc } from './tldraw-delete-files.uc';
 import { WsSharedDocDo } from '../domain';
 import { TldrawAsset, TldrawShape, TldrawShapeType } from '../types';
+import { tldrawShapeFactory, tldrawAssetFactory } from '../testing';
 
 describe('TldrawDeleteFilesUc', () => {
 	let uc: TldrawDeleteFilesUc;
@@ -40,22 +41,18 @@ describe('TldrawDeleteFilesUc', () => {
 		const setup = () => {
 			mdb.getAllDocumentNames.mockResolvedValueOnce(['doc1']);
 			const doc = new WsSharedDocDo('doc1');
+
 			const shapes: YMap<TldrawShape> = doc.getMap('shapes');
+			const shape1 = tldrawShapeFactory.build();
+			const shape2 = tldrawShapeFactory.build({ type: TldrawShapeType.Draw, assetId: undefined });
+			shapes.set('shape1', shape1);
+			shapes.set('shape2', shape2);
+
 			const assets: YMap<TldrawAsset> = doc.getMap('assets');
-			shapes.set('shape1', { id: 'shape1', type: TldrawShapeType.Image, assetId: 'asset1' });
-			shapes.set('shape2', { id: 'shape2', type: TldrawShapeType.Draw });
-			assets.set('asset1', {
-				id: 'asset1',
-				type: TldrawShapeType.Image,
-				name: 'asset1.jpg',
-				src: '/filerecordid1/file1.jpg',
-			});
-			assets.set('asset2', {
-				id: 'asset2',
-				type: TldrawShapeType.Image,
-				name: 'asset2.jpg',
-				src: '/filerecordid2/file2.jpg',
-			});
+			const asset1 = tldrawAssetFactory.build();
+			const asset2 = tldrawAssetFactory.build();
+			assets.set('asset1', asset1);
+			assets.set('asset2', asset2);
 
 			mdb.getDocument.mockResolvedValueOnce(doc);
 		};
