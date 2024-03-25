@@ -1,8 +1,8 @@
-import {Body, Controller, Delete, HttpCode, HttpStatus, Post, UseGuards} from '@nestjs/common';
+import { Body, Controller, Delete, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ForbiddenOperationError, ValidationError } from '@shared/common';
-import {CurrentUser, JWT} from '../decorator';
+import { CurrentUser, JWT } from '../decorator';
 import type { ICurrentUser, OauthCurrentUser } from '../interface';
 import { LoginDto } from '../uc/dto';
 import { LoginUc } from '../uc/login.uc';
@@ -71,9 +71,8 @@ export class LoginController {
 		return mapped;
 	}
 
-	@UseGuards(AuthGuard('oauth2'))
 	@Delete()
-	async logout(@JWT() jwt: string, @CurrentUser() user: OauthCurrentUser): Promise<void> {
+	async logout(@JWT() jwt: string, @CurrentUser() user: ICurrentUser): Promise<void> {
 		await this.loginUc.logoutUser(jwt, user);
 	}
 }
