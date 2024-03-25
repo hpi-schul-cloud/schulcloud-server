@@ -12,6 +12,7 @@ import {
 	ClassInfoSearchListResponse,
 	ClassSortParams,
 	GroupIdParams,
+	GroupListResponse,
 	GroupPaginationParams,
 	GroupParams,
 	GroupResponse,
@@ -83,8 +84,8 @@ export class GroupController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: GroupPaginationParams,
 		@Query() params: GroupParams
-	): Promise<GroupResponse[]> {
-		const groups: ResolvedGroupDto[] = await this.groupUc.getAllGroups(
+	): Promise<GroupListResponse> {
+		const groups: Page<ResolvedGroupDto> = await this.groupUc.getAllGroups(
 			currentUser.userId,
 			currentUser.schoolId,
 			pagination.skip,
@@ -92,7 +93,7 @@ export class GroupController {
 			params.availableGroupsForCourseSync,
 			params.nameQuery
 		);
-		const response: GroupResponse[] = GroupResponseMapper.mapToGroupResponseList(groups);
+		const response: GroupListResponse = GroupResponseMapper.mapToGroupListResponse(groups);
 
 		return response;
 	}

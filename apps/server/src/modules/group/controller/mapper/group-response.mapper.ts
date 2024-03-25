@@ -5,6 +5,7 @@ import {
 	ClassInfoResponse,
 	ClassInfoSearchListResponse,
 	ExternalSourceResponse,
+	GroupListResponse,
 	GroupResponse,
 	GroupTypeResponse,
 	GroupUserResponse,
@@ -81,11 +82,13 @@ export class GroupResponseMapper {
 		return mapped;
 	}
 
-	static mapToGroupResponseList(groups: ResolvedGroupDto[]): GroupResponse[] {
-		const mapped: GroupResponse[] = groups.map(
+	static mapToGroupListResponse(groups: Page<ResolvedGroupDto>): GroupListResponse {
+		const mapped: GroupResponse[] = groups.data.map(
 			(group: ResolvedGroupDto): GroupResponse => this.mapToGroupResponse(group)
 		);
 
-		return mapped;
+		const response: GroupListResponse = { data: mapped, total: groups.total };
+
+		return response;
 	}
 }

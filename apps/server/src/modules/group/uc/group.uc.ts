@@ -370,7 +370,7 @@ export class GroupUc {
 		limit?: number,
 		availableGroupsForCourseSync?: boolean,
 		nameQuery?: string
-	): Promise<ResolvedGroupDto[]> {
+	): Promise<Page<ResolvedGroupDto>> {
 		const school: School = await this.schoolService.getSchoolById(schoolId);
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
@@ -394,7 +394,9 @@ export class GroupUc {
 			})
 		);
 
-		return resolvedGroups;
+		const page: Page<ResolvedGroupDto> = new Page<ResolvedGroupDto>(resolvedGroups, resolvedGroups.length);
+
+		return page;
 	}
 
 	private async getGroupsForSchool(
