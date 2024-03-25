@@ -216,6 +216,32 @@
 			"type": "string",
 			"description": "The value is used to disable logging color in terminal and is set in production always to true. It is not connected to the loggers it self."
 		},
+		"EDU_SHARING": {
+			"type": "object",
+			"description": "edu-sharing server properties, required always to be defined",
+			"required": [],
+			"properties": {
+				"SERVICE_BASE_URL": {
+					"type": "string",
+					"format": "uri",
+					"default": "http://localhost:4450",
+					"description": "The URI of the edu-sharing service"
+				},
+				"DOMAIN": {
+					"type": "string",
+					"format": "uri",
+					"pattern": ".*(?<!/)$",
+					"description": "The URL for the edu-sharing repository.",
+					"default": "https://mv-repo.schul-cloud.org"
+				},
+				"INCOMING_REQUEST_TIMEOUT": {
+					"type": "integer",
+					"minimum": 0,
+					"default": 600000,
+					"description": "Timeout for incoming requests to the edu-sharing service in milliseconds."
+				}
+			}
+		},
 		"FILES_STORAGE": {
 			"type": "object",
 			"description": "Files storage server properties, required always to be defined",
@@ -1176,7 +1202,7 @@
 			"default": "https://www.geogebra.org",
 			"pattern": ".*(?<!/)$",
 			"description": "Base URL of GeoGebra materials"
-    },
+		},
 		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED": {
 			"type": "boolean",
 			"default": false,

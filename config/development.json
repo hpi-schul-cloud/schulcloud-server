@@ -15,6 +15,10 @@
 	"S3_KEY": "abcdefghijklmnop",
 	"AES_KEY": "thisisnotsecure12",
 	"LDAP_PASSWORD_ENCRYPTION_KEY": "thisisnotsecure12",
+	"EDU_SHARING": {
+		"DOMAIN": "http://localhost:8100",
+		"INCOMING_REQUEST_TIMEOUT": 600000
+	},
 	"FILES_STORAGE": {
 		"S3_ENDPOINT": "http://localhost:9000",
 		"S3_ACCESS_KEY_ID": "miniouser",
