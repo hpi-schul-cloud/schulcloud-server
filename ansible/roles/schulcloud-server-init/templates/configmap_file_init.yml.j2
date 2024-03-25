@@ -514,5 +514,44 @@ data:
 
     # ========== End of the Nextcloud configuration section.
 
+    # ========== Start of the CTL seed data configuration section.
+    echo "Inserting ctl seed data secrets to external-tools..."
+    mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
+             {
+               "name": "Moodle Fortbildung",
+             },
+             { $setOnInsert: {
+               "config_secret": "'$CTL_SEED_SECRET_MOODLE_FORTB'",
+             } },
+             {
+               "upsert": true
+             }
+         );'
+    mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
+           {
+             "name": "Product Test Onlinediagnose Grundschule - Mathematik",
+           },
+           { $setOnInsert: {
+             "config_secret": "'$CTL_SEED_SECRET_ONLINE_DIA_MATHE'",
+           } },
+           {
+             "upsert": true
+           }
+       );'
+    mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").updateOne(
+           {
+             "name": "Product Test Onlinediagnose Grundschule - Deutsch",
+           },
+           { $setOnInsert: {
+             "config_secret": "'$CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH'",
+           } },
+           {
+             "upsert": true
+           }
+       );'
+    echo "Inserted ctl seed data secrets to external-tools."
+
+    # ========== End of the CTL seed data configuration section.
+
     # Database indexes synchronization, it's crucial until we have all the entities in NestJS app.
     npm run syncIndexes
