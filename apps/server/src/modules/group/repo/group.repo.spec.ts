@@ -198,7 +198,10 @@ describe('GroupRepo', () => {
 			const setup = async () => {
 				const userEntity: User = userFactory.buildWithId();
 				const user: UserDO = userDoFactory.build({ id: userEntity.id });
-				const groupUserEntity: GroupUserEntity = { user: userEntity, role: roleFactory.buildWithId() };
+				const groupUserEntity: GroupUserEntity = new GroupUserEntity({
+					user: userEntity,
+					role: roleFactory.buildWithId(),
+				});
 				const groups: GroupEntity[] = groupEntityFactory.buildListWithId(3, {
 					users: [groupUserEntity],
 				});
