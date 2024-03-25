@@ -404,6 +404,34 @@ describe('Group (API)', () => {
 						},
 					]);
 				});
+
+				it('should return groups according to name query', async () => {
+					const { loggedInClient, availableGroupInSchool, adminUser } = await setup();
+
+					const response = await loggedInClient.get().query({ nameQuery: availableGroupInSchool.name });
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual([
+						{
+							id: availableGroupInSchool.id,
+							name: availableGroupInSchool.name,
+							organizationId: availableGroupInSchool.organization?.id,
+							type: availableGroupInSchool.type,
+							users: [
+								{
+									id: adminUser.id,
+									firstName: adminUser.firstName,
+									lastName: adminUser.lastName,
+									role: adminUser.roles[0].name,
+								},
+							],
+							externalSource: {
+								externalId: availableGroupInSchool.externalSource?.externalId,
+								systemId: availableGroupInSchool.externalSource?.system.id,
+							},
+						},
+					]);
+				});
 			});
 
 			describe('when requesting all available groups', () => {
@@ -442,6 +470,36 @@ describe('Group (API)', () => {
 
 					expect(response.status).toEqual(HttpStatus.OK);
 					expect(response.body).toEqual([]);
+				});
+
+				it('should return available groups according to name query', async () => {
+					const { loggedInClient, availableGroupInSchool, adminUser } = await setup();
+
+					const response = await loggedInClient
+						.get()
+						.query({ availableGroupsForCourseSync: true, nameQuery: availableGroupInSchool.name });
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual([
+						{
+							id: availableGroupInSchool.id,
+							name: availableGroupInSchool.name,
+							organizationId: availableGroupInSchool.organization?.id,
+							type: availableGroupInSchool.type,
+							users: [
+								{
+									id: adminUser.id,
+									firstName: adminUser.firstName,
+									lastName: adminUser.lastName,
+									role: adminUser.roles[0].name,
+								},
+							],
+							externalSource: {
+								externalId: availableGroupInSchool.externalSource?.externalId,
+								systemId: availableGroupInSchool.externalSource?.system.id,
+							},
+						},
+					]);
 				});
 			});
 		});
@@ -561,6 +619,34 @@ describe('Group (API)', () => {
 						},
 					]);
 				});
+
+				it('should return all groups according to name query', async () => {
+					const { loggedInClient, availableTeachersGroup, teacherUser } = await setup();
+
+					const response = await loggedInClient.get().query({ nameQuery: availableTeachersGroup.name });
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual([
+						{
+							id: availableTeachersGroup.id,
+							name: availableTeachersGroup.name,
+							organizationId: availableTeachersGroup.organization?.id,
+							type: availableTeachersGroup.type,
+							users: [
+								{
+									id: teacherUser.id,
+									firstName: teacherUser.firstName,
+									lastName: teacherUser.lastName,
+									role: teacherUser.roles[0].name,
+								},
+							],
+							externalSource: {
+								externalId: availableTeachersGroup.externalSource?.externalId,
+								systemId: availableTeachersGroup.externalSource?.system.id,
+							},
+						},
+					]);
+				});
 			});
 
 			describe('when requesting all available groups', () => {
@@ -599,6 +685,36 @@ describe('Group (API)', () => {
 
 					expect(response.status).toEqual(HttpStatus.OK);
 					expect(response.body).toEqual([]);
+				});
+
+				it('should return all available groups according to name query', async () => {
+					const { loggedInClient, availableTeachersGroup, teacherUser } = await setup();
+
+					const response = await loggedInClient
+						.get()
+						.query({ availableGroupsForCourseSync: true, nameQuery: availableTeachersGroup.name });
+
+					expect(response.status).toEqual(HttpStatus.OK);
+					expect(response.body).toEqual([
+						{
+							id: availableTeachersGroup.id,
+							name: availableTeachersGroup.name,
+							organizationId: availableTeachersGroup.organization?.id,
+							type: availableTeachersGroup.type,
+							users: [
+								{
+									id: teacherUser.id,
+									firstName: teacherUser.firstName,
+									lastName: teacherUser.lastName,
+									role: teacherUser.roles[0].name,
+								},
+							],
+							externalSource: {
+								externalId: availableTeachersGroup.externalSource?.externalId,
+								systemId: availableTeachersGroup.externalSource?.system.id,
+							},
+						},
+					]);
 				});
 			});
 		});

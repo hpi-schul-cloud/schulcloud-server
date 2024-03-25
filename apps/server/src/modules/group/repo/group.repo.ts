@@ -11,8 +11,6 @@ import { GroupEntity, GroupEntityTypes } from '../entity';
 import { GroupDomainMapper, GroupTypesToGroupEntityTypesMapping } from './group-domain.mapper';
 import { GroupScope } from './group.scope';
 
-const queryFlow = true;
-
 @Injectable()
 export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 	protected get entityName(): EntityName<GroupEntity> {
@@ -82,30 +80,10 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		return domainObjects;
 	}
 
-	public async findAvailableByUser(user: UserDO, skip = 0, limit = 1000000, nameQuery?: string): Promise<Group[]> {
-		let nameQueryMatch = {};
-		if (nameQuery && StringValidator.isNotEmptyString(nameQuery, true)) {
-			const escapedName = nameQuery.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
-			if (StringValidator.isNotEmptyString(escapedName, true)) {
-				nameQueryMatch = { name: { $regex: escapedName, $options: 'i' } };
-			}
-		}
-
-		const pipeline = [
-			{ $match: { users: { $elemMatch: { user: new ObjectId(user.id) } } } },
-			{ $match: nameQueryMatch },
-			{
-				$lookup: {
-					from: 'courses',
-					localField: '_id',
-					foreignField: 'syncedWithGroup',
-					as: 'syncedCourses',
-				},
-			},
-			{ $match: { syncedCourses: { $size: 0 } } },
-			{ $skip: skip },
-			{ $limit: limit },
-		];
+	public async findAvailableByUser(user: UserDO, skip?: number, limit?: number, nameQuery?: string): Promise<Group[]> {
+		const pipeline: unknown[] = [{ $match: { users: { $elemMatch: { user: new ObjectId(user.id) } } } }];
+		const pipelineStages = this.buildPipeline(skip, limit, nameQuery);
+		pipelineStages.forEach((stage) => pipeline.push(stage));
 
 		const mongoEntities = await this.em.aggregate(GroupEntity, pipeline);
 		const entities: GroupEntity[] = mongoEntities.map((entity: GroupEntity) => {
@@ -148,33 +126,13 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 
 	public async findAvailableBySchoolId(
 		schoolId: EntityId,
-		skip = 0,
-		limit = 1000000,
+		skip?: number,
+		limit?: number,
 		nameQuery?: string
 	): Promise<Group[]> {
-		let nameQueryMatch = {};
-		if (nameQuery && StringValidator.isNotEmptyString(nameQuery, true)) {
-			const escapedName = nameQuery.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
-			if (StringValidator.isNotEmptyString(escapedName, true)) {
-				nameQueryMatch = { name: { $regex: nameQuery, $options: 'i' } };
-			}
-		}
-
-		const pipeline = [
-			{ $match: { organization: new ObjectId(schoolId) } },
-			{ $match: nameQueryMatch },
-			{
-				$lookup: {
-					from: 'courses',
-					localField: '_id',
-					foreignField: 'syncedWithGroup',
-					as: 'syncedCourses',
-				},
-			},
-			{ $match: { syncedCourses: { $size: 0 } } },
-			{ $skip: skip },
-			{ $limit: limit },
-		];
+		const pipeline: unknown[] = [{ $match: { organization: new ObjectId(schoolId) } }];
+		const pipelineStages = this.buildPipeline(skip, limit, nameQuery);
+		pipelineStages.forEach((stage) => pipeline.push(stage));
 
 		const mongoEntities = await this.em.aggregate(GroupEntity, pipeline);
 		const entities: GroupEntity[] = mongoEntities.map((entity: GroupEntity) => {
@@ -204,5 +162,40 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
 
 		return domainObjects;
+	}
+
+	private buildPipeline(skip?: number, limit?: number, nameQuery?: string): unknown[] {
+		let nameQueryMatch = {};
+		const pipeline: unknown[] = [];
+
+		if (nameQuery && StringValidator.isNotEmptyString(nameQuery, true)) {
+			const escapedName = nameQuery.replace(MongoPatterns.REGEX_MONGO_LANGUAGE_PATTERN_WHITELIST, '').trim();
+			if (StringValidator.isNotEmptyString(escapedName, true)) {
+				nameQueryMatch = { name: { $regex: nameQuery, $options: 'i' } };
+			}
+		}
+
+		pipeline.push(
+			{ $match: nameQueryMatch },
+			{
+				$lookup: {
+					from: 'courses',
+					localField: '_id',
+					foreignField: 'syncedWithGroup',
+					as: 'syncedCourses',
+				},
+			},
+			{ $match: { syncedCourses: { $size: 0 } } }
+		);
+
+		if (skip) {
+			pipeline.push({ $skip: skip });
+		}
+
+		if (limit) {
+			pipeline.push({ $limit: limit });
+		}
+
+		return pipeline;
 	}
 }

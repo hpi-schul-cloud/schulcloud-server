@@ -143,6 +143,21 @@ describe('GroupRepo', () => {
 				expect(result[0].id).toEqual(groups[1].id);
 			});
 
+			it('should return groups according to name query', async () => {
+				const { user, groups } = await setup();
+
+				const result: Group[] = await repo.findByUserAndGroupTypes(
+					user,
+					[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
+					undefined,
+					undefined,
+					groups[1].name
+				);
+
+				expect(result.length).toEqual(1);
+				expect(result[0].id).toEqual(groups[1].id);
+			});
+
 			it('should return only groups of the given group types', async () => {
 				const { user } = await setup();
 
@@ -231,6 +246,15 @@ describe('GroupRepo', () => {
 				const { user, groups } = await setup();
 
 				const result: Group[] = await repo.findAvailableByUser(user, 1, 1);
+
+				expect(result.length).toEqual(1);
+				expect(result[0].id).toEqual(groups[2].id);
+			});
+
+			it('should return groups according to name query', async () => {
+				const { user, groups } = await setup();
+
+				const result: Group[] = await repo.findAvailableByUser(user, undefined, undefined, groups[2].name);
 
 				expect(result.length).toEqual(1);
 				expect(result[0].id).toEqual(groups[2].id);
@@ -326,6 +350,21 @@ describe('GroupRepo', () => {
 				expect(result[0].id).toEqual(groups[1].id);
 			});
 
+			it('should return groups according to name query', async () => {
+				const { school, groups } = await setup();
+
+				const result: Group[] = await repo.findBySchoolIdAndGroupTypes(
+					school.id,
+					[GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER],
+					undefined,
+					undefined,
+					groups[1].name
+				);
+
+				expect(result.length).toEqual(1);
+				expect(result[0].id).toEqual(groups[1].id);
+			});
+
 			it('should return only groups of the given group types', async () => {
 				const { school } = await setup();
 
@@ -406,6 +445,15 @@ describe('GroupRepo', () => {
 				const { school, groups } = await setup();
 
 				const result: Group[] = await repo.findAvailableBySchoolId(school.id, 1, 1);
+
+				expect(result.length).toEqual(1);
+				expect(result[0].id).toEqual(groups[2].id);
+			});
+
+			it('should return groups according to name query', async () => {
+				const { school, groups } = await setup();
+
+				const result: Group[] = await repo.findAvailableBySchoolId(school.id, undefined, undefined, groups[2].name);
 
 				expect(result.length).toEqual(1);
 				expect(result[0].id).toEqual(groups[2].id);
