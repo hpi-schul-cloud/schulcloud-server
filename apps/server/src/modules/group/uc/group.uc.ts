@@ -1,8 +1,12 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
+import { Course } from '@modules/learnroom/domain';
+import { CourseDoService } from '@modules/learnroom/service/course-do.service';
 import { SchoolYearService } from '@modules/legacy-school';
+import { ProvisioningConfig } from '@modules/provisioning';
 import { RoleService } from '@modules/role';
+import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { School, SchoolService } from '@modules/school/domain';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
@@ -14,10 +18,6 @@ import { Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Logger } from '@src/core/logger';
 import { LegacySystemService, SystemDto } from '@src/modules/system';
-import { CourseService } from '../../learnroom';
-import { Course } from '../../learnroom/domain';
-import { ProvisioningConfig } from '../../provisioning';
-import { RoleDto } from '../../role/service/dto/role.dto';
 import { ClassRequestContext, SchoolYearQueryType } from '../controller/dto/interface';
 import { Group, GroupTypes, GroupUser } from '../domain';
 import { UnknownQueryTypeLoggableException } from '../loggable';
@@ -36,7 +36,7 @@ export class GroupUc {
 		private readonly schoolService: SchoolService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly schoolYearService: SchoolYearService,
-		private readonly courseService: CourseService,
+		private readonly courseService: CourseDoService,
 		private readonly configService: ConfigService<ProvisioningConfig, true>,
 		private readonly logger: Logger
 	) {}
