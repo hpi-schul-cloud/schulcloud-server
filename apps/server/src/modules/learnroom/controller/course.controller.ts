@@ -1,5 +1,6 @@
 import { Authenticate, CurrentUser, ICurrentUser } from '@modules/authentication';
 import {
+	Body,
 	Controller,
 	Get,
 	HttpCode,
@@ -30,6 +31,7 @@ import { CourseMapper } from '../mapper/course.mapper';
 import { CourseExportUc, CourseImportUc, CourseSyncUc, CourseUc } from '../uc';
 import { CommonCartridgeFileValidatorPipe } from '../utils';
 import { CourseImportBodyParams, CourseMetadataListResponse, CourseQueryParams, CourseUrlParams } from './dto';
+import { CourseExportBodyParams } from './dto/course-export.body.params';
 
 @ApiTags('Courses')
 @Authenticate('jwt')
@@ -55,14 +57,21 @@ export class CourseController {
 		return result;
 	}
 
-	@Get(':courseId/export')
+	@Post(':courseId/export')
 	async exportCourse(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: CourseUrlParams,
 		@Query() queryParams: CourseQueryParams,
+		@Body() bodyParams: CourseExportBodyParams,
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile> {
-		const result = await this.courseExportUc.exportCourse(urlParams.courseId, currentUser.userId, queryParams.version);
+		const result = await this.courseExportUc.exportCourse(
+			urlParams.courseId,
+			currentUser.userId,
+			queryParams.version,
+			bodyParams.topics,
+			bodyParams.tasks
+		);
 
 		response.set({
 			'Content-Type': 'application/zip',
