@@ -297,8 +297,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="34"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/systemEntityFactory.ts:34</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="36"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/systemEntityFactory.ts:36</a></div>
                         </td>
                     </tr>
 
@@ -357,8 +357,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="13"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/systemEntityFactory.ts:13</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="14"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/systemEntityFactory.ts:14</a></div>
                         </td>
                     </tr>
 
@@ -385,8 +385,8 @@
 
                     <tr>
                         <td class="col-md-4">
-                            <div class="io-line">Defined in <a href="" data-line="46"
-                                    class="link-to-prism">apps/server/src/shared/testing/factory/systemEntityFactory.ts:46</a></div>
+                            <div class="io-line">Defined in <a href="" data-line="49"
+                                    class="link-to-prism">apps/server/src/shared/testing/factory/systemEntityFactory.ts:49</a></div>
                         </td>
                     </tr>
 
@@ -1426,12 +1426,14 @@
 	SystemEntityProps,
 } from &#x27;@shared/domain/entity&#x27;;
 import { SystemProvisioningStrategy } from &#x27;@shared/domain/interface/system-provisioning.strategy&#x27;;
+import { SystemTypeEnum } from &#x27;@shared/domain/types&#x27;;
 import { DeepPartial } from &#x27;fishery&#x27;;
 import { BaseFactory } from &#x27;./base.factory&#x27;;
 
 export class SystemEntityFactory extends BaseFactory&lt;SystemEntity, SystemEntityProps&gt; {
 	withOauthConfig(): this {
 		const params: DeepPartial&lt;SystemEntityProps&gt; &#x3D; {
+			type: SystemTypeEnum.OAUTH,
 			oauthConfig: new OauthConfigEntity({
 				clientId: &#x27;12345&#x27;,
 				clientSecret: &#x27;mocksecret&#x27;,
@@ -1453,6 +1455,7 @@ export class SystemEntityFactory extends BaseFactory&lt;SystemEntity, SystemEnti
 
 	withLdapConfig(otherParams?: DeepPartial&lt;LdapConfigEntity&gt;): this {
 		const params: DeepPartial&lt;SystemEntityProps&gt; &#x3D; {
+			type: SystemTypeEnum.LDAP,
 			ldapConfig: new LdapConfigEntity({
 				url: &#x27;ldaps:mock.de:389&#x27;,
 				active: true,
@@ -1465,6 +1468,7 @@ export class SystemEntityFactory extends BaseFactory&lt;SystemEntity, SystemEnti
 
 	withOidcConfig(): this {
 		const params &#x3D; {
+			type: SystemTypeEnum.OIDC,
 			oidcConfig: new OidcConfigEntity({
 				clientId: &#x27;mock-client-id&#x27;,
 				clientSecret: &#x27;mock-client-secret&#x27;,

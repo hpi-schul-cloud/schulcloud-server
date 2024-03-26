@@ -24,103 +24,103 @@
 <title>cluster_TldrawTestModule</title>
 <polygon fill="none" stroke="black" stroke-dasharray="1,5" points="8,-70 8,-195 1106,-195 1106,-70 8,-70"/>
 </g>
-<g id="clust3" class="cluster">
-<title>cluster_TldrawTestModule_imports</title>
-<polygon fill="none" stroke="black" points="764,-78 764,-130 1098,-130 1098,-78 764,-78"/>
-</g>
 <g id="clust6" class="cluster">
 <title>cluster_TldrawTestModule_providers</title>
-<polygon fill="none" stroke="black" points="16,-78 16,-130 756,-130 756,-78 16,-78"/>
+<polygon fill="none" stroke="black" points="358,-78 358,-130 1098,-130 1098,-78 358,-78"/>
+</g>
+<g id="clust3" class="cluster">
+<title>cluster_TldrawTestModule_imports</title>
+<polygon fill="none" stroke="black" points="16,-78 16,-130 350,-130 350,-78 16,-78"/>
 </g>
 <!-- LoggerModule -->
 <g id="node1" class="node">
 <title>LoggerModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="1089.98,-122 1086.98,-126 1065.98,-126 1062.98,-122 990.02,-122 990.02,-86 1089.98,-86 1089.98,-122"/>
-<text text-anchor="middle" x="1040" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="341.98,-122 338.98,-126 317.98,-126 314.98,-122 242.02,-122 242.02,-86 341.98,-86 341.98,-122"/>
+<text text-anchor="middle" x="292" y="-99.8" font-family="Times,serif" font-size="14.00">LoggerModule</text>
 </g>
 <!-- TldrawTestModule -->
 <g id="node3" class="node">
 <title>TldrawTestModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="645.08,-187 642.08,-191 621.08,-191 618.08,-187 520.92,-187 520.92,-151 645.08,-151 645.08,-187"/>
-<text text-anchor="middle" x="583" y="-164.8" font-family="Times,serif" font-size="14.00">TldrawTestModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="641.08,-187 638.08,-191 617.08,-191 614.08,-187 516.92,-187 516.92,-151 641.08,-151 641.08,-187"/>
+<text text-anchor="middle" x="579" y="-164.8" font-family="Times,serif" font-size="14.00">TldrawTestModule</text>
 </g>
 <!-- LoggerModule&#45;&gt;TldrawTestModule -->
 <g id="edge1" class="edge">
 <title>LoggerModule&#45;&gt;TldrawTestModule</title>
-<path fill="none" stroke="black" d="M1040,-122.29C1040,-144.21 1040,-178 1040,-178 1040,-178 655.11,-178 655.11,-178"/>
-<polygon fill="black" stroke="black" points="655.11,-174.5 645.11,-178 655.11,-181.5 655.11,-174.5"/>
+<path fill="none" stroke="black" d="M292,-122.11C292,-141.34 292,-169 292,-169 292,-169 506.73,-169 506.73,-169"/>
+<polygon fill="black" stroke="black" points="506.73,-172.5 516.73,-169 506.73,-165.5 506.73,-172.5"/>
 </g>
 <!-- MongoMemoryDatabaseModule -->
 <g id="node2" class="node">
 <title>MongoMemoryDatabaseModule</title>
-<polygon fill="#8dd3c7" stroke="black" points="971.51,-122 968.51,-126 947.51,-126 944.51,-122 772.49,-122 772.49,-86 971.51,-86 971.51,-122"/>
-<text text-anchor="middle" x="872" y="-99.8" font-family="Times,serif" font-size="14.00">MongoMemoryDatabaseModule</text>
+<polygon fill="#8dd3c7" stroke="black" points="223.51,-122 220.51,-126 199.51,-126 196.51,-122 24.49,-122 24.49,-86 223.51,-86 223.51,-122"/>
+<text text-anchor="middle" x="124" y="-99.8" font-family="Times,serif" font-size="14.00">MongoMemoryDatabaseModule</text>
 </g>
 <!-- MongoMemoryDatabaseModule&#45;&gt;TldrawTestModule -->
 <g id="edge2" class="edge">
 <title>MongoMemoryDatabaseModule&#45;&gt;TldrawTestModule</title>
-<path fill="none" stroke="black" d="M872,-122.11C872,-141.34 872,-169 872,-169 872,-169 655.35,-169 655.35,-169"/>
-<polygon fill="black" stroke="black" points="655.35,-165.5 645.35,-169 655.35,-172.5 655.35,-165.5"/>
+<path fill="none" stroke="black" d="M124,-122.29C124,-144.21 124,-178 124,-178 124,-178 506.69,-178 506.69,-178"/>
+<polygon fill="black" stroke="black" points="506.69,-181.5 516.69,-178 506.69,-174.5 506.69,-181.5"/>
 </g>
 <!-- Logger -->
 <g id="node4" class="node">
 <title>Logger</title>
-<ellipse fill="#fdb462" stroke="black" cx="709" cy="-104" rx="38.85" ry="18"/>
-<text text-anchor="middle" x="709" y="-99.8" font-family="Times,serif" font-size="14.00">Logger</text>
+<ellipse fill="#fdb462" stroke="black" cx="1051" cy="-104" rx="38.85" ry="18"/>
+<text text-anchor="middle" x="1051" y="-99.8" font-family="Times,serif" font-size="14.00">Logger</text>
 </g>
 <!-- Logger&#45;&gt;TldrawTestModule -->
 <g id="edge3" class="edge">
 <title>Logger&#45;&gt;TldrawTestModule</title>
-<path fill="none" stroke="black" d="M709,-122.03C709,-138.4 709,-160 709,-160 709,-160 655.26,-160 655.26,-160"/>
-<polygon fill="black" stroke="black" points="655.26,-156.5 645.26,-160 655.26,-163.5 655.26,-156.5"/>
+<path fill="none" stroke="black" d="M1051,-122.29C1051,-144.21 1051,-178 1051,-178 1051,-178 651.19,-178 651.19,-178"/>
+<polygon fill="black" stroke="black" points="651.19,-174.5 641.19,-178 651.19,-181.5 651.19,-174.5"/>
 </g>
 <!-- MetricsService -->
 <g id="node5" class="node">
 <title>MetricsService</title>
-<ellipse fill="#fdb462" stroke="black" cx="583" cy="-104" rx="69.47" ry="18"/>
-<text text-anchor="middle" x="583" y="-99.8" font-family="Times,serif" font-size="14.00">MetricsService</text>
+<ellipse fill="#fdb462" stroke="black" cx="925" cy="-104" rx="69.47" ry="18"/>
+<text text-anchor="middle" x="925" y="-99.8" font-family="Times,serif" font-size="14.00">MetricsService</text>
 </g>
 <!-- MetricsService&#45;&gt;TldrawTestModule -->
 <g id="edge4" class="edge">
 <title>MetricsService&#45;&gt;TldrawTestModule</title>
-<path fill="none" stroke="black" d="M583,-122.11C583,-122.11 583,-140.99 583,-140.99"/>
-<polygon fill="black" stroke="black" points="579.5,-140.99 583,-150.99 586.5,-140.99 579.5,-140.99"/>
+<path fill="none" stroke="black" d="M925,-122.11C925,-141.34 925,-169 925,-169 925,-169 651.26,-169 651.26,-169"/>
+<polygon fill="black" stroke="black" points="651.26,-165.5 641.26,-169 651.26,-172.5 651.26,-165.5"/>
 </g>
 <!-- TldrawRedisFactory -->
 <g id="node6" class="node">
 <title>TldrawRedisFactory</title>
-<ellipse fill="#fdb462" stroke="black" cx="405" cy="-104" rx="90.33" ry="18"/>
-<text text-anchor="middle" x="405" y="-99.8" font-family="Times,serif" font-size="14.00">TldrawRedisFactory</text>
+<ellipse fill="#fdb462" stroke="black" cx="747" cy="-104" rx="90.33" ry="18"/>
+<text text-anchor="middle" x="747" y="-99.8" font-family="Times,serif" font-size="14.00">TldrawRedisFactory</text>
 </g>
 <!-- TldrawRedisFactory&#45;&gt;TldrawTestModule -->
 <g id="edge5" class="edge">
 <title>TldrawRedisFactory&#45;&gt;TldrawTestModule</title>
-<path fill="none" stroke="black" d="M405,-122.03C405,-138.4 405,-160 405,-160 405,-160 510.74,-160 510.74,-160"/>
-<polygon fill="black" stroke="black" points="510.74,-163.5 520.74,-160 510.74,-156.5 510.74,-163.5"/>
+<path fill="none" stroke="black" d="M747,-122.03C747,-138.4 747,-160 747,-160 747,-160 651.08,-160 651.08,-160"/>
+<polygon fill="black" stroke="black" points="651.08,-156.5 641.08,-160 651.08,-163.5 651.08,-156.5"/>
 </g>
 <!-- TldrawRepo -->
 <g id="node7" class="node">
 <title>TldrawRepo</title>
-<ellipse fill="#fdb462" stroke="black" cx="237" cy="-104" rx="59.11" ry="18"/>
-<text text-anchor="middle" x="237" y="-99.8" font-family="Times,serif" font-size="14.00">TldrawRepo</text>
+<ellipse fill="#fdb462" stroke="black" cx="579" cy="-104" rx="59.11" ry="18"/>
+<text text-anchor="middle" x="579" y="-99.8" font-family="Times,serif" font-size="14.00">TldrawRepo</text>
 </g>
 <!-- TldrawRepo&#45;&gt;TldrawTestModule -->
 <g id="edge6" class="edge">
 <title>TldrawRepo&#45;&gt;TldrawTestModule</title>
-<path fill="none" stroke="black" d="M237,-122.11C237,-141.34 237,-169 237,-169 237,-169 510.74,-169 510.74,-169"/>
-<polygon fill="black" stroke="black" points="510.74,-172.5 520.74,-169 510.74,-165.5 510.74,-172.5"/>
+<path fill="none" stroke="black" d="M579,-122.11C579,-122.11 579,-140.99 579,-140.99"/>
+<polygon fill="black" stroke="black" points="575.5,-140.99 579,-150.99 582.5,-140.99 575.5,-140.99"/>
 </g>
 <!-- TldrawService -->
 <g id="node8" class="node">
 <title>TldrawService</title>
-<ellipse fill="#fdb462" stroke="black" cx="92" cy="-104" rx="67.75" ry="18"/>
-<text text-anchor="middle" x="92" y="-99.8" font-family="Times,serif" font-size="14.00">TldrawService</text>
+<ellipse fill="#fdb462" stroke="black" cx="434" cy="-104" rx="67.75" ry="18"/>
+<text text-anchor="middle" x="434" y="-99.8" font-family="Times,serif" font-size="14.00">TldrawService</text>
 </g>
 <!-- TldrawService&#45;&gt;TldrawTestModule -->
 <g id="edge7" class="edge">
 <title>TldrawService&#45;&gt;TldrawTestModule</title>
-<path fill="none" stroke="black" d="M92,-122.29C92,-144.21 92,-178 92,-178 92,-178 510.81,-178 510.81,-178"/>
-<polygon fill="black" stroke="black" points="510.81,-181.5 520.81,-178 510.81,-174.5 510.81,-181.5"/>
+<path fill="none" stroke="black" d="M434,-122.03C434,-138.4 434,-160 434,-160 434,-160 506.67,-160 506.67,-160"/>
+<polygon fill="black" stroke="black" points="506.67,-163.5 516.67,-160 506.67,-156.5 506.67,-163.5"/>
 </g>
 </g>
 </svg>

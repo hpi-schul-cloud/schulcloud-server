@@ -612,7 +612,7 @@
                                 </table>
                             </div>
                         <div class="io-description">
-                            <b>Returns : </b>    <code>Promise&lt;SchoolSystemsResponse&gt;</code>
+                            <b>Returns : </b>    <code>Promise&lt;SchoolSystemResponse[]&gt;</code>
 
                         </div>
                             <div class="io-description">
@@ -813,7 +813,7 @@ import {
 	SchoolExistsResponse,
 	SchoolForExternalInviteResponse,
 	SchoolResponse,
-	SchoolSystemsResponse,
+	SchoolSystemResponse,
 } from &#x27;./dto/response&#x27;;
 import { SchoolForLdapLoginResponse } from &#x27;./dto/response/school-for-ldap-login.response&#x27;;
 import { SchoolResponseMapper, SystemResponseMapper } from &#x27;./mapper&#x27;;
@@ -842,7 +842,7 @@ export class SchoolUc {
 		return responseDto;
 	}
 
-	public async getSchoolSystems(schoolId: EntityId, userId: EntityId): Promise&lt;SchoolSystemsResponse&gt; {
+	public async getSchoolSystems(schoolId: EntityId, userId: EntityId): Promise&lt;SchoolSystemResponse[]&gt; {
 		const [school, user] &#x3D; await Promise.all([
 			this.schoolService.getSchoolById(schoolId),
 			this.authorizationService.getUserWithPermissions(userId),
@@ -853,7 +853,7 @@ export class SchoolUc {
 
 		const systems &#x3D; await this.schoolService.getSchoolSystems(school);
 
-		const responseDto &#x3D; SystemResponseMapper.mapToSchoolSystemsResponse(school, systems);
+		const responseDto &#x3D; SystemResponseMapper.mapToSchoolSystemResponse(systems);
 
 		return responseDto;
 	}

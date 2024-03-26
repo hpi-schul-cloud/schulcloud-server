@@ -5337,6 +5337,9 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <a href="classes/PropertyData.html" data-type="entity-link" >PropertyData</a>
                             </li>
                             <li class="link">
+                                <a href="classes/ProviderConfigResponse.html" data-type="entity-link" >ProviderConfigResponse</a>
+                            </li>
+                            <li class="link">
                                 <a href="classes/ProvisioningConfiguration.html" data-type="entity-link" >ProvisioningConfiguration</a>
                             </li>
                             <li class="link">
@@ -5728,9 +5731,6 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolSystemResponse.html" data-type="entity-link" >SchoolSystemResponse</a>
-                            </li>
-                            <li class="link">
-                                <a href="classes/SchoolSystemsResponse.html" data-type="entity-link" >SchoolSystemsResponse</a>
                             </li>
                             <li class="link">
                                 <a href="classes/SchoolToolConfigurationStatusResponseMapper.html" data-type="entity-link" >SchoolToolConfigurationStatusResponseMapper</a>
