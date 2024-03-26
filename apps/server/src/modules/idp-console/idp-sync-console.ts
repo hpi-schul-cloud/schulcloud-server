@@ -1,5 +1,6 @@
 import { Console, Command } from 'nestjs-console';
 import { ConsoleWriterService } from '@infra/console';
+import { SynchronizationUc } from '@modules/synchronization';
 import { UsersSyncOptions, SystemType } from './interface';
 
 @Console({
@@ -7,7 +8,7 @@ import { UsersSyncOptions, SystemType } from './interface';
 	description: 'Console providing an access to the IDP-provisioned data synchronization operations.',
 })
 export class IdpSyncConsole {
-	constructor(private consoleWriter: ConsoleWriterService) {}
+	constructor(private consoleWriter: ConsoleWriterService, private synchronizationUc: SynchronizationUc) {}
 
 	@Command({
 		command: 'users',
@@ -37,6 +38,8 @@ export class IdpSyncConsole {
 				systemId: options.systemId,
 			})
 		);
+
+		await this.synchronizationUc.updateSystemUsersLastSyncedAt(options.systemId);
 
 		this.consoleWriter.info(
 			JSON.stringify({
