@@ -15,7 +15,7 @@ interface SchoolLogo {
 interface SchoolInfo {
 	id: EntityId;
 	name: string;
-	language?: string;
+	language?: LanguageType;
 	logo?: SchoolLogo;
 }
 
