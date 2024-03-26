@@ -4,7 +4,8 @@ import { LessonModule } from '@modules/lesson';
 import { TaskModule } from '@modules/task';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { ToolConfigModule } from '@modules/tool/tool-config.module';
-import { Module, forwardRef } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
 import {
 	CourseGroupRepo,
 	CourseRepo,
@@ -15,9 +16,9 @@ import {
 	UserRepo,
 } from '@shared/repo';
 import { LoggerModule } from '@src/core/logger';
-import { CqrsModule } from '@nestjs/cqrs';
 import { BoardNodeRepo } from '../board/repo';
 import { COURSE_REPO } from './domain';
+import { CommonCartridgeImportMapper } from './mapper/common-cartridge-import.mapper';
 import { CommonCartridgeMapper } from './mapper/common-cartridge.mapper';
 import { CourseMikroOrmRepo } from './repo/mikro-orm/course.repo';
 import {
@@ -25,6 +26,7 @@ import {
 	CommonCartridgeExportService,
 	CommonCartridgeImportService,
 	CourseCopyService,
+	CourseDoService,
 	CourseGroupService,
 	CourseService,
 	DashboardService,
@@ -54,6 +56,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 		CommonCartridgeFileValidatorPipe,
 		CommonCartridgeImportService,
 		CommonCartridgeMapper,
+		CommonCartridgeImportMapper,
 		CourseCopyService,
 		CourseGroupRepo,
 		CourseGroupService,
@@ -63,6 +66,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 			useClass: CourseMikroOrmRepo,
 		},
 		CourseService,
+		CourseDoService,
 		DashboardElementRepo,
 		DashboardModelMapper,
 		DashboardService,
@@ -73,6 +77,7 @@ import { CommonCartridgeFileValidatorPipe } from './utils';
 	exports: [
 		CourseCopyService,
 		CourseService,
+		CourseDoService,
 		RoomsService,
 		CommonCartridgeExportService,
 		CommonCartridgeImportService,

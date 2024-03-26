@@ -362,8 +362,8 @@
 				"INCOMING_REQUEST_TIMEOUT": {
 					"type": "integer",
 					"minimum": 0,
-					"default": 10000,
-					"description": "Timeout for incoming requests to the h5p editor in milliseconds."
+					"default": 600000,
+					"description": "Timeout for incoming requests (including file uploads) to the h5p editor in milliseconds ."
 				},
 				"LIBRARY_LIST_PATH": {
 					"type": "string",
@@ -1149,6 +1149,11 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Toggle for the task sharing feature."
+		},
+		"FEATURE_COLUMN_BOARD_SHARE": {
+			"type": "boolean",
+			"default": false,
+			"description": "Toggle for the column board sharing feature."
 		},
 		"FEATURE_USER_MIGRATION_ENABLED": {
 			"type": "boolean",
